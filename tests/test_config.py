@@ -30,3 +30,12 @@ def test_public_mcp_url() -> None:
     )
     assert settings.public_mcp_url == "https://brain.dceb.net/mcp"
 
+
+def test_public_ui_urls() -> None:
+    settings = Settings(
+        brain_public_base_url="https://brain.dceb.net/",
+        brain_public_ui_path="ui",
+        brain_public_ui_api_path="ui-api",
+    )
+    assert settings.public_ui_url == "https://brain.dceb.net/ui"
+    assert settings.public_ui_api_url == "https://brain.dceb.net/ui-api"

@@ -80,6 +80,15 @@ class Settings(BaseSettings):
     brain_prod_root: str = "/Volumes/xpg_usb4/prod/brain"
     brain_launchd_label: str = "com.brain.mcp"
     brain_health_path: str = "/healthz"
+    brain_ui_enabled: bool = False
+    brain_ui_host: str = "127.0.0.1"
+    brain_ui_proxy_port: int = 8002
+    brain_ui_frontend_port: int = 3000
+    brain_ui_backend_port: int = 8001
+    brain_public_ui_path: str = "/ui"
+    brain_public_ui_api_path: str = "/ui-api"
+    brain_ui_session_seconds: int = 60 * 60 * 12
+    brain_ui_launchd_label: str = "com.brain.ui"
 
     @model_validator(mode="after")
     def validate_profile(self) -> "Settings":
@@ -122,11 +131,21 @@ class Settings(BaseSettings):
         self.brain_mcp_path = normalize_path(self.brain_mcp_path)
         self.brain_public_mcp_path = normalize_path(self.brain_public_mcp_path)
         self.brain_health_path = normalize_path(self.brain_health_path)
+        self.brain_public_ui_path = normalize_path(self.brain_public_ui_path)
+        self.brain_public_ui_api_path = normalize_path(self.brain_public_ui_api_path)
         return self
 
     @property
     def public_mcp_url(self) -> str:
         return f"{self.brain_public_base_url.rstrip('/')}{self.brain_public_mcp_path}"
+
+    @property
+    def public_ui_url(self) -> str:
+        return f"{self.brain_public_base_url.rstrip('/')}{self.brain_public_ui_path}"
+
+    @property
+    def public_ui_api_url(self) -> str:
+        return f"{self.brain_public_base_url.rstrip('/')}{self.brain_public_ui_api_path}"
 
     @property
     def protected_resource_metadata_url(self) -> str:
@@ -224,6 +243,14 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "BRAIN_REQUEST_LOG_ENABLED": str(settings.brain_request_log_enabled).lower(),
         "BRAIN_REQUEST_LOG_PATH": settings.brain_request_log_path,
         "BRAIN_REQUEST_LOG_MAX_BODY_BYTES": str(settings.brain_request_log_max_body_bytes),
+        "BRAIN_UI_ENABLED": str(settings.brain_ui_enabled).lower(),
+        "BRAIN_UI_HOST": settings.brain_ui_host,
+        "BRAIN_UI_PROXY_PORT": str(settings.brain_ui_proxy_port),
+        "BRAIN_UI_FRONTEND_PORT": str(settings.brain_ui_frontend_port),
+        "BRAIN_UI_BACKEND_PORT": str(settings.brain_ui_backend_port),
+        "BRAIN_PUBLIC_UI_PATH": settings.brain_public_ui_path,
+        "BRAIN_PUBLIC_UI_API_PATH": settings.brain_public_ui_api_path,
+        "BRAIN_UI_SESSION_SECONDS": str(settings.brain_ui_session_seconds),
     }
     optional_values = {
         "LLM_API_KEY": settings.llm_api_key,

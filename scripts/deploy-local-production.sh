@@ -3,6 +3,7 @@ set -euo pipefail
 
 APP_NAME="brain"
 LABEL="com.brain.mcp"
+UI_LABEL="com.brain.ui"
 PROD_ROOT="${BRAIN_PROD_ROOT:-/Volumes/xpg_usb4/prod/brain}"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SHA="${GITHUB_SHA:-$(git -C "$REPO_ROOT" rev-parse HEAD)}"
@@ -14,8 +15,11 @@ SECRETS_DIR="$SHARED_DIR/secrets"
 DATA_DIR="$SHARED_DIR/data"
 BACKUP_DIR="$SHARED_DIR/backups"
 LOG_DIR="$SHARED_DIR/logs"
+LOCAL_SUPPORT_DIR="$HOME/Library/Application Support/brain"
 PLIST_SRC="$REPO_ROOT/launchd/com.brain.mcp.plist.template"
 PLIST_DST="$HOME/Library/LaunchAgents/$LABEL.plist"
+UI_PLIST_SRC="$REPO_ROOT/launchd/com.brain.ui.plist.template"
+UI_PLIST_DST="$HOME/Library/LaunchAgents/$UI_LABEL.plist"
 
 log() {
   printf '[deploy] %s\n' "$*"
@@ -43,7 +47,7 @@ ensure_env_var() {
 }
 
 log "creating production directories under $PROD_ROOT"
-mkdir -p "$PROD_ROOT/releases" "$DATA_DIR" "$BACKUP_DIR" "$SECRETS_DIR" "$LOG_DIR" "$HOME/Library/LaunchAgents" "$HOME/Library/Logs"
+mkdir -p "$PROD_ROOT/releases" "$DATA_DIR" "$BACKUP_DIR" "$SECRETS_DIR" "$LOG_DIR" "$HOME/Library/LaunchAgents" "$HOME/Library/Logs" "$LOCAL_SUPPORT_DIR"
 
 if [[ ! -f "$SECRETS_DIR/brain.env" ]]; then
   log "creating starter production env at $SECRETS_DIR/brain.env"
@@ -85,6 +89,14 @@ BRAIN_AUTH_REFRESH_TOKEN_SECONDS=2592000
 BRAIN_REQUEST_LOG_ENABLED=true
 BRAIN_REQUEST_LOG_PATH=$LOG_DIR/requests.jsonl
 BRAIN_REQUEST_LOG_MAX_BODY_BYTES=0
+BRAIN_UI_ENABLED=true
+BRAIN_UI_HOST=127.0.0.1
+BRAIN_UI_PROXY_PORT=8002
+BRAIN_UI_FRONTEND_PORT=3000
+BRAIN_UI_BACKEND_PORT=8001
+BRAIN_PUBLIC_UI_PATH=/ui
+BRAIN_PUBLIC_UI_API_PATH=/ui-api
+BRAIN_UI_SESSION_SECONDS=43200
 EOF
   chmod 600 "$SECRETS_DIR/brain.env"
 fi
@@ -99,6 +111,14 @@ ensure_env_var "BRAIN_AUTH_REFRESH_TOKEN_SECONDS" "2592000"
 ensure_env_var "BRAIN_REQUEST_LOG_ENABLED" "true"
 ensure_env_var "BRAIN_REQUEST_LOG_PATH" "$LOG_DIR/requests.jsonl"
 ensure_env_var "BRAIN_REQUEST_LOG_MAX_BODY_BYTES" "0"
+ensure_env_var "BRAIN_UI_ENABLED" "true"
+ensure_env_var "BRAIN_UI_HOST" "127.0.0.1"
+ensure_env_var "BRAIN_UI_PROXY_PORT" "8002"
+ensure_env_var "BRAIN_UI_FRONTEND_PORT" "3000"
+ensure_env_var "BRAIN_UI_BACKEND_PORT" "8001"
+ensure_env_var "BRAIN_PUBLIC_UI_PATH" "/ui"
+ensure_env_var "BRAIN_PUBLIC_UI_API_PATH" "/ui-api"
+ensure_env_var "BRAIN_UI_SESSION_SECONDS" "43200"
 
 if [[ ! -f "$SECRETS_DIR/brain-auth-password" ]]; then
   log "creating Brain OAuth password at $SECRETS_DIR/brain-auth-password"
@@ -133,6 +153,9 @@ log "installing dependencies in release"
   cd "$RELEASE_DIR"
   uv sync --all-extras
 )
+chmod +x "$RELEASE_DIR/scripts/run-cognee-ui-production.sh"
+cp "$RELEASE_DIR/scripts/run-cognee-ui-production.sh" "$LOCAL_SUPPORT_DIR/run-cognee-ui-production.sh"
+chmod +x "$LOCAL_SUPPORT_DIR/run-cognee-ui-production.sh"
 
 log "linking shared mutable state"
 mkdir -p "$RELEASE_DIR/.data"
@@ -141,6 +164,8 @@ ln -sfn "$DATA_DIR" "$RELEASE_DIR/.data/shared"
 log "installing launchd plist"
 cp "$PLIST_SRC" "$PLIST_DST"
 plutil -lint "$PLIST_DST" >/dev/null
+cp "$UI_PLIST_SRC" "$UI_PLIST_DST"
+plutil -lint "$UI_PLIST_DST" >/dev/null
 
 log "updating current symlink"
 ln -sfn "$RELEASE_DIR" "$CURRENT_LINK"
@@ -149,6 +174,9 @@ if command -v launchctl >/dev/null 2>&1; then
   log "restarting launchd service $LABEL"
   launchctl bootout "gui/$(id -u)" "$PLIST_DST" >/dev/null 2>&1 || true
   launchctl bootstrap "gui/$(id -u)" "$PLIST_DST"
+  log "restarting launchd service $UI_LABEL"
+  launchctl bootout "gui/$(id -u)" "$UI_PLIST_DST" >/dev/null 2>&1 || true
+  launchctl bootstrap "gui/$(id -u)" "$UI_PLIST_DST"
 else
   log "launchctl not found; skipping service restart"
 fi
@@ -165,11 +193,24 @@ for attempt in {1..30}; do
   sleep 1
 done
 
+log "waiting for local UI health"
+for attempt in {1..120}; do
+  if curl -fsS "http://127.0.0.1:8002/healthz" >/dev/null 2>&1; then
+    break
+  fi
+  if [[ "$attempt" == "120" ]]; then
+    echo "local UI health did not become ready" >&2
+    exit 1
+  fi
+  sleep 1
+done
+
 log "running production verifier"
 export ENV_FILE="$SECRETS_DIR/brain.env"
 (
   cd "$RELEASE_DIR"
   uv run python scripts/verify_mcp_production.py --skip-backups
+  uv run python scripts/verify_cognee_ui_production.py
 )
 
 log "deployed $APP_NAME $SHA"

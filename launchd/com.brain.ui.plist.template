@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.brain.ui</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/zsh</string>
+    <string>-lc</string>
+    <string>cd /Volumes/xpg_usb4/prod/brain/current &amp;&amp; exec /opt/homebrew/bin/uv run python -m memory_stack.ui_service</string>
+  </array>
+
+  <key>WorkingDirectory</key>
+  <string>/Users/oric</string>
+
+  <key>RunAtLoad</key>
+  <true/>
+
+  <key>KeepAlive</key>
+  <true/>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>ENV_FILE</key>
+    <string>/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env</string>
+    <key>BRAIN_UI_ENABLED</key>
+    <string>true</string>
+    <key>BRAIN_UI_HOST</key>
+    <string>127.0.0.1</string>
+    <key>BRAIN_UI_PROXY_PORT</key>
+    <string>8002</string>
+    <key>BRAIN_UI_FRONTEND_PORT</key>
+    <string>3000</string>
+    <key>BRAIN_UI_BACKEND_PORT</key>
+    <string>8001</string>
+    <key>BRAIN_PUBLIC_UI_PATH</key>
+    <string>/ui</string>
+    <key>BRAIN_PUBLIC_UI_API_PATH</key>
+    <string>/ui-api</string>
+    <key>BRAIN_UI_SESSION_SECONDS</key>
+    <string>43200</string>
+  </dict>
+
+  <key>StandardOutPath</key>
+  <string>/Users/oric/Library/Logs/brain-ui.out.log</string>
+
+  <key>StandardErrorPath</key>
+  <string>/Users/oric/Library/Logs/brain-ui.err.log</string>
+</dict>
+</plist>

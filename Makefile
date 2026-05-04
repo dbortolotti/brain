@@ -1,4 +1,4 @@
-.PHONY: setup up down check smoke ingest-sample recall-sample eval tokens reset reset-hard mcp-config mcp-http deploy-local-production prod-check backup cloudflare-verify test lint
+.PHONY: setup up down check smoke ingest-sample recall-sample eval tokens reset reset-hard mcp-config mcp-http ui-proxy deploy-local-production prod-check ui-prod-check backup cloudflare-verify test lint
 
 setup:
 	uv sync --all-extras
@@ -39,11 +39,17 @@ mcp-config:
 mcp-http:
 	uv run python -m memory_stack.mcp_server
 
+ui-proxy:
+	uv run python -m uvicorn memory_stack.ui_proxy:app --host 127.0.0.1 --port 8002
+
 deploy-local-production:
 	./scripts/deploy-local-production.sh
 
 prod-check:
 	uv run python scripts/verify_mcp_production.py
+
+ui-prod-check:
+	uv run python scripts/verify_cognee_ui_production.py
 
 backup:
 	uv run python scripts/backup_stores.py
@@ -56,4 +62,3 @@ test:
 
 lint:
 	uv run ruff check .
-
