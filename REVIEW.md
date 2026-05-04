@@ -17,17 +17,15 @@ This file consolidates findings from a code-quality, security, and design-fideli
 
 ### P0 — Backups have correctness gaps the verifier cannot catch
 
-- `scripts/backup_stores.py` Neo4j path (~lines 238–257): runs `docker exec neo4j-cognee neo4j-admin database dump … --to-path=/data` then `shutil.copy2` out. Container name is hardcoded; the copy is non-atomic and not validated; failures still let the manifest be written as verified.
+- `scripts/backup_stores.py` Neo4j path (~lines 238–257): runs `docker exec neo4j-cognee neo4j-admin database dump … --to-path=/data` then `shutil.copy2` out. Container name is hardcoded; the copy is non-atomic and only checked for existence, not validated with a restore/count check.
 - `scripts/backup_stores.py` LanceDB path (~lines 142–173): tars a live LanceDB directory. Memory-mapped files can be partially written. Either snapshot via LanceDB API or record `consistency: best_effort` in the manifest so the verifier knows.
 - `scripts/verify_mcp_production.py` (~line 307–310) treats `manifest.verified == true` as proof of a Google Drive upload. The plan (`initial-plan.md` §22) requires actual presence verification in `backup/brain`. Re-list the Drive folder during `prod-check` instead of trusting the manifest.
 - `scripts/verify_mcp_production.py:285` builds `system_root_directory + "/databases/cognee_db"` instead of `Path(settings.system_root_directory) / "databases" / settings.db_name`. Will silently miss the main DB if `db_name` ever changes.
 
 ### P0 — OAuth + session correctness
 
-- `src/memory_stack/oauth.py` `complete_authorization()` (~lines 602–624): pending authorization is popped under the lock, but the durability `save()` happens outside the lock. A crash between pop and save loses the grant; the redirect to the client still fires. Move the save inside the critical section, or write-then-pop.
 - `src/memory_stack/oauth.py` `_load_state()` (~lines 343–388): JSON state file is parsed with shape checks but no schema. Anyone with FS write access (or a corrupt restore from backup) can inject client records or expired-but-valid-looking tokens. Add Pydantic validation on load and reject unknown fields.
 - `src/memory_stack/oauth.py:388–391`: password file `chmod(0o600)` is wrapped in a bare `except` that silently passes. On a filesystem that rejects chmod, you'll write a world-readable secret and never know. Either fail loudly or assert mode after the chmod.
-- `src/memory_stack/ui_proxy.py` `safe_next_path` (~line 233–238): the open-redirect guard does not handle `//evil.example.com` (protocol-relative). Reject paths whose normalized form starts with `//` or contains a scheme.
 - `src/memory_stack/ui_proxy.py` session handling (lines 115–157): no unit tests for HMAC tampering, base64 corruption, or expiry. `hmac.compare_digest` is only exercised via the MCP OAuth integration test.
 
 ### P1 — Subprocess hygiene
@@ -73,9 +71,9 @@ Not blockers, but worth a CLAUDE.md note: "Phase 5 features are implemented; v1 
 - `src/memory_stack/cognee_adapter.py`, `ingest_cognee.py`, `recall_cognee.py`, `request_logging.py`: zero direct tests.
 
 If you only add a handful of tests, prioritize:
-1. `ui_proxy` HMAC + session expiry + open-redirect (`//`, scheme-bearing paths).
-2. `oauth.complete_authorization` crash-between-pop-and-save behavior.
-3. `backup_stores.backup_neo4j` failure path (subprocess returns non-zero → manifest must mark unverified).
+1. `ui_proxy` HMAC + session expiry + login `next` path validation for scheme-bearing paths.
+2. `oauth` expiry, scope mismatch, concurrent token issuance, and state-file corruption recovery.
+3. `backup_stores.backup_neo4j` success/failure paths, including dump existence and validation semantics.
 
 ---
 
@@ -95,7 +93,7 @@ If you want to convert this review into work, a reasonable split:
 
 1. `claude/fix-prod-portability` — plist templating, deploy script substitution.
 2. `claude/fix-backup-correctness` — Neo4j atomic dump, LanceDB consistency note, Drive presence re-check, `db_name` path bug in verifier.
-3. `claude/fix-oauth-and-session` — lock-ordering in `complete_authorization`, schema-validate state file, fix `safe_next_path`, fail-loud chmod.
+3. `claude/fix-oauth-and-session` — schema-validate state file, fail-loud chmod, broaden UI session/HMAC tests.
 4. `claude/improve-test-coverage` — ui_proxy session/HMAC, oauth expiry/concurrency, backup_stores Neo4j/LanceDB.
 5. `claude/scope-boundary-doc` — short note (CLAUDE.md or README §) clarifying which env vars are v1 vs Phase 5 and which Make targets each one needs.
 
@@ -105,4 +103,4 @@ If you want to convert this review into work, a reasonable split:
 
 - All findings include `path:line` references; confirm by opening the cited locations.
 - Recent diff: `git diff HEAD~10 --stat` shows the surface area touched in this branch (backup_stores, verify_mcp_production, ui_proxy, config, tests).
-- To validate the OAuth race and session bypass concerns specifically, the suggested test additions in the "Test coverage gaps" section are sufficient — no live MCP run needed.
+- To validate the OAuth state-file and session-cookie concerns specifically, the suggested test additions in the "Test coverage gaps" section are sufficient — no live MCP run needed.
