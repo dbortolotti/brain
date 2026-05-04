@@ -1,13 +1,22 @@
 from __future__ import annotations
 
 import argparse
+import json
 import time
 from typing import Any
 
 from fastapi import FastAPI, Header, HTTPException, Request, Response
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel
 
-from memory_stack.cognee_adapter import recall_text, remember_text
+from memory_stack.cognee_adapter import (
+    DatasourceNotFoundError,
+    create_datasource as create_cognee_datasource,
+    delete_datasource as delete_cognee_datasource,
+    list_datasources as list_cognee_datasources,
+    recall_text,
+    remember_text,
+)
 from memory_stack.config import Settings, load_settings
 from memory_stack.oauth import BrainOAuthProvider, parse_bearer
 from memory_stack.request_logging import RequestResponseLogMiddleware
@@ -21,15 +30,26 @@ if settings.brain_request_log_enabled:
     app.add_middleware(RequestResponseLogMiddleware, settings=settings)
 
 
+class CreateDatasourceRequest(BaseModel):
+    name: str
+
+
+class DeleteDatasourceRequest(BaseModel):
+    name: str | None = None
+    id: str | None = None
+
+
 @app.exception_handler(HTTPException)
 async def http_exception_handler(_request: Request, exc: HTTPException) -> JSONResponse:
+    headers = dict(exc.headers or {})
     if isinstance(exc.detail, dict) and "error" in exc.detail:
+        headers.update({"Cache-Control": "no-store", "Pragma": "no-cache"})
         return JSONResponse(
             exc.detail,
             status_code=exc.status_code,
-            headers={"Cache-Control": "no-store", "Pragma": "no-cache"},
+            headers=headers,
         )
-    return JSONResponse({"detail": exc.detail}, status_code=exc.status_code)
+    return JSONResponse({"detail": exc.detail}, status_code=exc.status_code, headers=headers)
 
 
 @app.get("/healthz")
@@ -105,6 +125,49 @@ async def revoke(request: Request) -> Response:
     return await oauth_provider.revoke(request)
 
 
+@app.get("/datasources")
+@app.get("/list_datasources")
+async def list_datasources_endpoint(
+    authorization: str | None = Header(default=None),
+) -> dict[str, Any]:
+    require_api_auth(authorization, settings)
+    return {"datasources": await list_cognee_datasources(settings=settings)}
+
+
+@app.post("/datasources", status_code=201)
+@app.post("/create_datasource", status_code=201)
+async def create_datasource_endpoint(
+    payload: CreateDatasourceRequest,
+    authorization: str | None = Header(default=None),
+) -> dict[str, Any]:
+    require_api_auth(authorization, settings)
+    return {
+        "datasource": await create_cognee_datasource(payload.name, settings=settings),
+    }
+
+
+@app.delete("/datasources/{datasource}")
+@app.delete("/delete_datasource/{datasource}")
+async def delete_datasource_path_endpoint(
+    datasource: str,
+    authorization: str | None = Header(default=None),
+) -> dict[str, Any]:
+    require_api_auth(authorization, settings)
+    return {"datasource": await delete_datasource_or_404(datasource)}
+
+
+@app.post("/delete_datasource")
+async def delete_datasource_endpoint(
+    payload: DeleteDatasourceRequest,
+    authorization: str | None = Header(default=None),
+) -> dict[str, Any]:
+    require_api_auth(authorization, settings)
+    datasource = payload.id or payload.name
+    if datasource is None:
+        raise HTTPException(status_code=422, detail="Provide datasource id or name.")
+    return {"datasource": await delete_datasource_or_404(datasource)}
+
+
 @app.api_route("/{path:path}", methods=["GET", "POST"])
 async def mcp_route(
     path: str,
@@ -149,16 +212,40 @@ def valid_bearer(header_value: str | None, active_settings: Settings) -> bool:
 
 def auth_challenge(active_settings: Settings) -> Response:
     return JSONResponse(
-        {"error": "authentication_required", "service": active_settings.brain_service_name},
+        authentication_required_payload(active_settings),
         status_code=401,
-        headers={
-            "WWW-Authenticate": (
-                'Bearer realm="Brain", '
-                f'resource_metadata="{active_settings.protected_resource_metadata_url}", '
-                f'scope="{" ".join(active_settings.brain_auth_scope_list)}"'
-            )
-        },
+        headers=auth_challenge_headers(active_settings),
     )
+
+
+def require_api_auth(header_value: str | None, active_settings: Settings) -> None:
+    if active_settings.brain_auth_enabled and not valid_bearer(header_value, active_settings):
+        raise HTTPException(
+            status_code=401,
+            detail=authentication_required_payload(active_settings),
+            headers=auth_challenge_headers(active_settings),
+        )
+
+
+def authentication_required_payload(active_settings: Settings) -> dict[str, str]:
+    return {"error": "authentication_required", "service": active_settings.brain_service_name}
+
+
+def auth_challenge_headers(active_settings: Settings) -> dict[str, str]:
+    return {
+        "WWW-Authenticate": (
+            'Bearer realm="Brain", '
+            f'resource_metadata="{active_settings.protected_resource_metadata_url}", '
+            f'scope="{" ".join(active_settings.brain_auth_scope_list)}"'
+        )
+    }
+
+
+async def delete_datasource_or_404(datasource: str) -> dict[str, Any]:
+    try:
+        return await delete_cognee_datasource(datasource, settings=settings)
+    except DatasourceNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
 
 
 async def handle_json_rpc(payload: Any) -> Any:
@@ -206,6 +293,36 @@ async def handle_json_rpc(payload: Any) -> Any:
                             "required": ["query"],
                         },
                     },
+                    {
+                        "name": "list_datasources",
+                        "description": "List Cognee datasources.",
+                        "inputSchema": {
+                            "type": "object",
+                            "properties": {},
+                        },
+                    },
+                    {
+                        "name": "create_datasource",
+                        "description": "Create a Cognee datasource.",
+                        "inputSchema": {
+                            "type": "object",
+                            "properties": {
+                                "name": {"type": "string"},
+                            },
+                            "required": ["name"],
+                        },
+                    },
+                    {
+                        "name": "delete_datasource",
+                        "description": "Delete a Cognee datasource by name or id.",
+                        "inputSchema": {
+                            "type": "object",
+                            "properties": {
+                                "name": {"type": "string"},
+                                "id": {"type": "string"},
+                            },
+                        },
+                    },
                 ]
             }
         elif method == "tools/call":
@@ -240,7 +357,27 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
         )
         return {"content": [{"type": "text", "text": str(result)}]}
 
+    if name == "list_datasources":
+        datasources = await list_cognee_datasources(settings=settings)
+        return json_tool_response({"datasources": datasources})
+
+    if name == "create_datasource":
+        datasource = await create_cognee_datasource(str(arguments["name"]), settings=settings)
+        return json_tool_response({"datasource": datasource})
+
+    if name == "delete_datasource":
+        datasource = arguments.get("id") or arguments.get("name")
+        if datasource is None:
+            raise ValueError("delete_datasource requires name or id.")
+        return json_tool_response(
+            {"datasource": await delete_cognee_datasource(str(datasource), settings=settings)}
+        )
+
     raise ValueError(f"Unknown tool: {name}")
+
+
+def json_tool_response(payload: Any) -> dict[str, Any]:
+    return {"content": [{"type": "text", "text": json.dumps(payload)}]}
 
 
 def json_rpc_error(request_id: Any, code: int, message: str) -> dict[str, Any]:

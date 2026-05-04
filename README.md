@@ -23,6 +23,9 @@ The HTTP service for production verification includes:
 
 - `GET /healthz`
 - `GET|POST /mcp`
+- `GET /datasources` or `GET /list_datasources`
+- `POST /datasources` or `POST /create_datasource`
+- `DELETE /datasources/{datasource}` or `DELETE /delete_datasource/{datasource}`
 - `GET /.well-known/oauth-protected-resource/mcp`
 - `GET /.well-known/oauth-authorization-server`
 - `POST /register`

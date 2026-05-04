@@ -31,6 +31,82 @@ def test_mcp_initialize() -> None:
     assert response.json()["result"]["serverInfo"]["name"] == "brain"
 
 
+def test_datasource_tools_are_listed() -> None:
+    client = TestClient(app)
+    response = client.post("/mcp", json={"jsonrpc": "2.0", "id": 1, "method": "tools/list"})
+
+    assert response.status_code == 200
+    tool_names = {tool["name"] for tool in response.json()["result"]["tools"]}
+    assert {"list_datasources", "create_datasource", "delete_datasource"} <= tool_names
+
+
+def test_list_datasources_http_endpoint(monkeypatch) -> None:
+    async def fake_list_datasources(*, settings):
+        return [{"id": "datasource-1", "name": "property_trial"}]
+
+    monkeypatch.setattr(mcp_server, "list_cognee_datasources", fake_list_datasources)
+
+    client = TestClient(app)
+    response = client.get("/list_datasources")
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "datasources": [{"id": "datasource-1", "name": "property_trial"}]
+    }
+
+
+def test_create_datasource_http_endpoint(monkeypatch) -> None:
+    async def fake_create_datasource(name, *, settings):
+        return {"id": "datasource-2", "name": name}
+
+    monkeypatch.setattr(mcp_server, "create_cognee_datasource", fake_create_datasource)
+
+    client = TestClient(app)
+    response = client.post("/create_datasource", json={"name": "new_source"})
+
+    assert response.status_code == 201
+    assert response.json() == {"datasource": {"id": "datasource-2", "name": "new_source"}}
+
+
+def test_delete_datasource_http_endpoint(monkeypatch) -> None:
+    async def fake_delete_datasource(datasource, *, settings):
+        return {"id": datasource, "name": "old_source", "status": "deleted"}
+
+    monkeypatch.setattr(mcp_server, "delete_cognee_datasource", fake_delete_datasource)
+
+    client = TestClient(app)
+    response = client.delete("/delete_datasource/datasource-3")
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "datasource": {"id": "datasource-3", "name": "old_source", "status": "deleted"}
+    }
+
+
+def test_list_datasources_mcp_tool(monkeypatch) -> None:
+    async def fake_list_datasources(*, settings):
+        return [{"id": "datasource-1", "name": "property_trial"}]
+
+    monkeypatch.setattr(mcp_server, "list_cognee_datasources", fake_list_datasources)
+
+    client = TestClient(app)
+    response = client.post(
+        "/mcp",
+        json={
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "tools/call",
+            "params": {"name": "list_datasources", "arguments": {}},
+        },
+    )
+
+    assert response.status_code == 200
+    content = response.json()["result"]["content"][0]
+    assert json.loads(content["text"]) == {
+        "datasources": [{"id": "datasource-1", "name": "property_trial"}]
+    }
+
+
 def test_auth_enabled_mcp_fails_closed(tmp_path) -> None:
     with oauth_settings(tmp_path):
         client = TestClient(app)
@@ -39,6 +115,16 @@ def test_auth_enabled_mcp_fails_closed(tmp_path) -> None:
     assert response.status_code == 401
     assert "Brain" in response.headers["www-authenticate"]
     assert "oauth-protected-resource/mcp" in response.headers["www-authenticate"]
+
+
+def test_auth_enabled_datasources_fail_closed(tmp_path) -> None:
+    with oauth_settings(tmp_path):
+        client = TestClient(app)
+        response = client.get("/list_datasources")
+
+    assert response.status_code == 401
+    assert response.json()["error"] == "authentication_required"
+    assert "Brain" in response.headers["www-authenticate"]
 
 
 def test_oauth_authorization_code_flow(tmp_path) -> None:

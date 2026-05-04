@@ -1,6 +1,14 @@
 from __future__ import annotations
 
-from memory_stack.cognee_adapter import recall_text, remember_text
+import json
+
+from memory_stack.cognee_adapter import (
+    create_datasource as create_cognee_datasource,
+    delete_datasource as delete_cognee_datasource,
+    list_datasources as list_cognee_datasources,
+    recall_text,
+    remember_text,
+)
 from memory_stack.config import load_settings
 
 
@@ -36,6 +44,24 @@ def build_server():
         )
         return str(result)
 
+    @mcp.tool()
+    async def list_datasources() -> str:
+        """List Cognee datasources."""
+        datasources = await list_cognee_datasources(settings=settings)
+        return json.dumps({"datasources": datasources})
+
+    @mcp.tool()
+    async def create_datasource(name: str) -> str:
+        """Create a Cognee datasource."""
+        datasource = await create_cognee_datasource(name, settings=settings)
+        return json.dumps({"datasource": datasource})
+
+    @mcp.tool()
+    async def delete_datasource(name: str) -> str:
+        """Delete a Cognee datasource by name or id."""
+        datasource = await delete_cognee_datasource(name, settings=settings)
+        return json.dumps({"datasource": datasource})
+
     return mcp
 
 
@@ -45,4 +71,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
