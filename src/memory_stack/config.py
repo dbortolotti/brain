@@ -73,6 +73,9 @@ class Settings(BaseSettings):
     brain_auth_require_pkce: bool = True
     brain_auth_access_token_seconds: int = 3600
     brain_auth_refresh_token_seconds: int = 60 * 60 * 24 * 30
+    brain_request_log_enabled: bool = False
+    brain_request_log_path: str = "./.data/logs/requests.jsonl"
+    brain_request_log_max_body_bytes: int = 1024 * 1024
     brain_service_name: str = "Brain"
     brain_prod_root: str = "/Volumes/xpg_usb4/prod/brain"
     brain_launchd_label: str = "com.brain.mcp"
@@ -218,6 +221,9 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "BRAIN_AUTH_REQUIRE_PKCE": str(settings.brain_auth_require_pkce).lower(),
         "BRAIN_AUTH_ACCESS_TOKEN_SECONDS": str(settings.brain_auth_access_token_seconds),
         "BRAIN_AUTH_REFRESH_TOKEN_SECONDS": str(settings.brain_auth_refresh_token_seconds),
+        "BRAIN_REQUEST_LOG_ENABLED": str(settings.brain_request_log_enabled).lower(),
+        "BRAIN_REQUEST_LOG_PATH": settings.brain_request_log_path,
+        "BRAIN_REQUEST_LOG_MAX_BODY_BYTES": str(settings.brain_request_log_max_body_bytes),
     }
     optional_values = {
         "LLM_API_KEY": settings.llm_api_key,

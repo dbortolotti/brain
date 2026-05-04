@@ -13,6 +13,7 @@ SHARED_DIR="$PROD_ROOT/shared"
 SECRETS_DIR="$SHARED_DIR/secrets"
 DATA_DIR="$SHARED_DIR/data"
 BACKUP_DIR="$SHARED_DIR/backups"
+LOG_DIR="$SHARED_DIR/logs"
 PLIST_SRC="$REPO_ROOT/launchd/com.brain.mcp.plist.template"
 PLIST_DST="$HOME/Library/LaunchAgents/$LABEL.plist"
 
@@ -42,7 +43,7 @@ ensure_env_var() {
 }
 
 log "creating production directories under $PROD_ROOT"
-mkdir -p "$PROD_ROOT/releases" "$DATA_DIR" "$BACKUP_DIR" "$SECRETS_DIR" "$HOME/Library/LaunchAgents" "$HOME/Library/Logs"
+mkdir -p "$PROD_ROOT/releases" "$DATA_DIR" "$BACKUP_DIR" "$SECRETS_DIR" "$LOG_DIR" "$HOME/Library/LaunchAgents" "$HOME/Library/Logs"
 
 if [[ ! -f "$SECRETS_DIR/brain.env" ]]; then
   log "creating starter production env at $SECRETS_DIR/brain.env"
@@ -81,6 +82,9 @@ BRAIN_AUTH_SCOPES="brain.memory.read brain.memory.write"
 BRAIN_AUTH_REQUIRE_PKCE=true
 BRAIN_AUTH_ACCESS_TOKEN_SECONDS=3600
 BRAIN_AUTH_REFRESH_TOKEN_SECONDS=2592000
+BRAIN_REQUEST_LOG_ENABLED=true
+BRAIN_REQUEST_LOG_PATH=$LOG_DIR/requests.jsonl
+BRAIN_REQUEST_LOG_MAX_BODY_BYTES=0
 EOF
   chmod 600 "$SECRETS_DIR/brain.env"
 fi
@@ -92,6 +96,9 @@ ensure_env_var "BRAIN_AUTH_SCOPES" '"brain.memory.read brain.memory.write"'
 ensure_env_var "BRAIN_AUTH_REQUIRE_PKCE" "true"
 ensure_env_var "BRAIN_AUTH_ACCESS_TOKEN_SECONDS" "3600"
 ensure_env_var "BRAIN_AUTH_REFRESH_TOKEN_SECONDS" "2592000"
+ensure_env_var "BRAIN_REQUEST_LOG_ENABLED" "true"
+ensure_env_var "BRAIN_REQUEST_LOG_PATH" "$LOG_DIR/requests.jsonl"
+ensure_env_var "BRAIN_REQUEST_LOG_MAX_BODY_BYTES" "0"
 
 if [[ ! -f "$SECRETS_DIR/brain-auth-password" ]]; then
   log "creating Brain OAuth password at $SECRETS_DIR/brain-auth-password"

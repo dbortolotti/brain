@@ -39,3 +39,12 @@ make mcp-http
 Production deployment is Phase 5 work and uses `/Volumes/xpg_usb4/prod/brain`.
 When production auth is enabled, the OAuth password is stored at
 `/Volumes/xpg_usb4/prod/brain/shared/secrets/brain-auth-password`.
+
+Production request/response refinement logs are JSONL records written to:
+
+```text
+/Volumes/xpg_usb4/prod/brain/shared/logs/requests.jsonl
+```
+
+The log captures HTTP metadata plus request and response bodies. OAuth passwords,
+authorization headers, auth codes, client secrets, and issued tokens are redacted.

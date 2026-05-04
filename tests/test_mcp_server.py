@@ -2,15 +2,19 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import json
 import re
 from urllib.parse import parse_qs, urlsplit
 
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from fastapi.testclient import TestClient
 
 from memory_stack.config import Settings
 from memory_stack.mcp_server import app
 from memory_stack import mcp_server
 from memory_stack.oauth import BrainOAuthProvider
+from memory_stack.request_logging import RequestResponseLogMiddleware, redact_text, redact_url
 
 
 def test_healthz() -> None:
@@ -100,6 +104,50 @@ def test_oauth_authorization_code_flow(tmp_path) -> None:
         mcp_response = client.get("/mcp", headers={"Authorization": f"Bearer {access_token}"})
         assert mcp_response.status_code == 200
         assert mcp_response.json()["service"] == "Brain"
+
+
+def test_request_response_logger_redacts_secrets(tmp_path) -> None:
+    log_path = tmp_path / "requests.jsonl"
+    settings = Settings(
+        brain_request_log_path=str(log_path),
+        brain_request_log_max_body_bytes=0,
+    )
+    test_app = FastAPI()
+    test_app.add_middleware(RequestResponseLogMiddleware, settings=settings)
+
+    @test_app.post("/echo")
+    async def echo(request: Request) -> JSONResponse:
+        return JSONResponse(await request.json())
+
+    client = TestClient(test_app)
+    response = client.post(
+        "/echo?code=abc123",
+        headers={"Authorization": "Bearer secret-token"},
+        json={
+            "text": "keep this refinement text",
+            "password": "secret-password",
+            "access_token": "secret-access-token",
+        },
+    )
+
+    assert response.status_code == 200
+    record = json.loads(log_path.read_text(encoding="utf-8"))
+    assert record["request"]["query"]["code"] == "[REDACTED]"
+    assert record["request"]["headers"]["authorization"] == "[REDACTED]"
+    assert record["request"]["body"]["text"] == "keep this refinement text"
+    assert record["request"]["body"]["password"] == "[REDACTED]"
+    assert record["response"]["body"]["access_token"] == "[REDACTED]"
+
+
+def test_request_logger_redacts_auth_urls_and_html() -> None:
+    redacted_url = redact_url("http://127.0.0.1/callback?code=abc&state=keep")
+    assert "code=%5BREDACTED%5D" in redacted_url
+    assert "abc" not in redacted_url
+    assert "state=keep" in redacted_url
+
+    redacted_html = redact_text('<input name="request_id" value="secret-request-id">')
+    assert "secret-request-id" not in redacted_html
+    assert "[REDACTED]" in redacted_html
 
 
 class oauth_settings:

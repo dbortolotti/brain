@@ -10,12 +10,15 @@ from fastapi.responses import JSONResponse
 from memory_stack.cognee_adapter import recall_text, remember_text
 from memory_stack.config import Settings, load_settings
 from memory_stack.oauth import BrainOAuthProvider, parse_bearer
+from memory_stack.request_logging import RequestResponseLogMiddleware
 
 STARTED_AT = time.time()
 settings = load_settings()
 oauth_provider = BrainOAuthProvider(settings) if settings.brain_auth_enabled else None
 
 app = FastAPI(title="Brain MCP", version="0.1.0")
+if settings.brain_request_log_enabled:
+    app.add_middleware(RequestResponseLogMiddleware, settings=settings)
 
 
 @app.exception_handler(HTTPException)
