@@ -93,6 +93,21 @@ Create:
         smoke_cognee.py
         estimate_tokens.py
         export_mcp_config.py
+        deploy-local-production.sh
+        backup_stores.py
+        verify_mcp_production.py
+        verify_mcp_production.sh
+        verify_cloudflare_mcp.py
+
+      .github/
+        workflows/
+          deploy-local-production.yml
+
+      launchd/
+        com.brain.mcp.plist.template
+
+      cloudflare/
+        config.example.yml
 
       src/
         memory_stack/
@@ -285,6 +300,19 @@ No-cloud local profile.
 
     SYSTEM_ROOT_DIRECTORY=./.data/system
     DATA_ROOT_DIRECTORY=./.data/data
+
+### Post-eval production environment additions
+
+Phase 5 production deployment adds these to the production `.env` and launchd environment only. They are not required for v1 eval runs.
+
+    BRAIN_MCP_HOST=127.0.0.1
+    BRAIN_MCP_PORT=8000
+    BRAIN_MCP_PATH=/mcp
+    BRAIN_PUBLIC_BASE_URL=https://brain.dceb.net
+    BRAIN_PUBLIC_MCP_PATH=/mcp
+    BRAIN_BACKUP_DIR=/Volumes/xpg_usb4/prod/brain/shared/backups
+    BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=true
+    BRAIN_GOOGLE_DRIVE_FOLDER=backup/brain
 
 ---
 
@@ -1021,6 +1049,22 @@ Create `Makefile`.
     mcp-config:
     	uv run python scripts/export_mcp_config.py
 
+Post-eval targets:
+
+```make
+deploy-local-production:
+	./scripts/deploy-local-production.sh
+
+prod-check:
+	uv run python scripts/verify_mcp_production.py
+
+backup:
+	uv run python scripts/backup_stores.py
+
+cloudflare-verify:
+	uv run python scripts/verify_cloudflare_mcp.py
+```
+
 ---
 
 ## 20. Local Ollama Setup
@@ -1084,7 +1128,111 @@ Do not judge Cognee architecture from local failure. A local 8B model failing te
 
 ---
 
-## 22. Acceptance Criteria
+## 22. Post-Eval MCP Production Track
+
+Phase 5 starts only after Cognee/model evaluation proves useful. v1 remains the Cognee eval harness.
+
+Production constants:
+
+    production root: /Volumes/xpg_usb4/prod/brain
+    public MCP URL: https://brain.dceb.net/mcp
+    launchd service label: com.brain.mcp
+    GitHub repo: dbortolotti/brain
+    branch: main
+    self-hosted runner label: brain-prod
+    Google Drive backup folder: backup/brain
+
+### Local MCP Production Deployment
+
+Deploy from `main` to:
+
+    /Volumes/xpg_usb4/prod/brain/current -> releases/<commit-sha>
+
+Keep immutable code in release directories. Keep mutable production state outside releases:
+
+    shared/data
+    shared/backups
+    shared/secrets
+
+Run the Cognee MCP HTTP transport at:
+
+    127.0.0.1:8000/mcp
+
+Start the service with launchd using:
+
+    com.brain.mcp
+
+Deploy from the `dbortolotti/brain` GitHub repo on branch `main` using a self-hosted GitHub Actions runner labeled:
+
+    brain-prod
+
+Deployment flow:
+
+    create a release for the commit SHA
+    install dependencies inside the release
+    link shared state into the release or configure env paths to shared state
+    update current atomically
+    restart launchd
+    verify local health
+
+The deploy script must write production host/path settings into the launchd environment so the running process advertises the correct public MCP URL.
+
+### Production Backup Pipeline
+
+Backups write timestamped files and a manifest under:
+
+    /Volumes/xpg_usb4/prod/brain/shared/backups
+
+Requirements:
+
+    SQLite backup passes PRAGMA integrity_check
+    LanceDB is archived or snapshotted in a restoreable form
+    Neo4j dump support is implemented, or Neo4j backup is recorded as an explicit blocker
+    Google Drive upload to backup/brain is verified after local backup creation
+
+The backup command must fail if local backup creation succeeds but Google Drive upload verification fails while `BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=true`.
+
+### Cloudflare Public MCP Endpoint
+
+Use the service-specific hostname:
+
+    brain.dceb.net
+
+Cloudflare Tunnel ingress routes the hostname to:
+
+    http://127.0.0.1:${BRAIN_MCP_PORT}
+
+The public MCP path remains:
+
+    /mcp
+
+Verification must cover:
+
+    DNS resolves through Cloudflare Tunnel
+    TLS certificate is valid for brain.dceb.net
+    local health endpoint works
+    https://brain.dceb.net/mcp reaches Brain
+    OAuth protected-resource metadata identifies Brain
+    OAuth authorization-server metadata identifies Brain
+    cloudflared launchd service is loaded and running
+
+If auth is enabled, public unauthenticated MCP access must fail closed. A 401 is not enough by itself; the auth challenge and metadata must name Brain, not another MCP service.
+
+### Production Verification
+
+`make prod-check` and `make cloudflare-verify` must establish:
+
+    launchd service is loaded and running
+    process cwd is under /Volumes/xpg_usb4/prod/brain/current or the active release
+    runtime data paths resolve under shared/data
+    local health works
+    public endpoint routes to Brain, not another MCP service
+    backups are valid locally
+    backup artifacts are present in Google Drive folder backup/brain
+
+---
+
+## 23. Acceptance Criteria
 
 ### Phase 1 — Infrastructure
 
@@ -1129,9 +1277,20 @@ Promote Gemini free-tier only if it matches the OpenAI quality-ceiling profile o
     source/audit trail
     current-position retrieval
 
+### Phase 5 — Post-eval MCP Production
+
+Pass if:
+
+    launchd service runs from /Volumes/xpg_usb4/prod/brain/current
+    data paths resolve under shared/data
+    local MCP health and /mcp work
+    backups are valid locally and uploaded to Google Drive
+    https://brain.dceb.net/mcp routes correctly
+    auth/OAuth metadata identifies Brain, not another MCP service
+
 ---
 
-## 23. Coding Agent Task Breakdown
+## 24. Coding Agent Task Breakdown
 
 ### Task 1 — Create repo skeleton
 
@@ -1248,9 +1407,33 @@ Done when:
 
 work and warn on embedding-dimension changes.
 
+### Task 10 — Implement post-eval production track
+
+Only start this after Phase 4 proves the Cognee/model combination is useful.
+
+Deliverables:
+
+    scripts/deploy-local-production.sh
+    scripts/backup_stores.py
+    scripts/verify_mcp_production.py
+    scripts/verify_mcp_production.sh
+    scripts/verify_cloudflare_mcp.py
+    .github/workflows/deploy-local-production.yml
+    launchd/com.brain.mcp.plist.template
+    cloudflare/config.example.yml
+
+Done when:
+
+    make deploy-local-production
+    make prod-check
+    make backup
+    make cloudflare-verify
+
+prove the service is running from production, backing up locally and to Google Drive, and reachable at `https://brain.dceb.net/mcp`.
+
 ---
 
-## 24. Things Not to Build in v1
+## 25. Things Not to Build in v1
 
 Do not build:
 
@@ -1260,18 +1443,25 @@ Do not build:
     automatic Gmail ingestion
     multi-user auth
     web UI
+    production deployment
+    Cloudflare exposure
+    Google Drive backup automation
     production backup system
     palate integration
     Postgres deployment
     Qdrant deployment
 
-These are Phase 2+.
+Production deployment, Cloudflare exposure, and Google Drive backup automation are post-eval Phase 5 work, after Cognee/model evaluation proves useful. They are not v1.
+
+The remaining items are Phase 2+ or later.
 
 ---
 
-## 25. Final Instruction to Coding Agent
+## 26. Final Instruction to Coding Agent
 
 Build a configurable local memory evaluation harness, not a production product.
+
+Treat production deployment as post-eval Phase 5 only.
 
 Primary execution order:
 
@@ -1286,6 +1476,7 @@ Primary execution order:
     9. MCP config exporter
     10. Token estimator
     11. Reset tooling
+    12. Post-eval production deployment only if Phase 4 passes
 
 Primary model comparison:
 
