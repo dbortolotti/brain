@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.brain.mcp</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/zsh</string>
+    <string>-lc</string>
+    <string>cd /Volumes/xpg_usb4/prod/brain/current &amp;&amp; exec /opt/homebrew/bin/uv run python -m memory_stack.mcp_server</string>
+  </array>
+
+  <key>WorkingDirectory</key>
+  <string>/Users/oric</string>
+
+  <key>RunAtLoad</key>
+  <true/>
+
+  <key>KeepAlive</key>
+  <true/>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>ENV_FILE</key>
+    <string>/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env</string>
+    <key>PROFILE</key>
+    <string>gemini</string>
+    <key>BRAIN_MCP_HOST</key>
+    <string>127.0.0.1</string>
+    <key>BRAIN_MCP_PORT</key>
+    <string>8000</string>
+    <key>BRAIN_MCP_PATH</key>
+    <string>/mcp</string>
+    <key>BRAIN_PUBLIC_BASE_URL</key>
+    <string>https://brain.dceb.net</string>
+    <key>BRAIN_PUBLIC_MCP_PATH</key>
+    <string>/mcp</string>
+    <key>BRAIN_BACKUP_DIR</key>
+    <string>/Volumes/xpg_usb4/prod/brain/shared/backups</string>
+    <key>SYSTEM_ROOT_DIRECTORY</key>
+    <string>/Volumes/xpg_usb4/prod/brain/shared/data/system</string>
+    <key>DATA_ROOT_DIRECTORY</key>
+    <string>/Volumes/xpg_usb4/prod/brain/shared/data/data</string>
+    <key>VECTOR_DB_URL</key>
+    <string>/Volumes/xpg_usb4/prod/brain/shared/data/lancedb/cognee.lancedb</string>
+  </dict>
+
+  <key>StandardOutPath</key>
+  <string>/Users/oric/Library/Logs/brain-prod.out.log</string>
+
+  <key>StandardErrorPath</key>
+  <string>/Users/oric/Library/Logs/brain-prod.err.log</string>
+</dict>
+</plist>
+

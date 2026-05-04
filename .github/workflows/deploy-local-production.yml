@@ -1,0 +1,27 @@
+name: Deploy Local Production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: brain-prod
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on:
+      - self-hosted
+      - macOS
+      - ARM64
+      - brain-prod
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Deploy to local LaunchAgent
+        run: ./scripts/deploy-local-production.sh
+

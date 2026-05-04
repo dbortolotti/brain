@@ -1,0 +1,53 @@
+[project]
+name = "memory-stack"
+version = "0.1.0"
+description = "Cognee-native local memory evaluation harness for Brain."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "cognee[neo4j,docs]",
+  "fastapi",
+  "httpx",
+  "mcp[cli]",
+  "pandas",
+  "pydantic",
+  "pydantic-settings",
+  "python-dotenv",
+  "pyyaml",
+  "rich",
+  "tiktoken",
+  "typer",
+  "uvicorn[standard]",
+]
+
+[project.optional-dependencies]
+local = [
+  "fastembed",
+]
+dev = [
+  "pytest",
+  "ruff",
+]
+
+[project.scripts]
+memory-stack-ingest = "memory_stack.ingest_cognee:app"
+memory-stack-recall = "memory_stack.recall_cognee:app"
+memory-stack-eval = "memory_stack.eval_runner:app"
+memory-stack-mcp-http = "memory_stack.mcp_server:main"
+memory-stack-mcp-stdio = "memory_stack.mcp_stdio:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/memory_stack"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+

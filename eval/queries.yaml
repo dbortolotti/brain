@@ -1,0 +1,63 @@
+queries:
+  - id: current_pd_position
+    dataset: property_trial
+    search_type: TEMPORAL
+    query: "What is our current position on whether a separate CDM Principal Designer is required?"
+    must_include:
+      - "Principal Designer"
+      - "Asbestech"
+      - "Irwin"
+    rubric:
+      temporal_anchor: 0.25
+      contradiction_separation: 0.30
+      source_trace: 0.25
+      current_state: 0.20
+
+  - id: involved_asbestos_work
+    dataset: property_trial
+    search_type: GRAPH_COMPLETION
+    query: "Who is currently involved in the Melcombe Court asbestos works and what is their role?"
+    must_include:
+      - "Asbestech"
+      - "Melcombe Court"
+    rubric:
+      entity_recall: 0.35
+      role_accuracy: 0.35
+      source_trace: 0.30
+
+  - id: what_happened_last_week
+    dataset: property_trial
+    search_type: TEMPORAL
+    query: "What happened last week about the Melcombe Court asbestos works?"
+    must_include:
+      - "Melcombe Court"
+      - "asbestos"
+    rubric:
+      temporal_filtering: 0.40
+      completeness: 0.30
+      source_trace: 0.30
+
+  - id: dispute_summary
+    dataset: property_trial
+    search_type: TEMPORAL
+    query: "Who disagreed with the Principal Designer position and what exactly was the disagreement?"
+    must_include:
+      - "Irwin"
+      - "disagrees"
+      - "CDM"
+    rubric:
+      contradiction_separation: 0.50
+      source_trace: 0.30
+      wording_accuracy: 0.20
+
+  - id: open_threads_week
+    dataset: property_trial
+    search_type: TEMPORAL
+    query: "What happened across my open property threads this week?"
+    must_include:
+      - "Melcombe"
+    rubric:
+      temporal_filtering: 0.40
+      thread_grouping: 0.30
+      completeness: 0.30
+

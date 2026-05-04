@@ -1,0 +1,14 @@
+services:
+  neo4j:
+    image: neo4j:5.26
+    container_name: neo4j-cognee
+    restart: unless-stopped
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - ${NEO4J_DATA_DIR:-./.data/neo4j}:/data
+    environment:
+      NEO4J_AUTH: "neo4j/${GRAPH_DATABASE_PASSWORD:-change-me}"
+      NEO4J_PLUGINS: '["apoc"]'
+
