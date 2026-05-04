@@ -61,9 +61,14 @@ class Settings(BaseSettings):
     brain_public_base_url: str = "https://brain.dceb.net"
     brain_public_mcp_path: str = "/mcp"
     brain_backup_dir: str = "/Volumes/xpg_usb4/prod/brain/shared/backups"
+    brain_neo4j_dump_enabled: bool = False
+    brain_neo4j_stop_for_dump: bool = False
+    brain_neo4j_brew_service: str = "neo4j"
+    brain_neo4j_launchd_label: str = "homebrew.mxcl.neo4j"
     brain_google_drive_backup_enabled: bool = False
     brain_google_drive_folder: str = "backup/brain"
     brain_google_drive_remote: str = "gdrive"
+    brain_google_drive_local_path: str | None = None
     brain_auth_enabled: bool = False
     brain_auth_token: str | None = None
     brain_auth_password: str | None = None
@@ -229,6 +234,10 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "BRAIN_PUBLIC_BASE_URL": settings.brain_public_base_url,
         "BRAIN_PUBLIC_MCP_PATH": settings.brain_public_mcp_path,
         "BRAIN_BACKUP_DIR": settings.brain_backup_dir,
+        "BRAIN_NEO4J_DUMP_ENABLED": str(settings.brain_neo4j_dump_enabled).lower(),
+        "BRAIN_NEO4J_STOP_FOR_DUMP": str(settings.brain_neo4j_stop_for_dump).lower(),
+        "BRAIN_NEO4J_BREW_SERVICE": settings.brain_neo4j_brew_service,
+        "BRAIN_NEO4J_LAUNCHD_LABEL": settings.brain_neo4j_launchd_label,
         "BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED": str(
             settings.brain_google_drive_backup_enabled
         ).lower(),
@@ -259,6 +268,7 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "OPENAI_API_KEY": settings.llm_api_key if settings.llm_provider == "openai" else None,
         "BRAIN_AUTH_TOKEN": settings.brain_auth_token,
         "BRAIN_AUTH_PASSWORD": settings.brain_auth_password,
+        "BRAIN_GOOGLE_DRIVE_LOCAL_PATH": settings.brain_google_drive_local_path,
     }
     for key, value in optional_values.items():
         if value:

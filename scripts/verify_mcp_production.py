@@ -275,15 +275,50 @@ def check_backups(backup_dir: Path, settings, failures: list[str]) -> None:
         return
     latest = manifests[-1]
     payload = json.loads(latest.read_text(encoding="utf-8"))
-    if not payload.get("sqlite") and "No SQLite files found under shared/data." not in payload.get(
-        "blockers", []
-    ):
+    blockers = payload.get("blockers", [])
+    if blockers:
+        failures.append(f"latest backup has blockers: {blockers}")
+
+    sqlite_entries = payload.get("sqlite") or []
+    if not sqlite_entries:
         failures.append(f"latest backup has no SQLite result: {latest}")
+    main_db = settings.system_root_directory.rstrip("/") + "/databases/cognee_db"
+    if not any(entry.get("source") == main_db for entry in sqlite_entries):
+        failures.append(f"latest backup does not include main Cognee DB: {latest}")
+    bad_sqlite = [
+        entry
+        for entry in sqlite_entries
+        if entry.get("integrity_check") != "ok" or not Path(entry.get("backup", "")).exists()
+    ]
+    if bad_sqlite:
+        failures.append(f"latest backup has invalid SQLite entries: {bad_sqlite}")
+
+    if not verified_archive_entries(payload.get("raw_data")):
+        failures.append(f"latest backup has no verified raw data archive: {latest}")
+    if not verified_archive_entries(payload.get("lancedb")):
+        failures.append(f"latest backup has no verified LanceDB archive: {latest}")
+    if not verified_archive_entries(payload.get("secrets")):
+        failures.append(f"latest backup has no verified secrets archive: {latest}")
+
+    neo4j_entries = payload.get("neo4j") or []
+    if not any(entry.get("verified") for entry in neo4j_entries):
+        failures.append(f"latest backup has no verified Neo4j check or dump: {latest}")
+
     if settings.brain_google_drive_backup_enabled:
         google = payload.get("google_drive") or {}
         if not google.get("verified"):
             failures.append(f"latest backup is not verified in Google Drive: {latest}")
     console.print(f"[green][OK][/green] backup manifest present: {latest}")
+
+
+def verified_archive_entries(entries: Any) -> bool:
+    if not entries:
+        return False
+    for entry in entries:
+        archive = entry.get("archive")
+        if archive and Path(archive).exists():
+            return True
+    return False
 
 
 def command_exists(command: str) -> bool:

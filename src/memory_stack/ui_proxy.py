@@ -5,7 +5,7 @@ import hashlib
 import hmac
 import time
 from html import escape
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlsplit, urlunsplit
 
 import httpx
 from fastapi import FastAPI, HTTPException, Request, Response
@@ -272,9 +272,41 @@ async def proxy_request(request: Request, upstream_base_url: str, upstream_path:
         for key, value in upstream.headers.items()
         if key.lower() not in HOP_BY_HOP_HEADERS
     }
+    location_header = next(
+        (key for key in response_headers if key.lower() == "location"),
+        None,
+    )
+    if location_header:
+        response_headers[location_header] = rewrite_redirect_location(
+            response_headers[location_header],
+            upstream_base_url,
+        )
+
     return Response(
         content=upstream.content,
         status_code=upstream.status_code,
         headers=response_headers,
         media_type=upstream.headers.get("content-type"),
     )
+
+
+def rewrite_redirect_location(location: str, upstream_base_url: str) -> str:
+    upstream = urlsplit(upstream_base_url)
+    target = urlsplit(location)
+    public_prefix = (
+        settings.brain_public_ui_api_path.rstrip("/")
+        if upstream_base_url == backend_base_url()
+        else ""
+    )
+
+    if target.scheme and target.netloc:
+        if target.netloc != upstream.netloc:
+            return location
+        path = target.path or "/"
+        rewritten = f"{public_prefix}{path}"
+        return urlunsplit(("", "", rewritten, target.query, target.fragment))
+
+    if location.startswith("/") and public_prefix and not location.startswith(public_prefix + "/"):
+        return f"{public_prefix}{location}"
+
+    return location
