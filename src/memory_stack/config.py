@@ -66,6 +66,13 @@ class Settings(BaseSettings):
     brain_google_drive_remote: str = "gdrive"
     brain_auth_enabled: bool = False
     brain_auth_token: str | None = None
+    brain_auth_password: str | None = None
+    brain_auth_password_file: str = "./secrets/brain-auth-password"
+    brain_auth_state_path: str = "./secrets/brain-oauth.json"
+    brain_auth_scopes: str = "brain.memory.read brain.memory.write"
+    brain_auth_require_pkce: bool = True
+    brain_auth_access_token_seconds: int = 3600
+    brain_auth_refresh_token_seconds: int = 60 * 60 * 24 * 30
     brain_service_name: str = "Brain"
     brain_prod_root: str = "/Volumes/xpg_usb4/prod/brain"
     brain_launchd_label: str = "com.brain.mcp"
@@ -134,6 +141,22 @@ class Settings(BaseSettings):
     def shared_data_path(self) -> Path:
         return self.prod_root_path / "shared" / "data"
 
+    @property
+    def auth_password_path(self) -> Path:
+        return Path(self.brain_auth_password_file).expanduser()
+
+    @property
+    def auth_state_path(self) -> Path:
+        return Path(self.brain_auth_state_path).expanduser()
+
+    @property
+    def oauth_scopes(self) -> list[str]:
+        return [scope for scope in self.brain_auth_scopes.split() if scope]
+
+    @property
+    def brain_auth_scope_list(self) -> list[str]:
+        return self.oauth_scopes
+
 
 def normalize_path(value: str) -> str:
     stripped = value.strip()
@@ -188,6 +211,13 @@ def runtime_env(settings: Settings) -> dict[str, str]:
             settings.brain_google_drive_backup_enabled
         ).lower(),
         "BRAIN_GOOGLE_DRIVE_FOLDER": settings.brain_google_drive_folder,
+        "BRAIN_AUTH_ENABLED": str(settings.brain_auth_enabled).lower(),
+        "BRAIN_AUTH_PASSWORD_FILE": settings.brain_auth_password_file,
+        "BRAIN_AUTH_STATE_PATH": settings.brain_auth_state_path,
+        "BRAIN_AUTH_SCOPES": settings.brain_auth_scopes,
+        "BRAIN_AUTH_REQUIRE_PKCE": str(settings.brain_auth_require_pkce).lower(),
+        "BRAIN_AUTH_ACCESS_TOKEN_SECONDS": str(settings.brain_auth_access_token_seconds),
+        "BRAIN_AUTH_REFRESH_TOKEN_SECONDS": str(settings.brain_auth_refresh_token_seconds),
     }
     optional_values = {
         "LLM_API_KEY": settings.llm_api_key,
@@ -195,6 +225,7 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "EMBEDDING_API_KEY": settings.embedding_api_key,
         "OPENAI_API_KEY": settings.llm_api_key if settings.llm_provider == "openai" else None,
         "BRAIN_AUTH_TOKEN": settings.brain_auth_token,
+        "BRAIN_AUTH_PASSWORD": settings.brain_auth_password,
     }
     for key, value in optional_values.items():
         if value:

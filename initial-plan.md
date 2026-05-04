@@ -122,6 +122,9 @@ Create:
           eval_runner.py
           scoring.py
           token_costs.py
+          mcp_server.py
+          mcp_stdio.py
+          oauth.py
 
       data/
         samples/
@@ -313,6 +316,13 @@ Phase 5 production deployment adds these to the production `.env` and launchd en
     BRAIN_BACKUP_DIR=/Volumes/xpg_usb4/prod/brain/shared/backups
     BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=true
     BRAIN_GOOGLE_DRIVE_FOLDER=backup/brain
+    BRAIN_AUTH_ENABLED=true
+    BRAIN_AUTH_PASSWORD_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain-auth-password
+    BRAIN_AUTH_STATE_PATH=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain-oauth.json
+    BRAIN_AUTH_SCOPES="brain.memory.read brain.memory.write"
+    BRAIN_AUTH_REQUIRE_PKCE=true
+    BRAIN_AUTH_ACCESS_TOKEN_SECONDS=3600
+    BRAIN_AUTH_REFRESH_TOKEN_SECONDS=2592000
 
 ---
 

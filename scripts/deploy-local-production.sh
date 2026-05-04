@@ -30,6 +30,16 @@ require_cmd() {
 require_cmd git
 require_cmd rsync
 require_cmd uv
+require_cmd python3
+
+ensure_env_var() {
+  local key="$1"
+  local value="$2"
+  local env_file="$SECRETS_DIR/brain.env"
+  if ! grep -q "^${key}=" "$env_file"; then
+    printf '%s=%s\n' "$key" "$value" >>"$env_file"
+  fi
+}
 
 log "creating production directories under $PROD_ROOT"
 mkdir -p "$PROD_ROOT/releases" "$DATA_DIR" "$BACKUP_DIR" "$SECRETS_DIR" "$HOME/Library/LaunchAgents" "$HOME/Library/Logs"
@@ -64,8 +74,34 @@ BRAIN_PUBLIC_MCP_PATH=/mcp
 BRAIN_BACKUP_DIR=$BACKUP_DIR
 BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED=true
 BRAIN_GOOGLE_DRIVE_FOLDER=backup/brain
+BRAIN_AUTH_ENABLED=true
+BRAIN_AUTH_PASSWORD_FILE=$SECRETS_DIR/brain-auth-password
+BRAIN_AUTH_STATE_PATH=$SECRETS_DIR/brain-oauth.json
+BRAIN_AUTH_SCOPES="brain.memory.read brain.memory.write"
+BRAIN_AUTH_REQUIRE_PKCE=true
+BRAIN_AUTH_ACCESS_TOKEN_SECONDS=3600
+BRAIN_AUTH_REFRESH_TOKEN_SECONDS=2592000
 EOF
   chmod 600 "$SECRETS_DIR/brain.env"
+fi
+
+ensure_env_var "BRAIN_AUTH_ENABLED" "true"
+ensure_env_var "BRAIN_AUTH_PASSWORD_FILE" "$SECRETS_DIR/brain-auth-password"
+ensure_env_var "BRAIN_AUTH_STATE_PATH" "$SECRETS_DIR/brain-oauth.json"
+ensure_env_var "BRAIN_AUTH_SCOPES" '"brain.memory.read brain.memory.write"'
+ensure_env_var "BRAIN_AUTH_REQUIRE_PKCE" "true"
+ensure_env_var "BRAIN_AUTH_ACCESS_TOKEN_SECONDS" "3600"
+ensure_env_var "BRAIN_AUTH_REFRESH_TOKEN_SECONDS" "2592000"
+
+if [[ ! -f "$SECRETS_DIR/brain-auth-password" ]]; then
+  log "creating Brain OAuth password at $SECRETS_DIR/brain-auth-password"
+  umask 077
+  python3 - <<'PY' >"$SECRETS_DIR/brain-auth-password"
+import secrets
+
+print(secrets.token_urlsafe(24))
+PY
+  chmod 600 "$SECRETS_DIR/brain-auth-password"
 fi
 
 if [[ ! -d "$RELEASE_DIR" ]]; then

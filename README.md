@@ -25,6 +25,10 @@ The HTTP service for production verification includes:
 - `GET|POST /mcp`
 - `GET /.well-known/oauth-protected-resource/mcp`
 - `GET /.well-known/oauth-authorization-server`
+- `POST /register`
+- `GET|POST /authorize`
+- `POST /token`
+- `POST /revoke`
 
 Run it locally with:
 
@@ -33,3 +37,5 @@ make mcp-http
 ```
 
 Production deployment is Phase 5 work and uses `/Volumes/xpg_usb4/prod/brain`.
+When production auth is enabled, the OAuth password is stored at
+`/Volumes/xpg_usb4/prod/brain/shared/secrets/brain-auth-password`.

@@ -50,6 +50,8 @@ def main() -> int:
         expect_json_service=True,
     )
     check_mcp(settings, failures)
+    if settings.brain_auth_enabled:
+        check_oauth_metadata(settings, failures)
 
     if not args.skip_backups:
         check_backups(Path(settings.brain_backup_dir), settings, failures)
@@ -200,12 +202,67 @@ def check_mcp(settings, failures: list[str]) -> None:
         challenge = headers.get("WWW-Authenticate", "")
         if "Brain" not in challenge and "brain" not in challenge:
             failures.append(f"MCP auth challenge does not identify Brain: {challenge}")
+        if settings.protected_resource_metadata_url not in challenge:
+            failures.append(
+                "MCP auth challenge does not advertise Brain protected-resource metadata: "
+                f"{challenge}"
+            )
+        else:
+            console.print("[green][OK][/green] local MCP fails closed with Brain auth metadata")
     elif status >= 400:
         failures.append(f"local MCP returned HTTP {status}: {body[:200]}")
     else:
         if "Brain" not in body and "brain" not in body:
             failures.append("local MCP response does not identify Brain")
         console.print(f"[green][OK][/green] local MCP: {url}")
+
+
+def check_oauth_metadata(settings, failures: list[str]) -> None:
+    base = f"http://{settings.brain_mcp_host}:{settings.brain_mcp_port}"
+    protected = check_http_json(
+        f"{base}/.well-known/oauth-protected-resource{settings.brain_public_mcp_path}",
+        "local OAuth protected-resource metadata",
+        failures,
+    )
+    if protected:
+        if protected.get("resource_name") != "Brain":
+            failures.append(f"protected-resource metadata is not Brain: {protected}")
+        if protected.get("resource") != settings.public_mcp_url:
+            failures.append(
+                "protected-resource metadata resource does not match public MCP URL: "
+                f"{protected}"
+            )
+
+    issuer = check_http_json(
+        f"{base}/.well-known/oauth-authorization-server",
+        "local OAuth authorization-server metadata",
+        failures,
+    )
+    if issuer:
+        if issuer.get("service") != "Brain":
+            failures.append(f"authorization-server metadata is not Brain: {issuer}")
+        if issuer.get("issuer") != settings.brain_public_base_url.rstrip("/"):
+            failures.append(f"authorization-server issuer is wrong: {issuer}")
+
+
+def check_http_json(url: str, label: str, failures: list[str]) -> dict[str, Any] | None:
+    try:
+        with urllib.request.urlopen(url, timeout=5) as response:
+            body = response.read().decode("utf-8", errors="replace")
+            status = response.status
+    except Exception as exc:
+        failures.append(f"{label} failed at {url}: {exc}")
+        return None
+    if status >= 400:
+        failures.append(f"{label} returned HTTP {status}: {url}")
+        return None
+    try:
+        payload = json.loads(body)
+    except json.JSONDecodeError:
+        failures.append(f"{label} did not return JSON")
+        return None
+    console.print(f"[green][OK][/green] {label}: {url}")
+    return payload
 
 
 def check_backups(backup_dir: Path, settings, failures: list[str]) -> None:
@@ -235,4 +292,3 @@ def command_exists(command: str) -> bool:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

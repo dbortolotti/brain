@@ -42,17 +42,15 @@ def main() -> int:
             require_brain=True,
         )
     check_public_mcp(settings, failures)
-    check_url(
+    check_protected_resource_metadata(
         f"https://{hostname}/.well-known/oauth-protected-resource{settings.brain_public_mcp_path}",
-        "OAuth protected-resource metadata",
+        settings,
         failures,
-        require_brain=True,
     )
-    check_url(
+    check_authorization_server_metadata(
         f"https://{hostname}/.well-known/oauth-authorization-server",
-        "OAuth authorization-server metadata",
+        settings,
         failures,
-        require_brain=True,
     )
     if not args.skip_cloudflared:
         check_cloudflared(failures)
@@ -135,6 +133,46 @@ def check_url(url: str, label: str, failures: list[str], *, require_brain: bool 
         failures.append(f"{label} does not identify Brain: {payload}")
         return
     console.print(f"[green][OK][/green] {label}: {url}")
+
+
+def check_protected_resource_metadata(url: str, settings, failures: list[str]) -> None:
+    payload = fetch_json(url, "OAuth protected-resource metadata", failures)
+    if not payload:
+        return
+    if payload.get("resource_name") != "Brain":
+        failures.append(f"OAuth protected-resource metadata is not Brain: {payload}")
+    if payload.get("resource") != settings.public_mcp_url:
+        failures.append(f"OAuth protected-resource resource is wrong: {payload}")
+
+
+def check_authorization_server_metadata(url: str, settings, failures: list[str]) -> None:
+    payload = fetch_json(url, "OAuth authorization-server metadata", failures)
+    if not payload:
+        return
+    if payload.get("service") != "Brain":
+        failures.append(f"OAuth authorization-server metadata is not Brain: {payload}")
+    if payload.get("issuer") != settings.brain_public_base_url.rstrip("/"):
+        failures.append(f"OAuth authorization-server issuer is wrong: {payload}")
+
+
+def fetch_json(url: str, label: str, failures: list[str]) -> dict | None:
+    status, _headers, body = fetch(url)
+    if status is None:
+        failures.append(f"{label} failed: {body}")
+        return None
+    if status >= 400:
+        failures.append(f"{label} returned HTTP {status}: {url}")
+        return None
+    try:
+        payload = json.loads(body)
+    except json.JSONDecodeError:
+        failures.append(f"{label} did not return JSON: {body[:300]}")
+        return None
+    if "Brain" not in body and "brain" not in body:
+        failures.append(f"{label} does not identify Brain: {payload}")
+        return None
+    console.print(f"[green][OK][/green] {label}: {url}")
+    return payload
 
 
 def fetch(url: str) -> tuple[int | None, dict[str, str], str]:
