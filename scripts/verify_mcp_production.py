@@ -187,11 +187,11 @@ def check_mcp(settings, failures: list[str]) -> None:
         with urllib.request.urlopen(request, timeout=5) as response:
             body = response.read().decode("utf-8", errors="replace")
             status = response.status
-            headers = dict(response.headers)
+            headers = {key.lower(): value for key, value in response.headers.items()}
     except urllib.error.HTTPError as exc:
         body = exc.read().decode("utf-8", errors="replace")
         status = exc.code
-        headers = dict(exc.headers)
+        headers = {key.lower(): value for key, value in exc.headers.items()}
     except Exception as exc:
         failures.append(f"local MCP failed at {url}: {exc}")
         return
@@ -199,7 +199,7 @@ def check_mcp(settings, failures: list[str]) -> None:
     if settings.brain_auth_enabled:
         if status != 401:
             failures.append(f"auth-enabled MCP did not fail closed; status={status}")
-        challenge = headers.get("WWW-Authenticate", "")
+        challenge = headers.get("www-authenticate", "")
         if "Brain" not in challenge and "brain" not in challenge:
             failures.append(f"MCP auth challenge does not identify Brain: {challenge}")
         if settings.protected_resource_metadata_url not in challenge:
