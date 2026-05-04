@@ -106,10 +106,21 @@ if command -v launchctl >/dev/null 2>&1; then
   log "restarting launchd service $LABEL"
   launchctl bootout "gui/$(id -u)" "$PLIST_DST" >/dev/null 2>&1 || true
   launchctl bootstrap "gui/$(id -u)" "$PLIST_DST"
-  sleep 2
 else
   log "launchctl not found; skipping service restart"
 fi
+
+log "waiting for local health"
+for attempt in {1..30}; do
+  if curl -fsS "http://127.0.0.1:8000/healthz" >/dev/null 2>&1; then
+    break
+  fi
+  if [[ "$attempt" == "30" ]]; then
+    echo "local health did not become ready" >&2
+    exit 1
+  fi
+  sleep 1
+done
 
 log "running production verifier"
 export ENV_FILE="$SECRETS_DIR/brain.env"
