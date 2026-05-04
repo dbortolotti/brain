@@ -31,6 +31,10 @@ def main() -> int:
 
     base = f"http://{settings.brain_ui_host}:{settings.brain_ui_proxy_port}"
     check_health(f"{base}/healthz", failures)
+    check_backend_health(
+        f"http://127.0.0.1:{settings.brain_ui_backend_port}/health",
+        failures,
+    )
     check_ui_requires_auth(f"{base}{settings.brain_public_ui_path}", failures)
     check_api_requires_auth(f"{base}{settings.brain_public_ui_api_path}/api/v1/users/me", failures)
 
@@ -52,6 +56,17 @@ def check_health(url: str, failures: list[str]) -> None:
         failures.append(f"UI health does not identify Brain UI: {body[:200]}")
         return
     console.print(f"[green][OK][/green] local UI health: {url}")
+
+
+def check_backend_health(url: str, failures: list[str]) -> None:
+    status, _headers, body = fetch(url)
+    if status != 200:
+        failures.append(f"Cognee backend health returned {status}: {body[:200]}")
+        return
+    if '"ready"' not in body or '"healthy"' not in body:
+        failures.append(f"Cognee backend health was not ready: {body[:200]}")
+        return
+    console.print(f"[green][OK][/green] Cognee backend health: {url}")
 
 
 def check_ui_requires_auth(url: str, failures: list[str]) -> None:
