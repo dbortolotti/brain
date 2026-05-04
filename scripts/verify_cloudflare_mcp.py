@@ -176,7 +176,11 @@ def fetch_json(url: str, label: str, failures: list[str]) -> dict | None:
 
 
 def fetch(url: str) -> tuple[int | None, dict[str, str], str]:
-    request = urllib.request.Request(url, method="GET")
+    request = urllib.request.Request(
+        url,
+        headers={"User-Agent": "brain-mcp-verifier/0.1"},
+        method="GET",
+    )
     try:
         with urllib.request.urlopen(request, timeout=8) as response:
             return (
