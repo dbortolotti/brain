@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from memory_stack.config import Settings, normalize_path
+from memory_stack.config import Settings, normalize_path, runtime_env
 
 
 def test_normalize_path() -> None:
@@ -39,3 +39,24 @@ def test_public_ui_urls() -> None:
     )
     assert settings.public_ui_url == "https://brain.dceb.net/ui"
     assert settings.public_ui_api_url == "https://brain.dceb.net/ui-api"
+
+
+def test_slack_agent_settings_are_exported() -> None:
+    settings = Settings(
+        brain_slack_agent_enabled=True,
+        brain_slack_agent_port=8003,
+        brain_slack_allowed_team_ids="T1,T2",
+        brain_slack_allowed_channel_ids="C1",
+        brain_slack_allowed_user_ids="U1",
+        brain_slack_admin_user_ids="UADMIN",
+        brain_slack_signing_secret="secret",
+        brain_slack_bot_token="xoxb-test",
+    )
+    env = runtime_env(settings)
+
+    assert settings.brain_slack_allowed_team_id_list == ["T1", "T2"]
+    assert settings.brain_slack_admin_user_id_list == ["UADMIN"]
+    assert env["BRAIN_SLACK_AGENT_ENABLED"] == "true"
+    assert env["BRAIN_SLACK_AGENT_PORT"] == "8003"
+    assert env["BRAIN_SLACK_SIGNING_SECRET"] == "secret"
+    assert env["BRAIN_SLACK_BOT_TOKEN"] == "xoxb-test"

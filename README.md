@@ -59,6 +59,45 @@ The high-level MCP tools are:
 Low-level Cognee and SQL operations are intentionally not exposed as public MCP
 tools.
 
+## Running The Slack Memory Agent
+
+The Slack memory agent is a separate HTTP service. It does not serve `/mcp`, and
+Slack paths should be routed to its own port:
+
+```bash
+make slack-agent
+```
+
+Routes:
+
+- `GET /slack/healthz`
+- `POST /slack/events`
+- `POST /slack/commands`
+- `POST /slack/interactions`
+
+The agent verifies Slack signatures, timestamp freshness, team/channel/user
+allowlists, and admin-only debug access before it touches Brain internals. Write
+requests go through `config/slack_memory_agent_rules.md`, a structured proposal
+contract, deterministic guardrails, and a dry-run before commit. By default,
+Slack writes require confirmation.
+
+Supported Slack commands:
+
+- `/brain remember <text>`
+- `/brain recall <query>`
+- `/brain profile <entity>`
+- `/brain open-loops [topic]`
+- `/brain get-memory <memory_id>`
+- `/brain debug ...` for admin-only read-only inspection
+
+Production should run this under launchd label `com.brain.slack-agent` on local
+port `8003`; see `launchd/com.brain.slack-agent.plist.template`. Verify route
+separation and fail-closed signature behavior with:
+
+```bash
+make slack-agent-check
+```
+
 ## Running Tests
 
 ```bash
@@ -100,6 +139,17 @@ Cognee projection settings, optional:
 Slack capture settings, optional:
 
 - `BRAIN_SLACK_ENABLED=false`
+- `BRAIN_SLACK_AGENT_ENABLED=false`
+- `BRAIN_SLACK_AGENT_HOST=127.0.0.1`
+- `BRAIN_SLACK_AGENT_PORT=8003`
+- `BRAIN_SLACK_SIGNING_SECRET`
+- `BRAIN_SLACK_BOT_TOKEN`
+- `BRAIN_SLACK_ALLOWED_TEAM_IDS`
+- `BRAIN_SLACK_ALLOWED_CHANNEL_IDS`
+- `BRAIN_SLACK_ALLOWED_USER_IDS`
+- `BRAIN_SLACK_ADMIN_USER_IDS`
+- `BRAIN_SLACK_RULES_PATH=./config/slack_memory_agent_rules.md`
+- `BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE=false`
 
 Slack command handling is a thin optional layer over Brain service methods. It
 does not bypass Brain DB.

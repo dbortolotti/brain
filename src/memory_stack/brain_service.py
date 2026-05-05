@@ -106,6 +106,9 @@ def remember(
         entity_resolver = EntityResolver(store)
         entity_receipts: dict[str, dict[str, Any]] = {}
         for card in compiled.memory_cards:
+            memory_metadata = {**card.metadata, "ingestion_run_id": run["id"]}
+            if "slack" in request.context:
+                memory_metadata["slack"] = request.context["slack"]
             memory, memory_created = store.upsert_memory_card(
                 {
                     "kind": str(card.kind),
@@ -116,7 +119,7 @@ def remember(
                     "observed_at": card.observed_at,
                     "source_id": source_id,
                     "source_quote": card.source_quote,
-                    "metadata_json": {**card.metadata, "ingestion_run_id": run["id"]},
+                    "metadata_json": memory_metadata,
                 }
             )
             memory_receipt = MemoryReceipt(
