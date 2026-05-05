@@ -3,6 +3,7 @@ from __future__ import annotations
 from memory_stack.brain_models import RecallResponse
 from memory_stack.brain_store import BrainStore
 from memory_stack.config import Settings
+from memory_stack.recall.evidence_builder import build_evidence, build_facts
 
 
 def build_profile_response(
@@ -26,24 +27,8 @@ def build_profile_response(
     entity = profile["entity"]
     memories = profile["memories"]
     relationships = profile["relationships"]
-    facts = [
-        {
-            "memory_id": memory["id"],
-            "kind": memory["kind"],
-            "statement": memory["statement"],
-            "status": memory["status"],
-            "confidence": memory["confidence"],
-        }
-        for memory in memories
-    ]
-    evidence = [
-        {
-            "memory_id": memory["id"],
-            "source_id": memory.get("source_id"),
-            "quote": memory.get("source_quote") or memory["statement"],
-        }
-        for memory in memories
-    ]
+    facts = build_facts(memories)
+    evidence = build_evidence(memories)
     lines = [entity["canonical_name"], "Identity"]
     lines.append(f"- {entity['type']}; confidence {entity['confidence']}.")
     if profile["aliases"]:

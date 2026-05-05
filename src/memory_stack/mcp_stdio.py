@@ -9,10 +9,15 @@ from memory_stack.brain_service import (
     get_source as brain_get_source,
     ingest_source as brain_ingest_source,
     list_open_loops as brain_list_open_loops,
+    merge_entities as brain_merge_entities,
     profile_entity as brain_profile_entity,
     recall as brain_recall,
     remember as brain_remember,
+    rebuild_cognee as brain_rebuild_cognee,
     resolve_conflict as brain_resolve_conflict,
+    review_recent as brain_review_recent,
+    sync_cognee as brain_sync_cognee,
+    undo_last as brain_undo_last,
 )
 from memory_stack.config import load_settings
 
@@ -203,6 +208,76 @@ def build_server():
             "mode": "hard" if hard else "soft",
             "cognee_sync_status": "stale",
         }
+
+    @mcp.tool(name="brain.review_recent", structured_output=True)
+    async def review_recent(
+        since: str | None = None,
+        limit: int = 20,
+        include_sources: bool = True,
+    ) -> dict[str, Any]:
+        """Review recent Brain ingestion runs, sources, memories, and conflict links."""
+        from datetime import datetime
+
+        parsed_since = None
+        if since:
+            parsed_since = datetime.fromisoformat(since.replace("Z", "+00:00"))
+        return brain_review_recent(
+            settings,
+            since=parsed_since,
+            limit=limit,
+            include_sources=include_sources,
+        )
+
+    @mcp.tool(name="brain.undo_last", structured_output=True)
+    async def undo_last(ingestion_run_id: str | None = None) -> dict[str, Any]:
+        """Soft-delete objects created by one recent ingestion run."""
+        return brain_undo_last(settings, ingestion_run_id=ingestion_run_id)
+
+    @mcp.tool(name="brain.sync_cognee", structured_output=True)
+    async def sync_cognee(
+        object_type: str = "all",
+        object_id: str | None = None,
+        dataset: str = "all",
+        force: bool = False,
+    ) -> dict[str, Any]:
+        """Manually sync pending Brain projections to Cognee."""
+        return brain_sync_cognee(
+            settings,
+            object_type=object_type,
+            object_id=object_id,
+            dataset=dataset,
+            force=force,
+        )
+
+    @mcp.tool(name="brain.rebuild_cognee", structured_output=True)
+    async def rebuild_cognee(
+        dataset: str = "all",
+        prune_first: bool = False,
+        confirm: bool = False,
+    ) -> dict[str, Any]:
+        """Mark Cognee projections stale so they can be rebuilt from Brain DB."""
+        return brain_rebuild_cognee(
+            settings,
+            dataset=dataset,
+            prune_first=prune_first,
+            confirm=confirm,
+        )
+
+    @mcp.tool(name="brain.merge_entities", structured_output=True)
+    async def merge_entities(
+        primary_entity_id: str,
+        duplicate_entity_id: str,
+        reason: str | None = None,
+        confirm: bool = False,
+    ) -> dict[str, Any]:
+        """Merge a duplicate entity into a primary entity after confirmation."""
+        return brain_merge_entities(
+            settings,
+            primary_entity_id=primary_entity_id,
+            duplicate_entity_id=duplicate_entity_id,
+            reason=reason,
+            confirm=confirm,
+        )
 
     return mcp
 

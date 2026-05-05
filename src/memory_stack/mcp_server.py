@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import time
+from datetime import datetime
 from typing import Any
 
 from fastapi import FastAPI, Header, HTTPException, Request, Response
@@ -16,10 +17,15 @@ from memory_stack.brain_service import (
     get_source as brain_get_source,
     ingest_source as brain_ingest_source,
     list_open_loops as brain_list_open_loops,
+    merge_entities as brain_merge_entities,
     profile_entity as brain_profile_entity,
     recall as brain_recall,
     remember as brain_remember,
+    rebuild_cognee as brain_rebuild_cognee,
     resolve_conflict as brain_resolve_conflict,
+    review_recent as brain_review_recent,
+    sync_cognee as brain_sync_cognee,
+    undo_last as brain_undo_last,
 )
 from memory_stack.brain_store import BrainStore
 from memory_stack.cognee_adapter import (
@@ -79,6 +85,36 @@ class ResolveConflictRequest(BaseModel):
     note: str | None = None
 
 
+class ReviewRecentRequest(BaseModel):
+    since: str | None = None
+    limit: int = 20
+    include_sources: bool = True
+
+
+class UndoLastRequest(BaseModel):
+    ingestion_run_id: str | None = None
+
+
+class SyncCogneeRequest(BaseModel):
+    object_type: str = "all"
+    object_id: str | None = None
+    dataset: str = "all"
+    force: bool = False
+
+
+class RebuildCogneeRequest(BaseModel):
+    dataset: str = "all"
+    prune_first: bool = False
+    confirm: bool = False
+
+
+class MergeEntitiesRequest(BaseModel):
+    primary_entity_id: str
+    duplicate_entity_id: str
+    reason: str | None = None
+    confirm: bool = False
+
+
 INPUT_TYPES = [
     "auto",
     "note",
@@ -113,6 +149,8 @@ CONFLICT_ACTIONS = [
     "mark_contradiction",
 ]
 FORGET_OBJECT_TYPES = ["memory", "source", "entity", "relationship", "open_loop"]
+ADMIN_COGNEE_OBJECT_TYPES = ["memory", "source", "data", "all"]
+ADMIN_COGNEE_DATASETS = ["memory", "sources", "data", "all"]
 
 
 def memory_tool_definitions() -> list[dict[str, Any]]:
@@ -274,6 +312,80 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
                     },
                 },
                 "required": ["object_type", "object_id"],
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain.review_recent",
+            "description": "Review recent Brain ingestion runs, sources, memories, and conflict links.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "since": {"type": "string", "format": "date-time"},
+                    "limit": {"type": "integer", "minimum": 1, "maximum": 100, "default": 20},
+                    "include_sources": {"type": "boolean", "default": True},
+                },
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain.undo_last",
+            "description": "Soft-delete objects created by one recent ingestion run.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "ingestion_run_id": {"type": "string"},
+                },
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain.sync_cognee",
+            "description": "Manually sync pending Brain projections to Cognee.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "object_type": {"type": "string", "enum": ADMIN_COGNEE_OBJECT_TYPES, "default": "all"},
+                    "object_id": {"type": "string"},
+                    "dataset": {"type": "string", "enum": ADMIN_COGNEE_DATASETS, "default": "all"},
+                    "force": {"type": "boolean", "default": False},
+                },
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain.rebuild_cognee",
+            "description": "Mark Cognee projections stale so they can be rebuilt from Brain DB.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "dataset": {"type": "string", "enum": ADMIN_COGNEE_DATASETS, "default": "all"},
+                    "prune_first": {"type": "boolean", "default": False},
+                    "confirm": {
+                        "type": "boolean",
+                        "default": False,
+                        "description": "Required true when prune_first=true.",
+                    },
+                },
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain.merge_entities",
+            "description": "Merge a duplicate entity into a primary entity after confirmation.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "primary_entity_id": {"type": "string"},
+                    "duplicate_entity_id": {"type": "string"},
+                    "reason": {"type": "string"},
+                    "confirm": {
+                        "type": "boolean",
+                        "default": False,
+                        "description": "Required true to merge entities.",
+                    },
+                },
+                "required": ["primary_entity_id", "duplicate_entity_id"],
                 "additionalProperties": False,
             },
         },
@@ -544,6 +656,73 @@ async def brain_resolve_conflict_endpoint(
     )
 
 
+@app.post("/memory/review_recent")
+async def brain_review_recent_endpoint(
+    payload: ReviewRecentRequest,
+    authorization: str | None = Header(default=None),
+) -> dict[str, Any]:
+    require_api_auth(authorization, settings)
+    return brain_review_recent(
+        settings,
+        since=parse_optional_datetime(payload.since),
+        limit=payload.limit,
+        include_sources=payload.include_sources,
+    )
+
+
+@app.post("/memory/undo_last")
+async def brain_undo_last_endpoint(
+    payload: UndoLastRequest,
+    authorization: str | None = Header(default=None),
+) -> dict[str, Any]:
+    require_api_auth(authorization, settings)
+    return brain_undo_last(settings, ingestion_run_id=payload.ingestion_run_id)
+
+
+@app.post("/memory/sync_cognee")
+async def brain_sync_cognee_endpoint(
+    payload: SyncCogneeRequest,
+    authorization: str | None = Header(default=None),
+) -> dict[str, Any]:
+    require_api_auth(authorization, settings)
+    return brain_sync_cognee(
+        settings,
+        object_type=payload.object_type,
+        object_id=payload.object_id,
+        dataset=payload.dataset,
+        force=payload.force,
+    )
+
+
+@app.post("/memory/rebuild_cognee")
+async def brain_rebuild_cognee_endpoint(
+    payload: RebuildCogneeRequest,
+    authorization: str | None = Header(default=None),
+) -> dict[str, Any]:
+    require_api_auth(authorization, settings)
+    return brain_rebuild_cognee(
+        settings,
+        dataset=payload.dataset,
+        prune_first=payload.prune_first,
+        confirm=payload.confirm,
+    )
+
+
+@app.post("/memory/merge_entities")
+async def brain_merge_entities_endpoint(
+    payload: MergeEntitiesRequest,
+    authorization: str | None = Header(default=None),
+) -> dict[str, Any]:
+    require_api_auth(authorization, settings)
+    return brain_merge_entities(
+        settings,
+        primary_entity_id=payload.primary_entity_id,
+        duplicate_entity_id=payload.duplicate_entity_id,
+        reason=payload.reason,
+        confirm=payload.confirm,
+    )
+
+
 @app.api_route("/{path:path}", methods=["GET", "POST"])
 async def mcp_route(
     path: str,
@@ -811,6 +990,73 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
         payload = {**payload, "mode": mode, "cognee_sync_status": "stale"}
         return json_tool_response(payload, summary=f"{mode.title()} delete result: {payload['status']}.")
 
+    if name == "brain.review_recent":
+        payload = brain_review_recent(
+            settings,
+            since=parse_optional_datetime(arguments.get("since")),
+            limit=bounded_int(arguments.get("limit", 20), minimum=1, maximum=100),
+            include_sources=bool(arguments.get("include_sources", True)),
+        )
+        return json_tool_response(
+            payload,
+            summary=(
+                f"Found {len(payload['memory_cards'])} recent memories and "
+                f"{len(payload['ingestion_runs'])} ingestion runs."
+            ),
+        )
+
+    if name == "brain.undo_last":
+        payload = brain_undo_last(
+            settings,
+            ingestion_run_id=arguments.get("ingestion_run_id"),
+        )
+        return json_tool_response(
+            payload,
+            summary=f"Undo result: {payload['status']}.",
+        )
+
+    if name == "brain.sync_cognee":
+        payload = brain_sync_cognee(
+            settings,
+            object_type=str(arguments.get("object_type", "all")),
+            object_id=arguments.get("object_id"),
+            dataset=str(arguments.get("dataset", "all")),
+            force=bool(arguments.get("force", False)),
+        )
+        return json_tool_response(
+            payload,
+            summary=f"Cognee sync {payload.get('status', 'complete')}: {payload.get('processed', 0)} rows.",
+        )
+
+    if name == "brain.rebuild_cognee":
+        payload = brain_rebuild_cognee(
+            settings,
+            dataset=str(arguments.get("dataset", "all")),
+            prune_first=bool(arguments.get("prune_first", False)),
+            confirm=bool(arguments.get("confirm", False)),
+        )
+        return json_tool_response(
+            payload,
+            summary=(
+                "Cognee rebuild queued: "
+                f"{payload.get('memory_rows_marked_stale', 0)} memories, "
+                f"{payload.get('source_rows_marked_stale', 0)} sources."
+            ),
+        )
+
+    if name == "brain.merge_entities":
+        payload = brain_merge_entities(
+            settings,
+            primary_entity_id=str(arguments["primary_entity_id"]),
+            duplicate_entity_id=str(arguments["duplicate_entity_id"]),
+            reason=arguments.get("reason"),
+            confirm=bool(arguments.get("confirm", False)),
+        )
+        return json_tool_response(
+            payload,
+            summary=f"Merged duplicate entity {payload['duplicate_entity_id']}.",
+        )
+
     raise ValueError(f"Unknown tool: {name}")
 
 
@@ -834,6 +1080,15 @@ def remember_summary(payload: dict[str, Any]) -> str:
 
 def bounded_int(value: Any, *, minimum: int, maximum: int) -> int:
     return max(minimum, min(maximum, int(value)))
+
+
+def parse_optional_datetime(value: Any) -> datetime | None:
+    if value in {None, ""}:
+        return None
+    text = str(value)
+    if text.endswith("Z"):
+        text = f"{text[:-1]}+00:00"
+    return datetime.fromisoformat(text)
 
 
 def source_without_text(source: dict[str, Any] | None) -> dict[str, Any] | None:

@@ -25,6 +25,27 @@ PERSON_INTERACTION_RE = re.compile(
     r"mentioned\s+that\s+(?:he|she|they)\s+likes?\s+(?P<liked>[^.]+)\.?$",
     re.IGNORECASE,
 )
+PERSON_LIKES_RE = re.compile(
+    r"^(?P<person>[A-Z][A-Za-z'-]+)\s+likes\s+(?P<liked>[^.]+)\.?$",
+    re.IGNORECASE,
+)
+PERSON_LIKES_CORRECTION_RE = re.compile(
+    r"^Actually,\s+(?P<person>[A-Z][A-Za-z'-]+)\s+likes\s+(?P<liked>.+?),\s+not\s+(?P<old>[^.]+)\.?$",
+    re.IGNORECASE,
+)
+PERSON_WORKS_AT_RE = re.compile(
+    r"^(?P<person>[A-Z][A-Za-z'-]+)\s+works\s+at\s+(?P<org>[A-Z][A-Za-z0-9& .'-]+?)\.?$",
+    re.IGNORECASE,
+)
+PERSON_LEFT_JOINED_RE = re.compile(
+    r"^(?P<person>[A-Z][A-Za-z'-]+)\s+left\s+(?P<old_org>[A-Z][A-Za-z0-9& .'-]+?)\s+"
+    r"and\s+joined\s+(?P<new_org>[A-Z][A-Za-z0-9& .'-]+?)\.?$",
+    re.IGNORECASE,
+)
+PERSON_CHILDREN_RE = re.compile(
+    r"^(?P<person>[A-Z][A-Za-z'-]+)\s+has\s+(?P<count>no|zero|one|two|three|four|five|\d+)\s+children\.?$",
+    re.IGNORECASE,
+)
 LEARN_MORE_RE = re.compile(
     r"^I\s+(?:would\s+)?(?:like|want)\s+to\s+learn\s+more\s+about\s+(?P<topic>[^.]+)\.?$",
     re.IGNORECASE,
@@ -78,6 +99,16 @@ def compile_input(request: RememberRequest, settings: Settings) -> CompiledInput
         cards = [compile_family_fact(text, request, settings)]
     elif input_type == "person_interaction":
         cards = [compile_person_interaction(text, request)]
+    elif input_type == "preference":
+        cards = [compile_person_likes(text, request)]
+    elif input_type == "preference_correction":
+        cards = [compile_person_likes_correction(text, request)]
+    elif input_type == "person_workplace":
+        cards = [compile_person_workplace(text, request)]
+    elif input_type == "person_transition":
+        cards = [compile_person_transition(text, request)]
+    elif input_type == "person_family_fact":
+        cards = [compile_person_children(text, request)]
     elif input_type == "open_question":
         cards = [compile_open_question(text, request, settings)]
     elif input_type == "research_question":
@@ -112,6 +143,16 @@ def classify_input(text: str) -> str:
         return "family_fact"
     if PERSON_INTERACTION_RE.match(text):
         return "person_interaction"
+    if PERSON_LIKES_CORRECTION_RE.match(text):
+        return "preference_correction"
+    if PERSON_LIKES_RE.match(text):
+        return "preference"
+    if PERSON_LEFT_JOINED_RE.match(text):
+        return "person_transition"
+    if PERSON_WORKS_AT_RE.match(text):
+        return "person_workplace"
+    if PERSON_CHILDREN_RE.match(text):
+        return "person_family_fact"
     if LEARN_MORE_RE.match(text):
         return "open_question"
     if WONDER_RE.match(text) and "research" in text.casefold():
@@ -231,7 +272,16 @@ def string_or_none(value: object) -> str | None:
 
 
 def rule_confidence(input_type: str, cards: list[MemoryCandidate]) -> str:
-    if input_type in {"family_fact", "open_question", "research_question"}:
+    if input_type in {
+        "family_fact",
+        "open_question",
+        "research_question",
+        "preference",
+        "preference_correction",
+        "person_workplace",
+        "person_transition",
+        "person_family_fact",
+    }:
         return "high"
     if input_type == "person_interaction":
         return "high"
@@ -248,6 +298,11 @@ def rule_sufficient(input_type: str) -> bool:
         "research_question",
         "basic_fact",
         "chat_conclusion",
+        "preference",
+        "preference_correction",
+        "person_workplace",
+        "person_transition",
+        "person_family_fact",
     }
 
 
@@ -318,6 +373,135 @@ def compile_person_interaction(text: str, request: RememberRequest) -> MemoryCan
         relationships=[
             RelationshipCandidate(subject=person_alias, predicate="associated_with", object=org),
             RelationshipCandidate(subject=person_alias, predicate="likes", object=liked),
+        ],
+    )
+
+
+def compile_person_likes(text: str, request: RememberRequest) -> MemoryCandidate:
+    match = PERSON_LIKES_RE.match(text)
+    if not match:
+        return compile_basic_memory(text, request)
+    person = match.group("person").strip()
+    liked = match.group("liked").strip()
+    return MemoryCandidate(
+        kind="preference",
+        statement=text,
+        summary=f"{person} likes {liked}.",
+        confidence="high",
+        observed_at=request.observed_at,
+        metadata={"topics": infer_topics(liked)},
+        entities=[
+            EntityMention(name=person, type="person", role="subject", confidence="high"),
+            EntityMention(name=liked, type=infer_entity_type(liked), role="topic"),
+        ],
+        relationships=[
+            RelationshipCandidate(subject=person, predicate="likes", object=liked, confidence="high"),
+        ],
+    )
+
+
+def compile_person_likes_correction(text: str, request: RememberRequest) -> MemoryCandidate:
+    match = PERSON_LIKES_CORRECTION_RE.match(text)
+    if not match:
+        return compile_basic_memory(text, request)
+    person = match.group("person").strip()
+    liked = match.group("liked").strip()
+    old = match.group("old").strip()
+    return MemoryCandidate(
+        kind="preference",
+        statement=text,
+        summary=f"Correction: {person} likes {liked}, not {old}.",
+        confidence="high",
+        observed_at=request.observed_at,
+        metadata={"topics": infer_topics(f"{liked} {old}"), "correction": True, "not": old},
+        entities=[
+            EntityMention(name=person, type="person", role="subject", confidence="high"),
+            EntityMention(name=liked, type=infer_entity_type(liked), role="topic"),
+            EntityMention(name=old, type=infer_entity_type(old), role="negated_topic"),
+        ],
+        relationships=[
+            RelationshipCandidate(subject=person, predicate="likes", object=liked, confidence="high"),
+        ],
+    )
+
+
+def compile_person_workplace(text: str, request: RememberRequest) -> MemoryCandidate:
+    match = PERSON_WORKS_AT_RE.match(text)
+    if not match:
+        return compile_basic_memory(text, request)
+    person = match.group("person").strip()
+    org = match.group("org").strip()
+    person_alias = f"{person} from {org}"
+    return MemoryCandidate(
+        kind="person_fact",
+        statement=text,
+        summary=f"{person_alias} works at {org}.",
+        confidence="high",
+        observed_at=request.observed_at,
+        metadata={"topics": [slug(org)]},
+        entities=[
+            EntityMention(name=person_alias, type="person", role="subject", alias=person, confidence="high"),
+            EntityMention(name=org, type="organization", role="organization", confidence="high"),
+        ],
+        relationships=[
+            RelationshipCandidate(subject=person_alias, predicate="works_at", object=org, confidence="high"),
+        ],
+    )
+
+
+def compile_person_transition(text: str, request: RememberRequest) -> MemoryCandidate:
+    match = PERSON_LEFT_JOINED_RE.match(text)
+    if not match:
+        return compile_basic_memory(text, request)
+    person = match.group("person").strip()
+    old_org = match.group("old_org").strip()
+    new_org = match.group("new_org").strip()
+    person_alias = f"{person} from {old_org}"
+    return MemoryCandidate(
+        kind="person_fact",
+        statement=text,
+        summary=f"{person} left {old_org} and joined {new_org}.",
+        confidence="high",
+        observed_at=request.observed_at,
+        metadata={"topics": [slug(old_org), slug(new_org)], "supersession": True},
+        entities=[
+            EntityMention(name=person_alias, type="person", role="subject", alias=person, confidence="high"),
+            EntityMention(name=old_org, type="organization", role="previous_organization", confidence="high"),
+            EntityMention(name=new_org, type="organization", role="organization", confidence="high"),
+        ],
+        relationships=[
+            RelationshipCandidate(subject=person_alias, predicate="left", object=old_org, confidence="high"),
+            RelationshipCandidate(subject=person_alias, predicate="works_at", object=new_org, confidence="high"),
+        ],
+    )
+
+
+def compile_person_children(text: str, request: RememberRequest) -> MemoryCandidate:
+    match = PERSON_CHILDREN_RE.match(text)
+    if not match:
+        return compile_basic_memory(text, request)
+    person = match.group("person").strip()
+    count = match.group("count").strip().casefold()
+    normalized_count = number_word_to_int(count)
+    object_name = "no children" if normalized_count == 0 else f"{normalized_count} children"
+    return MemoryCandidate(
+        kind="person_fact",
+        statement=text,
+        summary=f"{person} has {object_name}.",
+        confidence="high",
+        observed_at=request.observed_at,
+        metadata={"topics": ["family"], "children_count": normalized_count},
+        entities=[
+            EntityMention(name=person, type="person", role="subject", confidence="high"),
+            EntityMention(name=object_name, type="concept", role="attribute", confidence="high"),
+        ],
+        relationships=[
+            RelationshipCandidate(
+                subject=person,
+                predicate="has_children_count",
+                object=object_name,
+                confidence="high",
+            ),
         ],
     )
 
@@ -441,6 +625,22 @@ def infer_entity_type(value: str) -> str:
     if len(words) >= 2 and all(word[:1].isupper() for word in words):
         return "person"
     return "concept"
+
+
+def number_word_to_int(value: str) -> int:
+    numbers = {
+        "no": 0,
+        "zero": 0,
+        "one": 1,
+        "two": 2,
+        "three": 3,
+        "four": 4,
+        "five": 5,
+    }
+    lowered = value.casefold()
+    if lowered in numbers:
+        return numbers[lowered]
+    return int(value)
 
 
 def infer_topics(text: str) -> list[str]:

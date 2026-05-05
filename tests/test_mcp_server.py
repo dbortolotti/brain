@@ -47,6 +47,11 @@ def test_datasource_tools_are_listed() -> None:
         "brain.get_source",
         "brain.resolve_conflict",
         "brain.forget",
+        "brain.review_recent",
+        "brain.undo_last",
+        "brain.sync_cognee",
+        "brain.rebuild_cognee",
+        "brain.merge_entities",
     } == tool_names
     assert {
         "add",
@@ -73,6 +78,11 @@ def test_memory_tools_expose_node_set_and_search_options() -> None:
         "brain.get_source",
         "brain.resolve_conflict",
         "brain.forget",
+        "brain.review_recent",
+        "brain.undo_last",
+        "brain.sync_cognee",
+        "brain.rebuild_cognee",
+        "brain.merge_entities",
     } <= set(tools)
 
     remember_properties = tools["brain.remember"]["inputSchema"]["properties"]

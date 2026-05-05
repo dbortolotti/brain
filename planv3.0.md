@@ -830,47 +830,47 @@ Conflict classes:
 
 MVP algorithm:
 
-  [ ] For each new candidate card, find similar current cards:
+  [x] For each new candidate card, find similar current cards:
         - same main entity
         - similar kind
         - overlapping topics
         - lexical similarity / simple embedding later
 
-  [ ] Classify relationship using:
+  [x] Classify relationship using:
         - deterministic heuristics first
         - LLM classifier if enabled
 
-  [ ] Apply safe default:
+  [x] Apply safe default:
         - if uncertain, keep both
         - do not delete
         - surface possible conflict in receipt
 
 Tests:
 
-  [ ] Duplicate:
+  [x] Duplicate:
         Sam likes Bill Evans.
         Sam likes Bill Evans.
       Expected:
         no duplicate current card, or duplicate link if retained.
 
-  [ ] Additive:
+  [x] Additive:
         Sam likes Bill Evans.
         Sam likes Sonny Rollins.
       Expected:
         both current.
 
-  [ ] Supersession:
+  [x] Supersession:
         Sam works at Goldman.
         Sam left Goldman and joined Point72.
       Expected:
         old superseded, new current, supersedes link.
 
-  [ ] Correction:
+  [x] Correction:
         Actually, Sam likes early Coltrane, not Bill Evans.
       Expected:
         old superseded, new current.
 
-  [ ] Contradiction:
+  [x] Contradiction:
         Sam has two children.
         Sam has no children.
       Expected:
@@ -999,12 +999,12 @@ Implement:
 
 Behaviour:
 
-  [ ] Read pending/stale rows from cognee_sync.
-  [ ] Serialize object.
-  [ ] Send to Cognee dataset.
-  [ ] Mark synced with projection_hash.
-  [ ] On failure, mark failed with error_message.
-  [ ] Do not delete Brain DB rows if Cognee sync fails.
+  [x] Read pending/stale rows from cognee_sync.
+  [x] Serialize object.
+  [x] Send to Cognee dataset.
+  [x] Mark synced with projection_hash.
+  [x] On failure, mark failed with error_message.
+  [x] Do not delete Brain DB rows if Cognee sync fails.
 
 --------------------------------------------------------------------------------
 8.4 Rebuild command
@@ -1022,9 +1022,9 @@ Implement CLI or callable:
 
 MVP behaviour:
 
-  [ ] Mark all relevant projections stale.
-  [ ] Optionally prune Cognee dataset only with explicit confirmation.
-  [ ] Reproject all non-deleted Brain records.
+  [x] Mark all relevant projections stale.
+  [x] Optionally prune Cognee dataset only with explicit confirmation.
+  [x] Reproject all non-deleted Brain records.
 
 --------------------------------------------------------------------------------
 8.5 Tests
@@ -1034,18 +1034,18 @@ Use fake Cognee adapter.
 
 Tests:
 
-  [ ] Memory card projection contains memory_id.
-  [ ] Source projection contains source_id.
-  [ ] Pending sync row becomes synced after fake adapter success.
-  [ ] Failed adapter call marks sync failed and preserves Brain DB state.
-  [ ] Source creation creates pending source sync row.
-  [ ] Memory update marks projection stale.
+  [x] Memory card projection contains memory_id.
+  [x] Source projection contains source_id.
+  [x] Pending sync row becomes synced after fake adapter success.
+  [x] Failed adapter call marks sync failed and preserves Brain DB state.
+  [x] Source creation creates pending source sync row.
+  [x] Memory update marks projection stale.
 
 Acceptance criteria:
 
-  [ ] Cognee projection is real but optional.
-  [ ] Brain still works if Cognee unavailable.
-  [ ] Cognee can be rebuilt from Brain DB.
+  [x] Cognee projection is real but optional.
+  [x] Brain still works if Cognee unavailable.
+  [x] Cognee can be rebuilt from Brain DB.
 
 ================================================================================
 PHASE 9 — COGNEE-BACKED RECALL
@@ -1177,17 +1177,17 @@ Concept output sections:
 
 Tests:
 
-  [ ] profile_entity("Sam from Goldman") includes DB facts.
-  [ ] recall("knowledge graphs") returns open_question.
-  [ ] deleted/superseded memories hidden by default.
-  [ ] fake Cognee result with memory_id is hydrated from Brain DB.
-  [ ] Cognee unavailable does not break DB recall.
+  [x] profile_entity("Sam from Goldman") includes DB facts.
+  [x] recall("knowledge graphs") returns open_question.
+  [x] deleted/superseded memories hidden by default.
+  [x] fake Cognee result with memory_id is hydrated from Brain DB.
+  [x] Cognee unavailable does not break DB recall.
 
 Acceptance criteria:
 
-  [ ] Brain recall works without Cognee.
-  [ ] Brain recall improves with Cognee enabled.
-  [ ] Brain never trusts Cognee text without hydrating Brain IDs when possible.
+  [x] Brain recall works without Cognee.
+  [x] Brain recall improves with Cognee enabled.
+  [x] Brain never trusts Cognee text without hydrating Brain IDs when possible.
 
 ================================================================================
 PHASE 10 — ADMIN TOOLS
@@ -1235,9 +1235,9 @@ Use case:
 
 Behaviour:
 
-  [ ] Soft-delete objects created by one ingestion_run.
-  [ ] Mark Cognee projections stale/deleted.
-  [ ] Never hard delete by default.
+  [x] Soft-delete objects created by one ingestion_run.
+  [x] Mark Cognee projections stale/deleted.
+  [x] Never hard delete by default.
 
 --------------------------------------------------------------------------------
 10.3 brain.sync_cognee
@@ -1270,8 +1270,8 @@ Input:
 
 Rules:
 
-  [ ] If prune_first=true, require confirm=true.
-  [ ] Do not let ordinary recall/remember flows call this.
+  [x] If prune_first=true, require confirm=true.
+  [x] Do not let ordinary recall/remember flows call this.
 
 --------------------------------------------------------------------------------
 10.5 brain.merge_entities
@@ -1290,17 +1290,17 @@ Input:
 
 Behaviour:
 
-  [ ] Move aliases.
-  [ ] Repoint memory_entities.
-  [ ] Repoint relationships.
-  [ ] Archive duplicate entity.
-  [ ] Add audit link/metadata.
+  [x] Move aliases.
+  [x] Repoint memory_entities.
+  [x] Repoint relationships.
+  [x] Archive duplicate entity.
+  [x] Add audit link/metadata.
 
 Acceptance criteria:
 
-  [ ] Admin tools are tested.
-  [ ] Dangerous tools require confirmation.
-  [ ] Default MCP flow remains simple.
+  [x] Admin tools are tested.
+  [x] Dangerous tools require confirmation.
+  [x] Default MCP flow remains simple.
 
 ================================================================================
 PHASE 11 — REMINDERS AND OPEN LOOPS

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Any
 
 from memory_stack.brain_models import (
@@ -13,14 +14,22 @@ from memory_stack.brain_models import (
     SourceReceipt,
 )
 from memory_stack.brain_store import BrainStore, content_hash, stable_id
+from memory_stack.cognee.rebuild import rebuild_cognee as rebuild_cognee_projection
+from memory_stack.cognee.serializers import (
+    serialize_memory_for_cognee,
+    serialize_source_for_cognee,
+)
+from memory_stack.cognee.sync_worker import sync_one, sync_pending_cognee
 from memory_stack.config import Settings
 from memory_stack.ingestion.classifier import input_type_for_source_kind
 from memory_stack.ingestion.memory_compiler import compile_memory
 from memory_stack.llm.client import LLMClient
+from memory_stack.recall.evidence_builder import build_evidence, build_facts
 from memory_stack.recall.planner import extract_profile_name, infer_recall_mode
 from memory_stack.recall.profile_builder import build_profile_response
 from memory_stack.recall.retriever import retrieve_memories, retrieve_open_loops
 from memory_stack.recall.synthesizer import render_memory_answer, render_open_loops
+from memory_stack.resolution.conflict_detector import detect_and_apply_memory_resolution
 from memory_stack.resolution.entity_resolver import EntityResolver
 
 
@@ -70,7 +79,7 @@ def remember(
                     "file_path": compiled.source.file_path,
                     "raw_text": compiled.source.raw_text,
                     "summary": compiled.source.summary,
-                    "metadata_json": compiled.source.metadata,
+                    "metadata_json": {**compiled.source.metadata, "ingestion_run_id": run["id"]},
                     "status": compiled.source.status,
                 }
             )
@@ -107,18 +116,17 @@ def remember(
                     "observed_at": card.observed_at,
                     "source_id": source_id,
                     "source_quote": card.source_quote,
-                    "metadata_json": card.metadata,
+                    "metadata_json": {**card.metadata, "ingestion_run_id": run["id"]},
                 }
             )
-            receipt.memory_cards.append(
-                MemoryReceipt(
-                    id=memory["id"],
-                    kind=memory["kind"],
-                    statement=memory["statement"],
-                    status=memory["status"],
-                    created=memory_created,
-                )
+            memory_receipt = MemoryReceipt(
+                id=memory["id"],
+                kind=memory["kind"],
+                statement=memory["statement"],
+                status=memory["status"],
+                created=memory_created,
             )
+            receipt.memory_cards.append(memory_receipt)
             entity_map: dict[str, dict[str, Any]] = {}
             for mention in card.entities:
                 aliases = [mention.alias] if mention.alias else []
@@ -180,10 +188,27 @@ def remember(
                 )
                 receipt.open_loops.append({**loop, "created": loop_created})
 
-            projection_hash = content_hash(memory["id"], memory["statement"], memory["status"])
+            detections = detect_and_apply_memory_resolution(store, memory["id"])
+            if detections:
+                receipt.conflicts.extend(detections)
+                for detection in detections:
+                    target_memory_id = detection.get("target_memory_id")
+                    if target_memory_id:
+                        store.mark_cognee_stale(
+                            object_type="memory",
+                            object_id=str(target_memory_id),
+                        )
+
+            refreshed_memory = store.get_memory(memory["id"]) or memory
+            memory_receipt.status = refreshed_memory["status"]
+            projection_hash = content_hash(
+                refreshed_memory["id"],
+                refreshed_memory["statement"],
+                refreshed_memory["status"],
+            )
             store.mark_cognee_pending(
                 object_type="memory",
-                object_id=memory["id"],
+                object_id=refreshed_memory["id"],
                 dataset=settings.brain_cognee_memory_dataset,
                 projection_hash=projection_hash,
             )
@@ -232,7 +257,12 @@ def ingest_source(
     return remember(remember_request, settings, llm_client=llm_client)
 
 
-def recall(request: RecallRequest, settings: Settings) -> RecallResponse:
+def recall(
+    request: RecallRequest,
+    settings: Settings,
+    *,
+    cognee_searcher: Any = None,
+) -> RecallResponse:
     store = BrainStore(settings)
     query = request.query.strip()
     mode = request.mode if request.mode != "auto" else infer_recall_mode(query)
@@ -269,28 +299,14 @@ def recall(request: RecallRequest, settings: Settings) -> RecallResponse:
     memories = retrieve_memories(
         store,
         query,
+        settings=settings,
+        cognee_searcher=cognee_searcher,
         include_superseded=request.include_superseded,
         include_conflicts=request.include_conflicts,
         limit=request.limit,
     )
-    facts = [
-        {
-            "memory_id": memory["id"],
-            "kind": memory["kind"],
-            "statement": memory["statement"],
-            "status": memory["status"],
-            "confidence": memory["confidence"],
-        }
-        for memory in memories
-    ]
-    evidence = [
-        {
-            "memory_id": memory["id"],
-            "source_id": memory.get("source_id"),
-            "quote": memory.get("source_quote") or memory["statement"],
-        }
-        for memory in memories
-    ]
+    facts = build_facts(memories)
+    evidence = build_evidence(memories, include_sources=request.include_sources)
     answer = render_memory_answer(memories)
     store.log_recall(
         query=query,
@@ -421,3 +437,181 @@ def resolve_conflict(
         "action must be supersede, keep_both, mark_duplicate, archive_old, "
         "reject_new, or mark_contradiction."
     )
+
+
+def review_recent(
+    settings: Settings,
+    *,
+    since: datetime | None = None,
+    limit: int = 20,
+    include_sources: bool = True,
+) -> dict[str, Any]:
+    store = BrainStore(settings)
+    return {
+        "ingestion_runs": store.list_ingestion_runs(since=since, limit=limit),
+        "sources": store.list_sources(since=since, limit=limit) if include_sources else [],
+        "memory_cards": store.list_memory_cards(since=since, limit=limit),
+        "conflicts": store.list_memory_links(
+            relations=("duplicates", "supersedes", "contradicts"),
+            since=since,
+            limit=limit,
+        ),
+    }
+
+
+def undo_last(
+    settings: Settings,
+    *,
+    ingestion_run_id: str | None = None,
+) -> dict[str, Any]:
+    store = BrainStore(settings)
+    run = (
+        store.get_ingestion_run(ingestion_run_id)
+        if ingestion_run_id
+        else (store.list_ingestion_runs(limit=1)[0] if store.list_ingestion_runs(limit=1) else None)
+    )
+    if run is None:
+        return {"status": "not_found", "deleted_memories": [], "deleted_sources": []}
+
+    memory_rows = store.list_memory_cards(include_deleted=True, limit=100_000)
+    memory_ids = [
+        memory["id"]
+        for memory in memory_rows
+        if (memory.get("metadata_json") or {}).get("ingestion_run_id") == run["id"]
+        or (run.get("source_id") and memory.get("source_id") == run.get("source_id"))
+    ]
+    deleted_memories = []
+    for memory_id in memory_ids:
+        if store.update_memory_status(memory_id, "deleted"):
+            deleted_memories.append(memory_id)
+
+    deleted_sources = []
+    if run.get("source_id") and store.update_source_status(run["source_id"], "deleted"):
+        deleted_sources.append(run["source_id"])
+
+    return {
+        "status": "undone",
+        "ingestion_run_id": run["id"],
+        "deleted_memories": deleted_memories,
+        "deleted_sources": deleted_sources,
+        "mode": "soft",
+        "cognee_sync_status": "stale",
+    }
+
+
+def sync_cognee(
+    settings: Settings,
+    *,
+    object_type: str = "all",
+    object_id: str | None = None,
+    dataset: str = "all",
+    force: bool = False,
+    adapter: Any = None,
+) -> dict[str, Any]:
+    store = BrainStore(settings)
+    if object_id:
+        if object_type not in {"memory", "source"}:
+            raise ValueError("object_type must be memory or source when object_id is provided.")
+        _ensure_projection_row(
+            store,
+            settings,
+            object_type=object_type,
+            object_id=object_id,
+            force=force,
+        )
+        rows = store.list_cognee_sync(
+            statuses=("pending", "stale", "failed"),
+            object_type=object_type,
+            object_id=object_id,
+            limit=100,
+        )
+        results = [
+            sync_one(row["id"], settings=settings, store=store, adapter=adapter)
+            for row in rows
+            if row["status"] in {"pending", "stale"} or force
+        ]
+        return {
+            "status": "complete",
+            "processed": len(results),
+            "succeeded": len([result for result in results if result.get("status") == "synced"]),
+            "failed": len([result for result in results if result.get("status") == "failed"]),
+            "results": results,
+        }
+
+    if force:
+        rebuild_cognee_projection(
+            settings=settings,
+            store=store,
+            dataset=dataset,
+            confirm=True,
+            sync=False,
+        )
+    return sync_pending_cognee(settings=settings, store=store, adapter=adapter)
+
+
+def rebuild_cognee(
+    settings: Settings,
+    *,
+    dataset: str = "all",
+    prune_first: bool = False,
+    confirm: bool = False,
+    sync: bool = False,
+    adapter: Any = None,
+) -> dict[str, Any]:
+    return rebuild_cognee_projection(
+        settings=settings,
+        dataset=dataset,
+        prune_first=prune_first,
+        confirm=confirm,
+        sync=sync,
+        adapter=adapter,
+    )
+
+
+def merge_entities(
+    settings: Settings,
+    *,
+    primary_entity_id: str,
+    duplicate_entity_id: str,
+    reason: str | None = None,
+    confirm: bool = False,
+) -> dict[str, Any]:
+    if not confirm:
+        raise ValueError("brain.merge_entities requires confirm=true.")
+    store = BrainStore(settings)
+    result = store.merge_entities(
+        primary_entity_id=primary_entity_id,
+        duplicate_entity_id=duplicate_entity_id,
+        reason=reason,
+    )
+    for memory in store.list_memories_by_entity(primary_entity_id, include_superseded=True, limit=100_000):
+        store.mark_cognee_stale(object_type="memory", object_id=memory["id"])
+    return {"status": "merged", **result}
+
+
+def _ensure_projection_row(
+    store: BrainStore,
+    settings: Settings,
+    *,
+    object_type: str,
+    object_id: str,
+    force: bool,
+) -> None:
+    if object_type == "memory":
+        text = serialize_memory_for_cognee(object_id, store=store)
+        store.mark_cognee_pending(
+            object_type="memory",
+            object_id=object_id,
+            dataset=settings.brain_cognee_memory_dataset,
+            projection_hash=content_hash(text),
+        )
+    elif object_type == "source":
+        text = serialize_source_for_cognee(object_id, store=store)
+        store.mark_cognee_pending(
+            object_type="source",
+            object_id=object_id,
+            dataset=settings.brain_cognee_sources_dataset,
+            projection_hash=content_hash(text),
+        )
+    if force:
+        store.mark_cognee_stale(object_type=object_type, object_id=object_id)
