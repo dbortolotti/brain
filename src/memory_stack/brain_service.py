@@ -21,6 +21,7 @@ from memory_stack.recall.planner import extract_profile_name, infer_recall_mode
 from memory_stack.recall.profile_builder import build_profile_response
 from memory_stack.recall.retriever import retrieve_memories, retrieve_open_loops
 from memory_stack.recall.synthesizer import render_memory_answer, render_open_loops
+from memory_stack.resolution.entity_resolver import EntityResolver
 
 
 def remember(
@@ -93,6 +94,7 @@ def remember(
             classification=compiled.classification,
             source=SourceReceipt(created=source_created, source_id=source_id),
         )
+        entity_resolver = EntityResolver(store)
         entity_receipts: dict[str, dict[str, Any]] = {}
         for card in compiled.memory_cards:
             memory, memory_created = store.upsert_memory_card(
@@ -120,13 +122,14 @@ def remember(
             entity_map: dict[str, dict[str, Any]] = {}
             for mention in card.entities:
                 aliases = [mention.alias] if mention.alias else []
-                entity, entity_created = store.upsert_entity(
+                resolution = entity_resolver.resolve_entity(
                     entity_type=mention.type,
                     canonical_name=mention.name,
                     aliases=aliases,
                     confidence=mention.confidence,
                     metadata_json=mention.metadata,
                 )
+                entity = resolution.entity
                 entity_map[mention.name] = entity
                 if mention.alias:
                     entity_map[mention.alias] = entity
@@ -134,7 +137,7 @@ def remember(
                     "id": entity["id"],
                     "canonical_name": entity["canonical_name"],
                     "type": entity["type"],
-                    "created": entity_created,
+                    "created": resolution.created,
                 }
                 store.link_memory_entity(
                     memory_id=memory["id"],
@@ -147,15 +150,15 @@ def remember(
                 subject = entity_map.get(relationship.subject)
                 object_ = entity_map.get(relationship.object)
                 if subject is None:
-                    subject, _ = store.upsert_entity(
+                    subject = entity_resolver.resolve_entity(
                         entity_type="concept",
                         canonical_name=relationship.subject,
-                    )
+                    ).entity
                 if object_ is None:
-                    object_, _ = store.upsert_entity(
+                    object_ = entity_resolver.resolve_entity(
                         entity_type="concept",
                         canonical_name=relationship.object,
-                    )
+                    ).entity
                 rel, rel_created = store.create_relationship(
                     subject_entity_id=subject["id"],
                     predicate=relationship.predicate,

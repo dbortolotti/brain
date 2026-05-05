@@ -773,22 +773,22 @@ EntityResolution result:
 
 Tasks:
 
-  [ ] Extract entity resolution logic out of BrainStore.
-  [ ] Preserve exact/alias behaviour.
-  [ ] Add contextual matching for common patterns:
+  [x] Extract entity resolution logic out of BrainStore.
+  [x] Preserve exact/alias behaviour.
+  [x] Add contextual matching for common patterns:
         "Sam from Goldman"
         "Sam at Goldman Sachs"
         "Sam / Goldman"
-  [ ] Add alias candidate support if not already present.
-  [ ] Do not over-merge low-confidence entities.
+  [x] Add alias candidate support if not already present.
+  [x] Do not over-merge low-confidence entities.
 
 Tests:
 
-  [ ] "Sam from Goldman" then "Sam at Goldman" resolves same entity.
-  [ ] "Sam from Goldman" and "Sam from Point72" do not automatically merge
+  [x] "Sam from Goldman" then "Sam at Goldman" resolves same entity.
+  [x] "Sam from Goldman" and "Sam from Point72" do not automatically merge
       unless strong evidence exists.
-  [ ] Alias lookup works.
-  [ ] Low-confidence ambiguity is stored, not guessed.
+  [x] Alias lookup works.
+  [x] Low-confidence ambiguity is stored, not guessed.
 
 ================================================================================
 PHASE 7 — DUPLICATE AND CONFLICT DETECTION

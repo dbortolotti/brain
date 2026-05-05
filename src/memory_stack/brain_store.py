@@ -170,62 +170,103 @@ class BrainStore:
         confidence: str = "medium",
         metadata_json: dict[str, Any] | None = None,
     ) -> tuple[dict[str, Any], bool]:
-        normalized = normalize_name(canonical_name)
-        normalized_aliases = [normalize_name(alias) for alias in aliases or [] if alias.strip()]
+        from memory_stack.resolution.entity_resolver import EntityResolver
 
+        resolution = EntityResolver(self).resolve_entity(
+            entity_type=entity_type,
+            canonical_name=canonical_name,
+            aliases=aliases,
+            confidence=confidence,
+            metadata_json=metadata_json,
+        )
+        return resolution.entity, resolution.created
+
+    def find_entity_by_normalized_name(
+        self,
+        *,
+        entity_type: str,
+        normalized_name: str,
+    ) -> dict[str, Any] | None:
         with self.engine.begin() as conn:
             row = conn.execute(
                 select(schema.entities).where(
                     and_(
                         schema.entities.c.type == entity_type,
-                        schema.entities.c.normalized_name == normalized,
+                        schema.entities.c.normalized_name == normalized_name,
                     )
                 )
             ).first()
-            if row is None and normalized_aliases:
-                row = conn.execute(
-                    select(schema.entities)
-                    .join(
-                        schema.entity_aliases,
-                        schema.entity_aliases.c.entity_id == schema.entities.c.id,
-                    )
-                    .where(
-                        and_(
-                            schema.entities.c.type == entity_type,
-                            schema.entity_aliases.c.normalized_alias.in_(normalized_aliases),
-                        )
-                    )
-                ).first()
+        return row_dict(row) if row is not None else None
 
-            created = row is None
-            if row is None:
-                entity_id = stable_id("ent", entity_type, normalized)
+    def find_entities_by_alias(
+        self,
+        *,
+        entity_type: str,
+        normalized_alias: str,
+    ) -> list[dict[str, Any]]:
+        with self.engine.begin() as conn:
+            rows = conn.execute(
+                select(schema.entities)
+                .join(
+                    schema.entity_aliases,
+                    schema.entity_aliases.c.entity_id == schema.entities.c.id,
+                )
+                .where(
+                    and_(
+                        schema.entities.c.type == entity_type,
+                        schema.entity_aliases.c.normalized_alias == normalized_alias,
+                    )
+                )
+            ).fetchall()
+        return [row_dict(row) for row in rows]
+
+    def create_entity(
+        self,
+        *,
+        entity_type: str,
+        canonical_name: str,
+        normalized_name: str,
+        confidence: str = "medium",
+        metadata_json: dict[str, Any] | None = None,
+    ) -> tuple[dict[str, Any], bool]:
+        entity_id = stable_id("ent", entity_type, normalized_name)
+        with self.engine.begin() as conn:
+            try:
                 conn.execute(
                     insert(schema.entities).values(
                         id=entity_id,
                         type=entity_type,
                         canonical_name=canonical_name,
-                        normalized_name=normalized,
+                        normalized_name=normalized_name,
                         confidence=confidence,
                         status="current",
                         metadata_json=metadata_json or {},
                     )
                 )
-                row = conn.execute(
-                    select(schema.entities).where(schema.entities.c.id == entity_id)
-                ).one()
+                created = True
+            except IntegrityError:
+                created = False
+            row = conn.execute(
+                select(schema.entities).where(schema.entities.c.id == entity_id)
+            ).one()
+        return row_dict(row), created
 
-            entity = row_dict(row)
-            for alias in aliases or []:
-                self._insert_alias(
-                    conn,
-                    entity_id=entity["id"],
-                    alias=alias,
-                    source_memory_id=None,
-                    confidence=confidence,
-                )
-
-        return entity, created
+    def add_entity_alias(
+        self,
+        *,
+        entity_id: str,
+        alias: str,
+        source_memory_id: str | None = None,
+        confidence: str = "medium",
+    ) -> None:
+        with self.engine.begin() as conn:
+            self._insert_alias(
+                conn,
+                entity_id=entity_id,
+                alias=alias,
+                source_memory_id=source_memory_id,
+                confidence=confidence,
+            )
 
     def _insert_alias(
         self,
