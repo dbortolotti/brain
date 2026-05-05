@@ -13,14 +13,15 @@ from memory_stack.brain_models import RecallRequest, RememberRequest
 from memory_stack.brain_service import (
     forget as brain_forget,
     get_memory as brain_get_memory,
+    get_source as brain_get_source,
     list_open_loops as brain_list_open_loops,
     profile_entity as brain_profile_entity,
     recall as brain_recall,
     remember as brain_remember,
     resolve_conflict as brain_resolve_conflict,
 )
+from memory_stack.brain_store import BrainStore
 from memory_stack.cognee_adapter import (
-    SEARCH_TYPES,
     DatasourceNotFoundError,
     add_text,
     cognify_dataset,
@@ -31,6 +32,7 @@ from memory_stack.cognee_adapter import (
     remember_text,
 )
 from memory_stack.config import Settings, load_settings
+from memory_stack.io import to_jsonable
 from memory_stack.name_resolution import (
     load_node_set_registry,
     register_node_sets,
@@ -83,6 +85,272 @@ class ResolveConflictRequest(BaseModel):
     target_memory_id: str
     action: str
     note: str | None = None
+
+
+MEMORY_TOOL_NAMES = [
+    "brain.remember",
+    "brain.ingest_source",
+    "brain.recall",
+    "brain.profile_entity",
+    "brain.list_open_loops",
+    "brain.get_memory",
+    "brain.get_source",
+    "brain.resolve_conflict",
+    "brain.forget",
+]
+
+TOOL_ALIASES = {
+    "remember": "brain.remember",
+    "ingest_source": "brain.ingest_source",
+    "recall": "brain.recall",
+    "profile_entity": "brain.profile_entity",
+    "list_open_loops": "brain.list_open_loops",
+    "get_memory": "brain.get_memory",
+    "get_source": "brain.get_source",
+    "resolve_conflict": "brain.resolve_conflict",
+    "forget": "brain.forget",
+    "sync_cognee": "brain.sync_cognee",
+}
+
+INPUT_TYPES = [
+    "auto",
+    "note",
+    "fact",
+    "thought",
+    "person_interaction",
+    "open_question",
+    "research_question",
+    "chat_conclusion",
+    "table",
+]
+SOURCE_KINDS = [
+    "auto",
+    "article",
+    "transcript",
+    "markdown",
+    "pdf",
+    "email",
+    "table",
+    "chat_log",
+    "other",
+]
+RECALL_MODES = ["auto", "evidence", "profile", "open_loops", "sources", "memories", "debug"]
+ENTITY_TYPES = ["auto", "person", "organization", "place", "concept", "project", "artifact"]
+OPEN_LOOP_STATUSES = ["open", "parked", "in_progress", "closed", "archived", "any"]
+CONFLICT_ACTIONS = [
+    "supersede",
+    "keep_both",
+    "mark_duplicate",
+    "archive_old",
+    "reject_new",
+    "mark_contradiction",
+]
+FORGET_OBJECT_TYPES = ["memory", "source", "entity", "relationship", "open_loop"]
+
+
+def memory_tool_definitions() -> list[dict[str, Any]]:
+    return [
+        {
+            "name": "brain.remember",
+            "description": "Store a user-level memory, fact, thought, or short note in Brain.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "input": {"type": "string"},
+                    "input_type": {"type": "string", "enum": INPUT_TYPES, "default": "auto"},
+                    "observed_at": {"type": "string", "format": "date-time"},
+                    "source_policy": {
+                        "type": "string",
+                        "enum": ["auto", "memory_only", "source_only", "source_and_memory"],
+                        "default": "auto",
+                    },
+                    "dry_run": {"type": "boolean", "default": False},
+                    "context": {"type": "object", "additionalProperties": True},
+                },
+                "required": ["input"],
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain.ingest_source",
+            "description": "Store source material and optionally extract durable Brain memories.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "source": {"type": "string"},
+                    "source_kind": {"type": "string", "enum": SOURCE_KINDS, "default": "auto"},
+                    "title": {"type": "string"},
+                    "why_saved": {"type": "string"},
+                    "extract_memories": {"type": "boolean", "default": True},
+                    "dry_run": {"type": "boolean", "default": False},
+                    "metadata": {"type": "object", "additionalProperties": True},
+                },
+                "required": ["source"],
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain.recall",
+            "description": "Answer a user-level memory query with evidence.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string"},
+                    "mode": {"type": "string", "enum": RECALL_MODES, "default": "auto"},
+                    "include_sources": {"type": "boolean", "default": True},
+                    "include_superseded": {"type": "boolean", "default": False},
+                    "include_conflicts": {"type": "boolean", "default": True},
+                    "limit": {"type": "integer", "minimum": 1, "maximum": 100, "default": 20},
+                    "time_range": {
+                        "type": "object",
+                        "properties": {
+                            "from": {"type": "string", "format": "date-time"},
+                            "to": {"type": "string", "format": "date-time"},
+                        },
+                        "additionalProperties": False,
+                    },
+                },
+                "required": ["query"],
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain.profile_entity",
+            "description": "Build an entity-centric Brain profile.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "entity_type": {"type": "string", "enum": ENTITY_TYPES, "default": "auto"},
+                    "include_sources": {"type": "boolean", "default": True},
+                    "include_superseded": {"type": "boolean", "default": False},
+                    "include_conflicts": {"type": "boolean", "default": True},
+                    "limit": {"type": "integer", "minimum": 1, "maximum": 100, "default": 50},
+                },
+                "required": ["name"],
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain.list_open_loops",
+            "description": "List open questions, ideas, reminders, and parked research threads.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "topic": {"type": "string"},
+                    "status": {"type": "string", "enum": OPEN_LOOP_STATUSES, "default": "open"},
+                    "due_before": {"type": "string", "format": "date-time"},
+                    "include_recently_reminded": {"type": "boolean", "default": False},
+                    "limit": {"type": "integer", "minimum": 1, "maximum": 100, "default": 20},
+                },
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain.get_memory",
+            "description": "Read one Brain memory card by id.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "memory_id": {"type": "string"},
+                    "include_links": {"type": "boolean", "default": True},
+                    "include_entities": {"type": "boolean", "default": True},
+                    "include_source": {"type": "boolean", "default": True},
+                },
+                "required": ["memory_id"],
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain.get_source",
+            "description": "Read Brain source metadata and optionally truncated source text.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "source_id": {"type": "string"},
+                    "include_text": {"type": "boolean", "default": False},
+                    "max_chars": {"type": "integer", "minimum": 1000, "maximum": 100000, "default": 10000},
+                },
+                "required": ["source_id"],
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain.resolve_conflict",
+            "description": "Resolve a contradiction or duplicate between two Brain memories.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "conflict_memory_id": {"type": "string"},
+                    "target_memory_id": {"type": "string"},
+                    "action": {"type": "string", "enum": CONFLICT_ACTIONS},
+                    "note": {"type": "string"},
+                },
+                "required": ["conflict_memory_id", "target_memory_id", "action"],
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain.forget",
+            "description": "Soft delete a Brain object. Hard delete requires confirm=true.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "object_type": {"type": "string", "enum": FORGET_OBJECT_TYPES},
+                    "object_id": {"type": "string"},
+                    "hard": {"type": "boolean", "default": False},
+                    "reason": {"type": "string"},
+                    "confirm": {
+                        "type": "boolean",
+                        "default": False,
+                        "description": "Required true for hard deletes.",
+                    },
+                },
+                "required": ["object_type", "object_id"],
+                "additionalProperties": False,
+            },
+        },
+    ]
+
+
+def resource_definitions() -> list[dict[str, str]]:
+    return [
+        {
+            "uri": "brain://schema/memory-card",
+            "name": "Brain memory-card schema",
+            "mimeType": "application/json",
+        },
+        {
+            "uri": "brain://schema/source",
+            "name": "Brain source schema",
+            "mimeType": "application/json",
+        },
+        {
+            "uri": "brain://schema/entity",
+            "name": "Brain entity schema",
+            "mimeType": "application/json",
+        },
+    ]
+
+
+def resource_template_definitions() -> list[dict[str, str]]:
+    return [
+        {"uriTemplate": "brain://memory/{memory_id}", "name": "Brain memory", "mimeType": "application/json"},
+        {"uriTemplate": "brain://source/{source_id}", "name": "Brain source", "mimeType": "application/json"},
+        {"uriTemplate": "brain://entity/{entity_id}", "name": "Brain entity", "mimeType": "application/json"},
+        {"uriTemplate": "brain://open-loop/{loop_id}", "name": "Brain open loop", "mimeType": "application/json"},
+        {
+            "uriTemplate": "brain://ingestion-run/{run_id}",
+            "name": "Brain ingestion run",
+            "mimeType": "application/json",
+        },
+        {
+            "uriTemplate": "brain://debug/cognee-sync/{object_id}",
+            "name": "Brain Cognee sync debug record",
+            "mimeType": "application/json",
+        },
+        {"uriTemplate": "brain://schema/{schema_name}", "name": "Brain schema", "mimeType": "application/json"},
+    ]
 
 
 @app.exception_handler(HTTPException)
@@ -401,276 +669,17 @@ async def handle_json_rpc(payload: Any) -> Any:
         if method == "initialize":
             result = {
                 "protocolVersion": "2024-11-05",
-                "capabilities": {"tools": {}},
+                "capabilities": {"tools": {}, "resources": {}},
                 "serverInfo": {"name": "brain", "version": "0.1.0"},
             }
         elif method == "tools/list":
-            result = {
-                "tools": [
-                    {
-                        "name": "remember",
-                        "description": "Store durable memory in Brain. Legacy text+dataset_name calls still write directly to Cognee.",
-                        "inputSchema": {
-                            "type": "object",
-                            "properties": {
-                                "input": {"type": "string"},
-                                "input_type": {
-                                    "type": "string",
-                                    "default": "auto",
-                                    "description": "auto, note, fact, thought, article_url, transcript, chat_summary, or table.",
-                                },
-                                "observed_at": {"type": "string", "format": "date-time"},
-                                "source_policy": {
-                                    "type": "string",
-                                    "default": "auto",
-                                    "enum": ["auto", "memory_only", "source_only", "source_and_memory"],
-                                },
-                                "dry_run": {"type": "boolean", "default": False},
-                                "context": {"type": "object"},
-                                "text": {"type": "string"},
-                                "dataset_name": {"type": "string"},
-                                "temporal": {"type": "boolean", "default": True},
-                                "node_set": {
-                                    "type": "array",
-                                    "items": {"type": "string"},
-                                    "description": "Optional Cognee node-set tags for this item.",
-                                },
-                            },
-                            "anyOf": [
-                                {"required": ["input"]},
-                                {"required": ["text", "dataset_name"]},
-                            ],
-                        },
-                    },
-                    {
-                        "name": "ingest_source",
-                        "description": "Store source material and extract durable Brain memory cards.",
-                        "inputSchema": {
-                            "type": "object",
-                            "properties": {
-                                "input": {"type": "string"},
-                                "input_type": {"type": "string", "default": "auto"},
-                                "observed_at": {"type": "string", "format": "date-time"},
-                                "context": {"type": "object"},
-                                "dry_run": {"type": "boolean", "default": False},
-                            },
-                            "required": ["input"],
-                        },
-                    },
-                    {
-                        "name": "add",
-                        "description": "Add text to a Cognee dataset without cognifying it.",
-                        "inputSchema": {
-                            "type": "object",
-                            "properties": {
-                                "text": {"type": "string"},
-                                "dataset_name": {"type": "string"},
-                                "node_set": {
-                                    "type": "array",
-                                    "items": {"type": "string"},
-                                    "description": "Optional Cognee node-set tags for this item.",
-                                },
-                            },
-                            "required": ["text", "dataset_name"],
-                        },
-                    },
-                    {
-                        "name": "cognify",
-                        "description": "Cognify a Cognee dataset after one or more add calls.",
-                        "inputSchema": {
-                            "type": "object",
-                            "properties": {
-                                "dataset_name": {"type": "string"},
-                                "temporal": {"type": "boolean", "default": True},
-                            },
-                            "required": ["dataset_name"],
-                        },
-                    },
-                    {
-                        "name": "recall",
-                        "description": "Recall from Brain memory. Legacy dataset/search_type calls still query Cognee directly.",
-                        "inputSchema": {
-                            "type": "object",
-                            "properties": {
-                                "query": {"type": "string"},
-                                "mode": {
-                                    "type": "string",
-                                    "default": "auto",
-                                    "enum": ["auto", "evidence", "profile", "open_loops", "sources", "memories"],
-                                },
-                                "include_sources": {"type": "boolean", "default": True},
-                                "include_superseded": {"type": "boolean", "default": False},
-                                "limit": {"type": "integer", "default": 20},
-                                "dataset": {
-                                    "type": "string",
-                                    "default": "property_trial",
-                                    "description": "Dataset to search. Use an empty string to search all accessible datasets.",
-                                },
-                                "search_type": {
-                                    "type": "string",
-                                    "enum": SEARCH_TYPES,
-                                    "default": "TEMPORAL",
-                                },
-                                "top_k": {"type": "integer", "default": 10},
-                                "node_name": {
-                                    "type": "array",
-                                    "items": {"type": "string"},
-                                    "description": "Optional Cognee node-set names to scope supported graph search types.",
-                                },
-                                "node_name_filter_operator": {
-                                    "type": "string",
-                                    "enum": ["OR", "AND"],
-                                    "default": "OR",
-                                },
-                            },
-                            "required": ["query"],
-                        },
-                    },
-                    {
-                        "name": "profile_entity",
-                        "description": "Build an evidence-aware profile for a Brain entity.",
-                        "inputSchema": {
-                            "type": "object",
-                            "properties": {
-                                "name": {"type": "string"},
-                                "entity_type": {"type": "string"},
-                                "include_superseded": {"type": "boolean", "default": False},
-                                "include_sources": {"type": "boolean", "default": True},
-                            },
-                            "required": ["name"],
-                        },
-                    },
-                    {
-                        "name": "list_open_loops",
-                        "description": "List Brain open questions and reminder-worthy memory loops.",
-                        "inputSchema": {
-                            "type": "object",
-                            "properties": {
-                                "topic": {"type": "string"},
-                                "status": {"type": "string", "default": "open"},
-                                "limit": {"type": "integer", "default": 20},
-                            },
-                        },
-                    },
-                    {
-                        "name": "get_memory",
-                        "description": "Fetch one Brain memory card with entities, relationships, and links.",
-                        "inputSchema": {
-                            "type": "object",
-                            "properties": {"memory_id": {"type": "string"}},
-                            "required": ["memory_id"],
-                        },
-                    },
-                    {
-                        "name": "resolve_conflict",
-                        "description": "Resolve a Brain memory conflict with append-only links.",
-                        "inputSchema": {
-                            "type": "object",
-                            "properties": {
-                                "conflict_memory_id": {"type": "string"},
-                                "target_memory_id": {"type": "string"},
-                                "action": {
-                                    "type": "string",
-                                    "enum": [
-                                        "supersede",
-                                        "keep_both",
-                                        "mark_duplicate",
-                                        "archive_old",
-                                        "reject_new",
-                                    ],
-                                },
-                                "note": {"type": "string"},
-                            },
-                            "required": ["conflict_memory_id", "target_memory_id", "action"],
-                        },
-                    },
-                    {
-                        "name": "forget",
-                        "description": "Soft-delete a Brain object. Hard delete is intentionally blocked here.",
-                        "inputSchema": {
-                            "type": "object",
-                            "properties": {
-                                "object_type": {"type": "string", "enum": ["memory", "source", "entity"]},
-                                "object_id": {"type": "string"},
-                                "hard": {"type": "boolean", "default": False},
-                                "reason": {"type": "string"},
-                            },
-                            "required": ["object_type", "object_id"],
-                        },
-                    },
-                    {
-                        "name": "sync_cognee",
-                        "description": "Placeholder for Brain-to-Cognee projection jobs.",
-                        "inputSchema": {
-                            "type": "object",
-                            "properties": {
-                                "dataset": {"type": "string", "default": "memory"},
-                                "limit": {"type": "integer", "default": 100},
-                            },
-                        },
-                    },
-                    {
-                        "name": "list_datasources",
-                        "description": "List Cognee datasources.",
-                        "inputSchema": {
-                            "type": "object",
-                            "properties": {},
-                        },
-                    },
-                    {
-                        "name": "list_node_sets",
-                        "description": "List known Brain node-set tags.",
-                        "inputSchema": {
-                            "type": "object",
-                            "properties": {},
-                        },
-                    },
-                    {
-                        "name": "create_datasource",
-                        "description": "Create a Cognee datasource.",
-                        "inputSchema": {
-                            "type": "object",
-                            "properties": {
-                                "name": {"type": "string"},
-                            },
-                            "required": ["name"],
-                        },
-                    },
-                    {
-                        "name": "create_dataset",
-                        "description": "Alias for create_datasource.",
-                        "inputSchema": {
-                            "type": "object",
-                            "properties": {
-                                "name": {"type": "string"},
-                            },
-                            "required": ["name"],
-                        },
-                    },
-                    {
-                        "name": "create_node_set",
-                        "description": "Register a Brain node-set tag for future writes and scoped recall.",
-                        "inputSchema": {
-                            "type": "object",
-                            "properties": {
-                                "name": {"type": "string"},
-                            },
-                            "required": ["name"],
-                        },
-                    },
-                    {
-                        "name": "delete_datasource",
-                        "description": "Delete a Cognee datasource by name or id.",
-                        "inputSchema": {
-                            "type": "object",
-                            "properties": {
-                                "name": {"type": "string"},
-                                "id": {"type": "string"},
-                            },
-                        },
-                    },
-                ]
-            }
+            result = {"tools": memory_tool_definitions()}
+        elif method == "resources/list":
+            result = {"resources": resource_definitions()}
+        elif method == "resources/templates/list":
+            result = {"resourceTemplates": resource_template_definitions()}
+        elif method == "resources/read":
+            result = read_resource(str(params.get("uri", "")))
         elif method == "tools/call":
             result = await call_tool(params)
         elif method and method.startswith("notifications/"):
@@ -684,54 +693,98 @@ async def handle_json_rpc(payload: Any) -> Any:
 
 
 async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
-    name = params.get("name")
+    raw_name = str(params.get("name") or "")
+    name = TOOL_ALIASES.get(raw_name, raw_name)
     arguments = params.get("arguments") or {}
-    if name == "remember":
-        if "input" in arguments or "dataset_name" not in arguments:
-            request = RememberRequest.model_validate(
-                {
-                    "input": arguments.get("input", arguments.get("text", "")),
-                    "input_type": arguments.get("input_type", "auto"),
-                    "observed_at": arguments.get("observed_at"),
-                    "source_policy": arguments.get("source_policy", "auto"),
-                    "dry_run": bool(arguments.get("dry_run", False)),
-                    "context": arguments.get("context") or {},
-                }
+    if name == "brain.remember":
+        if raw_name == "remember" and "dataset_name" in arguments and "input" not in arguments:
+            text = str(arguments["text"])
+            dataset_name = await resolve_dataset_name(
+                str(arguments["dataset_name"]),
+                settings=settings,
             )
-            return json_tool_response(brain_remember(request, settings).model_dump(mode="json"))
+            temporal = bool(arguments.get("temporal", True))
+            node_set = resolve_node_set_names(
+                arguments.get("node_set"),
+                settings=settings,
+                for_write=True,
+            )
+            await remember_text(
+                text,
+                dataset_name=dataset_name,
+                temporal=temporal,
+                node_set=node_set,
+                settings=settings,
+            )
+            return json_tool_response(
+                {"status": "remembered"},
+                summary="Remembered legacy Cognee text.",
+            )
 
-        text = str(arguments["text"])
-        dataset_name = await resolve_dataset_name(
-            str(arguments["dataset_name"]),
-            settings=settings,
-        )
-        temporal = bool(arguments.get("temporal", True))
-        node_set = resolve_node_set_names(
-            arguments.get("node_set"),
-            settings=settings,
-            for_write=True,
-        )
-        await remember_text(
-            text,
-            dataset_name=dataset_name,
-            temporal=temporal,
-            node_set=node_set,
-            settings=settings,
-        )
-        return {"content": [{"type": "text", "text": "remembered"}]}
-
-    if name == "ingest_source":
         request = RememberRequest.model_validate(
             {
-                "input": arguments["input"],
+                "input": arguments.get("input", arguments.get("text", "")),
                 "input_type": arguments.get("input_type", "auto"),
                 "observed_at": arguments.get("observed_at"),
-                "source_policy": "source_and_memory",
+                "source_policy": arguments.get("source_policy", "auto"),
                 "dry_run": bool(arguments.get("dry_run", False)),
                 "context": arguments.get("context") or {},
             }
         )
-        return json_tool_response(brain_remember(request, settings).model_dump(mode="json"))
+        payload = brain_remember(request, settings).model_dump(mode="json")
+        return json_tool_response(payload, summary=remember_summary(payload))
+
+    if name == "brain.ingest_source":
+        if "source" in arguments:
+            request = RememberRequest.model_validate(
+                {
+                    "input": arguments["source"],
+                    "input_type": input_type_for_source_kind(
+                        str(arguments.get("source_kind", "auto")),
+                        str(arguments["source"]),
+                    ),
+                    "source_policy": (
+                        "source_and_memory"
+                        if bool(arguments.get("extract_memories", True))
+                        else "source_only"
+                    ),
+                    "dry_run": bool(arguments.get("dry_run", False)),
+                    "context": {
+                        "title": arguments.get("title"),
+                        "why_saved": arguments.get("why_saved"),
+                        "metadata": arguments.get("metadata") or {},
+                        "source_kind": arguments.get("source_kind", "auto"),
+                    },
+                }
+            )
+        else:
+            request = RememberRequest.model_validate(
+                {
+                    "input": arguments["input"],
+                    "input_type": arguments.get("input_type", "auto"),
+                    "observed_at": arguments.get("observed_at"),
+                    "source_policy": "source_and_memory",
+                    "dry_run": bool(arguments.get("dry_run", False)),
+                    "context": arguments.get("context") or {},
+                }
+            )
+        receipt = brain_remember(request, settings).model_dump(mode="json")
+        payload = {
+            "source_id": receipt.get("source", {}).get("source_id"),
+            "status": "processed",
+            "memory_cards_created": [
+                card["id"] for card in receipt.get("memory_cards", []) if card.get("created")
+            ],
+            "summary": source_summary_from_request(arguments),
+            "cognee_sync_status": receipt.get("cognee_sync_status", "pending"),
+            "ingestion": receipt,
+        }
+        return json_tool_response(
+            payload,
+            summary=(
+                f"Ingested source and created {len(payload['memory_cards_created'])} memories."
+            ),
+        )
 
     if name == "add":
         dataset_name = await resolve_dataset_name(
@@ -763,8 +816,8 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
         )
         return {"content": [{"type": "text", "text": "cognified"}]}
 
-    if name == "recall":
-        legacy_recall = any(
+    if name == "brain.recall":
+        legacy_recall = raw_name == "recall" and any(
             key in arguments
             for key in ("dataset", "search_type", "node_name", "node_name_filter_operator")
         ) and not any(
@@ -781,7 +834,8 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
                     "limit": int(arguments.get("limit", arguments.get("top_k", 20))),
                 }
             )
-            return json_tool_response(brain_recall(request, settings).model_dump(mode="json"))
+            payload = brain_recall(request, settings).model_dump(mode="json")
+            return json_tool_response(payload, summary=payload.get("answer", "Recall complete."))
 
         raw_dataset = str(arguments.get("dataset", "property_trial")).strip()
         dataset = (
@@ -806,57 +860,87 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
             node_name_filter_operator=str(arguments.get("node_name_filter_operator", "OR")),
             settings=settings,
         )
-        return {"content": [{"type": "text", "text": str(result)}]}
+        return json_tool_response({"result": result}, summary="Legacy Cognee recall complete.")
 
-    if name == "profile_entity":
-        return json_tool_response(
-            brain_profile_entity(
+    if name == "brain.profile_entity":
+        entity_type = arguments.get("entity_type")
+        if entity_type == "auto":
+            entity_type = None
+        payload = brain_profile_entity(
+            settings,
+            name=str(arguments["name"]),
+            entity_type=entity_type,
+            include_superseded=bool(arguments.get("include_superseded", False)),
+        ).model_dump(mode="json")
+        return json_tool_response(payload, summary=payload.get("answer", "Profile complete."))
+
+    if name == "brain.list_open_loops":
+        payload = {
+            "open_loops": brain_list_open_loops(
                 settings,
-                name=str(arguments["name"]),
-                entity_type=arguments.get("entity_type"),
-                include_superseded=bool(arguments.get("include_superseded", False)),
-            ).model_dump(mode="json")
-        )
-
-    if name == "list_open_loops":
+                topic=arguments.get("topic"),
+                status=str(arguments.get("status", "open")),
+                limit=int(arguments.get("limit", 20)),
+            )
+        }
         return json_tool_response(
-            {
-                "open_loops": brain_list_open_loops(
-                    settings,
-                    topic=arguments.get("topic"),
-                    status=str(arguments.get("status", "open")),
-                    limit=int(arguments.get("limit", 20)),
-                )
-            }
+            payload,
+            summary=f"Found {len(payload['open_loops'])} open loops.",
         )
 
-    if name == "get_memory":
+    if name == "brain.get_memory":
         memory = brain_get_memory(str(arguments["memory_id"]), settings)
-        return json_tool_response({"memory": memory})
-
-    if name == "resolve_conflict":
         return json_tool_response(
-            brain_resolve_conflict(
-                settings,
-                conflict_memory_id=str(arguments["conflict_memory_id"]),
-                target_memory_id=str(arguments["target_memory_id"]),
-                action=str(arguments["action"]),
-                note=arguments.get("note"),
-            )
+            {"memory": memory},
+            summary="Memory found." if memory else "Memory not found.",
         )
 
-    if name == "forget":
+    if name == "brain.get_source":
+        max_chars = bounded_int(arguments.get("max_chars", 10_000), minimum=1_000, maximum=100_000)
+        source = brain_get_source(
+            str(arguments["source_id"]),
+            settings,
+            include_text=bool(arguments.get("include_text", False)),
+            max_chars=max_chars,
+        )
+        payload = {
+            "source": source_without_text(source),
+            "text": source.get("text") if source and "text" in source else None,
+        }
         return json_tool_response(
-            brain_forget(
-                settings,
-                object_type=str(arguments["object_type"]),
-                object_id=str(arguments["object_id"]),
-                hard=bool(arguments.get("hard", False)),
-                reason=arguments.get("reason"),
-            )
+            payload,
+            summary="Source found." if source else "Source not found.",
         )
 
-    if name == "sync_cognee":
+    if name == "brain.resolve_conflict":
+        payload = brain_resolve_conflict(
+            settings,
+            conflict_memory_id=str(arguments["conflict_memory_id"]),
+            target_memory_id=str(arguments["target_memory_id"]),
+            action=str(arguments["action"]),
+            note=arguments.get("note"),
+        )
+        return json_tool_response(
+            normalize_conflict_resolution(payload),
+            summary=f"Conflict action applied: {payload.get('action')}.",
+        )
+
+    if name == "brain.forget":
+        hard = bool(arguments.get("hard", False))
+        if hard and not bool(arguments.get("confirm", False)):
+            raise ValueError("brain.forget requires confirm=true for hard deletes.")
+        payload = brain_forget(
+            settings,
+            object_type=str(arguments["object_type"]),
+            object_id=str(arguments["object_id"]),
+            hard=hard,
+            reason=arguments.get("reason"),
+        )
+        mode = "hard" if hard else "soft"
+        payload = {**payload, "mode": mode, "cognee_sync_status": "stale"}
+        return json_tool_response(payload, summary=f"{mode.title()} delete result: {payload['status']}.")
+
+    if name == "brain.sync_cognee":
         return json_tool_response(
             {
                 "status": "not_implemented",
@@ -887,11 +971,135 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
             {"datasource": await delete_cognee_datasource(str(datasource), settings=settings)}
         )
 
-    raise ValueError(f"Unknown tool: {name}")
+    raise ValueError(f"Unknown tool: {raw_name}")
 
 
-def json_tool_response(payload: Any) -> dict[str, Any]:
-    return {"content": [{"type": "text", "text": json.dumps(payload, default=str)}]}
+def input_type_for_source_kind(source_kind: str, source: str) -> str:
+    normalized = source_kind.strip().lower()
+    if normalized == "auto":
+        if source.startswith(("http://", "https://")):
+            return "article_url"
+        return "source_text"
+    mapping = {
+        "article": "article_url" if source.startswith(("http://", "https://")) else "article",
+        "transcript": "transcript",
+        "markdown": "markdown",
+        "table": "table",
+        "chat_log": "transcript",
+        "pdf": "source_text",
+        "email": "source_text",
+        "other": "source_text",
+    }
+    return mapping.get(normalized, "source_text")
+
+
+def source_summary_from_request(arguments: dict[str, Any]) -> str | None:
+    for key in ("title", "why_saved", "source", "input"):
+        value = arguments.get(key)
+        if value:
+            return str(value)[:500]
+    return None
+
+
+def remember_summary(payload: dict[str, Any]) -> str:
+    memory_count = len(payload.get("memory_cards", []))
+    entity_count = len(payload.get("entities", []))
+    conflict_count = len(payload.get("conflicts", []))
+    return (
+        f"Stored {memory_count} memories and created or matched {entity_count} entities. "
+        f"{conflict_count} conflicts detected."
+    )
+
+
+def bounded_int(value: Any, *, minimum: int, maximum: int) -> int:
+    return max(minimum, min(maximum, int(value)))
+
+
+def source_without_text(source: dict[str, Any] | None) -> dict[str, Any] | None:
+    if source is None:
+        return None
+    return {key: value for key, value in source.items() if key != "text"}
+
+
+def normalize_conflict_resolution(payload: dict[str, Any]) -> dict[str, Any]:
+    normalized = {
+        "status": "resolved",
+        "action": payload.get("action"),
+        "created_links": [],
+        "updated_memories": [],
+        **payload,
+    }
+    link = payload.get("link")
+    if link:
+        normalized["created_links"] = [
+            {
+                "from_memory_id": link.get("from_memory_id"),
+                "relation": link.get("relation"),
+                "to_memory_id": link.get("to_memory_id"),
+            }
+        ]
+    return normalized
+
+
+def read_resource(uri: str) -> dict[str, Any]:
+    payload = resource_payload(uri)
+    if payload is None:
+        raise ValueError(f"Unknown Brain resource: {uri}")
+    return {
+        "contents": [
+            {
+                "uri": uri,
+                "mimeType": "application/json",
+                "text": json.dumps(payload, default=str),
+            }
+        ]
+    }
+
+
+def resource_payload(uri: str) -> Any:
+    store = BrainStore(settings)
+    if uri == "brain://schema/memory-card":
+        return {"schema": "memory-card", "fields": list(schema_field_names("memory_cards"))}
+    if uri == "brain://schema/source":
+        return {"schema": "source", "fields": list(schema_field_names("sources"))}
+    if uri == "brain://schema/entity":
+        return {"schema": "entity", "fields": list(schema_field_names("entities"))}
+    prefix_handlers = {
+        "brain://memory/": store.get_memory,
+        "brain://entity/": store.get_entity,
+        "brain://open-loop/": store.get_open_loop,
+        "brain://ingestion-run/": store.get_ingestion_run,
+        "brain://debug/cognee-sync/": store.get_cognee_sync,
+    }
+    for prefix, handler in prefix_handlers.items():
+        if uri.startswith(prefix):
+            return handler(uri.removeprefix(prefix))
+    if uri.startswith("brain://source/"):
+        return store.get_source(uri.removeprefix("brain://source/"), include_text=False)
+    if uri.startswith("brain://schema/"):
+        schema_name = uri.removeprefix("brain://schema/")
+        return {"schema": schema_name, "error": "unknown schema"}
+    return None
+
+
+def schema_field_names(name: str) -> list[str]:
+    from memory_stack import brain_schema
+
+    table = getattr(brain_schema, name)
+    return [column.name for column in table.columns]
+
+
+def json_tool_response(payload: Any, *, summary: str | None = None) -> dict[str, Any]:
+    structured = to_jsonable(payload)
+    json_text = json.dumps(structured, default=str)
+    return {
+        "content": [
+            {"type": "text", "text": summary or "Brain tool call complete."},
+            {"type": "text", "text": json_text},
+        ],
+        "structuredContent": structured,
+        "isError": False,
+    }
 
 
 def json_rpc_error(request_id: Any, code: int, message: str) -> dict[str, Any]:

@@ -38,7 +38,25 @@ def test_datasource_tools_are_listed() -> None:
 
     assert response.status_code == 200
     tool_names = {tool["name"] for tool in response.json()["result"]["tools"]}
-    assert {"list_datasources", "create_datasource", "delete_datasource"} <= tool_names
+    assert {
+        "brain.remember",
+        "brain.ingest_source",
+        "brain.recall",
+        "brain.profile_entity",
+        "brain.list_open_loops",
+        "brain.get_memory",
+        "brain.get_source",
+        "brain.resolve_conflict",
+        "brain.forget",
+    } == tool_names
+    assert {
+        "add",
+        "cognify",
+        "list_datasources",
+        "create_datasource",
+        "delete_datasource",
+        "create_node_set",
+    }.isdisjoint(tool_names)
 
 
 def test_memory_tools_expose_node_set_and_search_options() -> None:
@@ -47,30 +65,86 @@ def test_memory_tools_expose_node_set_and_search_options() -> None:
 
     assert response.status_code == 200
     tools = {tool["name"]: tool for tool in response.json()["result"]["tools"]}
-    assert {"remember", "recall", "add", "cognify"} <= set(tools)
     assert {
-        "ingest_source",
-        "profile_entity",
-        "list_open_loops",
-        "get_memory",
-        "resolve_conflict",
-        "forget",
-        "sync_cognee",
+        "brain.remember",
+        "brain.recall",
+        "brain.profile_entity",
+        "brain.list_open_loops",
+        "brain.get_memory",
+        "brain.get_source",
+        "brain.resolve_conflict",
+        "brain.forget",
     } <= set(tools)
 
-    remember_properties = tools["remember"]["inputSchema"]["properties"]
+    remember_properties = tools["brain.remember"]["inputSchema"]["properties"]
     assert "input" in remember_properties
-    assert "node_set" in remember_properties
+    assert "dataset_name" not in remember_properties
+    assert "node_set" not in remember_properties
 
-    add_properties = tools["add"]["inputSchema"]["properties"]
-    assert "node_set" in add_properties
+    recall_properties = tools["brain.recall"]["inputSchema"]["properties"]
+    assert recall_properties["mode"]["enum"] == [
+        "auto",
+        "evidence",
+        "profile",
+        "open_loops",
+        "sources",
+        "memories",
+        "debug",
+    ]
+    assert "dataset" not in recall_properties
+    assert "search_type" not in recall_properties
+    assert "node_name" not in recall_properties
 
-    recall_properties = tools["recall"]["inputSchema"]["properties"]
-    assert "TEMPORAL" in recall_properties["search_type"]["enum"]
-    assert "GRAPH_COMPLETION" in recall_properties["search_type"]["enum"]
-    assert "node_name" in recall_properties
-    assert recall_properties["node_name_filter_operator"]["enum"] == ["OR", "AND"]
-    assert {"create_dataset", "list_node_sets", "create_node_set"} <= set(tools)
+    forget_properties = tools["brain.forget"]["inputSchema"]["properties"]
+    assert forget_properties["object_type"]["enum"] == [
+        "memory",
+        "source",
+        "entity",
+        "relationship",
+        "open_loop",
+    ]
+    assert "confirm" in forget_properties
+
+
+def test_mcp_resources_are_listed_and_schema_can_be_read() -> None:
+    client = TestClient(app)
+    list_response = client.post(
+        "/mcp",
+        json={"jsonrpc": "2.0", "id": 1, "method": "resources/list"},
+    )
+    templates_response = client.post(
+        "/mcp",
+        json={"jsonrpc": "2.0", "id": 2, "method": "resources/templates/list"},
+    )
+    read_response = client.post(
+        "/mcp",
+        json={
+            "jsonrpc": "2.0",
+            "id": 3,
+            "method": "resources/read",
+            "params": {"uri": "brain://schema/memory-card"},
+        },
+    )
+
+    assert list_response.status_code == 200
+    assert {
+        resource["uri"] for resource in list_response.json()["result"]["resources"]
+    } == {
+        "brain://schema/memory-card",
+        "brain://schema/source",
+        "brain://schema/entity",
+    }
+    assert templates_response.status_code == 200
+    template_uris = {
+        template["uriTemplate"]
+        for template in templates_response.json()["result"]["resourceTemplates"]
+    }
+    assert "brain://memory/{memory_id}" in template_uris
+    assert "brain://source/{source_id}" in template_uris
+    assert read_response.status_code == 200
+    content = read_response.json()["result"]["contents"][0]
+    assert content["uri"] == "brain://schema/memory-card"
+    assert json.loads(content["text"])["schema"] == "memory-card"
 
 
 def test_high_level_brain_remember_and_recall_mcp_tools(tmp_path) -> None:
@@ -85,7 +159,7 @@ def test_high_level_brain_remember_and_recall_mcp_tools(tmp_path) -> None:
                 "id": 1,
                 "method": "tools/call",
                 "params": {
-                    "name": "remember",
+                    "name": "brain.remember",
                     "arguments": {
                         "input": "Sam from Goldman mentioned that he likes Bill Evans.",
                     },
@@ -99,7 +173,7 @@ def test_high_level_brain_remember_and_recall_mcp_tools(tmp_path) -> None:
                 "id": 2,
                 "method": "tools/call",
                 "params": {
-                    "name": "recall",
+                    "name": "brain.recall",
                     "arguments": {
                         "query": "Tell me everything about Sam from Goldman",
                         "mode": "profile",
@@ -111,14 +185,65 @@ def test_high_level_brain_remember_and_recall_mcp_tools(tmp_path) -> None:
         mcp_server.settings = previous_settings
 
     assert remember_response.status_code == 200
-    remember_payload = json.loads(remember_response.json()["result"]["content"][0]["text"])
+    remember_result = remember_response.json()["result"]
+    remember_payload = remember_result["structuredContent"]
+    assert "Stored 1 memories" in remember_result["content"][0]["text"]
     assert remember_payload["classification"] == "person_interaction"
     assert remember_payload["memory_cards"][0]["kind"] == "person_interaction"
 
     assert recall_response.status_code == 200
-    recall_payload = json.loads(recall_response.json()["result"]["content"][0]["text"])
+    recall_result = recall_response.json()["result"]
+    recall_payload = recall_result["structuredContent"]
+    assert json.loads(recall_result["content"][1]["text"]) == recall_payload
     assert "likes Bill Evans" in recall_payload["answer"]
     assert recall_payload["facts"][0]["kind"] == "person_interaction"
+
+
+def test_brain_ingest_source_and_get_source_mcp_tools(tmp_path) -> None:
+    previous_settings = mcp_server.settings
+    mcp_server.settings = Settings(brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}")
+    try:
+        client = TestClient(app)
+        ingest_response = client.post(
+            "/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "tools/call",
+                "params": {
+                    "name": "brain.ingest_source",
+                    "arguments": {
+                        "source": "# Source\nKnowledge graphs matter for Brain.",
+                        "source_kind": "markdown",
+                        "title": "Knowledge graph note",
+                    },
+                },
+            },
+        )
+        ingest_payload = ingest_response.json()["result"]["structuredContent"]
+        source_id = ingest_payload["source_id"]
+        source_response = client.post(
+            "/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 2,
+                "method": "tools/call",
+                "params": {
+                    "name": "brain.get_source",
+                    "arguments": {"source_id": source_id, "include_text": True},
+                },
+            },
+        )
+    finally:
+        mcp_server.settings = previous_settings
+
+    assert ingest_response.status_code == 200
+    assert ingest_payload["memory_cards_created"]
+    assert source_response.status_code == 200
+    source_payload = source_response.json()["result"]["structuredContent"]
+    assert source_payload["source"]["id"] == source_id
+    assert source_payload["source"]["kind"] == "markdown"
+    assert "Knowledge graphs matter" in source_payload["text"]
 
 
 def test_list_datasources_http_endpoint(monkeypatch) -> None:
@@ -182,8 +307,7 @@ def test_list_datasources_mcp_tool(monkeypatch) -> None:
     )
 
     assert response.status_code == 200
-    content = response.json()["result"]["content"][0]
-    assert json.loads(content["text"]) == {
+    assert response.json()["result"]["structuredContent"] == {
         "datasources": [{"id": "datasource-1", "name": "property_trial"}]
     }
 
@@ -235,7 +359,7 @@ def test_remember_mcp_tool_passes_node_set(monkeypatch) -> None:
     )
 
     assert response.status_code == 200
-    assert response.json()["result"]["content"][0]["text"] == "remembered"
+    assert response.json()["result"]["structuredContent"] == {"status": "remembered"}
     assert captured["text"] == "decision text"
     assert captured["dataset_name"] == "daily-log"
     assert captured["temporal"] is False
@@ -382,7 +506,7 @@ def test_recall_mcp_tool_passes_search_and_node_filters(monkeypatch) -> None:
     )
 
     assert response.status_code == 200
-    assert response.json()["result"]["content"][0]["text"] == "['matched']"
+    assert response.json()["result"]["structuredContent"] == {"result": ["matched"]}
     assert captured == {
         "query": "What happened?",
         "dataset": "daily-log",
@@ -449,7 +573,7 @@ def test_create_dataset_alias_creates_datasource(monkeypatch) -> None:
     )
 
     assert response.status_code == 200
-    assert json.loads(response.json()["result"]["content"][0]["text"]) == {
+    assert response.json()["result"]["structuredContent"] == {
         "datasource": {"id": "dataset-1", "name": "my_health"}
     }
 
@@ -490,11 +614,11 @@ def test_node_set_registry_tools(monkeypatch) -> None:
     )
 
     assert create_response.status_code == 200
-    assert json.loads(create_response.json()["result"]["content"][0]["text"]) == {
+    assert create_response.json()["result"]["structuredContent"] == {
         "node_set": "my-health"
     }
     assert captured["node_sets"] == ["my-health"]
-    assert json.loads(list_response.json()["result"]["content"][0]["text"]) == {
+    assert list_response.json()["result"]["structuredContent"] == {
         "node_sets": ["decision", "health"]
     }
 

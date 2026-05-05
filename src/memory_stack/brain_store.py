@@ -442,6 +442,65 @@ class BrainStore:
             payload["links"] = self._memory_links(conn, memory_id)
             return payload
 
+    def get_source(
+        self,
+        source_id: str,
+        *,
+        include_text: bool = False,
+        max_chars: int = 10_000,
+    ) -> dict[str, Any] | None:
+        with self.engine.begin() as conn:
+            row = conn.execute(
+                select(schema.sources).where(schema.sources.c.id == source_id)
+            ).first()
+        if row is None:
+            return None
+
+        source = row_dict(row)
+        raw_text = source.pop("raw_text", None)
+        if include_text:
+            source["text"] = (raw_text or "")[:max_chars]
+        return source
+
+    def get_entity(self, entity_id: str) -> dict[str, Any] | None:
+        with self.engine.begin() as conn:
+            row = conn.execute(
+                select(schema.entities).where(schema.entities.c.id == entity_id)
+            ).first()
+            if row is None:
+                return None
+            aliases = conn.execute(
+                select(schema.entity_aliases).where(
+                    schema.entity_aliases.c.entity_id == entity_id
+                )
+            ).fetchall()
+        return {**row_dict(row), "aliases": [row_dict(alias) for alias in aliases]}
+
+    def get_open_loop(self, loop_id: str) -> dict[str, Any] | None:
+        with self.engine.begin() as conn:
+            row = conn.execute(
+                select(schema.open_loops, schema.memory_cards.c.statement)
+                .join(schema.memory_cards, schema.memory_cards.c.id == schema.open_loops.c.memory_id)
+                .where(schema.open_loops.c.id == loop_id)
+            ).first()
+        if row is None:
+            return None
+        return {**row_dict(row), "statement": row._mapping["statement"]}
+
+    def get_ingestion_run(self, run_id: str) -> dict[str, Any] | None:
+        with self.engine.begin() as conn:
+            row = conn.execute(
+                select(schema.ingestion_runs).where(schema.ingestion_runs.c.id == run_id)
+            ).first()
+        return row_dict(row) if row is not None else None
+
+    def get_cognee_sync(self, object_id: str) -> list[dict[str, Any]]:
+        with self.engine.begin() as conn:
+            rows = conn.execute(
+                select(schema.cognee_sync).where(schema.cognee_sync.c.object_id == object_id)
+            ).fetchall()
+        return [row_dict(row) for row in rows]
+
     def search_memory(
         self,
         query: str,
@@ -626,7 +685,7 @@ class BrainStore:
         status: str = "open",
         limit: int = 20,
     ) -> list[dict[str, Any]]:
-        filters = [schema.open_loops.c.status == status]
+        filters = [] if status == "any" else [schema.open_loops.c.status == status]
         if topic:
             filters.append(schema.memory_cards.c.statement.ilike(f"%{topic}%"))
         with self.engine.begin() as conn:
@@ -659,10 +718,14 @@ class BrainStore:
             "memory": schema.memory_cards,
             "source": schema.sources,
             "entity": schema.entities,
+            "relationship": schema.relationships,
+            "open_loop": schema.open_loops,
         }
         table = table_by_type.get(object_type)
         if table is None:
-            raise ValueError("object_type must be memory, source, or entity.")
+            raise ValueError(
+                "object_type must be memory, source, entity, relationship, or open_loop."
+            )
         with self.engine.begin() as conn:
             result = conn.execute(
                 update(table)

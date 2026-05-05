@@ -1,33 +1,19 @@
 from __future__ import annotations
 
-import json
+from typing import Any
 
 from memory_stack.brain_models import RecallRequest, RememberRequest
 from memory_stack.brain_service import (
     forget as brain_forget,
     get_memory as brain_get_memory,
+    get_source as brain_get_source,
     list_open_loops as brain_list_open_loops,
     profile_entity as brain_profile_entity,
     recall as brain_recall,
     remember as brain_remember,
     resolve_conflict as brain_resolve_conflict,
 )
-from memory_stack.cognee_adapter import (
-    add_text,
-    cognify_dataset,
-    create_datasource as create_cognee_datasource,
-    delete_datasource as delete_cognee_datasource,
-    list_datasources as list_cognee_datasources,
-    recall_text,
-    remember_text,
-)
 from memory_stack.config import load_settings
-from memory_stack.name_resolution import (
-    load_node_set_registry,
-    register_node_sets,
-    resolve_dataset_name,
-    resolve_node_set_names,
-)
 
 
 def build_server():
@@ -39,271 +25,204 @@ def build_server():
     settings = load_settings()
     mcp = FastMCP("Brain")
 
-    @mcp.tool()
+    @mcp.tool(name="brain.remember", structured_output=True)
     async def remember(
-        input: str | None = None,
-        text: str | None = None,
-        dataset_name: str | None = None,
+        input: str,
         input_type: str = "auto",
         source_policy: str = "auto",
         dry_run: bool = False,
-        context: dict | None = None,
-        temporal: bool = True,
-        node_set: list[str] | None = None,
-    ) -> str:
-        """Store durable memory in Brain, or use legacy Cognee mode with text+dataset_name."""
-        if input is not None or dataset_name is None:
-            request = RememberRequest(
-                input=input or text or "",
-                input_type=input_type,
-                source_policy=source_policy,
-                dry_run=dry_run,
-                context=context or {},
-            )
-            return json.dumps(brain_remember(request, settings).model_dump(mode="json"))
-
-        resolved_dataset = await resolve_dataset_name(
-            dataset_name,
-            settings=settings,
-        )
-        resolved_node_set = resolve_node_set_names(
-            node_set,
-            settings=settings,
-            for_write=True,
-        )
-        await remember_text(
-            text or "",
-            dataset_name=resolved_dataset,
-            temporal=temporal,
-            node_set=resolved_node_set,
-            settings=settings,
-        )
-        return "remembered"
-
-    @mcp.tool()
-    async def ingest_source(
-        input: str,
-        input_type: str = "auto",
-        dry_run: bool = False,
-        context: dict | None = None,
-    ) -> str:
-        """Store source material and extract durable Brain memory cards."""
+        context: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Store a user-level memory, fact, thought, or short note in Brain."""
         request = RememberRequest(
             input=input,
             input_type=input_type,
-            source_policy="source_and_memory",
+            source_policy=source_policy,
             dry_run=dry_run,
             context=context or {},
         )
-        return json.dumps(brain_remember(request, settings).model_dump(mode="json"))
+        return brain_remember(request, settings).model_dump(mode="json")
 
-    @mcp.tool()
-    async def add(
-        text: str,
-        dataset_name: str,
-        node_set: list[str] | None = None,
-    ) -> str:
-        """Add text to a Cognee dataset without cognifying it."""
-        resolved_dataset = await resolve_dataset_name(
-            dataset_name,
-            settings=settings,
+    @mcp.tool(name="brain.ingest_source", structured_output=True)
+    async def ingest_source(
+        source: str,
+        source_kind: str = "auto",
+        title: str | None = None,
+        why_saved: str | None = None,
+        extract_memories: bool = True,
+        dry_run: bool = False,
+        metadata: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Store source material and optionally extract durable Brain memories."""
+        request = RememberRequest(
+            input=source,
+            input_type=input_type_for_source_kind(source_kind, source),
+            source_policy="source_and_memory" if extract_memories else "source_only",
+            dry_run=dry_run,
+            context={
+                "title": title,
+                "why_saved": why_saved,
+                "metadata": metadata or {},
+                "source_kind": source_kind,
+            },
         )
-        resolved_node_set = resolve_node_set_names(
-            node_set,
-            settings=settings,
-            for_write=True,
-        )
-        await add_text(
-            text,
-            dataset_name=resolved_dataset,
-            node_set=resolved_node_set,
-            settings=settings,
-        )
-        return "added"
+        receipt = brain_remember(request, settings).model_dump(mode="json")
+        return {
+            "source_id": receipt.get("source", {}).get("source_id"),
+            "status": "processed",
+            "memory_cards_created": [
+                card["id"] for card in receipt.get("memory_cards", []) if card.get("created")
+            ],
+            "summary": title or why_saved or source[:500],
+            "cognee_sync_status": receipt.get("cognee_sync_status", "pending"),
+            "ingestion": receipt,
+        }
 
-    @mcp.tool()
-    async def cognify(dataset_name: str, temporal: bool = True) -> str:
-        """Cognify a Cognee dataset after one or more add calls."""
-        resolved_dataset = await resolve_dataset_name(
-            dataset_name,
-            settings=settings,
-        )
-        await cognify_dataset(resolved_dataset, temporal=temporal, settings=settings)
-        return "cognified"
-
-    @mcp.tool()
+    @mcp.tool(name="brain.recall", structured_output=True)
     async def recall(
         query: str,
         mode: str = "auto",
         include_sources: bool = True,
         include_superseded: bool = False,
+        include_conflicts: bool = True,
         limit: int = 20,
-        dataset: str | None = None,
-        search_type: str | None = None,
-        top_k: int = 10,
-        node_name: list[str] | None = None,
-        node_name_filter_operator: str = "OR",
-    ) -> str:
-        """Recall from Brain memory, or use legacy Cognee mode with dataset/search_type."""
-        if dataset is None and search_type is None and node_name is None:
-            request = RecallRequest(
-                query=query,
-                mode=mode,
-                include_sources=include_sources,
-                include_superseded=include_superseded,
-                limit=limit,
-            )
-            return json.dumps(brain_recall(request, settings).model_dump(mode="json"))
-
-        resolved_dataset = (
-            await resolve_dataset_name(
-                dataset,
-                settings=settings,
-            )
-            if dataset
-            else None
-        )
-        resolved_node_name = resolve_node_set_names(
-            node_name,
-            settings=settings,
-            for_write=False,
-        )
-        result = await recall_text(
+    ) -> dict[str, Any]:
+        """Answer a user-level memory query with evidence."""
+        del include_conflicts
+        request = RecallRequest(
             query=query,
-            dataset=resolved_dataset,
-            search_type=search_type or "TEMPORAL",
-            top_k=top_k,
-            node_name=resolved_node_name,
-            node_name_filter_operator=node_name_filter_operator,
-            settings=settings,
+            mode=mode,
+            include_sources=include_sources,
+            include_superseded=include_superseded,
+            limit=limit,
         )
-        return str(result)
+        return brain_recall(request, settings).model_dump(mode="json")
 
-    @mcp.tool()
+    @mcp.tool(name="brain.profile_entity", structured_output=True)
     async def profile_entity(
         name: str,
-        entity_type: str | None = None,
+        entity_type: str = "auto",
+        include_sources: bool = True,
         include_superseded: bool = False,
-    ) -> str:
-        """Build an evidence-aware profile for a Brain entity."""
-        return json.dumps(
-            brain_profile_entity(
-                settings,
-                name=name,
-                entity_type=entity_type,
-                include_superseded=include_superseded,
-            ).model_dump(mode="json")
-        )
+        include_conflicts: bool = True,
+        limit: int = 50,
+    ) -> dict[str, Any]:
+        """Build an entity-centric Brain profile."""
+        del include_sources, include_conflicts, limit
+        resolved_type = None if entity_type == "auto" else entity_type
+        return brain_profile_entity(
+            settings,
+            name=name,
+            entity_type=resolved_type,
+            include_superseded=include_superseded,
+        ).model_dump(mode="json")
 
-    @mcp.tool()
+    @mcp.tool(name="brain.list_open_loops", structured_output=True)
     async def list_open_loops(
         topic: str | None = None,
         status: str = "open",
+        include_recently_reminded: bool = False,
         limit: int = 20,
-    ) -> str:
-        """List Brain open questions and reminder-worthy loops."""
-        return json.dumps(
-            {
-                "open_loops": brain_list_open_loops(
-                    settings,
-                    topic=topic,
-                    status=status,
-                    limit=limit,
-                )
-            },
-            default=str,
+    ) -> dict[str, Any]:
+        """List open questions, ideas, reminders, and parked research threads."""
+        del include_recently_reminded
+        return {
+            "open_loops": brain_list_open_loops(
+                settings,
+                topic=topic,
+                status=status,
+                limit=limit,
+            )
+        }
+
+    @mcp.tool(name="brain.get_memory", structured_output=True)
+    async def get_memory(
+        memory_id: str,
+        include_links: bool = True,
+        include_entities: bool = True,
+        include_source: bool = True,
+    ) -> dict[str, Any]:
+        """Read one Brain memory card by id."""
+        del include_links, include_entities, include_source
+        return {"memory": brain_get_memory(memory_id, settings)}
+
+    @mcp.tool(name="brain.get_source", structured_output=True)
+    async def get_source(
+        source_id: str,
+        include_text: bool = False,
+        max_chars: int = 10_000,
+    ) -> dict[str, Any]:
+        """Read Brain source metadata and optionally truncated source text."""
+        source = brain_get_source(
+            source_id,
+            settings,
+            include_text=include_text,
+            max_chars=max(1_000, min(100_000, max_chars)),
         )
+        text = source.get("text") if source and "text" in source else None
+        source_without_text = (
+            {key: value for key, value in source.items() if key != "text"} if source else None
+        )
+        return {"source": source_without_text, "text": text}
 
-    @mcp.tool()
-    async def get_memory(memory_id: str) -> str:
-        """Fetch one Brain memory card."""
-        return json.dumps({"memory": brain_get_memory(memory_id, settings)}, default=str)
-
-    @mcp.tool()
+    @mcp.tool(name="brain.resolve_conflict", structured_output=True)
     async def resolve_conflict(
         conflict_memory_id: str,
         target_memory_id: str,
         action: str,
         note: str | None = None,
-    ) -> str:
-        """Resolve a Brain memory conflict with append-only links."""
-        return json.dumps(
-            brain_resolve_conflict(
-                settings,
-                conflict_memory_id=conflict_memory_id,
-                target_memory_id=target_memory_id,
-                action=action,
-                note=note,
-            ),
-            default=str,
+    ) -> dict[str, Any]:
+        """Resolve a contradiction or duplicate between two Brain memories."""
+        return brain_resolve_conflict(
+            settings,
+            conflict_memory_id=conflict_memory_id,
+            target_memory_id=target_memory_id,
+            action=action,
+            note=note,
         )
 
-    @mcp.tool()
+    @mcp.tool(name="brain.forget", structured_output=True)
     async def forget(
         object_type: str,
         object_id: str,
         hard: bool = False,
         reason: str | None = None,
-    ) -> str:
-        """Soft-delete a Brain object."""
-        return json.dumps(
-            brain_forget(
-                settings,
-                object_type=object_type,
-                object_id=object_id,
-                hard=hard,
-                reason=reason,
-            ),
-            default=str,
+        confirm: bool = False,
+    ) -> dict[str, Any]:
+        """Soft delete a Brain object. Hard delete requires confirm=true."""
+        if hard and not confirm:
+            raise ValueError("brain.forget requires confirm=true for hard deletes.")
+        payload = brain_forget(
+            settings,
+            object_type=object_type,
+            object_id=object_id,
+            hard=hard,
+            reason=reason,
         )
-
-    @mcp.tool()
-    async def sync_cognee(dataset: str = "memory", limit: int = 100) -> str:
-        """Placeholder for Brain-to-Cognee projection jobs."""
-        del dataset, limit
-        return json.dumps(
-            {
-                "status": "not_implemented",
-                "detail": "Brain control-plane writes cognee_sync rows; projection worker is a later phase.",
-            }
-        )
-
-    @mcp.tool()
-    async def list_datasources() -> str:
-        """List Cognee datasources."""
-        datasources = await list_cognee_datasources(settings=settings)
-        return json.dumps({"datasources": datasources})
-
-    @mcp.tool()
-    async def create_datasource(name: str) -> str:
-        """Create a Cognee datasource."""
-        datasource = await create_cognee_datasource(name, settings=settings)
-        return json.dumps({"datasource": datasource})
-
-    @mcp.tool()
-    async def create_dataset(name: str) -> str:
-        """Alias for create_datasource."""
-        datasource = await create_cognee_datasource(name, settings=settings)
-        return json.dumps({"datasource": datasource})
-
-    @mcp.tool()
-    async def list_node_sets() -> str:
-        """List known Brain node-set tags."""
-        return json.dumps({"node_sets": load_node_set_registry(settings)})
-
-    @mcp.tool()
-    async def create_node_set(name: str) -> str:
-        """Register a Brain node-set tag."""
-        register_node_sets(settings, [name])
-        return json.dumps({"node_set": name})
-
-    @mcp.tool()
-    async def delete_datasource(name: str) -> str:
-        """Delete a Cognee datasource by name or id."""
-        datasource = await delete_cognee_datasource(name, settings=settings)
-        return json.dumps({"datasource": datasource})
+        return {
+            **payload,
+            "mode": "hard" if hard else "soft",
+            "cognee_sync_status": "stale",
+        }
 
     return mcp
+
+
+def input_type_for_source_kind(source_kind: str, source: str) -> str:
+    normalized = source_kind.strip().lower()
+    if normalized == "auto":
+        return "article_url" if source.startswith(("http://", "https://")) else "source_text"
+    mapping = {
+        "article": "article_url" if source.startswith(("http://", "https://")) else "article",
+        "transcript": "transcript",
+        "markdown": "markdown",
+        "table": "table",
+        "chat_log": "transcript",
+        "pdf": "source_text",
+        "email": "source_text",
+        "other": "source_text",
+    }
+    return mapping.get(normalized, "source_text")
 
 
 def main() -> None:

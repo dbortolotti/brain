@@ -680,6 +680,20 @@ def get_memory(memory_id: str, settings: Settings) -> dict[str, Any] | None:
     return BrainStore(settings).get_memory(memory_id)
 
 
+def get_source(
+    source_id: str,
+    settings: Settings,
+    *,
+    include_text: bool = False,
+    max_chars: int = 10_000,
+) -> dict[str, Any] | None:
+    return BrainStore(settings).get_source(
+        source_id,
+        include_text=include_text,
+        max_chars=max_chars,
+    )
+
+
 def list_open_loops(
     settings: Settings,
     *,
@@ -750,6 +764,16 @@ def resolve_conflict(
             metadata_json={"note": note} if note else {},
         )
         return {"action": action, "link": link}
+    if action == "mark_contradiction":
+        store.update_memory_status(conflict_memory_id, "current")
+        store.update_memory_status(target_memory_id, "current")
+        link, _ = store.create_memory_link(
+            from_memory_id=conflict_memory_id,
+            relation="contradicts",
+            to_memory_id=target_memory_id,
+            metadata_json={"note": note} if note else {},
+        )
+        return {"action": action, "link": link}
     if action == "mark_duplicate":
         store.update_memory_status(conflict_memory_id, "archived")
         link, _ = store.create_memory_link(
@@ -765,4 +789,7 @@ def resolve_conflict(
     if action == "reject_new":
         store.update_memory_status(conflict_memory_id, "rejected")
         return {"action": action, "conflict_memory_id": conflict_memory_id, "status": "rejected"}
-    raise ValueError("action must be supersede, keep_both, mark_duplicate, archive_old, or reject_new.")
+    raise ValueError(
+        "action must be supersede, keep_both, mark_duplicate, archive_old, "
+        "reject_new, or mark_contradiction."
+    )
