@@ -2,11 +2,12 @@ from __future__ import annotations
 
 from typing import Any
 
-from memory_stack.brain_models import RecallRequest, RememberRequest
+from memory_stack.brain_models import IngestSourceRequest, RecallRequest, RememberRequest
 from memory_stack.brain_service import (
     forget as brain_forget,
     get_memory as brain_get_memory,
     get_source as brain_get_source,
+    ingest_source as brain_ingest_source,
     list_open_loops as brain_list_open_loops,
     profile_entity as brain_profile_entity,
     recall as brain_recall,
@@ -54,19 +55,16 @@ def build_server():
         metadata: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Store source material and optionally extract durable Brain memories."""
-        request = RememberRequest(
-            input=source,
-            input_type=input_type_for_source_kind(source_kind, source),
-            source_policy="source_and_memory" if extract_memories else "source_only",
+        request = IngestSourceRequest(
+            source=source,
+            source_kind=source_kind,
+            title=title,
+            why_saved=why_saved,
+            extract_memories=extract_memories,
             dry_run=dry_run,
-            context={
-                "title": title,
-                "why_saved": why_saved,
-                "metadata": metadata or {},
-                "source_kind": source_kind,
-            },
+            metadata=metadata or {},
         )
-        receipt = brain_remember(request, settings).model_dump(mode="json")
+        receipt = brain_ingest_source(request, settings).model_dump(mode="json")
         return {
             "source_id": receipt.get("source", {}).get("source_id"),
             "status": "processed",
@@ -88,12 +86,12 @@ def build_server():
         limit: int = 20,
     ) -> dict[str, Any]:
         """Answer a user-level memory query with evidence."""
-        del include_conflicts
         request = RecallRequest(
             query=query,
             mode=mode,
             include_sources=include_sources,
             include_superseded=include_superseded,
+            include_conflicts=include_conflicts,
             limit=limit,
         )
         return brain_recall(request, settings).model_dump(mode="json")
@@ -108,13 +106,14 @@ def build_server():
         limit: int = 50,
     ) -> dict[str, Any]:
         """Build an entity-centric Brain profile."""
-        del include_sources, include_conflicts, limit
+        del include_sources, limit
         resolved_type = None if entity_type == "auto" else entity_type
         return brain_profile_entity(
             settings,
             name=name,
             entity_type=resolved_type,
             include_superseded=include_superseded,
+            include_conflicts=include_conflicts,
         ).model_dump(mode="json")
 
     @mcp.tool(name="brain.list_open_loops", structured_output=True)
@@ -206,23 +205,6 @@ def build_server():
         }
 
     return mcp
-
-
-def input_type_for_source_kind(source_kind: str, source: str) -> str:
-    normalized = source_kind.strip().lower()
-    if normalized == "auto":
-        return "article_url" if source.startswith(("http://", "https://")) else "source_text"
-    mapping = {
-        "article": "article_url" if source.startswith(("http://", "https://")) else "article",
-        "transcript": "transcript",
-        "markdown": "markdown",
-        "table": "table",
-        "chat_log": "transcript",
-        "pdf": "source_text",
-        "email": "source_text",
-        "other": "source_text",
-    }
-    return mapping.get(normalized, "source_text")
 
 
 def main() -> None:

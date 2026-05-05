@@ -9,11 +9,12 @@ from fastapi import FastAPI, Header, HTTPException, Request, Response
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from memory_stack.brain_models import RecallRequest, RememberRequest
+from memory_stack.brain_models import IngestSourceRequest, RecallRequest, RememberRequest
 from memory_stack.brain_service import (
     forget as brain_forget,
     get_memory as brain_get_memory,
     get_source as brain_get_source,
+    ingest_source as brain_ingest_source,
     list_open_loops as brain_list_open_loops,
     profile_entity as brain_profile_entity,
     recall as brain_recall,
@@ -55,6 +56,7 @@ class ProfileEntityRequest(BaseModel):
     entity_type: str | None = None
     include_superseded: bool = False
     include_sources: bool = True
+    include_conflicts: bool = True
 
 
 class OpenLoopsRequest(BaseModel):
@@ -458,12 +460,11 @@ async def brain_remember_endpoint(
 
 @app.post("/memory/ingest_source")
 async def brain_ingest_source_endpoint(
-    payload: RememberRequest,
+    payload: IngestSourceRequest | RememberRequest,
     authorization: str | None = Header(default=None),
 ) -> dict[str, Any]:
     require_api_auth(authorization, settings)
-    request = payload.model_copy(update={"source_policy": "source_and_memory"})
-    return brain_remember(request, settings).model_dump(mode="json")
+    return brain_ingest_source(payload, settings).model_dump(mode="json")
 
 
 @app.post("/memory/recall")
@@ -484,8 +485,9 @@ async def brain_profile_entity_endpoint(
     return brain_profile_entity(
         settings,
         name=payload.name,
-        entity_type=payload.entity_type,
+        entity_type=None if payload.entity_type == "auto" else payload.entity_type,
         include_superseded=payload.include_superseded,
+        include_conflicts=payload.include_conflicts,
     ).model_dump(mode="json")
 
 
@@ -676,25 +678,15 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
 
     if name == "brain.ingest_source":
         if "source" in arguments:
-            request = RememberRequest.model_validate(
+            request = IngestSourceRequest.model_validate(
                 {
-                    "input": arguments["source"],
-                    "input_type": input_type_for_source_kind(
-                        str(arguments.get("source_kind", "auto")),
-                        str(arguments["source"]),
-                    ),
-                    "source_policy": (
-                        "source_and_memory"
-                        if bool(arguments.get("extract_memories", True))
-                        else "source_only"
-                    ),
+                    "source": arguments["source"],
+                    "source_kind": arguments.get("source_kind", "auto"),
+                    "title": arguments.get("title"),
+                    "why_saved": arguments.get("why_saved"),
+                    "extract_memories": bool(arguments.get("extract_memories", True)),
                     "dry_run": bool(arguments.get("dry_run", False)),
-                    "context": {
-                        "title": arguments.get("title"),
-                        "why_saved": arguments.get("why_saved"),
-                        "metadata": arguments.get("metadata") or {},
-                        "source_kind": arguments.get("source_kind", "auto"),
-                    },
+                    "metadata": arguments.get("metadata") or {},
                 }
             )
         else:
@@ -708,7 +700,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
                     "context": arguments.get("context") or {},
                 }
             )
-        receipt = brain_remember(request, settings).model_dump(mode="json")
+        receipt = brain_ingest_source(request, settings).model_dump(mode="json")
         payload = {
             "source_id": receipt.get("source", {}).get("source_id"),
             "status": "processed",
@@ -733,6 +725,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
                 "mode": arguments.get("mode", "auto"),
                 "include_sources": bool(arguments.get("include_sources", True)),
                 "include_superseded": bool(arguments.get("include_superseded", False)),
+                "include_conflicts": bool(arguments.get("include_conflicts", True)),
                 "limit": int(arguments.get("limit", 20)),
             }
         )
@@ -748,6 +741,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
             name=str(arguments["name"]),
             entity_type=entity_type,
             include_superseded=bool(arguments.get("include_superseded", False)),
+            include_conflicts=bool(arguments.get("include_conflicts", True)),
         ).model_dump(mode="json")
         return json_tool_response(payload, summary=payload.get("answer", "Profile complete."))
 
@@ -818,25 +812,6 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
         return json_tool_response(payload, summary=f"{mode.title()} delete result: {payload['status']}.")
 
     raise ValueError(f"Unknown tool: {name}")
-
-
-def input_type_for_source_kind(source_kind: str, source: str) -> str:
-    normalized = source_kind.strip().lower()
-    if normalized == "auto":
-        if source.startswith(("http://", "https://")):
-            return "article_url"
-        return "source_text"
-    mapping = {
-        "article": "article_url" if source.startswith(("http://", "https://")) else "article",
-        "transcript": "transcript",
-        "markdown": "markdown",
-        "table": "table",
-        "chat_log": "transcript",
-        "pdf": "source_text",
-        "email": "source_text",
-        "other": "source_text",
-    }
-    return mapping.get(normalized, "source_text")
 
 
 def source_summary_from_request(arguments: dict[str, Any]) -> str | None:

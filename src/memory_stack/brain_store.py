@@ -35,6 +35,19 @@ def stable_id(prefix: str, *values: Any) -> str:
     return f"{prefix}_{digest}"
 
 
+def visible_memory_status_filter(
+    *,
+    include_superseded: bool = False,
+    include_conflicts: bool = True,
+) -> Any:
+    statuses = ["current"]
+    if include_conflicts:
+        statuses.append("conflicted")
+    if include_superseded:
+        statuses.append("superseded")
+    return schema.memory_cards.c.status.in_(statuses)
+
+
 def brain_database_url(settings: Settings) -> str:
     url = settings.brain_database_url
     if not url.startswith("sqlite:///") or url == "sqlite:///:memory:":
@@ -506,14 +519,16 @@ class BrainStore:
         query: str,
         *,
         include_superseded: bool = False,
+        include_conflicts: bool = True,
         limit: int = 20,
     ) -> list[dict[str, Any]]:
         terms = WORD_RE.findall(query.casefold())
         if not terms:
             return []
 
-        status_filter = (
-            schema.memory_cards.c.status != "superseded" if not include_superseded else None
+        status_filter = visible_memory_status_filter(
+            include_superseded=include_superseded,
+            include_conflicts=include_conflicts,
         )
         text_filters = [
             or_(
@@ -527,7 +542,7 @@ class BrainStore:
         with self.engine.begin() as conn:
             direct = conn.execute(
                 select(schema.memory_cards)
-                .where(and_(*([status_filter] if status_filter is not None else []), or_(*text_filters)))
+                .where(and_(status_filter, or_(*text_filters)))
                 .limit(limit)
             ).fetchall()
             entity_rows = conn.execute(
@@ -539,7 +554,7 @@ class BrainStore:
                 .join(schema.entities, schema.entities.c.id == schema.memory_entities.c.entity_id)
                 .where(
                     and_(
-                        *([status_filter] if status_filter is not None else []),
+                        status_filter,
                         or_(
                             *[
                                 schema.entities.c.normalized_name.ilike(f"%{term}%")
@@ -594,13 +609,17 @@ class BrainStore:
         *,
         entity_type: str | None = None,
         include_superseded: bool = False,
+        include_conflicts: bool = True,
     ) -> dict[str, Any] | None:
         entity = self.resolve_entity(name, entity_type)
         if entity is None:
             return None
-        status_filter = (
-            schema.memory_cards.c.status != "superseded" if not include_superseded else True
+        status_filter = visible_memory_status_filter(
+            include_superseded=include_superseded,
+            include_conflicts=include_conflicts,
         )
+        subject_entities = schema.entities.alias("subject_entities")
+        object_entities = schema.entities.alias("object_entities")
         with self.engine.begin() as conn:
             memory_rows = conn.execute(
                 select(schema.memory_cards, schema.memory_entities.c.role)
@@ -617,24 +636,34 @@ class BrainStore:
                 .order_by(schema.memory_cards.c.created_at.desc())
             ).fetchall()
             relationship_rows = conn.execute(
-                select(schema.relationships, schema.entities.c.canonical_name.label("other_name"))
+                select(
+                    schema.relationships,
+                    subject_entities.c.canonical_name.label("subject_name"),
+                    object_entities.c.canonical_name.label("object_name"),
+                )
                 .join(
-                    schema.entities,
-                    or_(
-                        and_(
-                            schema.relationships.c.subject_entity_id == entity["id"],
-                            schema.relationships.c.object_entity_id == schema.entities.c.id,
-                        ),
-                        and_(
-                            schema.relationships.c.object_entity_id == entity["id"],
-                            schema.relationships.c.subject_entity_id == schema.entities.c.id,
-                        ),
-                    ),
+                    subject_entities,
+                    subject_entities.c.id == schema.relationships.c.subject_entity_id,
+                )
+                .join(
+                    object_entities,
+                    object_entities.c.id == schema.relationships.c.object_entity_id,
+                )
+                .outerjoin(
+                    schema.memory_cards,
+                    schema.memory_cards.c.id == schema.relationships.c.evidence_memory_id,
                 )
                 .where(
-                    or_(
-                        schema.relationships.c.subject_entity_id == entity["id"],
-                        schema.relationships.c.object_entity_id == entity["id"],
+                    and_(
+                        or_(
+                            schema.relationships.c.subject_entity_id == entity["id"],
+                            schema.relationships.c.object_entity_id == entity["id"],
+                        ),
+                        schema.relationships.c.status == "current",
+                        or_(
+                            schema.relationships.c.evidence_memory_id.is_(None),
+                            status_filter,
+                        ),
                     )
                 )
             ).fetchall()
@@ -649,6 +678,7 @@ class BrainStore:
                     and_(
                         schema.memory_entities.c.entity_id == entity["id"],
                         schema.open_loops.c.status == "open",
+                        status_filter,
                     )
                 )
             ).fetchall()
@@ -663,7 +693,13 @@ class BrainStore:
         relationships = [
             {
                 **row_dict(row),
-                "other_name": row._mapping["other_name"],
+                "subject_name": row._mapping["subject_name"],
+                "object_name": row._mapping["object_name"],
+                "direction_relative_to_profile_entity": (
+                    "outgoing"
+                    if row._mapping[schema.relationships.c.subject_entity_id] == entity["id"]
+                    else "incoming"
+                ),
             }
             for row in relationship_rows
         ]
@@ -692,7 +728,7 @@ class BrainStore:
             rows = conn.execute(
                 select(schema.open_loops, schema.memory_cards)
                 .join(schema.memory_cards, schema.memory_cards.c.id == schema.open_loops.c.memory_id)
-                .where(and_(*filters))
+                .where(and_(*filters, visible_memory_status_filter()))
                 .order_by(schema.open_loops.c.next_review_at.is_(None), schema.open_loops.c.created_at.desc())
                 .limit(limit)
             ).fetchall()

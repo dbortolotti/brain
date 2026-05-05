@@ -245,6 +245,30 @@ def test_brain_ingest_source_and_get_source_mcp_tools(tmp_path) -> None:
     assert "Knowledge graphs matter" in source_payload["text"]
 
 
+def test_brain_ingest_source_rest_accepts_source_schema(tmp_path) -> None:
+    previous_settings = mcp_server.settings
+    mcp_server.settings = Settings(brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}")
+    try:
+        client = TestClient(app)
+        response = client.post(
+            "/memory/ingest_source",
+            json={
+                "source": "# Source\nKnowledge graphs matter for Brain.",
+                "source_kind": "markdown",
+                "title": "Knowledge graph note",
+                "metadata": {"origin": "test"},
+            },
+        )
+    finally:
+        mcp_server.settings = previous_settings
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["classification"] == "markdown"
+    assert payload["source"]["created"] is True
+    assert payload["memory_cards"][0]["kind"] == "source_summary"
+
+
 def test_list_datasources_http_endpoint(monkeypatch) -> None:
     async def fake_list_datasources(*, settings):
         return [{"id": "datasource-1", "name": "property_trial"}]

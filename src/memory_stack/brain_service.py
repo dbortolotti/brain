@@ -1,348 +1,29 @@
 from __future__ import annotations
 
-import re
 from typing import Any
 
 from memory_stack.brain_models import (
-    EntityMention,
     EntityReceipt,
+    IngestSourceRequest,
     IngestionReceipt,
-    MemoryCandidate,
     MemoryReceipt,
     RecallRequest,
     RecallResponse,
-    RelationshipCandidate,
     RememberRequest,
-    SourceCandidate,
     SourceReceipt,
 )
 from memory_stack.brain_store import BrainStore, content_hash, stable_id
 from memory_stack.config import Settings
-
-
-FAMILY_TWINS_RE = re.compile(
-    r"^(?P<first>[A-Z][A-Za-z'-]+)\s+and\s+(?P<second>[A-Z][A-Za-z'-]+)\s+are\s+my\s+twin\s+daughters?\.?$",
-    re.IGNORECASE,
-)
-PERSON_INTERACTION_RE = re.compile(
-    r"^(?P<person>[A-Z][A-Za-z'-]+)\s+(?:from|at)\s+(?P<org>[A-Z][A-Za-z0-9& .'-]+?)\s+"
-    r"mentioned\s+that\s+(?:he|she|they)\s+likes?\s+(?P<liked>[^.]+)\.?$",
-    re.IGNORECASE,
-)
-LEARN_MORE_RE = re.compile(
-    r"^I\s+(?:would\s+)?(?:like|want)\s+to\s+learn\s+more\s+about\s+(?P<topic>[^.]+)\.?$",
-    re.IGNORECASE,
-)
-WONDER_RE = re.compile(
-    r"^I\s+wonder\s+(?P<question>.+?)(?:\.?\s+Need\s+to\s+research\s+this\.?)?$",
-    re.IGNORECASE | re.DOTALL,
-)
-
-
-def slug(value: str) -> str:
-    return "_".join(re.findall(r"[a-z0-9]+", value.casefold()))
-
-
-def compact_statement(value: str) -> str:
-    return " ".join(value.strip().split())
-
-
-class CompiledInput:
-    def __init__(
-        self,
-        *,
-        classification: str,
-        source: SourceCandidate | None,
-        memory_cards: list[MemoryCandidate],
-    ) -> None:
-        self.classification = classification
-        self.source = source
-        self.memory_cards = memory_cards
-
-
-def compile_input(request: RememberRequest, settings: Settings) -> CompiledInput:
-    text = compact_statement(request.input)
-    input_type = request.input_type if request.input_type != "auto" else classify_input(text)
-    source = source_for_input(text, input_type, request.source_policy)
-    if request.source_policy == "source_only":
-        return CompiledInput(classification=input_type, source=source, memory_cards=[])
-
-    if input_type == "family_fact":
-        cards = [compile_family_fact(text, request, settings)]
-    elif input_type == "person_interaction":
-        cards = [compile_person_interaction(text, request)]
-    elif input_type == "open_question":
-        cards = [compile_open_question(text, request, settings)]
-    elif input_type == "research_question":
-        cards = [compile_research_question(text, request, settings)]
-    elif input_type in {"article_url", "article"}:
-        cards = [compile_article_note(text, request)]
-    elif input_type == "table":
-        cards = [compile_table_note(text, request)]
-    elif input_type in {"chat_summary", "chat_conclusion"}:
-        cards = [compile_chat_conclusion(text, request)]
-    elif input_type in {"transcript", "markdown", "source_text"}:
-        cards = [compile_source_summary(text, request)]
-    else:
-        cards = [compile_basic_memory(text, request)]
-
-    if source is not None:
-        cards = [
-            card.model_copy(update={"source_quote": card.source_quote or text[:500]})
-            for card in cards
-        ]
-    return CompiledInput(classification=input_type, source=source, memory_cards=cards)
-
-
-def classify_input(text: str) -> str:
-    if FAMILY_TWINS_RE.match(text):
-        return "family_fact"
-    if PERSON_INTERACTION_RE.match(text):
-        return "person_interaction"
-    if LEARN_MORE_RE.match(text):
-        return "open_question"
-    if WONDER_RE.match(text) and "research" in text.casefold():
-        return "research_question"
-    if text.startswith(("http://", "https://")):
-        return "article_url"
-    if "\n|" in text or text.count(",") >= 4 and "\n" in text:
-        return "table"
-    if len(text) > 1200 or text.startswith("#"):
-        return "source_text"
-    if "concluded" in text.casefold() or "should use" in text.casefold():
-        return "chat_conclusion"
-    return "basic_fact"
-
-
-def source_for_input(text: str, input_type: str, source_policy: str) -> SourceCandidate | None:
-    if source_policy == "memory_only":
-        return None
-    if input_type == "article_url":
-        return SourceCandidate(
-            kind="article",
-            title=text,
-            uri=text,
-            raw_text=text,
-            summary=f"Saved article URL: {text}",
-            metadata={"capture_note": "URL captured; article fetching is not implemented yet."},
-        )
-    if input_type in {"article", "transcript", "markdown", "source_text", "table"}:
-        return SourceCandidate(
-            kind="table" if input_type == "table" else input_type,
-            raw_text=text,
-            summary=text[:500],
-        )
-    if source_policy == "source_and_memory":
-        return SourceCandidate(kind="manual_note", raw_text=text, summary=text[:500])
-    return None
-
-
-def compile_family_fact(
-    text: str,
-    request: RememberRequest,
-    settings: Settings,
-) -> MemoryCandidate:
-    match = FAMILY_TWINS_RE.match(text)
-    if not match:
-        return compile_basic_memory(text, request)
-    first = match.group("first")
-    second = match.group("second")
-    owner = settings.brain_owner_name
-    statement = f"{first} and {second} are {owner}'s twin daughters."
-    return MemoryCandidate(
-        kind="family_fact",
-        statement=statement,
-        summary=f"{first} and {second} are twin daughters of {owner}.",
-        confidence="high",
-        observed_at=request.observed_at,
-        metadata={"topics": ["family"]},
-        entities=[
-            EntityMention(name=owner, type="person", role="parent", confidence="high"),
-            EntityMention(name=first, type="person", role="child", confidence="high"),
-            EntityMention(name=second, type="person", role="child", confidence="high"),
-        ],
-        relationships=[
-            RelationshipCandidate(
-                subject=first,
-                predicate="daughter_of",
-                object=owner,
-                confidence="high",
-            ),
-            RelationshipCandidate(
-                subject=second,
-                predicate="daughter_of",
-                object=owner,
-                confidence="high",
-            ),
-            RelationshipCandidate(subject=first, predicate="twin_of", object=second, confidence="high"),
-            RelationshipCandidate(subject=second, predicate="twin_of", object=first, confidence="high"),
-        ],
-    )
-
-
-def compile_person_interaction(text: str, request: RememberRequest) -> MemoryCandidate:
-    match = PERSON_INTERACTION_RE.match(text)
-    if not match:
-        return compile_basic_memory(text, request)
-    person = match.group("person").strip()
-    org = match.group("org").strip()
-    liked = match.group("liked").strip()
-    person_alias = f"{person} from {org}"
-    topics = infer_topics(liked)
-    return MemoryCandidate(
-        kind="person_interaction",
-        statement=text,
-        summary=f"{person_alias} likes {liked}.",
-        confidence="medium",
-        observed_at=request.observed_at,
-        metadata={"topics": topics},
-        entities=[
-            EntityMention(name=person_alias, type="person", role="subject", alias=person),
-            EntityMention(name=org, type="organization", role="affiliation_context"),
-            EntityMention(name=liked, type=infer_entity_type(liked), role="topic"),
-        ],
-        relationships=[
-            RelationshipCandidate(subject=person_alias, predicate="associated_with", object=org),
-            RelationshipCandidate(subject=person_alias, predicate="likes", object=liked),
-        ],
-    )
-
-
-def compile_open_question(
-    text: str,
-    request: RememberRequest,
-    settings: Settings,
-) -> MemoryCandidate:
-    match = LEARN_MORE_RE.match(text)
-    topic = match.group("topic").strip() if match else text
-    topics = [slug(topic)]
-    return MemoryCandidate(
-        kind="open_question",
-        statement=f"{settings.brain_owner_name} wants to learn more about {topic}.",
-        summary=f"Learn more about {topic}.",
-        confidence="high",
-        observed_at=request.observed_at,
-        metadata={"topics": topics},
-        entities=[EntityMention(name=topic, type="concept", role="topic")],
-        open_loop={
-            "status": "open",
-            "priority": "normal",
-            "reminder_policy": "opportunistic_or_weekly",
-        },
-    )
-
-
-def compile_research_question(
-    text: str,
-    request: RememberRequest,
-    settings: Settings,
-) -> MemoryCandidate:
-    match = WONDER_RE.match(text)
-    question = compact_statement(match.group("question")) if match else text
-    statement = f"{settings.brain_owner_name} wants to research: {question.rstrip('?')}?"
-    topics = infer_topics(question)
-    return MemoryCandidate(
-        kind="research_question",
-        statement=statement,
-        summary=question,
-        confidence="high",
-        observed_at=request.observed_at,
-        metadata={"topics": topics},
-        open_loop={
-            "status": "open",
-            "priority": "normal",
-            "reminder_policy": "opportunistic_or_weekly",
-        },
-    )
-
-
-def compile_article_note(text: str, request: RememberRequest) -> MemoryCandidate:
-    topics = infer_topics(f"{text} {request.context.get('user_note', '')}")
-    return MemoryCandidate(
-        kind="article_note",
-        statement=f"Saved article for later recall: {text}",
-        summary=f"Saved article: {text}",
-        confidence="medium",
-        observed_at=request.observed_at,
-        metadata={"topics": topics, "why_saved": request.context.get("user_note")},
-    )
-
-
-def compile_table_note(text: str, request: RememberRequest) -> MemoryCandidate:
-    first_line = text.splitlines()[0] if text.splitlines() else "table"
-    return MemoryCandidate(
-        kind="table_note",
-        statement=f"Stored a small table: {first_line[:160]}",
-        summary=text[:500],
-        confidence="medium",
-        observed_at=request.observed_at,
-        metadata={"topics": infer_topics(text)},
-    )
-
-
-def compile_chat_conclusion(text: str, request: RememberRequest) -> MemoryCandidate:
-    return MemoryCandidate(
-        kind="chat_conclusion",
-        statement=text,
-        summary=text[:300],
-        confidence="high",
-        observed_at=request.observed_at,
-        metadata={"topics": infer_topics(text)},
-    )
-
-
-def compile_source_summary(text: str, request: RememberRequest) -> MemoryCandidate:
-    return MemoryCandidate(
-        kind="source_summary",
-        statement=f"Stored source material: {text[:220]}",
-        summary=text[:500],
-        confidence="medium",
-        observed_at=request.observed_at,
-        metadata={"topics": infer_topics(text)},
-    )
-
-
-def compile_basic_memory(text: str, request: RememberRequest) -> MemoryCandidate:
-    kind = "idea" if text.endswith("?") else "basic_fact"
-    return MemoryCandidate(
-        kind=kind,
-        statement=text,
-        summary=text[:300],
-        confidence="high" if request.input_type in {"fact", "note", "auto"} else "medium",
-        observed_at=request.observed_at,
-        metadata={"topics": infer_topics(text)},
-    )
-
-
-def infer_entity_type(value: str) -> str:
-    words = value.split()
-    if len(words) >= 2 and all(word[:1].isupper() for word in words):
-        return "person"
-    return "concept"
-
-
-def infer_topics(text: str) -> list[str]:
-    lower = text.casefold()
-    topics: list[str] = []
-    topic_map = {
-        "knowledge graph": "knowledge_graphs",
-        "ai memory": "ai_memory",
-        "cognee": "cognee",
-        "brain": "brain",
-        "bill evans": "jazz",
-        "coltrane": "jazz",
-        "jazz": "jazz",
-        "language": "language",
-        "intelligence": "intelligence",
-    }
-    for needle, topic in topic_map.items():
-        if needle in lower and topic not in topics:
-            topics.append(topic)
-    return topics
+from memory_stack.ingestion.classifier import input_type_for_source_kind
+from memory_stack.ingestion.memory_compiler import compile_memory
+from memory_stack.recall.planner import extract_profile_name, infer_recall_mode
+from memory_stack.recall.profile_builder import build_profile_response
+from memory_stack.recall.retriever import retrieve_memories, retrieve_open_loops
+from memory_stack.recall.synthesizer import render_memory_answer, render_open_loops
 
 
 def remember(request: RememberRequest, settings: Settings) -> IngestionReceipt:
-    compiled = compile_input(request, settings)
+    compiled = compile_memory(request, settings)
     input_hash = content_hash(request.input, request.input_type, request.context)
     run_id = stable_id("dry_ing", input_hash)
     if request.dry_run:
@@ -501,13 +182,40 @@ def remember(request: RememberRequest, settings: Settings) -> IngestionReceipt:
         raise
 
 
+def ingest_source(
+    request: IngestSourceRequest | RememberRequest,
+    settings: Settings,
+) -> IngestionReceipt:
+    if isinstance(request, RememberRequest):
+        return remember(request.model_copy(update={"source_policy": "source_and_memory"}), settings)
+
+    remember_request = RememberRequest(
+        input=request.source,
+        input_type=input_type_for_source_kind(request.source_kind, request.source),
+        source_policy="source_and_memory" if request.extract_memories else "source_only",
+        dry_run=request.dry_run,
+        context={
+            "title": request.title,
+            "why_saved": request.why_saved,
+            "metadata": request.metadata,
+            "source_kind": request.source_kind,
+        },
+    )
+    return remember(remember_request, settings)
+
+
 def recall(request: RecallRequest, settings: Settings) -> RecallResponse:
     store = BrainStore(settings)
     query = request.query.strip()
     mode = request.mode if request.mode != "auto" else infer_recall_mode(query)
     if mode == "profile":
         name = extract_profile_name(query)
-        profile = build_profile_response(name, settings, include_superseded=request.include_superseded)
+        profile = build_profile_response(
+            name,
+            settings,
+            include_superseded=request.include_superseded,
+            include_conflicts=request.include_conflicts,
+        )
         if profile is not None:
             store.log_recall(
                 query=query,
@@ -518,7 +226,7 @@ def recall(request: RecallRequest, settings: Settings) -> RecallResponse:
             )
             return profile
     if mode == "open_loops":
-        loops = store.list_open_loops(limit=request.limit)
+        loops = retrieve_open_loops(store, limit=request.limit)
         answer = render_open_loops(loops)
         response = RecallResponse(answer=answer, open_loops=loops)
         store.log_recall(
@@ -530,9 +238,11 @@ def recall(request: RecallRequest, settings: Settings) -> RecallResponse:
         )
         return response
 
-    memories = store.search_memory(
+    memories = retrieve_memories(
+        store,
         query,
         include_superseded=request.include_superseded,
+        include_conflicts=request.include_conflicts,
         limit=request.limit,
     )
     facts = [
@@ -562,118 +272,6 @@ def recall(request: RecallRequest, settings: Settings) -> RecallResponse:
         answer_preview=answer,
     )
     return RecallResponse(answer=answer, facts=facts, evidence=evidence)
-
-
-def infer_recall_mode(query: str) -> str:
-    lower = query.casefold()
-    if "open question" in lower or "open idea" in lower or "open loops" in lower:
-        return "open_loops"
-    if lower.startswith(("tell me everything about ", "tell me about ", "what do i know about ")):
-        return "profile"
-    return "memories"
-
-
-def extract_profile_name(query: str) -> str:
-    lower = query.casefold()
-    prefixes = [
-        "tell me everything about ",
-        "tell me about ",
-        "what do i know about ",
-    ]
-    for prefix in prefixes:
-        if lower.startswith(prefix):
-            return query[len(prefix) :].strip(" ?.")
-    return query.strip(" ?.")
-
-
-def build_profile_response(
-    name: str,
-    settings: Settings,
-    *,
-    entity_type: str | None = None,
-    include_superseded: bool = False,
-) -> RecallResponse | None:
-    store = BrainStore(settings)
-    profile = store.entity_profile(
-        name,
-        entity_type=entity_type,
-        include_superseded=include_superseded,
-    )
-    if profile is None:
-        return None
-
-    entity = profile["entity"]
-    memories = profile["memories"]
-    relationships = profile["relationships"]
-    facts = [
-        {
-            "memory_id": memory["id"],
-            "kind": memory["kind"],
-            "statement": memory["statement"],
-            "status": memory["status"],
-            "confidence": memory["confidence"],
-        }
-        for memory in memories
-    ]
-    evidence = [
-        {
-            "memory_id": memory["id"],
-            "source_id": memory.get("source_id"),
-            "quote": memory.get("source_quote") or memory["statement"],
-        }
-        for memory in memories
-    ]
-    lines = [entity["canonical_name"], "Identity"]
-    lines.append(f"- {entity['type']}; confidence {entity['confidence']}.")
-    if profile["aliases"]:
-        alias_names = sorted({alias["alias"] for alias in profile["aliases"]})
-        lines.append(f"- Aliases: {', '.join(alias_names)}.")
-    lines.append("Known facts")
-    known = [memory for memory in memories if memory["kind"] not in {"person_interaction", "open_question"}]
-    lines.extend([f"- {memory['statement']} [{memory['id']}]" for memory in known] or ["- None known."])
-    lines.append("Interactions")
-    interactions = [memory for memory in memories if memory["kind"] == "person_interaction"]
-    lines.extend(
-        [f"- {memory['statement']} [{memory['id']}]" for memory in interactions] or ["- None known."]
-    )
-    lines.append("Relationships")
-    lines.extend(
-        [
-            f"- {relationship['predicate']} {relationship['other_name']} "
-            f"[evidence: {relationship['evidence_memory_id']}]"
-            for relationship in relationships
-        ]
-        or ["- None known."]
-    )
-    lines.append("Open loops")
-    lines.extend(
-        [f"- {loop['statement']} [{loop['memory_id']}]" for loop in profile["open_loops"]]
-        or ["- None known."]
-    )
-    lines.append("Conflicts / uncertainties")
-    lines.append("- No conflicts recorded.")
-    return RecallResponse(answer="\n".join(lines), facts=facts, evidence=evidence)
-
-
-def render_open_loops(loops: list[dict[str, Any]]) -> str:
-    if not loops:
-        return "No open loops found."
-    lines = ["Open loops"]
-    for loop in loops:
-        lines.append(f"- {loop['statement']} [{loop['memory_id']}]")
-    return "\n".join(lines)
-
-
-def render_memory_answer(memories: list[dict[str, Any]]) -> str:
-    if not memories:
-        return "No matching memories found."
-    lines = ["Known memories"]
-    for memory in memories:
-        lines.append(
-            f"- {memory['statement']} "
-            f"[{memory['id']}; {memory['kind']}; {memory['confidence']}]"
-        )
-    return "\n".join(lines)
 
 
 def get_memory(memory_id: str, settings: Settings) -> dict[str, Any] | None:
@@ -710,12 +308,14 @@ def profile_entity(
     name: str,
     entity_type: str | None = None,
     include_superseded: bool = False,
+    include_conflicts: bool = True,
 ) -> RecallResponse:
     response = build_profile_response(
         name,
         settings,
         entity_type=entity_type,
         include_superseded=include_superseded,
+        include_conflicts=include_conflicts,
     )
     if response is None:
         return RecallResponse(answer=f"No entity found for {name}.")
