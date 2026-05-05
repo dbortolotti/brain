@@ -40,6 +40,7 @@ class EvalQuery(BaseModel):
     dataset: str
     search_type: str
     query: str
+    node_name: list[str] | None = None
+    node_name_filter_operator: str = "OR"
     must_include: list[str] = Field(default_factory=list)
     rubric: dict[str, float] = Field(default_factory=dict)
-

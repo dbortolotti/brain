@@ -82,6 +82,8 @@ class Settings(BaseSettings):
     brain_request_log_path: str = "./.data/logs/requests.jsonl"
     brain_request_log_max_body_bytes: int = 1024 * 1024
     brain_service_name: str = "Brain"
+    brain_database_url: str = "sqlite:///.data/brain/brain.db"
+    brain_owner_name: str = "Daniele"
     brain_prod_root: str = "/Volumes/xpg_usb4/prod/brain"
     brain_launchd_label: str = "com.brain.mcp"
     brain_health_path: str = "/healthz"
@@ -252,6 +254,8 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "BRAIN_REQUEST_LOG_ENABLED": str(settings.brain_request_log_enabled).lower(),
         "BRAIN_REQUEST_LOG_PATH": settings.brain_request_log_path,
         "BRAIN_REQUEST_LOG_MAX_BODY_BYTES": str(settings.brain_request_log_max_body_bytes),
+        "BRAIN_DATABASE_URL": settings.brain_database_url,
+        "BRAIN_OWNER_NAME": settings.brain_owner_name,
         "BRAIN_UI_ENABLED": str(settings.brain_ui_enabled).lower(),
         "BRAIN_UI_HOST": settings.brain_ui_host,
         "BRAIN_UI_PROXY_PORT": str(settings.brain_ui_proxy_port),

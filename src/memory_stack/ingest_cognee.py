@@ -38,6 +38,7 @@ async def ingest_items(
             dataset_name=item.dataset_name,
             temporal=temporal,
             self_improvement=self_improvement,
+            node_set=item.tags or None,
             settings=settings,
         )
         elapsed = time.perf_counter() - start

@@ -25,6 +25,8 @@ async def recall(
     dataset: str,
     search_type: str,
     top_k: int,
+    node_name: list[str] | None,
+    node_name_filter_operator: str,
     output_dir: str,
 ) -> dict:
     settings = load_settings()
@@ -36,6 +38,8 @@ async def recall(
         dataset=dataset,
         search_type=normalized_search_type,
         top_k=top_k,
+        node_name=node_name,
+        node_name_filter_operator=node_name_filter_operator,
         settings=settings,
     )
     elapsed = time.perf_counter() - start
@@ -45,6 +49,8 @@ async def recall(
         "dataset": dataset,
         "search_type": normalized_search_type,
         "top_k": top_k,
+        "node_name": node_name,
+        "node_name_filter_operator": node_name_filter_operator,
         "latency_seconds": elapsed,
         "result": to_jsonable(result),
     }
@@ -64,9 +70,21 @@ def main(
     dataset: str = typer.Option("property_trial", "--dataset"),
     search_type: str = typer.Option("TEMPORAL", "--search-type"),
     top_k: int = typer.Option(10, "--top-k"),
+    node_name: list[str] | None = typer.Option(None, "--node-name"),
+    node_name_filter_operator: str = typer.Option("OR", "--node-name-filter-operator"),
     output_dir: str = typer.Option("eval/results/raw", "--output-dir"),
 ) -> None:
-    asyncio.run(recall(query, dataset, search_type, top_k, output_dir))
+    asyncio.run(
+        recall(
+            query,
+            dataset,
+            search_type,
+            top_k,
+            node_name,
+            node_name_filter_operator,
+            output_dir,
+        )
+    )
 
 
 if __name__ == "__main__":

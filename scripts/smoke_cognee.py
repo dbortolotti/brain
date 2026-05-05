@@ -29,6 +29,7 @@ async def run_smoke() -> int:
                 item.to_ingestion_text(),
                 dataset_name=item.dataset_name,
                 temporal=True,
+                node_set=item.tags or None,
                 settings=settings,
             )
         console.print("[green][PASS][/green] ingest succeeded")
@@ -84,4 +85,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

@@ -53,6 +53,8 @@ async def run_eval(queries_path: str, output_path: str, top_k: int = 10) -> list
             dataset=eval_query.dataset,
             search_type=eval_query.search_type,
             top_k=top_k,
+            node_name=eval_query.node_name,
+            node_name_filter_operator=eval_query.node_name_filter_operator,
             settings=settings,
         )
         elapsed = time.perf_counter() - start
@@ -106,4 +108,3 @@ def main(
 
 if __name__ == "__main__":
     app()
-

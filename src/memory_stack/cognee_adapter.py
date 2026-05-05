@@ -15,6 +15,26 @@ class DatasourceNotFoundError(ValueError):
     """Raised when a datasource cannot be found in Cognee's dataset table."""
 
 
+SEARCH_TYPES = [
+    "SUMMARIES",
+    "CHUNKS",
+    "RAG_COMPLETION",
+    "TRIPLET_COMPLETION",
+    "GRAPH_COMPLETION",
+    "GRAPH_COMPLETION_DECOMPOSITION",
+    "GRAPH_SUMMARY_COMPLETION",
+    "CYPHER",
+    "NATURAL_LANGUAGE",
+    "GRAPH_COMPLETION_COT",
+    "GRAPH_COMPLETION_CONTEXT_EXTENSION",
+    "FEELING_LUCKY",
+    "TEMPORAL",
+    "CODING_RULES",
+    "CHUNKS_LEXICAL",
+]
+NODE_NAME_FILTER_OPERATORS = {"AND", "OR"}
+
+
 def import_cognee() -> Any:
     try:
         import cognee  # type: ignore
@@ -79,33 +99,59 @@ def resolve_search_type(search_type: str) -> Any:
         return value
 
 
+def normalize_optional_string_list(value: Any, *, field_name: str) -> list[str] | None:
+    if value is None:
+        return None
+    if isinstance(value, str):
+        items = [value]
+    elif isinstance(value, list | tuple | set):
+        items = list(value)
+    else:
+        raise ValueError(f"{field_name} must be a string or list of strings.")
+
+    normalized = [str(item).strip() for item in items if str(item).strip()]
+    return normalized or None
+
+
+def normalize_node_name_filter_operator(value: str) -> str:
+    normalized = value.strip().upper()
+    if normalized not in NODE_NAME_FILTER_OPERATORS:
+        raise ValueError("node_name_filter_operator must be either AND or OR.")
+    return normalized
+
+
 async def remember_text(
     text: str,
     *,
     dataset_name: str,
     temporal: bool = True,
     self_improvement: bool = False,
+    node_set: list[str] | None = None,
     settings: Settings | None = None,
 ) -> Any:
     if settings is not None:
         apply_runtime_environment(settings)
     cognee = import_cognee()
+    normalized_node_set = normalize_optional_string_list(node_set, field_name="node_set")
 
     if hasattr(cognee, "remember"):
+        kwargs: dict[str, Any] = {
+            "dataset_name": dataset_name,
+            "temporal_cognify": temporal,
+            "self_improvement": self_improvement,
+        }
+        if normalized_node_set is not None:
+            kwargs["node_set"] = normalized_node_set
         try:
-            return await maybe_await(
-                cognee.remember(
-                    text,
-                    dataset_name=dataset_name,
-                    temporal_cognify=temporal,
-                    self_improvement=self_improvement,
-                )
-            )
+            return await maybe_await(cognee.remember(text, **kwargs))
         except TypeError:
             return await maybe_await(cognee.remember(text, dataset_name=dataset_name))
 
     if hasattr(cognee, "add"):
-        await maybe_await(cognee.add(text, dataset_name=dataset_name))
+        add_kwargs: dict[str, Any] = {"dataset_name": dataset_name}
+        if normalized_node_set is not None:
+            add_kwargs["node_set"] = normalized_node_set
+        await maybe_await(cognee.add(text, **add_kwargs))
         if hasattr(cognee, "cognify"):
             kwargs: dict[str, Any] = {"datasets": [dataset_name]}
             if temporal:
@@ -117,6 +163,47 @@ async def remember_text(
         return None
 
     raise RuntimeError("Installed Cognee package exposes neither remember() nor add().")
+
+
+async def add_text(
+    text: str,
+    *,
+    dataset_name: str,
+    node_set: list[str] | None = None,
+    settings: Settings | None = None,
+) -> Any:
+    if settings is not None:
+        apply_runtime_environment(settings)
+    cognee = import_cognee()
+    if not hasattr(cognee, "add"):
+        raise RuntimeError("Installed Cognee package does not expose add().")
+
+    kwargs: dict[str, Any] = {"dataset_name": dataset_name}
+    normalized_node_set = normalize_optional_string_list(node_set, field_name="node_set")
+    if normalized_node_set is not None:
+        kwargs["node_set"] = normalized_node_set
+    return await maybe_await(cognee.add(text, **kwargs))
+
+
+async def cognify_dataset(
+    dataset_name: str,
+    *,
+    temporal: bool = True,
+    settings: Settings | None = None,
+) -> Any:
+    if settings is not None:
+        apply_runtime_environment(settings)
+    cognee = import_cognee()
+    if not hasattr(cognee, "cognify"):
+        raise RuntimeError("Installed Cognee package does not expose cognify().")
+
+    kwargs: dict[str, Any] = {"datasets": [dataset_name]}
+    if temporal:
+        kwargs["temporal_cognify"] = True
+    try:
+        return await maybe_await(cognee.cognify(**kwargs))
+    except TypeError:
+        return await maybe_await(cognee.cognify(datasets=[dataset_name]))
 
 
 async def list_datasources(*, settings: Settings | None = None) -> list[dict[str, Any]]:
@@ -190,35 +277,52 @@ async def delete_datasource(
 async def recall_text(
     *,
     query: str,
-    dataset: str,
+    dataset: str | None,
     search_type: str,
     top_k: int = 10,
+    node_name: list[str] | None = None,
+    node_name_filter_operator: str = "OR",
     settings: Settings | None = None,
 ) -> Any:
     if settings is not None:
         apply_runtime_environment(settings)
     cognee = import_cognee()
     query_type = resolve_search_type(search_type)
+    datasets = [dataset] if dataset else None
+    normalized_node_name = normalize_optional_string_list(node_name, field_name="node_name")
+    normalized_operator = normalize_node_name_filter_operator(node_name_filter_operator)
 
     if hasattr(cognee, "recall"):
+        kwargs: dict[str, Any] = {
+            "query_text": query,
+            "query_type": query_type,
+            "datasets": datasets,
+            "top_k": top_k,
+        }
+        if normalized_node_name is not None:
+            kwargs["node_name"] = normalized_node_name
+            kwargs["node_name_filter_operator"] = normalized_operator
         try:
-            return await maybe_await(
-                cognee.recall(
-                    query_text=query,
-                    query_type=query_type,
-                    datasets=[dataset],
-                    top_k=top_k,
-                )
-            )
+            return await maybe_await(cognee.recall(**kwargs))
         except TypeError:
-            return await maybe_await(
-                cognee.recall(query_text=query, datasets=[dataset], top_k=top_k)
-            )
+            return await maybe_await(cognee.recall(query_text=query, datasets=datasets, top_k=top_k))
 
     if hasattr(cognee, "search"):
+        scoped_kwargs: dict[str, Any] = {}
+        if normalized_node_name is not None:
+            scoped_kwargs["node_name"] = normalized_node_name
+            scoped_kwargs["node_name_filter_operator"] = normalized_operator
         attempts = [
-            {"query_text": query, "query_type": query_type, "datasets": [dataset], "top_k": top_k},
-            {"query_text": query, "query_type": query_type, "datasets": [dataset]},
+            {
+                "query_text": query,
+                "query_type": query_type,
+                "datasets": datasets,
+                "top_k": top_k,
+                **scoped_kwargs,
+            },
+            {"query_text": query, "query_type": query_type, "datasets": datasets, **scoped_kwargs},
+            {"query_text": query, "query_type": query_type, "datasets": datasets, "top_k": top_k},
+            {"query_text": query, "query_type": query_type, "datasets": datasets},
             {"query_text": query, "query_type": query_type},
             {"query_text": query},
         ]
