@@ -145,8 +145,26 @@ def test_recall_include_superseded_keeps_deleted_and_rejected_hidden(tmp_path) -
     }
 
 
-def test_ingest_source_request_accepts_article_url(tmp_path) -> None:
+def test_ingest_source_request_accepts_article_url(tmp_path, monkeypatch) -> None:
     settings = brain_test_settings(tmp_path)
+
+    class FakeResponse:
+        text = """
+        <html>
+          <head><title>Fetched article title</title></head>
+          <body><article><p>AI memory systems need durable source evidence.</p></article></body>
+        </html>
+        """
+
+        def raise_for_status(self) -> None:
+            return None
+
+    def fake_get(url, **kwargs):
+        assert url == "https://example.com/ai-memory"
+        assert kwargs["follow_redirects"] is True
+        return FakeResponse()
+
+    monkeypatch.setattr("memory_stack.ingestion.article_loader.httpx.get", fake_get)
 
     receipt = ingest_source(
         IngestSourceRequest(
@@ -165,7 +183,15 @@ def test_ingest_source_request_accepts_article_url(tmp_path) -> None:
     assert source["kind"] == "article"
     assert source["title"] == "AI memory note"
     assert source["uri"] == "https://example.com/ai-memory"
+    assert "durable source evidence" in source["text"]
+    assert source["status"] == "processed"
+    assert source["metadata_json"]["fetched"] is True
     assert source["metadata_json"]["why_saved"] == "Useful for memory design."
+    sync_rows = BrainStore(settings).get_cognee_sync(receipt.source.source_id)
+    assert {
+        (row["object_type"], row["dataset"], row["status"])
+        for row in sync_rows
+    } == {("source", "sources", "pending")}
 
 
 def test_ingest_source_dry_run_does_not_write_rows(tmp_path) -> None:
@@ -184,6 +210,58 @@ def test_ingest_source_dry_run_does_not_write_rows(tmp_path) -> None:
     assert receipt.source.created is True
     assert receipt.source.source_id is None
     assert BrainStore(settings).search_memory("knowledge graphs") == []
+
+
+def test_table_source_creates_source_and_table_note(tmp_path) -> None:
+    settings = brain_test_settings(tmp_path)
+    table = "\n".join(
+        [
+            "| Person | Preference |",
+            "| --- | --- |",
+            "| Sam | Bill Evans |",
+            "| Daniele | Knowledge graphs |",
+        ]
+    )
+
+    receipt = ingest_source(
+        IngestSourceRequest(source=table, source_kind="table", title="Preferences"),
+        settings,
+    )
+
+    source = BrainStore(settings).get_source(receipt.source.source_id)
+    memory = BrainStore(settings).get_memory(receipt.memory_cards[0].id)
+    assert receipt.classification == "table"
+    assert source["kind"] == "table"
+    assert source["metadata_json"]["columns"] == ["Person", "Preference"]
+    assert source["metadata_json"]["row_count"] == 2
+    assert memory["kind"] == "table_note"
+    assert memory["metadata_json"]["sample_rows"][0] == {
+        "Person": "Sam",
+        "Preference": "Bill Evans",
+    }
+
+
+def test_transcript_source_preserves_participants(tmp_path) -> None:
+    settings = brain_test_settings(tmp_path)
+    transcript = "\n".join(
+        [
+            "Daniele: We should keep Brain DB as source of truth.",
+            "Sam: Cognee should stay rebuildable.",
+            "Daniele: Add source-backed recall next.",
+        ]
+    )
+
+    receipt = ingest_source(
+        IngestSourceRequest(source=transcript, source_kind="transcript", title="Brain sync"),
+        settings,
+    )
+
+    source = BrainStore(settings).get_source(receipt.source.source_id)
+    assert receipt.classification == "transcript"
+    assert source["kind"] == "transcript"
+    assert source["metadata_json"]["participants"] == ["Daniele", "Sam"]
+    assert source["metadata_json"]["turn_count"] == 3
+    assert receipt.memory_cards[0].kind == "source_summary"
 
 
 def brain_test_settings(tmp_path) -> Settings:

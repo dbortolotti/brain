@@ -84,6 +84,17 @@ class Settings(BaseSettings):
     brain_service_name: str = "Brain"
     brain_database_url: str = "sqlite:///.data/brain/brain.db"
     brain_owner_name: str = "Daniele"
+    brain_llm_enabled: bool = False
+    brain_llm_provider: str | None = None
+    brain_llm_model: str | None = None
+    brain_cognee_enabled: bool = False
+    brain_cognee_recall_enabled: bool = False
+    brain_cognee_memory_dataset: str = "memory"
+    brain_cognee_sources_dataset: str = "sources"
+    brain_cognee_data_dataset: str = "data"
+    brain_cognee_recall_top_k: int = 10
+    brain_slack_enabled: bool = False
+    brain_log_level: str = "INFO"
     brain_prod_root: str = "/Volumes/xpg_usb4/prod/brain"
     brain_launchd_label: str = "com.brain.mcp"
     brain_health_path: str = "/healthz"
@@ -256,6 +267,17 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "BRAIN_REQUEST_LOG_MAX_BODY_BYTES": str(settings.brain_request_log_max_body_bytes),
         "BRAIN_DATABASE_URL": settings.brain_database_url,
         "BRAIN_OWNER_NAME": settings.brain_owner_name,
+        "BRAIN_LLM_ENABLED": str(settings.brain_llm_enabled).lower(),
+        "BRAIN_LLM_PROVIDER": settings.brain_llm_provider or "",
+        "BRAIN_LLM_MODEL": settings.brain_llm_model or "",
+        "BRAIN_COGNEE_ENABLED": str(settings.brain_cognee_enabled).lower(),
+        "BRAIN_COGNEE_RECALL_ENABLED": str(settings.brain_cognee_recall_enabled).lower(),
+        "BRAIN_COGNEE_MEMORY_DATASET": settings.brain_cognee_memory_dataset,
+        "BRAIN_COGNEE_SOURCES_DATASET": settings.brain_cognee_sources_dataset,
+        "BRAIN_COGNEE_DATA_DATASET": settings.brain_cognee_data_dataset,
+        "BRAIN_COGNEE_RECALL_TOP_K": str(settings.brain_cognee_recall_top_k),
+        "BRAIN_SLACK_ENABLED": str(settings.brain_slack_enabled).lower(),
+        "BRAIN_LOG_LEVEL": settings.brain_log_level,
         "BRAIN_UI_ENABLED": str(settings.brain_ui_enabled).lower(),
         "BRAIN_UI_HOST": settings.brain_ui_host,
         "BRAIN_UI_PROXY_PORT": str(settings.brain_ui_proxy_port),

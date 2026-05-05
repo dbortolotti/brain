@@ -10,7 +10,10 @@ from memory_stack.brain_models import (
     SourceCandidate,
 )
 from memory_stack.config import Settings
+from memory_stack.ingestion.article_loader import load_article
 from memory_stack.ingestion.classifier import source_kind_for_input_type
+from memory_stack.ingestion.table_parser import parse_table, table_summary
+from memory_stack.ingestion.transcript_parser import parse_transcript, transcript_summary
 
 
 FAMILY_TWINS_RE = re.compile(
@@ -47,18 +50,29 @@ class CompiledInput:
         classification: str,
         source: SourceCandidate | None,
         memory_cards: list[MemoryCandidate],
+        confidence: str = "medium",
+        sufficient: bool = False,
     ) -> None:
         self.classification = classification
         self.source = source
         self.memory_cards = memory_cards
+        self.confidence = confidence
+        self.sufficient = sufficient
 
 
 def compile_input(request: RememberRequest, settings: Settings) -> CompiledInput:
-    text = compact_statement(request.input)
-    input_type = request.input_type if request.input_type != "auto" else classify_input(text)
+    raw_text = request.input.strip()
+    input_type = request.input_type if request.input_type != "auto" else classify_input(raw_text)
+    text = raw_text if preserves_source_structure(input_type) else compact_statement(raw_text)
     source = source_for_input(text, input_type, request.source_policy, request.context)
     if request.source_policy == "source_only":
-        return CompiledInput(classification=input_type, source=source, memory_cards=[])
+        return CompiledInput(
+            classification=input_type,
+            source=source,
+            memory_cards=[],
+            confidence="high",
+            sufficient=True,
+        )
 
     if input_type == "family_fact":
         cards = [compile_family_fact(text, request, settings)]
@@ -84,7 +98,13 @@ def compile_input(request: RememberRequest, settings: Settings) -> CompiledInput
             card.model_copy(update={"source_quote": card.source_quote or text[:500]})
             for card in cards
         ]
-    return CompiledInput(classification=input_type, source=source, memory_cards=cards)
+    return CompiledInput(
+        classification=input_type,
+        source=source,
+        memory_cards=cards,
+        confidence=rule_confidence(input_type, cards),
+        sufficient=rule_sufficient(input_type),
+    )
 
 
 def classify_input(text: str) -> str:
@@ -100,11 +120,24 @@ def classify_input(text: str) -> str:
         return "article_url"
     if "\n|" in text or text.count(",") >= 4 and "\n" in text:
         return "table"
+    if len(parse_transcript(text).turns) >= 2:
+        return "transcript"
     if len(text) > 1200 or text.startswith("#"):
         return "source_text"
     if "concluded" in text.casefold() or "should use" in text.casefold():
         return "chat_conclusion"
     return "basic_fact"
+
+
+def preserves_source_structure(input_type: str) -> bool:
+    return input_type in {
+        "article",
+        "article_url",
+        "transcript",
+        "markdown",
+        "source_text",
+        "table",
+    }
 
 
 def source_for_input(
@@ -125,16 +158,51 @@ def source_for_input(
         metadata["why_saved"] = why_saved
 
     if input_type == "article_url":
+        article = load_article(text, title=title, why_saved=why_saved)
         return SourceCandidate(
             kind="article",
-            title=title or text,
+            title=article.title or title or text,
             uri=text,
-            raw_text=text,
-            summary=why_saved or f"Saved article URL: {text}",
+            raw_text=article.text,
+            summary=article.summary or why_saved or f"Saved article URL: {text}",
             metadata={
                 **metadata,
-                "capture_note": "URL captured; article fetching is not implemented yet.",
+                **article.metadata,
             },
+            status=article.status,
+        )
+    if input_type == "transcript":
+        parse_result = parse_transcript(text)
+        metadata.update(
+            {
+                "participants": parse_result.participants,
+                "turn_count": len(parse_result.turns),
+                "parser": parse_result.metadata.get("parser"),
+            }
+        )
+        return SourceCandidate(
+            kind="transcript",
+            title=title,
+            raw_text=text,
+            summary=why_saved or transcript_summary(parse_result, text),
+            metadata=metadata,
+        )
+    if input_type == "table":
+        table = parse_table(text)
+        metadata.update(
+            {
+                "columns": table.columns,
+                "row_count": table.row_count,
+                "sample_rows": table.sample_rows,
+                "table_kind": table.kind,
+            }
+        )
+        return SourceCandidate(
+            kind="table",
+            title=title,
+            raw_text=text,
+            summary=why_saved or table_summary(table),
+            metadata=metadata,
         )
     if input_type in {"article", "transcript", "markdown", "source_text", "table"}:
         return SourceCandidate(
@@ -160,6 +228,27 @@ def string_or_none(value: object) -> str | None:
         return None
     text = str(value).strip()
     return text or None
+
+
+def rule_confidence(input_type: str, cards: list[MemoryCandidate]) -> str:
+    if input_type in {"family_fact", "open_question", "research_question"}:
+        return "high"
+    if input_type == "person_interaction":
+        return "high"
+    if cards and all(card.confidence == "high" for card in cards):
+        return "high"
+    return "medium"
+
+
+def rule_sufficient(input_type: str) -> bool:
+    return input_type in {
+        "family_fact",
+        "person_interaction",
+        "open_question",
+        "research_question",
+        "basic_fact",
+        "chat_conclusion",
+    }
 
 
 def compile_family_fact(
@@ -296,13 +385,20 @@ def compile_article_note(text: str, request: RememberRequest) -> MemoryCandidate
 
 def compile_table_note(text: str, request: RememberRequest) -> MemoryCandidate:
     first_line = text.splitlines()[0] if text.splitlines() else "table"
+    table = parse_table(text)
     return MemoryCandidate(
         kind="table_note",
         statement=f"Stored a small table: {first_line[:160]}",
-        summary=text[:500],
+        summary=table_summary(table),
         confidence="medium",
         observed_at=request.observed_at,
-        metadata={"topics": infer_topics(text)},
+        metadata={
+            "topics": infer_topics(text),
+            "columns": table.columns,
+            "row_count": table.row_count,
+            "sample_rows": table.sample_rows,
+            "table_kind": table.kind,
+        },
     )
 
 

@@ -16,14 +16,20 @@ from memory_stack.brain_store import BrainStore, content_hash, stable_id
 from memory_stack.config import Settings
 from memory_stack.ingestion.classifier import input_type_for_source_kind
 from memory_stack.ingestion.memory_compiler import compile_memory
+from memory_stack.llm.client import LLMClient
 from memory_stack.recall.planner import extract_profile_name, infer_recall_mode
 from memory_stack.recall.profile_builder import build_profile_response
 from memory_stack.recall.retriever import retrieve_memories, retrieve_open_loops
 from memory_stack.recall.synthesizer import render_memory_answer, render_open_loops
 
 
-def remember(request: RememberRequest, settings: Settings) -> IngestionReceipt:
-    compiled = compile_memory(request, settings)
+def remember(
+    request: RememberRequest,
+    settings: Settings,
+    *,
+    llm_client: LLMClient | None = None,
+) -> IngestionReceipt:
+    compiled = compile_memory(request, settings, llm_client=llm_client)
     input_hash = content_hash(request.input, request.input_type, request.context)
     run_id = stable_id("dry_ing", input_hash)
     if request.dry_run:
@@ -68,6 +74,19 @@ def remember(request: RememberRequest, settings: Settings) -> IngestionReceipt:
                 }
             )
             source_id = source["id"]
+            projection_hash = content_hash(
+                source["id"],
+                source["kind"],
+                source.get("uri"),
+                source.get("summary"),
+                source.get("status"),
+            )
+            store.mark_cognee_pending(
+                object_type="source",
+                object_id=source["id"],
+                dataset=settings.brain_cognee_sources_dataset,
+                projection_hash=projection_hash,
+            )
 
         receipt = IngestionReceipt(
             ingestion_run_id=run["id"],
@@ -162,7 +181,7 @@ def remember(request: RememberRequest, settings: Settings) -> IngestionReceipt:
             store.mark_cognee_pending(
                 object_type="memory",
                 object_id=memory["id"],
-                dataset="memory",
+                dataset=settings.brain_cognee_memory_dataset,
                 projection_hash=projection_hash,
             )
 
@@ -185,9 +204,15 @@ def remember(request: RememberRequest, settings: Settings) -> IngestionReceipt:
 def ingest_source(
     request: IngestSourceRequest | RememberRequest,
     settings: Settings,
+    *,
+    llm_client: LLMClient | None = None,
 ) -> IngestionReceipt:
     if isinstance(request, RememberRequest):
-        return remember(request.model_copy(update={"source_policy": "source_and_memory"}), settings)
+        return remember(
+            request.model_copy(update={"source_policy": "source_and_memory"}),
+            settings,
+            llm_client=llm_client,
+        )
 
     remember_request = RememberRequest(
         input=request.source,
@@ -201,7 +226,7 @@ def ingest_source(
             "source_kind": request.source_kind,
         },
     )
-    return remember(remember_request, settings)
+    return remember(remember_request, settings, llm_client=llm_client)
 
 
 def recall(request: RecallRequest, settings: Settings) -> RecallResponse:
