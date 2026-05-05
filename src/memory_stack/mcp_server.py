@@ -23,22 +23,12 @@ from memory_stack.brain_service import (
 from memory_stack.brain_store import BrainStore
 from memory_stack.cognee_adapter import (
     DatasourceNotFoundError,
-    add_text,
-    cognify_dataset,
     create_datasource as create_cognee_datasource,
     delete_datasource as delete_cognee_datasource,
     list_datasources as list_cognee_datasources,
-    recall_text,
-    remember_text,
 )
 from memory_stack.config import Settings, load_settings
 from memory_stack.io import to_jsonable
-from memory_stack.name_resolution import (
-    load_node_set_registry,
-    register_node_sets,
-    resolve_dataset_name,
-    resolve_node_set_names,
-)
 from memory_stack.oauth import BrainOAuthProvider, parse_bearer
 from memory_stack.request_logging import RequestResponseLogMiddleware
 
@@ -86,31 +76,6 @@ class ResolveConflictRequest(BaseModel):
     action: str
     note: str | None = None
 
-
-MEMORY_TOOL_NAMES = [
-    "brain.remember",
-    "brain.ingest_source",
-    "brain.recall",
-    "brain.profile_entity",
-    "brain.list_open_loops",
-    "brain.get_memory",
-    "brain.get_source",
-    "brain.resolve_conflict",
-    "brain.forget",
-]
-
-TOOL_ALIASES = {
-    "remember": "brain.remember",
-    "ingest_source": "brain.ingest_source",
-    "recall": "brain.recall",
-    "profile_entity": "brain.profile_entity",
-    "list_open_loops": "brain.list_open_loops",
-    "get_memory": "brain.get_memory",
-    "get_source": "brain.get_source",
-    "resolve_conflict": "brain.resolve_conflict",
-    "forget": "brain.forget",
-    "sync_cognee": "brain.sync_cognee",
-}
 
 INPUT_TYPES = [
     "auto",
@@ -693,37 +658,12 @@ async def handle_json_rpc(payload: Any) -> Any:
 
 
 async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
-    raw_name = str(params.get("name") or "")
-    name = TOOL_ALIASES.get(raw_name, raw_name)
+    name = str(params.get("name") or "")
     arguments = params.get("arguments") or {}
     if name == "brain.remember":
-        if raw_name == "remember" and "dataset_name" in arguments and "input" not in arguments:
-            text = str(arguments["text"])
-            dataset_name = await resolve_dataset_name(
-                str(arguments["dataset_name"]),
-                settings=settings,
-            )
-            temporal = bool(arguments.get("temporal", True))
-            node_set = resolve_node_set_names(
-                arguments.get("node_set"),
-                settings=settings,
-                for_write=True,
-            )
-            await remember_text(
-                text,
-                dataset_name=dataset_name,
-                temporal=temporal,
-                node_set=node_set,
-                settings=settings,
-            )
-            return json_tool_response(
-                {"status": "remembered"},
-                summary="Remembered legacy Cognee text.",
-            )
-
         request = RememberRequest.model_validate(
             {
-                "input": arguments.get("input", arguments.get("text", "")),
+                "input": arguments.get("input", ""),
                 "input_type": arguments.get("input_type", "auto"),
                 "observed_at": arguments.get("observed_at"),
                 "source_policy": arguments.get("source_policy", "auto"),
@@ -786,81 +726,18 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
             ),
         )
 
-    if name == "add":
-        dataset_name = await resolve_dataset_name(
-            str(arguments["dataset_name"]),
-            settings=settings,
-        )
-        node_set = resolve_node_set_names(
-            arguments.get("node_set"),
-            settings=settings,
-            for_write=True,
-        )
-        await add_text(
-            str(arguments["text"]),
-            dataset_name=dataset_name,
-            node_set=node_set,
-            settings=settings,
-        )
-        return {"content": [{"type": "text", "text": "added"}]}
-
-    if name == "cognify":
-        dataset_name = await resolve_dataset_name(
-            str(arguments["dataset_name"]),
-            settings=settings,
-        )
-        await cognify_dataset(
-            dataset_name,
-            temporal=bool(arguments.get("temporal", True)),
-            settings=settings,
-        )
-        return {"content": [{"type": "text", "text": "cognified"}]}
-
     if name == "brain.recall":
-        legacy_recall = raw_name == "recall" and any(
-            key in arguments
-            for key in ("dataset", "search_type", "node_name", "node_name_filter_operator")
-        ) and not any(
-            key in arguments
-            for key in ("mode", "include_sources", "include_superseded", "limit")
+        request = RecallRequest.model_validate(
+            {
+                "query": arguments["query"],
+                "mode": arguments.get("mode", "auto"),
+                "include_sources": bool(arguments.get("include_sources", True)),
+                "include_superseded": bool(arguments.get("include_superseded", False)),
+                "limit": int(arguments.get("limit", 20)),
+            }
         )
-        if not legacy_recall:
-            request = RecallRequest.model_validate(
-                {
-                    "query": arguments["query"],
-                    "mode": arguments.get("mode", "auto"),
-                    "include_sources": bool(arguments.get("include_sources", True)),
-                    "include_superseded": bool(arguments.get("include_superseded", False)),
-                    "limit": int(arguments.get("limit", arguments.get("top_k", 20))),
-                }
-            )
-            payload = brain_recall(request, settings).model_dump(mode="json")
-            return json_tool_response(payload, summary=payload.get("answer", "Recall complete."))
-
-        raw_dataset = str(arguments.get("dataset", "property_trial")).strip()
-        dataset = (
-            await resolve_dataset_name(
-                raw_dataset,
-                settings=settings,
-            )
-            if raw_dataset
-            else None
-        )
-        node_name = resolve_node_set_names(
-            arguments.get("node_name"),
-            settings=settings,
-            for_write=False,
-        )
-        result = await recall_text(
-            query=str(arguments["query"]),
-            dataset=dataset,
-            search_type=str(arguments.get("search_type", "TEMPORAL")),
-            top_k=int(arguments.get("top_k", 10)),
-            node_name=node_name,
-            node_name_filter_operator=str(arguments.get("node_name_filter_operator", "OR")),
-            settings=settings,
-        )
-        return json_tool_response({"result": result}, summary="Legacy Cognee recall complete.")
+        payload = brain_recall(request, settings).model_dump(mode="json")
+        return json_tool_response(payload, summary=payload.get("answer", "Recall complete."))
 
     if name == "brain.profile_entity":
         entity_type = arguments.get("entity_type")
@@ -940,38 +817,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
         payload = {**payload, "mode": mode, "cognee_sync_status": "stale"}
         return json_tool_response(payload, summary=f"{mode.title()} delete result: {payload['status']}.")
 
-    if name == "brain.sync_cognee":
-        return json_tool_response(
-            {
-                "status": "not_implemented",
-                "detail": "Brain control-plane writes cognee_sync rows; projection worker is a later phase.",
-            }
-        )
-
-    if name == "list_datasources":
-        datasources = await list_cognee_datasources(settings=settings)
-        return json_tool_response({"datasources": datasources})
-
-    if name == "list_node_sets":
-        return json_tool_response({"node_sets": load_node_set_registry(settings)})
-
-    if name in {"create_datasource", "create_dataset"}:
-        datasource = await create_cognee_datasource(str(arguments["name"]), settings=settings)
-        return json_tool_response({"datasource": datasource})
-
-    if name == "create_node_set":
-        register_node_sets(settings, [str(arguments["name"])])
-        return json_tool_response({"node_set": str(arguments["name"])})
-
-    if name == "delete_datasource":
-        datasource = arguments.get("id") or arguments.get("name")
-        if datasource is None:
-            raise ValueError("delete_datasource requires name or id.")
-        return json_tool_response(
-            {"datasource": await delete_cognee_datasource(str(datasource), settings=settings)}
-        )
-
-    raise ValueError(f"Unknown tool: {raw_name}")
+    raise ValueError(f"Unknown tool: {name}")
 
 
 def input_type_for_source_kind(source_kind: str, source: str) -> str:

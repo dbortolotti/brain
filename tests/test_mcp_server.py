@@ -13,7 +13,6 @@ from fastapi.testclient import TestClient
 from memory_stack.config import Settings
 from memory_stack.mcp_server import app
 from memory_stack import mcp_server
-from memory_stack import name_resolution
 from memory_stack.oauth import BrainOAuthProvider
 from memory_stack.request_logging import RequestResponseLogMiddleware, redact_text, redact_url
 
@@ -289,338 +288,32 @@ def test_delete_datasource_http_endpoint(monkeypatch) -> None:
     }
 
 
-def test_list_datasources_mcp_tool(monkeypatch) -> None:
-    async def fake_list_datasources(*, settings):
-        return [{"id": "datasource-1", "name": "property_trial"}]
-
-    monkeypatch.setattr(mcp_server, "list_cognee_datasources", fake_list_datasources)
-
+def test_low_level_legacy_mcp_tools_are_rejected() -> None:
     client = TestClient(app)
-    response = client.post(
-        "/mcp",
-        json={
-            "jsonrpc": "2.0",
-            "id": 1,
-            "method": "tools/call",
-            "params": {"name": "list_datasources", "arguments": {}},
-        },
-    )
-
-    assert response.status_code == 200
-    assert response.json()["result"]["structuredContent"] == {
-        "datasources": [{"id": "datasource-1", "name": "property_trial"}]
-    }
-
-
-def test_remember_mcp_tool_passes_node_set(monkeypatch) -> None:
-    captured = {}
-
-    async def fake_resolve_dataset_name(value, *, settings):
-        assert value == "daily-log"
-        return value
-
-    def fake_resolve_node_set_names(values, *, settings, for_write):
-        assert values == ["decision", "2026-q2"]
-        assert for_write is True
-        return values
-
-    async def fake_remember_text(text, *, dataset_name, temporal, node_set, settings):
-        captured.update(
-            {
-                "text": text,
-                "dataset_name": dataset_name,
-                "temporal": temporal,
-                "node_set": node_set,
-                "settings": settings,
-            }
+    stale_names = [
+        "remember",
+        "recall",
+        "add",
+        "cognify",
+        "list_datasources",
+        "create_dataset",
+        "create_node_set",
+        "list_node_sets",
+        "delete_datasource",
+        "sync_cognee",
+    ]
+    for idx, name in enumerate(stale_names, start=1):
+        response = client.post(
+            "/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": idx,
+                "method": "tools/call",
+                "params": {"name": name, "arguments": {}},
+            },
         )
-
-    monkeypatch.setattr(mcp_server, "resolve_dataset_name", fake_resolve_dataset_name)
-    monkeypatch.setattr(mcp_server, "resolve_node_set_names", fake_resolve_node_set_names)
-    monkeypatch.setattr(mcp_server, "remember_text", fake_remember_text)
-
-    client = TestClient(app)
-    response = client.post(
-        "/mcp",
-        json={
-            "jsonrpc": "2.0",
-            "id": 1,
-            "method": "tools/call",
-            "params": {
-                "name": "remember",
-                "arguments": {
-                    "text": "decision text",
-                    "dataset_name": "daily-log",
-                    "temporal": False,
-                    "node_set": ["decision", "2026-q2"],
-                },
-            },
-        },
-    )
-
-    assert response.status_code == 200
-    assert response.json()["result"]["structuredContent"] == {"status": "remembered"}
-    assert captured["text"] == "decision text"
-    assert captured["dataset_name"] == "daily-log"
-    assert captured["temporal"] is False
-    assert captured["node_set"] == ["decision", "2026-q2"]
-    assert captured["settings"] is mcp_server.settings
-
-
-def test_add_and_cognify_mcp_tools(monkeypatch) -> None:
-    captured = {}
-
-    async def fake_resolve_dataset_name(value, *, settings):
-        assert value == "melcombe-court"
-        return value
-
-    def fake_resolve_node_set_names(values, *, settings, for_write):
-        assert values == "contract"
-        assert for_write is True
-        return ["contract"]
-
-    async def fake_add_text(text, *, dataset_name, node_set, settings):
-        captured["add"] = {
-            "text": text,
-            "dataset_name": dataset_name,
-            "node_set": node_set,
-            "settings": settings,
-        }
-
-    async def fake_cognify_dataset(dataset_name, *, temporal, settings):
-        captured["cognify"] = {
-            "dataset_name": dataset_name,
-            "temporal": temporal,
-            "settings": settings,
-        }
-
-    monkeypatch.setattr(mcp_server, "resolve_dataset_name", fake_resolve_dataset_name)
-    monkeypatch.setattr(mcp_server, "resolve_node_set_names", fake_resolve_node_set_names)
-    monkeypatch.setattr(mcp_server, "add_text", fake_add_text)
-    monkeypatch.setattr(mcp_server, "cognify_dataset", fake_cognify_dataset)
-
-    client = TestClient(app)
-    add_response = client.post(
-        "/mcp",
-        json={
-            "jsonrpc": "2.0",
-            "id": 1,
-            "method": "tools/call",
-            "params": {
-                "name": "add",
-                "arguments": {
-                    "text": "batch item",
-                    "dataset_name": "melcombe-court",
-                    "node_set": "contract",
-                },
-            },
-        },
-    )
-    cognify_response = client.post(
-        "/mcp",
-        json={
-            "jsonrpc": "2.0",
-            "id": 2,
-            "method": "tools/call",
-            "params": {
-                "name": "cognify",
-                "arguments": {"dataset_name": "melcombe-court", "temporal": True},
-            },
-        },
-    )
-
-    assert add_response.status_code == 200
-    assert add_response.json()["result"]["content"][0]["text"] == "added"
-    assert captured["add"]["text"] == "batch item"
-    assert captured["add"]["dataset_name"] == "melcombe-court"
-    assert captured["add"]["node_set"] == ["contract"]
-    assert captured["add"]["settings"] is mcp_server.settings
-
-    assert cognify_response.status_code == 200
-    assert cognify_response.json()["result"]["content"][0]["text"] == "cognified"
-    assert captured["cognify"] == {
-        "dataset_name": "melcombe-court",
-        "temporal": True,
-        "settings": mcp_server.settings,
-    }
-
-
-def test_recall_mcp_tool_passes_search_and_node_filters(monkeypatch) -> None:
-    captured = {}
-
-    async def fake_resolve_dataset_name(value, *, settings):
-        assert value == "daily-log"
-        return value
-
-    def fake_resolve_node_set_names(values, *, settings, for_write):
-        assert values == ["2026-q2", "decision"]
-        assert for_write is False
-        return values
-
-    async def fake_recall_text(
-        *,
-        query,
-        dataset,
-        search_type,
-        top_k,
-        node_name,
-        node_name_filter_operator,
-        settings,
-    ):
-        captured.update(
-            {
-                "query": query,
-                "dataset": dataset,
-                "search_type": search_type,
-                "top_k": top_k,
-                "node_name": node_name,
-                "node_name_filter_operator": node_name_filter_operator,
-                "settings": settings,
-            }
-        )
-        return ["matched"]
-
-    monkeypatch.setattr(mcp_server, "resolve_dataset_name", fake_resolve_dataset_name)
-    monkeypatch.setattr(mcp_server, "resolve_node_set_names", fake_resolve_node_set_names)
-    monkeypatch.setattr(mcp_server, "recall_text", fake_recall_text)
-
-    client = TestClient(app)
-    response = client.post(
-        "/mcp",
-        json={
-            "jsonrpc": "2.0",
-            "id": 1,
-            "method": "tools/call",
-            "params": {
-                "name": "recall",
-                "arguments": {
-                    "query": "What happened?",
-                    "dataset": "daily-log",
-                    "search_type": "GRAPH_COMPLETION",
-                    "top_k": 5,
-                    "node_name": ["2026-q2", "decision"],
-                    "node_name_filter_operator": "AND",
-                },
-            },
-        },
-    )
-
-    assert response.status_code == 200
-    assert response.json()["result"]["structuredContent"] == {"result": ["matched"]}
-    assert captured == {
-        "query": "What happened?",
-        "dataset": "daily-log",
-        "search_type": "GRAPH_COMPLETION",
-        "top_k": 5,
-        "node_name": ["2026-q2", "decision"],
-        "node_name_filter_operator": "AND",
-        "settings": mcp_server.settings,
-    }
-
-
-def test_fuzzy_dataset_match_requests_choice(monkeypatch) -> None:
-    async def fake_list_datasources(*, settings):
-        return [{"id": "1", "name": "my-health"}]
-
-    async def fake_remember_text(*args, **kwargs):
-        raise AssertionError("remember_text should not run until the user chooses")
-
-    monkeypatch.setattr(name_resolution, "list_datasources", fake_list_datasources)
-    monkeypatch.setattr(mcp_server, "remember_text", fake_remember_text)
-
-    client = TestClient(app)
-    response = client.post(
-        "/mcp",
-        json={
-            "jsonrpc": "2.0",
-            "id": 1,
-            "method": "tools/call",
-            "params": {
-                "name": "remember",
-                "arguments": {
-                    "text": "blood pressure note",
-                    "dataset_name": "my_health",
-                },
-            },
-        },
-    )
-
-    assert response.status_code == 200
-    error = response.json()["error"]["message"]
-    assert "I couldn't find dataset 'my_health', but found 'my-health'." in error
-    assert "a) my-health" in error
-    assert "create it first using create_dataset" in error
-
-
-def test_create_dataset_alias_creates_datasource(monkeypatch) -> None:
-    async def fake_create_datasource(name, *, settings):
-        return {"id": "dataset-1", "name": name}
-
-    monkeypatch.setattr(mcp_server, "create_cognee_datasource", fake_create_datasource)
-
-    client = TestClient(app)
-    response = client.post(
-        "/mcp",
-        json={
-            "jsonrpc": "2.0",
-            "id": 1,
-            "method": "tools/call",
-            "params": {
-                "name": "create_dataset",
-                "arguments": {"name": "my_health"},
-            },
-        },
-    )
-
-    assert response.status_code == 200
-    assert response.json()["result"]["structuredContent"] == {
-        "datasource": {"id": "dataset-1", "name": "my_health"}
-    }
-
-
-def test_node_set_registry_tools(monkeypatch) -> None:
-    captured = {}
-
-    def fake_register_node_sets(settings, node_sets):
-        captured["node_sets"] = node_sets
-
-    def fake_load_node_set_registry(settings):
-        return ["decision", "health"]
-
-    monkeypatch.setattr(mcp_server, "register_node_sets", fake_register_node_sets)
-    monkeypatch.setattr(mcp_server, "load_node_set_registry", fake_load_node_set_registry)
-
-    client = TestClient(app)
-    create_response = client.post(
-        "/mcp",
-        json={
-            "jsonrpc": "2.0",
-            "id": 1,
-            "method": "tools/call",
-            "params": {
-                "name": "create_node_set",
-                "arguments": {"name": "my-health"},
-            },
-        },
-    )
-    list_response = client.post(
-        "/mcp",
-        json={
-            "jsonrpc": "2.0",
-            "id": 2,
-            "method": "tools/call",
-            "params": {"name": "list_node_sets", "arguments": {}},
-        },
-    )
-
-    assert create_response.status_code == 200
-    assert create_response.json()["result"]["structuredContent"] == {
-        "node_set": "my-health"
-    }
-    assert captured["node_sets"] == ["my-health"]
-    assert list_response.json()["result"]["structuredContent"] == {
-        "node_sets": ["decision", "health"]
-    }
+        assert response.status_code == 200
+        assert response.json()["error"]["message"] == f"Unknown tool: {name}"
 
 
 def test_auth_enabled_mcp_fails_closed(tmp_path) -> None:

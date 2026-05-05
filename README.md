@@ -33,21 +33,22 @@ The HTTP service for production verification includes:
 - `POST /token`
 - `POST /revoke`
 
-The Brain MCP tool surface now has two layers:
+The Brain MCP tool surface is intentionally small and user-level:
 
-- High-level Brain memory tools: `remember(input, input_type="auto")`, `ingest_source`, `recall`, `profile_entity`, `list_open_loops`, `get_memory`, `resolve_conflict`, `forget`, and `sync_cognee`.
-- Legacy Cognee harness tools: `remember(text, dataset_name, temporal=true, node_set=...)`, `add`, `cognify`, `recall(query, dataset, search_type="TEMPORAL", ...)`, `list_datasources`, `create_datasource`/`create_dataset`, `delete_datasource`, `list_node_sets`, and `create_node_set`.
+- `brain.remember`
+- `brain.ingest_source`
+- `brain.recall`
+- `brain.profile_entity`
+- `brain.list_open_loops`
+- `brain.get_memory`
+- `brain.get_source`
+- `brain.resolve_conflict`
+- `brain.forget`
 
 Brain-owned memory is stored in the application control-plane database configured by
 `BRAIN_DATABASE_URL` and defaults to `sqlite:///.data/brain/brain.db` for local
 development. Set it to a Postgres URL for the production source of truth. Cognee
-is treated as a projection/index; the first control-plane pass writes pending
-`cognee_sync` rows and keeps the direct Cognee tools for evaluation/backfill.
-
-Dataset and node-set names fail closed. If a tool sees a close existing name,
-for example `my_health` versus `my-health`, it refuses the write/read and asks
-you to retry with the exact existing name. To intentionally create the new
-spelling, create the dataset or node set first.
+is treated as a projection/index behind Brain, not as a public MCP tool surface.
 
 The production Cognee web UI is published separately at:
 
