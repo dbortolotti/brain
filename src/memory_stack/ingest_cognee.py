@@ -1,3 +1,7 @@
+"""Legacy direct Cognee ingestion CLI.
+
+New ingestion should go through Brain service or MCP tools.
+"""
 from __future__ import annotations
 
 import asyncio

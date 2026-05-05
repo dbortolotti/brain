@@ -1,4 +1,4 @@
-.PHONY: setup up down check smoke ingest-sample recall-sample eval tokens reset reset-hard mcp-config mcp-http ui-proxy deploy-local-production prod-check ui-prod-check backup cloudflare-verify test lint
+.PHONY: setup up down check smoke ingest-sample recall-sample eval brain-eval tokens reset reset-hard mcp-config mcp-http ui-proxy deploy-local-production prod-check ui-prod-check backup cloudflare-verify test lint
 
 setup:
 	uv sync --all-extras
@@ -23,6 +23,9 @@ recall-sample:
 
 eval:
 	uv run python -m memory_stack.eval_runner --queries eval/queries.yaml --output eval/results/results.csv
+
+brain-eval:
+	uv run python -m memory_stack.evals.cli --output eval/results/brain-golden.json
 
 tokens:
 	uv run python scripts/estimate_tokens.py --input data/samples/synthetic_property_emails.jsonl

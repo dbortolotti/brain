@@ -1332,28 +1332,28 @@ Reminder modes:
 
 Tasks:
 
-  [ ] Add open_loop fields if missing:
+  [x] Add open_loop fields if missing:
         priority
         next_review_at
         last_reminded_at
         reminder_policy
 
-  [ ] Implement:
+  [x] Implement:
         list_due_open_loops()
         mark_reminded(loop_id)
         find_relevant_open_loops(topic/query)
 
-  [ ] Add suppression:
+  [x] Add suppression:
         - do not remind if recently reminded
         - do not remind archived/closed loops
         - require relevance threshold
 
 Tests:
 
-  [ ] Open question creates open_loop.
-  [ ] Closed loop not returned.
-  [ ] Recently reminded loop suppressed unless include_recently_reminded=true.
-  [ ] Topic query retrieves relevant open loop.
+  [x] Open question creates open_loop.
+  [x] Closed loop not returned.
+  [x] Recently reminded loop suppressed unless include_recently_reminded=true.
+  [x] Topic query retrieves relevant open loop.
 
 ================================================================================
 PHASE 12 — SLACK INGESTION AGENT
@@ -1385,10 +1385,10 @@ Commands:
 
 Rules:
 
-  [ ] Slack bot should call Brain API/MCP service methods.
-  [ ] Slack bot should not bypass Brain DB.
-  [ ] Slack receipt should be concise and structured.
-  [ ] Slack undo should soft-delete one ingestion run.
+  [x] Slack bot should call Brain API/MCP service methods.
+  [x] Slack bot should not bypass Brain DB.
+  [x] Slack receipt should be concise and structured.
+  [x] Slack undo should soft-delete one ingestion run.
 
 Receipt example:
 
@@ -1414,9 +1414,9 @@ Receipt example:
 
 Acceptance criteria:
 
-  [ ] Slack commands tested with mocked Slack client.
-  [ ] No secrets committed.
-  [ ] Slack is optional and disabled by default.
+  [x] Slack commands tested with mocked Slack client.
+  [x] No secrets committed.
+  [x] Slack is optional and disabled by default.
 
 ================================================================================
 PHASE 13 — MIGRATIONS AND PACKAGING
@@ -1431,11 +1431,11 @@ Add proper migrations if not already present.
 
 Tasks:
 
-  [ ] Add Alembic if not already configured.
-  [ ] Create initial migration matching current schema.
-  [ ] Add migration for any new columns/tables.
-  [ ] Ensure tests can use in-memory SQLite or test Postgres, depending on current setup.
-  [ ] Document DB setup in README.
+  [x] Add Alembic if not already configured.
+  [x] Create initial migration matching current schema.
+  [x] Add migration for any new columns/tables.
+  [x] Ensure tests can use in-memory SQLite or test Postgres, depending on current setup.
+  [x] Document DB setup in README.
 
 Required docs:
 
@@ -1450,9 +1450,9 @@ Required docs:
 
 Acceptance criteria:
 
-  [ ] Fresh checkout can create schema.
-  [ ] Tests run from clean DB.
-  [ ] No manual schema setup required.
+  [x] Fresh checkout can create schema.
+  [x] Tests run from clean DB.
+  [x] No manual schema setup required.
 
 ================================================================================
 PHASE 14 — EVALUATION HARNESS
@@ -1506,9 +1506,9 @@ Metrics:
 
 Acceptance criteria:
 
-  [ ] Golden fixtures run in CI.
-  [ ] Fake LLM and fake Cognee are supported.
-  [ ] Evals do not require live external services.
+  [x] Golden fixtures run in CI.
+  [x] Fake LLM and fake Cognee are supported.
+  [x] Evals do not require live external services.
 
 ================================================================================
 PHASE 15 — CLEANUP LEGACY STRUCTURE
@@ -1525,22 +1525,22 @@ Current repo has two personalities:
 
 Tasks:
 
-  [ ] Move legacy files under:
+  [x] Move legacy files under:
         src/memory_stack/legacy_eval/
 
       or clearly mark as legacy in docs.
 
-  [ ] Ensure primary README focuses on Brain, not Cognee evals.
+  [x] Ensure primary README focuses on Brain, not Cognee evals.
 
-  [ ] Keep useful eval cases by porting them to Brain eval harness.
+  [x] Keep useful eval cases by porting them to Brain eval harness.
 
-  [ ] Remove dead code only after tests prove it is unused.
+  [x] Remove dead code only after tests prove it is unused.
 
 Acceptance criteria:
 
-  [ ] New contributor sees Brain architecture first.
-  [ ] Legacy tools do not appear as primary interface.
-  [ ] No accidental removal of useful tests.
+  [x] New contributor sees Brain architecture first.
+  [x] Legacy tools do not appear as primary interface.
+  [x] No accidental removal of useful tests.
 
 ================================================================================
 GLOBAL TEST REQUIREMENTS

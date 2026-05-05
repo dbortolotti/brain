@@ -1,39 +1,45 @@
 # Brain
 
-Cognee-native local memory evaluation harness.
+Brain is a local personal memory control plane exposed through a small MCP
+surface. Brain DB is the source of truth for memory identity, lifecycle, entity
+resolution, conflicts, open loops, and Cognee sync state. Cognee is an optional
+semantic projection that can be rebuilt from Brain DB.
 
-## Quick Start
+## Local Dev Setup
 
 ```bash
 cp .env.gemini.example .env
 make setup
-make up
-make check
-make smoke
-make eval
+uv run pytest
 ```
 
-Profiles are selected through `PROFILE` and provider-specific environment variables:
+By default Brain uses SQLite at `sqlite:///.data/brain/brain.db`. The store also
+creates the schema automatically for local tests and dev, and Alembic migrations
+are available for production-controlled setup:
 
-- `gemini` for the Google challenger lane
-- `openai` for the quality-ceiling lane
-- `local` for the Ollama/Fastembed no-cloud lane
+```bash
+uv run alembic upgrade head
+```
 
-The HTTP service for production verification includes:
+## Running The MCP Server
+
+```bash
+make mcp-http
+```
+
+HTTP endpoints include:
 
 - `GET /healthz`
 - `GET|POST /mcp`
-- `GET /datasources` or `GET /list_datasources`
-- `POST /datasources` or `POST /create_datasource`
-- `DELETE /datasources/{datasource}` or `DELETE /delete_datasource/{datasource}`
-- `GET /.well-known/oauth-protected-resource/mcp`
-- `GET /.well-known/oauth-authorization-server`
-- `POST /register`
-- `GET|POST /authorize`
-- `POST /token`
-- `POST /revoke`
+- `POST /memory/remember`
+- `POST /memory/ingest_source`
+- `POST /memory/recall`
+- `POST /memory/profile_entity`
+- `GET /memory/open_loops`
+- `POST /memory/review_recent`
+- `POST /memory/undo_last`
 
-The Brain MCP tool surface is intentionally small and user-level:
+The high-level MCP tools are:
 
 - `brain.remember`
 - `brain.ingest_source`
@@ -44,46 +50,71 @@ The Brain MCP tool surface is intentionally small and user-level:
 - `brain.get_source`
 - `brain.resolve_conflict`
 - `brain.forget`
+- `brain.review_recent`
+- `brain.undo_last`
+- `brain.sync_cognee`
+- `brain.rebuild_cognee`
+- `brain.merge_entities`
 
-Brain-owned memory is stored in the application control-plane database configured by
-`BRAIN_DATABASE_URL` and defaults to `sqlite:///.data/brain/brain.db` for local
-development. Set it to a Postgres URL for the production source of truth. Cognee
-is treated as a projection/index behind Brain, not as a public MCP tool surface.
+Low-level Cognee and SQL operations are intentionally not exposed as public MCP
+tools.
 
-The production Cognee web UI is published separately at:
-
-- `https://brain.dceb.net/ui`
-- local proxy: `http://127.0.0.1:8002`
-- local Cognee frontend: `http://127.0.0.1:3000`
-- local Cognee backend API: `http://127.0.0.1:8001`
-
-The UI does not use the MCP OAuth authorization-code resource directly. The
-browser app and Cognee backend have their own local auth assumptions, so Brain
-puts a small reverse proxy in front of them and gates `/ui`, `/ui-api`, and
-Next.js app routes with the same Brain auth password file used by MCP OAuth
-approval.
-
-Run it locally with:
+## Running Tests
 
 ```bash
-make mcp-http
+uv run ruff check src tests
+uv run pytest
 ```
 
-Run only the UI proxy locally with:
+Unit tests use clean SQLite databases under `tmp_path`. They do not require live
+network, live LLM calls, live Slack, or live Cognee.
 
-```bash
-make ui-proxy
-```
+## Environment Variables
 
-Production deployment is Phase 5 work and uses `/Volumes/xpg_usb4/prod/brain`.
-When production auth is enabled, the OAuth password is stored at
-`/Volumes/xpg_usb4/prod/brain/shared/secrets/brain-auth-password`.
+Core Brain settings:
 
-Production request/response refinement logs are JSONL records written to:
+- `BRAIN_DATABASE_URL=sqlite:///.data/brain/brain.db`
+- `BRAIN_OWNER_NAME=Daniele`
+- `BRAIN_LOG_LEVEL=INFO`
+- `BRAIN_AUTH_ENABLED=false`
+- `BRAIN_AUTH_TOKEN`
 
-```text
-/Volumes/xpg_usb4/prod/brain/shared/logs/requests.jsonl
-```
+LLM compiler settings, disabled by default:
 
-The log captures HTTP metadata plus request and response bodies. OAuth passwords,
-authorization headers, auth codes, client secrets, and issued tokens are redacted.
+- `BRAIN_LLM_ENABLED=false`
+- `BRAIN_LLM_PROVIDER`
+- `BRAIN_LLM_MODEL`
+- `LLM_PROVIDER`
+- `LLM_MODEL`
+- `LLM_API_KEY`
+
+Cognee projection settings, optional:
+
+- `BRAIN_COGNEE_ENABLED=false`
+- `BRAIN_COGNEE_RECALL_ENABLED=false`
+- `BRAIN_COGNEE_MEMORY_DATASET=memory`
+- `BRAIN_COGNEE_SOURCES_DATASET=sources`
+- `BRAIN_COGNEE_DATA_DATASET=data`
+- `BRAIN_COGNEE_RECALL_TOP_K=10`
+
+Slack capture settings, optional:
+
+- `BRAIN_SLACK_ENABLED=false`
+
+Slack command handling is a thin optional layer over Brain service methods. It
+does not bypass Brain DB.
+
+## Profiles
+
+Profiles are selected through `PROFILE` and provider-specific environment
+variables:
+
+- `gemini` for the Google lane
+- `openai` for the OpenAI lane
+- `local` for Ollama/Fastembed no-cloud use
+
+## Legacy Cognee Eval Tools
+
+The old Cognee-first scripts are retained for compatibility and are marked as
+legacy. New work should use the Brain eval harness under
+`src/memory_stack/evals/`.

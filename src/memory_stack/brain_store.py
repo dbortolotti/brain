@@ -21,6 +21,12 @@ def now_utc() -> datetime:
     return datetime.now(UTC)
 
 
+def as_utc(value: datetime) -> datetime:
+    if value.tzinfo is None:
+        return value.replace(tzinfo=UTC)
+    return value.astimezone(UTC)
+
+
 def normalize_name(value: str) -> str:
     return " ".join(WORD_RE.findall(value.casefold()))
 
@@ -997,6 +1003,63 @@ class BrainStore:
             }
             for row in rows
         ]
+
+    def list_due_open_loops(
+        self,
+        *,
+        now: datetime | None = None,
+        include_recently_reminded: bool = False,
+        recent_seconds: int = 60 * 60 * 24,
+        limit: int = 20,
+    ) -> list[dict[str, Any]]:
+        active_now = as_utc(now or now_utc())
+        loops = self.list_open_loops(status="open", limit=limit * 5)
+        due: list[dict[str, Any]] = []
+        for loop in loops:
+            next_review_at = loop.get("next_review_at")
+            if next_review_at is not None and as_utc(next_review_at) > active_now:
+                continue
+            last_reminded_at = loop.get("last_reminded_at")
+            if (
+                not include_recently_reminded
+                and last_reminded_at is not None
+                and (active_now - as_utc(last_reminded_at)).total_seconds() < recent_seconds
+            ):
+                continue
+            due.append(loop)
+            if len(due) >= limit:
+                break
+        return due
+
+    def mark_open_loop_reminded(
+        self,
+        loop_id: str,
+        *,
+        reminded_at: datetime | None = None,
+        next_review_at: datetime | None = None,
+    ) -> bool:
+        values: dict[str, Any] = {
+            "last_reminded_at": reminded_at or now_utc(),
+            "updated_at": now_utc(),
+        }
+        if next_review_at is not None:
+            values["next_review_at"] = next_review_at
+        with self.engine.begin() as conn:
+            result = conn.execute(
+                update(schema.open_loops)
+                .where(schema.open_loops.c.id == loop_id)
+                .values(**values)
+            )
+        return result.rowcount > 0
+
+    def update_open_loop_status(self, loop_id: str, status: str) -> bool:
+        with self.engine.begin() as conn:
+            result = conn.execute(
+                update(schema.open_loops)
+                .where(schema.open_loops.c.id == loop_id)
+                .values(status=status, updated_at=now_utc())
+            )
+        return result.rowcount > 0
 
     def forget(self, *, object_type: str, object_id: str, hard: bool = False) -> bool:
         if hard:
