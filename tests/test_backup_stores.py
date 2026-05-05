@@ -133,3 +133,44 @@ def test_verify_backups_rejects_missing_main_cognee_db(tmp_path) -> None:
     verify_mcp_production.check_backups(backup_dir, settings, failures)
 
     assert any("main Cognee DB" in failure for failure in failures)
+
+
+def test_verify_backups_uses_configured_db_name(tmp_path) -> None:
+    backup_dir = tmp_path / "backups"
+    run_dir = backup_dir / "20260504_120000"
+    for name in ("sqlite", "raw_data", "lancedb", "secrets"):
+        (run_dir / name).mkdir(parents=True, exist_ok=True)
+    main_db_backup = run_dir / "sqlite" / "system__databases__custom_cognee"
+    raw_archive = run_dir / "raw_data" / "data.tar.gz"
+    lancedb_archive = run_dir / "lancedb" / "cognee.lancedb.tar.gz"
+    secrets_archive = run_dir / "secrets" / "secrets.tar.gz"
+    for path in (main_db_backup, raw_archive, lancedb_archive, secrets_archive):
+        path.write_text("backup", encoding="utf-8")
+
+    manifest = {
+        "blockers": [],
+        "sqlite": [
+            {
+                "source": "/prod/shared/data/system/databases/custom_cognee",
+                "backup": str(main_db_backup),
+                "integrity_check": "ok",
+            }
+        ],
+        "raw_data": [{"archive": str(raw_archive)}],
+        "lancedb": [{"archive": str(lancedb_archive)}],
+        "secrets": [{"archive": str(secrets_archive)}],
+        "neo4j": [{"method": "cypher_count_check", "verified": True}],
+        "google_drive": {"verified": False},
+    }
+    (run_dir / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+
+    settings = SimpleNamespace(
+        system_root_directory="/prod/shared/data/system",
+        db_name="custom_cognee",
+        brain_google_drive_backup_enabled=False,
+    )
+    failures: list[str] = []
+
+    verify_mcp_production.check_backups(backup_dir, settings, failures)
+
+    assert failures == []

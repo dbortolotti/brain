@@ -282,7 +282,8 @@ def check_backups(backup_dir: Path, settings, failures: list[str]) -> None:
     sqlite_entries = payload.get("sqlite") or []
     if not sqlite_entries:
         failures.append(f"latest backup has no SQLite result: {latest}")
-    main_db = settings.system_root_directory.rstrip("/") + "/databases/cognee_db"
+    db_name = getattr(settings, "db_name", "cognee_db")
+    main_db = str(Path(settings.system_root_directory) / "databases" / db_name)
     if not any(entry.get("source") == main_db for entry in sqlite_entries):
         failures.append(f"latest backup does not include main Cognee DB: {latest}")
     bad_sqlite = [

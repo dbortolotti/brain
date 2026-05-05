@@ -45,7 +45,7 @@ async def run_eval(queries_path: str, output_path: str, top_k: int = 10) -> list
     raw_dir.mkdir(parents=True, exist_ok=True)
 
     rows: list[dict[str, Any]] = []
-    for eval_query in queries:
+    for index, eval_query in enumerate(queries, start=1):
         console.print(f"[cyan]query[/cyan] {eval_query.id} search_type={eval_query.search_type}")
         start = time.perf_counter()
         result = await recall_text(
@@ -58,8 +58,8 @@ async def run_eval(queries_path: str, output_path: str, top_k: int = 10) -> list
             settings=settings,
         )
         elapsed = time.perf_counter() - start
-        timestamp = datetime.now().isoformat(timespec="seconds")
-        raw_path = raw_dir / f"{timestamp.replace(':', '')}_{eval_query.id}.json"
+        timestamp = datetime.now().isoformat(timespec="microseconds")
+        raw_path = raw_result_path(raw_dir, timestamp, eval_query.id, index)
         write_json(
             raw_path,
             {
@@ -95,6 +95,11 @@ async def run_eval(queries_path: str, output_path: str, top_k: int = 10) -> list
 
     console.print(f"[green]wrote[/green] {output}")
     return rows
+
+
+def raw_result_path(raw_dir: Path, timestamp: str, query_id: str, index: int) -> Path:
+    safe_timestamp = timestamp.replace(":", "").replace(".", "")
+    return raw_dir / f"{safe_timestamp}_{index:03d}_{query_id}.json"
 
 
 @app.command()

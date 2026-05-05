@@ -10,13 +10,13 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from rich.console import Console
 
 from memory_stack.cognee_adapter import recall_text, remember_text
-from memory_stack.config import load_settings
+from memory_stack.config import PROJECT_ROOT, load_settings
 from memory_stack.io import load_memory_items
 from memory_stack.scoring import result_to_text
 
 
 console = Console()
-SAMPLE = "data/samples/synthetic_property_emails.jsonl"
+SAMPLE = PROJECT_ROOT / "data" / "samples" / "synthetic_property_emails.jsonl"
 
 
 async def run_smoke() -> int:

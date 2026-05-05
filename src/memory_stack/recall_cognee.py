@@ -8,7 +8,7 @@ from pathlib import Path
 import typer
 from rich.console import Console
 
-from memory_stack.cognee_adapter import recall_text
+from memory_stack.cognee_adapter import SEARCH_TYPES, recall_text
 from memory_stack.config import load_settings
 from memory_stack.io import to_jsonable, write_json
 
@@ -17,7 +17,13 @@ console = Console()
 
 
 def parse_search_type(value: str) -> str:
-    return str(value).upper()
+    normalized = str(value).strip().upper()
+    if normalized not in SEARCH_TYPES:
+        allowed = ", ".join(SEARCH_TYPES)
+        raise typer.BadParameter(
+            f"Unknown search type {normalized!r}. Allowed values: {allowed}"
+        )
+    return normalized
 
 
 async def recall(
