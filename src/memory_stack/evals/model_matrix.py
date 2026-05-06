@@ -18,7 +18,7 @@ MODEL_TEST_INITIAL_REFS = [
     "google:gemini-2.5-pro",
     "aws-bedrock:mistral.ministral-3-14b-instruct",
     "aws-bedrock:nvidia.nemotron-super-3-120b",
-    "aws-bedrock:nvidia.nemotron-nano-2",
+    "aws-bedrock:nvidia.nemotron-nano-9b-v2",
     "groq:llama-3.1-8b-instant",
     "groq:llama-3.3-70b-versatile",
     "groq:openai/gpt-oss-120b",

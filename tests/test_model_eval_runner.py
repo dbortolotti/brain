@@ -7,11 +7,16 @@ from typing import Any
 from memory_stack.config import Settings
 from memory_stack.evals.model_fixtures import ModelEvalFixture
 from memory_stack.evals.model_matrix import load_model_registry, select_model_candidates
-from memory_stack.evals.model_runner import ModelEvalRunConfig, run_model_evals
+from memory_stack.evals.model_runner import ModelEvalRunConfig, render_report, run_model_evals
 from memory_stack.evals.provider_client import ModelCallResult, openai_reasoning_effort
 from memory_stack.evals.scoring import (
+    EvalRecord,
+    FailureClass,
+    Summary,
+    aggregate,
     aggregate_model_role_records,
-    paired_model_comparisons,
+    is_stack_deployable,
+    pairwise_quality,
     score_model_output,
     zero_tolerance_upper_bound,
 )
@@ -126,7 +131,7 @@ def test_fixture_scoring_detects_zero_tolerance_overmerge() -> None:
 
     assert scores["entity_safety"] == 0.0
     assert zero_tolerance is True
-    assert notes == ["zero_tolerance_failed"]
+    assert notes == ["entity_overmerge"]
 
 
 def test_provider_failure_is_not_counted_as_zero_tolerance() -> None:
@@ -145,59 +150,205 @@ def test_provider_failure_is_not_counted_as_zero_tolerance() -> None:
     assert notes == ["provider_failure"]
 
 
+def test_provider_error_is_not_semantic_zero() -> None:
+    summary = aggregate(
+        [
+            EvalRecord(
+                model="a",
+                role="router",
+                operational_success=False,
+                failure_class=FailureClass.PROVIDER_ERROR,
+                schema_valid=False,
+                semantic_evaluable=False,
+                quality_score=None,
+            )
+        ],
+        bootstrap_samples=0,
+    )
+
+    assert summary.operational_success_rate == 0
+    assert summary.semantic_score_mean is None
+
+
+def test_schema_failure_is_distinct_from_provider_failure() -> None:
+    summary = aggregate(
+        [
+            EvalRecord(
+                model="a",
+                role="router",
+                operational_success=True,
+                failure_class=FailureClass.SCHEMA_INVALID,
+                schema_valid=False,
+                json_parseable=True,
+                semantic_evaluable=False,
+            )
+        ],
+        bootstrap_samples=0,
+    )
+
+    assert summary.operational_success_rate == 1
+    assert summary.schema_validity_rate == 0
+    assert summary.semantic_score_mean is None
+
+
 def test_statistical_aggregation_outputs_ci_and_zero_bound() -> None:
     records = [
-        {
-            "model": "openai:gpt-5.4-nano",
-            "role": "slack_intake",
-            "scenario_group": "a",
-            "status": "ok",
-            "zero_tolerance_failure": False,
-            "scores": {"schema_validity": 1.0, "decision_correctness": 1.0},
-            "estimated_cost_usd": 0.1,
-            "latency_ms": 100,
-        },
-        {
-            "model": "openai:gpt-5.4-nano",
-            "role": "slack_intake",
-            "scenario_group": "b",
-            "status": "ok",
-            "zero_tolerance_failure": False,
-            "scores": {"schema_validity": 1.0, "decision_correctness": 0.0},
-            "estimated_cost_usd": 0.2,
-            "latency_ms": 200,
-        },
+        EvalRecord(
+            model="openai:gpt-5.4-nano",
+            provider="openai",
+            role="slack_intake",
+            scenario_group="a",
+            fixture_id="f1",
+            variant_id="base",
+            operational_success=True,
+            schema_valid=True,
+            json_parseable=True,
+            semantic_evaluable=True,
+            subscores={"decision_correctness": 1.0, "repair_quality": 1.0},
+            quality_score=1.0,
+            estimated_cost_usd=0.1,
+            latency_ms=100,
+        ),
+        EvalRecord(
+            model="openai:gpt-5.4-nano",
+            provider="openai",
+            role="slack_intake",
+            scenario_group="b",
+            fixture_id="f2",
+            variant_id="base",
+            operational_success=True,
+            schema_valid=True,
+            json_parseable=True,
+            semantic_evaluable=True,
+            subscores={"decision_correctness": 0.0, "repair_quality": 1.0},
+            quality_score=0.5,
+            estimated_cost_usd=0.2,
+            latency_ms=200,
+        ),
     ]
 
     summary = aggregate_model_role_records(records, bootstrap_samples=100)[0]
 
-    assert summary["overall_score"]["method"] == "hierarchical_bootstrap_by_scenario_group"
-    assert summary["n_scenario_groups"] == 2
+    assert summary["records_total"] == 2
+    assert summary["records_semantic_evaluable"] == 2
+    assert summary["subscores"]["decision_correctness"]["method"] == "hierarchical_bootstrap_by_scenario_fixture_variant"
     assert zero_tolerance_upper_bound(0, 10) == 0.3
 
 
-def test_pairwise_comparison_uses_shared_fixtures() -> None:
-    base = {
-        "role": "router",
-        "scenario_group": "router",
-        "fixture_id": "router_1",
-        "repeat_idx": 0,
-        "status": "ok",
-        "zero_tolerance_failure": False,
-        "estimated_cost_usd": 0.1,
-        "latency_ms": 10,
-    }
-    records = [
-        {**base, "model": "a", "scores": {"schema_validity": 1.0}},
-        {**base, "model": "b", "scores": {"schema_validity": 0.0}, "estimated_cost_usd": 0.2},
+def test_embeddings_do_not_satisfy_runtime_roles() -> None:
+    eligible = [
+        Summary(role="embeddings", eligible=True),
     ]
 
-    comparison = paired_model_comparisons(records, bootstrap_samples=10)[0]
+    deployable, missing = is_stack_deployable(eligible)
 
-    assert comparison["model_a"] == "a"
-    assert comparison["model_b"] == "b"
-    assert comparison["n_paired_fixtures"] == 1
-    assert comparison["score_diff_a_minus_b"]["mean"] > 0
+    assert deployable is False
+    assert "slack_intake" in missing
+
+
+def test_missing_mandatory_role_marks_stack_non_deployable() -> None:
+    eligible = [
+        Summary(role="router", eligible=True),
+        Summary(role="memory_compiler", eligible=True),
+        Summary(role="conflict_classifier", eligible=True),
+        Summary(role="recall_synthesizer", eligible=True),
+        Summary(role="embeddings", eligible=True),
+    ]
+
+    deployable, missing = is_stack_deployable(eligible)
+
+    assert deployable is False
+    assert missing == ["slack_intake"]
+
+
+def test_pairwise_comparison_uses_shared_fixtures() -> None:
+    comparison = pairwise_quality(
+        [
+            EvalRecord(
+                model="a",
+                role="router",
+                fixture_id="router_1",
+                variant_id="base",
+                scenario_group="router",
+                operational_success=True,
+                schema_valid=True,
+                json_parseable=True,
+                semantic_evaluable=True,
+                quality_score=1.0,
+                subscores={"decision_correctness": 1.0},
+                estimated_cost_usd=0.1,
+                latency_ms=10,
+            )
+        ],
+        [
+            EvalRecord(
+                model="b",
+                role="router",
+                fixture_id="router_1",
+                variant_id="base",
+                scenario_group="router",
+                operational_success=True,
+                schema_valid=True,
+                json_parseable=True,
+                semantic_evaluable=True,
+                quality_score=0.0,
+                subscores={"decision_correctness": 0.0},
+                estimated_cost_usd=0.2,
+                latency_ms=10,
+            )
+        ],
+        bootstrap_samples=10,
+    )
+
+    assert comparison.model_a == "a"
+    assert comparison.model_b == "b"
+    assert comparison.shared_variants_total == 1
+    assert comparison.semantic_score_diff_mean is not None
+    assert comparison.semantic_score_diff_mean > 0
+
+
+def test_pairwise_semantic_excludes_provider_errors() -> None:
+    comparison = pairwise_quality(
+        [
+            EvalRecord(
+                model="a",
+                role="router",
+                fixture_id="f1",
+                operational_success=False,
+                failure_class=FailureClass.PROVIDER_ERROR,
+                semantic_evaluable=False,
+            )
+        ],
+        [
+            EvalRecord(
+                model="b",
+                role="router",
+                fixture_id="f1",
+                operational_success=True,
+                schema_valid=True,
+                json_parseable=True,
+                semantic_evaluable=True,
+                quality_score=0.9,
+                subscores={"decision_correctness": 0.9},
+            )
+        ],
+        bootstrap_samples=10,
+    )
+
+    assert comparison.shared_variants_semantic_evaluable == 0
+    assert comparison.recommendation == "insufficient_semantic_overlap"
+
+
+def test_non_deployable_report_suppresses_production_defaults() -> None:
+    report = render_report(
+        deployable_stack=False,
+        missing_roles=["slack_intake"],
+        partial_recommendations={"router": "model_x"},
+    )
+
+    assert "Deployable stack: **NO**" in report
+    assert "Partial recommendations" in report
+    assert "Production defaults" not in report
 
 
 def test_openai_reasoning_effort_matches_model_family() -> None:
@@ -230,4 +381,4 @@ def test_model_eval_runner_writes_jsonl_and_markdown(tmp_path) -> None:
     assert result["record_count"] >= 3
     assert "slack_intake_family_twins" in {row["fixture_id"] for row in rows}
     assert rows[0]["status"] == "ok"
-    assert report.read_text().startswith("# Brain Model Eval Report")
+    assert report.read_text().startswith("# Executive verdict")
