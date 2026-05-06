@@ -108,6 +108,18 @@ uv run pytest
 Unit tests use clean SQLite databases under `tmp_path`. They do not require live
 network, live LLM calls, live Slack, or live Cognee.
 
+Production deploys additionally run a live model smoke check. The default scope
+is `active`, which makes tiny provider calls to the configured LLM and embedding
+models after the app health checks pass:
+
+```bash
+ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env \
+  uv run python scripts/live_model_smoke.py --scope active
+```
+
+Use `--scope core`, `--scope enabled`, or `--scope all` for registry-wide checks.
+Judge-only models are excluded unless `--include-judge` is set.
+
 ## Environment Variables
 
 Core Brain settings:

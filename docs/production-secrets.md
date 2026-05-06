@@ -42,6 +42,27 @@ re-baseline. Otherwise, resolve a conflict by propagating the production change
 back to GitHub Secrets/Variables or by intentionally reconciling production back
 to the last deployed baseline before redeploying.
 
+## Live Model Smoke
+
+After deployment, production runs `scripts/live_model_smoke.py` against the
+configured live model scope. By default this is `active`, which calls the active
+`LLM_PROVIDER`/`LLM_MODEL` and `EMBEDDING_PROVIDER`/`EMBEDDING_MODEL` with tiny
+requests. Set repository variable `BRAIN_MODEL_SMOKE_SCOPE` to control push
+deploys:
+
+```text
+active   current configured LLM and embedding models
+core     unique models in core_eval_matrix, excluding judge_only by default
+enabled  all enabled_by_default registry models, excluding judge_only by default
+all      all registry models, excluding judge_only by default
+none     disable live provider smoke
+```
+
+Manual workflow dispatch exposes the same scope plus
+`model_smoke_skip_missing_keys` and `model_smoke_include_judge`. Normal smoke
+runs fail on missing credentials. Use `skip_missing_keys=true` only when you want
+to check the providers currently available without blocking on unfetched keys.
+
 The generated config includes metadata for diagnostics:
 
 ```text
