@@ -1,0 +1,76 @@
+{
+  "error": null,
+  "fixture_id": "recall_brain_cognee_conclusions_relevance_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "You appear to have concluded that Brain DB is the source of truth, and Cognee is a rebuildable/derived projection that can be regenerated from Brain rather than treated as canonical.",
+    "citations": [
+      "fixture:recall_brain_cognee_conclusions_relevance_001__context"
+    ],
+    "conflict_classification": "no_conflict_detected",
+    "decision": "answer_with_guarded_summary",
+    "entity_resolution": {
+      "action": "resolve_to_contextual_systems",
+      "entity_id": null,
+      "reason": "The prompt names Brain and Cognee as systems, but no durable entity IDs are provided in the fixture."
+    },
+    "intent": "recall_synthesizer",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source-of-truth store",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "rebuildable projection",
+            "type": "system"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "records",
+            "predicate": "is_source_of_truth_for",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "Brain DB",
+            "predicate": "is_derived_from",
+            "subject": "Cognee"
+          },
+          {
+            "object": "Brain DB",
+            "predicate": "is_rebuildable_from",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "The likely conclusion was that Brain DB is the source of truth, while Cognee is a rebuildable projection or derived view rather than the canonical record."
+      },
+      {
+        "confidence": "high",
+        "entities": [],
+        "kind": "note",
+        "relationships": [],
+        "statement": "I cannot confirm any stronger or more specific conclusion from the provided context alone."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Summarized the likely conclusion from the provided context.",
+        "Preserved ambiguity by avoiding claims beyond the source-of-truth vs rebuildable-projection distinction."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want, I can restate this as a durable memory card with explicit confidence and scope limits.",
+      "If there were additional nuances (for example, when Cognee should be used operationally), provide the source text and I can reconcile them."
+    ]
+  },
+  "raw_text": "{\"intent\":\"recall_synthesizer\",\"decision\":\"answer_with_guarded_summary\",\"memory_cards\":[{\"kind\":\"conclusion\",\"statement\":\"The likely conclusion was that Brain DB is the source of truth, while Cognee is a rebuildable projection or derived view rather than the canonical record.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Brain DB\",\"type\":\"system\",\"role\":\"source-of-truth store\"},{\"name\":\"Cognee\",\"type\":\"system\",\"role\":\"rebuildable projection\"}],\"relationships\":[{\"subject\":\"Brain DB\",\"predicate\":\"is_source_of_truth_for\",\"object\":\"records\"},{\"subject\":\"Cognee\",\"predicate\":\"is_derived_from\",\"object\":\"Brain DB\"},{\"subject\":\"Cognee\",\"predicate\":\"is_rebuildable_from\",\"object\":\"Brain DB\"}]},{\"kind\":\"note\",\"statement\":\"I cannot confirm any stronger or more specific conclusion from the provided context alone.\",\"confidence\":\"high\",\"entities\":[],\"relationships\":[]}],\"entity_resolution\":{\"action\":\"resolve_to_contextual_systems\",\"entity_id\":null,\"reason\":\"The prompt names Brain and Cognee as systems, but no durable entity IDs are provided in the fixture.\"},\"conflict_classification\":\"no_conflict_detected\",\"answer\":\"You appear to have concluded that Brain DB is the source of truth, and Cognee is a rebuildable/derived projection that can be regenerated from Brain rather than treated as canonical.\",\"citations\":[\"fixture:recall_brain_cognee_conclusions_relevance_001__context\"],\"repair_options\":[\"If you want, I can restate this as a durable memory card with explicit confidence and scope limits.\",\"If there were additional nuances (for example, when Cognee should be used operationally), provide the source text and I can reconcile them.\"],\"receipt\":{\"success\":true,\"details\":[\"Summarized the likely conclusion from the provided context.\",\"Preserved ambiguity by avoiding claims beyond the source-of-truth vs rebuildable-projection distinction.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

@@ -1,0 +1,128 @@
+{
+  "error": null,
+  "fixture_id": "article_url_ai_memory_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "citations": [
+      "https://example.com/ai-memory"
+    ],
+    "conflict_classification": "none",
+    "decision": "preserve_with_ambiguity",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": null,
+      "reason": "No existing entities match the granularity of the article's concepts (e.g., 'provenance tracking' as a distinct entity type)."
+    },
+    "intent": "durable_memory_ingestion",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Graph memory",
+            "role": "primary_subject",
+            "type": "memory_system"
+          },
+          {
+            "name": "agents",
+            "role": "user",
+            "type": "artificial_entities"
+          },
+          {
+            "name": "relationships",
+            "role": "preserved_property",
+            "type": "semantic_connections"
+          }
+        ],
+        "kind": "conceptual",
+        "relationships": [
+          {
+            "object": "agents to preserve relationships",
+            "predicate": "enables",
+            "subject": "Graph memory"
+          },
+          {
+            "object": "preserved in graph memory",
+            "predicate": "are",
+            "subject": "relationships"
+          }
+        ],
+        "statement": "Graph memory systems enable agents to preserve relationships between entities, not just isolated facts."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "provenance",
+            "role": "critical_feature",
+            "type": "metadata"
+          },
+          {
+            "name": "graph memory systems",
+            "role": "system_requirement",
+            "type": "memory_system"
+          }
+        ],
+        "kind": "design_requirement",
+        "relationships": [
+          {
+            "object": "provenance tracking",
+            "predicate": "require",
+            "subject": "graph memory systems"
+          },
+          {
+            "object": "trust and traceability",
+            "predicate": "enables",
+            "subject": "provenance"
+          }
+        ],
+        "statement": "Provenance tracking is essential for graph memory systems to maintain trust and traceability of stored knowledge."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "update semantics",
+            "role": "critical_feature",
+            "type": "operational_rule"
+          },
+          {
+            "name": "graph memory systems",
+            "role": "system_requirement",
+            "type": "memory_system"
+          },
+          {
+            "name": "historical context",
+            "role": "preservation_target",
+            "type": "temporal_data"
+          }
+        ],
+        "kind": "design_requirement",
+        "relationships": [
+          {
+            "object": "update semantics",
+            "predicate": "must define",
+            "subject": "graph memory systems"
+          },
+          {
+            "object": "loss of historical context",
+            "predicate": "prevent",
+            "subject": "update semantics"
+          }
+        ],
+        "statement": "Update semantics must be explicitly defined in graph memory systems to handle modifications without losing historical context."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ingested 3 memory cards with high confidence.",
+        "No conflicts detected with existing durable memory.",
+        "Entity resolution: Created new entities for 'provenance' and 'update semantics'."
+      ],
+      "success": true
+    }
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"durable_memory_ingestion\",\n  \"decision\": \"preserve_with_ambiguity\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"conceptual\",\n      \"statement\": \"Graph memory systems enable agents to preserve relationships between entities, not just isolated facts.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Graph memory\",\n          \"type\": \"memory_system\",\n          \"role\": \"primary_subject\"\n        },\n        {\n          \"name\": \"agents\",\n          \"type\": \"artificial_entities\",\n          \"role\": \"user\"\n        },\n        {\n          \"name\": \"relationships\",\n          \"type\": \"semantic_connections\",\n          \"role\": \"preserved_property\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Graph memory\",\n          \"predicate\": \"enables\",\n          \"object\": \"agents to preserve relationships\"\n        },\n        {\n          \"subject\": \"relationships\",\n          \"predicate\": \"are\",\n          \"object\": \"preserved in graph memory\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"design_requirement\",\n      \"statement\": \"Provenance tracking is essential for graph memory systems to maintain trust and traceability of stored knowledge.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"provenance\",\n          \"type\": \"metadata\",\n          \"role\": \"critical_feature\"\n        },\n        {\n          \"name\": \"graph memory systems\",\n          \"type\": \"memory_system\",\n          \"role\": \"system_requirement\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"graph memory systems\",\n          \"predicate\": \"require\",\n          \"object\": \"provenance tracking\"\n        },\n        {\n          \"subject\": \"provenance\",\n          \"predicate\": \"enables\",\n          \"object\": \"trust and traceability\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"design_requirement\",\n      \"statement\": \"Update semantics must be explicitly defined in graph memory systems to handle modifications without losing historical context.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"update semantics\",\n          \"type\": \"operational_rule\",\n          \"role\": \"critical_feature\"\n        },\n        {\n          \"name\": \"graph memory systems\",\n          \"type\": \"memory_system\",\n          \"role\": \"system_requirement\"\n        },\n        {\n          \"name\": \"historical context\",\n          \"type\": \"temporal_data\",\n          \"role\": \"preservation_target\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"graph memory systems\",\n          \"predicate\": \"must define\",\n          \"object\": \"update semantics\"\n        },\n        {\n          \"subject\": \"update semantics\",\n          \"predicate\": \"prevent\",\n          \"object\": \"loss of historical context\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_new\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entities match the granularity of the article's concepts (e.g., 'provenance tracking' as a distinct entity type).\"\n  },\n  \"conflict_classification\": \"none\",\n  \"citations\": [\n    \"https://example.com/ai-memory\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Ingested 3 memory cards with high confidence.\",\n      \"No conflicts detected with existing durable memory.\",\n      \"Entity resolution: Created new entities for 'provenance' and 'update semantics'.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

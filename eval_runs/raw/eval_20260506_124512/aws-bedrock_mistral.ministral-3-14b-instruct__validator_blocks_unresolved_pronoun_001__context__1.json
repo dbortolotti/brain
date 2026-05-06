@@ -1,0 +1,37 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_unresolved_pronoun_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory card rejected due to unresolved pronoun reference. Requires explicit antecedent specification (e.g., 'John prefers the other one') to comply with durable memory standards.",
+    "citations": [
+      "Brain System Rule: Pronouns must resolve to unambiguous, previously established entities in durable memory.",
+      "Validator Block: Unresolved pronouns violate memory integrity (validator_blocks_unresolved_pronoun_001)"
+    ],
+    "conflict_classification": "unresolvable_ambiguity",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "flag",
+      "entity_id": null,
+      "reason": "Pronoun 'He' lacks antecedent in provided context. Ambiguity violates durable memory preservation rules (strict antecedent resolution required)."
+    },
+    "intent": "resolve_unambiguous_pronoun_reference",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Pronoun 'He' has no valid antecedent in memory or context.",
+        "Memory card violates Rule 3.2.1: 'All pronouns must resolve to explicitly stored entities.'",
+        "Action: Memory card discarded; no durable storage committed."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Add antecedent: 'John prefers the other one.'",
+      "Delete memory card: Pronoun ambiguity cannot be resolved in current context.",
+      "Request clarification: 'Which entity does 'He' refer to?'"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"resolve_unambiguous_pronoun_reference\",\n  \"decision\": \"reject\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"flag\",\n    \"entity_id\": null,\n    \"reason\": \"Pronoun 'He' lacks antecedent in provided context. Ambiguity violates durable memory preservation rules (strict antecedent resolution required).\"\n  },\n  \"conflict_classification\": \"unresolvable_ambiguity\",\n  \"answer\": \"Memory card rejected due to unresolved pronoun reference. Requires explicit antecedent specification (e.g., 'John prefers the other one') to comply with durable memory standards.\",\n  \"citations\": [\n    \"Brain System Rule: Pronouns must resolve to unambiguous, previously established entities in durable memory.\",\n    \"Validator Block: Unresolved pronouns violate memory integrity (validator_blocks_unresolved_pronoun_001)\"\n  ],\n  \"repair_options\": [\n    \"Add antecedent: 'John prefers the other one.'\",\n    \"Delete memory card: Pronoun ambiguity cannot be resolved in current context.\",\n    \"Request clarification: 'Which entity does 'He' refer to?'\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Pronoun 'He' has no valid antecedent in memory or context.\",\n      \"Memory card violates Rule 3.2.1: 'All pronouns must resolve to explicitly stored entities.'\",\n      \"Action: Memory card discarded; no durable storage committed.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

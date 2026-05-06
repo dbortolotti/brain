@@ -1,0 +1,90 @@
+{
+  "error": null,
+  "fixture_id": "numeric_table_exactness_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Compiled two experiment result memory cards from the provided context table.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": null,
+      "reason": "PPO-001 and PPO-002 appear to be distinct experiment identifiers; no canonical IDs were provided beyond these labels."
+    },
+    "intent": "Compile context table into memory cards for Brain\u2019s personal memory system.",
+    "memory_cards": [
+      {
+        "confidence": "0.78",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "identifier",
+            "type": "model_variant"
+          }
+        ],
+        "kind": "experiment_result",
+        "relationships": [
+          {
+            "object": "0.12",
+            "predicate": "has_run_value",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "0.45",
+            "predicate": "has_reward_value",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "baseline",
+            "predicate": "has_notes",
+            "subject": "PPO-001"
+          }
+        ],
+        "statement": "PPO-001: Run=0.12, Reward=0.45, Sharpe=baseline."
+      },
+      {
+        "confidence": "0.78",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "identifier",
+            "type": "model_variant"
+          }
+        ],
+        "kind": "experiment_result",
+        "relationships": [
+          {
+            "object": "0.18",
+            "predicate": "has_run_value",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "0.51",
+            "predicate": "has_reward_value",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "entropy tuned",
+            "predicate": "has_notes",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "PPO-002: Run=0.18, Reward=0.51, Sharpe=entropy tuned."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created 2 memory cards (PPO-001, PPO-002).",
+        "Preserved the provided values including the ambiguity that 'Sharpe' entries are non-numeric notes."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If Sharpe is meant to be numeric, provide the intended Sharpe values for PPO-001 and PPO-002 (current table shows notes text under the Sharpe column)."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Compile context table into memory cards for Brain\u2019s personal memory system.\",\n  \"decision\": \"commit\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"experiment_result\",\n      \"statement\": \"PPO-001: Run=0.12, Reward=0.45, Sharpe=baseline.\",\n      \"confidence\": \"0.78\",\n      \"entities\": [\n        {\n          \"name\": \"PPO-001\",\n          \"type\": \"model_variant\",\n          \"role\": \"identifier\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"has_run_value\",\n          \"object\": \"0.12\"\n        },\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"has_reward_value\",\n          \"object\": \"0.45\"\n        },\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"has_notes\",\n          \"object\": \"baseline\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"experiment_result\",\n      \"statement\": \"PPO-002: Run=0.18, Reward=0.51, Sharpe=entropy tuned.\",\n      \"confidence\": \"0.78\",\n      \"entities\": [\n        {\n          \"name\": \"PPO-002\",\n          \"type\": \"model_variant\",\n          \"role\": \"identifier\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"has_run_value\",\n          \"object\": \"0.18\"\n        },\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"has_reward_value\",\n          \"object\": \"0.51\"\n        },\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"has_notes\",\n          \"object\": \"entropy tuned\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolved\",\n    \"entity_id\": null,\n    \"reason\": \"PPO-001 and PPO-002 appear to be distinct experiment identifiers; no canonical IDs were provided beyond these labels.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Compiled two experiment result memory cards from the provided context table.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If Sharpe is meant to be numeric, provide the intended Sharpe values for PPO-001 and PPO-002 (current table shows notes text under the Sharpe column).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Created 2 memory cards (PPO-001, PPO-002).\",\n      \"Preserved the provided values including the ambiguity that 'Sharpe' entries are non-numeric notes.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

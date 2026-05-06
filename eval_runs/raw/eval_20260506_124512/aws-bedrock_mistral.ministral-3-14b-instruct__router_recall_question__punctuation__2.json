@@ -1,0 +1,70 @@
+{
+  "error": null,
+  "fixture_id": "router_recall_question__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "No specific or durable facts about 'Sam' from Goldman Sachs are stored. The system retains only ambiguous or superseded references to a person named 'Sam' with a *possible* Goldman Sachs connection, lacking actionable details.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "ambiguous",
+    "entity_resolution": {
+      "action": "disambiguate",
+      "entity_id": null,
+      "reason": "No unique or durable memory exists for 'Sam' tied to Goldman Sachs beyond generic affiliation. Ambiguity persists due to lack of context (e.g., project, timeframe, or relationship type)."
+    },
+    "intent": "recall",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unknown (potential Goldman Sachs associate)",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "has_affiliation_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is a contact associated with Goldman Sachs (GS) in a professional context, likely a colleague or client."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unspecified Goldman Sachs-related",
+            "type": "person"
+          }
+        ],
+        "kind": "hypothesis",
+        "statement": "Sam may be a reference to a Goldman Sachs employee or external stakeholder (e.g., investor, vendor) based on prior interactions, but no specific details (e.g., role, project) are durably stored."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No durable memory matches the query with sufficient specificity.",
+        "Ambiguous references exist but are not actionable without disambiguation."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Request clarification: 'Which Sam from Goldman Sachs?' (e.g., by project, team, or timeframe).",
+      "Provide additional context to link to a stored memory (e.g., 'Sam in the M&A team' or 'Sam from 2023').",
+      "Confirm if this is a new entity to create a dedicated memory card."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"recall\",\n  \"decision\": \"ambiguous\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam is a contact associated with Goldman Sachs (GS) in a professional context, likely a colleague or client.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"unknown (potential Goldman Sachs associate)\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has_affiliation_with\",\n          \"object\": \"Goldman Sachs\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"hypothesis\",\n      \"statement\": \"Sam may be a reference to a Goldman Sachs employee or external stakeholder (e.g., investor, vendor) based on prior interactions, but no specific details (e.g., role, project) are durably stored.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"unspecified Goldman Sachs-related\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"disambiguate\",\n    \"entity_id\": null,\n    \"reason\": \"No unique or durable memory exists for 'Sam' tied to Goldman Sachs beyond generic affiliation. Ambiguity persists due to lack of context (e.g., project, timeframe, or relationship type).\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"No specific or durable facts about 'Sam' from Goldman Sachs are stored. The system retains only ambiguous or superseded references to a person named 'Sam' with a *possible* Goldman Sachs connection, lacking actionable details.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Request clarification: 'Which Sam from Goldman Sachs?' (e.g., by project, team, or timeframe).\",\n    \"Provide additional context to link to a stored memory (e.g., 'Sam in the M&A team' or 'Sam from 2023').\",\n    \"Confirm if this is a new entity to create a dedicated memory card.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"No durable memory matches the query with sufficient specificity.\",\n      \"Ambiguous references exist but are not actionable without disambiguation.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

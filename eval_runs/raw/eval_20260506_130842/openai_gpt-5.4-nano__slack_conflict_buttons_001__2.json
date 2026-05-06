@@ -1,0 +1,33 @@
+{
+  "error": null,
+  "fixture_id": "slack_conflict_buttons_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "We have conflicting employment facts about Sam: one says Sam works at Goldman, another says Sam left Goldman and joined Point72. I\u2019m not storing either as definitive until this is resolved.",
+    "citations": [],
+    "conflict_classification": "employment_history_conflict",
+    "decision": "conflict_needs_user_confirmation",
+    "entity_resolution": {
+      "action": "review_for_conflict",
+      "entity_id": null,
+      "reason": "Same person (Sam) has contradictory employer/location statements (Goldman vs Point72) with opposing employment status (works at vs left/joined)."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected conflicting statements in existing memory vs new input: 'Sam works at Goldman' vs 'Sam left Goldman and joined Point72'.",
+        "No memory update performed pending clarification."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Confirm current employer for Sam (Goldman or Point72).",
+      "If both are true historically, store a timeline with dates (e.g., left Goldman in YEAR, joined Point72 in YEAR).",
+      "If one is incorrect, specify which statement to retract."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"slack_intake\",\n  \"decision\": \"conflict_needs_user_confirmation\",\n  \"conflict_classification\": \"employment_history_conflict\",\n  \"answer\": \"We have conflicting employment facts about Sam: one says Sam works at Goldman, another says Sam left Goldman and joined Point72. I\u2019m not storing either as definitive until this is resolved.\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"review_for_conflict\",\n    \"entity_id\": null,\n    \"reason\": \"Same person (Sam) has contradictory employer/location statements (Goldman vs Point72) with opposing employment status (works at vs left/joined).\"\n  },\n  \"repair_options\": [\n    \"Confirm current employer for Sam (Goldman or Point72).\",\n    \"If both are true historically, store a timeline with dates (e.g., left Goldman in YEAR, joined Point72 in YEAR).\",\n    \"If one is incorrect, specify which statement to retract.\"\n  ],\n  \"citations\": [],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Detected conflicting statements in existing memory vs new input: 'Sam works at Goldman' vs 'Sam left Goldman and joined Point72'.\",\n      \"No memory update performed pending clarification.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

@@ -1,0 +1,74 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_time_reference_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam\u2019s departure from Goldman Sachs is planned for an unspecified future timeframe ('next month'), but the exact date cannot be determined due to ambiguous time references ('last Friday'). Clarification is required before committing this to durable memory.",
+    "citations": [
+      "Input: 'Sam said last Friday that he is leaving Goldman next month.'"
+    ],
+    "conflict_classification": "temporal_ambiguity",
+    "entity_resolution": {
+      "action": "flag_ambiguity",
+      "entity_id": "ambiguous_time_reference_001",
+      "reason": "The temporal references ('last Friday' and 'next month') lack sufficient precision to anchor the event to a specific calendar date. Resolution requires clarification from Sam or contextual cues (e.g., calendar entries, follow-up conversations)."
+    },
+    "intent": "memory_intake",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer",
+            "type": "organization"
+          },
+          {
+            "name": "last Friday",
+            "role": "contextual_anchor",
+            "type": "time_reference"
+          },
+          {
+            "name": "next month",
+            "role": "intention_timeline",
+            "type": "time_reference"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "leave_Goldman_Sachs",
+            "predicate": "expressed_intent_to",
+            "subject": "Sam"
+          },
+          {
+            "object": "next_month_ambiguous",
+            "predicate": "has_timeline",
+            "subject": "Sam's_intention"
+          },
+          {
+            "object": "Sam's_statement",
+            "predicate": "serves_as_context_for",
+            "subject": "last_Friday"
+          }
+        ],
+        "statement": "Sam expressed intent to leave Goldman Sachs in an unspecified future timeframe, referenced as 'next month' during a conversation last Friday. The exact timing remains ambiguous due to potential misalignment between calendar weeks (e.g., 'Friday' could refer to the prior or current week) and the lack of a precise month reference."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory not committed due to unresolved temporal ambiguity.",
+        "Memory card created as a placeholder for future resolution."
+      ],
+      "success": false
+    }
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_intake\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"durable_memory\",\n      \"statement\": \"Sam expressed intent to leave Goldman Sachs in an unspecified future timeframe, referenced as 'next month' during a conversation last Friday. The exact timing remains ambiguous due to potential misalignment between calendar weeks (e.g., 'Friday' could refer to the prior or current week) and the lack of a precise month reference.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        },\n        {\n          \"name\": \"last Friday\",\n          \"type\": \"time_reference\",\n          \"role\": \"contextual_anchor\"\n        },\n        {\n          \"name\": \"next month\",\n          \"type\": \"time_reference\",\n          \"role\": \"intention_timeline\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"expressed_intent_to\",\n          \"object\": \"leave_Goldman_Sachs\"\n        },\n        {\n          \"subject\": \"Sam's_intention\",\n          \"predicate\": \"has_timeline\",\n          \"object\": \"next_month_ambiguous\"\n        },\n        {\n          \"subject\": \"last_Friday\",\n          \"predicate\": \"serves_as_context_for\",\n          \"object\": \"Sam's_statement\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"flag_ambiguity\",\n    \"entity_id\": \"ambiguous_time_reference_001\",\n    \"reason\": \"The temporal references ('last Friday' and 'next month') lack sufficient precision to anchor the event to a specific calendar date. Resolution requires clarification from Sam or contextual cues (e.g., calendar entries, follow-up conversations).\"\n  },\n  \"conflict_classification\": \"temporal_ambiguity\",\n  \"answer\": \"Sam\u2019s departure from Goldman Sachs is planned for an unspecified future timeframe ('next month'), but the exact date cannot be determined due to ambiguous time references ('last Friday'). Clarification is required before committing this to durable memory.\",\n  \"citations\": [\n    \"Input: 'Sam said last Friday that he is leaving Goldman next month.'\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Durable memory not committed due to unresolved temporal ambiguity.\",\n      \"Memory card created as a placeholder for future resolution.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "cascade_conflict_escalation_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Conflict: existing memory says Sara is my daughter, while the new input says Sara is my niece. I have not committed the new relationship as current.",
+    "citations": [
+      "Existing - Sara is my daughter",
+      "Input - Sara is my niece"
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "Conflict detected; do not commit the new statement as durable memory because it directly contradicts the existing fact",
+    "entity_resolution": {
+      "action": "merge_with_conflict",
+      "entity_id": "Sara",
+      "reason": "Both mentions refer to the same person name, but the family relationship labels conflict directly."
+    },
+    "intent": "Update the family relationship for Sara",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "conflict",
+        "relationships": [
+          {
+            "object": "my daughter",
+            "predicate": "is described as",
+            "subject": "Sara"
+          },
+          {
+            "object": "my niece",
+            "predicate": "is described as",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is described inconsistently as both my daughter and my niece; the relationship is unresolved."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected direct contradiction between daughter and niece",
+        "Preserved ambiguity instead of overwriting the existing memory",
+        "No durable replacement committed"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Keep existing memory as current and ignore the new input",
+      "Replace the existing memory with the new relationship if the user confirms Sara is actually my niece",
+      "Store both as conflicting notes until clarified"
+    ]
+  },
+  "raw_text": "{\"intent\":\"Update the family relationship for Sara\",\"decision\":\"Conflict detected; do not commit the new statement as durable memory because it directly contradicts the existing fact\",\"memory_cards\":[{\"kind\":\"conflict\",\"statement\":\"Sara is described inconsistently as both my daughter and my niece; the relationship is unresolved.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"is described as\",\"object\":\"my daughter\"},{\"subject\":\"Sara\",\"predicate\":\"is described as\",\"object\":\"my niece\"}]}],\"entity_resolution\":{\"action\":\"merge_with_conflict\",\"entity_id\":\"Sara\",\"reason\":\"Both mentions refer to the same person name, but the family relationship labels conflict directly.\"},\"conflict_classification\":\"direct_contradiction\",\"answer\":\"Conflict: existing memory says Sara is my daughter, while the new input says Sara is my niece. I have not committed the new relationship as current.\",\"citations\":[\"Existing - Sara is my daughter\",\"Input - Sara is my niece\"],\"repair_options\":[\"Keep existing memory as current and ignore the new input\",\"Replace the existing memory with the new relationship if the user confirms Sara is actually my niece\",\"Store both as conflicting notes until clarified\"],\"receipt\":{\"success\":true,\"details\":[\"Detected direct contradiction between daughter and niece\",\"Preserved ambiguity instead of overwriting the existing memory\",\"No durable replacement committed\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

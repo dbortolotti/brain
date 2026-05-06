@@ -1,0 +1,67 @@
+{
+  "error": null,
+  "fixture_id": "recall_hide_superseded__punctuation",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Sam works at Point72.",
+    "citations": [
+      "Sam left Goldman and joined Point72 [mem_new]"
+    ],
+    "conflict_classification": "superseded",
+    "decision": "Answer based on current facts only, ignoring superseded information.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No ambiguity in entity resolution; 'Sam' is clearly identified."
+    },
+    "intent": "recall_synthesizer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "previous_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Used current fact: Sam left Goldman and joined Point72 [mem_new]",
+        "Ignored superseded fact: Sam works at Goldman [mem_old]",
+        "Answer derived directly from current employment status."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"recall_synthesizer\",\n  \"decision\": \"Answer based on current facts only, ignoring superseded information.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam left Goldman and joined Point72\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"previous_employer\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"current_employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"left\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No ambiguity in entity resolution; 'Sam' is clearly identified.\"\n  },\n  \"conflict_classification\": \"superseded\",\n  \"answer\": \"Sam works at Point72.\",\n  \"citations\": [\n    \"Sam left Goldman and joined Point72 [mem_new]\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Used current fact: Sam left Goldman and joined Point72 [mem_new]\",\n      \"Ignored superseded fact: Sam works at Goldman [mem_old]\",\n      \"Answer derived directly from current employment status.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

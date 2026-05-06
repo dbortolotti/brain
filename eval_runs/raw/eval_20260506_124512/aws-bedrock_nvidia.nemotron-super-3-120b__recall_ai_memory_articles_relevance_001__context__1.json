@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "fixture_id": "recall_ai_memory_articles_relevance_001__context",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "I have saved one article about AI memory, which discusses Brain and Cognee as personal memory systems.",
+    "citations": [
+      "context: AI memory article"
+    ],
+    "conflict_classification": "none",
+    "decision": "retrieve_saved_articles_about_ai_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No ambiguous or conflicting entities detected; 'Brain' and 'Cognee' are clearly referenced in the context as saved article subjects."
+    },
+    "intent": "recall_synthesizer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "subject",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "subject",
+            "type": "system"
+          },
+          {
+            "name": "AI memory",
+            "role": "topic",
+            "type": "concept"
+          }
+        ],
+        "kind": "article",
+        "relationships": [
+          {
+            "object": "article",
+            "predicate": "is discussed in",
+            "subject": "Brain"
+          },
+          {
+            "object": "article",
+            "predicate": "is discussed in",
+            "subject": "Cognee"
+          },
+          {
+            "object": "AI memory",
+            "predicate": "covers",
+            "subject": "article"
+          }
+        ],
+        "statement": "I have saved an article about AI memory systems, specifically discussing Brain and Cognee as personal memory architectures."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Successfully recalled one saved article about AI memory from context.",
+        "No superseded or deleted facts were presented.",
+        "Ambiguity preserved where not resolved; no false commitments made."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"recall_synthesizer\",\n  \"decision\": \"retrieve_saved_articles_about_ai_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"article\",\n      \"statement\": \"I have saved an article about AI memory systems, specifically discussing Brain and Cognee as personal memory architectures.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain\",\n          \"type\": \"system\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"system\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"AI memory\",\n          \"type\": \"concept\",\n          \"role\": \"topic\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain\",\n          \"predicate\": \"is discussed in\",\n          \"object\": \"article\"\n        },\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"is discussed in\",\n          \"object\": \"article\"\n        },\n        {\n          \"subject\": \"article\",\n          \"predicate\": \"covers\",\n          \"object\": \"AI memory\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No ambiguous or conflicting entities detected; 'Brain' and 'Cognee' are clearly referenced in the context as saved article subjects.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"I have saved one article about AI memory, which discusses Brain and Cognee as personal memory systems.\",\n  \"citations\": [\n    \"context: AI memory article\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Successfully recalled one saved article about AI memory from context.\",\n      \"No superseded or deleted facts were presented.\",\n      \"Ambiguity preserved where not resolved; no false commitments made.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

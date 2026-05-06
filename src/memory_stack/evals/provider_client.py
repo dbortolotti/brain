@@ -164,7 +164,7 @@ class LiveProviderClient:
                 "model": candidate.model,
                 "input": prompt_with_schema(prompt, schema),
                 "max_output_tokens": MAX_OUTPUT_TOKENS,
-                "reasoning": {"effort": "minimal"},
+                "reasoning": {"effort": openai_reasoning_effort(candidate.model)},
             },
         )
         payload = checked_json(response)
@@ -364,6 +364,12 @@ def parse_json_object(raw_text: str) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise ProviderCallError("model output JSON was not an object")
     return payload
+
+
+def openai_reasoning_effort(model: str) -> str:
+    if model.startswith(("gpt-5.4", "gpt-5.5")):
+        return "low"
+    return "minimal"
 
 
 def checked_json(response: httpx.Response) -> dict[str, Any]:

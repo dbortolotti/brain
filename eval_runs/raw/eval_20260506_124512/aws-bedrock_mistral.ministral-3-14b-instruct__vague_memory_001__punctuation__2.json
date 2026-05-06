@@ -1,0 +1,63 @@
+{
+  "error": null,
+  "fixture_id": "vague_memory_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The request cannot be fulfilled as stated due to ambiguity. Clarification is required to distinguish between: (a) a forgotten memory, (b) a stylistic choice, or (c) an incomplete query. No durable memory exists for an unspecified 'thing' from yesterday.",
+    "citations": [],
+    "conflict_classification": "none_applicable",
+    "decision": "ambiguous_retrieval_request",
+    "entity_resolution": {
+      "action": "defer_resolution",
+      "reason": "Lack of specificity prevents unambiguous entity binding. Potential interpretations include: (1) a literal object/event forgotten, (2) a rhetorical device, or (3) a placeholder for future input. No superseded/deleted facts exist to contradict."
+    },
+    "intent": "retrieve_vague_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "yesterday",
+            "role": "time_anchor",
+            "type": "temporal_reference"
+          },
+          {
+            "name": "thing",
+            "role": "placeholder",
+            "type": "unspecified_entity"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "unspecified_event_or_object",
+            "predicate": "referenced",
+            "subject": "user"
+          },
+          {
+            "object": "yesterday",
+            "predicate": "occurred_at",
+            "subject": "unspecified_event_or_object"
+          }
+        ],
+        "statement": "The user referenced an unspecified 'thing' from yesterday, lacking sufficient specificity to identify a concrete memory. Punctuation or phrasing may imply intentional vagueness (e.g., rhetorical, poetic, or placeholder intent)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguity detected in temporal + entity reference.",
+        "No actionable memory retrieved without disambiguation.",
+        "Request preserved in durable memory as unresolved query."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Specify the 'thing' (e.g., 'the meeting notes', 'the conversation with Alex').",
+      "Clarify intent (e.g., 'Was this a joke?', 'Do you mean a forgotten task?').",
+      "Provide context (e.g., 'It was related to [topic]')."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"retrieve_vague_memory\",\n  \"decision\": \"ambiguous_retrieval_request\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"durable_memory\",\n      \"statement\": \"The user referenced an unspecified 'thing' from yesterday, lacking sufficient specificity to identify a concrete memory. Punctuation or phrasing may imply intentional vagueness (e.g., rhetorical, poetic, or placeholder intent).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"yesterday\",\n          \"type\": \"temporal_reference\",\n          \"role\": \"time_anchor\"\n        },\n        {\n          \"name\": \"thing\",\n          \"type\": \"unspecified_entity\",\n          \"role\": \"placeholder\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"user\",\n          \"predicate\": \"referenced\",\n          \"object\": \"unspecified_event_or_object\"\n        },\n        {\n          \"subject\": \"unspecified_event_or_object\",\n          \"predicate\": \"occurred_at\",\n          \"object\": \"yesterday\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer_resolution\",\n    \"reason\": \"Lack of specificity prevents unambiguous entity binding. Potential interpretations include: (1) a literal object/event forgotten, (2) a rhetorical device, or (3) a placeholder for future input. No superseded/deleted facts exist to contradict.\"\n  },\n  \"conflict_classification\": \"none_applicable\",\n  \"answer\": \"The request cannot be fulfilled as stated due to ambiguity. Clarification is required to distinguish between: (a) a forgotten memory, (b) a stylistic choice, or (c) an incomplete query. No durable memory exists for an unspecified 'thing' from yesterday.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Specify the 'thing' (e.g., 'the meeting notes', 'the conversation with Alex').\",\n    \"Clarify intent (e.g., 'Was this a joke?', 'Do you mean a forgotten task?').\",\n    \"Provide context (e.g., 'It was related to [topic]').\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Ambiguity detected in temporal + entity reference.\",\n      \"No actionable memory retrieved without disambiguation.\",\n      \"Request preserved in durable memory as unresolved query.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

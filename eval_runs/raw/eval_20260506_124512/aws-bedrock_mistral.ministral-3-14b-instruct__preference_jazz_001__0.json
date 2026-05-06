@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "fixture_id": "preference_jazz_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Preference for Sonny Rollins over John Coltrane for relaxed Sunday listening has been durably recorded.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "durable_memory",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": null,
+      "reason": "No existing preference conflicts; new explicit preference recorded."
+    },
+    "intent": "preference_update",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sonny Rollins",
+            "role": "preferred_musician",
+            "type": "artist"
+          },
+          {
+            "name": "John Coltrane",
+            "role": "alternative_musician",
+            "type": "artist"
+          },
+          {
+            "name": "relaxed Sunday listening",
+            "role": "use_case",
+            "type": "context"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Sonny Rollins",
+            "predicate": "prefers",
+            "subject": "user"
+          },
+          {
+            "object": "John Coltrane",
+            "predicate": "avoids",
+            "subject": "user"
+          },
+          {
+            "object": "relaxed Sunday listening",
+            "predicate": "is_superior_for",
+            "subject": "Sonny Rollins"
+          }
+        ],
+        "statement": "User prefers Sonny Rollins over John Coltrane for relaxed Sunday listening."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory committed with high confidence.",
+        "No superseded or conflicting facts detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"preference_update\",\n  \"decision\": \"durable_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"User prefers Sonny Rollins over John Coltrane for relaxed Sunday listening.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sonny Rollins\",\n          \"type\": \"artist\",\n          \"role\": \"preferred_musician\"\n        },\n        {\n          \"name\": \"John Coltrane\",\n          \"type\": \"artist\",\n          \"role\": \"alternative_musician\"\n        },\n        {\n          \"name\": \"relaxed Sunday listening\",\n          \"type\": \"context\",\n          \"role\": \"use_case\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"user\",\n          \"predicate\": \"prefers\",\n          \"object\": \"Sonny Rollins\"\n        },\n        {\n          \"subject\": \"user\",\n          \"predicate\": \"avoids\",\n          \"object\": \"John Coltrane\"\n        },\n        {\n          \"subject\": \"Sonny Rollins\",\n          \"predicate\": \"is_superior_for\",\n          \"object\": \"relaxed Sunday listening\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_new\",\n    \"entity_id\": null,\n    \"reason\": \"No existing preference conflicts; new explicit preference recorded.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Preference for Sonny Rollins over John Coltrane for relaxed Sunday listening has been durably recorded.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Durable memory committed with high confidence.\",\n      \"No superseded or conflicting facts detected.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

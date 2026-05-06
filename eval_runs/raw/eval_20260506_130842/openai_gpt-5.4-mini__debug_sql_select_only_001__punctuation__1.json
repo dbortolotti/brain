@@ -1,0 +1,75 @@
+{
+  "error": null,
+  "fixture_id": "debug_sql_select_only_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Admin SQL select-only mode permits SELECT queries and denies DELETE queries.",
+    "citations": [
+      "Input: \"Admin SQL select-only mode - SELECT id FROM memory_cards LIMIT 10 allowed; DELETE FROM memory_cards denied\""
+    ],
+    "conflict_classification": "none",
+    "decision": "store_ambiguous_fact",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No persistent entity can be resolved from the fixture beyond a mode/query policy statement."
+    },
+    "intent": "debug_explainer",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "admin SQL select-only mode",
+            "role": "context",
+            "type": "mode"
+          },
+          {
+            "name": "memory_cards",
+            "role": "target_table",
+            "type": "table"
+          },
+          {
+            "name": "SELECT id FROM memory_cards LIMIT 10",
+            "role": "allowed_example",
+            "type": "query"
+          },
+          {
+            "name": "DELETE FROM memory_cards",
+            "role": "denied_example",
+            "type": "query"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "SELECT id FROM memory_cards LIMIT 10",
+            "predicate": "allows",
+            "subject": "admin SQL select-only mode"
+          },
+          {
+            "object": "DELETE FROM memory_cards",
+            "predicate": "denies",
+            "subject": "admin SQL select-only mode"
+          }
+        ],
+        "statement": "In admin SQL select-only mode, SELECT queries such as \"SELECT id FROM memory_cards LIMIT 10\" are allowed, while DELETE FROM memory_cards is denied."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed a mode/policy statement.",
+        "No deletion or destructive operation was inferred as allowed.",
+        "Stored as a low-to-medium confidence fact only."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If this policy should be durable, store it as a mode-level permission fact.",
+      "If this is only a test fixture, keep it low-confidence and avoid reusing it as a general rule."
+    ]
+  },
+  "raw_text": "{\"intent\":\"debug_explainer\",\"decision\":\"store_ambiguous_fact\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"In admin SQL select-only mode, SELECT queries such as \\\"SELECT id FROM memory_cards LIMIT 10\\\" are allowed, while DELETE FROM memory_cards is denied.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"admin SQL select-only mode\",\"type\":\"mode\",\"role\":\"context\"},{\"name\":\"memory_cards\",\"type\":\"table\",\"role\":\"target_table\"},{\"name\":\"SELECT id FROM memory_cards LIMIT 10\",\"type\":\"query\",\"role\":\"allowed_example\"},{\"name\":\"DELETE FROM memory_cards\",\"type\":\"query\",\"role\":\"denied_example\"}],\"relationships\":[{\"subject\":\"admin SQL select-only mode\",\"predicate\":\"allows\",\"object\":\"SELECT id FROM memory_cards LIMIT 10\"},{\"subject\":\"admin SQL select-only mode\",\"predicate\":\"denies\",\"object\":\"DELETE FROM memory_cards\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No persistent entity can be resolved from the fixture beyond a mode/query policy statement.\"},\"conflict_classification\":\"none\",\"answer\":\"Admin SQL select-only mode permits SELECT queries and denies DELETE queries.\",\"citations\":[\"Input: \\\"Admin SQL select-only mode - SELECT id FROM memory_cards LIMIT 10 allowed; DELETE FROM memory_cards denied\\\"\"],\"repair_options\":[\"If this policy should be durable, store it as a mode-level permission fact.\",\"If this is only a test fixture, keep it low-confidence and avoid reusing it as a general rule.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed a mode/policy statement.\",\"No deletion or destructive operation was inferred as allowed.\",\"Stored as a low-to-medium confidence fact only.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

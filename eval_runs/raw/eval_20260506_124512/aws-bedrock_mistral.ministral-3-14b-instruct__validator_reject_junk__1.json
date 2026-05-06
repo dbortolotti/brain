@@ -1,0 +1,31 @@
+{
+  "error": null,
+  "fixture_id": "validator_reject_junk",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Input lacks meaningful content or evaluable structure. Rejected as non-compliant with durable memory requirements.",
+    "citations": [],
+    "conflict_classification": "junk_input",
+    "decision": "reject",
+    "entity_resolution": null,
+    "intent": "invalid",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Input 'lol ok sure whatever' fails to meet minimum criteria for intent, confidence, or actionable content.",
+        "No valid `kind` (e.g., 'fact', 'query', 'command') or `statement` present.",
+        "Ambiguity or slang (e.g., 'lol') cannot be resolved into durable memory without explicit disambiguation.",
+        "Violates 'preserve ambiguity' rule by defaulting to rejection for unparseable input."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide structured input adhering to the schema (e.g., a valid memory statement, query, or directive).",
+      "Clarify intent with explicit context (e.g., 'Is this a test of the system?' or 'What should I remember?').",
+      "Use natural language *only* if it can be unambiguously mapped to a memory operation (e.g., 'Store: [fact] with confidence [X]')."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"invalid\",\n  \"decision\": \"reject\",\n  \"memory_cards\": [],\n  \"entity_resolution\": null,\n  \"conflict_classification\": \"junk_input\",\n  \"answer\": \"Input lacks meaningful content or evaluable structure. Rejected as non-compliant with durable memory requirements.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Provide structured input adhering to the schema (e.g., a valid memory statement, query, or directive).\",\n    \"Clarify intent with explicit context (e.g., 'Is this a test of the system?' or 'What should I remember?').\",\n    \"Use natural language *only* if it can be unambiguously mapped to a memory operation (e.g., 'Store: [fact] with confidence [X]').\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Input 'lol ok sure whatever' fails to meet minimum criteria for intent, confidence, or actionable content.\",\n      \"No valid `kind` (e.g., 'fact', 'query', 'command') or `statement` present.\",\n      \"Ambiguity or slang (e.g., 'lol') cannot be resolved into durable memory without explicit disambiguation.\",\n      \"Violates 'preserve ambiguity' rule by defaulting to rejection for unparseable input.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

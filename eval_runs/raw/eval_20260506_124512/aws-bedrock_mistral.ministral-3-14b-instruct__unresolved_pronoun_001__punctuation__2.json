@@ -1,0 +1,46 @@
+{
+  "error": null,
+  "fixture_id": "unresolved_pronoun_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The statement contains an ambiguous pronoun ('one') whose referent cannot be determined without additional context. No durable memory can be committed.",
+    "conflict_classification": "unresolved_ambiguity",
+    "entity_resolution": {
+      "action": "defer",
+      "reason": "Ambiguous pronoun ('one') lacks clear referent in current context. Requires prior or additional context to resolve."
+    },
+    "intent": "reference_resolution",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "one",
+            "role": "ambiguous_antecedent",
+            "type": "pronoun"
+          }
+        ],
+        "kind": "ambiguous_reference",
+        "relationships": [
+          {
+            "object": "one",
+            "predicate": "prefers",
+            "subject": "speaker"
+          }
+        ],
+        "statement": "The speaker refers to an unspecified 'one' (likely an object, concept, or entity) with preference, but the antecedent is unresolved due to lack of context or prior mention."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguous reference detected: 'one' lacks antecedent.",
+        "No prior context exists to resolve the pronoun.",
+        "Memory commit deferred to preserve ambiguity."
+      ],
+      "success": false
+    }
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"reference_resolution\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"ambiguous_reference\",\n      \"statement\": \"The speaker refers to an unspecified 'one' (likely an object, concept, or entity) with preference, but the antecedent is unresolved due to lack of context or prior mention.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"one\",\n          \"type\": \"pronoun\",\n          \"role\": \"ambiguous_antecedent\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"speaker\",\n          \"predicate\": \"prefers\",\n          \"object\": \"one\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"reason\": \"Ambiguous pronoun ('one') lacks clear referent in current context. Requires prior or additional context to resolve.\"\n  },\n  \"conflict_classification\": \"unresolved_ambiguity\",\n  \"answer\": \"The statement contains an ambiguous pronoun ('one') whose referent cannot be determined without additional context. No durable memory can be committed.\",\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Ambiguous reference detected: 'one' lacks antecedent.\",\n      \"No prior context exists to resolve the pronoun.\",\n      \"Memory commit deferred to preserve ambiguity.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

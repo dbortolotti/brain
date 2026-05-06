@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "fixture_id": "debug_sql_select_only_001__context",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "In Admin SQL select-only mode, SELECT queries are permitted to retrieve data (e.g., SELECT id FROM memory_cards LIMIT 10), but DELETE operations are explicitly denied to prevent data modification. This ensures read-only access for auditing or inspection purposes while maintaining data integrity.",
+    "citations": [
+      "fixture:debug_sql_select_only_001__context"
+    ],
+    "conflict_classification": "none",
+    "decision": "explain_sql_select_only_mode",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": "admin_sql_select_only_mode_001",
+      "reason": "Matched to defined policy fixture for debug_sql_select_only_001__context"
+    },
+    "intent": "debug_explainer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Admin SQL select-only mode",
+            "role": "restriction",
+            "type": "database_policy"
+          },
+          {
+            "name": "memory_cards",
+            "role": "target",
+            "type": "database_table"
+          },
+          {
+            "name": "SELECT",
+            "role": "allowed",
+            "type": "sql_operation"
+          },
+          {
+            "name": "DELETE",
+            "role": "denied",
+            "type": "sql_operation"
+          }
+        ],
+        "kind": "policy",
+        "relationships": [
+          {
+            "object": "SELECT id FROM memory_cards LIMIT 10",
+            "predicate": "allows",
+            "subject": "Admin SQL select-only mode"
+          },
+          {
+            "object": "DELETE FROM memory_cards",
+            "predicate": "denies",
+            "subject": "Admin SQL select-only mode"
+          }
+        ],
+        "statement": "Admin SQL select-only mode permits SELECT queries on memory_cards but denies DELETE, INSERT, and UPDATE operations."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Policy interpreted correctly: SELECT allowed, DELETE denied.",
+        "No conflicting or superseded facts present.",
+        "Response adheres to read-only memory constraints."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"debug_explainer\",\n  \"decision\": \"explain_sql_select_only_mode\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"policy\",\n      \"statement\": \"Admin SQL select-only mode permits SELECT queries on memory_cards but denies DELETE, INSERT, and UPDATE operations.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Admin SQL select-only mode\",\n          \"type\": \"database_policy\",\n          \"role\": \"restriction\"\n        },\n        {\n          \"name\": \"memory_cards\",\n          \"type\": \"database_table\",\n          \"role\": \"target\"\n        },\n        {\n          \"name\": \"SELECT\",\n          \"type\": \"sql_operation\",\n          \"role\": \"allowed\"\n        },\n        {\n          \"name\": \"DELETE\",\n          \"type\": \"sql_operation\",\n          \"role\": \"denied\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Admin SQL select-only mode\",\n          \"predicate\": \"allows\",\n          \"object\": \"SELECT id FROM memory_cards LIMIT 10\"\n        },\n        {\n          \"subject\": \"Admin SQL select-only mode\",\n          \"predicate\": \"denies\",\n          \"object\": \"DELETE FROM memory_cards\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolve\",\n    \"entity_id\": \"admin_sql_select_only_mode_001\",\n    \"reason\": \"Matched to defined policy fixture for debug_sql_select_only_001__context\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"In Admin SQL select-only mode, SELECT queries are permitted to retrieve data (e.g., SELECT id FROM memory_cards LIMIT 10), but DELETE operations are explicitly denied to prevent data modification. This ensures read-only access for auditing or inspection purposes while maintaining data integrity.\",\n  \"citations\": [\n    \"fixture:debug_sql_select_only_001__context\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Policy interpreted correctly: SELECT allowed, DELETE denied.\",\n      \"No conflicting or superseded facts present.\",\n      \"Response adheres to read-only memory constraints.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

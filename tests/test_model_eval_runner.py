@@ -8,7 +8,7 @@ from memory_stack.config import Settings
 from memory_stack.evals.model_fixtures import ModelEvalFixture
 from memory_stack.evals.model_matrix import load_model_registry, select_model_candidates
 from memory_stack.evals.model_runner import ModelEvalRunConfig, run_model_evals
-from memory_stack.evals.provider_client import ModelCallResult
+from memory_stack.evals.provider_client import ModelCallResult, openai_reasoning_effort
 from memory_stack.evals.scoring import (
     aggregate_model_role_records,
     paired_model_comparisons,
@@ -200,6 +200,13 @@ def test_pairwise_comparison_uses_shared_fixtures() -> None:
     assert comparison["score_diff_a_minus_b"]["mean"] > 0
 
 
+def test_openai_reasoning_effort_matches_model_family() -> None:
+    assert openai_reasoning_effort("gpt-5-nano") == "minimal"
+    assert openai_reasoning_effort("gpt-5.4-nano") == "low"
+    assert openai_reasoning_effort("gpt-5.4-mini") == "low"
+    assert openai_reasoning_effort("gpt-5.5") == "low"
+
+
 def test_model_eval_runner_writes_jsonl_and_markdown(tmp_path) -> None:
     output = tmp_path / "eval.jsonl"
     report = tmp_path / "report.md"
@@ -214,6 +221,7 @@ def test_model_eval_runner_writes_jsonl_and_markdown(tmp_path) -> None:
         bootstrap_samples=10,
         output_path=output,
         report_md_path=report,
+        max_workers=2,
     )
 
     result = run_model_evals(Settings(), config, client=FakeEvalClient())

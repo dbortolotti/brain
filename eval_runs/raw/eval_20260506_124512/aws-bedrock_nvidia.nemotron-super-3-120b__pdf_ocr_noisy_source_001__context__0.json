@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "fixture_id": "pdf_ocr_noisy_source_001__context",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "The OCR-noisy source conveys that Brain DB is the authoritative source of truth and Cognee must be reconstructible as a projection from it.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "extract_core_meaning_from_noisy_text",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Entities are unambiguous in context; no resolution needed."
+    },
+    "intent": "interpret_ocr_noisy_source",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "is",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB remains the source of truth."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "projection",
+            "type": "system"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "rebuildable projection",
+            "predicate": "should be",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee should be rebuildable as a projection."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "OCR noise interpreted: 'remalns' \u2192 'remains', 'sou1d' \u2192 'should', 'trvth' \u2192 'truth'",
+        "Core meaning preserved despite character-level corruption",
+        "No conflicting or superseded facts present in input"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"interpret_ocr_noisy_source\",\n  \"decision\": \"extract_core_meaning_from_noisy_text\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Brain DB remains the source of truth.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"system\",\n          \"role\": \"source_of_truth\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"is\",\n          \"object\": \"source of truth\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Cognee should be rebuildable as a projection.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"system\",\n          \"role\": \"projection\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"should be\",\n          \"object\": \"rebuildable projection\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"Entities are unambiguous in context; no resolution needed.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"The OCR-noisy source conveys that Brain DB is the authoritative source of truth and Cognee must be reconstructible as a projection from it.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"OCR noise interpreted: 'remalns' \u2192 'remains', 'sou1d' \u2192 'should', 'trvth' \u2192 'truth'\",\n      \"Core meaning preserved despite character-level corruption\",\n      \"No conflicting or superseded facts present in input\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

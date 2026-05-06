@@ -1,0 +1,78 @@
+{
+  "error": null,
+  "fixture_id": "pdf_ocr_noisy_source_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Durable memory committed: Brain DB is the source of truth; Cognee is a rebuildable projection.",
+    "citations": [
+      "For context, [OCR noisy] Brain DB remalns source of trvth. Cognee shou1d be rebuildable projection."
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "Commit a stable memory that Brain DB remains the source of truth and Cognee should be treated as a rebuildable projection.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The source is OCR-noisy and only mentions systems conceptually; no reliable entity merge or unique identifier can be inferred."
+    },
+    "intent": "Extract durable memory from OCR-noisy context while preserving ambiguity.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source of truth",
+            "type": "system"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "is",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB remains the source of truth."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "projection",
+            "type": "system"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "rebuildable projection",
+            "predicate": "should be",
+            "subject": "Cognee"
+          },
+          {
+            "object": "source of truth",
+            "predicate": "is not",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee should be rebuildable as a projection rather than treated as the authoritative source."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted two conservative facts from OCR-noisy text.",
+        "Avoided overcommitting beyond the explicit source wording."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If a canonical product name exists, map 'Cognee' to that entity later.",
+      "If additional context appears, confirm whether 'Brain DB' is the persistent authoritative store and whether Cognee is a derived index or cache."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Extract durable memory from OCR-noisy context while preserving ambiguity.\",\"decision\":\"Commit a stable memory that Brain DB remains the source of truth and Cognee should be treated as a rebuildable projection.\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Brain DB remains the source of truth.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Brain DB\",\"type\":\"system\",\"role\":\"source of truth\"}],\"relationships\":[{\"subject\":\"Brain DB\",\"predicate\":\"is\",\"object\":\"source of truth\"}]},{\"kind\":\"fact\",\"statement\":\"Cognee should be rebuildable as a projection rather than treated as the authoritative source.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Cognee\",\"type\":\"system\",\"role\":\"projection\"}],\"relationships\":[{\"subject\":\"Cognee\",\"predicate\":\"should be\",\"object\":\"rebuildable projection\"},{\"subject\":\"Cognee\",\"predicate\":\"is not\",\"object\":\"source of truth\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The source is OCR-noisy and only mentions systems conceptually; no reliable entity merge or unique identifier can be inferred.\"},\"conflict_classification\":\"no_conflict\",\"answer\":\"Durable memory committed: Brain DB is the source of truth; Cognee is a rebuildable projection.\",\"citations\":[\"For context, [OCR noisy] Brain DB remalns source of trvth. Cognee shou1d be rebuildable projection.\"],\"repair_options\":[\"If a canonical product name exists, map 'Cognee' to that entity later.\",\"If additional context appears, confirm whether 'Brain DB' is the persistent authoritative store and whether Cognee is a derived index or cache.\"],\"receipt\":{\"success\":true,\"details\":[\"Extracted two conservative facts from OCR-noisy text.\",\"Avoided overcommitting beyond the explicit source wording.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

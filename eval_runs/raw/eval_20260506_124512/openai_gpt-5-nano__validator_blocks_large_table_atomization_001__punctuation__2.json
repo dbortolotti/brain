@@ -1,0 +1,50 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_large_table_atomization_001__punctuation",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "The proposed approach of generating 500 memory cards from a CSV row basis is potentially excessive and may lead to inefficiencies. Recommend batching or consolidating related rows into contextual cards, and clearly define the criteria for atomization (row-level vs. feature-level).",
+    "citations": [],
+    "conflict_classification": "ambiguity_in_scope_and_scale",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "ambiguous",
+      "entity_id": null,
+      "reason": "No concrete entities identified to resolve; input describes a plan rather than specific named entities."
+    },
+    "intent": "evaluate_and_validate",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [],
+        "kind": "note",
+        "relationships": [],
+        "statement": "Proposing 500 memory cards (one per CSV row) may be impractical for large CSVs and could overwhelm retrieval or exceed storage constraints."
+      },
+      {
+        "confidence": "medium",
+        "entities": [],
+        "kind": "requirement",
+        "relationships": [],
+        "statement": "Memory cards should be created with careful atomization and indexability; avoid over-fragmentation that harms retrieval performance."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Received evaluation request for large-scale memory card generation.",
+        "Generated cautious decision and structured repair options."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Limit memory cards to a maximum manageable number (e.g., per logical topic or per CSV section).",
+      "Define atomization rules: one card per logical unit (e.g., per row with consistent schema or per group of similar rows).",
+      "Include a schema for memory_card fields to ensure uniformity (kind, statement, confidence, entities, relationships).",
+      "Provide a plan for indexing, retrieval, and lifecycle (update/delete) of memory cards.",
+      "Pilot with a small subset of CSV rows to validate utility before full-scale expansion."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"evaluate_and_validate\",\n  \"decision\": \"reject\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"note\",\n      \"statement\": \"Proposing 500 memory cards (one per CSV row) may be impractical for large CSVs and could overwhelm retrieval or exceed storage constraints.\",\n      \"confidence\": \"low\",\n      \"entities\": [],\n      \"relationships\": []\n    },\n    {\n      \"kind\": \"requirement\",\n      \"statement\": \"Memory cards should be created with careful atomization and indexability; avoid over-fragmentation that harms retrieval performance.\",\n      \"confidence\": \"medium\",\n      \"entities\": [],\n      \"relationships\": []\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"ambiguous\",\n    \"entity_id\": null,\n    \"reason\": \"No concrete entities identified to resolve; input describes a plan rather than specific named entities.\"\n  },\n  \"conflict_classification\": \"ambiguity_in_scope_and_scale\",\n  \"answer\": \"The proposed approach of generating 500 memory cards from a CSV row basis is potentially excessive and may lead to inefficiencies. Recommend batching or consolidating related rows into contextual cards, and clearly define the criteria for atomization (row-level vs. feature-level).\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Limit memory cards to a maximum manageable number (e.g., per logical topic or per CSV section).\",\n    \"Define atomization rules: one card per logical unit (e.g., per row with consistent schema or per group of similar rows).\",\n    \"Include a schema for memory_card fields to ensure uniformity (kind, statement, confidence, entities, relationships).\",\n    \"Provide a plan for indexing, retrieval, and lifecycle (update/delete) of memory cards.\",\n    \"Pilot with a small subset of CSV rows to validate utility before full-scale expansion.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Received evaluation request for large-scale memory card generation.\",\n      \"Generated cautious decision and structured repair options.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

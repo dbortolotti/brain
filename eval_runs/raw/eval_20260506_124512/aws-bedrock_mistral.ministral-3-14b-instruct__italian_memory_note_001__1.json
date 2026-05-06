@@ -1,0 +1,60 @@
+{
+  "error": null,
+  "fixture_id": "italian_memory_note_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memorizzato: Sam di Goldman preferisce Bill Evans come pianista jazz. Nessun conflitto rilevato.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "durable_memory",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "New preference relationship established; no prior conflicting memory exists."
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam di Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred_entity",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam di Goldman"
+          },
+          {
+            "object": "jazz_pianism",
+            "predicate": "has_preference_in",
+            "subject": "Sam di Goldman"
+          }
+        ],
+        "statement": "Sam di Goldman prefers Bill Evans as a jazz pianist."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created with high confidence.",
+        "No prior conflicting statements detected.",
+        "Entity resolution: New entities/relationships added."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_ingestion\",\n  \"decision\": \"durable_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam di Goldman prefers Bill Evans as a jazz pianist.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam di Goldman\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"preferred_entity\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam di Goldman\",\n          \"predicate\": \"prefers\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam di Goldman\",\n          \"predicate\": \"has_preference_in\",\n          \"object\": \"jazz_pianism\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create\",\n    \"entity_id\": null,\n    \"reason\": \"New preference relationship established; no prior conflicting memory exists.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Memorizzato: Sam di Goldman preferisce Bill Evans come pianista jazz. Nessun conflitto rilevato.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card created with high confidence.\",\n      \"No prior conflicting statements detected.\",\n      \"Entity resolution: New entities/relationships added.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

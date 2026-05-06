@@ -1,0 +1,119 @@
+{
+  "error": null,
+  "fixture_id": "pdf_ocr_noisy_source_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The input is an unverified, noisy OCR fragment from 'pdf_ocr_noisy_source_001'. Its *potential* meaning is preserved as a memory card with **low confidence** and **ambiguity warnings**, but it is **not committed as durable memory** due to reliability concerns.",
+    "citations": [],
+    "conflict_classification": "none_applicable",
+    "decision": "retain_with_ambiguity",
+    "entity_resolution": {
+      "action": "defer",
+      "reason": "Ambiguity in 'Brain DB' and 'cognition' prevents resolution without additional context or source verification."
+    },
+    "intent": "memory_compilation",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "pdf_ocr_noisy_source_001",
+            "role": "source",
+            "type": "document"
+          },
+          {
+            "name": "OCR",
+            "role": "error_source",
+            "type": "process"
+          }
+        ],
+        "kind": "source_metadata",
+        "relationships": [
+          {
+            "object": "noisy_text_fragment",
+            "predicate": "contains",
+            "subject": "pdf_ocr_noisy_source_001"
+          },
+          {
+            "object": "OCR_errors",
+            "predicate": "corrupted_by",
+            "subject": "noisy_text_fragment"
+          }
+        ],
+        "statement": "The input is an OCR-extracted, noisy text fragment from a document labeled as 'pdf_ocr_noisy_source_001'. The source is unreliable due to OCR errors (e.g., 'remalns' for 'remains', 'trvth' for 'truth', 'Cognee' for 'Cognition')."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "ambiguous_reference",
+            "type": "entity"
+          },
+          {
+            "name": "source_of_truth",
+            "role": "hypothesized_meaning",
+            "type": "concept"
+          },
+          {
+            "name": "cognition",
+            "role": "hypothesized_meaning",
+            "type": "concept"
+          },
+          {
+            "name": "rebuildable_projection",
+            "role": "hypothesized_meaning",
+            "type": "concept"
+          }
+        ],
+        "kind": "interpretation",
+        "relationships": [
+          {
+            "object": "source_of_truth",
+            "predicate": "claimed_as",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "rebuildable_projection",
+            "predicate": "should_be",
+            "subject": "cognition"
+          }
+        ],
+        "statement": "The core *potential* meaning of the fragment is: 'Brain DB remains the source of truth. Cognition should be a rebuildable projection.' This is ambiguous due to OCR noise and lacks context (e.g., 'Brain DB' could refer to a database, AI system, or metaphorical construct)."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "durable_truth",
+            "role": "exclusion_criterion",
+            "type": "concept"
+          },
+          {
+            "name": "OCR_noise",
+            "role": "exclusion_criterion",
+            "type": "error"
+          }
+        ],
+        "kind": "warning",
+        "statement": "This memory card is *not* committed as durable truth due to: (1) OCR noise, (2) lack of verifiable context, and (3) ambiguity in core terms ('Brain DB', 'cognition'). Superseded/deleted facts are explicitly excluded."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created with ambiguity preserved.",
+        "No durable commitments made.",
+        "Entity resolution deferred."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request human review of the OCR source to resolve ambiguities.",
+      "Link to a verified source if 'Brain DB' or 'cognition' are known entities in the system.",
+      "Flag for deletion if the fragment is confirmed to be irrelevant."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_compilation\",\n  \"decision\": \"retain_with_ambiguity\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"source_metadata\",\n      \"statement\": \"The input is an OCR-extracted, noisy text fragment from a document labeled as 'pdf_ocr_noisy_source_001'. The source is unreliable due to OCR errors (e.g., 'remalns' for 'remains', 'trvth' for 'truth', 'Cognee' for 'Cognition').\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"pdf_ocr_noisy_source_001\",\n          \"type\": \"document\",\n          \"role\": \"source\"\n        },\n        {\n          \"name\": \"OCR\",\n          \"type\": \"process\",\n          \"role\": \"error_source\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"pdf_ocr_noisy_source_001\",\n          \"predicate\": \"contains\",\n          \"object\": \"noisy_text_fragment\"\n        },\n        {\n          \"subject\": \"noisy_text_fragment\",\n          \"predicate\": \"corrupted_by\",\n          \"object\": \"OCR_errors\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"interpretation\",\n      \"statement\": \"The core *potential* meaning of the fragment is: 'Brain DB remains the source of truth. Cognition should be a rebuildable projection.' This is ambiguous due to OCR noise and lacks context (e.g., 'Brain DB' could refer to a database, AI system, or metaphorical construct).\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"entity\",\n          \"role\": \"ambiguous_reference\"\n        },\n        {\n          \"name\": \"source_of_truth\",\n          \"type\": \"concept\",\n          \"role\": \"hypothesized_meaning\"\n        },\n        {\n          \"name\": \"cognition\",\n          \"type\": \"concept\",\n          \"role\": \"hypothesized_meaning\"\n        },\n        {\n          \"name\": \"rebuildable_projection\",\n          \"type\": \"concept\",\n          \"role\": \"hypothesized_meaning\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"claimed_as\",\n          \"object\": \"source_of_truth\"\n        },\n        {\n          \"subject\": \"cognition\",\n          \"predicate\": \"should_be\",\n          \"object\": \"rebuildable_projection\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"warning\",\n      \"statement\": \"This memory card is *not* committed as durable truth due to: (1) OCR noise, (2) lack of verifiable context, and (3) ambiguity in core terms ('Brain DB', 'cognition'). Superseded/deleted facts are explicitly excluded.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"durable_truth\",\n          \"type\": \"concept\",\n          \"role\": \"exclusion_criterion\"\n        },\n        {\n          \"name\": \"OCR_noise\",\n          \"type\": \"error\",\n          \"role\": \"exclusion_criterion\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"reason\": \"Ambiguity in 'Brain DB' and 'cognition' prevents resolution without additional context or source verification.\"\n  },\n  \"conflict_classification\": \"none_applicable\",\n  \"answer\": \"The input is an unverified, noisy OCR fragment from 'pdf_ocr_noisy_source_001'. Its *potential* meaning is preserved as a memory card with **low confidence** and **ambiguity warnings**, but it is **not committed as durable memory** due to reliability concerns.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Request human review of the OCR source to resolve ambiguities.\",\n    \"Link to a verified source if 'Brain DB' or 'cognition' are known entities in the system.\",\n    \"Flag for deletion if the fragment is confirmed to be irrelevant.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card created with ambiguity preserved.\",\n      \"No durable commitments made.\",\n      \"Entity resolution deferred.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

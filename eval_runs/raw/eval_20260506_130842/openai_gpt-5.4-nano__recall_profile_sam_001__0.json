@@ -1,0 +1,105 @@
+{
+  "error": null,
+  "fixture_id": "recall_profile_sam_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Sam is associated with Goldman. Sam likes Bill Evans. Sam is interested in AI infrastructure.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "recall_from_profile_only",
+    "entity_resolution": {
+      "action": "map_to_known_profile",
+      "entity_id": "recall_profile_sam_001",
+      "reason": "The query matches the fixture facts for 'Sam from Goldman'."
+    },
+    "intent": "Tell me everything about Sam from Goldman",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "primary",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "profile_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "is_associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is associated with Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "primary",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_target",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "primary",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "interest",
+            "type": "topic"
+          }
+        ],
+        "kind": "interest",
+        "relationships": [
+          {
+            "object": "AI infrastructure",
+            "predicate": "is_interested_in",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is interested in AI infrastructure."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Returned only the available facts from the provided profile fixture.",
+        "Preserved the open-loop instruction to send an article about AI infrastructure as a future action rather than asserting it as completed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask what additional context is desired about Sam (e.g., whether there are other interests, roles, or people involved).",
+      "If you intended a different Sam, provide distinguishing details (e.g., full name, department, or timeframe)."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Tell me everything about Sam from Goldman\",\n  \"decision\": \"recall_from_profile_only\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"profile_fact\",\n      \"statement\": \"Sam is associated with Goldman.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"primary\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"is_associated_with\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam likes Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"primary\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"preference_target\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"interest\",\n      \"statement\": \"Sam is interested in AI infrastructure.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"primary\"\n        },\n        {\n          \"name\": \"AI infrastructure\",\n          \"type\": \"topic\",\n          \"role\": \"interest\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"is_interested_in\",\n          \"object\": \"AI infrastructure\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"map_to_known_profile\",\n    \"entity_id\": \"recall_profile_sam_001\",\n    \"reason\": \"The query matches the fixture facts for 'Sam from Goldman'.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Sam is associated with Goldman. Sam likes Bill Evans. Sam is interested in AI infrastructure.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Ask what additional context is desired about Sam (e.g., whether there are other interests, roles, or people involved).\",\n    \"If you intended a different Sam, provide distinguishing details (e.g., full name, department, or timeframe).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Returned only the available facts from the provided profile fixture.\",\n      \"Preserved the open-loop instruction to send an article about AI infrastructure as a future action rather than asserting it as completed.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

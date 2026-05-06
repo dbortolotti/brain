@@ -1,0 +1,104 @@
+{
+  "error": null,
+  "fixture_id": "small_table_preferences_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Stored two preferences: Sam likes Bill Evans; Anna likes Barolo, each associated with the provided dated context.",
+    "citations": [
+      "Dinner 2026-05-05 (Sam | Goldman | Likes Bill Evans)",
+      "Lunch 2026-05-01 (Anna | JPM | Likes Barolo)"
+    ],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "create_or_match",
+      "entity_id": null,
+      "reason": "No existing entity IDs were provided; store as new resolved entities based on names and affiliations."
+    },
+    "intent": "Compile durable memory cards from provided preference context for Brain (personal memory system).",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "individual",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "firm"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference",
+            "type": "artist"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          },
+          {
+            "object": "Dinner 2026-05-05",
+            "predicate": "context",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (Goldman) likes Bill Evans (for dinner)."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Anna",
+            "role": "individual",
+            "type": "person"
+          },
+          {
+            "name": "JPM",
+            "role": "affiliation",
+            "type": "firm"
+          },
+          {
+            "name": "Barolo",
+            "role": "preference",
+            "type": "wine"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Barolo",
+            "predicate": "prefers",
+            "subject": "Anna"
+          },
+          {
+            "object": "Lunch 2026-05-01",
+            "predicate": "context",
+            "subject": "Anna"
+          }
+        ],
+        "statement": "Anna (JPM) likes Barolo (for lunch)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed 2 rows of preference context.",
+        "Created 2 preference memory cards without contradictions."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If a canonical entity ID system exists, map 'Sam' and 'Goldman' and 'Anna' and 'JPM' to those IDs.",
+      "If 'likes' should be generalized beyond the specific meal context, re-save without the dinner/lunch association."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Compile durable memory cards from provided preference context for Brain (personal memory system).\",\n  \"decision\": \"store\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam (Goldman) likes Bill Evans (for dinner).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"individual\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"firm\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"artist\",\n          \"role\": \"preference\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"prefers\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"context\",\n          \"object\": \"Dinner 2026-05-05\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Anna (JPM) likes Barolo (for lunch).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Anna\",\n          \"type\": \"person\",\n          \"role\": \"individual\"\n        },\n        {\n          \"name\": \"JPM\",\n          \"type\": \"firm\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Barolo\",\n          \"type\": \"wine\",\n          \"role\": \"preference\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Anna\",\n          \"predicate\": \"prefers\",\n          \"object\": \"Barolo\"\n        },\n        {\n          \"subject\": \"Anna\",\n          \"predicate\": \"context\",\n          \"object\": \"Lunch 2026-05-01\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_or_match\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entity IDs were provided; store as new resolved entities based on names and affiliations.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Stored two preferences: Sam likes Bill Evans; Anna likes Barolo, each associated with the provided dated context.\",\n  \"citations\": [\n    \"Dinner 2026-05-05 (Sam | Goldman | Likes Bill Evans)\",\n    \"Lunch 2026-05-01 (Anna | JPM | Likes Barolo)\"\n  ],\n  \"repair_options\": [\n    \"If a canonical entity ID system exists, map 'Sam' and 'Goldman' and 'Anna' and 'JPM' to those IDs.\",\n    \"If 'likes' should be generalized beyond the specific meal context, re-save without the dinner/lunch association.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Parsed 2 rows of preference context.\",\n      \"Created 2 preference memory cards without contradictions.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

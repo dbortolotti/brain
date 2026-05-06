@@ -1,0 +1,96 @@
+{
+  "error": null,
+  "fixture_id": "supersession_sam_job_001__punctuation",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "The statement 'Sam left Goldman and joined Point72' supersedes 'Sam works at Goldman New' as it describes a more recent and definitive change in employment.",
+    "citations": [
+      "Sam left Goldman and joined Point72"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "superseded",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "Sam",
+      "reason": "Both statements refer to the same person; the second supersedes the first regarding employment status."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman New",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman New",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman New"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict identified: employment status contradiction",
+        "Resolution applied: supersession rule triggered",
+        "Entity 'Sam' resolved and unified",
+        "Outdated fact marked as superseded, not deleted"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retain only the superseded fact: 'Sam left Goldman and joined Point72'",
+      "Archive the outdated fact: 'Sam works at Goldman New' as historical",
+      "Update temporal metadata to reflect the change in employment timeline"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"classify_conflict\",\n  \"decision\": \"superseded\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam works at Goldman New\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"employee\"\n        },\n        {\n          \"name\": \"Goldman New\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Goldman New\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam left Goldman and joined Point72\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"employee\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"former_employer\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"current_employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"left\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge\",\n    \"entity_id\": \"Sam\",\n    \"reason\": \"Both statements refer to the same person; the second supersedes the first regarding employment status.\"\n  },\n  \"conflict_classification\": \"supersession\",\n  \"answer\": \"The statement 'Sam left Goldman and joined Point72' supersedes 'Sam works at Goldman New' as it describes a more recent and definitive change in employment.\",\n  \"citations\": [\n    \"Sam left Goldman and joined Point72\"\n  ],\n  \"repair_options\": [\n    \"Retain only the superseded fact: 'Sam left Goldman and joined Point72'\",\n    \"Archive the outdated fact: 'Sam works at Goldman New' as historical\",\n    \"Update temporal metadata to reflect the change in employment timeline\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Conflict identified: employment status contradiction\",\n      \"Resolution applied: supersession rule triggered\",\n      \"Entity 'Sam' resolved and unified\",\n      \"Outdated fact marked as superseded, not deleted\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

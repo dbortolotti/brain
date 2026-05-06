@@ -1,0 +1,83 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_high_confidence_overwrite_001__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Existing memory: Sara is Daniele's daughter. The proposed memory 'Sara is Daniele's niece' conflicts with the established relation. Until clarified with new evidence (e.g., family tree context), preserve the existing durable memory and treat the proposal as a conflicting, lower-confidence replacement candidate. Do not overwrite the established relation.",
+    "citations": [],
+    "conflict_classification": "high_confidence_overwrite_declared_false_assumption",
+    "decision": "overwrite_with_older_memory_preserved_when conflicting_and_high_confidence_swap_not_allowed",
+    "entity_resolution": {
+      "action": "flag_conflict",
+      "entity_id": null,
+      "reason": "Two statements about Sara's relation to Daniele are conflicting; 'daughter' vs 'niece'. Both involve same entities but cannot both be true unless additional context (e.g., Daniele is Sara's uncle). Original existing statement indicates daughter; proposed statement contradicts and appears less supported."
+    },
+    "intent": "validate_and_resolve_memory_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "other",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_child_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "other",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict detected between memory statements.",
+        "Durable memory preserved: 'Sara is Daniele's daughter.'",
+        "Proposed alternative remains as a lower-confidence note pending clarification."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retain existing memory: Sara is Daniele's daughter.",
+      "If new evidence shows Sara is Daniele's niece (e.g., Sara is Daniele's sister's daughter), create a disjoint or updated entry with explicit clarification of family tree and timestamp.",
+      "Add a discriminating note indicating the context under which Sara could be both daughter and niece in an expanded family tree; otherwise avoid overwriting."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"validate_and_resolve_memory_conflict\",\n  \"decision\": \"overwrite_with_older_memory_preserved_when conflicting_and_high_confidence_swap_not_allowed\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"relationship\",\n      \"statement\": \"Sara is Daniele's daughter.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Sara\", \"type\": \"person\", \"role\": \"subject\"},\n        {\"name\": \"Daniele\", \"type\": \"person\", \"role\": \"other\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sara\", \"predicate\": \"is_child_of\", \"object\": \"Daniele\"}\n      ]\n    },\n    {\n      \"kind\": \"relationship\",\n      \"statement\": \"Sara is Daniele's niece.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\"name\": \"Sara\", \"type\": \"person\", \"role\": \"subject\"},\n        {\"name\": \"Daniele\", \"type\": \"person\", \"role\": \"other\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sara\", \"predicate\": \"is_niece_of\", \"object\": \"Daniele\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"flag_conflict\",\n    \"entity_id\": null,\n    \"reason\": \"Two statements about Sara's relation to Daniele are conflicting; 'daughter' vs 'niece'. Both involve same entities but cannot both be true unless additional context (e.g., Daniele is Sara's uncle). Original existing statement indicates daughter; proposed statement contradicts and appears less supported.\"\n  },\n  \"conflict_classification\": \"high_confidence_overwrite_declared_false_assumption\",\n  \"answer\": \"Existing memory: Sara is Daniele's daughter. The proposed memory 'Sara is Daniele's niece' conflicts with the established relation. Until clarified with new evidence (e.g., family tree context), preserve the existing durable memory and treat the proposal as a conflicting, lower-confidence replacement candidate. Do not overwrite the established relation.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Retain existing memory: Sara is Daniele's daughter.\",\n    \"If new evidence shows Sara is Daniele's niece (e.g., Sara is Daniele's sister's daughter), create a disjoint or updated entry with explicit clarification of family tree and timestamp.\",\n    \"Add a discriminating note indicating the context under which Sara could be both daughter and niece in an expanded family tree; otherwise avoid overwriting.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Conflict detected between memory statements.\",\n      \"Durable memory preserved: 'Sara is Daniele's daughter.'\",\n      \"Proposed alternative remains as a lower-confidence note pending clarification.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

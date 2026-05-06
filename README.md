@@ -120,6 +120,22 @@ ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env \
 Use `--scope core`, `--scope enabled`, or `--scope all` for registry-wide checks.
 Judge-only models are excluded unless `--include-judge` is set.
 
+To run one tiny live probe against every unique model declared in
+`brain_model_registry.yaml`, including disabled and judge-only entries:
+
+```bash
+ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env \
+  uv run python scripts/live_model_smoke.py \
+    --all-registry \
+    --json-output eval_runs/live_model_smoke_all.json
+```
+
+The equivalent Make target is:
+
+```bash
+ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make model-smoke-all
+```
+
 For statistical model-role evals, use the Brain eval CLI. It writes one JSONL
 record per model/role/fixture/repeat, plus an optional Markdown report with
 bootstrap confidence intervals, cost, latency, zero-tolerance failures, and
@@ -132,6 +148,7 @@ uv run brain eval models \
   --roles slack_intake,memory_compiler,entity_resolution,conflict_classifier,recall_synthesizer \
   --model-set model-test-initial \
   --bootstrap-samples 5000 \
+  --max-workers 4 \
   --output eval_runs/prod_$(date +%Y%m%d_%H%M%S).jsonl \
   --report-md eval_reports/model_eval_$(date +%Y%m%d_%H%M%S).md
 ```

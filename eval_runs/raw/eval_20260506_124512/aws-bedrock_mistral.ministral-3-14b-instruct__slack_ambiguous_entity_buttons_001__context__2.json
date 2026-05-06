@@ -1,0 +1,34 @@
+{
+  "error": null,
+  "fixture_id": "slack_ambiguous_entity_buttons_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Cannot commit memory due to unresolved entity ambiguity. Clarify which 'Sam' (Goldman or Point72) is being referenced before proceeding.",
+    "citations": [],
+    "conflict_classification": "entity_ambiguity",
+    "decision": "defer_due_to_ambiguity",
+    "entity_resolution": {
+      "action": "disambiguation_required",
+      "entity_id": null,
+      "reason": "Input references 'Sam' without clear context between Sam (Goldman) and Sam (Point72). No prior disambiguation exists for this relationship. Ambiguity persists due to lack of unique identifiers or additional context (e.g., 'Sam from Goldman' vs. 'Sam from Point72')."
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Memory ingestion aborted due to entity ambiguity.",
+        "No memory cards created for 'Sam likes Bill Evans' without resolution."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Explicitly specify: 'Sam from Goldman likes Bill Evans.'",
+      "Explicitly specify: 'Sam from Point72 likes Bill Evans.'",
+      "Provide additional context to disambiguate (e.g., 'Sam who works at Goldman...').",
+      "Request user to confirm the correct 'Sam' via follow-up."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_ingestion\",\n  \"decision\": \"defer_due_to_ambiguity\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"disambiguation_required\",\n    \"reason\": \"Input references 'Sam' without clear context between Sam (Goldman) and Sam (Point72). No prior disambiguation exists for this relationship. Ambiguity persists due to lack of unique identifiers or additional context (e.g., 'Sam from Goldman' vs. 'Sam from Point72').\",\n    \"entity_id\": null\n  },\n  \"conflict_classification\": \"entity_ambiguity\",\n  \"answer\": \"Cannot commit memory due to unresolved entity ambiguity. Clarify which 'Sam' (Goldman or Point72) is being referenced before proceeding.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Explicitly specify: 'Sam from Goldman likes Bill Evans.'\",\n    \"Explicitly specify: 'Sam from Point72 likes Bill Evans.'\",\n    \"Provide additional context to disambiguate (e.g., 'Sam who works at Goldman...').\",\n    \"Request user to confirm the correct 'Sam' via follow-up.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Memory ingestion aborted due to entity ambiguity.\",\n      \"No memory cards created for 'Sam likes Bill Evans' without resolution.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

@@ -1,0 +1,59 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_sam_001__context",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Unable to determine which Sam is referenced; memory recorded with low confidence pending disambiguation.",
+    "citations": [],
+    "conflict_classification": "ambiguous_entity",
+    "decision": "defer",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Ambiguous reference to 'Sam' \u2014 two known entities exist: Sam from Goldman and Sam from Point72. No contextual disambiguation available in input."
+    },
+    "intent": "record_preference",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unspecified",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "musician",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam mentioned that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created with low confidence due to entity ambiguity.",
+        "No overwriting of existing entity facts occurred.",
+        "System preserved ambiguity as instructed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request clarification on which Sam (Goldman or Point72) is being referred to.",
+      "Wait for additional context that disambiguates the Sam entity.",
+      "Link preference to both Sams tentatively with conflict flag."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"record_preference\",\n  \"decision\": \"defer\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam mentioned that he likes Bill Evans.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"unspecified\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"musician\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguous reference to 'Sam' \u2014 two known entities exist: Sam from Goldman and Sam from Point72. No contextual disambiguation available in input.\"\n  },\n  \"conflict_classification\": \"ambiguous_entity\",\n  \"answer\": \"Unable to determine which Sam is referenced; memory recorded with low confidence pending disambiguation.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Request clarification on which Sam (Goldman or Point72) is being referred to.\",\n    \"Wait for additional context that disambiguates the Sam entity.\",\n    \"Link preference to both Sams tentatively with conflict flag.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card created with low confidence due to entity ambiguity.\",\n      \"No overwriting of existing entity facts occurred.\",\n      \"System preserved ambiguity as instructed.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

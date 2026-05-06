@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "fixture_id": "slack_conflict_buttons_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam's employment record has been updated to reflect their departure from Goldman Sachs and current role at Point72 Ventures. The original 'Sam works at Goldman' statement is now superseded, but transition details remain unspecified.",
+    "citations": [
+      "User input: 'Sam left Goldman and joined Point72'",
+      "Original conflicting memory: 'Sam works at Goldman'"
+    ],
+    "conflict_classification": "employment_status_update",
+    "decision": "supersede_existing_with_ambiguity_preserved",
+    "entity_resolution": {
+      "action": "merge_with_ambiguity",
+      "entity_id": "sam_employment_001",
+      "reason": "Preserving ambiguity about transition timing/reason while superseding outdated employment record"
+    },
+    "intent": "memory_update_conflict_resolution",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72 Ventures",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "left_employment_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72 Ventures",
+            "predicate": "joined_employment_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman Sachs and joined Point72 Ventures (exact timeline or reason unspecified)"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded memory card: 'Sam works at Goldman' marked as historical",
+        "New durable memory created with preserved ambiguity",
+        "Entity resolution applied to employment records"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add explicit transition date if known",
+      "Include reason for departure if available",
+      "Flag as unverified if details are uncertain"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_update_conflict_resolution\",\n  \"decision\": \"supersede_existing_with_ambiguity_preserved\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"durable_memory\",\n      \"statement\": \"Sam left Goldman Sachs and joined Point72 Ventures (exact timeline or reason unspecified)\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"former_employer\"\n        },\n        {\n          \"name\": \"Point72 Ventures\",\n          \"type\": \"organization\",\n          \"role\": \"current_employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"left_employment_at\",\n          \"object\": \"Goldman Sachs\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined_employment_at\",\n          \"object\": \"Point72 Ventures\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge_with_ambiguity\",\n    \"entity_id\": \"sam_employment_001\",\n    \"reason\": \"Preserving ambiguity about transition timing/reason while superseding outdated employment record\"\n  },\n  \"conflict_classification\": \"employment_status_update\",\n  \"answer\": \"Sam's employment record has been updated to reflect their departure from Goldman Sachs and current role at Point72 Ventures. The original 'Sam works at Goldman' statement is now superseded, but transition details remain unspecified.\",\n  \"citations\": [\n    \"User input: 'Sam left Goldman and joined Point72'\",\n    \"Original conflicting memory: 'Sam works at Goldman'\"\n  ],\n  \"repair_options\": [\n    \"Add explicit transition date if known\",\n    \"Include reason for departure if available\",\n    \"Flag as unverified if details are uncertain\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Superseded memory card: 'Sam works at Goldman' marked as historical\",\n      \"New durable memory created with preserved ambiguity\",\n      \"Entity resolution applied to employment records\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

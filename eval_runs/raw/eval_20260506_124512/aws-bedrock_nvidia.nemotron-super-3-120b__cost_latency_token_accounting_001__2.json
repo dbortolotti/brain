@@ -1,0 +1,107 @@
+{
+  "error": null,
+  "fixture_id": "cost_latency_token_accounting_001",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "The required eval accounting fields are: token counts (input/output), provider/model IDs (for attribution), estimated price (cost based on usage and pricing), and latency percentiles (p50, p90, p95) to characterize response time performance.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "Provide a clear explanation of the required evaluation accounting fields for model performance and cost tracking.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "All entities are clearly defined in context; no disambiguation needed."
+    },
+    "intent": "explain_required_eval_accounting_fields",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "token counts",
+            "role": "measured_value",
+            "type": "metric"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "input and output tokens",
+            "predicate": "measure",
+            "subject": "token counts"
+          }
+        ],
+        "statement": "Token counts measure input and output tokens used during model inference, essential for cost and usage tracking."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "provider/model IDs",
+            "role": "attribution_key",
+            "type": "identifier"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "service and model version",
+            "predicate": "identify",
+            "subject": "provider/model IDs"
+          }
+        ],
+        "statement": "Provider and model IDs identify the specific service and model version used, enabling reproducibility and cost attribution."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "estimated price",
+            "role": "cost_estimate",
+            "type": "metric"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "token usage and provider pricing",
+            "predicate": "based on",
+            "subject": "estimated price"
+          }
+        ],
+        "statement": "Estimated price calculates the monetary cost based on token usage and provider pricing, critical for budgeting and ROI analysis."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "latency p50 p90 p95",
+            "role": "performance_indicator",
+            "type": "metric"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "response time distribution",
+            "predicate": "describe",
+            "subject": "latency percentiles"
+          }
+        ],
+        "statement": "Latency percentiles (p50, p90, p95) describe response time distribution, indicating performance under typical and high-load conditions."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "All required fields explained accurately.",
+        "No deprecated or ambiguous information included.",
+        "Response adheres to schema and constraints."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"explain_required_eval_accounting_fields\",\n  \"decision\": \"Provide a clear explanation of the required evaluation accounting fields for model performance and cost tracking.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Token counts measure input and output tokens used during model inference, essential for cost and usage tracking.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"token counts\",\n          \"type\": \"metric\",\n          \"role\": \"measured_value\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"token counts\",\n          \"predicate\": \"measure\",\n          \"object\": \"input and output tokens\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Provider and model IDs identify the specific service and model version used, enabling reproducibility and cost attribution.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"provider/model IDs\",\n          \"type\": \"identifier\",\n          \"role\": \"attribution_key\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"provider/model IDs\",\n          \"predicate\": \"identify\",\n          \"object\": \"service and model version\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Estimated price calculates the monetary cost based on token usage and provider pricing, critical for budgeting and ROI analysis.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"estimated price\",\n          \"type\": \"metric\",\n          \"role\": \"cost_estimate\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"estimated price\",\n          \"predicate\": \"based on\",\n          \"object\": \"token usage and provider pricing\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Latency percentiles (p50, p90, p95) describe response time distribution, indicating performance under typical and high-load conditions.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"latency p50 p90 p95\",\n          \"type\": \"metric\",\n          \"role\": \"performance_indicator\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"latency percentiles\",\n          \"predicate\": \"describe\",\n          \"object\": \"response time distribution\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"All entities are clearly defined in context; no disambiguation needed.\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"The required eval accounting fields are: token counts (input/output), provider/model IDs (for attribution), estimated price (cost based on usage and pricing), and latency percentiles (p50, p90, p95) to characterize response time performance.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"All required fields explained accurately.\",\n      \"No deprecated or ambiguous information included.\",\n      \"Response adheres to schema and constraints.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

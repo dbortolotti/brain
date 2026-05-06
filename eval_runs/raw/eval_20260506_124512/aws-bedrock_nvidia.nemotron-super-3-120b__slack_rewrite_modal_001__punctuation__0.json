@@ -1,0 +1,55 @@
+{
+  "error": null,
+  "fixture_id": "slack_rewrite_modal_001__punctuation",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Memory rewritten: 'He prefers the other one'.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "User chose to rewrite the memory; the original statement is being replaced with the new one.",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "No specific named entity was provided; 'He' and 'the other one' are ambiguous and cannot be resolved to a known entity ID without additional context."
+    },
+    "intent": "rewrite_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "He",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "the other one",
+            "role": "preference_target",
+            "type": "object"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "He"
+          }
+        ],
+        "statement": "He prefers the other one"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory successfully rewritten.",
+        "Previous version of this memory (if any) has been superseded.",
+        "No conflicts detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"rewrite_memory\",\n  \"decision\": \"User chose to rewrite the memory; the original statement is being replaced with the new one.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"He prefers the other one\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"He\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"the other one\",\n          \"type\": \"object\",\n          \"role\": \"preference_target\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"He\",\n          \"predicate\": \"prefers\",\n          \"object\": \"the other one\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create\",\n    \"entity_id\": null,\n    \"reason\": \"No specific named entity was provided; 'He' and 'the other one' are ambiguous and cannot be resolved to a known entity ID without additional context.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Memory rewritten: 'He prefers the other one'.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory successfully rewritten.\",\n      \"Previous version of this memory (if any) has been superseded.\",\n      \"No conflicts detected.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

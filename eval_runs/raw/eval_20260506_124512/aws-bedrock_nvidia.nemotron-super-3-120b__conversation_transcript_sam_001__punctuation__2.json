@@ -1,0 +1,135 @@
+{
+  "error": null,
+  "fixture_id": "conversation_transcript_sam_001__punctuation",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Updated Sam's current employment to Point72 (left Goldman Sachs last month), confirmed ongoing interest in Bill Evans with increased focus on early Coltrane, and noted intent to discuss AI infrastructure with Daniele.",
+    "citations": [
+      "conversation_transcript_sam_001__punctuation"
+    ],
+    "conflict_classification": "none",
+    "decision": "store_new_employment_and_music_preferences",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": "sam_001",
+      "reason": "New conversation transcript establishes updated employment and music preferences for Sam"
+    },
+    "intent": "update_personal_info",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman Sachs last month and joined Point72"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "artist",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "artist_period",
+            "type": "music_period"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "listens_to",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "listens_to_more_recently",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is still listening to Bill Evans but has recently been listening more to early Coltrane"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "initiator",
+            "type": "person"
+          },
+          {
+            "name": "Sam",
+            "role": "recipient",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "subject_of_discussion",
+            "type": "topic"
+          }
+        ],
+        "kind": "intent",
+        "relationships": [
+          {
+            "object": "Sam",
+            "predicate": "should_catch_up_with",
+            "subject": "Daniele"
+          },
+          {
+            "object": "AI infrastructure",
+            "predicate": "will_send_article_about",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Daniele and Sam plan to catch up about AI infrastructure"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory cards created for employment change, music preference shift, and discussion intent",
+        "Entity 'sam_001' resolved and updated with current employment and music preferences",
+        "No conflicts detected with prior knowledge"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"update_personal_info\",\n  \"decision\": \"store_new_employment_and_music_preferences\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam left Goldman Sachs last month and joined Point72\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"former_employer\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"current_employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"left\",\n          \"object\": \"Goldman Sachs\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam is still listening to Bill Evans but has recently been listening more to early Coltrane\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"artist\"\n        },\n        {\n          \"name\": \"early Coltrane\",\n          \"type\": \"music_period\",\n          \"role\": \"artist_period\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"listens_to\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"listens_to_more_recently\",\n          \"object\": \"early Coltrane\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"intent\",\n      \"statement\": \"Daniele and Sam plan to catch up about AI infrastructure\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"initiator\"\n        },\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"recipient\"\n        },\n        {\n          \"name\": \"AI infrastructure\",\n          \"type\": \"topic\",\n          \"role\": \"subject_of_discussion\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Daniele\",\n          \"predicate\": \"should_catch_up_with\",\n          \"object\": \"Sam\"\n        },\n        {\n          \"subject\": \"Daniele\",\n          \"predicate\": \"will_send_article_about\",\n          \"object\": \"AI infrastructure\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create\",\n    \"entity_id\": \"sam_001\",\n    \"reason\": \"New conversation transcript establishes updated employment and music preferences for Sam\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Updated Sam's current employment to Point72 (left Goldman Sachs last month), confirmed ongoing interest in Bill Evans with increased focus on early Coltrane, and noted intent to discuss AI infrastructure with Daniele.\",\n  \"citations\": [\n    \"conversation_transcript_sam_001__punctuation\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory cards created for employment change, music preference shift, and discussion intent\",\n      \"Entity 'sam_001' resolved and updated with current employment and music preferences\",\n      \"No conflicts detected with prior knowledge\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

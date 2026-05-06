@@ -1,0 +1,58 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_sam_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam (unspecified) likes Bill Evans. Clarification needed to resolve which Sam is referenced.",
+    "citations": [],
+    "conflict_classification": "entity_ambiguity",
+    "decision": "ambiguous_entity_resolution_required",
+    "entity_resolution": {
+      "action": "pending",
+      "entity_id": null,
+      "reason": "Ambiguity between Sam from Goldman Sachs and Sam from Point72. Context insufficient to disambiguate."
+    },
+    "intent": "memory_intake",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unspecified",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "jazz_pianist",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (unspecified) mentioned liking Bill Evans (jazz pianist)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguous entity 'Sam' could not be resolved to a single durable memory location.",
+        "Fact retained in temporary state pending resolution."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Request disambiguation: 'Which Sam (Goldman Sachs or Point72) mentioned liking Bill Evans?'",
+      "Temporarily store as ambiguous fact with source attribution.",
+      "Flag for manual review due to unresolved entity conflict."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_intake\",\n  \"decision\": \"ambiguous_entity_resolution_required\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam (unspecified) mentioned liking Bill Evans (jazz pianist).\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"unspecified\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"jazz_pianist\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"pending\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguity between Sam from Goldman Sachs and Sam from Point72. Context insufficient to disambiguate.\"\n  },\n  \"conflict_classification\": \"entity_ambiguity\",\n  \"answer\": \"Sam (unspecified) likes Bill Evans. Clarification needed to resolve which Sam is referenced.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Request disambiguation: 'Which Sam (Goldman Sachs or Point72) mentioned liking Bill Evans?'\",\n    \"Temporarily store as ambiguous fact with source attribution.\",\n    \"Flag for manual review due to unresolved entity conflict.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Ambiguous entity 'Sam' could not be resolved to a single durable memory location.\",\n      \"Fact retained in temporary state pending resolution.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

@@ -1,0 +1,81 @@
+{
+  "error": null,
+  "fixture_id": "correction_sam_music_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Update the memory to Sam from Goldman likes early Coltrane; remove Bill Evans as the current preference.",
+    "citations": [
+      "input: Existing memory - Sam from Goldman likes Bill Evans",
+      "input: Correction - Sam from Goldman actually likes early Coltrane, not Bill Evans"
+    ],
+    "conflict_classification": "direct_replacement",
+    "decision": "accept_correction",
+    "entity_resolution": {
+      "action": "reuse_with_update",
+      "entity_id": null,
+      "reason": "The correction refers to the same Sam from Goldman and replaces the previously stored music preference."
+    },
+    "intent": "correct existing memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "superseded_preference",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "corrected_preference",
+            "type": "person/artist"
+          }
+        ],
+        "kind": "correction",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at_or_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "does_not_like_as_current_preference",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane, not Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recognized direct contradiction in preference",
+        "Stored corrected preference as current",
+        "Avoided preserving superseded fact as current"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace 'Bill Evans' with 'early Coltrane' in Sam's music preference.",
+      "Mark the Bill Evans preference as superseded and store early Coltrane as current."
+    ]
+  },
+  "raw_text": "{\"intent\":\"correct existing memory\",\"decision\":\"accept_correction\",\"memory_cards\":[{\"kind\":\"correction\",\"statement\":\"Sam from Goldman likes early Coltrane, not Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"superseded_preference\"},{\"name\":\"early Coltrane\",\"type\":\"person/artist\",\"role\":\"corrected_preference\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at_or_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"early Coltrane\"},{\"subject\":\"Sam\",\"predicate\":\"does_not_like_as_current_preference\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"reuse_with_update\",\"entity_id\":null,\"reason\":\"The correction refers to the same Sam from Goldman and replaces the previously stored music preference.\"},\"conflict_classification\":\"direct_replacement\",\"answer\":\"Update the memory to Sam from Goldman likes early Coltrane; remove Bill Evans as the current preference.\",\"citations\":[\"input: Existing memory - Sam from Goldman likes Bill Evans\",\"input: Correction - Sam from Goldman actually likes early Coltrane, not Bill Evans\"],\"repair_options\":[\"Replace 'Bill Evans' with 'early Coltrane' in Sam's music preference.\",\"Mark the Bill Evans preference as superseded and store early Coltrane as current.\"],\"receipt\":{\"success\":true,\"details\":[\"Recognized direct contradiction in preference\",\"Stored corrected preference as current\",\"Avoided preserving superseded fact as current\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

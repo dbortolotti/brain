@@ -1,0 +1,94 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001__context",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "The new statement 'Sara is my niece' directly contradicts the existing high-confidence memory that Sara is Daniele's daughter and Nur's twin, as being a daughter and being a niece are mutually exclusive roles in standard kinship structures unless complex family arrangements (e.g., adoption, remarriage) are involved \u2014 none of which are indicated here.",
+    "citations": [],
+    "conflict_classification": "direct_contradiction",
+    "decision": "conflict",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Entities are consistent (Sara is the same person); conflict arises from contradictory relational claims."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "twin",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is daughter of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is twin of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "my",
+            "role": "possessor",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "my",
+            "predicate": "is niece of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict identified: daughter vs. niece relationship for Sara.",
+        "No entity mismatch detected.",
+        "Classification based on standard kinship logic.",
+        "No superseded or deleted facts presented as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request clarification on the speaker's relationship to Daniele/Nur to determine if 'my niece' could be accurate under a non-biological or extended family context.",
+      "Downgrade confidence in the existing memory pending verification of Daniele and Nur's parental status.",
+      "Flag for human review to resolve kinship ambiguity."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"classify_conflict\",\n  \"decision\": \"conflict\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is Daniele's daughter and Nur's twin.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"parent\"\n        },\n        {\n          \"name\": \"Nur\",\n          \"type\": \"person\",\n          \"role\": \"twin\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is daughter of\",\n          \"object\": \"Daniele\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is twin of\",\n          \"object\": \"Nur\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is my niece.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"my\",\n          \"type\": \"person\",\n          \"role\": \"possessor\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is niece of\",\n          \"object\": \"my\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"Entities are consistent (Sara is the same person); conflict arises from contradictory relational claims.\"\n  },\n  \"conflict_classification\": \"direct_contradiction\",\n  \"answer\": \"The new statement 'Sara is my niece' directly contradicts the existing high-confidence memory that Sara is Daniele's daughter and Nur's twin, as being a daughter and being a niece are mutually exclusive roles in standard kinship structures unless complex family arrangements (e.g., adoption, remarriage) are involved \u2014 none of which are indicated here.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Request clarification on the speaker's relationship to Daniele/Nur to determine if 'my niece' could be accurate under a non-biological or extended family context.\",\n    \"Downgrade confidence in the existing memory pending verification of Daniele and Nur's parental status.\",\n    \"Flag for human review to resolve kinship ambiguity.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Conflict identified: daughter vs. niece relationship for Sara.\",\n      \"No entity mismatch detected.\",\n      \"Classification based on standard kinship logic.\",\n      \"No superseded or deleted facts presented as current.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

@@ -1,0 +1,63 @@
+{
+  "error": null,
+  "fixture_id": "cascade_low_confidence_asks_user_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The system cannot commit this note to durable memory due to low confidence and ambiguity. Please clarify: *What does 'cloud escalation' refer to in Sam's note?* (e.g., process, incident, feature request, etc.).",
+    "citations": [],
+    "conflict_classification": "ambiguity",
+    "decision": "request_user_resolution",
+    "entity_resolution": {
+      "action": "pending",
+      "entity_id": null,
+      "reason": "Ambiguity in 'cloud escalation' requires user clarification to avoid misinterpretation or false precision."
+    },
+    "intent": "clarify_ambiguous_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "author",
+            "type": "person"
+          },
+          {
+            "name": "cloud escalation",
+            "role": "topic",
+            "type": "concept"
+          }
+        ],
+        "kind": "note",
+        "relationships": [
+          {
+            "object": "note about cloud escalation",
+            "predicate": "created",
+            "subject": "Sam"
+          },
+          {
+            "object": "low confidence",
+            "predicate": "has",
+            "subject": "note about cloud escalation"
+          }
+        ],
+        "statement": "Sam's note about cloud escalation is ambiguous and lacks sufficient context for durable storage."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory commit aborted due to low-confidence/ambiguous input.",
+        "User resolution required before reprocessing."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Rephrase the note with explicit context (e.g., 'Sam requested cloud escalation for incident #123').",
+      "Provide additional details about the 'cloud escalation' topic.",
+      "Flag as unresolved if ambiguity cannot be resolved."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"clarify_ambiguous_memory\",\n  \"decision\": \"request_user_resolution\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"note\",\n      \"statement\": \"Sam's note about cloud escalation is ambiguous and lacks sufficient context for durable storage.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"author\"\n        },\n        {\n          \"name\": \"cloud escalation\",\n          \"type\": \"concept\",\n          \"role\": \"topic\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"created\",\n          \"object\": \"note about cloud escalation\"\n        },\n        {\n          \"subject\": \"note about cloud escalation\",\n          \"predicate\": \"has\",\n          \"object\": \"low confidence\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"pending\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguity in 'cloud escalation' requires user clarification to avoid misinterpretation or false precision.\"\n  },\n  \"conflict_classification\": \"ambiguity\",\n  \"answer\": \"The system cannot commit this note to durable memory due to low confidence and ambiguity. Please clarify: *What does 'cloud escalation' refer to in Sam's note?* (e.g., process, incident, feature request, etc.).\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Rephrase the note with explicit context (e.g., 'Sam requested cloud escalation for incident #123').\",\n    \"Provide additional details about the 'cloud escalation' topic.\",\n    \"Flag as unresolved if ambiguity cannot be resolved.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Memory commit aborted due to low-confidence/ambiguous input.\",\n      \"User resolution required before reprocessing.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

@@ -1,0 +1,58 @@
+{
+  "error": null,
+  "fixture_id": "entity_ambiguous_sam_two_people__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Ambiguous: Sam could be either Sam from Goldman or Sam from Point72; no durable memory committed.",
+    "citations": [],
+    "conflict_classification": "ambiguous_reference",
+    "decision": "do_not_commit",
+    "entity_resolution": {
+      "action": "ambiguous",
+      "entity_id": null,
+      "reason": "The mention \"Sam\" could refer to either existing person entity, and the message provides no disambiguating context."
+    },
+    "intent": "entity_resolution",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "candidate",
+            "type": "person"
+          },
+          {
+            "name": "Sam from Point72",
+            "role": "candidate",
+            "type": "person"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "A message says that Sam likes early Coltrane, but Sam is ambiguous because there are two existing person entities: Sam from Goldman and Sam from Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected ambiguous reference to Sam.",
+        "Did not attach the preference to either existing entity.",
+        "Preserved ambiguity and avoided committing a durable memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask a clarifying question to identify which Sam is meant.",
+      "Wait for additional context before linking the preference to an existing entity."
+    ]
+  },
+  "raw_text": "{\"intent\":\"entity_resolution\",\"decision\":\"do_not_commit\",\"memory_cards\":[{\"kind\":\"observation\",\"statement\":\"A message says that Sam likes early Coltrane, but Sam is ambiguous because there are two existing person entities: Sam from Goldman and Sam from Point72.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam from Goldman\",\"type\":\"person\",\"role\":\"candidate\"},{\"name\":\"Sam from Point72\",\"type\":\"person\",\"role\":\"candidate\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"early Coltrane\"}]}],\"entity_resolution\":{\"action\":\"ambiguous\",\"entity_id\":null,\"reason\":\"The mention \\\"Sam\\\" could refer to either existing person entity, and the message provides no disambiguating context.\"},\"conflict_classification\":\"ambiguous_reference\",\"answer\":\"Ambiguous: Sam could be either Sam from Goldman or Sam from Point72; no durable memory committed.\",\"citations\":[],\"repair_options\":[\"Ask a clarifying question to identify which Sam is meant.\",\"Wait for additional context before linking the preference to an existing entity.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected ambiguous reference to Sam.\",\"Did not attach the preference to either existing entity.\",\"Preserved ambiguity and avoided committing a durable memory.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

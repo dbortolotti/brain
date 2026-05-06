@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "slack_no_durable_value_repair_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory rejected due to unresolved temporal reference. Clarify the date (e.g., 'Today, June 5th') to commit durably.",
+    "conflict_classification": "temporal_ambiguity",
+    "decision": "durable_memory_rejected",
+    "entity_resolution": {
+      "action": "no_resolution_needed",
+      "entity_id": null,
+      "reason": "Ambiguous temporal reference ('Today') lacks specificity for durable storage. Contextual anchoring (e.g., date) is required to prevent supersession of future weather updates."
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Today",
+            "role": "reference_time",
+            "type": "temporal"
+          },
+          {
+            "name": "cloudy",
+            "role": "value",
+            "type": "weather_condition"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "cloudy",
+            "predicate": "is",
+            "subject": "weather"
+          },
+          {
+            "object": "weather",
+            "predicate": "has",
+            "subject": "Today"
+          }
+        ],
+        "statement": "Today's weather is cloudy"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Temporal reference 'Today' is context-dependent and cannot be durably stored without a fixed date.",
+        "Supersession risk: Future weather updates for the same ambiguous reference would overwrite this fact."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Specify the date: 'Today, [YYYY-MM-DD], the weather was cloudy.'",
+      "Use a relative anchor: 'The weather on [day of week] was cloudy.'",
+      "Defer to ephemeral memory: 'Note: Weather today is cloudy (non-durable).'"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_ingestion\",\n  \"decision\": \"durable_memory_rejected\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Today's weather is cloudy\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Today\",\n          \"type\": \"temporal\",\n          \"role\": \"reference_time\"\n        },\n        {\n          \"name\": \"cloudy\",\n          \"type\": \"weather_condition\",\n          \"role\": \"value\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"weather\",\n          \"predicate\": \"is\",\n          \"object\": \"cloudy\"\n        },\n        {\n          \"subject\": \"Today\",\n          \"predicate\": \"has\",\n          \"object\": \"weather\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_resolution_needed\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguous temporal reference ('Today') lacks specificity for durable storage. Contextual anchoring (e.g., date) is required to prevent supersession of future weather updates.\"\n  },\n  \"conflict_classification\": \"temporal_ambiguity\",\n  \"answer\": \"Memory rejected due to unresolved temporal reference. Clarify the date (e.g., 'Today, June 5th') to commit durably.\",\n  \"repair_options\": [\n    \"Specify the date: 'Today, [YYYY-MM-DD], the weather was cloudy.'\",\n    \"Use a relative anchor: 'The weather on [day of week] was cloudy.'\",\n    \"Defer to ephemeral memory: 'Note: Weather today is cloudy (non-durable).'\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Temporal reference 'Today' is context-dependent and cannot be durably stored without a fixed date.\",\n      \"Supersession risk: Future weather updates for the same ambiguous reference would overwrite this fact.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

@@ -1,0 +1,59 @@
+{
+  "error": null,
+  "fixture_id": "validator_reject_junk__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Input rejected. No memory committed. Provide structured, unambiguous statements for evaluation.",
+    "citations": [],
+    "conflict_classification": "none_applicable",
+    "decision": "invalid_input",
+    "entity_resolution": {
+      "action": "nullify",
+      "entity_id": null,
+      "reason": "No valid entities or relationships extracted from input."
+    },
+    "intent": "reject",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "input_text",
+            "role": "invalid_context",
+            "type": "text"
+          }
+        ],
+        "kind": "context_rejection",
+        "relationships": [
+          {
+            "object": "non-durable_memory_indicators",
+            "predicate": "contains",
+            "subject": "input_text"
+          },
+          {
+            "object": "structured_intent",
+            "predicate": "lacks",
+            "subject": "input_text"
+          }
+        ],
+        "statement": "Input 'For context, lol ok sure whatever' is non-committal, ambiguous, and lacks actionable or durable memory value. Rejected as junk context."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Input failed validation: lacks durable memory potential.",
+        "Ambiguity and colloquialisms (e.g., 'lol', 'ok sure') disqualify retention.",
+        "No entities or relationships parsed for commitment."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Resubmit with a clear, actionable statement (e.g., 'Brain, remember that X is Y').",
+      "Specify intent (e.g., 'Brain, classify this as [fact/opinion/question]').",
+      "Avoid colloquialisms or non-committal phrasing."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"reject\",\n  \"decision\": \"invalid_input\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"context_rejection\",\n      \"statement\": \"Input 'For context, lol ok sure whatever' is non-committal, ambiguous, and lacks actionable or durable memory value. Rejected as junk context.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"input_text\",\n          \"type\": \"text\",\n          \"role\": \"invalid_context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"input_text\",\n          \"predicate\": \"contains\",\n          \"object\": \"non-durable_memory_indicators\"\n        },\n        {\n          \"subject\": \"input_text\",\n          \"predicate\": \"lacks\",\n          \"object\": \"structured_intent\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"nullify\",\n    \"entity_id\": null,\n    \"reason\": \"No valid entities or relationships extracted from input.\"\n  },\n  \"conflict_classification\": \"none_applicable\",\n  \"answer\": \"Input rejected. No memory committed. Provide structured, unambiguous statements for evaluation.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Resubmit with a clear, actionable statement (e.g., 'Brain, remember that X is Y').\",\n    \"Specify intent (e.g., 'Brain, classify this as [fact/opinion/question]').\",\n    \"Avoid colloquialisms or non-committal phrasing.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Input failed validation: lacks durable memory potential.\",\n      \"Ambiguity and colloquialisms (e.g., 'lol', 'ok sure') disqualify retention.\",\n      \"No entities or relationships parsed for commitment.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

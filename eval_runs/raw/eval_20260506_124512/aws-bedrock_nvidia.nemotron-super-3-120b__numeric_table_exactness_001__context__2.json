@@ -1,0 +1,122 @@
+{
+  "error": null,
+  "fixture_id": "numeric_table_exactness_001__context",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Extracted two performance records: PPO-001 (reward: 0.12, Sharpe: 0.45, baseline) and PPO-002 (reward: 0.18, Sharpe: 0.51, entropy tuned).",
+    "citations": [
+      "input_table"
+    ],
+    "conflict_classification": "none",
+    "decision": "compile memory cards for PPO-001 and PPO-002 based on provided table",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "All entities are explicitly named and unambiguous in the input table."
+    },
+    "intent": "extract_performance_metrics",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "subject",
+            "type": "experiment_id"
+          },
+          {
+            "name": "0.12",
+            "role": "metric",
+            "type": "reward_value"
+          },
+          {
+            "name": "0.45",
+            "role": "metric",
+            "type": "sharpe_ratio"
+          },
+          {
+            "name": "baseline",
+            "role": "context",
+            "type": "note"
+          }
+        ],
+        "kind": "performance_record",
+        "relationships": [
+          {
+            "object": "0.12",
+            "predicate": "has_reward",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "0.45",
+            "predicate": "has_sharpe_ratio",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "baseline",
+            "predicate": "has_note",
+            "subject": "PPO-001"
+          }
+        ],
+        "statement": "PPO-001 achieved a reward of 0.12 and a Sharpe ratio of 0.45, noted as baseline."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "subject",
+            "type": "experiment_id"
+          },
+          {
+            "name": "0.18",
+            "role": "metric",
+            "type": "reward_value"
+          },
+          {
+            "name": "0.51",
+            "role": "metric",
+            "type": "sharpe_ratio"
+          },
+          {
+            "name": "entropy tuned",
+            "role": "context",
+            "type": "note"
+          }
+        ],
+        "kind": "performance_record",
+        "relationships": [
+          {
+            "object": "0.18",
+            "predicate": "has_reward",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "0.51",
+            "predicate": "has_sharpe_ratio",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "entropy tuned",
+            "predicate": "has_note",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "PPO-002 achieved a reward of 0.18 and a Sharpe ratio of 0.51, noted as entropy tuned."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Successfully parsed table with two rows.",
+        "Created two memory cards with high confidence.",
+        "No conflicts or ambiguities detected.",
+        "All metrics and notes accurately captured."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"extract_performance_metrics\",\n  \"decision\": \"compile memory cards for PPO-001 and PPO-002 based on provided table\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"performance_record\",\n      \"statement\": \"PPO-001 achieved a reward of 0.12 and a Sharpe ratio of 0.45, noted as baseline.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"PPO-001\",\n          \"type\": \"experiment_id\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"0.12\",\n          \"type\": \"reward_value\",\n          \"role\": \"metric\"\n        },\n        {\n          \"name\": \"0.45\",\n          \"type\": \"sharpe_ratio\",\n          \"role\": \"metric\"\n        },\n        {\n          \"name\": \"baseline\",\n          \"type\": \"note\",\n          \"role\": \"context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"has_reward\",\n          \"object\": \"0.12\"\n        },\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"has_sharpe_ratio\",\n          \"object\": \"0.45\"\n        },\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"has_note\",\n          \"object\": \"baseline\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"performance_record\",\n      \"statement\": \"PPO-002 achieved a reward of 0.18 and a Sharpe ratio of 0.51, noted as entropy tuned.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"PPO-002\",\n          \"type\": \"experiment_id\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"0.18\",\n          \"type\": \"reward_value\",\n          \"role\": \"metric\"\n        },\n        {\n          \"name\": \"0.51\",\n          \"type\": \"sharpe_ratio\",\n          \"role\": \"metric\"\n        },\n        {\n          \"name\": \"entropy tuned\",\n          \"type\": \"note\",\n          \"role\": \"context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"has_reward\",\n          \"object\": \"0.18\"\n        },\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"has_sharpe_ratio\",\n          \"object\": \"0.51\"\n        },\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"has_note\",\n          \"object\": \"entropy tuned\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"All entities are explicitly named and unambiguous in the input table.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Extracted two performance records: PPO-001 (reward: 0.12, Sharpe: 0.45, baseline) and PPO-002 (reward: 0.18, Sharpe: 0.51, entropy tuned).\",\n  \"citations\": [\n    \"input_table\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Successfully parsed table with two rows.\",\n      \"Created two memory cards with high confidence.\",\n      \"No conflicts or ambiguities detected.\",\n      \"All metrics and notes accurately captured.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

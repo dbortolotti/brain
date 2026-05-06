@@ -1,0 +1,85 @@
+{
+  "error": null,
+  "fixture_id": "concurrent_conflict_writes_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Ambiguous conflict: Sam is associated with Goldman in one write and Point72 in another; do not overwrite either without clarification.",
+    "citations": [
+      "Input: \"Concurrent writes - Sam works at Goldman Sam joined Point72\""
+    ],
+    "conflict_classification": "concurrent_conflicting_writes_punctuation_sensitive",
+    "decision": "Do not commit a single durable employment fact; preserve both statements as conflicting and unresolved.",
+    "entity_resolution": {
+      "action": "ambiguous",
+      "entity_id": null,
+      "reason": "The two writes may refer to the same person but assert different employers; there is not enough evidence to merge or supersede either statement."
+    },
+    "intent": "Classify concurrent conflicting writes about Sam's employment",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "conflict",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is reported as working at Goldman."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "conflict",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is reported as having joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected two concurrent employment claims for the same subject.",
+        "No durable canonical fact committed.",
+        "Ambiguity preserved."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for clarification on which employer is current.",
+      "Store both as competing claims with timestamps if available.",
+      "If one is meant to supersede the other, request an explicit correction or deletion."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Classify concurrent conflicting writes about Sam's employment\",\"decision\":\"Do not commit a single durable employment fact; preserve both statements as conflicting and unresolved.\",\"memory_cards\":[{\"kind\":\"conflict\",\"statement\":\"Sam is reported as working at Goldman.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Goldman\"}]},{\"kind\":\"conflict\",\"statement\":\"Sam is reported as having joined Point72.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"ambiguous\",\"entity_id\":null,\"reason\":\"The two writes may refer to the same person but assert different employers; there is not enough evidence to merge or supersede either statement.\"},\"conflict_classification\":\"concurrent_conflicting_writes_punctuation_sensitive\",\"answer\":\"Ambiguous conflict: Sam is associated with Goldman in one write and Point72 in another; do not overwrite either without clarification.\",\"citations\":[\"Input: \\\"Concurrent writes - Sam works at Goldman Sam joined Point72\\\"\"],\"repair_options\":[\"Ask for clarification on which employer is current.\",\"Store both as competing claims with timestamps if available.\",\"If one is meant to supersede the other, request an explicit correction or deletion.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected two concurrent employment claims for the same subject.\",\"No durable canonical fact committed.\",\"Ambiguity preserved.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

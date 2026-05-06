@@ -1,0 +1,68 @@
+{
+  "error": null,
+  "fixture_id": "router_remember_plain",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Stored the association: Sam from Goldman likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "New association inferred from input; no existing unique identifier provided."
+    },
+    "intent": "memory_update",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unknown",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "musician",
+            "type": "person"
+          }
+        ],
+        "kind": "person",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "employed_by",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "pianist",
+            "predicate": "profession",
+            "subject": "Bill Evans"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory entry created for Sam, Goldman, and Bill Evans relationship."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"memory_update\",\n  \"decision\": \"store\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"person\",\n      \"statement\": \"Sam from Goldman likes Bill Evans\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\"name\": \"Sam\", \"type\": \"person\", \"role\": \"unknown\"},\n        {\"name\": \"Goldman\", \"type\": \"organization\", \"role\": \"employer\"},\n        {\"name\": \"Bill Evans\", \"type\": \"person\", \"role\": \"musician\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sam\", \"predicate\": \"employed_by\", \"object\": \"Goldman\"},\n        {\"subject\": \"Sam\", \"predicate\": \"likes\", \"object\": \"Bill Evans\"},\n        {\"subject\": \"Bill Evans\", \"predicate\": \"profession\", \"object\": \"pianist\"}\n      ]\n    }\n    ],\n  \"entity_resolution\": {\n    \"action\": \"create_or_update\",\n    \"entity_id\": null,\n    \"reason\": \"New association inferred from input; no existing unique identifier provided.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Stored the association: Sam from Goldman likes Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory entry created for Sam, Goldman, and Bill Evans relationship.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

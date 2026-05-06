@@ -1,0 +1,47 @@
+{
+  "error": null,
+  "fixture_id": "cascade_validator_failure_escalates_001__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Escalate to a stronger model or provide a safe rejection with corrected schema compliance.",
+    "citations": [],
+    "conflict_classification": "schema_and_safety_violation",
+    "decision": "reject_or_escalate",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No persistent external entities identified in the input that require resolution"
+    },
+    "intent": "escalate_or_reject",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [],
+        "kind": "observation",
+        "relationships": [],
+        "statement": "Cheap model output did not conform to the required schema and proposed an unsafe or inappropriate action."
+      },
+      {
+        "confidence": "high",
+        "entities": [],
+        "kind": "assessment",
+        "relationships": [],
+        "statement": "Current output is invalid with respect to the memory schema and safety constraints; escalation to a stronger model or safe rejection is warranted."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Escalation prepared due to schema violation and potential safety risk."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Return a schema-compliant response that preserves ambiguity where appropriate.",
+      "If unsafe content was requested, refuse with a safe alternative aligned to policy.",
+      "Route the task to a stronger model for validation before finalizing the answer."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"escalate_or_reject\",\n  \"decision\": \"reject_or_escalate\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"observation\",\n      \"statement\": \"Cheap model output did not conform to the required schema and proposed an unsafe or inappropriate action.\",\n      \"confidence\": \"high\",\n      \"entities\": [],\n      \"relationships\": []\n    }\n    ,\n    {\n      \"kind\": \"assessment\",\n      \"statement\": \"Current output is invalid with respect to the memory schema and safety constraints; escalation to a stronger model or safe rejection is warranted.\",\n      \"confidence\": \"high\",\n      \"entities\": [],\n      \"relationships\": []\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No persistent external entities identified in the input that require resolution\"\n  },\n  \"conflict_classification\": \"schema_and_safety_violation\",\n  \"answer\": \"Escalate to a stronger model or provide a safe rejection with corrected schema compliance.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Return a schema-compliant response that preserves ambiguity where appropriate.\",\n    \"If unsafe content was requested, refuse with a safe alternative aligned to policy.\",\n    \"Route the task to a stronger model for validation before finalizing the answer.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Escalation prepared due to schema violation and potential safety risk.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

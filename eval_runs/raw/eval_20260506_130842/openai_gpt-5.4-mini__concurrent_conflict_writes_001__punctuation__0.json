@@ -1,0 +1,85 @@
+{
+  "error": null,
+  "fixture_id": "concurrent_conflict_writes_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Ambiguous concurrent employment claims for Sam; retain both without resolving.",
+    "citations": [
+      "Concurrent writes - Sam works at Goldman Sam joined Point72"
+    ],
+    "conflict_classification": "concurrent_conflicting_claims",
+    "decision": "Preserve both statements as competing claims; do not overwrite either without disambiguation.",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Sam is not sufficiently disambiguated, and the two employment statements may reflect a change, simultaneous reporting, or two different people."
+    },
+    "intent": "Classify concurrent conflicting employment updates about Sam.",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "claim",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "claim",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected conflicting concurrent claims.",
+        "No durable overwrite committed.",
+        "Ambiguity preserved."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask whether Goldman and Point72 refer to the same Sam and whether one statement supersedes the other.",
+      "Store with timestamps or source attribution to determine which employment is current.",
+      "Merge only after confirming whether these are distinct people or a job change."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Classify concurrent conflicting employment updates about Sam.\",\"decision\":\"Preserve both statements as competing claims; do not overwrite either without disambiguation.\",\"memory_cards\":[{\"kind\":\"claim\",\"statement\":\"Sam works at Goldman.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Goldman\"}]},{\"kind\":\"claim\",\"statement\":\"Sam joined Point72.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"Sam is not sufficiently disambiguated, and the two employment statements may reflect a change, simultaneous reporting, or two different people.\"},\"conflict_classification\":\"concurrent_conflicting_claims\",\"answer\":\"Ambiguous concurrent employment claims for Sam; retain both without resolving.\",\"citations\":[\"Concurrent writes - Sam works at Goldman Sam joined Point72\"],\"repair_options\":[\"Ask whether Goldman and Point72 refer to the same Sam and whether one statement supersedes the other.\",\"Store with timestamps or source attribution to determine which employment is current.\",\"Merge only after confirming whether these are distinct people or a job change.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected conflicting concurrent claims.\",\"No durable overwrite committed.\",\"Ambiguity preserved.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

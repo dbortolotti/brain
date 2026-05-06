@@ -1,0 +1,73 @@
+{
+  "error": null,
+  "fixture_id": "slack_conflict_buttons_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam no longer works at Goldman Sachs and is now employed by Point72 (employer type unspecified; verify if Point72 Ventures or Point72 Asset Management).",
+    "citations": [
+      "Original: 'Sam works at Goldman.' (superseded)",
+      "Update: 'Sam left Goldman and joined Point72.' (durable, with ambiguity)"
+    ],
+    "conflict_classification": "superseded_fact_with_ambiguity",
+    "decision": "supersede_existing_with_ambiguity_preserved",
+    "entity_resolution": {
+      "action": "disambiguate_employer",
+      "entity_id": "Point72",
+      "reason": "Ambiguity between Point72 Ventures and Point72 Asset Management; requires clarification to avoid miscategorization."
+    },
+    "intent": "memory_update_conflict_resolution",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "past_employer",
+            "type": "organization"
+          },
+          {
+            "ambiguity": "Point72 Ventures vs. Point72 Asset Management",
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman Sachs and joined Point72 Ventures (exact employer ambiguous; could be Point72 Asset Management or Point72 Ventures)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded 'Sam works at Goldman' with updated durable memory.",
+        "Preserved ambiguity in employer name (Point72).",
+        "No deleted facts retained; only current/ambiguous statements committed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify employer type (Point72 Ventures vs. Point72 Asset Management)",
+      "Add timestamp to departure from Goldman Sachs",
+      "Flag for user confirmation if ambiguity persists"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_update_conflict_resolution\",\n  \"decision\": \"supersede_existing_with_ambiguity_preserved\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"durable_memory\",\n      \"statement\": \"Sam left Goldman Sachs and joined Point72 Ventures (exact employer ambiguous; could be Point72 Asset Management or Point72 Ventures).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"past_employer\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"current_employer\",\n          \"ambiguity\": \"Point72 Ventures vs. Point72 Asset Management\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"left\",\n          \"object\": \"Goldman Sachs\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"disambiguate_employer\",\n    \"entity_id\": \"Point72\",\n    \"reason\": \"Ambiguity between Point72 Ventures and Point72 Asset Management; requires clarification to avoid miscategorization.\"\n  },\n  \"conflict_classification\": \"superseded_fact_with_ambiguity\",\n  \"answer\": \"Sam no longer works at Goldman Sachs and is now employed by Point72 (employer type unspecified; verify if Point72 Ventures or Point72 Asset Management).\",\n  \"citations\": [\n    \"Original: 'Sam works at Goldman.' (superseded)\",\n    \"Update: 'Sam left Goldman and joined Point72.' (durable, with ambiguity)\"\n  ],\n  \"repair_options\": [\n    \"Clarify employer type (Point72 Ventures vs. Point72 Asset Management)\",\n    \"Add timestamp to departure from Goldman Sachs\",\n    \"Flag for user confirmation if ambiguity persists\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Superseded 'Sam works at Goldman' with updated durable memory.\",\n      \"Preserved ambiguity in employer name (Point72).\",\n      \"No deleted facts retained; only current/ambiguous statements committed.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

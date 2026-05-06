@@ -1,0 +1,36 @@
+{
+  "error": null,
+  "fixture_id": "debug_sql_disabled_001__context",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "The admin SQL command was not executed because BRAIN_DEBUG_SQL_ENABLED is set to false. No memory cards were accessed, modified, or returned.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "SQL execution is disabled due to BRAIN_DEBUG_SQL_ENABLED=false, so no memory cards were retrieved or modified.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No SQL query executed; no entities to resolve."
+    },
+    "intent": "debug_explainer",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Command: /brain admin sql SELECT * FROM memory_cards",
+        "BRAIN_DEBUG_SQL_ENABLED=false",
+        "SQL execution blocked per security/runtime configuration.",
+        "No memory cards read, written, or altered.",
+        "System state remains unchanged."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Set BRAIN_DEBUG_SQL_ENABLED=true to allow SQL execution for debugging.",
+      "Verify the environment variable is correctly configured in the Brain system.",
+      "Check system logs for confirmation of SQL disablement status."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"debug_explainer\",\n  \"decision\": \"SQL execution is disabled due to BRAIN_DEBUG_SQL_ENABLED=false, so no memory cards were retrieved or modified.\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No SQL query executed; no entities to resolve.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"The admin SQL command was not executed because BRAIN_DEBUG_SQL_ENABLED is set to false. No memory cards were accessed, modified, or returned.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Set BRAIN_DEBUG_SQL_ENABLED=true to allow SQL execution for debugging.\",\n    \"Verify the environment variable is correctly configured in the Brain system.\",\n    \"Check system logs for confirmation of SQL disablement status.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Command: /brain admin sql SELECT * FROM memory_cards\",\n      \"BRAIN_DEBUG_SQL_ENABLED=false\",\n      \"SQL execution blocked per security/runtime configuration.\",\n      \"No memory cards read, written, or altered.\",\n      \"System state remains unchanged.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

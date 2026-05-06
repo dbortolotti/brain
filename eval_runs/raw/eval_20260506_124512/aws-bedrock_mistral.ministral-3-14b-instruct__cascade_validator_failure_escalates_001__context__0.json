@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "fixture_id": "cascade_validator_failure_escalates_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Reject the output and escalate to a stronger model for reprocessing. No durable memory updates will be committed.",
+    "citations": [
+      "Fixture ID: cascade_validator_failure_escalates_001__context",
+      "Schema: Brain memory system requirements (strict durability, ambiguity preservation)"
+    ],
+    "conflict_classification": "schema_violation_and_safety_risk",
+    "decision": "reject_with_escalation",
+    "entity_resolution": {
+      "action": "escalate",
+      "entity_id": "Cheap_model",
+      "reason": "Output failed schema validation and posed durability risks (e.g., superseded facts, ambiguity loss)."
+    },
+    "intent": "validate_and_escalate",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cheap_model",
+            "role": "memory_proposer",
+            "type": "system_component"
+          },
+          {
+            "name": "validator_critic",
+            "role": "validator",
+            "type": "system_component"
+          }
+        ],
+        "kind": "validation_failure",
+        "relationships": [
+          {
+            "object": "invalid_schema_output",
+            "predicate": "generated",
+            "subject": "Cheap_model"
+          },
+          {
+            "object": "schema_violation",
+            "predicate": "detected",
+            "subject": "validator_critic"
+          },
+          {
+            "object": "stronger_model",
+            "predicate": "escalated",
+            "subject": "validator_critic"
+          }
+        ],
+        "statement": "Cheap model output violated schema constraints (invalid JSON structure, unsafe proposal) and lacked durable memory integrity."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Output rejected due to schema violation and safety concerns.",
+        "Escalation triggered to stronger model (e.g., 'Brain++').",
+        "No memory updates applied."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Reject and discard the invalid output.",
+      "Escalate to a higher-capacity model for reprocessing.",
+      "Log the failure as a system event for review."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"validate_and_escalate\",\n  \"decision\": \"reject_with_escalation\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"validation_failure\",\n      \"statement\": \"Cheap model output violated schema constraints (invalid JSON structure, unsafe proposal) and lacked durable memory integrity.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Cheap_model\",\n          \"type\": \"system_component\",\n          \"role\": \"memory_proposer\"\n        },\n        {\n          \"name\": \"validator_critic\",\n          \"type\": \"system_component\",\n          \"role\": \"validator\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cheap_model\",\n          \"predicate\": \"generated\",\n          \"object\": \"invalid_schema_output\"\n        },\n        {\n          \"subject\": \"validator_critic\",\n          \"predicate\": \"detected\",\n          \"object\": \"schema_violation\"\n        },\n        {\n          \"subject\": \"validator_critic\",\n          \"predicate\": \"escalated\",\n          \"object\": \"stronger_model\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"escalate\",\n    \"entity_id\": \"Cheap_model\",\n    \"reason\": \"Output failed schema validation and posed durability risks (e.g., superseded facts, ambiguity loss).\"\n  },\n  \"conflict_classification\": \"schema_violation_and_safety_risk\",\n  \"answer\": \"Reject the output and escalate to a stronger model for reprocessing. No durable memory updates will be committed.\",\n  \"citations\": [\n    \"Fixture ID: cascade_validator_failure_escalates_001__context\",\n    \"Schema: Brain memory system requirements (strict durability, ambiguity preservation)\"\n  ],\n  \"repair_options\": [\n    \"Reject and discard the invalid output.\",\n    \"Escalate to a higher-capacity model for reprocessing.\",\n    \"Log the failure as a system event for review.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Output rejected due to schema violation and safety concerns.\",\n      \"Escalation triggered to stronger model (e.g., 'Brain++').\",\n      \"No memory updates applied.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

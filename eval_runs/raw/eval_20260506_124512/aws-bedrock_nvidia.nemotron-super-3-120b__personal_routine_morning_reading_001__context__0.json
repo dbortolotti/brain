@@ -1,0 +1,71 @@
+{
+  "error": null,
+  "fixture_id": "personal_routine_morning_reading_001__context",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Recorded preference: user prefers reading technical papers in the morning before checking email.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store preference for morning technical paper reading before email",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": "personal_routine_morning_reading_001__context",
+      "reason": "New user preference recorded for morning technical paper reading routine"
+    },
+    "intent": "record_user_preference",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "technical papers",
+            "role": "object",
+            "type": "content"
+          },
+          {
+            "name": "morning",
+            "role": "temporal_context",
+            "type": "time"
+          },
+          {
+            "name": "email",
+            "role": "comparative_activity",
+            "type": "activity"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "technical papers",
+            "predicate": "prefers_to_read",
+            "subject": "user"
+          },
+          {
+            "object": "checking email",
+            "predicate": "occurs_before",
+            "subject": "reading technical papers"
+          },
+          {
+            "object": "morning",
+            "predicate": "occurs_during",
+            "subject": "reading technical papers"
+          }
+        ],
+        "statement": "I usually prefer to read technical papers in the morning before checking email."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preference stored successfully",
+        "Memory card created with high confidence",
+        "Entities and relationships resolved",
+        "No conflicts detected"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"record_user_preference\",\n  \"decision\": \"store preference for morning technical paper reading before email\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"I usually prefer to read technical papers in the morning before checking email.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"technical papers\",\n          \"type\": \"content\",\n          \"role\": \"object\"\n        },\n        {\n          \"name\": \"morning\",\n          \"type\": \"time\",\n          \"role\": \"temporal_context\"\n        },\n        {\n          \"name\": \"email\",\n          \"type\": \"activity\",\n          \"role\": \"comparative_activity\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"user\",\n          \"predicate\": \"prefers_to_read\",\n          \"object\": \"technical papers\"\n        },\n        {\n          \"subject\": \"reading technical papers\",\n          \"predicate\": \"occurs_before\",\n          \"object\": \"checking email\"\n        },\n        {\n          \"subject\": \"reading technical papers\",\n          \"predicate\": \"occurs_during\",\n          \"object\": \"morning\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create\",\n    \"entity_id\": \"personal_routine_morning_reading_001__context\",\n    \"reason\": \"New user preference recorded for morning technical paper reading routine\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Recorded preference: user prefers reading technical papers in the morning before checking email.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Preference stored successfully\",\n      \"Memory card created with high confidence\",\n      \"Entities and relationships resolved\",\n      \"No conflicts detected\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

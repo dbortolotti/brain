@@ -1,0 +1,58 @@
+{
+  "error": null,
+  "fixture_id": "vague_memory_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "No durable memory can be retrieved due to the ambiguous temporal reference. Clarification is required to resolve the scope (e.g., 'yesterday\u2019s meeting notes,' 'yesterday\u2019s coding task,' or a specific date).",
+    "citations": [],
+    "conflict_classification": "none_applicable",
+    "decision": "ambiguous_temporal_reference",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Insufficient specificity in temporal reference ('yesterday') to resolve to a unique memory card. Ambiguity persists due to lack of contextual cues (e.g., project, conversation, or event metadata)."
+    },
+    "intent": "retrieve_durable_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "yesterday",
+            "role": "ambiguous_anchor",
+            "type": "temporal_reference"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "specific_memory_identifier",
+            "predicate": "requires",
+            "subject": "user_request"
+          },
+          {
+            "object": "disambiguated_temporal_context",
+            "predicate": "lacks",
+            "subject": "system_state"
+          }
+        ],
+        "statement": "The user requested retrieval of a memory from 'yesterday,' but no specific event, object, or interaction was referenced. The system lacks a concrete anchor to disambiguate the temporal scope (e.g., calendar date, project milestone, or personal event)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguous temporal reference 'yesterday' cannot be mapped to a unique memory card.",
+        "System adheres to strict durability rules: no superseded/deleted facts are presented as current."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide a specific event/object from yesterday (e.g., 'the team sync' or 'the bug fix').",
+      "Clarify the temporal scope (e.g., 'yesterday in the context of Project X').",
+      "Request a date range or alternative reference (e.g., 'the last 24 hours')."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"retrieve_durable_memory\",\n  \"decision\": \"ambiguous_temporal_reference\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"durable_memory\",\n      \"statement\": \"The user requested retrieval of a memory from 'yesterday,' but no specific event, object, or interaction was referenced. The system lacks a concrete anchor to disambiguate the temporal scope (e.g., calendar date, project milestone, or personal event).\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"yesterday\",\n          \"type\": \"temporal_reference\",\n          \"role\": \"ambiguous_anchor\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"user_request\",\n          \"predicate\": \"requires\",\n          \"object\": \"specific_memory_identifier\"\n        },\n        {\n          \"subject\": \"system_state\",\n          \"predicate\": \"lacks\",\n          \"object\": \"disambiguated_temporal_context\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Insufficient specificity in temporal reference ('yesterday') to resolve to a unique memory card. Ambiguity persists due to lack of contextual cues (e.g., project, conversation, or event metadata).\"\n  },\n  \"conflict_classification\": \"none_applicable\",\n  \"answer\": \"No durable memory can be retrieved due to the ambiguous temporal reference. Clarification is required to resolve the scope (e.g., 'yesterday\u2019s meeting notes,' 'yesterday\u2019s coding task,' or a specific date).\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Provide a specific event/object from yesterday (e.g., 'the team sync' or 'the bug fix').\",\n    \"Clarify the temporal scope (e.g., 'yesterday in the context of Project X').\",\n    \"Request a date range or alternative reference (e.g., 'the last 24 hours').\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Ambiguous temporal reference 'yesterday' cannot be mapped to a unique memory card.\",\n      \"System adheres to strict durability rules: no superseded/deleted facts are presented as current.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

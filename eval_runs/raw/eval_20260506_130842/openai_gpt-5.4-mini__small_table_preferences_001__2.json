@@ -1,0 +1,101 @@
+{
+  "error": null,
+  "fixture_id": "small_table_preferences_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Committed two preference memories from the table, with no detected conflicts.",
+    "citations": [
+      "Dinner 2026-05-05",
+      "Lunch 2026-05-01"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No prior entity context was provided for disambiguation or merging."
+    },
+    "intent": "compile_memory_from_table_preferences",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "firm"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at_or_is_associated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam, associated with Goldman, likes Bill Evans."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Anna",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "JPM",
+            "role": "affiliation",
+            "type": "firm"
+          },
+          {
+            "name": "Barolo",
+            "role": "preference_object",
+            "type": "wine"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "JPM",
+            "predicate": "works_at_or_is_associated_with",
+            "subject": "Anna"
+          },
+          {
+            "object": "Barolo",
+            "predicate": "likes",
+            "subject": "Anna"
+          }
+        ],
+        "statement": "Anna, associated with JPM, likes Barolo."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored Sam -> likes -> Bill Evans with Goldman affiliation context.",
+        "Stored Anna -> likes -> Barolo with JPM affiliation context."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"compile_memory_from_table_preferences\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam, associated with Goldman, likes Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"firm\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"preference_object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at_or_is_associated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]},{\"kind\":\"preference\",\"statement\":\"Anna, associated with JPM, likes Barolo.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Anna\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"JPM\",\"type\":\"firm\",\"role\":\"affiliation\"},{\"name\":\"Barolo\",\"type\":\"wine\",\"role\":\"preference_object\"}],\"relationships\":[{\"subject\":\"Anna\",\"predicate\":\"works_at_or_is_associated_with\",\"object\":\"JPM\"},{\"subject\":\"Anna\",\"predicate\":\"likes\",\"object\":\"Barolo\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No prior entity context was provided for disambiguation or merging.\"},\"conflict_classification\":\"none\",\"answer\":\"Committed two preference memories from the table, with no detected conflicts.\",\"citations\":[\"Dinner 2026-05-05\",\"Lunch 2026-05-01\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Stored Sam -> likes -> Bill Evans with Goldman affiliation context.\",\"Stored Anna -> likes -> Barolo with JPM affiliation context.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

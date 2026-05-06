@@ -1,0 +1,56 @@
+{
+  "error": null,
+  "fixture_id": "entity_alias_sam_goldman__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Treat 'Sam G' as the existing entity 'Sam from Goldman' and record that Sam G likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Sam G likely refers to the existing entity Sam from Goldman",
+    "entity_resolution": {
+      "action": "link_alias",
+      "entity_id": null,
+      "reason": "New message 'Sam G likes Bill Evans' uses alias 'Sam G', which matches the existing entity's alias pattern ('Sam G') for the same person 'Sam from Goldman'."
+    },
+    "intent": "entity_resolution",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam (from Goldman)",
+            "role": "owner_of_preference",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_entity",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam (from Goldman)"
+          }
+        ],
+        "statement": "Sam G likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Alias 'Sam G' linked to existing entity 'Sam from Goldman' without conflict.",
+        "Preference fact added: Sam G likes Bill Evans."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If 'Sam G' could be a different person than the Goldman Sam, ask for a clarifying detail (e.g., last name, context, or additional identifier)."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"entity_resolution\",\n  \"decision\": \"Sam G likely refers to the existing entity Sam from Goldman\",\n  \"entity_resolution\": {\n    \"action\": \"link_alias\",\n    \"entity_id\": null,\n    \"reason\": \"New message 'Sam G likes Bill Evans' uses alias 'Sam G', which matches the existing entity's alias pattern ('Sam G') for the same person 'Sam from Goldman'.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam G likes Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam (from Goldman)\",\n          \"type\": \"person\",\n          \"role\": \"owner_of_preference\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"liked_entity\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam (from Goldman)\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"answer\": \"Treat 'Sam G' as the existing entity 'Sam from Goldman' and record that Sam G likes Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If 'Sam G' could be a different person than the Goldman Sam, ask for a clarifying detail (e.g., last name, context, or additional identifier).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Alias 'Sam G' linked to existing entity 'Sam from Goldman' without conflict.\",\n      \"Preference fact added: Sam G likes Bill Evans.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

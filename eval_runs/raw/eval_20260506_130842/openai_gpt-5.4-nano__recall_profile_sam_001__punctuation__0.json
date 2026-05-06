@@ -1,0 +1,105 @@
+{
+  "error": null,
+  "fixture_id": "recall_profile_sam_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Sam is associated with Goldman, likes Bill Evans, and is interested in AI infrastructure. (Open loop: send Sam an article about AI infrastructure.)",
+    "citations": [],
+    "conflict_classification": "no_conflict_detected",
+    "decision": "Recall Sam profile from memory and include context about sending an article related to AI infrastructure; do not add new facts beyond the provided ones.",
+    "entity_resolution": {
+      "action": "create_or_select_best_match",
+      "entity_id": null,
+      "reason": "We have partial profile details for 'Sam' (from Goldman) but no unique identifier beyond the fixture context."
+    },
+    "intent": "recall_synthesizer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "primary",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "association",
+            "type": "organization"
+          }
+        ],
+        "kind": "entity_profile",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "is associated with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is associated with Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "primary",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "favorite",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "primary",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "interest",
+            "type": "topic"
+          }
+        ],
+        "kind": "interest",
+        "relationships": [
+          {
+            "object": "AI infrastructure",
+            "predicate": "is interested in",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is interested in AI infrastructure."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Used only the provided facts for Sam's profile.",
+        "Preserved the open-loop instruction to send an AI infrastructure article without adding specifics."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for additional disambiguation if 'Sam from Goldman' could refer to multiple people.",
+      "Confirm the preferred format/source of the AI infrastructure article to be sent."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"recall_synthesizer\",\n  \"decision\": \"Recall Sam profile from memory and include context about sending an article related to AI infrastructure; do not add new facts beyond the provided ones.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"entity_profile\",\n      \"statement\": \"Sam is associated with Goldman.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"primary\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"association\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"is associated with\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam likes Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"primary\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"favorite\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"interest\",\n      \"statement\": \"Sam is interested in AI infrastructure.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"primary\"\n        },\n        {\n          \"name\": \"AI infrastructure\",\n          \"type\": \"topic\",\n          \"role\": \"interest\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"is interested in\",\n          \"object\": \"AI infrastructure\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_or_select_best_match\",\n    \"entity_id\": null,\n    \"reason\": \"We have partial profile details for 'Sam' (from Goldman) but no unique identifier beyond the fixture context.\"\n  },\n  \"conflict_classification\": \"no_conflict_detected\",\n  \"answer\": \"Sam is associated with Goldman, likes Bill Evans, and is interested in AI infrastructure. (Open loop: send Sam an article about AI infrastructure.)\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Ask for additional disambiguation if 'Sam from Goldman' could refer to multiple people.\",\n    \"Confirm the preferred format/source of the AI infrastructure article to be sent.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Used only the provided facts for Sam's profile.\",\n      \"Preserved the open-loop instruction to send an AI infrastructure article without adding specifics.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

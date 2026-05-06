@@ -1,0 +1,59 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_high_confidence_overwrite_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Reject the proposed update. The existing memory ('Sara is Daniele's daughter') is high-confidence and lacks superseding evidence. The proposed relationship ('niece') introduces ambiguity without justification.",
+    "citations": [],
+    "conflict_classification": "high_confidence_overwrite_attempt",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "preserve_existing",
+      "entity_id": null,
+      "reason": "The proposed relationship ('niece') contradicts the high-confidence, durable memory ('daughter'). No evidence supports the overwrite, and the original fact lacks ambiguity in punctuation or context."
+    },
+    "intent": "memory_update",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_the_daughter_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Proposed fact ('niece') conflicts with durable memory ('daughter').",
+        "No superseding evidence or context provided to justify overwrite.",
+        "Ambiguity in punctuation ('Daniele\u2019s') does not invalidate the original fact."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Verify with source: Confirm the relationship via authoritative documentation (e.g., birth certificate, family records).",
+      "Clarify ambiguity: Resolve potential misinterpretation of 'Daniele\u2019s' (e.g., possessive vs. name ambiguity).",
+      "Flag for review: Escalate to human validator if no resolution is possible."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_update\",\n  \"decision\": \"reject\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is Daniele's daughter\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"daughter\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"parent\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is_the_daughter_of\",\n          \"object\": \"Daniele\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"preserve_existing\",\n    \"entity_id\": null,\n    \"reason\": \"The proposed relationship ('niece') contradicts the high-confidence, durable memory ('daughter'). No evidence supports the overwrite, and the original fact lacks ambiguity in punctuation or context.\"\n  },\n  \"conflict_classification\": \"high_confidence_overwrite_attempt\",\n  \"answer\": \"Reject the proposed update. The existing memory ('Sara is Daniele's daughter') is high-confidence and lacks superseding evidence. The proposed relationship ('niece') introduces ambiguity without justification.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Verify with source: Confirm the relationship via authoritative documentation (e.g., birth certificate, family records).\",\n    \"Clarify ambiguity: Resolve potential misinterpretation of 'Daniele\u2019s' (e.g., possessive vs. name ambiguity).\",\n    \"Flag for review: Escalate to human validator if no resolution is possible.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Proposed fact ('niece') conflicts with durable memory ('daughter').\",\n      \"No superseding evidence or context provided to justify overwrite.\",\n      \"Ambiguity in punctuation ('Daniele\u2019s') does not invalidate the original fact.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

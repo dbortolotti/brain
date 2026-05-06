@@ -1,0 +1,59 @@
+{
+  "error": null,
+  "fixture_id": "slack_ambiguous_entity_buttons_001",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "I've recorded that Sam likes Bill Evans, but I couldn't determine which Sam you mean\u2014Sam from Goldman or Sam from Point72. Please clarify if you'd like this memory tied to a specific Sam.",
+    "citations": [],
+    "conflict_classification": "ambiguous_entity",
+    "decision": "create_new_memory",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Ambiguous entity: 'Sam' could refer to either 'Sam from Goldman' or 'Sam from Point72'; no disambiguating context provided in input to resolve which Sam is intended."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unspecified",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "unspecified",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory fact 'Sam likes Bill Evans' created with medium confidence.",
+        "Entity 'Sam' left unresolved due to ambiguity; no existing entity ID assigned.",
+        "User prompted for clarification to enable future disambiguation."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Specify which Sam: 'Sam from Goldman' or 'Sam from Point72'",
+      "Provide additional context to disambiguate (e.g., role, project, timeframe)",
+      "Use a unique identifier or nickname for Sam if available"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"remember\",\n  \"decision\": \"create_new_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam likes Bill Evans\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"unspecified\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"unspecified\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguous entity: 'Sam' could refer to either 'Sam from Goldman' or 'Sam from Point72'; no disambiguating context provided in input to resolve which Sam is intended.\"\n  },\n  \"conflict_classification\": \"ambiguous_entity\",\n  \"answer\": \"I've recorded that Sam likes Bill Evans, but I couldn't determine which Sam you mean\u2014Sam from Goldman or Sam from Point72. Please clarify if you'd like this memory tied to a specific Sam.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Specify which Sam: 'Sam from Goldman' or 'Sam from Point72'\",\n    \"Provide additional context to disambiguate (e.g., role, project, timeframe)\",\n    \"Use a unique identifier or nickname for Sam if available\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory fact 'Sam likes Bill Evans' created with medium confidence.\",\n      \"Entity 'Sam' left unresolved due to ambiguity; no existing entity ID assigned.\",\n      \"User prompted for clarification to enable future disambiguation.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

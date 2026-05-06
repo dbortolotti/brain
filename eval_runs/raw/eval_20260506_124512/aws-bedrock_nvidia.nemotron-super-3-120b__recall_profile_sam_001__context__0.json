@@ -1,0 +1,105 @@
+{
+  "error": null,
+  "fixture_id": "recall_profile_sam_001__context",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Sam from Goldman likes Bill Evans, is associated with Goldman, and is interested in AI infrastructure.",
+    "citations": [
+      "recall_profile_sam_001__context"
+    ],
+    "conflict_classification": "none",
+    "decision": "synthesize_profile",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": "recall_profile_sam_001__context",
+      "reason": "Matched fixture ID to Sam from Goldman profile"
+    },
+    "intent": "recall_synthesizer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "musician"
+          }
+        ],
+        "kind": "profile_fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "object",
+            "type": "organization"
+          }
+        ],
+        "kind": "profile_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "is associated with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is associated with Goldman"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "object",
+            "type": "topic"
+          }
+        ],
+        "kind": "profile_fact",
+        "relationships": [
+          {
+            "object": "AI infrastructure",
+            "predicate": "is interested in",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is interested in AI infrastructure"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "All facts retrieved and synthesized without contradiction",
+        "No superseded or deleted facts presented",
+        "Ambiguity preserved where not explicitly stated"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"recall_synthesizer\",\n  \"decision\": \"synthesize_profile\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"profile_fact\",\n      \"statement\": \"Sam from Goldman likes Bill Evans\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"musician\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"profile_fact\",\n      \"statement\": \"Sam is associated with Goldman\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"is associated with\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"profile_fact\",\n      \"statement\": \"Sam is interested in AI infrastructure\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"AI infrastructure\",\n          \"type\": \"topic\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"is interested in\",\n          \"object\": \"AI infrastructure\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolved\",\n    \"entity_id\": \"recall_profile_sam_001__context\",\n    \"reason\": \"Matched fixture ID to Sam from Goldman profile\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Sam from Goldman likes Bill Evans, is associated with Goldman, and is interested in AI infrastructure.\",\n  \"citations\": [\n    \"recall_profile_sam_001__context\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"All facts retrieved and synthesized without contradiction\",\n      \"No superseded or deleted facts presented\",\n      \"Ambiguity preserved where not explicitly stated\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

@@ -1,0 +1,51 @@
+{
+  "error": null,
+  "fixture_id": "entity_ambiguous_sam_two_people__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Cannot reliably resolve which Sam; record as an unlinked, low-confidence note.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_undisambiguated_preference_note",
+    "entity_resolution": {
+      "action": "no_link_to_existing_entity",
+      "entity_id": null,
+      "reason": "The message only says 'Sam' and does not include an affiliation (e.g., Goldman/Point72) or other disambiguating details, so it cannot be safely linked to either existing Sam entity."
+    },
+    "intent": "entity_resolution",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unresolved",
+            "type": "person"
+          }
+        ],
+        "kind": "ephemeral_note",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Someone named Sam likes early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Kept the preference note without attaching it to either existing Sam entity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask which Sam (Goldman or Point72) this refers to",
+      "Use an additional message that includes the affiliation or a unique identifier to disambiguate"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"entity_resolution\",\n  \"decision\": \"store_undisambiguated_preference_note\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"ephemeral_note\",\n      \"statement\": \"Someone named Sam likes early Coltrane.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"unresolved\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"early Coltrane\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_link_to_existing_entity\",\n    \"entity_id\": null,\n    \"reason\": \"The message only says 'Sam' and does not include an affiliation (e.g., Goldman/Point72) or other disambiguating details, so it cannot be safely linked to either existing Sam entity.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Cannot reliably resolve which Sam; record as an unlinked, low-confidence note.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Ask which Sam (Goldman or Point72) this refers to\",\n    \"Use an additional message that includes the affiliation or a unique identifier to disambiguate\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Kept the preference note without attaching it to either existing Sam entity.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

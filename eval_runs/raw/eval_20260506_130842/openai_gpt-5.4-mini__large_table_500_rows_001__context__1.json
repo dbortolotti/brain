@@ -1,0 +1,81 @@
+{
+  "error": null,
+  "fixture_id": "large_table_500_rows_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Store only a brief schema-level summary, not the 500-row contents. The data should be treated as contextual/ephemeral unless a later message assigns semantic importance to specific rows or values.",
+    "citations": [
+      "Input: 'For context, CSV table with 500 rows: id,name,value repeated many times. Policy question: how should it be stored?'"
+    ],
+    "conflict_classification": "none",
+    "decision": "Do not store the full 500-row table as durable memory. If needed, store only a compact summary of the table\u2019s schema and general characteristics, preserving ambiguity about any semantic meaning in the repeated values.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No durable real-world entity can be confidently resolved from the provided generic table context alone."
+    },
+    "intent": "Evaluate whether the provided CSV table context warrants durable memory storage and, if so, at what granularity.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "source",
+            "type": "data_artifact"
+          },
+          {
+            "name": "id",
+            "role": "column",
+            "type": "field"
+          },
+          {
+            "name": "name",
+            "role": "column",
+            "type": "field"
+          },
+          {
+            "name": "value",
+            "role": "column",
+            "type": "field"
+          }
+        ],
+        "kind": "summary",
+        "relationships": [
+          {
+            "object": "id",
+            "predicate": "has_column",
+            "subject": "CSV table"
+          },
+          {
+            "object": "name",
+            "predicate": "has_column",
+            "subject": "CSV table"
+          },
+          {
+            "object": "value",
+            "predicate": "has_column",
+            "subject": "CSV table"
+          }
+        ],
+        "statement": "The input is a large CSV table with 500 rows and repeated columns/fields: id, name, value. It appears to be contextual data rather than a stable personal fact worth storing in full."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Chose summary-level storage only.",
+        "Preserved ambiguity about whether repeated values have meaning.",
+        "Avoided committing row-level details to durable memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If the table later receives semantic meaning, store only the relevant derived facts, not every row.",
+      "If exact row-level retrieval is required, store it as external structured data rather than durable personal memory.",
+      "If no downstream use exists, discard after use."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Evaluate whether the provided CSV table context warrants durable memory storage and, if so, at what granularity.\",\"decision\":\"Do not store the full 500-row table as durable memory. If needed, store only a compact summary of the table\u2019s schema and general characteristics, preserving ambiguity about any semantic meaning in the repeated values.\",\"memory_cards\":[{\"kind\":\"summary\",\"statement\":\"The input is a large CSV table with 500 rows and repeated columns/fields: id, name, value. It appears to be contextual data rather than a stable personal fact worth storing in full.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"CSV table\",\"type\":\"data_artifact\",\"role\":\"source\"},{\"name\":\"id\",\"type\":\"field\",\"role\":\"column\"},{\"name\":\"name\",\"type\":\"field\",\"role\":\"column\"},{\"name\":\"value\",\"type\":\"field\",\"role\":\"column\"}],\"relationships\":[{\"subject\":\"CSV table\",\"predicate\":\"has_column\",\"object\":\"id\"},{\"subject\":\"CSV table\",\"predicate\":\"has_column\",\"object\":\"name\"},{\"subject\":\"CSV table\",\"predicate\":\"has_column\",\"object\":\"value\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No durable real-world entity can be confidently resolved from the provided generic table context alone.\"},\"conflict_classification\":\"none\",\"answer\":\"Store only a brief schema-level summary, not the 500-row contents. The data should be treated as contextual/ephemeral unless a later message assigns semantic importance to specific rows or values.\",\"citations\":[\"Input: 'For context, CSV table with 500 rows: id,name,value repeated many times. Policy question: how should it be stored?'\"],\"repair_options\":[\"If the table later receives semantic meaning, store only the relevant derived facts, not every row.\",\"If exact row-level retrieval is required, store it as external structured data rather than durable personal memory.\",\"If no downstream use exists, discard after use.\"],\"receipt\":{\"success\":true,\"details\":[\"Chose summary-level storage only.\",\"Preserved ambiguity about whether repeated values have meaning.\",\"Avoided committing row-level details to durable memory.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

@@ -1,0 +1,37 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_transcript_as_memory_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The LLM proposal fails to meet durability requirements for Brain's memory system. A single 8000-word transcript summary cannot be committed as a single card without risking loss of context, temporal granularity, or superseded facts. Instead, decompose into atomic memory cards (e.g., 'event', 'decision', 'fact') with explicit relationships and confidence scores.",
+    "citations": [
+      "Brain's durability principle: 'Memory must be decomposable to preserve ambiguity and prevent superseded facts.'",
+      "Schema requirement: 'kind' must specify atomic memory types (e.g., 'fact', 'event', 'decision')."
+    ],
+    "conflict_classification": "ambiguity_in_scope",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "null",
+      "entity_id": null,
+      "reason": "No explicit entities or relationships were extracted from the LLM proposal due to ambiguity in the 8000-word transcript's scope. The proposed 'conversation_summary' card lacks granularity for durable memory encoding (e.g., no timestamped events, speaker roles, or actionable predicates)."
+    },
+    "intent": "evaluate_memory_card_creation_for_transcript_summary",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Missing atomic granularity in the proposed card.",
+        "No explicit relationships between statements (e.g., cause-effect, contradiction).",
+        "Transcript summary lacks temporal or speaker context for durability."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Decompose transcript into timestamped segments (e.g., '2023-10-01: User requested X \u2192 System responded Y').",
+      "Create separate cards for each speaker's contributions with roles (e.g., 'kind': 'statement', 'entities': [{'name': 'Alice', 'role': 'user'}]).",
+      "Add 'confidence': 'low' to speculative inferences and flag for review."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"evaluate_memory_card_creation_for_transcript_summary\",\n  \"decision\": \"reject\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"null\",\n    \"entity_id\": null,\n    \"reason\": \"No explicit entities or relationships were extracted from the LLM proposal due to ambiguity in the 8000-word transcript's scope. The proposed 'conversation_summary' card lacks granularity for durable memory encoding (e.g., no timestamped events, speaker roles, or actionable predicates).\"\n  },\n  \"conflict_classification\": \"ambiguity_in_scope\",\n  \"answer\": \"The LLM proposal fails to meet durability requirements for Brain's memory system. A single 8000-word transcript summary cannot be committed as a single card without risking loss of context, temporal granularity, or superseded facts. Instead, decompose into atomic memory cards (e.g., 'event', 'decision', 'fact') with explicit relationships and confidence scores.\",\n  \"citations\": [\n    \"Brain's durability principle: 'Memory must be decomposable to preserve ambiguity and prevent superseded facts.'\",\n    \"Schema requirement: 'kind' must specify atomic memory types (e.g., 'fact', 'event', 'decision').\"\n  ],\n  \"repair_options\": [\n    \"Decompose transcript into timestamped segments (e.g., '2023-10-01: User requested X \u2192 System responded Y').\",\n    \"Create separate cards for each speaker's contributions with roles (e.g., 'kind': 'statement', 'entities': [{'name': 'Alice', 'role': 'user'}]).\",\n    \"Add 'confidence': 'low' to speculative inferences and flag for review.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Missing atomic granularity in the proposed card.\",\n      \"No explicit relationships between statements (e.g., cause-effect, contradiction).\",\n      \"Transcript summary lacks temporal or speaker context for durability.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

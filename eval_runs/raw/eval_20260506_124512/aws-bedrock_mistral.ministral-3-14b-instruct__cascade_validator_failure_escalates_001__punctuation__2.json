@@ -1,0 +1,30 @@
+{
+  "error": null,
+  "fixture_id": "cascade_validator_failure_escalates_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The input violates the schema by omitting required fields (`kind`, `statement`) in `memory_cards` and lacks a structured `receipt` object. Additionally, the proposal is unsafe due to potential ambiguity in punctuation handling (e.g., 'Cheap model output invalid schema or unsafe proposal' could imply factual claims without validation). Escalation to a stronger model is required for resolution.",
+    "citations": [],
+    "conflict_classification": "schema_violation",
+    "decision": "reject_with_escalation",
+    "entity_resolution": null,
+    "intent": "validate_schema_compliance_and_safety",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Missing required `kind` and `statement` in `memory_cards` array.",
+        "Unstructured input lacks durable memory preservation guarantees.",
+        "Punctuation ambiguity ('or') could mislead factual claims without resolution."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Reject the input outright with explicit schema violation details.",
+      "Escalate to a stronger model for punctuation-aware validation and memory durability checks.",
+      "Propose a corrected schema-compliant JSON with explicit `memory_cards` and `receipt` structures."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"validate_schema_compliance_and_safety\",\n  \"decision\": \"reject_with_escalation\",\n  \"memory_cards\": [],\n  \"entity_resolution\": null,\n  \"conflict_classification\": \"schema_violation\",\n  \"answer\": \"The input violates the schema by omitting required fields (`kind`, `statement`) in `memory_cards` and lacks a structured `receipt` object. Additionally, the proposal is unsafe due to potential ambiguity in punctuation handling (e.g., 'Cheap model output invalid schema or unsafe proposal' could imply factual claims without validation). Escalation to a stronger model is required for resolution.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Reject the input outright with explicit schema violation details.\",\n    \"Escalate to a stronger model for punctuation-aware validation and memory durability checks.\",\n    \"Propose a corrected schema-compliant JSON with explicit `memory_cards` and `receipt` structures.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Missing required `kind` and `statement` in `memory_cards` array.\",\n      \"Unstructured input lacks durable memory preservation guarantees.\",\n      \"Punctuation ambiguity ('or') could mislead factual claims without resolution.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

@@ -1,0 +1,60 @@
+{
+  "error": null,
+  "fixture_id": "preference_jazz_001",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Recorded preference for Sonny Rollins over John Coltrane for relaxed Sunday listening.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "prefers Sonny Rollins over John Coltrane for relaxed Sunday listening",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "New preference expressed; no existing entity to resolve."
+    },
+    "intent": "express_preference",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sonny Rollins",
+            "role": "preferred_artist",
+            "type": "musician"
+          },
+          {
+            "name": "John Coltrane",
+            "role": "less_preferred_artist",
+            "type": "musician"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "John Coltrane",
+            "predicate": "is_preferred_over",
+            "subject": "Sonny Rollins"
+          },
+          {
+            "object": "relaxed Sunday listening",
+            "predicate": "is",
+            "subject": "listening_context"
+          }
+        ],
+        "statement": "I prefer Sonny Rollins over John Coltrane for relaxed Sunday listening."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preference memory card created successfully.",
+        "No conflicts detected.",
+        "Entities resolved as new entries."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"express_preference\",\n  \"decision\": \"prefers Sonny Rollins over John Coltrane for relaxed Sunday listening\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"I prefer Sonny Rollins over John Coltrane for relaxed Sunday listening.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sonny Rollins\",\n          \"type\": \"musician\",\n          \"role\": \"preferred_artist\"\n        },\n        {\n          \"name\": \"John Coltrane\",\n          \"type\": \"musician\",\n          \"role\": \"less_preferred_artist\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sonny Rollins\",\n          \"predicate\": \"is_preferred_over\",\n          \"object\": \"John Coltrane\"\n        },\n        {\n          \"subject\": \"listening_context\",\n          \"predicate\": \"is\",\n          \"object\": \"relaxed Sunday listening\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create\",\n    \"entity_id\": null,\n    \"reason\": \"New preference expressed; no existing entity to resolve.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Recorded preference for Sonny Rollins over John Coltrane for relaxed Sunday listening.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Preference memory card created successfully.\",\n      \"No conflicts detected.\",\n      \"Entities resolved as new entries.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

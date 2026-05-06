@@ -1,0 +1,56 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_sam_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Captured that 'Sam' likes Bill Evans, but did not resolve which Sam.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "store_ambiguous",
+    "entity_resolution": {
+      "action": "no_link",
+      "entity_id": null,
+      "reason": "The message refers to 'Sam' without specifying whether it is the Goldman Sam or the Point72 Sam; existing entities are ambiguous."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "ambiguous",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "subject_of_preference",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam mentioned that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored a preference fact with Sam left unresolved due to ambiguity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask which Sam (Goldman or Point72) said this, then link the preference to the correct entity.",
+      "If more context exists in the thread (channel, username, or prior mentions), use it to resolve 'Sam'."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"slack_intake\",\n  \"decision\": \"store_ambiguous\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam mentioned that he likes Bill Evans.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"ambiguous\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"subject_of_preference\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_link\",\n    \"entity_id\": null,\n    \"reason\": \"The message refers to 'Sam' without specifying whether it is the Goldman Sam or the Point72 Sam; existing entities are ambiguous.\"\n  },\n  \"conflict_classification\": \"none_detected\",\n  \"answer\": \"Captured that 'Sam' likes Bill Evans, but did not resolve which Sam.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Ask which Sam (Goldman or Point72) said this, then link the preference to the correct entity.\",\n    \"If more context exists in the thread (channel, username, or prior mentions), use it to resolve 'Sam'.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Stored a preference fact with Sam left unresolved due to ambiguity.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

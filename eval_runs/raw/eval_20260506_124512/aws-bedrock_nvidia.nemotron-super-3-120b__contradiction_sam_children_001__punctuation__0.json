@@ -1,0 +1,95 @@
+{
+  "error": null,
+  "fixture_id": "contradiction_sam_children_001__punctuation",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "The statements 'Sam from Goldman has two children' and 'Sam from Goldman has no children' are in direct contradiction regarding the number of children Sam has.",
+    "citations": [],
+    "conflict_classification": "direct_contradiction",
+    "decision": "contradiction",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "Sam_from_Goldman",
+      "reason": "Both statements refer to the same individual (Sam) associated with Goldman Sachs, indicating a direct contradiction in familial status."
+    },
+    "intent": "detect_contradiction",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "two",
+            "predicate": "has_number_of_children",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman has two children"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "zero",
+            "predicate": "has_number_of_children",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman has no children"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Contradiction detected between two high-confidence facts about Sam's children.",
+        "Entities resolved to a single individual: Sam from Goldman.",
+        "Conflict classified as direct contradiction on a binary attribute (has children vs. has no children).",
+        "No temporal or contextual qualifiers provided to disambiguate."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retain the older memory and reject the new one",
+      "Retain the new memory and reject the older one",
+      "Flag for manual review due to conflicting eyewitness or testimonial evidence",
+      "Request additional context (e.g., timeframe, definition of 'children') to resolve ambiguity"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"detect_contradiction\",\n  \"decision\": \"contradiction\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam from Goldman has two children\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"employee\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has_number_of_children\",\n          \"object\": \"two\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam from Goldman has no children\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"employee\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has_number_of_children\",\n          \"object\": \"zero\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge\",\n    \"entity_id\": \"Sam_from_Goldman\",\n    \"reason\": \"Both statements refer to the same individual (Sam) associated with Goldman Sachs, indicating a direct contradiction in familial status.\"\n  },\n  \"conflict_classification\": \"direct_contradiction\",\n  \"answer\": \"The statements 'Sam from Goldman has two children' and 'Sam from Goldman has no children' are in direct contradiction regarding the number of children Sam has.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Retain the older memory and reject the new one\",\n    \"Retain the new memory and reject the older one\",\n    \"Flag for manual review due to conflicting eyewitness or testimonial evidence\",\n    \"Request additional context (e.g., timeframe, definition of 'children') to resolve ambiguity\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Contradiction detected between two high-confidence facts about Sam's children.\",\n      \"Entities resolved to a single individual: Sam from Goldman.\",\n      \"Conflict classified as direct contradiction on a binary attribute (has children vs. has no children).\",\n      \"No temporal or contextual qualifiers provided to disambiguate.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

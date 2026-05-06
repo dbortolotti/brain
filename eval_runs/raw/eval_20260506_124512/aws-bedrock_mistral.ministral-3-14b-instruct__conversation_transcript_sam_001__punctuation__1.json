@@ -1,0 +1,208 @@
+{
+  "error": null,
+  "fixture_id": "conversation_transcript_sam_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Durable memory updated with Sam's employment change, jazz preference shift, and pending AI infrastructure discussion/action item. No conflicts detected.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": null,
+      "reason": "No pre-existing entities match the context of Sam's employment transition or jazz preferences."
+    },
+    "intent": "update_durable_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer_previous",
+            "type": "organization"
+          },
+          {
+            "name": "Point72 Ventures",
+            "role": "employer_current",
+            "type": "organization"
+          },
+          {
+            "name": "[current month - 1]",
+            "role": "timestamp",
+            "type": "time"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "left_employment_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72 Ventures",
+            "predicate": "joined_employment_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Sam's employment transition",
+            "predicate": "occurred_during",
+            "subject": "[current month - 1]"
+          }
+        ],
+        "statement": "Sam left Goldman Sachs in [current month - 1] and joined Point72 Ventures."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_previous",
+            "type": "artist"
+          },
+          {
+            "name": "Coltrane (early)",
+            "role": "preference_current",
+            "type": "artist"
+          },
+          {
+            "name": "jazz",
+            "role": "category",
+            "type": "genre"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Coltrane (early)",
+            "predicate": "prefers_artist",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "previously_preferred",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "replaced_in_preference",
+            "subject": "Coltrane (early)"
+          }
+        ],
+        "statement": "Sam continues to listen to jazz, with a recent shift toward early Coltrane recordings over Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "participant",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "participant",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "subject",
+            "type": "topic"
+          },
+          {
+            "name": "future catch-up",
+            "role": "context",
+            "type": "event"
+          }
+        ],
+        "kind": "intent",
+        "relationships": [
+          {
+            "object": "AI infrastructure",
+            "predicate": "proposed_to_discuss",
+            "subject": "Sam"
+          },
+          {
+            "object": "AI infrastructure",
+            "predicate": "agreed_to_discuss",
+            "subject": "Daniele"
+          },
+          {
+            "object": "AI infrastructure discussion",
+            "predicate": "scheduled_for",
+            "subject": "future catch-up"
+          }
+        ],
+        "statement": "Sam and Daniele agreed to discuss AI infrastructure in a future catch-up."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "requester",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "recipient",
+            "type": "person"
+          },
+          {
+            "name": "article",
+            "role": "object",
+            "type": "document"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "context",
+            "type": "topic"
+          }
+        ],
+        "kind": "action_item",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "requested_from",
+            "subject": "Sam"
+          },
+          {
+            "object": "article",
+            "predicate": "expected_to_send",
+            "subject": "Daniele"
+          },
+          {
+            "object": "AI infrastructure",
+            "predicate": "related_to",
+            "subject": "article"
+          }
+        ],
+        "statement": "Sam requested Daniele to send an article related to AI infrastructure."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed employment transition (Goldman \u2192 Point72).",
+        "Updated jazz preference hierarchy (Coltrane > Evans).",
+        "Logged intent to discuss AI infrastructure.",
+        "Recorded action item for article sharing."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"update_durable_memory\",\n  \"decision\": \"commit\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam left Goldman Sachs in [current month - 1] and joined Point72 Ventures.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"employer_previous\"\n        },\n        {\n          \"name\": \"Point72 Ventures\",\n          \"type\": \"organization\",\n          \"role\": \"employer_current\"\n        },\n        {\n          \"name\": \"[current month - 1]\",\n          \"type\": \"time\",\n          \"role\": \"timestamp\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"left_employment_at\",\n          \"object\": \"Goldman Sachs\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined_employment_at\",\n          \"object\": \"Point72 Ventures\"\n        },\n        {\n          \"subject\": \"[current month - 1]\",\n          \"predicate\": \"occurred_during\",\n          \"object\": \"Sam's employment transition\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam continues to listen to jazz, with a recent shift toward early Coltrane recordings over Bill Evans.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"artist\",\n          \"role\": \"preference_previous\"\n        },\n        {\n          \"name\": \"Coltrane (early)\",\n          \"type\": \"artist\",\n          \"role\": \"preference_current\"\n        },\n        {\n          \"name\": \"jazz\",\n          \"type\": \"genre\",\n          \"role\": \"category\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"prefers_artist\",\n          \"object\": \"Coltrane (early)\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"previously_preferred\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Coltrane (early)\",\n          \"predicate\": \"replaced_in_preference\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"intent\",\n      \"statement\": \"Sam and Daniele agreed to discuss AI infrastructure in a future catch-up.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"participant\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"participant\"\n        },\n        {\n          \"name\": \"AI infrastructure\",\n          \"type\": \"topic\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"future catch-up\",\n          \"type\": \"event\",\n          \"role\": \"context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"proposed_to_discuss\",\n          \"object\": \"AI infrastructure\"\n        },\n        {\n          \"subject\": \"Daniele\",\n          \"predicate\": \"agreed_to_discuss\",\n          \"object\": \"AI infrastructure\"\n        },\n        {\n          \"subject\": \"future catch-up\",\n          \"predicate\": \"scheduled_for\",\n          \"object\": \"AI infrastructure discussion\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"action_item\",\n      \"statement\": \"Sam requested Daniele to send an article related to AI infrastructure.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"requester\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"recipient\"\n        },\n        {\n          \"name\": \"article\",\n          \"type\": \"document\",\n          \"role\": \"object\"\n        },\n        {\n          \"name\": \"AI infrastructure\",\n          \"type\": \"topic\",\n          \"role\": \"context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"requested_from\",\n          \"object\": \"Daniele\"\n        },\n        {\n          \"subject\": \"Daniele\",\n          \"predicate\": \"expected_to_send\",\n          \"object\": \"article\"\n        },\n        {\n          \"subject\": \"article\",\n          \"predicate\": \"related_to\",\n          \"object\": \"AI infrastructure\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_new\",\n    \"entity_id\": null,\n    \"reason\": \"No pre-existing entities match the context of Sam's employment transition or jazz preferences.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Durable memory updated with Sam's employment change, jazz preference shift, and pending AI infrastructure discussion/action item. No conflicts detected.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Committed employment transition (Goldman \u2192 Point72).\",\n      \"Updated jazz preference hierarchy (Coltrane > Evans).\",\n      \"Logged intent to discuss AI infrastructure.\",\n      \"Recorded action item for article sharing.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

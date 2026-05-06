@@ -1,0 +1,68 @@
+{
+  "error": null,
+  "fixture_id": "italian_memory_note_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Stored as a preference memory with preserved ambiguity around Sam's full identity and Goldman affiliation.",
+    "citations": [
+      "input: Ricordami che Sam di Goldman preferisce Bill Evans"
+    ],
+    "conflict_classification": "none",
+    "decision": "accept",
+    "entity_resolution": {
+      "action": "provisionally_resolve",
+      "entity_id": null,
+      "reason": "The note identifies 'Sam of Goldman' but does not fully disambiguate which Sam or which Goldman affiliation is intended, so the memory is stored with preserved ambiguity."
+    },
+    "intent": "store_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "association",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam of Goldman prefers Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured a preference memory.",
+        "Preserved ambiguity in entity resolution."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify which Sam is meant and whether 'Goldman' refers to Goldman Sachs or another Goldman association."
+    ]
+  },
+  "raw_text": "{\"intent\":\"store_memory\",\"decision\":\"accept\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam of Goldman prefers Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"association\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"preferred artist\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"prefers\",\"object\":\"Bill Evans\"},{\"subject\":\"Sam\",\"predicate\":\"associated_with\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"provisionally_resolve\",\"entity_id\":null,\"reason\":\"The note identifies 'Sam of Goldman' but does not fully disambiguate which Sam or which Goldman affiliation is intended, so the memory is stored with preserved ambiguity.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored as a preference memory with preserved ambiguity around Sam's full identity and Goldman affiliation.\",\"citations\":[\"input: Ricordami che Sam di Goldman preferisce Bill Evans\"],\"repair_options\":[\"Clarify which Sam is meant and whether 'Goldman' refers to Goldman Sachs or another Goldman association.\"],\"receipt\":{\"success\":true,\"details\":[\"Captured a preference memory.\",\"Preserved ambiguity in entity resolution.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

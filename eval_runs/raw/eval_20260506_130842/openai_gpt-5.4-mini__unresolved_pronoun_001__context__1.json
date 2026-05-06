@@ -1,0 +1,60 @@
+{
+  "error": null,
+  "fixture_id": "unresolved_pronoun_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Ambiguous: 'he' and 'the other one' are not identifiable from the provided context.",
+    "citations": [
+      "For context, He prefers the other one."
+    ],
+    "conflict_classification": "unresolved_pronoun",
+    "decision": "defer",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The pronoun 'he' and the phrase 'the other one' lack enough context to resolve to durable entities."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "he",
+            "role": "subject",
+            "type": "pronoun"
+          },
+          {
+            "name": "the other one",
+            "role": "object",
+            "type": "unspecified_entity"
+          }
+        ],
+        "kind": "uncertain_reference",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "he"
+          }
+        ],
+        "statement": "A speaker referred to an unspecified male person who prefers 'the other one,' but the referents are unresolved in the provided context."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed as an ambiguous statement.",
+        "No durable memory committed due to unresolved referents."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide the antecedent for 'he'.",
+      "Specify what 'the other one' refers to.",
+      "Add the surrounding context needed to resolve the reference."
+    ]
+  },
+  "raw_text": "{\"intent\":\"slack_intake\",\"decision\":\"defer\",\"memory_cards\":[{\"kind\":\"uncertain_reference\",\"statement\":\"A speaker referred to an unspecified male person who prefers 'the other one,' but the referents are unresolved in the provided context.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"he\",\"type\":\"pronoun\",\"role\":\"subject\"},{\"name\":\"the other one\",\"type\":\"unspecified_entity\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"he\",\"predicate\":\"prefers\",\"object\":\"the other one\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"The pronoun 'he' and the phrase 'the other one' lack enough context to resolve to durable entities.\"},\"conflict_classification\":\"unresolved_pronoun\",\"answer\":\"Ambiguous: 'he' and 'the other one' are not identifiable from the provided context.\",\"citations\":[\"For context, He prefers the other one.\"],\"repair_options\":[\"Provide the antecedent for 'he'.\",\"Specify what 'the other one' refers to.\",\"Add the surrounding context needed to resolve the reference.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed as an ambiguous statement.\",\"No durable memory committed due to unresolved referents.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

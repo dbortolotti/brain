@@ -1,0 +1,63 @@
+{
+  "error": null,
+  "fixture_id": "slack_no_durable_value_repair_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory ingestion rejected due to ambiguity in temporal reference ('today'). To commit, specify a precise date (e.g., '2023-11-15') or time zone (e.g., 'today in New York').",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "durable_memory_rejected",
+    "entity_resolution": {
+      "action": "no_resolution_needed",
+      "entity_id": null,
+      "reason": "No existing entities to resolve; temporal reference ('today') is ambiguous without context (e.g., local time zone, date precision)."
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "cloudy",
+            "role": "value",
+            "type": "weather_condition"
+          },
+          {
+            "name": "today",
+            "role": "time_anchor",
+            "type": "temporal_reference"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "cloudy",
+            "predicate": "is",
+            "subject": "weather"
+          },
+          {
+            "object": "weather",
+            "predicate": "has",
+            "subject": "today"
+          }
+        ],
+        "statement": "Today's weather is cloudy."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguous temporal reference ('today') prevents durable memory commitment.",
+        "Ambiguity preserved in `entity_resolution.reason` for context."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Respecify with date: 'Brain, remember the weather on 2023-11-15 was cloudy.'",
+      "Respecify with time zone: 'Brain, remember today\u2019s weather in London is cloudy.'",
+      "Clarify intent: 'Brain, is today\u2019s weather cloudy?' (query-only, no memory)."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_ingestion\",\n  \"decision\": \"durable_memory_rejected\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Today's weather is cloudy.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"cloudy\",\n          \"type\": \"weather_condition\",\n          \"role\": \"value\"\n        },\n        {\n          \"name\": \"today\",\n          \"type\": \"temporal_reference\",\n          \"role\": \"time_anchor\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"weather\",\n          \"predicate\": \"is\",\n          \"object\": \"cloudy\"\n        },\n        {\n          \"subject\": \"today\",\n          \"predicate\": \"has\",\n          \"object\": \"weather\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_resolution_needed\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entities to resolve; temporal reference ('today') is ambiguous without context (e.g., local time zone, date precision).\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"Memory ingestion rejected due to ambiguity in temporal reference ('today'). To commit, specify a precise date (e.g., '2023-11-15') or time zone (e.g., 'today in New York').\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Respecify with date: 'Brain, remember the weather on 2023-11-15 was cloudy.'\",\n    \"Respecify with time zone: 'Brain, remember today\u2019s weather in London is cloudy.'\",\n    \"Clarify intent: 'Brain, is today\u2019s weather cloudy?' (query-only, no memory).\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Ambiguous temporal reference ('today') prevents durable memory commitment.\",\n      \"Ambiguity preserved in `entity_resolution.reason` for context.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

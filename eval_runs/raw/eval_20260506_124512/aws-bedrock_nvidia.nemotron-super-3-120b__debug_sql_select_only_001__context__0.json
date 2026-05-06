@@ -1,0 +1,35 @@
+{
+  "error": null,
+  "fixture_id": "debug_sql_select_only_001__context",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "The context describes a restricted SQL environment where only SELECT id FROM memory_cards LIMIT 10 is permitted; DELETE operations are denied. No memory cards are returned or modified by this query alone, as it only retrieves IDs without exposing statement content or other fields. Therefore, no durable memory can be committed, and no facts can be inferred or presented as current from this limited output.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "no_action",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No entities present in context to resolve"
+    },
+    "intent": "debug_explainer",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Context interpreted correctly: SELECT-only mode permits reading IDs but not modifying or deleting data",
+        "No memory card statements, entities, or relationships were accessible via the permitted query",
+        "No superseded or deleted facts were presented \u2014 all output adheres to constraint of not exposing non-current data",
+        "Ambiguity preserved: no assumptions made about content of memory cards beyond what is explicitly allowed to be read"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request broader SELECT permissions to retrieve statement, kind, confidence, entities, or relationships fields from memory_cards",
+      "Use a different tool or interface that allows read access to full memory card contents",
+      "Clarify if the intent is to debug why no data is returned despite the SELECT being allowed"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"debug_explainer\",\n  \"decision\": \"no_action\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No entities present in context to resolve\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"The context describes a restricted SQL environment where only SELECT id FROM memory_cards LIMIT 10 is permitted; DELETE operations are denied. No memory cards are returned or modified by this query alone, as it only retrieves IDs without exposing statement content or other fields. Therefore, no durable memory can be committed, and no facts can be inferred or presented as current from this limited output.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Request broader SELECT permissions to retrieve statement, kind, confidence, entities, or relationships fields from memory_cards\",\n    \"Use a different tool or interface that allows read access to full memory card contents\",\n    \"Clarify if the intent is to debug why no data is returned despite the SELECT being allowed\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Context interpreted correctly: SELECT-only mode permits reading IDs but not modifying or deleting data\",\n      \"No memory card statements, entities, or relationships were accessible via the permitted query\",\n      \"No superseded or deleted facts were presented \u2014 all output adheres to constraint of not exposing non-current data\",\n      \"Ambiguity preserved: no assumptions made about content of memory cards beyond what is explicitly allowed to be read\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

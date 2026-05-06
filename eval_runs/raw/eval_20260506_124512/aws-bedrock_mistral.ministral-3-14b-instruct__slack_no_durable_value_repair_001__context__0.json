@@ -1,0 +1,58 @@
+{
+  "error": null,
+  "fixture_id": "slack_no_durable_value_repair_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory intake deferred. Clarify temporal scope (e.g., 'today' relative to what?) before committing to durable storage.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "defer_durable_memory",
+    "entity_resolution": {
+      "action": "pending",
+      "entity_id": null,
+      "reason": "Ambiguous temporal reference ('today') requires contextual grounding. No prior durable memory of 'today' exists to validate scope (e.g., user's local time vs. system time)."
+    },
+    "intent": "memory_intake",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "today",
+            "role": "temporal_anchor",
+            "type": "time_reference"
+          },
+          {
+            "name": "cloudy",
+            "role": "observation",
+            "type": "weather_condition"
+          }
+        ],
+        "kind": "temporal",
+        "relationships": [
+          {
+            "object": "cloudy",
+            "predicate": "has_weather",
+            "subject": "today"
+          }
+        ],
+        "statement": "Today's weather is cloudy."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Temporal ambiguity in 'today' prevents durable memory commitment.",
+        "No superseded/deleted facts exist to conflict with."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Request user to specify: 'Today (your local time) is cloudy.'",
+      "Request user to specify: 'Today (as of [timestamp]) is cloudy.'",
+      "Discard as non-durable (e.g., 'Note: Weather today is cloudy (no storage).')"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_intake\",\n  \"decision\": \"defer_durable_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"temporal\",\n      \"statement\": \"Today's weather is cloudy.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"today\",\n          \"type\": \"time_reference\",\n          \"role\": \"temporal_anchor\"\n        },\n        {\n          \"name\": \"cloudy\",\n          \"type\": \"weather_condition\",\n          \"role\": \"observation\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"today\",\n          \"predicate\": \"has_weather\",\n          \"object\": \"cloudy\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"pending\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguous temporal reference ('today') requires contextual grounding. No prior durable memory of 'today' exists to validate scope (e.g., user's local time vs. system time).\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Memory intake deferred. Clarify temporal scope (e.g., 'today' relative to what?) before committing to durable storage.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Request user to specify: 'Today (your local time) is cloudy.'\",\n    \"Request user to specify: 'Today (as of [timestamp]) is cloudy.'\",\n    \"Discard as non-durable (e.g., 'Note: Weather today is cloudy (no storage).')\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Temporal ambiguity in 'today' prevents durable memory commitment.\",\n      \"No superseded/deleted facts exist to conflict with.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

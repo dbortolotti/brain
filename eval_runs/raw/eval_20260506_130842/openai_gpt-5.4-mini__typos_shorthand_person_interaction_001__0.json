@@ -1,0 +1,70 @@
+{
+  "error": null,
+  "fixture_id": "typos_shorthand_person_interaction_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Provisional memory extracted from shorthand: Sam, apparently from Goldman, likes Bill Evans.",
+    "citations": [
+      "sam frm goldmn likes bill evns apparently"
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "store_provisional_memory",
+    "entity_resolution": {
+      "action": "provisional_match",
+      "entity_id": null,
+      "reason": "The input is shorthand and ambiguous; 'frm goldmn' likely means 'from Goldman', but the exact identities of Sam, Goldman, and Bill Evans are not confirmed."
+    },
+    "intent": "extract_and_store_person_interaction",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization_or_place"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object_of_liking",
+            "type": "person"
+          }
+        ],
+        "kind": "preference_or_affinity",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam, apparently from Goldman, seems to like Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed shorthand into a tentative person-affiliation-preference statement.",
+        "Marked low confidence due to ambiguity and 'apparently'."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm whether 'Goldman' refers to Goldman Sachs or another Goldman.",
+      "Confirm whether 'Bill Evans' is the intended person.",
+      "Confirm whether 'likes' means personal admiration, friendship, or another relation."
+    ]
+  },
+  "raw_text": "{\"intent\":\"extract_and_store_person_interaction\",\"decision\":\"store_provisional_memory\",\"memory_cards\":[{\"kind\":\"preference_or_affinity\",\"statement\":\"Sam, apparently from Goldman, seems to like Bill Evans.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization_or_place\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"object_of_liking\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"provisional_match\",\"entity_id\":null,\"reason\":\"The input is shorthand and ambiguous; 'frm goldmn' likely means 'from Goldman', but the exact identities of Sam, Goldman, and Bill Evans are not confirmed.\"},\"conflict_classification\":\"no_conflict\",\"answer\":\"Provisional memory extracted from shorthand: Sam, apparently from Goldman, likes Bill Evans.\",\"citations\":[\"sam frm goldmn likes bill evns apparently\"],\"repair_options\":[\"Confirm whether 'Goldman' refers to Goldman Sachs or another Goldman.\",\"Confirm whether 'Bill Evans' is the intended person.\",\"Confirm whether 'likes' means personal admiration, friendship, or another relation.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed shorthand into a tentative person-affiliation-preference statement.\",\"Marked low confidence due to ambiguity and 'apparently'.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

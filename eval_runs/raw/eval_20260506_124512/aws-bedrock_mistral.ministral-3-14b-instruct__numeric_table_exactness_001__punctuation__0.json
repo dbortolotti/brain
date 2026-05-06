@@ -1,0 +1,138 @@
+{
+  "error": null,
+  "fixture_id": "numeric_table_exactness_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The table's numeric values (e.g., 012, 045, 018, 051) are stored verbatim, including leading zeros, to preserve exactness. No superseded or deleted facts exist in this fixture.",
+    "citations": [
+      "Input table: numeric_table_exactness_001__punctuation"
+    ],
+    "conflict_classification": "none",
+    "decision": "preserve_ambiguity_and_validate_structure",
+    "entity_resolution": {
+      "action": "no_resolution_needed",
+      "entity_id": null,
+      "reason": "All entities are unambiguous and directly tied to the input table."
+    },
+    "intent": "evaluate_numeric_table_exactness",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "subject",
+            "type": "run_id"
+          },
+          {
+            "name": "012",
+            "role": "reward",
+            "type": "numeric_value"
+          },
+          {
+            "name": "045",
+            "role": "sharpe_ratio",
+            "type": "numeric_value"
+          },
+          {
+            "name": "baseline",
+            "role": "notes",
+            "type": "label"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "012",
+            "predicate": "has_reward",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "045",
+            "predicate": "has_sharpe_ratio",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "baseline",
+            "predicate": "classified_as",
+            "subject": "PPO-001"
+          }
+        ],
+        "statement": "Run PPO-001 achieved a reward of 012 and a Sharpe ratio of 045, marked as a baseline."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "subject",
+            "type": "run_id"
+          },
+          {
+            "name": "018",
+            "role": "reward",
+            "type": "numeric_value"
+          },
+          {
+            "name": "051",
+            "role": "sharpe_ratio",
+            "type": "numeric_value"
+          },
+          {
+            "name": "entropy tuned",
+            "role": "notes",
+            "type": "label"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "018",
+            "predicate": "has_reward",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "051",
+            "predicate": "has_sharpe_ratio",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "entropy tuned",
+            "predicate": "classified_as",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "Run PPO-002 achieved a reward of 018 and a Sharpe ratio of 051, marked as entropy-tuned."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "leading zeros",
+            "role": "feature",
+            "type": "punctuation"
+          },
+          {
+            "name": "numeric_table_exactness",
+            "role": "context",
+            "type": "constraint"
+          }
+        ],
+        "kind": "meta",
+        "statement": "Punctuation (e.g., leading zeros in numeric values) is preserved as-is to maintain exactness in the original table."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory committed with strict adherence to input punctuation.",
+        "Ambiguity preserved (e.g., no normalization of leading zeros).",
+        "No conflicts or superseded facts detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"evaluate_numeric_table_exactness\",\n  \"decision\": \"preserve_ambiguity_and_validate_structure\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Run PPO-001 achieved a reward of 012 and a Sharpe ratio of 045, marked as a baseline.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"PPO-001\",\n          \"type\": \"run_id\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"012\",\n          \"type\": \"numeric_value\",\n          \"role\": \"reward\"\n        },\n        {\n          \"name\": \"045\",\n          \"type\": \"numeric_value\",\n          \"role\": \"sharpe_ratio\"\n        },\n        {\n          \"name\": \"baseline\",\n          \"type\": \"label\",\n          \"role\": \"notes\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"has_reward\",\n          \"object\": \"012\"\n        },\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"has_sharpe_ratio\",\n          \"object\": \"045\"\n        },\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"classified_as\",\n          \"object\": \"baseline\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Run PPO-002 achieved a reward of 018 and a Sharpe ratio of 051, marked as entropy-tuned.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"PPO-002\",\n          \"type\": \"run_id\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"018\",\n          \"type\": \"numeric_value\",\n          \"role\": \"reward\"\n        },\n        {\n          \"name\": \"051\",\n          \"type\": \"numeric_value\",\n          \"role\": \"sharpe_ratio\"\n        },\n        {\n          \"name\": \"entropy tuned\",\n          \"type\": \"label\",\n          \"role\": \"notes\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"has_reward\",\n          \"object\": \"018\"\n        },\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"has_sharpe_ratio\",\n          \"object\": \"051\"\n        },\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"classified_as\",\n          \"object\": \"entropy tuned\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"meta\",\n      \"statement\": \"Punctuation (e.g., leading zeros in numeric values) is preserved as-is to maintain exactness in the original table.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"leading zeros\",\n          \"type\": \"punctuation\",\n          \"role\": \"feature\"\n        },\n        {\n          \"name\": \"numeric_table_exactness\",\n          \"type\": \"constraint\",\n          \"role\": \"context\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_resolution_needed\",\n    \"entity_id\": null,\n    \"reason\": \"All entities are unambiguous and directly tied to the input table.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"The table's numeric values (e.g., 012, 045, 018, 051) are stored verbatim, including leading zeros, to preserve exactness. No superseded or deleted facts exist in this fixture.\",\n  \"citations\": [\n    \"Input table: numeric_table_exactness_001__punctuation\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Durable memory committed with strict adherence to input punctuation.\",\n      \"Ambiguity preserved (e.g., no normalization of leading zeros).\",\n      \"No conflicts or superseded facts detected.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

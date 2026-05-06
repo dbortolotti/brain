@@ -1,0 +1,84 @@
+{
+  "error": null,
+  "fixture_id": "debug_explain_recall_sam",
+  "model": "groq:llama-3.3-70b-versatile",
+  "payload": {
+    "answer": "mem_new",
+    "citations": [
+      "memory_card_1",
+      "memory_card_2"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "filter_superseded",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": "Sam",
+      "reason": "entity_match"
+    },
+    "intent": "explain_recall",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "mem_new",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman"
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "former_employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "mem_old",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "used_to_work_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam used to work at Goldman"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "recall_successful",
+        "mem_old_filtered"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "update_mem_old",
+      "delete_mem_old"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"explain_recall\",\n   \"decision\": \"filter_superseded\",\n   \"memory_cards\": [\n       {\n           \"kind\": \"mem_new\",\n           \"statement\": \"Sam works at Goldman\",\n           \"confidence\": \"high\",\n           \"entities\": [\n               {\n                   \"name\": \"Sam\",\n                   \"type\": \"person\",\n                   \"role\": \"employee\"\n               },\n               {\n                   \"name\": \"Goldman\",\n                   \"type\": \"organization\",\n                   \"role\": \"employer\"\n               }\n           ],\n           \"relationships\": [\n               {\n                   \"subject\": \"Sam\",\n                   \"predicate\": \"works_at\",\n                   \"object\": \"Goldman\"\n               }\n           ]\n       },\n       {\n           \"kind\": \"mem_old\",\n           \"statement\": \"Sam used to work at Goldman\",\n           \"confidence\": \"low\",\n           \"entities\": [\n               {\n                   \"name\": \"Sam\",\n                   \"type\": \"person\",\n                   \"role\": \"former_employee\"\n               },\n               {\n                   \"name\": \"Goldman\",\n                   \"type\": \"organization\",\n                   \"role\": \"former_employer\"\n               }\n           ],\n           \"relationships\": [\n               {\n                   \"subject\": \"Sam\",\n                   \"predicate\": \"used_to_work_at\",\n                   \"object\": \"Goldman\"\n               }\n           ]\n       }\n   ],\n   \"entity_resolution\": {\n       \"action\": \"resolved\",\n       \"entity_id\": \"Sam\",\n       \"reason\": \"entity_match\"\n   },\n   \"conflict_classification\": \"supersession\",\n   \"answer\": \"mem_new\",\n   \"citations\": [\n       \"memory_card_1\",\n       \"memory_card_2\"\n   ],\n   \"repair_options\": [\n       \"update_mem_old\",\n       \"delete_mem_old\"\n   ],\n   \"receipt\": {\n       \"success\": true,\n       \"details\": [\n           \"recall_successful\",\n           \"mem_old_filtered\"\n       ]\n   }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

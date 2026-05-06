@@ -46,6 +46,7 @@ def models(
     include_judge: bool = typer.Option(False, "--include-judge"),
     repeat_runs: int = typer.Option(1, "--repeat-runs", min=1),
     bootstrap_samples: int = typer.Option(1000, "--bootstrap-samples", min=0),
+    max_workers: int = typer.Option(1, "--max-workers", min=1),
     output: Path = typer.Option(..., "--output"),
     report_md: Path | None = typer.Option(None, "--report-md"),
     raw_output_dir: Path | None = typer.Option(None, "--raw-output-dir"),
@@ -63,8 +64,9 @@ def models(
         output_path=output,
         report_md_path=report_md,
         raw_output_dir=raw_output_dir,
+        max_workers=max_workers,
     )
-    result = run_model_evals(load_settings(), config)
+    result = run_model_evals(load_settings(), config, progress_callback=progress_printer())
     console.print(f"[green]wrote[/green] {output}")
     if report_md:
         console.print(f"[green]wrote[/green] {report_md}")
@@ -89,6 +91,29 @@ def parse_csv(value: str | None) -> set[str]:
 def parse_csv_list(value: str | None) -> list[str] | None:
     items = [item.strip() for item in (value or "").split(",") if item.strip()]
     return items or None
+
+
+def progress_printer():
+    last_printed = {"value": 0}
+
+    def print_progress(done: int, total: int, record: dict) -> None:
+        should_print = (
+            done == 1
+            or done == total
+            or done - last_printed["value"] >= 25
+            or record.get("status") == "fail"
+        )
+        if not should_print:
+            return
+        last_printed["value"] = done
+        console.print(
+            "[cyan]progress[/cyan] "
+            f"{done}/{total} "
+            f"{record['model']} {record['role']} {record['fixture_id']} "
+            f"status={record['status']}"
+        )
+
+    return print_progress
 
 
 if __name__ == "__main__":

@@ -1,0 +1,95 @@
+{
+  "error": null,
+  "fixture_id": "pdf_ocr_noisy_source_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The memory system cannot commit durable memory from this fixture due to OCR-induced corruption. A full rebuild from verified sources is required to restore integrity.",
+    "citations": [
+      "OCR noise introduces uncorrectable ambiguity in text extraction (e.g., 'trvth' \u2192 'truth', 'Cognee' \u2192 'Cognitive').",
+      "Durable memory requires unambiguous, verifiable source data."
+    ],
+    "conflict_classification": "source_integrity_conflict",
+    "decision": "flag_for_rebuild",
+    "entity_resolution": {
+      "action": "supersede",
+      "entity_id": "pdf_ocr_noisy_source_001__context",
+      "reason": "Ambiguity and noise render the fixture unreliable for durable memory. Replacement required."
+    },
+    "intent": "evaluate_memory_system",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "pdf_ocr_noisy_source_001__context",
+            "role": "corrupted_source",
+            "type": "memory_fixture"
+          },
+          {
+            "name": "Brain DB",
+            "role": "truth_source",
+            "type": "memory_system"
+          }
+        ],
+        "kind": "system_alert",
+        "relationships": [
+          {
+            "object": "Brain DB",
+            "predicate": "corrupts",
+            "subject": "pdf_ocr_noisy_source_001__context"
+          },
+          {
+            "object": "ambiguity_in_statements",
+            "predicate": "introduces",
+            "subject": "OCR noise"
+          }
+        ],
+        "statement": "Source data integrity compromised due to OCR noise. Durable memory cannot be guaranteed."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "cognitive_projection",
+            "role": "rebuild_target",
+            "type": "memory_model"
+          },
+          {
+            "name": "verified_sources",
+            "role": "replacement_input",
+            "type": "data_source"
+          }
+        ],
+        "kind": "action_required",
+        "relationships": [
+          {
+            "object": "verified_sources",
+            "predicate": "depends_on",
+            "subject": "cognitive_projection"
+          },
+          {
+            "object": "source_integrity_issue",
+            "predicate": "resolves",
+            "subject": "rebuild"
+          }
+        ],
+        "statement": "Cognitive projection must be rebuilt from verified sources to ensure durability."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory compilation aborted due to source corruption.",
+        "Action: Initiate rebuild workflow (priority: critical)."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Discard corrupted fixture and ingest clean source data.",
+      "Apply manual OCR correction with human-in-the-loop validation.",
+      "Flag all statements from this fixture as 'unverified' and exclude from durable memory."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"evaluate_memory_system\",\n  \"decision\": \"flag_for_rebuild\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"system_alert\",\n      \"statement\": \"Source data integrity compromised due to OCR noise. Durable memory cannot be guaranteed.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"pdf_ocr_noisy_source_001__context\",\n          \"type\": \"memory_fixture\",\n          \"role\": \"corrupted_source\"\n        },\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"memory_system\",\n          \"role\": \"truth_source\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"pdf_ocr_noisy_source_001__context\",\n          \"predicate\": \"corrupts\",\n          \"object\": \"Brain DB\"\n        },\n        {\n          \"subject\": \"OCR noise\",\n          \"predicate\": \"introduces\",\n          \"object\": \"ambiguity_in_statements\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"action_required\",\n      \"statement\": \"Cognitive projection must be rebuilt from verified sources to ensure durability.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"cognitive_projection\",\n          \"type\": \"memory_model\",\n          \"role\": \"rebuild_target\"\n        },\n        {\n          \"name\": \"verified_sources\",\n          \"type\": \"data_source\",\n          \"role\": \"replacement_input\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"cognitive_projection\",\n          \"predicate\": \"depends_on\",\n          \"object\": \"verified_sources\"\n        },\n        {\n          \"subject\": \"rebuild\",\n          \"predicate\": \"resolves\",\n          \"object\": \"source_integrity_issue\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"supersede\",\n    \"entity_id\": \"pdf_ocr_noisy_source_001__context\",\n    \"reason\": \"Ambiguity and noise render the fixture unreliable for durable memory. Replacement required.\"\n  },\n  \"conflict_classification\": \"source_integrity_conflict\",\n  \"answer\": \"The memory system cannot commit durable memory from this fixture due to OCR-induced corruption. A full rebuild from verified sources is required to restore integrity.\",\n  \"citations\": [\n    \"OCR noise introduces uncorrectable ambiguity in text extraction (e.g., 'trvth' \u2192 'truth', 'Cognee' \u2192 'Cognitive').\",\n    \"Durable memory requires unambiguous, verifiable source data.\"\n  ],\n  \"repair_options\": [\n    \"Discard corrupted fixture and ingest clean source data.\",\n    \"Apply manual OCR correction with human-in-the-loop validation.\",\n    \"Flag all statements from this fixture as 'unverified' and exclude from durable memory.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Memory compilation aborted due to source corruption.\",\n      \"Action: Initiate rebuild workflow (priority: critical).\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

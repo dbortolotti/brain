@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "fixture_id": "typos_shorthand_person_interaction_001__punctuation",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Stored as low-confidence claim due to typos and shorthand; no definitive entities resolved.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_as_ambiguous_claim",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Ambiguous shorthand and typos prevent confident entity resolution; 'Goldmn' likely refers to Goldman Sachs, 'frm' to 'from', 'evns' to 'Evans', but no definitive match can be made without further context."
+    },
+    "intent": "parse_typoed_statement",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans apparently"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Input parsed and stored as ambiguous low-confidence memory card",
+        "No entity resolution performed due to uncertainty",
+        "No conflicts detected"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request clarification on intended entities (e.g., 'Did you mean Goldman Sachs? Bill Evans the jazz pianist?')",
+      "Wait for additional context to confirm referents",
+      "Flag for human review if used in decision-making"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"parse_typoed_statement\",\n  \"decision\": \"store_as_ambiguous_claim\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam from Goldman likes Bill Evans apparently\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"affiliated_with\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguous shorthand and typos prevent confident entity resolution; 'Goldmn' likely refers to Goldman Sachs, 'frm' to 'from', 'evns' to 'Evans', but no definitive match can be made without further context.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Stored as low-confidence claim due to typos and shorthand; no definitive entities resolved.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Request clarification on intended entities (e.g., 'Did you mean Goldman Sachs? Bill Evans the jazz pianist?')\",\n    \"Wait for additional context to confirm referents\",\n    \"Flag for human review if used in decision-making\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Input parsed and stored as ambiguous low-confidence memory card\",\n      \"No entity resolution performed due to uncertainty\",\n      \"No conflicts detected\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

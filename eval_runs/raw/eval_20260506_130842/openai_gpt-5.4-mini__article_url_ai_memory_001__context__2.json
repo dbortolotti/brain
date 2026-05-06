@@ -1,0 +1,80 @@
+{
+  "error": null,
+  "fixture_id": "article_url_ai_memory_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Stored a contextual memory about the article's relevance to AI memory design.",
+    "citations": [
+      "https://example.com/ai-memory"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "This is a new contextual memory about a source article; no existing entity resolution was provided."
+    },
+    "intent": "Store a contextual memory about an article related to AI memory design.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "https://example.com/ai-memory",
+            "role": "source",
+            "type": "url"
+          },
+          {
+            "name": "graph memory",
+            "role": "design approach",
+            "type": "concept"
+          },
+          {
+            "name": "provenance",
+            "role": "required property",
+            "type": "concept"
+          },
+          {
+            "name": "update semantics",
+            "role": "required property",
+            "type": "concept"
+          }
+        ],
+        "kind": "context_note",
+        "relationships": [
+          {
+            "object": "relationships",
+            "predicate": "helps preserve",
+            "subject": "graph memory"
+          },
+          {
+            "object": "provenance",
+            "predicate": "needs",
+            "subject": "memory design"
+          },
+          {
+            "object": "update semantics",
+            "predicate": "needs",
+            "subject": "memory design"
+          }
+        ],
+        "statement": "An article about AI memory design (https://example.com/ai-memory) is relevant because it argues that graph memory helps agents preserve relationships, and that provenance plus update semantics are needed."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created one contextual memory card.",
+        "Kept confidence medium because the source is a mock fetched article.",
+        "Preserved the statement as relevance/context rather than a strong factual claim."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If later evidence clarifies the article's exact claims, replace the current summary with a more specific one.",
+      "If the URL is not the canonical source, add the canonical citation and mark this entry as source-derived context only."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Store a contextual memory about an article related to AI memory design.\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"context_note\",\"statement\":\"An article about AI memory design (https://example.com/ai-memory) is relevant because it argues that graph memory helps agents preserve relationships, and that provenance plus update semantics are needed.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"https://example.com/ai-memory\",\"type\":\"url\",\"role\":\"source\"},{\"name\":\"graph memory\",\"type\":\"concept\",\"role\":\"design approach\"},{\"name\":\"provenance\",\"type\":\"concept\",\"role\":\"required property\"},{\"name\":\"update semantics\",\"type\":\"concept\",\"role\":\"required property\"}],\"relationships\":[{\"subject\":\"graph memory\",\"predicate\":\"helps preserve\",\"object\":\"relationships\"},{\"subject\":\"memory design\",\"predicate\":\"needs\",\"object\":\"provenance\"},{\"subject\":\"memory design\",\"predicate\":\"needs\",\"object\":\"update semantics\"}]}],\"entity_resolution\":{\"action\":\"create\",\"entity_id\":null,\"reason\":\"This is a new contextual memory about a source article; no existing entity resolution was provided.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored a contextual memory about the article's relevance to AI memory design.\",\"citations\":[\"https://example.com/ai-memory\"],\"repair_options\":[\"If later evidence clarifies the article's exact claims, replace the current summary with a more specific one.\",\"If the URL is not the canonical source, add the canonical citation and mark this entry as source-derived context only.\"],\"receipt\":{\"success\":true,\"details\":[\"Created one contextual memory card.\",\"Kept confidence medium because the source is a mock fetched article.\",\"Preserved the statement as relevance/context rather than a strong factual claim.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

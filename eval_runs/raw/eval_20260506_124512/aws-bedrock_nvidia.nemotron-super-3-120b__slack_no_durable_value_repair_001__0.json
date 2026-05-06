@@ -1,0 +1,60 @@
+{
+  "error": null,
+  "fixture_id": "slack_no_durable_value_repair_001",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Stored: Today's weather is cloudy.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No existing entities found for resolution; all entities are new or contextually bound."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Today",
+            "role": "time_reference",
+            "type": "temporal"
+          },
+          {
+            "name": "weather",
+            "role": "subject",
+            "type": "concept"
+          },
+          {
+            "name": "cloudy",
+            "role": "attribute",
+            "type": "state"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "cloudy",
+            "predicate": "is",
+            "subject": "Today's weather"
+          }
+        ],
+        "statement": "Today's weather is cloudy."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created successfully.",
+        "No conflicts detected.",
+        "Entities resolved contextually."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"remember\",\n  \"decision\": \"store\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Today's weather is cloudy.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Today\",\n          \"type\": \"temporal\",\n          \"role\": \"time_reference\"\n        },\n        {\n          \"name\": \"weather\",\n          \"type\": \"concept\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"cloudy\",\n          \"type\": \"state\",\n          \"role\": \"attribute\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Today's weather\",\n          \"predicate\": \"is\",\n          \"object\": \"cloudy\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entities found for resolution; all entities are new or contextually bound.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Stored: Today's weather is cloudy.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card created successfully.\",\n      \"No conflicts detected.\",\n      \"Entities resolved contextually.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

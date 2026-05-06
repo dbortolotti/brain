@@ -1,0 +1,60 @@
+{
+  "error": null,
+  "fixture_id": "conflict_employment_transition__context",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Sam now works at Point72 after leaving Goldman.",
+    "citations": [],
+    "conflict_classification": "contradiction",
+    "decision": "replace",
+    "entity_resolution": {
+      "action": "update",
+      "entity_id": "Sam",
+      "reason": "Employment status changed from Goldman to Point72; prior fact superseded."
+    },
+    "intent": "update_employment",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict detected: employment transition contradicts current fact.",
+        "Old fact: 'Sam works at Goldman' marked as superseded.",
+        "New fact: 'Sam works at Point72' committed as current.",
+        "Entity 'Sam' resolved and updated with new employer."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retract 'Sam works at Goldman'",
+      "Insert 'Sam works at Point72'",
+      "Maintain temporal validity: Sam worked at Goldman until [date], then joined Point72"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"update_employment\",\n  \"decision\": \"replace\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam works at Point72.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"employee\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works at\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"update\",\n    \"entity_id\": \"Sam\",\n    \"reason\": \"Employment status changed from Goldman to Point72; prior fact superseded.\"\n  },\n  \"conflict_classification\": \"contradiction\",\n  \"answer\": \"Sam now works at Point72 after leaving Goldman.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Retract 'Sam works at Goldman'\",\n    \"Insert 'Sam works at Point72'\",\n    \"Maintain temporal validity: Sam worked at Goldman until [date], then joined Point72\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Conflict detected: employment transition contradicts current fact.\",\n      \"Old fact: 'Sam works at Goldman' marked as superseded.\",\n      \"New fact: 'Sam works at Point72' committed as current.\",\n      \"Entity 'Sam' resolved and updated with new employer.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

@@ -1,0 +1,78 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_time_reference_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam's statement about leaving Goldman Sachs is durably recorded, but the exact departure date is ambiguous due to unresolved time references ('last Friday' and 'next month'). No superseded/deleted facts are present.",
+    "citations": [],
+    "conflict_classification": "none",
+    "entity_resolution": {
+      "action": "flag_ambiguity",
+      "entity_id": "ambiguous_time_reference_001",
+      "reason": "The time reference 'next month' is ambiguous without a specific date or calendar context. 'Last Friday' is also ambiguous without a fixed date (e.g., relative to today's date)."
+    },
+    "intent": "memory_intake",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer",
+            "type": "organization"
+          },
+          {
+            "name": "last Friday",
+            "role": "conversation_timestamp",
+            "type": "time_reference"
+          },
+          {
+            "name": "next month",
+            "role": "intended_departure_timestamp",
+            "type": "time_reference"
+          }
+        ],
+        "kind": "event",
+        "relationships": [
+          {
+            "object": "leave_Goldman_Sachs",
+            "predicate": "expressed_intent_to",
+            "subject": "Sam"
+          },
+          {
+            "object": "last_Friday",
+            "predicate": "stated_in_conversation",
+            "subject": "Sam"
+          },
+          {
+            "object": "next_month",
+            "predicate": "ambiguous_reference_to",
+            "subject": "intended_departure_timestamp"
+          }
+        ],
+        "statement": "Sam expressed intent to leave Goldman Sachs in an unspecified future timeframe, referenced as 'next month' by Sam in a conversation last Friday."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created with low confidence due to ambiguous time references.",
+        "Entity resolution flagged for manual review.",
+        "No conflicts detected with existing durable memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request clarification from Sam: 'Which specific date did you mean by 'last Friday' and 'next month'?'",
+      "Anchor to today's date: 'Assuming today is [YYYY-MM-DD], 'last Friday' was [YYYY-MM-DD], and 'next month' would be [YYYY-MM].'",
+      "Mark as pending resolution: 'Sam's departure from Goldman Sachs is pending confirmation of exact dates.'"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_intake\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"event\",\n      \"statement\": \"Sam expressed intent to leave Goldman Sachs in an unspecified future timeframe, referenced as 'next month' by Sam in a conversation last Friday.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        },\n        {\n          \"name\": \"last Friday\",\n          \"type\": \"time_reference\",\n          \"role\": \"conversation_timestamp\"\n        },\n        {\n          \"name\": \"next month\",\n          \"type\": \"time_reference\",\n          \"role\": \"intended_departure_timestamp\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"expressed_intent_to\",\n          \"object\": \"leave_Goldman_Sachs\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"stated_in_conversation\",\n          \"object\": \"last_Friday\"\n        },\n        {\n          \"subject\": \"intended_departure_timestamp\",\n          \"predicate\": \"ambiguous_reference_to\",\n          \"object\": \"next_month\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"flag_ambiguity\",\n    \"entity_id\": \"ambiguous_time_reference_001\",\n    \"reason\": \"The time reference 'next month' is ambiguous without a specific date or calendar context. 'Last Friday' is also ambiguous without a fixed date (e.g., relative to today's date).\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Sam's statement about leaving Goldman Sachs is durably recorded, but the exact departure date is ambiguous due to unresolved time references ('last Friday' and 'next month'). No superseded/deleted facts are present.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Request clarification from Sam: 'Which specific date did you mean by 'last Friday' and 'next month'?'\",\n    \"Anchor to today's date: 'Assuming today is [YYYY-MM-DD], 'last Friday' was [YYYY-MM-DD], and 'next month' would be [YYYY-MM].'\",\n    \"Mark as pending resolution: 'Sam's departure from Goldman Sachs is pending confirmation of exact dates.'\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card created with low confidence due to ambiguous time references.\",\n      \"Entity resolution flagged for manual review.\",\n      \"No conflicts detected with existing durable memory.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

@@ -1,0 +1,64 @@
+{
+  "error": null,
+  "fixture_id": "person_interaction_sam_bill_evans_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Stored tentatively as a low-confidence preference note.",
+    "citations": [
+      "input"
+    ],
+    "conflict_classification": "none",
+    "decision": "store_tentatively",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Sam is only identified as 'from Goldman'; this is not enough to resolve to a specific durable entity with confidence."
+    },
+    "intent": "capture_personal_preference",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman reportedly likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured a tentative preference mention.",
+        "Kept entity resolution unresolved due to limited context."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If Sam is a specific contact, provide a fuller identifier (full name, role, or company team).",
+      "If 'Bill Evans' refers to the musician, that can be noted explicitly to reduce ambiguity."
+    ]
+  },
+  "raw_text": "{\"intent\":\"capture_personal_preference\",\"decision\":\"store_tentatively\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman reportedly likes Bill Evans.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"Sam is only identified as 'from Goldman'; this is not enough to resolve to a specific durable entity with confidence.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored tentatively as a low-confidence preference note.\",\"citations\":[\"input\"],\"repair_options\":[\"If Sam is a specific contact, provide a fuller identifier (full name, role, or company team).\",\"If 'Bill Evans' refers to the musician, that can be noted explicitly to reduce ambiguity.\"],\"receipt\":{\"success\":true,\"details\":[\"Captured a tentative preference mention.\",\"Kept entity resolution unresolved due to limited context.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

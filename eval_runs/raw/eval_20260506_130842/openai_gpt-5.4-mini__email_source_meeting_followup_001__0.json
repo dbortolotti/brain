@@ -1,0 +1,76 @@
+{
+  "error": null,
+  "fixture_id": "email_source_meeting_followup_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Store the follow-up facts: Sam joined Point72 last month and wants the AI infra article sent.",
+    "citations": [
+      "From: sam@example.com",
+      "Subject: Follow up. Great seeing you. Yes, I joined Point72 last month. Please send the AI infra article."
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "Commit two memory cards: Sam says they joined Point72 last month, and Sam asked to be sent the AI infra article.",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "The sender is identified only as Sam in the email; there is not enough evidence here to link to an existing person entity with certainty."
+    },
+    "intent": "Extract durable, relevant follow-up facts from the email.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "sender",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said they joined Point72 last month."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "sender",
+            "type": "person"
+          }
+        ],
+        "kind": "request",
+        "relationships": [
+          {
+            "object": "AI infra article",
+            "predicate": "requested",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam asked to be sent the AI infra article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted one employment update and one request.",
+        "Preserved ambiguity around 'last month'."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"Extract durable, relevant follow-up facts from the email.\",\"decision\":\"Commit two memory cards: Sam says they joined Point72 last month, and Sam asked to be sent the AI infra article.\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam said they joined Point72 last month.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"sender\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]},{\"kind\":\"request\",\"statement\":\"Sam asked to be sent the AI infra article.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"sender\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"requested\",\"object\":\"AI infra article\"}]}],\"entity_resolution\":{\"action\":\"create_or_update\",\"entity_id\":null,\"reason\":\"The sender is identified only as Sam in the email; there is not enough evidence here to link to an existing person entity with certainty.\"},\"conflict_classification\":\"no_conflict\",\"answer\":\"Store the follow-up facts: Sam joined Point72 last month and wants the AI infra article sent.\",\"citations\":[\"From: sam@example.com\",\"Subject: Follow up. Great seeing you. Yes, I joined Point72 last month. Please send the AI infra article.\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Extracted one employment update and one request.\",\"Preserved ambiguity around 'last month'.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

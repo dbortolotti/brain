@@ -1,0 +1,60 @@
+{
+  "error": null,
+  "fixture_id": "router_remember_plain",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Stored memory: Sam from Goldman likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "store_memory",
+    "entity_resolution": {
+      "action": "store",
+      "entity_id": null,
+      "reason": "New association between Sam (from Goldman) and Bill Evans established."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created for statement: 'Sam from Goldman likes Bill Evans'.",
+        "Entities identified: Sam (person), Bill Evans (person), Goldman (organization).",
+        "Relationship recorded: Sam from Goldman likes Bill Evans."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"remember\",\n  \"decision\": \"store_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam from Goldman likes Bill Evans\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Sam\", \"type\": \"person\", \"role\": \"subject\"},\n        {\"name\": \"Bill Evans\", \"type\": \"person\", \"role\": \"object\"},\n        {\"name\": \"Goldman\", \"type\": \"organization\", \"role\": \"affiliation\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sam from Goldman\", \"predicate\": \"likes\", \"object\": \"Bill Evans\"}\n      ]\n    }\n    ],\n  \"entity_resolution\": {\n    \"action\": \"store\",\n    \"entity_id\": null,\n    \"reason\": \"New association between Sam (from Goldman) and Bill Evans established.\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"Stored memory: Sam from Goldman likes Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card created for statement: 'Sam from Goldman likes Bill Evans'.\",\n      \"Entities identified: Sam (person), Bill Evans (person), Goldman (organization).\",\n      \"Relationship recorded: Sam from Goldman likes Bill Evans.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

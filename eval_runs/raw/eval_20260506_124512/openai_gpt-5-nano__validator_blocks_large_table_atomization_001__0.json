@@ -1,0 +1,75 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_large_table_atomization_001",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "The proposal to create 500 memory cards is currently uncertain. Without access to the CSV file structure, row validity, and deduplication rules, the exact number of durable memory cards cannot be determined. Recommend outlining mapping rules, validating CSV integrity, and confirming whether cards should be immutable or versioned.",
+    "citations": [],
+    "conflict_classification": "ambiguity_due_to_downstream_mapping_uncertainty",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "assess_consistency",
+      "entity_id": null,
+      "reason": "Ambiguity about how many CSV rows exist and how memory cards map to them; potential redundancy if rows are filtered or invalid."
+    },
+    "intent": "evaluate_and_validate_memory_plan",
+    "memory_cards": [
+      {
+        "confidence": "0.60",
+        "entities": [
+          {
+            "name": "500",
+            "role": "quantity",
+            "type": "count"
+          },
+          {
+            "name": "memory cards",
+            "role": "product",
+            "type": "artifact"
+          },
+          {
+            "name": "CSV row",
+            "role": "input_source",
+            "type": "data_unit"
+          }
+        ],
+        "kind": "proposal",
+        "relationships": [
+          {
+            "object": "one per CSV row",
+            "predicate": "consists_of",
+            "subject": "500 memory cards"
+          },
+          {
+            "object": "CSV rows",
+            "predicate": "based_on",
+            "subject": "memory cards"
+          },
+          {
+            "object": "CSV file",
+            "predicate": "source",
+            "subject": "CSV rows"
+          }
+        ],
+        "statement": "500 memory cards, one per CSV row, proposed by LLM."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Validation initiated for large-scale memory card generation.",
+        "Ambiguity detected regarding final cardinality due to data quality and mapping rules."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Define deterministic mapping rules from CSV rows to memory cards (e.g., one card per non-empty row).",
+      "Pre-scan CSV to count valid rows and detect duplicates, missing fields, or malformed rows.",
+      "Introduce versioning or de-duplication strategy to handle updates to the CSV source.",
+      "Provide a sample schema for a memory card to ensure consistency (kind, statement, confidence, entities).",
+      "Limit initial batch to a small pilot (e.g., 10\u201320 cards) to validate process before scaling to 500."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"evaluate_and_validate_memory_plan\",\n  \"decision\": \"reject\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"proposal\",\n      \"statement\": \"500 memory cards, one per CSV row, proposed by LLM.\",\n      \"confidence\": \"0.60\",\n      \"entities\": [\n        {\"name\": \"500\", \"type\": \"count\", \"role\": \"quantity\"},\n        {\"name\": \"memory cards\", \"type\": \"artifact\", \"role\": \"product\"},\n        {\"name\": \"CSV row\", \"type\": \"data_unit\", \"role\": \"input_source\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"500 memory cards\", \"predicate\": \"consists_of\", \"object\": \"one per CSV row\"},\n        {\"subject\": \"memory cards\", \"predicate\": \"based_on\", \"object\": \"CSV rows\"},\n        {\"subject\": \"CSV rows\", \"predicate\": \"source\", \"object\": \"CSV file\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"assess_consistency\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguity about how many CSV rows exist and how memory cards map to them; potential redundancy if rows are filtered or invalid.\"\n  },\n  \"conflict_classification\": \"ambiguity_due_to_downstream_mapping_uncertainty\",\n  \"answer\": \"The proposal to create 500 memory cards is currently uncertain. Without access to the CSV file structure, row validity, and deduplication rules, the exact number of durable memory cards cannot be determined. Recommend outlining mapping rules, validating CSV integrity, and confirming whether cards should be immutable or versioned.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Define deterministic mapping rules from CSV rows to memory cards (e.g., one card per non-empty row).\",\n    \"Pre-scan CSV to count valid rows and detect duplicates, missing fields, or malformed rows.\",\n    \"Introduce versioning or de-duplication strategy to handle updates to the CSV source.\",\n    \"Provide a sample schema for a memory card to ensure consistency (kind, statement, confidence, entities).\",\n    \"Limit initial batch to a small pilot (e.g., 10\u201320 cards) to validate process before scaling to 500.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Validation initiated for large-scale memory card generation.\",\n      \"Ambiguity detected regarding final cardinality due to data quality and mapping rules.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

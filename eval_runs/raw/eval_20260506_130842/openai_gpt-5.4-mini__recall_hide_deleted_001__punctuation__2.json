@@ -1,0 +1,61 @@
+{
+  "error": null,
+  "fixture_id": "recall_hide_deleted_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Sam likes Bill Evans.",
+    "citations": [
+      "Current memory - Sam likes Bill Evans",
+      "Deleted memory - Sam likes Taylor Swift"
+    ],
+    "conflict_classification": "deleted_fact_superseded_by_current_fact",
+    "decision": "answer_with_current_memory_only",
+    "entity_resolution": {
+      "action": "resolve_to_known_entity",
+      "entity_id": null,
+      "reason": "'Sam' is the subject in the current memory, but there is not enough context to assign a stable entity ID."
+    },
+    "intent": "recall_synthesizer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Used current memory only.",
+        "Ignored deleted memory as superseded.",
+        "Returned a conservative answer without overgeneralizing Bill Evans into a specific genre."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If needed, store that Sam likes Bill Evans as the current preference.",
+      "Do not restore Taylor Swift as current; it is marked deleted."
+    ]
+  },
+  "raw_text": "{\"intent\":\"recall_synthesizer\",\"decision\":\"answer_with_current_memory_only\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam likes Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked artist\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"resolve_to_known_entity\",\"entity_id\":null,\"reason\":\"'Sam' is the subject in the current memory, but there is not enough context to assign a stable entity ID.\"},\"conflict_classification\":\"deleted_fact_superseded_by_current_fact\",\"answer\":\"Sam likes Bill Evans.\",\"citations\":[\"Current memory - Sam likes Bill Evans\",\"Deleted memory - Sam likes Taylor Swift\"],\"repair_options\":[\"If needed, store that Sam likes Bill Evans as the current preference.\",\"Do not restore Taylor Swift as current; it is marked deleted.\"],\"receipt\":{\"success\":true,\"details\":[\"Used current memory only.\",\"Ignored deleted memory as superseded.\",\"Returned a conservative answer without overgeneralizing Bill Evans into a specific genre.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "typos_shorthand_person_interaction_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Recorded a tentative note: Sam (from Goldman) apparently likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_tentative_preference",
+    "entity_resolution": {
+      "action": "no_confirmed_ids",
+      "entity_id": null,
+      "reason": "Names are not fully disambiguated (e.g., 'Goldmn' likely 'Goldman'; 'sam' is ambiguous). Kept as text with low confidence."
+    },
+    "intent": "capture_person_interest",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context_affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "person_preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "apparently likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (from Goldman) apparently likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed input despite typos/abbreviations and included 'apparently' as hedge (low confidence)."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm whether 'Goldmn' should be 'Goldman' (and which specific organization).",
+      "Confirm which 'Sam' and which 'Bill Evans' this refers to.",
+      "Confirm whether 'likes' is accurate or if it should be softened/qualified further."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"capture_person_interest\",\n  \"decision\": \"store_tentative_preference\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"person_preference\",\n      \"statement\": \"Sam (from Goldman) apparently likes Bill Evans.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"context_affiliation\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"apparently likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_confirmed_ids\",\n    \"entity_id\": null,\n    \"reason\": \"Names are not fully disambiguated (e.g., 'Goldmn' likely 'Goldman'; 'sam' is ambiguous). Kept as text with low confidence.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Recorded a tentative note: Sam (from Goldman) apparently likes Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Confirm whether 'Goldmn' should be 'Goldman' (and which specific organization).\",\n    \"Confirm which 'Sam' and which 'Bill Evans' this refers to.\",\n    \"Confirm whether 'likes' is accurate or if it should be softened/qualified further.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Parsed input despite typos/abbreviations and included 'apparently' as hedge (low confidence).\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

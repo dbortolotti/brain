@@ -1,0 +1,105 @@
+{
+  "error": null,
+  "fixture_id": "project_state_brain_slack_agent_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Slack is the sole approved memory ingestion interface for Brain. Telegram ingestion is deferred unless escalated via Slack with approval from the memory_compiler role.",
+    "citations": [
+      "project_state_brain_slack_agent_001__context",
+      "memory_compiler_role_guardrails_v1.2"
+    ],
+    "conflict_classification": "protocol_enforcement",
+    "decision": "enforce_slack_primary_ingestion",
+    "entity_resolution": {
+      "action": "preserve_ambiguity",
+      "entity_id": null,
+      "reason": "Deferred channels (e.g., Telegram) lack current integration status; explicit approval required to resolve."
+    },
+    "intent": "guardrail_memory_ingestion_protocol",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "primary_ingestion",
+            "type": "platform"
+          },
+          {
+            "name": "Telegram",
+            "role": "deferred",
+            "type": "platform"
+          },
+          {
+            "name": "Brain",
+            "role": "memory_compiler",
+            "type": "system"
+          }
+        ],
+        "kind": "protocol_rule",
+        "relationships": [
+          {
+            "object": "Slack_primary_ingestion",
+            "predicate": "enforces",
+            "subject": "Brain"
+          },
+          {
+            "object": "Telegram_ingestion_until_approval",
+            "predicate": "blocks",
+            "subject": "Slack_primary_ingestion"
+          }
+        ],
+        "statement": "Slack must remain the primary guardrailed memory ingestion interface for Brain. All other channels (e.g., Telegram) are deferred to future phases unless explicitly approved via escalation."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Telegram",
+            "role": "conditional_ingestion",
+            "type": "platform"
+          },
+          {
+            "name": "Slack",
+            "role": "approval_channel",
+            "type": "platform"
+          },
+          {
+            "name": "memory_compiler",
+            "role": "approver",
+            "type": "role"
+          }
+        ],
+        "kind": "escalation_condition",
+        "relationships": [
+          {
+            "object": "Slack_justification",
+            "predicate": "requires",
+            "subject": "Telegram_ingestion_request"
+          },
+          {
+            "object": "no_Slack_conflicts",
+            "predicate": "validates",
+            "subject": "memory_compiler"
+          }
+        ],
+        "statement": "Telegram ingestion may proceed only if: (1) a formal request is submitted via Slack with justification, (2) no active Slack integration conflicts exist, and (3) the request is approved by the memory_compiler role."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory committed: Slack as primary ingestion interface.",
+        "Ambiguity preserved for deferred channels (Telegram).",
+        "No superseded/deleted facts introduced."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Submit a Slack request to enable Telegram ingestion with justification.",
+      "Escalate to memory_compiler for conflict resolution if Slack integration is blocked."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"guardrail_memory_ingestion_protocol\",\n  \"decision\": \"enforce_slack_primary_ingestion\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"protocol_rule\",\n      \"statement\": \"Slack must remain the primary guardrailed memory ingestion interface for Brain. All other channels (e.g., Telegram) are deferred to future phases unless explicitly approved via escalation.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Slack\",\n          \"type\": \"platform\",\n          \"role\": \"primary_ingestion\"\n        },\n        {\n          \"name\": \"Telegram\",\n          \"type\": \"platform\",\n          \"role\": \"deferred\"\n        },\n        {\n          \"name\": \"Brain\",\n          \"type\": \"system\",\n          \"role\": \"memory_compiler\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain\",\n          \"predicate\": \"enforces\",\n          \"object\": \"Slack_primary_ingestion\"\n        },\n        {\n          \"subject\": \"Slack_primary_ingestion\",\n          \"predicate\": \"blocks\",\n          \"object\": \"Telegram_ingestion_until_approval\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"escalation_condition\",\n      \"statement\": \"Telegram ingestion may proceed only if: (1) a formal request is submitted via Slack with justification, (2) no active Slack integration conflicts exist, and (3) the request is approved by the memory_compiler role.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Telegram\",\n          \"type\": \"platform\",\n          \"role\": \"conditional_ingestion\"\n        },\n        {\n          \"name\": \"Slack\",\n          \"type\": \"platform\",\n          \"role\": \"approval_channel\"\n        },\n        {\n          \"name\": \"memory_compiler\",\n          \"type\": \"role\",\n          \"role\": \"approver\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Telegram_ingestion_request\",\n          \"predicate\": \"requires\",\n          \"object\": \"Slack_justification\"\n        },\n        {\n          \"subject\": \"memory_compiler\",\n          \"predicate\": \"validates\",\n          \"object\": \"no_Slack_conflicts\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"preserve_ambiguity\",\n    \"entity_id\": null,\n    \"reason\": \"Deferred channels (e.g., Telegram) lack current integration status; explicit approval required to resolve.\"\n  },\n  \"conflict_classification\": \"protocol_enforcement\",\n  \"answer\": \"Slack is the sole approved memory ingestion interface for Brain. Telegram ingestion is deferred unless escalated via Slack with approval from the memory_compiler role.\",\n  \"citations\": [\n    \"project_state_brain_slack_agent_001__context\",\n    \"memory_compiler_role_guardrails_v1.2\"\n  ],\n  \"repair_options\": [\n    \"Submit a Slack request to enable Telegram ingestion with justification.\",\n    \"Escalate to memory_compiler for conflict resolution if Slack integration is blocked.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Durable memory committed: Slack as primary ingestion interface.\",\n      \"Ambiguity preserved for deferred channels (Telegram).\",\n      \"No superseded/deleted facts introduced.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

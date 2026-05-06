@@ -1,0 +1,37 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_unresolved_pronoun_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The proposed memory card is invalid due to an ambiguous pronoun ('He'). No durable memory can be committed without resolving the referent.",
+    "citations": [
+      "Schema requirement: 'preserve ambiguity' implies unresolved references must be flagged, not stored.",
+      "Schema requirement: 'never present superseded/deleted facts as current'\u2014this would apply if the pronoun were later resolved, but the current state is invalid."
+    ],
+    "conflict_classification": "unresolved_reference",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "block",
+      "entity_id": null,
+      "reason": "Unresolved pronoun 'He' lacks referential clarity. The statement cannot be durably committed without explicit antecedent resolution (e.g., 'User prefers the other [option X]') or contextual grounding. Ambiguity violates the 'preserve ambiguity' constraint when durability is required."
+    },
+    "intent": "evaluate_memory_card",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Memory card rejected for unresolved pronoun ('He')",
+        "No durable memory committed",
+        "Repair options provided for resolution"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Replace 'He' with the explicit referent (e.g., 'User prefers the other [option X]')",
+      "Add a contextual note linking to prior statements (if applicable) to resolve the pronoun",
+      "Delete the card and request clarification from the user"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"evaluate_memory_card\",\n  \"decision\": \"reject\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"block\",\n    \"entity_id\": null,\n    \"reason\": \"Unresolved pronoun 'He' lacks referential clarity. The statement cannot be durably committed without explicit antecedent resolution (e.g., 'User prefers the other [option X]') or contextual grounding. Ambiguity violates the 'preserve ambiguity' constraint when durability is required.\"\n  },\n  \"conflict_classification\": \"unresolved_reference\",\n  \"answer\": \"The proposed memory card is invalid due to an ambiguous pronoun ('He'). No durable memory can be committed without resolving the referent.\",\n  \"citations\": [\n    \"Schema requirement: 'preserve ambiguity' implies unresolved references must be flagged, not stored.\",\n    \"Schema requirement: 'never present superseded/deleted facts as current'\u2014this would apply if the pronoun were later resolved, but the current state is invalid.\"\n  ],\n  \"repair_options\": [\n    \"Replace 'He' with the explicit referent (e.g., 'User prefers the other [option X]')\",\n    \"Add a contextual note linking to prior statements (if applicable) to resolve the pronoun\",\n    \"Delete the card and request clarification from the user\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Memory card rejected for unresolved pronoun ('He')\",\n      \"No durable memory committed\",\n      \"Repair options provided for resolution\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

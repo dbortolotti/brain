@@ -1,0 +1,70 @@
+{
+  "error": null,
+  "fixture_id": "duplicate_sam_bill_evans_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "No conflict: the new statement repeats the existing fact that Sam from Goldman likes Bill Evans.",
+    "citations": [
+      "Existing memory: Sam from Goldman mentioned that he likes Bill Evans.",
+      "New: Sam from Goldman said he likes Bill Evans."
+    ],
+    "conflict_classification": "duplicate_paraphrase",
+    "decision": "duplicate_no_update",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": null,
+      "reason": "The new input is a paraphrase of the existing memory with no substantive difference; treat as the same entity/context."
+    },
+    "intent": "conflict_classification",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker/subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "music preference",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected semantic equivalence.",
+        "No superseding or contradictory information present."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Keep the existing memory as-is.",
+      "Optionally normalize wording to a single canonical fact statement."
+    ]
+  },
+  "raw_text": "{\"intent\":\"conflict_classification\",\"decision\":\"duplicate_no_update\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam from Goldman likes Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"speaker/subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"music preference\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"merge\",\"entity_id\":null,\"reason\":\"The new input is a paraphrase of the existing memory with no substantive difference; treat as the same entity/context.\"},\"conflict_classification\":\"duplicate_paraphrase\",\"answer\":\"No conflict: the new statement repeats the existing fact that Sam from Goldman likes Bill Evans.\",\"citations\":[\"Existing memory: Sam from Goldman mentioned that he likes Bill Evans.\",\"New: Sam from Goldman said he likes Bill Evans.\"],\"repair_options\":[\"Keep the existing memory as-is.\",\"Optionally normalize wording to a single canonical fact statement.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected semantic equivalence.\",\"No superseding or contradictory information present.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

@@ -1,0 +1,113 @@
+{
+  "error": null,
+  "fixture_id": "pdf_ocr_noisy_source_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The input cannot be committed to durable memory as a factual statement due to OCR-induced ambiguity. The raw fragment is preserved for review, but no derived knowledge is stored.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "ambiguous_preservation",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "OCR noise prevents reliable disambiguation of terms ('trvth', 'Cognee', 'rebuildable projection'). Human-in-the-loop required."
+    },
+    "intent": "memory_compilation",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "pdf_ocr_noisy_source_001__punctuation",
+            "role": "input_source",
+            "type": "fixture_id"
+          },
+          {
+            "name": "Brain DB",
+            "role": "potential_memory_system",
+            "type": "system"
+          },
+          {
+            "name": "trvth",
+            "role": "possible_interpretation",
+            "type": "ambiguous_term"
+          },
+          {
+            "name": "Cognee",
+            "role": "possible_interpretation",
+            "type": "ambiguous_term"
+          },
+          {
+            "name": "rebuildable projection",
+            "role": "uncertain_goal",
+            "type": "conceptual_fragment"
+          }
+        ],
+        "kind": "source_metadata",
+        "relationships": [
+          {
+            "object": "noisy_text_fragment",
+            "predicate": "contains",
+            "subject": "pdf_ocr_noisy_source_001__punctuation"
+          },
+          {
+            "object": "potential_memory_system_reference",
+            "predicate": "implies",
+            "subject": "noisy_text_fragment"
+          },
+          {
+            "object": "uncertain_terminology",
+            "predicate": "has",
+            "subject": "potential_memory_system_reference"
+          }
+        ],
+        "statement": "The input text is an OCR-extracted fragment with high noise (punctuation/character errors) from a document labeled as a 'Brain DB' or cognitive system source."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "raw_fragment",
+            "role": "durable_placeholder",
+            "type": "memory_artifact"
+          },
+          {
+            "name": "manual_review",
+            "role": "required_action",
+            "type": "process"
+          }
+        ],
+        "kind": "compilation_rule",
+        "relationships": [
+          {
+            "object": "source_metadata",
+            "predicate": "must_link_to",
+            "subject": "raw_fragment"
+          },
+          {
+            "object": "ambiguity_in_terminology",
+            "predicate": "resolves",
+            "subject": "manual_review"
+          }
+        ],
+        "statement": "Preserve the raw fragment as-is in memory due to OCR noise, but flag for manual review. Do not infer or commit any derived facts (e.g., 'trvth' as 'truth', 'Cognee' as 'cognition') without human validation."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Raw fragment stored in memory as 'unresolved_ocr_fragment_<timestamp>'.",
+        "No new facts committed to durable memory.",
+        "Review queue updated with priority 'high' for this entry."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Flag for human review to resolve terminology ambiguities.",
+      "Link the raw fragment to the source metadata without interpretation.",
+      "Discard if no further context is provided (default: preserve for 72 hours)."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_compilation\",\n  \"decision\": \"ambiguous_preservation\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"source_metadata\",\n      \"statement\": \"The input text is an OCR-extracted fragment with high noise (punctuation/character errors) from a document labeled as a 'Brain DB' or cognitive system source.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"pdf_ocr_noisy_source_001__punctuation\",\n          \"type\": \"fixture_id\",\n          \"role\": \"input_source\"\n        },\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"system\",\n          \"role\": \"potential_memory_system\"\n        },\n        {\n          \"name\": \"trvth\",\n          \"type\": \"ambiguous_term\",\n          \"role\": \"possible_interpretation\"\n        },\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"ambiguous_term\",\n          \"role\": \"possible_interpretation\"\n        },\n        {\n          \"name\": \"rebuildable projection\",\n          \"type\": \"conceptual_fragment\",\n          \"role\": \"uncertain_goal\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"pdf_ocr_noisy_source_001__punctuation\",\n          \"predicate\": \"contains\",\n          \"object\": \"noisy_text_fragment\"\n        },\n        {\n          \"subject\": \"noisy_text_fragment\",\n          \"predicate\": \"implies\",\n          \"object\": \"potential_memory_system_reference\"\n        },\n        {\n          \"subject\": \"potential_memory_system_reference\",\n          \"predicate\": \"has\",\n          \"object\": \"uncertain_terminology\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"compilation_rule\",\n      \"statement\": \"Preserve the raw fragment as-is in memory due to OCR noise, but flag for manual review. Do not infer or commit any derived facts (e.g., 'trvth' as 'truth', 'Cognee' as 'cognition') without human validation.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"raw_fragment\",\n          \"type\": \"memory_artifact\",\n          \"role\": \"durable_placeholder\"\n        },\n        {\n          \"name\": \"manual_review\",\n          \"type\": \"process\",\n          \"role\": \"required_action\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"raw_fragment\",\n          \"predicate\": \"must_link_to\",\n          \"object\": \"source_metadata\"\n        },\n        {\n          \"subject\": \"manual_review\",\n          \"predicate\": \"resolves\",\n          \"object\": \"ambiguity_in_terminology\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"OCR noise prevents reliable disambiguation of terms ('trvth', 'Cognee', 'rebuildable projection'). Human-in-the-loop required.\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"The input cannot be committed to durable memory as a factual statement due to OCR-induced ambiguity. The raw fragment is preserved for review, but no derived knowledge is stored.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Flag for human review to resolve terminology ambiguities.\",\n    \"Link the raw fragment to the source metadata without interpretation.\",\n    \"Discard if no further context is provided (default: preserve for 72 hours).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Raw fragment stored in memory as 'unresolved_ocr_fragment_<timestamp>'.\",\n      \"No new facts committed to durable memory.\",\n      \"Review queue updated with priority 'high' for this entry.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

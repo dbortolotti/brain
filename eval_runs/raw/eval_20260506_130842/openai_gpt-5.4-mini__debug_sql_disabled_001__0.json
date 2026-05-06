@@ -1,0 +1,35 @@
+{
+  "error": null,
+  "fixture_id": "debug_sql_disabled_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "SQL admin access is disabled in this environment, so the query was not executed.",
+    "citations": [
+      "/brain admin sql SELECT * FROM memory_cards with BRAIN_DEBUG_SQL_ENABLED=false"
+    ],
+    "conflict_classification": "policy_denied",
+    "decision": "Denied because BRAIN_DEBUG_SQL_ENABLED=false; no database access or memory mutation performed.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No durable entity resolution is needed because the request was rejected before any lookup or write operation."
+    },
+    "intent": "Attempted admin SQL query to inspect memory cards while debug SQL is disabled.",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Blocked admin SQL execution due to debug flag being disabled.",
+        "No memory cards were read or modified."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Enable BRAIN_DEBUG_SQL_ENABLED=true in a trusted debug environment before retrying.",
+      "Use a non-admin, read-safe memory inspection path if available.",
+      "Provide a narrower question that can be answered without direct SQL access."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Attempted admin SQL query to inspect memory cards while debug SQL is disabled.\",\"decision\":\"Denied because BRAIN_DEBUG_SQL_ENABLED=false; no database access or memory mutation performed.\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No durable entity resolution is needed because the request was rejected before any lookup or write operation.\"},\"conflict_classification\":\"policy_denied\",\"answer\":\"SQL admin access is disabled in this environment, so the query was not executed.\",\"citations\":[\"/brain admin sql SELECT * FROM memory_cards with BRAIN_DEBUG_SQL_ENABLED=false\"],\"repair_options\":[\"Enable BRAIN_DEBUG_SQL_ENABLED=true in a trusted debug environment before retrying.\",\"Use a non-admin, read-safe memory inspection path if available.\",\"Provide a narrower question that can be answered without direct SQL access.\"],\"receipt\":{\"success\":false,\"details\":[\"Blocked admin SQL execution due to debug flag being disabled.\",\"No memory cards were read or modified.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

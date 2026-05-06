@@ -1,0 +1,36 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_large_table_atomization_001",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "The proposal to generate 500 memory cards (one per CSV row) is not accepted in its current form. Core ambiguities to resolve before proceeding: (1) what constitutes a 'memory card' in this system (content, structure, and metadata); (2) handling of potentially large/unknown CSV schemas (columns, data types, sensitive data); (3) deduplication strategy and storage constraints; (4) lifecycle: update, delete, and aging of cards; (5) performance implications and batching strategy; (6) definitions of 'statement' validity and confidence thresholds. Recommend defining a formal card template, a schema for entities/relationships, and a pagination/batching plan with limits (e.g., per-card size, total storage). Once clarified, we can generate a concrete set of cards or provide a generation plan.",
+    "citations": [],
+    "conflict_classification": "ambiguous_scope",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No memory cards created yet; need clarification on scope and feasibility of 500 cards from CSV rows."
+    },
+    "intent": "evaluate_memory_plan",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Proposal received: 500 cards requested.",
+        "Initial evaluation indicates need for scope clarification before creation."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Define a formal memory_card_template including fields: kind, statement, confidence, entities, relationships, and optional metadata.",
+      "Specify CSV parsing rules: header presence, data type inference, handling of missing values, and row filtering.",
+      "Establish deduplication and versioning policy for memory cards.",
+      "Set cardinality and batching constraints (e.g., max 100 cards per batch, total limit).",
+      "Create a validation checklist to ensure each card has at least one entity or relationship and a non-null statement.",
+      "Provide risk and privacy considerations for storing CSV-derived content."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"evaluate_memory_plan\",\n  \"decision\": \"reject\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No memory cards created yet; need clarification on scope and feasibility of 500 cards from CSV rows.\"\n  },\n  \"conflict_classification\": \"ambiguous_scope\",\n  \"answer\": \"The proposal to generate 500 memory cards (one per CSV row) is not accepted in its current form. Core ambiguities to resolve before proceeding: (1) what constitutes a 'memory card' in this system (content, structure, and metadata); (2) handling of potentially large/unknown CSV schemas (columns, data types, sensitive data); (3) deduplication strategy and storage constraints; (4) lifecycle: update, delete, and aging of cards; (5) performance implications and batching strategy; (6) definitions of 'statement' validity and confidence thresholds. Recommend defining a formal card template, a schema for entities/relationships, and a pagination/batching plan with limits (e.g., per-card size, total storage). Once clarified, we can generate a concrete set of cards or provide a generation plan.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Define a formal memory_card_template including fields: kind, statement, confidence, entities, relationships, and optional metadata.\",\n    \"Specify CSV parsing rules: header presence, data type inference, handling of missing values, and row filtering.\",\n    \"Establish deduplication and versioning policy for memory cards.\",\n    \"Set cardinality and batching constraints (e.g., max 100 cards per batch, total limit).\",\n    \"Create a validation checklist to ensure each card has at least one entity or relationship and a non-null statement.\",\n    \"Provide risk and privacy considerations for storing CSV-derived content.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Proposal received: 500 cards requested.\",\n      \"Initial evaluation indicates need for scope clarification before creation.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

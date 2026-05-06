@@ -1,0 +1,65 @@
+{
+  "error": null,
+  "fixture_id": "article_url_fetch_failure_001",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "The article at https://example.com/missing could not be retrieved due to a 404 network error. This failure is stored as a knowledge gap for future reference.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_failed_fetch_as_knowledge_gap",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": "url_https_example_com_missing",
+      "reason": "No prior entity exists for this URL; creating new entity to record fetch failure."
+    },
+    "intent": "store_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "target_resource",
+            "type": "url"
+          },
+          {
+            "name": "404",
+            "role": "error_indicator",
+            "type": "http_status_code"
+          },
+          {
+            "name": "network error",
+            "role": "failure_type",
+            "type": "error_category"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "404 network error",
+            "predicate": "fetch_result",
+            "subject": "https://example.com/missing"
+          }
+        ],
+        "statement": "Attempt to fetch article at https://example.com/missing resulted in a 404 network error."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "HTTP 404 received",
+        "Network timeout after 5s",
+        "No redirect or fallback content available"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Verify URL correctness",
+      "Check network connectivity",
+      "Attempt fetch again later",
+      "Consult alternative sources for similar content"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"store_memory\",\n  \"decision\": \"store_failed_fetch_as_knowledge_gap\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Attempt to fetch article at https://example.com/missing resulted in a 404 network error.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"https://example.com/missing\",\n          \"type\": \"url\",\n          \"role\": \"target_resource\"\n        },\n        {\n          \"name\": \"404\",\n          \"type\": \"http_status_code\",\n          \"role\": \"error_indicator\"\n        },\n        {\n          \"name\": \"network error\",\n          \"type\": \"error_category\",\n          \"role\": \"failure_type\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"https://example.com/missing\",\n          \"predicate\": \"fetch_result\",\n          \"object\": \"404 network error\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_new\",\n    \"entity_id\": \"url_https_example_com_missing\",\n    \"reason\": \"No prior entity exists for this URL; creating new entity to record fetch failure.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"The article at https://example.com/missing could not be retrieved due to a 404 network error. This failure is stored as a knowledge gap for future reference.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Verify URL correctness\",\n    \"Check network connectivity\",\n    \"Attempt fetch again later\",\n    \"Consult alternative sources for similar content\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"HTTP 404 received\",\n      \"Network timeout after 5s\",\n      \"No redirect or fallback content available\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

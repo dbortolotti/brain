@@ -1,0 +1,50 @@
+{
+  "error": null,
+  "fixture_id": "debug_inspect_memory_001__context",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Inspecting memory card mem_123 as requested. No additional context or content from mem_123 is available in the current fixture scope.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "inspect_memory",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": "mem_123",
+      "reason": "Explicitly referenced in user input for inspection"
+    },
+    "intent": "debug_explainer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "mem_123",
+            "role": "target",
+            "type": "memory_card"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "debug_explainer",
+            "predicate": "is_being_inspected",
+            "subject": "mem_123"
+          }
+        ],
+        "statement": "The system is currently inspecting memory card mem_123 as requested."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory inspection initiated for mem_123",
+        "No conflicting or superseded facts detected",
+        "Entity mem_123 resolved successfully"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"debug_explainer\",\n  \"decision\": \"inspect_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"The system is currently inspecting memory card mem_123 as requested.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"mem_123\",\n          \"type\": \"memory_card\",\n          \"role\": \"target\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"mem_123\",\n          \"predicate\": \"is_being_inspected\",\n          \"object\": \"debug_explainer\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolve\",\n    \"entity_id\": \"mem_123\",\n    \"reason\": \"Explicitly referenced in user input for inspection\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Inspecting memory card mem_123 as requested. No additional context or content from mem_123 is available in the current fixture scope.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory inspection initiated for mem_123\",\n      \"No conflicting or superseded facts detected\",\n      \"Entity mem_123 resolved successfully\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

@@ -1,0 +1,68 @@
+{
+  "error": null,
+  "fixture_id": "typos_shorthand_person_interaction_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Captured a tentative relationship: Sam (from Goldman) apparently likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_tentative",
+    "entity_resolution": {
+      "action": "no_link_or_single_guess",
+      "entity_id": null,
+      "reason": "Input provides names only in shorthand; no unique IDs or disambiguating details are available."
+    },
+    "intent": "extract_person_interaction",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes (apparently)",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "is from",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (from Goldman) apparently likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed shorthand: 'sam frm goldmn' and 'bill evns'.",
+        "Treated 'apparently' as low-confidence / tentative."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm Sam\u2019s full name (and which Goldman entity).",
+      "Confirm which Bill Evans (e.g., context like company/team).",
+      "Clarify whether 'likes' means professional admiration, personal liking, or a preference."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"extract_person_interaction\",\n  \"decision\": \"store_tentative\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"relationship\",\n      \"statement\": \"Sam (from Goldman) apparently likes Bill Evans.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"context\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes (apparently)\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"is from\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_link_or_single_guess\",\n    \"entity_id\": null,\n    \"reason\": \"Input provides names only in shorthand; no unique IDs or disambiguating details are available.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Captured a tentative relationship: Sam (from Goldman) apparently likes Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Confirm Sam\u2019s full name (and which Goldman entity).\",\n    \"Confirm which Bill Evans (e.g., context like company/team).\",\n    \"Clarify whether 'likes' means professional admiration, personal liking, or a preference.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Parsed shorthand: 'sam frm goldmn' and 'bill evns'.\",\n      \"Treated 'apparently' as low-confidence / tentative.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

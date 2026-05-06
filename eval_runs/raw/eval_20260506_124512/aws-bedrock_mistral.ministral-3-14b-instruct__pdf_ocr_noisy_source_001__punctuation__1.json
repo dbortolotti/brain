@@ -1,0 +1,129 @@
+{
+  "error": null,
+  "fixture_id": "pdf_ocr_noisy_source_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The input contains a corrupted OCR snippet with ambiguous references to a 'Brain DB' and a 'truth'-related concept ('trvth'). No durable memory is committed due to noise and ambiguity. The system should prioritize rebuildable projections for cognitive architectures handling noisy data.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "retain_with_ambiguity",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Ambiguity in 'trvth' and 'Brain DB' cannot be resolved without additional context or repair. Preserving raw ambiguity to avoid introducing false precision."
+    },
+    "intent": "memory_compilation",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "OCR_noisy_source_001__punctuation",
+            "role": "input_fixture",
+            "type": "source"
+          }
+        ],
+        "kind": "source_metadata",
+        "relationships": [
+          {
+            "object": "unreliable_textual_content",
+            "predicate": "has",
+            "subject": "OCR_noisy_source_001__punctuation"
+          },
+          {
+            "object": "manual_validation_or_repair",
+            "predicate": "requires",
+            "subject": "unreliable_textual_content"
+          }
+        ],
+        "statement": "OCR output contains high noise and punctuation errors, rendering raw text unreliable for direct use as a durable memory source."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain_DB",
+            "role": "potential_memory_system",
+            "type": "concept"
+          },
+          {
+            "name": "trvth",
+            "role": "corrupted_term",
+            "type": "lexical_artifact"
+          },
+          {
+            "name": "cognitive_projection",
+            "role": "interpretive_hypothesis",
+            "type": "theory"
+          }
+        ],
+        "kind": "conceptual_ambiguity",
+        "relationships": [
+          {
+            "object": "personal_memory_system",
+            "predicate": "may_refer_to",
+            "subject": "Brain_DB"
+          },
+          {
+            "object": "truth|truth-projection|corruption",
+            "predicate": "ambiguous_as",
+            "subject": "trvth"
+          },
+          {
+            "object": "rebuildable_framework",
+            "predicate": "requires",
+            "subject": "cognitive_projection"
+          }
+        ],
+        "statement": "Phrase 'Brain DB remalns source of trvth' may imply: (1) a foundational memory system ('Brain DB' as a database), (2) a cognitive architecture ('trvth' as 'truth' or 'truth-projection'), or (3) a corrupted reference to 'truth' as a rebuildable projection. Ambiguity preserved to avoid premature resolution."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "cognitive_architecture",
+            "type": "system"
+          },
+          {
+            "name": "rebuildable_projection",
+            "role": "preferred_approach",
+            "type": "design_principle"
+          }
+        ],
+        "kind": "actionable_insight",
+        "relationships": [
+          {
+            "object": "dynamic_memory_models",
+            "predicate": "should_adopt",
+            "subject": "Cognee"
+          },
+          {
+            "object": "projection-based_reconstruction",
+            "predicate": "require",
+            "subject": "noisy_inputs"
+          }
+        ],
+        "statement": "Cognitive system ('Cognee') should prioritize rebuildable projections over static memory storage to accommodate noisy or evolving inputs."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguity preserved for 'trvth' and 'Brain DB'",
+        "No durable memory committed",
+        "Actionable insights generated for cognitive system design",
+        "Repair options provided for downstream processing"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Manual OCR correction for 'trvth' \u2192 ['truth', 'truth-projection', 'truth-source']",
+      "Contextual disambiguation: Query user/system for 'Brain DB' definition",
+      "Apply projection-based memory repair: Reconstruct plausible statements from noisy input",
+      "Flag as 'unreliable' and exclude from durable storage"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_compilation\",\n  \"decision\": \"retain_with_ambiguity\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"source_metadata\",\n      \"statement\": \"OCR output contains high noise and punctuation errors, rendering raw text unreliable for direct use as a durable memory source.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"OCR_noisy_source_001__punctuation\",\n          \"type\": \"source\",\n          \"role\": \"input_fixture\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"OCR_noisy_source_001__punctuation\",\n          \"predicate\": \"has\",\n          \"object\": \"unreliable_textual_content\"\n        },\n        {\n          \"subject\": \"unreliable_textual_content\",\n          \"predicate\": \"requires\",\n          \"object\": \"manual_validation_or_repair\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"conceptual_ambiguity\",\n      \"statement\": \"Phrase 'Brain DB remalns source of trvth' may imply: (1) a foundational memory system ('Brain DB' as a database), (2) a cognitive architecture ('trvth' as 'truth' or 'truth-projection'), or (3) a corrupted reference to 'truth' as a rebuildable projection. Ambiguity preserved to avoid premature resolution.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Brain_DB\",\n          \"type\": \"concept\",\n          \"role\": \"potential_memory_system\"\n        },\n        {\n          \"name\": \"trvth\",\n          \"type\": \"lexical_artifact\",\n          \"role\": \"corrupted_term\"\n        },\n        {\n          \"name\": \"cognitive_projection\",\n          \"type\": \"theory\",\n          \"role\": \"interpretive_hypothesis\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain_DB\",\n          \"predicate\": \"may_refer_to\",\n          \"object\": \"personal_memory_system\"\n        },\n        {\n          \"subject\": \"trvth\",\n          \"predicate\": \"ambiguous_as\",\n          \"object\": \"truth|truth-projection|corruption\"\n        },\n        {\n          \"subject\": \"cognitive_projection\",\n          \"predicate\": \"requires\",\n          \"object\": \"rebuildable_framework\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"actionable_insight\",\n      \"statement\": \"Cognitive system ('Cognee') should prioritize rebuildable projections over static memory storage to accommodate noisy or evolving inputs.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"system\",\n          \"role\": \"cognitive_architecture\"\n        },\n        {\n          \"name\": \"rebuildable_projection\",\n          \"type\": \"design_principle\",\n          \"role\": \"preferred_approach\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"should_adopt\",\n          \"object\": \"dynamic_memory_models\"\n        },\n        {\n          \"subject\": \"noisy_inputs\",\n          \"predicate\": \"require\",\n          \"object\": \"projection-based_reconstruction\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguity in 'trvth' and 'Brain DB' cannot be resolved without additional context or repair. Preserving raw ambiguity to avoid introducing false precision.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"The input contains a corrupted OCR snippet with ambiguous references to a 'Brain DB' and a 'truth'-related concept ('trvth'). No durable memory is committed due to noise and ambiguity. The system should prioritize rebuildable projections for cognitive architectures handling noisy data.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Manual OCR correction for 'trvth' \u2192 ['truth', 'truth-projection', 'truth-source']\",\n    \"Contextual disambiguation: Query user/system for 'Brain DB' definition\",\n    \"Apply projection-based memory repair: Reconstruct plausible statements from noisy input\",\n    \"Flag as 'unreliable' and exclude from durable storage\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Ambiguity preserved for 'trvth' and 'Brain DB'\",\n      \"No durable memory committed\",\n      \"Actionable insights generated for cognitive system design\",\n      \"Repair options provided for downstream processing\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

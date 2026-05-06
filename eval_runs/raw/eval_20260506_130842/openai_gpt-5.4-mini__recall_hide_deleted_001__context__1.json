@@ -1,0 +1,60 @@
+{
+  "error": null,
+  "fixture_id": "recall_hide_deleted_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Sam likes Bill Evans. If you mean the music style associated with Bill Evans, that suggests jazz, but the current memory only states that Sam likes Bill Evans.",
+    "citations": [
+      "Current memory: Sam likes Bill Evans."
+    ],
+    "conflict_classification": "deleted_vs_current_prefer_current",
+    "decision": "answer_with_current_memory_only",
+    "entity_resolution": {
+      "action": "resolved_with_context",
+      "entity_id": null,
+      "reason": "Sam is the subject in the current memory; Bill Evans is the currently retained liked entity. The deleted Taylor Swift memory is not used."
+    },
+    "intent": "recall_synthesis",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked entity",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Used current memory only.",
+        "Ignored deleted memory.",
+        "Preserved ambiguity about inferred music genre."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If needed, add a separate memory clarifying that Sam likes jazz.",
+      "Do not restore the deleted Taylor Swift preference unless explicitly reintroduced."
+    ]
+  },
+  "raw_text": "{\"intent\":\"recall_synthesis\",\"decision\":\"answer_with_current_memory_only\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam likes Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked entity\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"resolved_with_context\",\"entity_id\":null,\"reason\":\"Sam is the subject in the current memory; Bill Evans is the currently retained liked entity. The deleted Taylor Swift memory is not used.\"},\"conflict_classification\":\"deleted_vs_current_prefer_current\",\"answer\":\"Sam likes Bill Evans. If you mean the music style associated with Bill Evans, that suggests jazz, but the current memory only states that Sam likes Bill Evans.\",\"citations\":[\"Current memory: Sam likes Bill Evans.\"],\"repair_options\":[\"If needed, add a separate memory clarifying that Sam likes jazz.\",\"Do not restore the deleted Taylor Swift preference unless explicitly reintroduced.\"],\"receipt\":{\"success\":true,\"details\":[\"Used current memory only.\",\"Ignored deleted memory.\",\"Preserved ambiguity about inferred music genre.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

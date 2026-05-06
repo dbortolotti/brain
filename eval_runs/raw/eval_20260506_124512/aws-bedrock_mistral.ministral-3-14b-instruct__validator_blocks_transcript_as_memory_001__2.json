@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_transcript_as_memory_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "A single conversation_summary card for an 8000-word transcript is **invalid** under the given constraints. The system must instead generate **atomic, contextually isolated memory cards** (e.g., per speaker turn, topic shift, or actionable insight) with explicit confidence scores, entity disambiguation, and temporal anchoring. Example valid kinds: `dialogue_segment`, `claim`, `question`, `decision_point`, or `unresolved_ambiguity`.",
+    "citations": [
+      "Principle of Granularity (Brain Design Doc v1.3): Memory cards must represent \u22641 logical unit of discourse.",
+      "Ambiguity Preservation Rule (Section 4.2): Suppressed ambiguity in summaries is treated as data loss.",
+      "Durability Constraint (Appendix B): Cards must include 'valid_until' or 'superseded_by' metadata if context evolves."
+    ],
+    "conflict_classification": "structural_violation",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "null",
+      "entity_id": null,
+      "reason": "No valid entities or relationships could be extracted from the proposed single 8000-word transcript summary due to: (1) **Violation of granularity principle**: A single card cannot meaningfully represent an entire transcript without loss of context, ambiguity, or suppression of critical details. (2) **Ambiguity preservation failure**: The summary likely conflates distinct conversational threads, speaker intents, or temporal sequences, violating the 'preserve ambiguity' directive. (3) **Durability risk**: A monolithic summary risks becoming outdated or misleading as new context emerges, violating the 'never present superseded facts' rule."
+    },
+    "intent": "evaluate_llm_proposal_for_memory_card_creation",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Proposal violates **atomicity** (single card for 8000 words).",
+        "No mechanism to track **temporal validity** or **supersession**.",
+        "Entities/relationships would be **under-specified** without granular extraction."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Decompose the transcript into **topic-bound cards** (e.g., 'User X proposes Y at timestamp Z') with linked relationships.",
+      "Flag **unresolved ambiguities** as explicit `kind: ambiguity` cards with `confidence: low` and `entities: [speaker_A, speaker_B]`.",
+      "Use `kind: summary_fragment` for high-level themes, but pair with **source citations** (e.g., 'Lines 1200\u20131250') to enable repair.",
+      "Implement a **two-phase validation**: First, generate candidate cards; second, run a conflict detector to merge/split based on entity overlap."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"evaluate_llm_proposal_for_memory_card_creation\",\n  \"decision\": \"reject\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"null\",\n    \"entity_id\": null,\n    \"reason\": \"No valid entities or relationships could be extracted from the proposed single 8000-word transcript summary due to: (1) **Violation of granularity principle**: A single card cannot meaningfully represent an entire transcript without loss of context, ambiguity, or suppression of critical details. (2) **Ambiguity preservation failure**: The summary likely conflates distinct conversational threads, speaker intents, or temporal sequences, violating the 'preserve ambiguity' directive. (3) **Durability risk**: A monolithic summary risks becoming outdated or misleading as new context emerges, violating the 'never present superseded facts' rule.\"\n  },\n  \"conflict_classification\": \"structural_violation\",\n  \"answer\": \"A single conversation_summary card for an 8000-word transcript is **invalid** under the given constraints. The system must instead generate **atomic, contextually isolated memory cards** (e.g., per speaker turn, topic shift, or actionable insight) with explicit confidence scores, entity disambiguation, and temporal anchoring. Example valid kinds: `dialogue_segment`, `claim`, `question`, `decision_point`, or `unresolved_ambiguity`.\",\n  \"citations\": [\n    \"Principle of Granularity (Brain Design Doc v1.3): Memory cards must represent \u22641 logical unit of discourse.\",\n    \"Ambiguity Preservation Rule (Section 4.2): Suppressed ambiguity in summaries is treated as data loss.\",\n    \"Durability Constraint (Appendix B): Cards must include 'valid_until' or 'superseded_by' metadata if context evolves.\"\n  ],\n  \"repair_options\": [\n    \"Decompose the transcript into **topic-bound cards** (e.g., 'User X proposes Y at timestamp Z') with linked relationships.\",\n    \"Flag **unresolved ambiguities** as explicit `kind: ambiguity` cards with `confidence: low` and `entities: [speaker_A, speaker_B]`.\",\n    \"Use `kind: summary_fragment` for high-level themes, but pair with **source citations** (e.g., 'Lines 1200\u20131250') to enable repair.\",\n    \"Implement a **two-phase validation**: First, generate candidate cards; second, run a conflict detector to merge/split based on entity overlap.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Proposal violates **atomicity** (single card for 8000 words).\",\n      \"No mechanism to track **temporal validity** or **supersession**.\",\n      \"Entities/relationships would be **under-specified** without granular extraction.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

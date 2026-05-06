@@ -1,0 +1,95 @@
+{
+  "error": null,
+  "fixture_id": "conflict_employment_transition",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Replace the old current-employment fact with the new current employer, and retain the transition event if supported.",
+    "citations": [
+      "Existing current fact: Sam works at Goldman.",
+      "New fact: Sam left Goldman and joined Point72."
+    ],
+    "conflict_classification": "employment_transition",
+    "decision": "replace",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": null,
+      "reason": "The new fact refers to the same person, Sam, and describes an employment transition that updates the current employer from Goldman to Point72."
+    },
+    "intent": "conflict_classifier",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam currently works at Point72."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "person",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "new employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "event",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected a direct conflict in current employer.",
+        "New fact supersedes the previous current-employment fact.",
+        "Preserved the transition event without retaining Goldman as current employer."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Update current employer to Point72.",
+      "Optionally store a transition event: left Goldman, joined Point72."
+    ]
+  },
+  "raw_text": "{\"intent\":\"conflict_classifier\",\"decision\":\"replace\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam currently works at Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"employee\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Point72\"}]},{\"kind\":\"event\",\"statement\":\"Sam left Goldman and joined Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"person\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"new employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"left\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"merge\",\"entity_id\":null,\"reason\":\"The new fact refers to the same person, Sam, and describes an employment transition that updates the current employer from Goldman to Point72.\"},\"conflict_classification\":\"employment_transition\",\"answer\":\"Replace the old current-employment fact with the new current employer, and retain the transition event if supported.\",\"citations\":[\"Existing current fact: Sam works at Goldman.\",\"New fact: Sam left Goldman and joined Point72.\"],\"repair_options\":[\"Update current employer to Point72.\",\"Optionally store a transition event: left Goldman, joined Point72.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected a direct conflict in current employer.\",\"New fact supersedes the previous current-employment fact.\",\"Preserved the transition event without retaining Goldman as current employer.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

@@ -1,0 +1,70 @@
+{
+  "error": null,
+  "fixture_id": "typos_shorthand_person_interaction_001__context",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Stored observation: Sam from Goldman likes Bill Evans apparently (low confidence due to typos in input)",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_as_ambiguous_social_observation",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": null,
+      "reason": "Input contains typos ('frm' for 'from', 'goldmn' for 'Goldman', 'evns' for 'Evans'); resolved via contextual inference but retained low confidence due to ambiguity and lack of disambiguating context"
+    },
+    "intent": "parse_typoed_input",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object_of_affection",
+            "type": "person"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "works_at_or_associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans apparently"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Input parsed despite typos",
+        "Ambiguity preserved in confidence and reasoning",
+        "No superseded or deleted facts presented as current",
+        "Memory card stored with low confidence and repair options flagged"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Verify spelling of 'Sam', 'Goldman', and 'Bill Evans' via external directory or prior context",
+      "Ask for clarification: 'Did you mean Sam from Goldman Sachs likes Bill Evans the jazz pianist?'",
+      "Check if 'Bill Evans' refers to the musician or another individual (e.g., namesake in finance)"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"parse_typoed_input\",\n  \"decision\": \"store_as_ambiguous_social_observation\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"observation\",\n      \"statement\": \"Sam from Goldman likes Bill Evans apparently\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"object_of_affection\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at_or_associated_with\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_new\",\n    \"entity_id\": null,\n    \"reason\": \"Input contains typos ('frm' for 'from', 'goldmn' for 'Goldman', 'evns' for 'Evans'); resolved via contextual inference but retained low confidence due to ambiguity and lack of disambiguating context\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Stored observation: Sam from Goldman likes Bill Evans apparently (low confidence due to typos in input)\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Verify spelling of 'Sam', 'Goldman', and 'Bill Evans' via external directory or prior context\",\n    \"Ask for clarification: 'Did you mean Sam from Goldman Sachs likes Bill Evans the jazz pianist?'\",\n    \"Check if 'Bill Evans' refers to the musician or another individual (e.g., namesake in finance)\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Input parsed despite typos\",\n      \"Ambiguity preserved in confidence and reasoning\",\n      \"No superseded or deleted facts presented as current\",\n      \"Memory card stored with low confidence and repair options flagged\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

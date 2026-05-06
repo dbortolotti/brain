@@ -1,0 +1,85 @@
+{
+  "error": null,
+  "fixture_id": "debug_sql_select_only_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "SELECT is allowed; DELETE is denied in admin SQL select-only mode.",
+    "citations": [
+      "Fixture ID: debug_sql_select_only_001",
+      "Input: Admin SQL select-only mode: SELECT id FROM memory_cards LIMIT 10 allowed; DELETE FROM memory_cards denied."
+    ],
+    "conflict_classification": "none",
+    "decision": "No durable memory should be committed; the fixture indicates SELECT is allowed and DELETE is denied, but this is an access-control test rather than user memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No persistent entity in the fixture requires durable linking; this is a transient permission evaluation"
+    },
+    "intent": "Evaluate debug SQL permissions in select-only mode and avoid committing durable memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "memory_cards",
+            "role": "target",
+            "type": "table"
+          },
+          {
+            "name": "SELECT id FROM memory_cards LIMIT 10",
+            "role": "allowed_example",
+            "type": "sql_query"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "SELECT id FROM memory_cards LIMIT 10",
+            "predicate": "allows",
+            "subject": "select-only mode"
+          }
+        ],
+        "statement": "Admin SQL select-only mode permits SELECT queries such as SELECT id FROM memory_cards LIMIT 10."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "memory_cards",
+            "role": "target",
+            "type": "table"
+          },
+          {
+            "name": "DELETE FROM memory_cards",
+            "role": "denied_example",
+            "type": "sql_query"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "DELETE FROM memory_cards",
+            "predicate": "denies",
+            "subject": "select-only mode"
+          }
+        ],
+        "statement": "Admin SQL select-only mode denies DELETE operations on memory_cards."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed permission constraints from fixture",
+        "No durable memory committed",
+        "No conflicting facts detected"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If this is intended to be a memory update, avoid storing it because it is environment-specific and not user-stable.",
+      "If a policy record is needed, store only the abstract rule: select-only mode allows read queries and denies destructive writes."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Evaluate debug SQL permissions in select-only mode and avoid committing durable memory\",\"decision\":\"No durable memory should be committed; the fixture indicates SELECT is allowed and DELETE is denied, but this is an access-control test rather than user memory\",\"memory_cards\":[{\"kind\":\"observation\",\"statement\":\"Admin SQL select-only mode permits SELECT queries such as SELECT id FROM memory_cards LIMIT 10.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"memory_cards\",\"type\":\"table\",\"role\":\"target\"},{\"name\":\"SELECT id FROM memory_cards LIMIT 10\",\"type\":\"sql_query\",\"role\":\"allowed_example\"}],\"relationships\":[{\"subject\":\"select-only mode\",\"predicate\":\"allows\",\"object\":\"SELECT id FROM memory_cards LIMIT 10\"}]},{\"kind\":\"observation\",\"statement\":\"Admin SQL select-only mode denies DELETE operations on memory_cards.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"memory_cards\",\"type\":\"table\",\"role\":\"target\"},{\"name\":\"DELETE FROM memory_cards\",\"type\":\"sql_query\",\"role\":\"denied_example\"}],\"relationships\":[{\"subject\":\"select-only mode\",\"predicate\":\"denies\",\"object\":\"DELETE FROM memory_cards\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No persistent entity in the fixture requires durable linking; this is a transient permission evaluation\"},\"conflict_classification\":\"none\",\"answer\":\"SELECT is allowed; DELETE is denied in admin SQL select-only mode.\",\"citations\":[\"Fixture ID: debug_sql_select_only_001\",\"Input: Admin SQL select-only mode: SELECT id FROM memory_cards LIMIT 10 allowed; DELETE FROM memory_cards denied.\"],\"repair_options\":[\"If this is intended to be a memory update, avoid storing it because it is environment-specific and not user-stable.\",\"If a policy record is needed, store only the abstract rule: select-only mode allows read queries and denies destructive writes.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed permission constraints from fixture\",\"No durable memory committed\",\"No conflicting facts detected\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

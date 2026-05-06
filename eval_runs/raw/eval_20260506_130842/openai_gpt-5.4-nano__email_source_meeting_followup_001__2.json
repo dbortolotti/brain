@@ -1,0 +1,88 @@
+{
+  "error": null,
+  "fixture_id": "email_source_meeting_followup_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Saved context that Sam joined Point72 last month and requested the AI infra article; proceed to provide/send the requested article if available.",
+    "citations": [
+      "Email: From sam@example.com; Subject: Follow up. Great seeing you. Yes, I joined Point72 last month. Please send the AI infra article."
+    ],
+    "conflict_classification": "none",
+    "decision": "Record follow-up context (Sam joined Point72; AI infra article requested) and prepare to send the requested article",
+    "entity_resolution": {
+      "action": "link_or_create",
+      "entity_id": null,
+      "reason": "No existing entity IDs were provided for Sam or Point72; store as-is from the email content."
+    },
+    "intent": "Handle meeting follow-up and document request",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "sam@example.com",
+            "role": "sender",
+            "type": "email"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "sam@example.com"
+          },
+          {
+            "object": "last month",
+            "predicate": "timeframe",
+            "subject": "Point72"
+          }
+        ],
+        "statement": "Sam (sam@example.com) says they joined Point72 last month."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "AI infra article",
+            "role": "requested item",
+            "type": "document"
+          },
+          {
+            "name": "sam@example.com",
+            "role": "recipient",
+            "type": "email"
+          }
+        ],
+        "kind": "task_request",
+        "relationships": [
+          {
+            "object": "AI infra article",
+            "predicate": "requested",
+            "subject": "sam@example.com"
+          }
+        ],
+        "statement": "Sam requests that an 'AI infra article' be sent to them."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted sender statement about joining Point72",
+        "Extracted request to send 'AI infra article'"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If the AI infra article is not identifiable, ask Sam which specific article or provide a link from the correct source.",
+      "Confirm whether 'last month' is relative to the email date if exact timing is required."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Handle meeting follow-up and document request\",\n  \"decision\": \"Record follow-up context (Sam joined Point72; AI infra article requested) and prepare to send the requested article\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam (sam@example.com) says they joined Point72 last month.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"sam@example.com\",\n          \"type\": \"email\",\n          \"role\": \"sender\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"sam@example.com\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        },\n        {\n          \"subject\": \"Point72\",\n          \"predicate\": \"timeframe\",\n          \"object\": \"last month\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"task_request\",\n      \"statement\": \"Sam requests that an 'AI infra article' be sent to them.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"AI infra article\",\n          \"type\": \"document\",\n          \"role\": \"requested item\"\n        },\n        {\n          \"name\": \"sam@example.com\",\n          \"type\": \"email\",\n          \"role\": \"recipient\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"sam@example.com\",\n          \"predicate\": \"requested\",\n          \"object\": \"AI infra article\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"link_or_create\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entity IDs were provided for Sam or Point72; store as-is from the email content.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Saved context that Sam joined Point72 last month and requested the AI infra article; proceed to provide/send the requested article if available.\",\n  \"citations\": [\n    \"Email: From sam@example.com; Subject: Follow up. Great seeing you. Yes, I joined Point72 last month. Please send the AI infra article.\"\n  ],\n  \"repair_options\": [\n    \"If the AI infra article is not identifiable, ask Sam which specific article or provide a link from the correct source.\",\n    \"Confirm whether 'last month' is relative to the email date if exact timing is required.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Extracted sender statement about joining Point72\",\n      \"Extracted request to send 'AI infra article'\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

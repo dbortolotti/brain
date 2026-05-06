@@ -1,0 +1,84 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_high_confidence_overwrite_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The proposed statement ('Sara is Daniele's niece') contradicts the existing high-confidence fact ('Sara is Daniele's daughter'). No overwrite is permitted without explicit justification or evidence.",
+    "citations": [
+      "High-confidence memory rule: Preserve unambiguous, durable relationships unless superseded by verified updates."
+    ],
+    "conflict_classification": "direct_predicate_conflict",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "no_change",
+      "entity_id": null,
+      "reason": "Entities remain consistent; conflict lies in relationship predicate."
+    },
+    "intent": "overwrite_existing_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_daughter_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "niece",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "uncle",
+            "type": "person"
+          }
+        ],
+        "kind": "proposed_fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Overwrite rejected due to high-confidence memory preservation policy.",
+        "Proposed fact lacks sufficient evidence to supersede existing relationship."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Verify source of proposed relationship (e.g., family tree, DNA evidence).",
+      "Clarify ambiguity: Is 'niece' a misstatement, or does it refer to a secondary relationship (e.g., step-niece)?",
+      "Flag for human review if context suggests potential mislabeling."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"overwrite_existing_memory\",\n  \"decision\": \"reject\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is Daniele's daughter.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"daughter\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"parent\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is_daughter_of\",\n          \"object\": \"Daniele\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"proposed_fact\",\n      \"statement\": \"Sara is Daniele's niece.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"niece\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"uncle\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is_niece_of\",\n          \"object\": \"Daniele\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_change\",\n    \"entity_id\": null,\n    \"reason\": \"Entities remain consistent; conflict lies in relationship predicate.\"\n  },\n  \"conflict_classification\": \"direct_predicate_conflict\",\n  \"answer\": \"The proposed statement ('Sara is Daniele's niece') contradicts the existing high-confidence fact ('Sara is Daniele's daughter'). No overwrite is permitted without explicit justification or evidence.\",\n  \"citations\": [\n    \"High-confidence memory rule: Preserve unambiguous, durable relationships unless superseded by verified updates.\"\n  ],\n  \"repair_options\": [\n    \"Verify source of proposed relationship (e.g., family tree, DNA evidence).\",\n    \"Clarify ambiguity: Is 'niece' a misstatement, or does it refer to a secondary relationship (e.g., step-niece)?\",\n    \"Flag for human review if context suggests potential mislabeling.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Overwrite rejected due to high-confidence memory preservation policy.\",\n      \"Proposed fact lacks sufficient evidence to supersede existing relationship.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

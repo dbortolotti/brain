@@ -1,0 +1,55 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "No clear conflict: 'Sara is my niece' can be true while Sara is also Daniele's daughter and Nur's twin, but the speaker identity is unknown, so this should be treated as low-confidence/ambiguous rather than a durable update.",
+    "citations": [
+      "Existing high-confidence memory: Sara is Daniele's daughter and Nur's twin.",
+      "New: Sara is my niece."
+    ],
+    "conflict_classification": "compatible_ambiguous",
+    "decision": "defer",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The new statement does not identify the speaker, so it can coexist with the existing memory that Sara is Daniele's daughter and Nur's twin."
+    },
+    "intent": "conflict_classification",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "mentioned person",
+            "type": "person"
+          }
+        ],
+        "kind": "relation",
+        "relationships": [
+          {
+            "object": "speaker",
+            "predicate": "is_niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara may be the speaker's niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No superseding or deleting of the existing memory.",
+        "Ambiguous relation recorded cautiously."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Keep the existing family relations as high-confidence.",
+      "Store the new relation only as low-confidence until the speaker is identified."
+    ]
+  },
+  "raw_text": "{\"intent\":\"conflict_classification\",\"decision\":\"defer\",\"memory_cards\":[{\"kind\":\"relation\",\"statement\":\"Sara may be the speaker's niece.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"mentioned person\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"is_niece_of\",\"object\":\"speaker\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The new statement does not identify the speaker, so it can coexist with the existing memory that Sara is Daniele's daughter and Nur's twin.\"},\"conflict_classification\":\"compatible_ambiguous\",\"answer\":\"No clear conflict: 'Sara is my niece' can be true while Sara is also Daniele's daughter and Nur's twin, but the speaker identity is unknown, so this should be treated as low-confidence/ambiguous rather than a durable update.\",\"citations\":[\"Existing high-confidence memory: Sara is Daniele's daughter and Nur's twin.\",\"New: Sara is my niece.\"],\"repair_options\":[\"Keep the existing family relations as high-confidence.\",\"Store the new relation only as low-confidence until the speaker is identified.\"],\"receipt\":{\"success\":true,\"details\":[\"No superseding or deleting of the existing memory.\",\"Ambiguous relation recorded cautiously.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

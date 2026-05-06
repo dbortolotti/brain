@@ -1,0 +1,91 @@
+{
+  "error": null,
+  "fixture_id": "numeric_table_exactness_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Stored two experiment_result memory cards for PPO-001 and PPO-002 with Reward and Sharpe preserving leading zeros as strings.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_run_metrics_as_string_values",
+    "entity_resolution": {
+      "action": "link_runs_to_distinct_identifiers",
+      "entity_id": null,
+      "reason": "Each Run value (PPO-001, PPO-002) appears distinct in the provided table."
+    },
+    "intent": "compile_memory_from_fixture_table",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "identifier",
+            "type": "run"
+          }
+        ],
+        "kind": "experiment_result",
+        "relationships": [
+          {
+            "object": "012",
+            "predicate": "has_reward",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "045",
+            "predicate": "has_sharpe",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "baseline",
+            "predicate": "notes",
+            "subject": "PPO-001"
+          }
+        ],
+        "statement": "Run PPO-001 has Reward=012, Sharpe=045, and Notes=baseline."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "identifier",
+            "type": "run"
+          }
+        ],
+        "kind": "experiment_result",
+        "relationships": [
+          {
+            "object": "018",
+            "predicate": "has_reward",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "051",
+            "predicate": "has_sharpe",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "entropy tuned",
+            "predicate": "notes",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "Run PPO-002 has Reward=018, Sharpe=051, and Notes=entropy tuned."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted Run, Reward, Sharpe, and Notes fields from the two rows of the provided fixture table.",
+        "Preserved token punctuation/formatting including leading zeros (e.g., 012, 045, 018, 051) as strings."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If numeric parsing is desired, convert Reward and Sharpe from string tokens with leading zeros to integers, but only if explicitly requested.",
+      "If Notes should be treated as tags, normalize 'baseline' and 'entropy tuned' into a controlled vocabulary."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"compile_memory_from_fixture_table\",\n  \"decision\": \"store_run_metrics_as_string_values\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"experiment_result\",\n      \"statement\": \"Run PPO-001 has Reward=012, Sharpe=045, and Notes=baseline.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"PPO-001\",\n          \"type\": \"run\",\n          \"role\": \"identifier\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"has_reward\",\n          \"object\": \"012\"\n        },\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"has_sharpe\",\n          \"object\": \"045\"\n        },\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"notes\",\n          \"object\": \"baseline\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"experiment_result\",\n      \"statement\": \"Run PPO-002 has Reward=018, Sharpe=051, and Notes=entropy tuned.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"PPO-002\",\n          \"type\": \"run\",\n          \"role\": \"identifier\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"has_reward\",\n          \"object\": \"018\"\n        },\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"has_sharpe\",\n          \"object\": \"051\"\n        },\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"notes\",\n          \"object\": \"entropy tuned\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"link_runs_to_distinct_identifiers\",\n    \"entity_id\": null,\n    \"reason\": \"Each Run value (PPO-001, PPO-002) appears distinct in the provided table.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Stored two experiment_result memory cards for PPO-001 and PPO-002 with Reward and Sharpe preserving leading zeros as strings.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If numeric parsing is desired, convert Reward and Sharpe from string tokens with leading zeros to integers, but only if explicitly requested.\",\n    \"If Notes should be treated as tags, normalize 'baseline' and 'entropy tuned' into a controlled vocabulary.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Extracted Run, Reward, Sharpe, and Notes fields from the two rows of the provided fixture table.\",\n      \"Preserved token punctuation/formatting including leading zeros (e.g., 012, 045, 018, 051) as strings.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

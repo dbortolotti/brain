@@ -1,0 +1,67 @@
+{
+  "error": null,
+  "fixture_id": "debug_inspect_memory_001",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Memory mem_123 contains a record of a user interaction involving a system error during file upload.",
+    "citations": [
+      "/brain inspect memory mem_123"
+    ],
+    "conflict_classification": "none",
+    "decision": "inspect_memory",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": "mem_123",
+      "reason": "Memory ID explicitly referenced in input command; no ambiguity detected."
+    },
+    "intent": "debug_explainer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "mem_123",
+            "role": "target",
+            "type": "memory_id"
+          },
+          {
+            "name": "system error",
+            "role": "content",
+            "type": "event"
+          },
+          {
+            "name": "file upload",
+            "role": "context",
+            "type": "action"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "record of user interaction",
+            "predicate": "contains",
+            "subject": "mem_123"
+          },
+          {
+            "object": "system error during file upload",
+            "predicate": "involves",
+            "subject": "record"
+          }
+        ],
+        "statement": "Memory mem_123 contains a record of a user interaction involving a system error during file upload."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory mem_123 inspected successfully.",
+        "No conflicting or superseded facts found.",
+        "Entity mem_123 resolved to active memory record."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"debug_explainer\",\n  \"decision\": \"inspect_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Memory mem_123 contains a record of a user interaction involving a system error during file upload.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"mem_123\",\n          \"type\": \"memory_id\",\n          \"role\": \"target\"\n        },\n        {\n          \"name\": \"system error\",\n          \"type\": \"event\",\n          \"role\": \"content\"\n        },\n        {\n          \"name\": \"file upload\",\n          \"type\": \"action\",\n          \"role\": \"context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"mem_123\",\n          \"predicate\": \"contains\",\n          \"object\": \"record of user interaction\"\n        },\n        {\n          \"subject\": \"record\",\n          \"predicate\": \"involves\",\n          \"object\": \"system error during file upload\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolve\",\n    \"entity_id\": \"mem_123\",\n    \"reason\": \"Memory ID explicitly referenced in input command; no ambiguity detected.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Memory mem_123 contains a record of a user interaction involving a system error during file upload.\",\n  \"citations\": [\n    \"/brain inspect memory mem_123\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory mem_123 inspected successfully.\",\n      \"No conflicting or superseded facts found.\",\n      \"Entity mem_123 resolved to active memory record.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

@@ -1,0 +1,46 @@
+{
+  "error": null,
+  "fixture_id": "unresolved_pronoun_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The reference to 'the other one' cannot be resolved without additional context. Please specify which 'other one' is being referred to.",
+    "conflict_classification": "unresolved_ambiguity",
+    "entity_resolution": {
+      "action": "pending",
+      "entity_id": null,
+      "reason": "No prior context or explicit antecedent provided for 'other one'. Requires clarification from the user or system to resolve."
+    },
+    "intent": "reference_resolution",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "other one",
+            "role": "ambiguous_reference",
+            "type": "pronoun"
+          }
+        ],
+        "kind": "ambiguous_reference",
+        "relationships": [
+          {
+            "object": "other one",
+            "predicate": "refers_to",
+            "subject": "speaker"
+          }
+        ],
+        "statement": "The speaker refers to an unspecified 'other one' without prior context, requiring disambiguation."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguous pronoun 'other one' detected with no prior context.",
+        "Resolution requires explicit disambiguation."
+      ],
+      "success": false
+    }
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"reference_resolution\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"ambiguous_reference\",\n      \"statement\": \"The speaker refers to an unspecified 'other one' without prior context, requiring disambiguation.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"other one\",\n          \"type\": \"pronoun\",\n          \"role\": \"ambiguous_reference\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"speaker\",\n          \"predicate\": \"refers_to\",\n          \"object\": \"other one\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"pending\",\n    \"entity_id\": null,\n    \"reason\": \"No prior context or explicit antecedent provided for 'other one'. Requires clarification from the user or system to resolve.\"\n  },\n  \"conflict_classification\": \"unresolved_ambiguity\",\n  \"answer\": \"The reference to 'the other one' cannot be resolved without additional context. Please specify which 'other one' is being referred to.\",\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Ambiguous pronoun 'other one' detected with no prior context.\",\n      \"Resolution requires explicit disambiguation.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

@@ -1,0 +1,64 @@
+{
+  "error": null,
+  "fixture_id": "recall_profile_sara_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Sara is Daniele's twin daughter. I don't have any other details about her from this context.",
+    "citations": [
+      "context fact: Nur and Sara are Daniele's twin daughters"
+    ],
+    "conflict_classification": "none",
+    "decision": "answer_with_minimal_memory",
+    "entity_resolution": {
+      "action": "resolve_to_known_entity",
+      "entity_id": null,
+      "reason": "The context identifies Sara only as Daniele's twin daughter; there is not enough information to assign a durable unique entity ID."
+    },
+    "intent": "recall_synthesizer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Nur",
+            "predicate": "is twin sibling of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Daniele",
+            "predicate": "is daughter of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is one of Daniele's twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted one stable fact about Sara.",
+        "Avoided inferring unsupported details."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want, I can help distinguish Sara from Nur if you provide more context.",
+      "You can add more facts about Sara's role, interests, or relationship to others."
+    ]
+  },
+  "raw_text": "{\"intent\":\"recall_synthesizer\",\"decision\":\"answer_with_minimal_memory\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sara is one of Daniele's twin daughters.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"daughter\"},{\"name\":\"Daniele\",\"type\":\"person\",\"role\":\"parent\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"is twin sibling of\",\"object\":\"Nur\"},{\"subject\":\"Sara\",\"predicate\":\"is daughter of\",\"object\":\"Daniele\"}]}],\"entity_resolution\":{\"action\":\"resolve_to_known_entity\",\"entity_id\":null,\"reason\":\"The context identifies Sara only as Daniele's twin daughter; there is not enough information to assign a durable unique entity ID.\"},\"conflict_classification\":\"none\",\"answer\":\"Sara is Daniele's twin daughter. I don't have any other details about her from this context.\",\"citations\":[\"context fact: Nur and Sara are Daniele's twin daughters\"],\"repair_options\":[\"If you want, I can help distinguish Sara from Nur if you provide more context.\",\"You can add more facts about Sara's role, interests, or relationship to others.\"],\"receipt\":{\"success\":true,\"details\":[\"Extracted one stable fact about Sara.\",\"Avoided inferring unsupported details.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

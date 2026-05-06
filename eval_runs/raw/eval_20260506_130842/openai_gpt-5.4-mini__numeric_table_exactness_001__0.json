@@ -1,0 +1,95 @@
+{
+  "error": null,
+  "fixture_id": "numeric_table_exactness_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Stored exact metrics for PPO-001 and PPO-002.",
+    "citations": [
+      "Input table row: PPO-001 | 0.12 | 0.45 | baseline",
+      "Input table row: PPO-002 | 0.18 | 0.51 | entropy tuned"
+    ],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "The runs PPO-001 and PPO-002 appear to be distinct experiment identifiers in the table; no prior entity mapping is provided."
+    },
+    "intent": "Extract exact run-level metrics from the provided table for durable memory storage.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "experiment run",
+            "type": "run"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "0.12",
+            "predicate": "has_reward",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "0.45",
+            "predicate": "has_sharpe",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "baseline",
+            "predicate": "has_notes",
+            "subject": "PPO-001"
+          }
+        ],
+        "statement": "PPO-001 has Reward 0.12, Sharpe 0.45, and Notes \"baseline\"."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "experiment run",
+            "type": "run"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "0.18",
+            "predicate": "has_reward",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "0.51",
+            "predicate": "has_sharpe",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "entropy tuned",
+            "predicate": "has_notes",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "PPO-002 has Reward 0.18, Sharpe 0.51, and Notes \"entropy tuned\"."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed 2 rows from the table.",
+        "Captured exact numeric values without rounding or inference.",
+        "No conflicts or deletions detected."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If desired, add a comparative summary such as PPO-002 outperforming PPO-001 on both Reward and Sharpe based on the table.",
+      "If desired, attach provenance tags for each run row for later retrieval."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Extract exact run-level metrics from the provided table for durable memory storage.\",\"decision\":\"store\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"PPO-001 has Reward 0.12, Sharpe 0.45, and Notes \\\"baseline\\\".\",\"confidence\":\"high\",\"entities\":[{\"name\":\"PPO-001\",\"type\":\"run\",\"role\":\"experiment run\"}],\"relationships\":[{\"subject\":\"PPO-001\",\"predicate\":\"has_reward\",\"object\":\"0.12\"},{\"subject\":\"PPO-001\",\"predicate\":\"has_sharpe\",\"object\":\"0.45\"},{\"subject\":\"PPO-001\",\"predicate\":\"has_notes\",\"object\":\"baseline\"}]},{\"kind\":\"fact\",\"statement\":\"PPO-002 has Reward 0.18, Sharpe 0.51, and Notes \\\"entropy tuned\\\".\",\"confidence\":\"high\",\"entities\":[{\"name\":\"PPO-002\",\"type\":\"run\",\"role\":\"experiment run\"}],\"relationships\":[{\"subject\":\"PPO-002\",\"predicate\":\"has_reward\",\"object\":\"0.18\"},{\"subject\":\"PPO-002\",\"predicate\":\"has_sharpe\",\"object\":\"0.51\"},{\"subject\":\"PPO-002\",\"predicate\":\"has_notes\",\"object\":\"entropy tuned\"}]}],\"entity_resolution\":{\"action\":\"create\",\"entity_id\":null,\"reason\":\"The runs PPO-001 and PPO-002 appear to be distinct experiment identifiers in the table; no prior entity mapping is provided.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored exact metrics for PPO-001 and PPO-002.\",\"citations\":[\"Input table row: PPO-001 | 0.12 | 0.45 | baseline\",\"Input table row: PPO-002 | 0.18 | 0.51 | entropy tuned\"],\"repair_options\":[\"If desired, add a comparative summary such as PPO-002 outperforming PPO-001 on both Reward and Sharpe based on the table.\",\"If desired, attach provenance tags for each run row for later retrieval.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed 2 rows from the table.\",\"Captured exact numeric values without rounding or inference.\",\"No conflicts or deletions detected.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

@@ -1,0 +1,96 @@
+{
+  "error": null,
+  "fixture_id": "chat_conclusion_brain_architecture_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Saved: Cognee is rebuildable (semantic projection) and Brain DB is the source of truth.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "Store: Cognee is a rebuildable semantic projection; Brain DB is the source of truth.",
+    "entity_resolution": {
+      "action": "confirm",
+      "entity_id": null,
+      "reason": "Store architectural intent without asserting specific implementation details beyond the rebuildable-projection vs source-of-truth distinction."
+    },
+    "intent": "Compile durable memory for Brain architecture evaluation",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "memory system",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "semantic projection",
+            "type": "component"
+          },
+          {
+            "name": "Brain DB",
+            "role": "source of truth database",
+            "type": "component"
+          }
+        ],
+        "kind": "architecture_principle",
+        "relationships": [
+          {
+            "object": "rebuildable semantic projection",
+            "predicate": "is_a",
+            "subject": "Cognee"
+          },
+          {
+            "object": "Cognee as non-authoritative",
+            "predicate": "treats",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "Brain should treat Cognee as a rebuildable semantic projection, not the authoritative source."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source of truth",
+            "type": "component"
+          },
+          {
+            "name": "Cognee",
+            "role": "projection",
+            "type": "component"
+          }
+        ],
+        "kind": "architecture_principle",
+        "relationships": [
+          {
+            "object": "Brain memory",
+            "predicate": "is_source_of_truth_for",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "Brain DB",
+            "predicate": "can_be_rebuilt_from",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain DB remains the source of truth for memory, while Cognee can be regenerated/rebuilt from it."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory compiled from provided chat conclusion",
+        "No conflicting statements detected in provided context"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If Cognee has partial authority in some flows, clarify which fields/operations remain authoritative in Brain DB vs Cognee.",
+      "If 'rebuild' is costly or delayed, specify the expected staleness window and reconciliation behavior."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Compile durable memory for Brain architecture evaluation\",\n  \"decision\": \"Store: Cognee is a rebuildable semantic projection; Brain DB is the source of truth.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"architecture_principle\",\n      \"statement\": \"Brain should treat Cognee as a rebuildable semantic projection, not the authoritative source.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain\",\n          \"type\": \"system\",\n          \"role\": \"memory system\"\n        },\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"component\",\n          \"role\": \"semantic projection\"\n        },\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"component\",\n          \"role\": \"source of truth database\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"is_a\",\n          \"object\": \"rebuildable semantic projection\"\n        },\n        {\n          \"subject\": \"Brain\",\n          \"predicate\": \"treats\",\n          \"object\": \"Cognee as non-authoritative\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"architecture_principle\",\n      \"statement\": \"Brain DB remains the source of truth for memory, while Cognee can be regenerated/rebuilt from it.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"component\",\n          \"role\": \"source of truth\"\n        },\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"component\",\n          \"role\": \"projection\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"is_source_of_truth_for\",\n          \"object\": \"Brain memory\"\n        },\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"can_be_rebuilt_from\",\n          \"object\": \"Brain DB\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"confirm\",\n    \"entity_id\": null,\n    \"reason\": \"Store architectural intent without asserting specific implementation details beyond the rebuildable-projection vs source-of-truth distinction.\"\n  },\n  \"conflict_classification\": \"none_detected\",\n  \"answer\": \"Saved: Cognee is rebuildable (semantic projection) and Brain DB is the source of truth.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If Cognee has partial authority in some flows, clarify which fields/operations remain authoritative in Brain DB vs Cognee.\",\n    \"If 'rebuild' is costly or delayed, specify the expected staleness window and reconciliation behavior.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Durable memory compiled from provided chat conclusion\",\n      \"No conflicting statements detected in provided context\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

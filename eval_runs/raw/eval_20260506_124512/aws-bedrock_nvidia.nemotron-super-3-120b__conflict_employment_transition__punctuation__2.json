@@ -1,0 +1,74 @@
+{
+  "error": null,
+  "fixture_id": "conflict_employment_transition__punctuation",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Sam's employment has changed from Goldman to Point72; the current fact reflects the updated status.",
+    "citations": [
+      "Existing current fact - Sam works at Goldman",
+      "New fact - Sam left Goldman and joined Point72"
+    ],
+    "conflict_classification": "contradiction",
+    "decision": "update",
+    "entity_resolution": {
+      "action": "update",
+      "entity_id": "Sam",
+      "reason": "New fact supersedes previous employment status; Sam's current employer is now Point72, not Goldman."
+    },
+    "intent": "resolve_employment_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict identified: contradiction in employment status",
+        "Old fact deprecated: 'Sam works at Goldman'",
+        "New fact accepted: 'Sam left Goldman and joined Point72'",
+        "Entity 'Sam' resolved with updated employer",
+        "Memory updated to reflect current state"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retract the old fact 'Sam works at Goldman'",
+      "Retain both facts with temporal validity markers",
+      "Merge into a timeline: Sam worked at Goldman until [date], then joined Point72"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"resolve_employment_conflict\",\n  \"decision\": \"update\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam left Goldman and joined Point72\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"employee\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"former_employer\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"current_employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"left\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"update\",\n    \"entity_id\": \"Sam\",\n    \"reason\": \"New fact supersedes previous employment status; Sam's current employer is now Point72, not Goldman.\"\n  },\n  \"conflict_classification\": \"contradiction\",\n  \"answer\": \"Sam's employment has changed from Goldman to Point72; the current fact reflects the updated status.\",\n  \"citations\": [\n    \"Existing current fact - Sam works at Goldman\",\n    \"New fact - Sam left Goldman and joined Point72\"\n  ],\n  \"repair_options\": [\n    \"Retract the old fact 'Sam works at Goldman'\",\n    \"Retain both facts with temporal validity markers\",\n    \"Merge into a timeline: Sam worked at Goldman until [date], then joined Point72\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Conflict identified: contradiction in employment status\",\n      \"Old fact deprecated: 'Sam works at Goldman'\",\n      \"New fact accepted: 'Sam left Goldman and joined Point72'\",\n      \"Entity 'Sam' resolved with updated employer\",\n      \"Memory updated to reflect current state\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

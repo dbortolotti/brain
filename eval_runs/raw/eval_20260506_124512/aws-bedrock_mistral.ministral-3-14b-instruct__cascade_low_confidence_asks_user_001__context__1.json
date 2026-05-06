@@ -1,0 +1,61 @@
+{
+  "error": null,
+  "fixture_id": "cascade_low_confidence_asks_user_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The system cannot commit this memory to durable storage due to low confidence and ambiguity. Escalation to the user (Sam) is required to clarify the intended meaning of 'cascade' and the context of the note.",
+    "conflict_classification": "ambiguity_conflict",
+    "decision": "escalate_to_user_for_resolution",
+    "entity_resolution": {
+      "action": "user_escalation_required",
+      "reason": "Low model confidence (disabled cloud escalation) and ambiguous reference to 'cascade' in Sam's note. Potential for misinterpretation of feature/process."
+    },
+    "intent": "clarify_ambiguous_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "user",
+            "type": "person"
+          },
+          {
+            "name": "cascade",
+            "role": "ambiguous_reference",
+            "type": "feature"
+          }
+        ],
+        "kind": "note",
+        "relationships": [
+          {
+            "object": "potential issue with 'cascade'",
+            "predicate": "mentioned",
+            "subject": "Sam"
+          },
+          {
+            "object": "unclear context",
+            "predicate": "has",
+            "subject": "cascade"
+          }
+        ],
+        "statement": "Sam mentioned a potential issue with the 'cascade' feature during the last sync, but the context was unclear."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory not committed to durable storage (violation of 'preserve ambiguity' and 'no superseded facts' rules).",
+        "Escalation path initiated for user resolution."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask Sam to rephrase the note with explicit details about 'cascade' (e.g., is it a feature name, a process, or a metaphor?).",
+      "Suggest Sam provide a follow-up message or reference a specific document/thread where 'cascade' was discussed.",
+      "Flag this as a 'pending clarification' in the system and notify Sam when new context is needed."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"clarify_ambiguous_memory\",\n  \"decision\": \"escalate_to_user_for_resolution\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"note\",\n      \"statement\": \"Sam mentioned a potential issue with the 'cascade' feature during the last sync, but the context was unclear.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"user\"\n        },\n        {\n          \"name\": \"cascade\",\n          \"type\": \"feature\",\n          \"role\": \"ambiguous_reference\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"mentioned\",\n          \"object\": \"potential issue with 'cascade'\"\n        },\n        {\n          \"subject\": \"cascade\",\n          \"predicate\": \"has\",\n          \"object\": \"unclear context\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"user_escalation_required\",\n    \"reason\": \"Low model confidence (disabled cloud escalation) and ambiguous reference to 'cascade' in Sam's note. Potential for misinterpretation of feature/process.\"\n  },\n  \"conflict_classification\": \"ambiguity_conflict\",\n  \"answer\": \"The system cannot commit this memory to durable storage due to low confidence and ambiguity. Escalation to the user (Sam) is required to clarify the intended meaning of 'cascade' and the context of the note.\",\n  \"repair_options\": [\n    \"Ask Sam to rephrase the note with explicit details about 'cascade' (e.g., is it a feature name, a process, or a metaphor?).\",\n    \"Suggest Sam provide a follow-up message or reference a specific document/thread where 'cascade' was discussed.\",\n    \"Flag this as a 'pending clarification' in the system and notify Sam when new context is needed.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Memory not committed to durable storage (violation of 'preserve ambiguity' and 'no superseded facts' rules).\",\n      \"Escalation path initiated for user resolution.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

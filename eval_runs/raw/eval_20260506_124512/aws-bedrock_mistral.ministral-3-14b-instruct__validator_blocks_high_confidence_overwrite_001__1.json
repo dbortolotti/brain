@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_high_confidence_overwrite_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The proposed statement 'Sara is Daniele's niece' conflicts with the existing high-confidence fact 'Sara is Daniele's daughter.' The system retains the original fact due to its higher confidence and lack of superseding evidence.",
+    "conflict_classification": "direct_contradiction_high_confidence",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "preserve",
+      "entity_id": null,
+      "reason": "The proposed relationship (niece) contradicts the high-confidence existing fact (daughter) without sufficient evidence to override it. Ambiguity in family relationships (e.g., step-relationships, adoption) is not resolved here."
+    },
+    "intent": "update_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_daughter_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Update rejected: High-confidence fact preserved.",
+        "Proposed statement discarded as superseding evidence is absent."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide evidence or context clarifying the relationship (e.g., adoption, step-relationship) to justify the update.",
+      "Flag for human review to resolve ambiguity.",
+      "Delete the existing fact if new evidence conclusively proves the niece relationship."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"update_memory\",\n  \"decision\": \"reject\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is Daniele's daughter.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"daughter\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"parent\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is_daughter_of\",\n          \"object\": \"Daniele\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"preserve\",\n    \"entity_id\": null,\n    \"reason\": \"The proposed relationship (niece) contradicts the high-confidence existing fact (daughter) without sufficient evidence to override it. Ambiguity in family relationships (e.g., step-relationships, adoption) is not resolved here.\"\n  },\n  \"conflict_classification\": \"direct_contradiction_high_confidence\",\n  \"answer\": \"The proposed statement 'Sara is Daniele's niece' conflicts with the existing high-confidence fact 'Sara is Daniele's daughter.' The system retains the original fact due to its higher confidence and lack of superseding evidence.\",\n  \"repair_options\": [\n    \"Provide evidence or context clarifying the relationship (e.g., adoption, step-relationship) to justify the update.\",\n    \"Flag for human review to resolve ambiguity.\",\n    \"Delete the existing fact if new evidence conclusively proves the niece relationship.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Update rejected: High-confidence fact preserved.\",\n      \"Proposed statement discarded as superseding evidence is absent.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

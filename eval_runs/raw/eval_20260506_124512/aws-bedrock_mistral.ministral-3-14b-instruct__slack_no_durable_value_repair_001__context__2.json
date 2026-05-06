@@ -1,0 +1,51 @@
+{
+  "error": null,
+  "fixture_id": "slack_no_durable_value_repair_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory deferred for durable commitment due to unresolved temporal ambiguity. Proceed with explicit date anchoring for storage.",
+    "conflict_classification": "none",
+    "decision": "defer_durable_commitment",
+    "entity_resolution": {
+      "action": "ambiguity_preserved",
+      "reason": "Temporal anchor ('today') lacks explicit resolution to a calendar date; context-dependent interpretation required."
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "today",
+            "role": "anchor",
+            "type": "time_reference"
+          },
+          {
+            "name": "cloudy",
+            "role": "value",
+            "type": "weather_condition"
+          }
+        ],
+        "kind": "temporal_fact",
+        "relationships": [
+          {
+            "object": "cloudy",
+            "predicate": "has_weather",
+            "subject": "today"
+          }
+        ],
+        "statement": "Today's weather is cloudy."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguous temporal reference ('today') prevents durable memory commitment.",
+        "Suggested repair: Specify date (e.g., '2023-11-15') or context (e.g., 'today in New York')."
+      ],
+      "success": false
+    }
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_ingestion\",\n  \"decision\": \"defer_durable_commitment\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"temporal_fact\",\n      \"statement\": \"Today's weather is cloudy.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"today\",\n          \"type\": \"time_reference\",\n          \"role\": \"anchor\"\n        },\n        {\n          \"name\": \"cloudy\",\n          \"type\": \"weather_condition\",\n          \"role\": \"value\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"today\",\n          \"predicate\": \"has_weather\",\n          \"object\": \"cloudy\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"ambiguity_preserved\",\n    \"reason\": \"Temporal anchor ('today') lacks explicit resolution to a calendar date; context-dependent interpretation required.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Memory deferred for durable commitment due to unresolved temporal ambiguity. Proceed with explicit date anchoring for storage.\",\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Ambiguous temporal reference ('today') prevents durable memory commitment.\",\n      \"Suggested repair: Specify date (e.g., '2023-11-15') or context (e.g., 'today in New York').\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

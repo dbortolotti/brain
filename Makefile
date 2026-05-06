@@ -1,4 +1,7 @@
-.PHONY: setup up down check smoke ingest-sample recall-sample eval brain-eval tokens reset reset-hard mcp-config mcp-http slack-agent ui-proxy deploy-local-production prod-check slack-agent-check ui-prod-check backup cloudflare-verify test lint
+.PHONY: setup up down check smoke model-smoke-all ingest-sample recall-sample eval brain-eval tokens reset reset-hard mcp-config mcp-http slack-agent ui-proxy deploy-local-production prod-check slack-agent-check ui-prod-check backup cloudflare-verify test lint
+
+MODEL_SMOKE_OUTPUT ?= eval_runs/live_model_smoke_all.json
+MODEL_SMOKE_ARGS ?=
 
 setup:
 	uv sync --all-extras
@@ -14,6 +17,9 @@ check:
 
 smoke:
 	uv run python scripts/smoke_cognee.py
+
+model-smoke-all:
+	uv run python scripts/live_model_smoke.py --all-registry --json-output $(MODEL_SMOKE_OUTPUT) $(MODEL_SMOKE_ARGS)
 
 ingest-sample:
 	uv run python -m memory_stack.ingest_cognee --input data/samples/synthetic_property_emails.jsonl --temporal

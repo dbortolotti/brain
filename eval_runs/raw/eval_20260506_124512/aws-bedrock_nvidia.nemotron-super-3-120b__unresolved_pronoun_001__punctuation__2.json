@@ -1,0 +1,60 @@
+{
+  "error": null,
+  "fixture_id": "unresolved_pronoun_001__punctuation",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Unable to determine referents for 'He' or 'the other one' due to unresolved pronoun and ambiguous reference; no durable memory can be committed without clarification.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "defer",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Pronoun 'He' and phrase 'the other one' lack sufficient context for disambiguation; no prior memory or external reference available to resolve referents."
+    },
+    "intent": "express_preference",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "He",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "the other one",
+            "role": "preference_target",
+            "type": "object"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "He"
+          }
+        ],
+        "statement": "He prefers the other one"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Input contains unresolved pronoun 'He'",
+        "Input contains ambiguous reference 'the other one'",
+        "No antecedent or contextual cues available for resolution",
+        "No durable memory committed due to ambiguity"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Request clarification on who 'He' refers to",
+      "Request clarification on what 'the other one' refers to in context",
+      "Provide prior context or options being compared"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"express_preference\",\n  \"decision\": \"defer\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"He prefers the other one\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"He\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"the other one\",\n          \"type\": \"object\",\n          \"role\": \"preference_target\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"He\",\n          \"predicate\": \"prefers\",\n          \"object\": \"the other one\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"Pronoun 'He' and phrase 'the other one' lack sufficient context for disambiguation; no prior memory or external reference available to resolve referents.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Unable to determine referents for 'He' or 'the other one' due to unresolved pronoun and ambiguous reference; no durable memory can be committed without clarification.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Request clarification on who 'He' refers to\",\n    \"Request clarification on what 'the other one' refers to in context\",\n    \"Provide prior context or options being compared\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Input contains unresolved pronoun 'He'\",\n      \"Input contains ambiguous reference 'the other one'\",\n      \"No antecedent or contextual cues available for resolution\",\n      \"No durable memory committed due to ambiguity\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

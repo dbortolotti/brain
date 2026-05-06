@@ -1,0 +1,56 @@
+{
+  "error": null,
+  "fixture_id": "recall_hide_deleted_001__punctuation",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Sam likes Bill Evans.",
+    "citations": [
+      "Sam likes Bill Evans"
+    ],
+    "conflict_classification": "resolved",
+    "decision": "retrieve",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No ambiguity in entity resolution; 'Sam' and 'Bill Evans' are uniquely identified."
+    },
+    "intent": "recall",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "musician"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Retrieved current memory: Sam likes Bill Evans",
+        "Deleted memory (Sam likes Taylor Swift) correctly excluded as superseded"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"recall\",\n  \"decision\": \"retrieve\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam likes Bill Evans\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"musician\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No ambiguity in entity resolution; 'Sam' and 'Bill Evans' are uniquely identified.\"\n  },\n  \"conflict_classification\": \"resolved\",\n  \"answer\": \"Sam likes Bill Evans.\",\n  \"citations\": [\n    \"Sam likes Bill Evans\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Retrieved current memory: Sam likes Bill Evans\",\n      \"Deleted memory (Sam likes Taylor Swift) correctly excluded as superseded\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

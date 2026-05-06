@@ -1,0 +1,91 @@
+{
+  "error": null,
+  "fixture_id": "article_url_ai_memory_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Stored reference and design principles from the provided article context.",
+    "citations": [
+      "https://example.com/ai-memory"
+    ],
+    "conflict_classification": "none",
+    "decision": "create_new_memory_cards",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No existing entity IDs were provided; using literal URL and concept names as-is."
+    },
+    "intent": "store_reference_and_design_notes",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "https://example.com/ai-memory",
+            "role": "source",
+            "type": "url"
+          }
+        ],
+        "kind": "reference",
+        "relationships": [],
+        "statement": "Remember article https://example.com/ai-memory as useful for thinking about knowledge graph memory design."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "graph memory",
+            "role": "system component",
+            "type": "concept"
+          },
+          {
+            "name": "agents",
+            "role": "user",
+            "type": "actor"
+          },
+          {
+            "name": "provenance",
+            "role": "requirement",
+            "type": "concept"
+          },
+          {
+            "name": "update semantics",
+            "role": "requirement",
+            "type": "concept"
+          }
+        ],
+        "kind": "design_principle",
+        "relationships": [
+          {
+            "object": "relationships",
+            "predicate": "helps preserve",
+            "subject": "graph memory"
+          },
+          {
+            "object": "provenance",
+            "predicate": "requires",
+            "subject": "graph memory"
+          },
+          {
+            "object": "update semantics",
+            "predicate": "requires",
+            "subject": "graph memory"
+          }
+        ],
+        "statement": "Graph memory helps agents preserve relationships, but provenance and update semantics are needed."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created 2 memory cards (reference and design_principle)."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If the article content is later verified, update confidence and add more specific claims.",
+      "If more entities/concepts are identified from the article, add them as structured entities/relationships."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"store_reference_and_design_notes\",\n  \"decision\": \"create_new_memory_cards\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"reference\",\n      \"statement\": \"Remember article https://example.com/ai-memory as useful for thinking about knowledge graph memory design.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"https://example.com/ai-memory\",\n          \"type\": \"url\",\n          \"role\": \"source\"\n        }\n      ],\n      \"relationships\": []\n    },\n    {\n      \"kind\": \"design_principle\",\n      \"statement\": \"Graph memory helps agents preserve relationships, but provenance and update semantics are needed.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"graph memory\",\n          \"type\": \"concept\",\n          \"role\": \"system component\"\n        },\n        {\n          \"name\": \"agents\",\n          \"type\": \"actor\",\n          \"role\": \"user\"\n        },\n        {\n          \"name\": \"provenance\",\n          \"type\": \"concept\",\n          \"role\": \"requirement\"\n        },\n        {\n          \"name\": \"update semantics\",\n          \"type\": \"concept\",\n          \"role\": \"requirement\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"graph memory\",\n          \"predicate\": \"helps preserve\",\n          \"object\": \"relationships\"\n        },\n        {\n          \"subject\": \"graph memory\",\n          \"predicate\": \"requires\",\n          \"object\": \"provenance\"\n        },\n        {\n          \"subject\": \"graph memory\",\n          \"predicate\": \"requires\",\n          \"object\": \"update semantics\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entity IDs were provided; using literal URL and concept names as-is.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Stored reference and design principles from the provided article context.\",\n  \"citations\": [\n    \"https://example.com/ai-memory\"\n  ],\n  \"repair_options\": [\n    \"If the article content is later verified, update confidence and add more specific claims.\",\n    \"If more entities/concepts are identified from the article, add them as structured entities/relationships.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Created 2 memory cards (reference and design_principle).\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

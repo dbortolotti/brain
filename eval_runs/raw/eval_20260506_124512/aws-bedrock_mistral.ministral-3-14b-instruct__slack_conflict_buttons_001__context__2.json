@@ -1,0 +1,73 @@
+{
+  "error": null,
+  "fixture_id": "slack_conflict_buttons_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam no longer works at Goldman Sachs. Their current employer is Point72 (subtype unspecified). The original memory is superseded but retains the departure fact.",
+    "citations": [
+      "User input: 'Sam left Goldman and joined Point72'",
+      "Existing memory: 'Sam works at Goldman'"
+    ],
+    "conflict_classification": "superseded_with_ambiguity",
+    "decision": "supersede_existing_with_ambiguity",
+    "entity_resolution": {
+      "action": "merge_with_ambiguity",
+      "entity_id": "org_point72_001",
+      "reason": "Existing memory lacked employer subtype specificity; new input clarifies departure but leaves ambiguity in Point72's operational unit (AM vs. Ventures)."
+    },
+    "intent": "memory_update_conflict_resolution",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "past_employer",
+            "type": "organization"
+          },
+          {
+            "ambiguity": "subtype_unspecified",
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "left_employer",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined_employer",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman Sachs and joined Point72 Ventures (exact employer ambiguous; could be Point72 Asset Management or Point72 Ventures)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded: 'Sam works at Goldman' \u2192 Archived as historical fact",
+        "Durable memory updated with ambiguity preserved",
+        "Entity resolution applied to Point72 with subtype placeholder"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify Point72 subtype (e.g., 'Point72 Asset Management')",
+      "Add timestamp to departure ('left Goldman in [month/year]')",
+      "Flag as unresolved if subtype ambiguity persists"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_update_conflict_resolution\",\n  \"decision\": \"supersede_existing_with_ambiguity\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"durable_memory\",\n      \"statement\": \"Sam left Goldman Sachs and joined Point72 Ventures (exact employer ambiguous; could be Point72 Asset Management or Point72 Ventures).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"past_employer\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"current_employer\",\n          \"ambiguity\": \"subtype_unspecified\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"left_employer\",\n          \"object\": \"Goldman Sachs\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined_employer\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge_with_ambiguity\",\n    \"entity_id\": \"org_point72_001\",\n    \"reason\": \"Existing memory lacked employer subtype specificity; new input clarifies departure but leaves ambiguity in Point72's operational unit (AM vs. Ventures).\"\n  },\n  \"conflict_classification\": \"superseded_with_ambiguity\",\n  \"answer\": \"Sam no longer works at Goldman Sachs. Their current employer is Point72 (subtype unspecified). The original memory is superseded but retains the departure fact.\",\n  \"citations\": [\n    \"User input: 'Sam left Goldman and joined Point72'\",\n    \"Existing memory: 'Sam works at Goldman'\"\n  ],\n  \"repair_options\": [\n    \"Clarify Point72 subtype (e.g., 'Point72 Asset Management')\",\n    \"Add timestamp to departure ('left Goldman in [month/year]')\",\n    \"Flag as unresolved if subtype ambiguity persists\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Superseded: 'Sam works at Goldman' \u2192 Archived as historical fact\",\n      \"Durable memory updated with ambiguity preserved\",\n      \"Entity resolution applied to Point72 with subtype placeholder\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

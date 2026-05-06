@@ -1,0 +1,77 @@
+{
+  "error": null,
+  "fixture_id": "overly_broad_memory_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Rejected: Input lacks specificity for durable memory. Clarify: (1) Definition of 'AI' (e.g., field, entity, or other), (2) Punctuation constraints (e.g., 'A.I.' vs. 'AI'), and (3) Scope (e.g., technical, cultural, or historical).",
+    "citations": [
+      "ISO/IEC 2382-13:2020 (Information technology \u2014 Vocabulary \u2014 Part 13: Artificial intelligence)",
+      "Linguistic ambiguity in proper nouns (e.g., 'AI' as a company vs. 'AI' as a concept)"
+    ],
+    "conflict_classification": "scope_ambiguity",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Ambiguity in 'AI' (e.g., artificial intelligence, A.I. as a company, or other uses) and lack of punctuation constraints prevent resolution. Requires explicit clarification."
+    },
+    "intent": "durable_memory_ingestion",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "AI",
+            "role": "topic",
+            "type": "concept"
+          },
+          {
+            "name": "punctuation",
+            "role": "ambiguity_source",
+            "type": "linguistic_feature"
+          },
+          {
+            "name": "scope",
+            "role": "ambiguity_source",
+            "type": "semantic_boundary"
+          }
+        ],
+        "kind": "warning",
+        "relationships": [
+          {
+            "object": "disambiguation",
+            "predicate": "requires",
+            "subject": "AI"
+          },
+          {
+            "object": "ambiguity_in_referent",
+            "predicate": "introduces",
+            "subject": "punctuation"
+          },
+          {
+            "object": "memory_boundaries",
+            "predicate": "determines",
+            "subject": "scope"
+          }
+        ],
+        "statement": "Input 'Remember everything about AI' is overly broad and lacks specificity for durable memory storage. Punctuation (e.g., 'AI' vs. 'A.I.') and scope (e.g., 'AI' as artificial intelligence vs. 'AI' as a proper noun) are ambiguous without context."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguity in 'AI' prevents durable storage.",
+        "Punctuation ('AI' vs. 'A.I.') introduces referential uncertainty.",
+        "Scope not constrained (e.g., cultural vs. technical AI)."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Specify: 'Remember everything about artificial intelligence (AI) as a field, excluding A.I. as a company.'",
+      "Clarify punctuation: 'Remember all facts about 'A.I.' (with periods) as a company.'",
+      "Narrow scope: 'Remember only technical definitions of AI from 2023 NIST frameworks.'"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"durable_memory_ingestion\",\n  \"decision\": \"reject\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"warning\",\n      \"statement\": \"Input 'Remember everything about AI' is overly broad and lacks specificity for durable memory storage. Punctuation (e.g., 'AI' vs. 'A.I.') and scope (e.g., 'AI' as artificial intelligence vs. 'AI' as a proper noun) are ambiguous without context.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"AI\",\n          \"type\": \"concept\",\n          \"role\": \"topic\"\n        },\n        {\n          \"name\": \"punctuation\",\n          \"type\": \"linguistic_feature\",\n          \"role\": \"ambiguity_source\"\n        },\n        {\n          \"name\": \"scope\",\n          \"type\": \"semantic_boundary\",\n          \"role\": \"ambiguity_source\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"AI\",\n          \"predicate\": \"requires\",\n          \"object\": \"disambiguation\"\n        },\n        {\n          \"subject\": \"punctuation\",\n          \"predicate\": \"introduces\",\n          \"object\": \"ambiguity_in_referent\"\n        },\n        {\n          \"subject\": \"scope\",\n          \"predicate\": \"determines\",\n          \"object\": \"memory_boundaries\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguity in 'AI' (e.g., artificial intelligence, A.I. as a company, or other uses) and lack of punctuation constraints prevent resolution. Requires explicit clarification.\"\n  },\n  \"conflict_classification\": \"scope_ambiguity\",\n  \"answer\": \"Rejected: Input lacks specificity for durable memory. Clarify: (1) Definition of 'AI' (e.g., field, entity, or other), (2) Punctuation constraints (e.g., 'A.I.' vs. 'AI'), and (3) Scope (e.g., technical, cultural, or historical).\",\n  \"citations\": [\n    \"ISO/IEC 2382-13:2020 (Information technology \u2014 Vocabulary \u2014 Part 13: Artificial intelligence)\",\n    \"Linguistic ambiguity in proper nouns (e.g., 'AI' as a company vs. 'AI' as a concept)\"\n  ],\n  \"repair_options\": [\n    \"Specify: 'Remember everything about artificial intelligence (AI) as a field, excluding A.I. as a company.'\",\n    \"Clarify punctuation: 'Remember all facts about 'A.I.' (with periods) as a company.'\",\n    \"Narrow scope: 'Remember only technical definitions of AI from 2023 NIST frameworks.'\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Ambiguity in 'AI' prevents durable storage.\",\n      \"Punctuation ('AI' vs. 'A.I.') introduces referential uncertainty.\",\n      \"Scope not constrained (e.g., cultural vs. technical AI).\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

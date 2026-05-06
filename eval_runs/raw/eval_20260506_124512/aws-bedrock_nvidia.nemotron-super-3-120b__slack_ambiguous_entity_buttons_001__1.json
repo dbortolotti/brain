@@ -1,0 +1,59 @@
+{
+  "error": null,
+  "fixture_id": "slack_ambiguous_entity_buttons_001",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "I cannot determine which Sam is being referred to \u2014 there are two known Sams in memory: one from Goldman and one from Point72. Please clarify which Sam likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "ambiguous_entity",
+    "decision": "ambiguous",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Ambiguous reference to 'Sam' \u2014 two known entities exist: Sam from Goldman and Sam from Point72. No disambiguating context provided in input to determine which Sam is intended."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unknown",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "musician",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Input contained ambiguous entity 'Sam' with two known matches in memory.",
+        "No disambiguating information provided to resolve to a single entity.",
+        "Memory not committed due to ambiguity; user clarification required."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Specify which Sam: 'Sam from Goldman' or 'Sam from Point72'",
+      "Provide additional context (e.g., role, project, time) to disambiguate",
+      "Use a unique identifier or nickname if available"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"remember\",\n  \"decision\": \"ambiguous\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam likes Bill Evans\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"unknown\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"musician\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguous reference to 'Sam' \u2014 two known entities exist: Sam from Goldman and Sam from Point72. No disambiguating context provided in input to determine which Sam is intended.\"\n  },\n  \"conflict_classification\": \"ambiguous_entity\",\n  \"answer\": \"I cannot determine which Sam is being referred to \u2014 there are two known Sams in memory: one from Goldman and one from Point72. Please clarify which Sam likes Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Specify which Sam: 'Sam from Goldman' or 'Sam from Point72'\",\n    \"Provide additional context (e.g., role, project, time) to disambiguate\",\n    \"Use a unique identifier or nickname if available\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Input contained ambiguous entity 'Sam' with two known matches in memory.\",\n      \"No disambiguating information provided to resolve to a single entity.\",\n      \"Memory not committed due to ambiguity; user clarification required.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

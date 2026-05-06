@@ -1,0 +1,61 @@
+{
+  "error": null,
+  "fixture_id": "recall_hide_deleted_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Sam likes Bill Evans.",
+    "citations": [
+      "Current memory: Sam likes Bill Evans.",
+      "Deleted memory: Sam likes Taylor Swift."
+    ],
+    "conflict_classification": "superseded_deleted_fact_present",
+    "decision": "answer_with_current_memory_only",
+    "entity_resolution": {
+      "action": "resolve_to_current_memory",
+      "entity_id": null,
+      "reason": "The query asks what music Sam likes, and the current memory states Sam likes Bill Evans. A deleted memory mentioning Taylor Swift is superseded and should not be treated as current."
+    },
+    "intent": "recall_synthesizer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked artist",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Used current memory only.",
+        "Ignored deleted superseded memory.",
+        "Answered with the non-deleted preference."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If needed, retain only the current preference: Sam likes Bill Evans.",
+      "Do not revive the deleted Taylor Swift preference unless it is explicitly re-added."
+    ]
+  },
+  "raw_text": "{\"intent\":\"recall_synthesizer\",\"decision\":\"answer_with_current_memory_only\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam likes Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked artist\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"resolve_to_current_memory\",\"entity_id\":null,\"reason\":\"The query asks what music Sam likes, and the current memory states Sam likes Bill Evans. A deleted memory mentioning Taylor Swift is superseded and should not be treated as current.\"},\"conflict_classification\":\"superseded_deleted_fact_present\",\"answer\":\"Sam likes Bill Evans.\",\"citations\":[\"Current memory: Sam likes Bill Evans.\",\"Deleted memory: Sam likes Taylor Swift.\"],\"repair_options\":[\"If needed, retain only the current preference: Sam likes Bill Evans.\",\"Do not revive the deleted Taylor Swift preference unless it is explicitly re-added.\"],\"receipt\":{\"success\":true,\"details\":[\"Used current memory only.\",\"Ignored deleted superseded memory.\",\"Answered with the non-deleted preference.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

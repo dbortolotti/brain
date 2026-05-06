@@ -1,0 +1,59 @@
+{
+  "error": null,
+  "fixture_id": "recall_hide_superseded_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Sam works at Point72.",
+    "citations": [
+      "current memory: Sam joined Point72",
+      "old memory status=superseded: Sam works at Goldman"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "answer_current_memory_only",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": null,
+      "reason": "Sam refers to the same person in the provided memory context; no persistent entity identifier is available."
+    },
+    "intent": "recall_synthesizer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam currently works at Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ignored superseded Goldman employment as current answer source.",
+        "Used current memory indicating Sam joined Point72."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If needed, retain only the current employer fact for Sam and keep the Goldman employment as superseded history."
+    ]
+  },
+  "raw_text": "{\"intent\":\"recall_synthesizer\",\"decision\":\"answer_current_memory_only\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam currently works at Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"employee\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"resolved\",\"entity_id\":null,\"reason\":\"Sam refers to the same person in the provided memory context; no persistent entity identifier is available.\"},\"conflict_classification\":\"supersession\",\"answer\":\"Sam works at Point72.\",\"citations\":[\"current memory: Sam joined Point72\",\"old memory status=superseded: Sam works at Goldman\"],\"repair_options\":[\"If needed, retain only the current employer fact for Sam and keep the Goldman employment as superseded history.\"],\"receipt\":{\"success\":true,\"details\":[\"Ignored superseded Goldman employment as current answer source.\",\"Used current memory indicating Sam joined Point72.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

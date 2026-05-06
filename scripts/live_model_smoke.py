@@ -68,39 +68,8 @@ class SmokeFailure(RuntimeError):
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Run low-token live model smoke checks.")
-    parser.add_argument("--registry", default=str(REGISTRY_PATH))
-    parser.add_argument(
-        "--scope",
-        choices=("none", "active", "core", "enabled", "all"),
-        default=os.getenv("BRAIN_MODEL_SMOKE_SCOPE", "active"),
-        help="Model set to test. Use core/enabled/all for registry-wide checks.",
-    )
-    parser.add_argument("--role", action="append", default=None, help="Limit registry scopes to a role.")
-    parser.add_argument(
-        "--skip-missing-keys",
-        action="store_true",
-        default=env_bool("BRAIN_MODEL_SMOKE_SKIP_MISSING_KEYS", False),
-        help="Skip probes whose provider credentials are not configured.",
-    )
-    parser.add_argument(
-        "--no-skip-missing-keys",
-        dest="skip_missing_keys",
-        action="store_false",
-    )
-    parser.add_argument(
-        "--include-judge",
-        action="store_true",
-        default=env_bool("BRAIN_MODEL_SMOKE_INCLUDE_JUDGE", False),
-        help="Include judge_only models in registry scopes.",
-    )
-    parser.add_argument(
-        "--timeout",
-        type=float,
-        default=float(os.getenv("BRAIN_MODEL_SMOKE_TIMEOUT_SECONDS", "30")),
-    )
-    parser.add_argument("--json-output", default=None)
-    args = parser.parse_args()
+    parser = build_parser()
+    args = normalize_args(parser.parse_args())
 
     if args.scope == "none":
         console.print("[yellow][SKIP][/yellow] live model smoke disabled")
@@ -133,6 +102,57 @@ def main() -> int:
 
     failed = [result for result in results if result.status == "fail"]
     return 1 if failed else 0
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="Run low-token live model smoke checks.")
+    parser.add_argument("--registry", default=str(REGISTRY_PATH))
+    parser.add_argument(
+        "--scope",
+        choices=("none", "active", "core", "enabled", "all"),
+        default=os.getenv("BRAIN_MODEL_SMOKE_SCOPE", "active"),
+        help="Model set to test. Use core/enabled/all for registry-wide checks.",
+    )
+    parser.add_argument(
+        "--all-registry",
+        action="store_true",
+        help=(
+            "Shortcut for --scope all --include-judge. Runs one tiny live probe for "
+            "every unique model declared in the registry."
+        ),
+    )
+    parser.add_argument("--role", action="append", default=None, help="Limit registry scopes to a role.")
+    parser.add_argument(
+        "--skip-missing-keys",
+        action="store_true",
+        default=env_bool("BRAIN_MODEL_SMOKE_SKIP_MISSING_KEYS", False),
+        help="Skip probes whose provider credentials are not configured.",
+    )
+    parser.add_argument(
+        "--no-skip-missing-keys",
+        dest="skip_missing_keys",
+        action="store_false",
+    )
+    parser.add_argument(
+        "--include-judge",
+        action="store_true",
+        default=env_bool("BRAIN_MODEL_SMOKE_INCLUDE_JUDGE", False),
+        help="Include judge_only models in registry scopes.",
+    )
+    parser.add_argument(
+        "--timeout",
+        type=float,
+        default=float(os.getenv("BRAIN_MODEL_SMOKE_TIMEOUT_SECONDS", "30")),
+    )
+    parser.add_argument("--json-output", default=None)
+    return parser
+
+
+def normalize_args(args: argparse.Namespace) -> argparse.Namespace:
+    if args.all_registry:
+        args.scope = "all"
+        args.include_judge = True
+    return args
 
 
 def env_bool(name: str, default: bool) -> bool:

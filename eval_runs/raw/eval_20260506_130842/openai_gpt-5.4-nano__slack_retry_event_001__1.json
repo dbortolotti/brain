@@ -1,0 +1,67 @@
+{
+  "error": null,
+  "fixture_id": "slack_retry_event_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Deduped Slack retry delivery; stored the single fact that Sam (Goldman) likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_deduped",
+    "entity_resolution": {
+      "action": "create_or_match",
+      "entity_id": null,
+      "reason": "No existing entity IDs were provided; create or match 'Sam', 'Goldman', and 'Bill Evans' as needed."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "liker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "is_affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Fixture slack_retry_event_001 indicates the same Slack event ID was delivered twice.",
+        "Only one memory card was recorded to avoid duplicate durable memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If 'Sam' is ambiguous (multiple Sams at Goldman), ask for clarification on which person.",
+      "If 'Bill Evans' refers to a different individual, confirm the correct person."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"slack_intake\",\n  \"decision\": \"store_deduped\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam from Goldman likes Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"liker\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"liked\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"is_affiliated_with\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_or_match\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entity IDs were provided; create or match 'Sam', 'Goldman', and 'Bill Evans' as needed.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Deduped Slack retry delivery; stored the single fact that Sam (Goldman) likes Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If 'Sam' is ambiguous (multiple Sams at Goldman), ask for clarification on which person.\",\n    \"If 'Bill Evans' refers to a different individual, confirm the correct person.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Fixture slack_retry_event_001 indicates the same Slack event ID was delivered twice.\",\n      \"Only one memory card was recorded to avoid duplicate durable memory.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

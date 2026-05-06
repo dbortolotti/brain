@@ -1,0 +1,78 @@
+{
+  "error": null,
+  "fixture_id": "article_url_fetch_failure_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Recorded an attempted fetch failure for the given URL and noted that content could not be retrieved; no article content was stored.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_ambiguous_fetch_failure",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No stable entity identifiers beyond the URL and error code were provided."
+    },
+    "intent": "Record outcome of attempting to fetch an article URL for memory-architecture context, without asserting missing article content.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "source",
+            "type": "url"
+          },
+          {
+            "name": "404",
+            "role": "error_code",
+            "type": "http_status"
+          }
+        ],
+        "kind": "source_fetch_failure",
+        "relationships": [
+          {
+            "object": "404 network error",
+            "predicate": "fetch_result",
+            "subject": "https://example.com/missing"
+          }
+        ],
+        "statement": "An attempted fetch of https://example.com/missing resulted in a 404 network error; article content was not retrieved."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "memory architecture",
+            "role": "purpose",
+            "type": "concept"
+          }
+        ],
+        "kind": "usage_context",
+        "relationships": [
+          {
+            "object": "memory architecture",
+            "predicate": "intended_use_for",
+            "subject": "https://example.com/missing"
+          }
+        ],
+        "statement": "The provided context indicates this (missing) article URL is intended to be useful for memory architecture, but its content could not be accessed due to the fetch failure."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created durable memory cards capturing the fetch failure and its impact on content availability.",
+        "Did not store or infer article contents because retrieval failed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retry fetching the URL later to confirm whether it is temporarily unavailable.",
+      "Check for typos or alternate canonical URLs for the intended article.",
+      "If available, use a cached copy or a different source for the same content.",
+      "Store the planned memory-architecture purpose separately from any article content until retrieval succeeds."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Record outcome of attempting to fetch an article URL for memory-architecture context, without asserting missing article content.\",\n  \"decision\": \"store_ambiguous_fetch_failure\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"source_fetch_failure\",\n      \"statement\": \"An attempted fetch of https://example.com/missing resulted in a 404 network error; article content was not retrieved.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"https://example.com/missing\",\n          \"type\": \"url\",\n          \"role\": \"source\"\n        },\n        {\n          \"name\": \"404\",\n          \"type\": \"http_status\",\n          \"role\": \"error_code\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"https://example.com/missing\",\n          \"predicate\": \"fetch_result\",\n          \"object\": \"404 network error\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"usage_context\",\n      \"statement\": \"The provided context indicates this (missing) article URL is intended to be useful for memory architecture, but its content could not be accessed due to the fetch failure.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"memory architecture\",\n          \"type\": \"concept\",\n          \"role\": \"purpose\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"https://example.com/missing\",\n          \"predicate\": \"intended_use_for\",\n          \"object\": \"memory architecture\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No stable entity identifiers beyond the URL and error code were provided.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Recorded an attempted fetch failure for the given URL and noted that content could not be retrieved; no article content was stored.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Retry fetching the URL later to confirm whether it is temporarily unavailable.\",\n    \"Check for typos or alternate canonical URLs for the intended article.\",\n    \"If available, use a cached copy or a different source for the same content.\",\n    \"Store the planned memory-architecture purpose separately from any article content until retrieval succeeds.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Created durable memory cards capturing the fetch failure and its impact on content availability.\",\n      \"Did not store or infer article contents because retrieval failed.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

@@ -1,0 +1,75 @@
+{
+  "error": null,
+  "fixture_id": "cascade_low_confidence_asks_user_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Logged low-confidence context: cloud escalation disabled; ambiguous 'Sam' note has low model confidence.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_low_confidence_context_as_ambiguous",
+    "entity_resolution": {
+      "action": "no_specific_entity_id",
+      "entity_id": null,
+      "reason": "Only generic context provided; 'Sam' is ambiguous and no stable entity identifier is available."
+    },
+    "intent": "slack_intake_context_update",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Cloud escalation",
+            "role": "subject",
+            "type": "system_setting"
+          }
+        ],
+        "kind": "context_note_low_confidence",
+        "relationships": [
+          {
+            "object": "disabled",
+            "predicate": "is",
+            "subject": "Cloud escalation"
+          }
+        ],
+        "statement": "Cloud escalation is disabled (per provided context)."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "ambiguous_subject",
+            "type": "person"
+          },
+          {
+            "name": "model",
+            "role": "confidence_source",
+            "type": "system"
+          }
+        ],
+        "kind": "context_note_low_confidence",
+        "relationships": [
+          {
+            "object": "low",
+            "predicate": "has_confidence",
+            "subject": "Sam note"
+          }
+        ],
+        "statement": "For an ambiguous 'Sam' note, the model confidence is low (per provided context)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored as low-confidence context notes without asserting any additional details."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide the full text and any relevant metadata for the 'Sam' note to disambiguate the entity and raise confidence.",
+      "Confirm whether 'cloud escalation disabled' is a global policy or specific to a particular workflow/tenant."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"slack_intake_context_update\",\n  \"decision\": \"store_low_confidence_context_as_ambiguous\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"context_note_low_confidence\",\n      \"statement\": \"Cloud escalation is disabled (per provided context).\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Cloud escalation\",\n          \"type\": \"system_setting\",\n          \"role\": \"subject\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cloud escalation\",\n          \"predicate\": \"is\",\n          \"object\": \"disabled\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"context_note_low_confidence\",\n      \"statement\": \"For an ambiguous 'Sam' note, the model confidence is low (per provided context).\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"ambiguous_subject\"\n        },\n        {\n          \"name\": \"model\",\n          \"type\": \"system\",\n          \"role\": \"confidence_source\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam note\",\n          \"predicate\": \"has_confidence\",\n          \"object\": \"low\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_specific_entity_id\",\n    \"entity_id\": null,\n    \"reason\": \"Only generic context provided; 'Sam' is ambiguous and no stable entity identifier is available.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Logged low-confidence context: cloud escalation disabled; ambiguous 'Sam' note has low model confidence.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Provide the full text and any relevant metadata for the 'Sam' note to disambiguate the entity and raise confidence.\",\n    \"Confirm whether 'cloud escalation disabled' is a global policy or specific to a particular workflow/tenant.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Stored as low-confidence context notes without asserting any additional details.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

@@ -1,0 +1,58 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_high_confidence_overwrite_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Reject the proposed update. The existing memory ('Sara is Daniele's daughter') is high-confidence and durable. The proposed relationship ('niece') lacks supporting evidence and violates the system's strict overwrite policy.",
+    "citations": [],
+    "conflict_classification": "direct_contradiction",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "preserve_existing",
+      "entity_id": null,
+      "reason": "The proposed relationship ('niece') directly contradicts the high-confidence, durable memory ('daughter'). No contextual ambiguity supports the overwrite, and the existing fact is not superseded or deleted."
+    },
+    "intent": "memory_update",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_daughter_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Proposed memory update rejected due to direct contradiction with durable, high-confidence fact.",
+        "No superseding or deletion conditions met."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Verify the proposed relationship with additional context or evidence.",
+      "Clarify the relationship type (e.g., 'niece' vs. 'daughter') with the user.",
+      "Flag for human review if ambiguity persists."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_update\",\n  \"decision\": \"reject\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is Daniele's daughter.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"daughter\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"parent\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is_daughter_of\",\n          \"object\": \"Daniele\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"preserve_existing\",\n    \"entity_id\": null,\n    \"reason\": \"The proposed relationship ('niece') directly contradicts the high-confidence, durable memory ('daughter'). No contextual ambiguity supports the overwrite, and the existing fact is not superseded or deleted.\"\n  },\n  \"conflict_classification\": \"direct_contradiction\",\n  \"answer\": \"Reject the proposed update. The existing memory ('Sara is Daniele's daughter') is high-confidence and durable. The proposed relationship ('niece') lacks supporting evidence and violates the system's strict overwrite policy.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Verify the proposed relationship with additional context or evidence.\",\n    \"Clarify the relationship type (e.g., 'niece' vs. 'daughter') with the user.\",\n    \"Flag for human review if ambiguity persists.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Proposed memory update rejected due to direct contradiction with durable, high-confidence fact.\",\n      \"No superseding or deletion conditions met.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

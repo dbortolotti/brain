@@ -1,0 +1,41 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_unresolved_pronoun_001",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "The memory card states a preference attributable to a male entity, but the antecedent for 'He' is unclear. Preserve the statement as a generic preference placeholder and avoid attributing it to a specific individual until disambiguated.",
+    "citations": [],
+    "conflict_classification": "pronoun_antecedent_ambiguous",
+    "decision": "retain_and_merge_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Ambiguity remains: pronoun 'He' has unresolved antecedent without additional context."
+    },
+    "intent": "validate_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [],
+        "kind": "preference",
+        "relationships": [],
+        "statement": "He prefers the other one."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card retained with unresolved pronoun reference",
+        "Ambiguity flagged for future resolution"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "attach explicit antecedent to the pronoun in future data",
+      "replace ambiguous pronoun with explicit name (e.g., 'John' or 'the first option') in the memory card",
+      "collect additional context to resolve which entity 'the other one' refers to"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"validate_memory\",\n  \"decision\": \"retain_and_merge_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"He prefers the other one.\",\n      \"confidence\": \"medium\",\n      \"entities\": [],\n      \"relationships\": []\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguity remains: pronoun 'He' has unresolved antecedent without additional context.\"\n  },\n  \"conflict_classification\": \"pronoun_antecedent_ambiguous\",\n  \"answer\": \"The memory card states a preference attributable to a male entity, but the antecedent for 'He' is unclear. Preserve the statement as a generic preference placeholder and avoid attributing it to a specific individual until disambiguated.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"attach explicit antecedent to the pronoun in future data\",\n    \"replace ambiguous pronoun with explicit name (e.g., 'John' or 'the first option') in the memory card\",\n    \"collect additional context to resolve which entity 'the other one' refers to\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card retained with unresolved pronoun reference\",\n      \"Ambiguity flagged for future resolution\"\n    ]\n    }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

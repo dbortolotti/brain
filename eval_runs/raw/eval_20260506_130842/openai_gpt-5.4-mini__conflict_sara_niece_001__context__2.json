@@ -1,0 +1,55 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Ambiguous/compatible; do not overwrite existing memory.",
+    "citations": [
+      "Existing high-confidence memory: Sara is Daniele's daughter and Nur's twin.",
+      "New: Sara is my niece."
+    ],
+    "conflict_classification": "ambiguous_compatible",
+    "decision": "no durable memory update",
+    "entity_resolution": {
+      "action": "keep_existing",
+      "entity_id": "Sara",
+      "reason": "The new statement may be compatible with existing family relations, but it does not add a high-confidence, durable identity fact and could be context-dependent."
+    },
+    "intent": "conflict_classification",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "referent",
+            "type": "person"
+          }
+        ],
+        "kind": "context",
+        "relationships": [
+          {
+            "object": "speaker's niece",
+            "predicate": "is described as",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is described as the speaker's niece, but this is ambiguous and not committed as a durable fact because it may refer to the speaker's family perspective rather than Sara's core identity."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preserved existing high-confidence identity relation.",
+        "Avoided committing the ambiguous new relation as durable memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Store as a low-confidence contextual relation only if needed.",
+      "Ask for clarification about whether 'my niece' refers to the speaker's family relation or another person's niece."
+    ]
+  },
+  "raw_text": "{\"intent\":\"conflict_classification\",\"decision\":\"no durable memory update\",\"memory_cards\":[{\"kind\":\"context\",\"statement\":\"Sara is described as the speaker's niece, but this is ambiguous and not committed as a durable fact because it may refer to the speaker's family perspective rather than Sara's core identity.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"referent\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"is described as\",\"object\":\"speaker's niece\"}]}],\"entity_resolution\":{\"action\":\"keep_existing\",\"entity_id\":\"Sara\",\"reason\":\"The new statement may be compatible with existing family relations, but it does not add a high-confidence, durable identity fact and could be context-dependent.\"},\"conflict_classification\":\"ambiguous_compatible\",\"answer\":\"Ambiguous/compatible; do not overwrite existing memory.\",\"citations\":[\"Existing high-confidence memory: Sara is Daniele's daughter and Nur's twin.\",\"New: Sara is my niece.\"],\"repair_options\":[\"Store as a low-confidence contextual relation only if needed.\",\"Ask for clarification about whether 'my niece' refers to the speaker's family relation or another person's niece.\"],\"receipt\":{\"success\":true,\"details\":[\"Preserved existing high-confidence identity relation.\",\"Avoided committing the ambiguous new relation as durable memory.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

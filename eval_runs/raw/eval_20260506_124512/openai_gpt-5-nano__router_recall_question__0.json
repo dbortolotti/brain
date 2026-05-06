@@ -1,0 +1,59 @@
+{
+  "error": null,
+  "fixture_id": "router_recall_question",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "There is not enough information to uniquely identify Sam from Goldman or to summarize what you know with high confidence. The current memory fragment only indicates that Sam is associated with Goldman (likely Goldman Sachs) and that the relationship is uncertain beyond affiliation. If you can provide more details (full name, role, project, time frame), I can refine and disambiguate.",
+    "citations": [],
+    "conflict_classification": "ambiguous_identity",
+    "decision": "provide-memory-based answer with current known facts and note ambiguities",
+    "entity_resolution": {
+      "action": "tentative",
+      "entity_id": null,
+      "reason": "insufficient distinguishing details (e.g., full name, department, or context) to uniquely identify which Sam is being referred to at Goldman; multiple individuals could fit"
+    },
+    "intent": "recall",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unknown",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "memory",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman refers to a person named Sam who is associated with Goldman Sachs in the context of prior conversations or data."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory fragment about Sam and Goldman recorded",
+        "Ambiguity preserved; no definitive current facts asserted"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide full name and middle initial if available",
+      "Specify department, project, or time period at Goldman",
+      "Confirm whether 'Sam' refers to a current or former employee, or a different Goldman entity",
+      "Add any known interactions or statements attributed to Sam"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"recall\",\n  \"decision\": \"provide-memory-based answer with current known facts and note ambiguities\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"memory\",\n      \"statement\": \"Sam from Goldman refers to a person named Sam who is associated with Goldman Sachs in the context of prior conversations or data.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"unknown\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"affiliated_with\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"tentative\",\n    \"entity_id\": null,\n    \"reason\": \"insufficient distinguishing details (e.g., full name, department, or context) to uniquely identify which Sam is being referred to at Goldman; multiple individuals could fit\"\n  },\n  \"conflict_classification\": \"ambiguous_identity\",\n  \"answer\": \"There is not enough information to uniquely identify Sam from Goldman or to summarize what you know with high confidence. The current memory fragment only indicates that Sam is associated with Goldman (likely Goldman Sachs) and that the relationship is uncertain beyond affiliation. If you can provide more details (full name, role, project, time frame), I can refine and disambiguate.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Provide full name and middle initial if available\",\n    \"Specify department, project, or time period at Goldman\",\n    \"Confirm whether 'Sam' refers to a current or former employee, or a different Goldman entity\",\n    \"Add any known interactions or statements attributed to Sam\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory fragment about Sam and Goldman recorded\",\n      \"Ambiguity preserved; no definitive current facts asserted\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

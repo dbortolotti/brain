@@ -1,0 +1,56 @@
+{
+  "error": null,
+  "fixture_id": "recall_hide_deleted_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Sam likes Bill Evans.",
+    "citations": [
+      "current memory: Sam likes Bill Evans"
+    ],
+    "conflict_classification": "no_conflict_current_memory_only",
+    "decision": "answer_from_current_memory",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": null,
+      "reason": "The query refers to Sam, which matches the current memory subject."
+    },
+    "intent": "recall_synthesizer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred_music_artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Used current memory only.",
+        "Ignored deleted memory as superseded."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"recall_synthesizer\",\"decision\":\"answer_from_current_memory\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam likes Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"preferred_music_artist\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"resolved\",\"entity_id\":null,\"reason\":\"The query refers to Sam, which matches the current memory subject.\"},\"conflict_classification\":\"no_conflict_current_memory_only\",\"answer\":\"Sam likes Bill Evans.\",\"citations\":[\"current memory: Sam likes Bill Evans\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Used current memory only.\",\"Ignored deleted memory as superseded.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

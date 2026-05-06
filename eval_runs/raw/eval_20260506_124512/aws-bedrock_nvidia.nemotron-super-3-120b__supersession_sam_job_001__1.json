@@ -1,0 +1,95 @@
+{
+  "error": null,
+  "fixture_id": "supersession_sam_job_001",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Sam's employment has been updated from Goldman to Point72.",
+    "citations": [],
+    "conflict_classification": "supersession",
+    "decision": "supersede",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "Sam",
+      "reason": "Same person referenced in both memory entries; employment status updated."
+    },
+    "intent": "update_employment",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict identified: superseding employment fact.",
+        "Old memory: 'Sam works at Goldman.' marked as low confidence and superseded.",
+        "New memory: 'Sam left Goldman and joined Point72.' accepted as high confidence.",
+        "Entity 'Sam' resolved and merged.",
+        "Durable memory updated to reflect current employment at Point72."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retain both records with timestamps for audit",
+      "Flag for manual review if confidence in new data is uncertain",
+      "Log the supersession event in a change log"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"update_employment\",\n  \"decision\": \"supersede\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam works at Goldman.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"employee\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam left Goldman and joined Point72.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"employee\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"former_employer\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"current_employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"left\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge\",\n    \"entity_id\": \"Sam\",\n    \"reason\": \"Same person referenced in both memory entries; employment status updated.\"\n  },\n  \"conflict_classification\": \"supersession\",\n  \"answer\": \"Sam's employment has been updated from Goldman to Point72.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Retain both records with timestamps for audit\",\n    \"Flag for manual review if confidence in new data is uncertain\",\n    \"Log the supersession event in a change log\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Conflict identified: superseding employment fact.\",\n      \"Old memory: 'Sam works at Goldman.' marked as low confidence and superseded.\",\n      \"New memory: 'Sam left Goldman and joined Point72.' accepted as high confidence.\",\n      \"Entity 'Sam' resolved and merged.\",\n      \"Durable memory updated to reflect current employment at Point72.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

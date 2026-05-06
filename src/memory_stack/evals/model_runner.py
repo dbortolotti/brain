@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -54,6 +56,7 @@ class ModelEvalRunConfig:
     model_set: str | None = None
     report_md_path: Path | None = None
     raw_output_dir: Path | None = None
+    max_workers: int = 1
 
 
 def run_model_evals(
@@ -61,6 +64,7 @@ def run_model_evals(
     config: ModelEvalRunConfig,
     *,
     client: EvalModelClient | None = None,
+    progress_callback: Callable[[int, int, dict], None] | None = None,
 ) -> dict:
     registry = load_model_registry(config.registry_path)
     model_refs = config.model_refs
@@ -89,15 +93,66 @@ def run_model_evals(
     active_client = client or LiveProviderClient(settings)
     raw_output_dir = config.raw_output_dir or config.output_path.parent / "raw" / run_id
     records: list[dict] = []
-    for candidate in candidates:
-        candidate_roles = roles_for_candidate(candidate, config.roles, fixtures)
-        for role in candidate_roles:
-            role_fixtures = [fixture for fixture in fixtures if fixture.role == role]
-            if candidate.kind == "embedding":
-                role_fixtures = embedding_fixtures(fixtures)
-            for fixture in role_fixtures:
-                for repeat_idx in range(config.repeat_runs):
-                    record = run_one_fixture(
+    candidate_task_groups = [
+        (candidate, candidate_tasks(candidate, config.roles, fixtures, config.repeat_runs))
+        for candidate in candidates
+    ]
+    total_records = sum(len(tasks) for _candidate, tasks in candidate_task_groups)
+    completed = 0
+    for candidate, tasks in candidate_task_groups:
+        if not tasks:
+            continue
+
+        first = tasks[0]
+        first_record = run_one_fixture(
+            active_client,
+            candidate=candidate,
+            fixture=first[0],
+            run_id=run_id,
+            repeat_idx=first[1],
+            raw_output_dir=raw_output_dir,
+        )
+        records.append(first_record)
+        completed += 1
+        if progress_callback:
+            progress_callback(completed, total_records, first_record)
+
+        remaining = tasks[1:]
+        if first_record["status"] == "fail":
+            for fixture, repeat_idx in remaining:
+                record = synthetic_failure_record(
+                    candidate=candidate,
+                    fixture=fixture,
+                    run_id=run_id,
+                    repeat_idx=repeat_idx,
+                    raw_output_dir=raw_output_dir,
+                    error=f"candidate preflight failed: {first_record['error']}",
+                )
+                records.append(record)
+                completed += 1
+                if progress_callback:
+                    progress_callback(completed, total_records, record)
+            continue
+
+        if config.max_workers <= 1 or len(remaining) <= 1:
+            for fixture, repeat_idx in remaining:
+                record = run_one_fixture(
+                    active_client,
+                    candidate=candidate,
+                    fixture=fixture,
+                    run_id=run_id,
+                    repeat_idx=repeat_idx,
+                    raw_output_dir=raw_output_dir,
+                )
+                records.append(record)
+                completed += 1
+                if progress_callback:
+                    progress_callback(completed, total_records, record)
+        else:
+            with ThreadPoolExecutor(max_workers=config.max_workers) as executor:
+                futures = [
+                    executor.submit(
+                        run_one_fixture,
                         active_client,
                         candidate=candidate,
                         fixture=fixture,
@@ -105,7 +160,14 @@ def run_model_evals(
                         repeat_idx=repeat_idx,
                         raw_output_dir=raw_output_dir,
                     )
+                    for fixture, repeat_idx in remaining
+                ]
+                for future in as_completed(futures):
+                    record = future.result()
                     records.append(record)
+                    completed += 1
+                    if progress_callback:
+                        progress_callback(completed, total_records, record)
 
     config.output_path.parent.mkdir(parents=True, exist_ok=True)
     write_jsonl(config.output_path, records)
@@ -132,6 +194,23 @@ def run_model_evals(
         config.report_md_path.parent.mkdir(parents=True, exist_ok=True)
         config.report_md_path.write_text(render_markdown_report(result, records), encoding="utf-8")
     return result
+
+
+def candidate_tasks(
+    candidate: ModelCandidate,
+    requested_roles: set[str],
+    fixtures: list[ModelEvalFixture],
+    repeat_runs: int,
+) -> list[tuple[ModelEvalFixture, int]]:
+    tasks: list[tuple[ModelEvalFixture, int]] = []
+    for role in roles_for_candidate(candidate, requested_roles, fixtures):
+        role_fixtures = [fixture for fixture in fixtures if fixture.role == role]
+        if candidate.kind == "embedding":
+            role_fixtures = embedding_fixtures(fixtures)
+        for fixture in role_fixtures:
+            for repeat_idx in range(repeat_runs):
+                tasks.append((fixture, repeat_idx))
+    return tasks
 
 
 def run_one_fixture(
@@ -182,6 +261,59 @@ def run_one_fixture(
         "estimated_cost_usd": call.estimated_cost_usd,
         "latency_ms": call.latency_ms,
         "schema_valid": call.status == "ok" and call.payload is not None,
+        "zero_tolerance_failure": zero_tolerance,
+        "scores": scores,
+        "notes": notes,
+        "raw_output_path": str(raw_output_path),
+    }
+
+
+def synthetic_failure_record(
+    *,
+    candidate: ModelCandidate,
+    fixture: ModelEvalFixture,
+    run_id: str,
+    repeat_idx: int,
+    raw_output_dir: Path,
+    error: str,
+) -> dict:
+    call = ModelCallResult(
+        status="fail",
+        payload=None,
+        raw_text="",
+        error=error,
+        latency_ms=0,
+        input_tokens=0,
+        output_tokens=0,
+        estimated_cost_usd=0.0,
+    )
+    scores, zero_tolerance, notes = score_model_output(fixture, call.payload, status=call.status)
+    raw_output_path = write_raw_output(
+        raw_output_dir,
+        run_id=run_id,
+        candidate=candidate,
+        fixture=fixture,
+        repeat_idx=repeat_idx,
+        call=call,
+    )
+    return {
+        "run_id": run_id,
+        "model": candidate.ref,
+        "provider": candidate.provider,
+        "role": fixture.role if candidate.kind != "embedding" else "embeddings",
+        "kind": candidate.kind,
+        "fixture_set_version": "brain-model-test-v2",
+        "policy_version": "memory-policy-v1",
+        "fixture_id": fixture.id,
+        "scenario_group": fixture.scenario_group,
+        "repeat_idx": repeat_idx,
+        "status": call.status,
+        "error": call.error,
+        "input_tokens": call.input_tokens,
+        "output_tokens": call.output_tokens,
+        "estimated_cost_usd": call.estimated_cost_usd,
+        "latency_ms": call.latency_ms,
+        "schema_valid": False,
         "zero_tolerance_failure": zero_tolerance,
         "scores": scores,
         "notes": notes,

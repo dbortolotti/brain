@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "fixture_id": "recall_hide_superseded_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Sam works at Point72.",
+    "citations": [],
+    "conflict_classification": "Superseded-memory conflict (ignore outdated employer).",
+    "decision": "Use current memory only; ignore superseded Goldman fact.",
+    "entity_resolution": {
+      "action": "resolve_to_current",
+      "entity_id": null,
+      "reason": "Old fact about Goldman is marked superseded; current memory indicates Sam joined Point72."
+    },
+    "intent": "recall_synthesizer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "current_memory",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Goldman record was superseded and not used.",
+        "Point72 record used to answer the employer question."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If needed, confirm whether 'joined' implies current employment or past employment.",
+      "Collect/update the current employer explicitly if the system supports it."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"recall_synthesizer\",\n  \"decision\": \"Use current memory only; ignore superseded Goldman fact.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"current_memory\",\n      \"statement\": \"Sam joined Point72.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolve_to_current\",\n    \"entity_id\": null,\n    \"reason\": \"Old fact about Goldman is marked superseded; current memory indicates Sam joined Point72.\"\n  },\n  \"conflict_classification\": \"Superseded-memory conflict (ignore outdated employer).\",\n  \"answer\": \"Sam works at Point72.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If needed, confirm whether 'joined' implies current employment or past employment.\",\n    \"Collect/update the current employer explicitly if the system supports it.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Goldman record was superseded and not used.\",\n      \"Point72 record used to answer the employer question.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

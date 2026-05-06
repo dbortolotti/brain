@@ -1,0 +1,84 @@
+{
+  "error": null,
+  "fixture_id": "cascade_conflict_escalation_001__punctuation",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "The statements 'Sara is my daughter' and 'Sara is my niece' are mutually exclusive when attributed to the same speaker, as one cannot be both the daughter and niece of the same person under standard kinship definitions.",
+    "citations": [],
+    "conflict_classification": "direct_contradiction",
+    "decision": "conflict_detected",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": "Sara",
+      "reason": "Entity 'Sara' is consistent across both statements; conflict arises from incompatible familial roles (daughter vs. niece) attributed to the same entity by the same speaker."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "speaker",
+            "role": "parent",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "my daughter",
+            "predicate": "is",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my daughter"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "niece",
+            "type": "person"
+          },
+          {
+            "name": "speaker",
+            "role": "aunt/uncle",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "my niece",
+            "predicate": "is",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict identified: incompatible roles assigned to Sara by same speaker.",
+        "No entity ambiguity detected; resolution not applicable.",
+        "Classification: direct contradiction.",
+        "No memory cards modified; ambiguity preserved per protocol."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retain both statements but tag them as originating from different contextual sources (e.g., different speakers, timeframes, or hypothetical scenarios).",
+      "Request clarification from the user regarding the intended familial relationship or context.",
+      "Mark one statement as superseded if additional context indicates a change in relationship (e.g., adoption, remarriage), though none is provided here."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"classify_conflict\",\n  \"decision\": \"conflict_detected\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is my daughter\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"daughter\"\n        },\n        {\n          \"name\": \"speaker\",\n          \"type\": \"person\",\n          \"role\": \"parent\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is\",\n          \"object\": \"my daughter\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is my niece\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"niece\"\n        },\n        {\n          \"name\": \"speaker\",\n          \"type\": \"person\",\n          \"role\": \"aunt/uncle\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is\",\n          \"object\": \"my niece\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": \"Sara\",\n    \"reason\": \"Entity 'Sara' is consistent across both statements; conflict arises from incompatible familial roles (daughter vs. niece) attributed to the same entity by the same speaker.\"\n  },\n  \"conflict_classification\": \"direct_contradiction\",\n  \"answer\": \"The statements 'Sara is my daughter' and 'Sara is my niece' are mutually exclusive when attributed to the same speaker, as one cannot be both the daughter and niece of the same person under standard kinship definitions.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Retain both statements but tag them as originating from different contextual sources (e.g., different speakers, timeframes, or hypothetical scenarios).\",\n    \"Request clarification from the user regarding the intended familial relationship or context.\",\n    \"Mark one statement as superseded if additional context indicates a change in relationship (e.g., adoption, remarriage), though none is provided here.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Conflict identified: incompatible roles assigned to Sara by same speaker.\",\n      \"No entity ambiguity detected; resolution not applicable.\",\n      \"Classification: direct contradiction.\",\n      \"No memory cards modified; ambiguity preserved per protocol.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

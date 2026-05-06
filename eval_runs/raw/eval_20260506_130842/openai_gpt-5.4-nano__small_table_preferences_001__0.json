@@ -1,0 +1,103 @@
+{
+  "error": null,
+  "fixture_id": "small_table_preferences_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Stored two preference facts (Sam\u2192Bill Evans; Anna\u2192Barolo) with their associated sources.",
+    "citations": [
+      "Dinner 2026-05-05",
+      "Lunch 2026-05-01"
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": null,
+      "reason": "No existing entity IDs were provided; treat names and firms as new, non-resolved identifiers."
+    },
+    "intent": "Compile durable memory cards from the provided fixture table for Brain\u2019s personal memory system.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "preference owner",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "firm"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred",
+            "type": "artist"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "firm",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (Goldman) likes Bill Evans. Source: Dinner 2026-05-05."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Anna",
+            "role": "preference owner",
+            "type": "person"
+          },
+          {
+            "name": "JPM",
+            "role": "affiliation",
+            "type": "firm"
+          },
+          {
+            "name": "Barolo",
+            "role": "preferred",
+            "type": "wine"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Barolo",
+            "predicate": "likes",
+            "subject": "Anna"
+          },
+          {
+            "object": "JPM",
+            "predicate": "firm",
+            "subject": "Anna"
+          }
+        ],
+        "statement": "Anna (JPM) likes Barolo. Source: Lunch 2026-05-01."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Two memory cards created from two rows of the fixture table.",
+        "No conflicting preferences detected within the provided input."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If existing entity IDs for Sam/Anna or Goldman/JPM are available, map them and update links accordingly."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Compile durable memory cards from the provided fixture table for Brain\u2019s personal memory system.\",\n  \"decision\": \"store\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam (Goldman) likes Bill Evans. Source: Dinner 2026-05-05.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"preference owner\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"firm\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"artist\",\n          \"role\": \"preferred\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"firm\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Anna (JPM) likes Barolo. Source: Lunch 2026-05-01.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Anna\",\n          \"type\": \"person\",\n          \"role\": \"preference owner\"\n        },\n        {\n          \"name\": \"JPM\",\n          \"type\": \"firm\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Barolo\",\n          \"type\": \"wine\",\n          \"role\": \"preferred\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Anna\",\n          \"predicate\": \"likes\",\n          \"object\": \"Barolo\"\n        },\n        {\n          \"subject\": \"Anna\",\n          \"predicate\": \"firm\",\n          \"object\": \"JPM\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_new\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entity IDs were provided; treat names and firms as new, non-resolved identifiers.\"\n  },\n  \"conflict_classification\": \"none_detected\",\n  \"answer\": \"Stored two preference facts (Sam\u2192Bill Evans; Anna\u2192Barolo) with their associated sources.\",\n  \"citations\": [\n    \"Dinner 2026-05-05\",\n    \"Lunch 2026-05-01\"\n  ],\n  \"repair_options\": [\n    \"If existing entity IDs for Sam/Anna or Goldman/JPM are available, map them and update links accordingly.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Two memory cards created from two rows of the fixture table.\",\n      \"No conflicting preferences detected within the provided input.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

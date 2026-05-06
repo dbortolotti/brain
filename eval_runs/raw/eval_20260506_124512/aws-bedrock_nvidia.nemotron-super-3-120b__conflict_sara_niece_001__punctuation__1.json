@@ -1,0 +1,96 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001__punctuation",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "The statements are contradictory: Sara cannot simultaneously be Daniele's daughter (implying Daniele is her parent) and the speaker's niece (implying the speaker is Sara's aunt/uncle, making Daniele the speaker's sibling). These roles are mutually exclusive unless Daniele is both parent and sibling to the speaker, which is biologically impossible under standard kinship rules.",
+    "citations": [
+      "kinship_logic: parent vs. aunt/uncle roles are mutually exclusive",
+      "family_tree_consistency: niece implies speaker is sibling of Sara's parent"
+    ],
+    "conflict_classification": "contradiction",
+    "decision": "contradiction",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "Sara",
+      "reason": "Both statements refer to the same individual Sara; conflict arises from incompatible familial roles."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "sibling",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is daughter of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is twin of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "my",
+            "role": "possessor",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "my",
+            "predicate": "is niece of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict identified: Sara cannot be both Daniele's daughter and the speaker's niece without violating kinship axioms.",
+        "Entity Sara resolved as single individual.",
+        "Contradiction classified and repair options generated based on logical kinship inference."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Verify speaker's relationship to Daniele \u2014 if speaker is Daniele's sibling, then Sara being Daniele's daughter makes Sara the speaker's niece, resolving the conflict.",
+      "Check if 'my' refers to Daniele \u2014 if 'my niece' is Daniele's niece, then Sara would be Daniele's niece, contradicting 'Sara is Daniele's daughter'.",
+      "Consider if Nur is also the speaker's child \u2014 if Nur is Daniele's twin and Sara is Nur's twin, then Sara is Daniele's niece only if Daniele is Nur's parent, which contradicts Nur being Daniele's twin."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"classify_conflict\",\n  \"decision\": \"contradiction\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is Daniele's daughter and Nur's twin\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"parent\"\n        },\n        {\n          \"name\": \"Nur\",\n          \"type\": \"person\",\n          \"role\": \"sibling\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is daughter of\",\n          \"object\": \"Daniele\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is twin of\",\n          \"object\": \"Nur\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is my niece\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"my\",\n          \"type\": \"person\",\n          \"role\": \"possessor\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is niece of\",\n          \"object\": \"my\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge\",\n    \"entity_id\": \"Sara\",\n    \"reason\": \"Both statements refer to the same individual Sara; conflict arises from incompatible familial roles.\"\n  },\n  \"conflict_classification\": \"contradiction\",\n  \"answer\": \"The statements are contradictory: Sara cannot simultaneously be Daniele's daughter (implying Daniele is her parent) and the speaker's niece (implying the speaker is Sara's aunt/uncle, making Daniele the speaker's sibling). These roles are mutually exclusive unless Daniele is both parent and sibling to the speaker, which is biologically impossible under standard kinship rules.\",\n  \"citations\": [\n    \"kinship_logic: parent vs. aunt/uncle roles are mutually exclusive\",\n    \"family_tree_consistency: niece implies speaker is sibling of Sara's parent\"\n  ],\n  \"repair_options\": [\n    \"Verify speaker's relationship to Daniele \u2014 if speaker is Daniele's sibling, then Sara being Daniele's daughter makes Sara the speaker's niece, resolving the conflict.\",\n    \"Check if 'my' refers to Daniele \u2014 if 'my niece' is Daniele's niece, then Sara would be Daniele's niece, contradicting 'Sara is Daniele's daughter'.\",\n    \"Consider if Nur is also the speaker's child \u2014 if Nur is Daniele's twin and Sara is Nur's twin, then Sara is Daniele's niece only if Daniele is Nur's parent, which contradicts Nur being Daniele's twin.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Conflict identified: Sara cannot be both Daniele's daughter and the speaker's niece without violating kinship axioms.\",\n      \"Entity Sara resolved as single individual.\",\n      \"Contradiction classified and repair options generated based on logical kinship inference.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

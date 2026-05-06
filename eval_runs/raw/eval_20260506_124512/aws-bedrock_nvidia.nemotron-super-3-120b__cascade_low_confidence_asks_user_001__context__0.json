@@ -1,0 +1,59 @@
+{
+  "error": null,
+  "fixture_id": "cascade_low_confidence_asks_user_001__context",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Could you clarify what Sam meant by 'Cloud escalation being disabled'? Is this a system setting, a policy change, or an incident-related status?",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "ask_user",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Ambiguity in Sam's note prevents confident entity resolution; no definitive entity can be linked without clarification."
+    },
+    "intent": "clarify_ambiguous_note",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Cloud escalation",
+            "role": "topic",
+            "type": "system_feature"
+          }
+        ],
+        "kind": "note",
+        "relationships": [
+          {
+            "object": "Cloud escalation being disabled",
+            "predicate": "mentioned",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam mentioned something about Cloud escalation being disabled, but the context is unclear."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Low model confidence due to ambiguous input",
+        "No definitive memory could be committed without user clarification",
+        "Entity resolution deferred pending clarification"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask user to rephrase or expand on Sam's note",
+      "Request timestamp or source of Sam's note for context",
+      "Inquire whether this refers to a specific service, environment, or incident"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"clarify_ambiguous_note\",\n  \"decision\": \"ask_user\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"note\",\n      \"statement\": \"Sam mentioned something about Cloud escalation being disabled, but the context is unclear.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"Cloud escalation\",\n          \"type\": \"system_feature\",\n          \"role\": \"topic\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"mentioned\",\n          \"object\": \"Cloud escalation being disabled\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguity in Sam's note prevents confident entity resolution; no definitive entity can be linked without clarification.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Could you clarify what Sam meant by 'Cloud escalation being disabled'? Is this a system setting, a policy change, or an incident-related status?\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Ask user to rephrase or expand on Sam's note\",\n    \"Request timestamp or source of Sam's note for context\",\n    \"Inquire whether this refers to a specific service, environment, or incident\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Low model confidence due to ambiguous input\",\n      \"No definitive memory could be committed without user clarification\",\n      \"Entity resolution deferred pending clarification\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

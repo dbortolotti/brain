@@ -1,0 +1,60 @@
+{
+  "error": null,
+  "fixture_id": "slack_no_durable_value_repair_001",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "I've remembered that today's weather is cloudy.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "No existing entity matches the temporal reference 'Today' in durable memory; treated as a new contextual reference."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Today",
+            "role": "time_reference",
+            "type": "temporal"
+          },
+          {
+            "name": "weather",
+            "role": "subject",
+            "type": "concept"
+          },
+          {
+            "name": "cloudy",
+            "role": "attribute",
+            "type": "condition"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "cloudy",
+            "predicate": "has_weather",
+            "subject": "Today"
+          }
+        ],
+        "statement": "Today's weather is cloudy."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card stored successfully under intent 'remember'.",
+        "No conflicts detected with existing durable memories.",
+        "Entity 'Today' resolved as a new temporal reference; no durable value existed to repair."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"remember\",\n  \"decision\": \"store\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Today's weather is cloudy.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Today\",\n          \"type\": \"temporal\",\n          \"role\": \"time_reference\"\n        },\n        {\n          \"name\": \"weather\",\n          \"type\": \"concept\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"cloudy\",\n          \"type\": \"condition\",\n          \"role\": \"attribute\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Today\",\n          \"predicate\": \"has_weather\",\n          \"object\": \"cloudy\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entity matches the temporal reference 'Today' in durable memory; treated as a new contextual reference.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"I've remembered that today's weather is cloudy.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card stored successfully under intent 'remember'.\",\n      \"No conflicts detected with existing durable memories.\",\n      \"Entity 'Today' resolved as a new temporal reference; no durable value existed to repair.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

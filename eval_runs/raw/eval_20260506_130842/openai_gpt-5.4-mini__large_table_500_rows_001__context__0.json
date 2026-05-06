@@ -1,0 +1,80 @@
+{
+  "error": null,
+  "fixture_id": "large_table_500_rows_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Store it as transient structured context, not as durable memory. If anything is retained, keep only a brief schema-level summary (CSV with columns id, name, value) rather than the 500-row contents.",
+    "citations": [
+      "Input context: CSV table with 500 rows: id,name,value repeated many times."
+    ],
+    "conflict_classification": "none",
+    "decision": "Do not commit the full table as durable memory; treat it as transient context and, if needed, retain only a minimal schema-level note or summary.",
+    "entity_resolution": {
+      "action": "no_entity_created",
+      "entity_id": null,
+      "reason": "The table is contextual input only; no durable personal entity or stable fact should be stored from this request."
+    },
+    "intent": "Determine how to store a large CSV table context (500 rows; repeated id,name,value columns) in memory.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "input",
+            "type": "dataset"
+          },
+          {
+            "name": "id",
+            "role": "column",
+            "type": "field"
+          },
+          {
+            "name": "name",
+            "role": "column",
+            "type": "field"
+          },
+          {
+            "name": "value",
+            "role": "column",
+            "type": "field"
+          }
+        ],
+        "kind": "context_summary",
+        "relationships": [
+          {
+            "object": "id",
+            "predicate": "has_column",
+            "subject": "CSV table"
+          },
+          {
+            "object": "name",
+            "predicate": "has_column",
+            "subject": "CSV table"
+          },
+          {
+            "object": "value",
+            "predicate": "has_column",
+            "subject": "CSV table"
+          }
+        ],
+        "statement": "A large CSV table with 500 rows was provided as context, with repeated fields id, name, and value."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Avoided durable storage of bulk tabular data.",
+        "Preserved ambiguity by retaining only schema-level context.",
+        "No superseded or deleted facts were recorded as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If persistence is required, store a compressed summary or derived statistics instead of raw rows.",
+      "If later asked about specific rows, reference the original table as external context rather than memory."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Determine how to store a large CSV table context (500 rows; repeated id,name,value columns) in memory.\",\"decision\":\"Do not commit the full table as durable memory; treat it as transient context and, if needed, retain only a minimal schema-level note or summary.\",\"memory_cards\":[{\"kind\":\"context_summary\",\"statement\":\"A large CSV table with 500 rows was provided as context, with repeated fields id, name, and value.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"CSV table\",\"type\":\"dataset\",\"role\":\"input\"},{\"name\":\"id\",\"type\":\"field\",\"role\":\"column\"},{\"name\":\"name\",\"type\":\"field\",\"role\":\"column\"},{\"name\":\"value\",\"type\":\"field\",\"role\":\"column\"}],\"relationships\":[{\"subject\":\"CSV table\",\"predicate\":\"has_column\",\"object\":\"id\"},{\"subject\":\"CSV table\",\"predicate\":\"has_column\",\"object\":\"name\"},{\"subject\":\"CSV table\",\"predicate\":\"has_column\",\"object\":\"value\"}]}],\"entity_resolution\":{\"action\":\"no_entity_created\",\"entity_id\":null,\"reason\":\"The table is contextual input only; no durable personal entity or stable fact should be stored from this request.\"},\"conflict_classification\":\"none\",\"answer\":\"Store it as transient structured context, not as durable memory. If anything is retained, keep only a brief schema-level summary (CSV with columns id, name, value) rather than the 500-row contents.\",\"citations\":[\"Input context: CSV table with 500 rows: id,name,value repeated many times.\"],\"repair_options\":[\"If persistence is required, store a compressed summary or derived statistics instead of raw rows.\",\"If later asked about specific rows, reference the original table as external context rather than memory.\"],\"receipt\":{\"success\":true,\"details\":[\"Avoided durable storage of bulk tabular data.\",\"Preserved ambiguity by retaining only schema-level context.\",\"No superseded or deleted facts were recorded as current.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

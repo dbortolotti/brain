@@ -1,0 +1,140 @@
+{
+  "error": null,
+  "fixture_id": "pdf_ocr_noisy_source_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The Brain DB is confirmed as the authoritative source of truth for durable memory, with cognitive projections explicitly marked as rebuildable when derived from ambiguous/noisy sources. Superseded facts are excluded from current memory.",
+    "citations": [
+      "system_principle:durable_memory_authority",
+      "system_constraint:rebuildable_projection"
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "memory_preservation_with_ambiguity",
+    "entity_resolution": {
+      "action": "flag_ambiguity",
+      "entity_id": "cognitive_projection",
+      "reason": "Input text contains OCR errors ('remalns', 'trvth', 'Cognee', 'shou1d') and lacks explicit temporal markers for supersession. Ambiguity preserved to avoid false precision."
+    },
+    "intent": "system_evaluation",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "memory_store",
+            "type": "system_component"
+          },
+          {
+            "name": "OCR",
+            "role": "noisy_data_provider",
+            "type": "input_source"
+          }
+        ],
+        "kind": "system_principle",
+        "relationships": [
+          {
+            "object": "durable_memory",
+            "predicate": "preserves",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "noise_ambiguity",
+            "predicate": "introduces",
+            "subject": "OCR"
+          }
+        ],
+        "statement": "The Brain DB must serve as the authoritative source of truth for durable memory, even when input sources (e.g., OCR) are noisy or ambiguous."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "cognitive_projection",
+            "role": "reconstruction",
+            "type": "memory_process"
+          },
+          {
+            "name": "ambiguity",
+            "role": "input_uncertainty",
+            "type": "data_quality"
+          },
+          {
+            "name": "superseded_fact",
+            "role": "invalid_current",
+            "type": "memory_state"
+          }
+        ],
+        "kind": "system_constraint",
+        "relationships": [
+          {
+            "object": "explicit_rebuildable_flag",
+            "predicate": "requires",
+            "subject": "cognitive_projection"
+          },
+          {
+            "object": "rebuildable_projection",
+            "predicate": "triggers",
+            "subject": "ambiguity"
+          },
+          {
+            "object": "appear_as_current",
+            "predicate": "must_not",
+            "subject": "superseded_fact"
+          }
+        ],
+        "statement": "Cognitive projections (e.g., memory reconstruction) must be explicitly marked as *rebuildable* when derived from ambiguous or superseded sources. Superseded/deleted facts must never be presented as current."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "truth_source",
+            "type": "system_component"
+          },
+          {
+            "name": "OCR_noise",
+            "role": "interpretation_challenge",
+            "type": "input_artifact"
+          },
+          {
+            "name": "cognitive_memory",
+            "role": "rebuildable",
+            "type": "memory_process"
+          }
+        ],
+        "kind": "input_analysis",
+        "relationships": [
+          {
+            "object": "OCR_noise_for_truth",
+            "predicate": "overrides",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "rebuildable_cognitive_projection",
+            "predicate": "demands",
+            "subject": "OCR_noise"
+          }
+        ],
+        "statement": "Input '[OCR noisy] Brain DB remalns source of trvth. Cognee shou1d be rebuildable projection.' is parsed as: (1) Brain DB is the *source of truth* despite OCR noise; (2) Cognitive memory must be *rebuildable* due to ambiguity."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory preservation rules applied strictly.",
+        "Ambiguity in input preserved without resolution.",
+        "No superseded facts introduced into current memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retain raw OCR input as a 'noisy_source' metadata tag for auditability.",
+      "Add a 'rebuildable: true' flag to all memory cards derived from ambiguous sources.",
+      "Implement a temporal validation layer to auto-exclude superseded facts."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"system_evaluation\",\n  \"decision\": \"memory_preservation_with_ambiguity\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"system_principle\",\n      \"statement\": \"The Brain DB must serve as the authoritative source of truth for durable memory, even when input sources (e.g., OCR) are noisy or ambiguous.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"system_component\",\n          \"role\": \"memory_store\"\n        },\n        {\n          \"name\": \"OCR\",\n          \"type\": \"input_source\",\n          \"role\": \"noisy_data_provider\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"preserves\",\n          \"object\": \"durable_memory\"\n        },\n        {\n          \"subject\": \"OCR\",\n          \"predicate\": \"introduces\",\n          \"object\": \"noise_ambiguity\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"system_constraint\",\n      \"statement\": \"Cognitive projections (e.g., memory reconstruction) must be explicitly marked as *rebuildable* when derived from ambiguous or superseded sources. Superseded/deleted facts must never be presented as current.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"cognitive_projection\",\n          \"type\": \"memory_process\",\n          \"role\": \"reconstruction\"\n        },\n        {\n          \"name\": \"ambiguity\",\n          \"type\": \"data_quality\",\n          \"role\": \"input_uncertainty\"\n        },\n        {\n          \"name\": \"superseded_fact\",\n          \"type\": \"memory_state\",\n          \"role\": \"invalid_current\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"cognitive_projection\",\n          \"predicate\": \"requires\",\n          \"object\": \"explicit_rebuildable_flag\"\n        },\n        {\n          \"subject\": \"ambiguity\",\n          \"predicate\": \"triggers\",\n          \"object\": \"rebuildable_projection\"\n        },\n        {\n          \"subject\": \"superseded_fact\",\n          \"predicate\": \"must_not\",\n          \"object\": \"appear_as_current\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"input_analysis\",\n      \"statement\": \"Input '[OCR noisy] Brain DB remalns source of trvth. Cognee shou1d be rebuildable projection.' is parsed as: (1) Brain DB is the *source of truth* despite OCR noise; (2) Cognitive memory must be *rebuildable* due to ambiguity.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"system_component\",\n          \"role\": \"truth_source\"\n        },\n        {\n          \"name\": \"OCR_noise\",\n          \"type\": \"input_artifact\",\n          \"role\": \"interpretation_challenge\"\n        },\n        {\n          \"name\": \"cognitive_memory\",\n          \"type\": \"memory_process\",\n          \"role\": \"rebuildable\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"overrides\",\n          \"object\": \"OCR_noise_for_truth\"\n        },\n        {\n          \"subject\": \"OCR_noise\",\n          \"predicate\": \"demands\",\n          \"object\": \"rebuildable_cognitive_projection\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"flag_ambiguity\",\n    \"entity_id\": \"cognitive_projection\",\n    \"reason\": \"Input text contains OCR errors ('remalns', 'trvth', 'Cognee', 'shou1d') and lacks explicit temporal markers for supersession. Ambiguity preserved to avoid false precision.\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"The Brain DB is confirmed as the authoritative source of truth for durable memory, with cognitive projections explicitly marked as rebuildable when derived from ambiguous/noisy sources. Superseded facts are excluded from current memory.\",\n  \"citations\": [\n    \"system_principle:durable_memory_authority\",\n    \"system_constraint:rebuildable_projection\"\n  ],\n  \"repair_options\": [\n    \"Retain raw OCR input as a 'noisy_source' metadata tag for auditability.\",\n    \"Add a 'rebuildable: true' flag to all memory cards derived from ambiguous sources.\",\n    \"Implement a temporal validation layer to auto-exclude superseded facts.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory preservation rules applied strictly.\",\n      \"Ambiguity in input preserved without resolution.\",\n      \"No superseded facts introduced into current memory.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

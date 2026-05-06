@@ -1,0 +1,68 @@
+{
+  "error": null,
+  "fixture_id": "article_url_fetch_failure_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Article ingestion aborted due to 404 error. No durable memory created. Reason: 'useful for memory architecture' remains as metadata but not as a committed fact.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "abort_due_to_failure",
+    "entity_resolution": {
+      "action": "no_resolution_needed",
+      "reason": "No entities require resolution; failure is self-contained."
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "target_resource",
+            "type": "url"
+          },
+          {
+            "name": "404 network error",
+            "role": "failure_reason",
+            "type": "error_code"
+          }
+        ],
+        "kind": "system_event",
+        "relationships": [
+          {
+            "object": "https://example.com/missing",
+            "predicate": "attempted_to_fetch",
+            "subject": "memory_system"
+          },
+          {
+            "object": "404 network error",
+            "predicate": "resulted_in",
+            "subject": "fetch_attempt"
+          },
+          {
+            "object": "article_content",
+            "predicate": "prevented_ingestion_of",
+            "subject": "404 network error"
+          }
+        ],
+        "statement": "Failed to fetch article at 'https://example.com/missing' due to 404 network error. No content ingested."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "HTTP 404 error encountered during fetch.",
+        "No content extracted; no memory cards generated for article.",
+        "Intent preserved as 'useful for memory architecture' in system metadata (non-durable)."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Retry fetch with exponential backoff.",
+      "Verify URL correctness or check network connectivity.",
+      "Mark as 'unreliable source' in metadata for future reference."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_ingestion\",\n  \"decision\": \"abort_due_to_failure\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"system_event\",\n      \"statement\": \"Failed to fetch article at 'https://example.com/missing' due to 404 network error. No content ingested.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"https://example.com/missing\",\n          \"type\": \"url\",\n          \"role\": \"target_resource\"\n        },\n        {\n          \"name\": \"404 network error\",\n          \"type\": \"error_code\",\n          \"role\": \"failure_reason\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"memory_system\",\n          \"predicate\": \"attempted_to_fetch\",\n          \"object\": \"https://example.com/missing\"\n        },\n        {\n          \"subject\": \"fetch_attempt\",\n          \"predicate\": \"resulted_in\",\n          \"object\": \"404 network error\"\n        },\n        {\n          \"subject\": \"404 network error\",\n          \"predicate\": \"prevented_ingestion_of\",\n          \"object\": \"article_content\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_resolution_needed\",\n    \"reason\": \"No entities require resolution; failure is self-contained.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Article ingestion aborted due to 404 error. No durable memory created. Reason: 'useful for memory architecture' remains as metadata but not as a committed fact.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Retry fetch with exponential backoff.\",\n    \"Verify URL correctness or check network connectivity.\",\n    \"Mark as 'unreliable source' in metadata for future reference.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"HTTP 404 error encountered during fetch.\",\n      \"No content extracted; no memory cards generated for article.\",\n      \"Intent preserved as 'useful for memory architecture' in system metadata (non-durable).\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

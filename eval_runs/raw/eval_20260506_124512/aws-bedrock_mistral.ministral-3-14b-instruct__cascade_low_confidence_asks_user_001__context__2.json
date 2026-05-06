@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "cascade_low_confidence_asks_user_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The system cannot commit this memory to durable storage due to ambiguity and low confidence. Please clarify or confirm the details of Sam's note regarding Cloud escalation.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "escalate_to_user_for_resolution",
+    "entity_resolution": {
+      "action": "user_intervention_required",
+      "reason": "Ambiguity in note content and low model confidence prevent automated resolution. User clarification needed to commit durable memory."
+    },
+    "intent": "clarify_ambiguous_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "user",
+            "type": "person"
+          },
+          {
+            "name": "Cloud escalation",
+            "role": "disabled_state",
+            "type": "system_feature"
+          }
+        ],
+        "kind": "note",
+        "relationships": [
+          {
+            "object": "Cloud escalation disabled",
+            "predicate": "mentioned",
+            "subject": "Sam"
+          },
+          {
+            "object": "low_confidence_context",
+            "predicate": "has",
+            "subject": "Cloud escalation"
+          }
+        ],
+        "statement": "Sam mentioned a potential issue with Cloud escalation being disabled, but the context is ambiguous and model confidence is low."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory not committed due to low confidence and ambiguity.",
+        "User intervention required for resolution."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask Sam to rephrase or provide additional context about the Cloud escalation note.",
+      "Verify if Cloud escalation is intentionally disabled or if this is a misinterpretation.",
+      "Request confirmation on whether this note should be retained or discarded."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"clarify_ambiguous_memory\",\n  \"decision\": \"escalate_to_user_for_resolution\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"note\",\n      \"statement\": \"Sam mentioned a potential issue with Cloud escalation being disabled, but the context is ambiguous and model confidence is low.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"user\"\n        },\n        {\n          \"name\": \"Cloud escalation\",\n          \"type\": \"system_feature\",\n          \"role\": \"disabled_state\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"mentioned\",\n          \"object\": \"Cloud escalation disabled\"\n        },\n        {\n          \"subject\": \"Cloud escalation\",\n          \"predicate\": \"has\",\n          \"object\": \"low_confidence_context\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"user_intervention_required\",\n    \"reason\": \"Ambiguity in note content and low model confidence prevent automated resolution. User clarification needed to commit durable memory.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"The system cannot commit this memory to durable storage due to ambiguity and low confidence. Please clarify or confirm the details of Sam's note regarding Cloud escalation.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Ask Sam to rephrase or provide additional context about the Cloud escalation note.\",\n    \"Verify if Cloud escalation is intentionally disabled or if this is a misinterpretation.\",\n    \"Request confirmation on whether this note should be retained or discarded.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Memory not committed due to low confidence and ambiguity.\",\n      \"User intervention required for resolution.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

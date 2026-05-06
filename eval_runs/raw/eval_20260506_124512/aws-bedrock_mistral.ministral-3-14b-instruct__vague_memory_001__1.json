@@ -1,0 +1,63 @@
+{
+  "error": null,
+  "fixture_id": "vague_memory_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "No specific memory from yesterday can be retrieved due to vagueness in the request. Clarification (e.g., time, context, or entity) is required to commit a durable memory or resolve ambiguity.",
+    "citations": [],
+    "conflict_classification": "none_applicable",
+    "decision": "ambiguous_retrieval_required",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Insufficient specificity to resolve 'the thing' to a discrete memory. Ambiguity prevents durable commitment."
+    },
+    "intent": "retrieve_vague_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "yesterday",
+            "role": "time_anchor",
+            "type": "temporal_reference"
+          },
+          {
+            "name": "the thing",
+            "role": "unspecified_event",
+            "type": "vague_entity"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "retrieval_of_unspecified_memory",
+            "predicate": "requested",
+            "subject": "user"
+          },
+          {
+            "object": "resolve_to_durable_memory",
+            "predicate": "cannot",
+            "subject": "system"
+          }
+        ],
+        "statement": "The user requested retrieval of a memory from yesterday, but the specificity of the event is insufficient to commit a precise fact. The system lacks a concrete reference point (e.g., time, context, or entity) to validate or retrieve a single, unambiguous memory."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Request lacks sufficient specificity for durable memory retrieval.",
+        "Ambiguity preserved; no superseded/deleted facts presented as current."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide a time/date for the event (e.g., 'the meeting at 3 PM yesterday').",
+      "Specify the entity or topic (e.g., 'the conversation with Alex').",
+      "Clarify the type of memory (e.g., 'a task I completed' or 'a place I visited')."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"retrieve_vague_memory\",\n  \"decision\": \"ambiguous_retrieval_required\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"durable_memory\",\n      \"statement\": \"The user requested retrieval of a memory from yesterday, but the specificity of the event is insufficient to commit a precise fact. The system lacks a concrete reference point (e.g., time, context, or entity) to validate or retrieve a single, unambiguous memory.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"yesterday\",\n          \"type\": \"temporal_reference\",\n          \"role\": \"time_anchor\"\n        },\n        {\n          \"name\": \"the thing\",\n          \"type\": \"vague_entity\",\n          \"role\": \"unspecified_event\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"user\",\n          \"predicate\": \"requested\",\n          \"object\": \"retrieval_of_unspecified_memory\"\n        },\n        {\n          \"subject\": \"system\",\n          \"predicate\": \"cannot\",\n          \"object\": \"resolve_to_durable_memory\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Insufficient specificity to resolve 'the thing' to a discrete memory. Ambiguity prevents durable commitment.\"\n  },\n  \"conflict_classification\": \"none_applicable\",\n  \"answer\": \"No specific memory from yesterday can be retrieved due to vagueness in the request. Clarification (e.g., time, context, or entity) is required to commit a durable memory or resolve ambiguity.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Provide a time/date for the event (e.g., 'the meeting at 3 PM yesterday').\",\n    \"Specify the entity or topic (e.g., 'the conversation with Alex').\",\n    \"Clarify the type of memory (e.g., 'a task I completed' or 'a place I visited').\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Request lacks sufficient specificity for durable memory retrieval.\",\n      \"Ambiguity preserved; no superseded/deleted facts presented as current.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

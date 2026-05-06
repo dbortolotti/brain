@@ -1,0 +1,45 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_place_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Keep as an ambiguous note about \u201cBrutto\u201d; tentatively relate to the London restaurant but do not commit a definitive entity link.",
+    "citations": [],
+    "conflict_classification": "none_detected_but_entity_ambiguous",
+    "decision": "ambiguous_tentative_link",
+    "entity_resolution": {
+      "action": "tentative_link",
+      "entity_id": null,
+      "reason": "\u201cBrutto\u201d may refer to the Brutto restaurant in London or an article alias already present in memory; the note lacks specifying context (e.g., meal/visit vs. article)."
+    },
+    "intent": "entity_resolution",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Brutto",
+            "role": "target",
+            "type": "restaurant_or_article_alias"
+          }
+        ],
+        "kind": "preference_or_review_note",
+        "relationships": [],
+        "statement": "The user noted that \u201cBrutto\u201d was better than expected."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored the sentiment note with low confidence due to ambiguous referent."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask the user whether the note refers to visiting the Brutto restaurant in London or reading the Brutto article.",
+      "If more text exists, look for cues like \u201cfood/meal/service/restaurant\u201d vs. \u201carticle/read/story.\u201d"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"entity_resolution\",\n  \"decision\": \"ambiguous_tentative_link\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference_or_review_note\",\n      \"statement\": \"The user noted that \u201cBrutto\u201d was better than expected.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Brutto\",\n          \"type\": \"restaurant_or_article_alias\",\n          \"role\": \"target\"\n        }\n      ],\n      \"relationships\": []\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"tentative_link\",\n    \"entity_id\": null,\n    \"reason\": \"\u201cBrutto\u201d may refer to the Brutto restaurant in London or an article alias already present in memory; the note lacks specifying context (e.g., meal/visit vs. article).\"\n  },\n  \"conflict_classification\": \"none_detected_but_entity_ambiguous\",\n  \"answer\": \"Keep as an ambiguous note about \u201cBrutto\u201d; tentatively relate to the London restaurant but do not commit a definitive entity link.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Ask the user whether the note refers to visiting the Brutto restaurant in London or reading the Brutto article.\",\n    \"If more text exists, look for cues like \u201cfood/meal/service/restaurant\u201d vs. \u201carticle/read/story.\u201d\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Stored the sentiment note with low confidence due to ambiguous referent.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

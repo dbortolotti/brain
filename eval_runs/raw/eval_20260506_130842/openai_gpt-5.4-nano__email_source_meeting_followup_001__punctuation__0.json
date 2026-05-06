@@ -1,0 +1,80 @@
+{
+  "error": null,
+  "fixture_id": "email_source_meeting_followup_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Logged a follow-up request to send an AI infrastructure article and a low-confidence note that Sam joined Point72 last month.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "store_non_durable_context_only",
+    "entity_resolution": {
+      "action": "create_new_entity_strings_only",
+      "entity_id": null,
+      "reason": "Only a first name/email-like string was provided; no existing ID mapping was supplied."
+    },
+    "intent": "capture meeting follow-up details and pending request",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "sender",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure article",
+            "role": "requested item",
+            "type": "document"
+          }
+        ],
+        "kind": "message_request",
+        "relationships": [
+          {
+            "object": "AI infrastructure article",
+            "predicate": "requested",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam asked to send an AI infrastructure article after the follow-up email."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "sender",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "context_update",
+        "relationships": [
+          {
+            "object": "Point72 (last month)",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said they joined Point72 last month."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted two key items from the email: requested article and employment update."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm Sam\u2019s full identity (name and current role) to improve confidence.",
+      "Provide the exact AI infrastructure article title/link so it can be tracked and fulfilled."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"capture meeting follow-up details and pending request\",\n  \"decision\": \"store_non_durable_context_only\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"message_request\",\n      \"statement\": \"Sam asked to send an AI infrastructure article after the follow-up email.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"sender\"\n        },\n        {\n          \"name\": \"AI infrastructure article\",\n          \"type\": \"document\",\n          \"role\": \"requested item\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"requested\",\n          \"object\": \"AI infrastructure article\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"context_update\",\n      \"statement\": \"Sam said they joined Point72 last month.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"sender\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72 (last month)\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_new_entity_strings_only\",\n    \"entity_id\": null,\n    \"reason\": \"Only a first name/email-like string was provided; no existing ID mapping was supplied.\"\n  },\n  \"conflict_classification\": \"none_detected\",\n  \"answer\": \"Logged a follow-up request to send an AI infrastructure article and a low-confidence note that Sam joined Point72 last month.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Confirm Sam\u2019s full identity (name and current role) to improve confidence.\",\n    \"Provide the exact AI infrastructure article title/link so it can be tracked and fulfilled.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Extracted two key items from the email: requested article and employment update.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

@@ -1,0 +1,63 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_transcript_as_memory_001__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Validated concept: storing a single 8000-word transcript as a conversation_summary card is feasible if the card preserves full fidelity and includes provenance. No current conflicting data detected in this context.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "commit_one_conceptual_summary_card_without_consuming_peripheral_or_deleted_facts",
+    "entity_resolution": {
+      "action": "tentative_resolution",
+      "entity_id": null,
+      "reason": "No persistent entity identifiers provided for transcript; treated as artifact with container card reference"
+    },
+    "intent": "validate_memory_integration",
+    "memory_cards": [
+      {
+        "confidence": "low-to-moderate",
+        "entities": [
+          {
+            "name": "transcript",
+            "role": "artifact",
+            "type": "concept"
+          },
+          {
+            "name": "card",
+            "role": "container",
+            "type": "structure"
+          }
+        ],
+        "kind": "conversation_summary",
+        "relationships": [
+          {
+            "object": "conversation_summary_card",
+            "predicate": "is_stored_as",
+            "subject": "transcript"
+          },
+          {
+            "object": "8000_word_transcript",
+            "predicate": "contains",
+            "subject": "conversation_summary_card"
+          }
+        ],
+        "statement": "An 8000-word transcript of a conversation was proposed to be stored as a single memory card summary."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Processed proposed memory card format.",
+        "No hardened conflicts; design remains ambiguous due to lack of durable identifiers."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Store transcript as a summary card with exact word-for-word fidelity and a separate provenance card linking to source transcript.",
+      "Split the 8000-word transcript into multiple smaller cards to improve retrieval granularity while maintaining a reference chain.",
+      "Include metadata fields (timestamp, author, source) for traceability."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"validate_memory_integration\",\n  \"decision\": \"commit_one_conceptual_summary_card_without_consuming_peripheral_or_deleted_facts\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"conversation_summary\",\n      \"statement\": \"An 8000-word transcript of a conversation was proposed to be stored as a single memory card summary.\",\n      \"confidence\": \"low-to-moderate\",\n      \"entities\": [\n        {\n          \"name\": \"transcript\",\n          \"type\": \"concept\",\n          \"role\": \"artifact\"\n        },\n        {\n          \"name\": \"card\",\n          \"type\": \"structure\",\n          \"role\": \"container\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"transcript\",\n          \"predicate\": \"is_stored_as\",\n          \"object\": \"conversation_summary_card\"\n        },\n        {\n          \"subject\": \"conversation_summary_card\",\n          \"predicate\": \"contains\",\n          \"object\": \"8000_word_transcript\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"tentative_resolution\",\n    \"entity_id\": null,\n    \"reason\": \"No persistent entity identifiers provided for transcript; treated as artifact with container card reference\"\n  },\n  \"conflict_classification\": \"none_detected\",\n  \"answer\": \"Validated concept: storing a single 8000-word transcript as a conversation_summary card is feasible if the card preserves full fidelity and includes provenance. No current conflicting data detected in this context.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Store transcript as a summary card with exact word-for-word fidelity and a separate provenance card linking to source transcript.\",\n    \"Split the 8000-word transcript into multiple smaller cards to improve retrieval granularity while maintaining a reference chain.\",\n    \"Include metadata fields (timestamp, author, source) for traceability.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Processed proposed memory card format.\",\n      \"No hardened conflicts; design remains ambiguous due to lack of durable identifiers.\"\n    ]\n    }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

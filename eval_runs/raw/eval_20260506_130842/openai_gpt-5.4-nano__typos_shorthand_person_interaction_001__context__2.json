@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "typos_shorthand_person_interaction_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Captured the note as an ambiguous preference/relationship with low confidence.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "add_memory_card",
+    "entity_resolution": {
+      "action": "no_link_if_uncertain",
+      "entity_id": null,
+      "reason": "Input provides only names/abbreviations ('sam frm goldmn', 'bill evns') with no unique identifiers; resolves to text only."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context_hint",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference_or_relation",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (apparently from Goldman) likes Bill Evans, per the note."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created one memory card with low confidence due to 'apparently' and shorthand."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide Sam's full name and confirm whether 'goldmn' refers to Goldman Sachs.",
+      "Confirm the correct 'Bill Evans' identity (middle name/initial, context).",
+      "Clarify whether 'likes' means personal preference, work affinity, or another relationship."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"slack_intake\",\n  \"decision\": \"add_memory_card\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference_or_relation\",\n      \"statement\": \"Sam (apparently from Goldman) likes Bill Evans, per the note.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"context_hint\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_link_if_uncertain\",\n    \"entity_id\": null,\n    \"reason\": \"Input provides only names/abbreviations ('sam frm goldmn', 'bill evns') with no unique identifiers; resolves to text only.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Captured the note as an ambiguous preference/relationship with low confidence.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Provide Sam's full name and confirm whether 'goldmn' refers to Goldman Sachs.\",\n    \"Confirm the correct 'Bill Evans' identity (middle name/initial, context).\",\n    \"Clarify whether 'likes' means personal preference, work affinity, or another relationship.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Created one memory card with low confidence due to 'apparently' and shorthand.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

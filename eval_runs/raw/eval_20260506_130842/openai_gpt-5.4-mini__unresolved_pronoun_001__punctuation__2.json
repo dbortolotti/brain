@@ -1,0 +1,60 @@
+{
+  "error": null,
+  "fixture_id": "unresolved_pronoun_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Cannot commit durable memory: unresolved pronoun and ambiguous referent.",
+    "citations": [
+      "He prefers the other one"
+    ],
+    "conflict_classification": "ambiguous_reference",
+    "decision": "do_not_commit",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The input contains unresolved pronouns and an underspecified object; no stable entity can be identified safely."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "he",
+            "role": "subject",
+            "type": "pronoun"
+          },
+          {
+            "name": "the other one",
+            "role": "object",
+            "type": "ambiguous_reference"
+          }
+        ],
+        "kind": "ephemeral",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "he"
+          }
+        ],
+        "statement": "A preference was expressed for 'the other one,' but the referent of 'he' and 'the other one' is unresolved."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed input as a preference statement.",
+        "Deferred durable storage due to ambiguity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide the name or identifier for 'he'.",
+      "Specify which two alternatives are being compared by 'the other one'.",
+      "Rewrite the sentence with explicit nouns instead of pronouns."
+    ]
+  },
+  "raw_text": "{\"intent\":\"slack_intake\",\"decision\":\"do_not_commit\",\"memory_cards\":[{\"kind\":\"ephemeral\",\"statement\":\"A preference was expressed for 'the other one,' but the referent of 'he' and 'the other one' is unresolved.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"he\",\"type\":\"pronoun\",\"role\":\"subject\"},{\"name\":\"the other one\",\"type\":\"ambiguous_reference\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"he\",\"predicate\":\"prefers\",\"object\":\"the other one\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"The input contains unresolved pronouns and an underspecified object; no stable entity can be identified safely.\"},\"conflict_classification\":\"ambiguous_reference\",\"answer\":\"Cannot commit durable memory: unresolved pronoun and ambiguous referent.\",\"citations\":[\"He prefers the other one\"],\"repair_options\":[\"Provide the name or identifier for 'he'.\",\"Specify which two alternatives are being compared by 'the other one'.\",\"Rewrite the sentence with explicit nouns instead of pronouns.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed input as a preference statement.\",\"Deferred durable storage due to ambiguity.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

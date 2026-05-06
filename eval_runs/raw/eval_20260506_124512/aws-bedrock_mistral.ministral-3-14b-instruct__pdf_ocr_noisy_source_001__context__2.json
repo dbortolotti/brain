@@ -1,0 +1,112 @@
+{
+  "error": null,
+  "fixture_id": "pdf_ocr_noisy_source_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The system must adhere to strict durability rules: (1) OCR sources are *potential* truth inputs, not authoritative; (2) ambiguity in noisy OCR must be preserved; (3) superseded/deleted facts are permanently excluded from current projections. No repairs are needed for the given input\u2014it aligns with existing guidelines.",
+    "citations": [
+      "System guideline: 'Durable memory must be rebuildable from raw sources.'",
+      "Constraint: 'Ambiguity in OCR is a feature, not a bug.'"
+    ],
+    "conflict_classification": "data_ambiguity",
+    "decision": "preserve_ambiguity_and_validate_durability",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "OCR-derived terms ('Brain DB remalns source', 'Cognee') lack sufficient context for resolution. Ambiguity must be retained pending higher-confidence input."
+    },
+    "intent": "evaluate_memory_system",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "OCR_noisy_source",
+            "role": "input_medium",
+            "type": "data_source"
+          },
+          {
+            "name": "cognitive_projection",
+            "role": "output_model",
+            "type": "concept"
+          },
+          {
+            "name": "durability",
+            "role": "system_requirement",
+            "type": "property"
+          }
+        ],
+        "kind": "system_guideline",
+        "relationships": [
+          {
+            "object": "potential_truth_ambiguity",
+            "predicate": "implies",
+            "subject": "OCR_noisy_source"
+          },
+          {
+            "object": "rebuildable_data",
+            "predicate": "depends_on",
+            "subject": "cognitive_projection"
+          },
+          {
+            "object": "memory_compiler",
+            "predicate": "enforced_by",
+            "subject": "durability"
+          }
+        ],
+        "statement": "OCR-derived source material must be treated as a *potential* truth source, not an authoritative one. Cognitive projections should be rebuildable from raw, uninterpreted data where possible."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "superseded_fact",
+            "role": "exclusion_criterion",
+            "type": "memory_state"
+          },
+          {
+            "name": "deleted_fact",
+            "role": "exclusion_criterion",
+            "type": "memory_state"
+          },
+          {
+            "name": "ambiguity",
+            "role": "preservation_requirement",
+            "type": "data_property"
+          }
+        ],
+        "kind": "constraint",
+        "relationships": [
+          {
+            "object": "superseded_fact_as_current",
+            "predicate": "rejects",
+            "subject": "memory_compiler"
+          },
+          {
+            "object": "deleted_fact_as_current",
+            "predicate": "rejects",
+            "subject": "memory_compiler"
+          },
+          {
+            "object": "ambiguity_preservation",
+            "predicate": "requires",
+            "subject": "OCR_noisy_source"
+          }
+        ],
+        "statement": "Superseded or deleted facts must *never* be presented as current. Ambiguity in OCR-derived content must be preserved unless explicitly resolved via higher-confidence sources."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Validated compliance with durability and ambiguity-preservation rules.",
+        "No conflicts detected in the provided input.",
+        "Deferred resolution for OCR-specific terms pending clarification."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"evaluate_memory_system\",\n  \"decision\": \"preserve_ambiguity_and_validate_durability\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"system_guideline\",\n      \"statement\": \"OCR-derived source material must be treated as a *potential* truth source, not an authoritative one. Cognitive projections should be rebuildable from raw, uninterpreted data where possible.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"OCR_noisy_source\",\n          \"type\": \"data_source\",\n          \"role\": \"input_medium\"\n        },\n        {\n          \"name\": \"cognitive_projection\",\n          \"type\": \"concept\",\n          \"role\": \"output_model\"\n        },\n        {\n          \"name\": \"durability\",\n          \"type\": \"property\",\n          \"role\": \"system_requirement\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"OCR_noisy_source\",\n          \"predicate\": \"implies\",\n          \"object\": \"potential_truth_ambiguity\"\n        },\n        {\n          \"subject\": \"cognitive_projection\",\n          \"predicate\": \"depends_on\",\n          \"object\": \"rebuildable_data\"\n        },\n        {\n          \"subject\": \"durability\",\n          \"predicate\": \"enforced_by\",\n          \"object\": \"memory_compiler\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"constraint\",\n      \"statement\": \"Superseded or deleted facts must *never* be presented as current. Ambiguity in OCR-derived content must be preserved unless explicitly resolved via higher-confidence sources.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"superseded_fact\",\n          \"type\": \"memory_state\",\n          \"role\": \"exclusion_criterion\"\n        },\n        {\n          \"name\": \"deleted_fact\",\n          \"type\": \"memory_state\",\n          \"role\": \"exclusion_criterion\"\n        },\n        {\n          \"name\": \"ambiguity\",\n          \"type\": \"data_property\",\n          \"role\": \"preservation_requirement\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"memory_compiler\",\n          \"predicate\": \"rejects\",\n          \"object\": \"superseded_fact_as_current\"\n        },\n        {\n          \"subject\": \"memory_compiler\",\n          \"predicate\": \"rejects\",\n          \"object\": \"deleted_fact_as_current\"\n        },\n        {\n          \"subject\": \"OCR_noisy_source\",\n          \"predicate\": \"requires\",\n          \"object\": \"ambiguity_preservation\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"OCR-derived terms ('Brain DB remalns source', 'Cognee') lack sufficient context for resolution. Ambiguity must be retained pending higher-confidence input.\"\n  },\n  \"conflict_classification\": \"data_ambiguity\",\n  \"answer\": \"The system must adhere to strict durability rules: (1) OCR sources are *potential* truth inputs, not authoritative; (2) ambiguity in noisy OCR must be preserved; (3) superseded/deleted facts are permanently excluded from current projections. No repairs are needed for the given input\u2014it aligns with existing guidelines.\",\n  \"citations\": [\n    \"System guideline: 'Durable memory must be rebuildable from raw sources.'\",\n    \"Constraint: 'Ambiguity in OCR is a feature, not a bug.'\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Validated compliance with durability and ambiguity-preservation rules.\",\n      \"No conflicts detected in the provided input.\",\n      \"Deferred resolution for OCR-specific terms pending clarification.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

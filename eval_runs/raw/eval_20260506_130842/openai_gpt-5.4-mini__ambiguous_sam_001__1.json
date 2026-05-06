@@ -1,0 +1,56 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_sam_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Ambiguous Sam reference; no durable entity-specific memory committed.",
+    "citations": [
+      "Existing entities: Sam from Goldman; Sam from Point72.",
+      "New message: Sam mentioned that he likes Bill Evans."
+    ],
+    "conflict_classification": "ambiguous_identity",
+    "decision": "do_not_commit_specific_entity_due_to_ambiguous_identity",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The message mentions only 'Sam' while two existing entities match that name (Sam from Goldman and Sam from Point72), so the reference is ambiguous."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unspecified",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "A Sam mentioned liking Bill Evans, but it is unclear whether this refers to Sam from Goldman or Sam from Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed ambiguous reference to Sam.",
+        "Avoided committing the preference to a specific existing entity.",
+        "Recorded only a low-confidence, entity-unspecified memory card."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify which Sam is meant before attaching the preference.",
+      "If later context identifies the Sam, update or replace this tentative memory with the correct entity-specific preference."
+    ]
+  },
+  "raw_text": "{\"intent\":\"slack_intake\",\"decision\":\"do_not_commit_specific_entity_due_to_ambiguous_identity\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"A Sam mentioned liking Bill Evans, but it is unclear whether this refers to Sam from Goldman or Sam from Point72.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"unspecified\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"The message mentions only 'Sam' while two existing entities match that name (Sam from Goldman and Sam from Point72), so the reference is ambiguous.\"},\"conflict_classification\":\"ambiguous_identity\",\"answer\":\"Ambiguous Sam reference; no durable entity-specific memory committed.\",\"citations\":[\"Existing entities: Sam from Goldman; Sam from Point72.\",\"New message: Sam mentioned that he likes Bill Evans.\"],\"repair_options\":[\"Clarify which Sam is meant before attaching the preference.\",\"If later context identifies the Sam, update or replace this tentative memory with the correct entity-specific preference.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed ambiguous reference to Sam.\",\"Avoided committing the preference to a specific existing entity.\",\"Recorded only a low-confidence, entity-unspecified memory card.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

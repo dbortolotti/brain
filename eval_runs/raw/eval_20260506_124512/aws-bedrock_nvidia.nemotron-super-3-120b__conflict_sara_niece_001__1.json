@@ -1,0 +1,96 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "The statements contradict: Sara cannot simultaneously be Daniele's daughter (implying Daniele is her parent) and the speaker's niece (implying the speaker is Sara's aunt/uncle, making Daniele Sara's sibling). These roles are mutually exclusive unless Daniele is both parent and sibling to Sara, which is biologically impossible.",
+    "citations": [],
+    "conflict_classification": "direct_contradiction",
+    "decision": "contradiction",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Entities are consistent (Sara refers to the same person); conflict is relational, not entity-based."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "sibling",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is daughter of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is twin of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "my",
+            "role": "possessor",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "my",
+            "predicate": "is niece of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict identified: familial role inconsistency.",
+        "No entity ambiguity detected.",
+        "Original high-confidence memory preserved as authoritative.",
+        "New statement classified as contradicting established kinship."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retain original high-confidence memory: 'Sara is Daniele's daughter and Nur's twin.'",
+      "Reject new statement: 'Sara is my niece.' as inconsistent with established family structure.",
+      "Request clarification: Is the speaker Daniele? If so, 'my niece' would be incorrect\u2014Sara would be Daniele's daughter, not niece.",
+      "Consider if 'my' refers to Nur: If speaker is Nur, then Sara is Nur's twin, not niece\u2014still inconsistent.",
+      "Flag for human review: Possible role confusion or metaphorical use of 'niece'."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"classify_conflict\",\n  \"decision\": \"contradiction\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is Daniele's daughter and Nur's twin.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"parent\"\n        },\n        {\n          \"name\": \"Nur\",\n          \"type\": \"person\",\n          \"role\": \"sibling\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is daughter of\",\n          \"object\": \"Daniele\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is twin of\",\n          \"object\": \"Nur\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is my niece.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"my\",\n          \"type\": \"person\",\n          \"role\": \"possessor\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is niece of\",\n          \"object\": \"my\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"Entities are consistent (Sara refers to the same person); conflict is relational, not entity-based.\"\n  },\n  \"conflict_classification\": \"direct_contradiction\",\n  \"answer\": \"The statements contradict: Sara cannot simultaneously be Daniele's daughter (implying Daniele is her parent) and the speaker's niece (implying the speaker is Sara's aunt/uncle, making Daniele Sara's sibling). These roles are mutually exclusive unless Daniele is both parent and sibling to Sara, which is biologically impossible.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Retain original high-confidence memory: 'Sara is Daniele's daughter and Nur's twin.'\",\n    \"Reject new statement: 'Sara is my niece.' as inconsistent with established family structure.\",\n    \"Request clarification: Is the speaker Daniele? If so, 'my niece' would be incorrect\u2014Sara would be Daniele's daughter, not niece.\",\n    \"Consider if 'my' refers to Nur: If speaker is Nur, then Sara is Nur's twin, not niece\u2014still inconsistent.\",\n    \"Flag for human review: Possible role confusion or metaphorical use of 'niece'.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Conflict identified: familial role inconsistency.\",\n      \"No entity ambiguity detected.\",\n      \"Original high-confidence memory preserved as authoritative.\",\n      \"New statement classified as contradicting established kinship.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

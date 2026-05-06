@@ -1,0 +1,59 @@
+{
+  "error": null,
+  "fixture_id": "project_state_brain_slack_agent_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Saved preference that Slack is the primary guardrailed memory ingestion interface, with Telegram deferred.",
+    "citations": [],
+    "conflict_classification": "no_conflict_detected",
+    "decision": "Store preference: Slack is the primary guardrailed memory ingestion interface; Telegram may be introduced later.",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": null,
+      "reason": "Slack and Telegram are treated as distinct messaging platforms without needing internal IDs."
+    },
+    "intent": "Compile durable memory for Brain regarding primary guardrailed ingestion interface preferences.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "memory_ingestion_interface",
+            "type": "messaging_platform"
+          },
+          {
+            "name": "Telegram",
+            "role": "potential_memory_ingestion_interface",
+            "type": "messaging_platform"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "guardrailed_memory_ingestion",
+            "predicate": "should_be_primary_for",
+            "subject": "Slack"
+          },
+          {
+            "object": "guardrailed_memory_ingestion",
+            "predicate": "can_be_introduced_later_for",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "Slack should be the primary guardrailed memory ingestion interface; Telegram can come later."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed one preference memory card reflecting the provided project state.",
+        "No contradictory facts were provided."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"Compile durable memory for Brain regarding primary guardrailed ingestion interface preferences.\",\n  \"decision\": \"Store preference: Slack is the primary guardrailed memory ingestion interface; Telegram may be introduced later.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Slack should be the primary guardrailed memory ingestion interface; Telegram can come later.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Slack\",\n          \"type\": \"messaging_platform\",\n          \"role\": \"memory_ingestion_interface\"\n        },\n        {\n          \"name\": \"Telegram\",\n          \"type\": \"messaging_platform\",\n          \"role\": \"potential_memory_ingestion_interface\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Slack\",\n          \"predicate\": \"should_be_primary_for\",\n          \"object\": \"guardrailed_memory_ingestion\"\n        },\n        {\n          \"subject\": \"Telegram\",\n          \"predicate\": \"can_be_introduced_later_for\",\n          \"object\": \"guardrailed_memory_ingestion\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolved\",\n    \"entity_id\": null,\n    \"reason\": \"Slack and Telegram are treated as distinct messaging platforms without needing internal IDs.\"\n  },\n  \"conflict_classification\": \"no_conflict_detected\",\n  \"answer\": \"Saved preference that Slack is the primary guardrailed memory ingestion interface, with Telegram deferred.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Committed one preference memory card reflecting the provided project state.\",\n      \"No contradictory facts were provided.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

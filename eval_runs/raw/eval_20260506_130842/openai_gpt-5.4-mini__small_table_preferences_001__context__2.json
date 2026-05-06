@@ -1,0 +1,101 @@
+{
+  "error": null,
+  "fixture_id": "small_table_preferences_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Committed two preference memories: Sam likes Bill Evans; Anna likes Barolo.",
+    "citations": [
+      "Dinner 2026-05-05",
+      "Lunch 2026-05-01"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No ambiguity or prior entity linkage was provided beyond the table context."
+    },
+    "intent": "Extract durable preference memories from the provided table context.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "organization",
+            "type": "firm"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam, associated with Goldman, likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Anna",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "JPM",
+            "role": "organization",
+            "type": "firm"
+          },
+          {
+            "name": "Barolo",
+            "role": "preference_object",
+            "type": "wine"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "JPM",
+            "predicate": "associated_with",
+            "subject": "Anna"
+          },
+          {
+            "object": "Barolo",
+            "predicate": "likes",
+            "subject": "Anna"
+          }
+        ],
+        "statement": "Anna, associated with JPM, likes Barolo."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted 2 memory cards from the table.",
+        "No conflicts detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"Extract durable preference memories from the provided table context.\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam, associated with Goldman, likes Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"firm\",\"role\":\"organization\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"preference_object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"associated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]},{\"kind\":\"preference\",\"statement\":\"Anna, associated with JPM, likes Barolo.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Anna\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"JPM\",\"type\":\"firm\",\"role\":\"organization\"},{\"name\":\"Barolo\",\"type\":\"wine\",\"role\":\"preference_object\"}],\"relationships\":[{\"subject\":\"Anna\",\"predicate\":\"associated_with\",\"object\":\"JPM\"},{\"subject\":\"Anna\",\"predicate\":\"likes\",\"object\":\"Barolo\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No ambiguity or prior entity linkage was provided beyond the table context.\"},\"conflict_classification\":\"none\",\"answer\":\"Committed two preference memories: Sam likes Bill Evans; Anna likes Barolo.\",\"citations\":[\"Dinner 2026-05-05\",\"Lunch 2026-05-01\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Extracted 2 memory cards from the table.\",\"No conflicts detected.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

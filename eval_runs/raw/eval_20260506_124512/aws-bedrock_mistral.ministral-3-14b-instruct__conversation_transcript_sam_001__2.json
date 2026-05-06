@@ -1,0 +1,139 @@
+{
+  "error": null,
+  "fixture_id": "conversation_transcript_sam_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam\u2019s professional transition to Point72 Ventures and updated jazz preferences (Coltrane) are durably recorded. The AI infrastructure article request is pending external fulfillment.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit_durable_memory",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": null,
+      "reason": "No pre-existing entities match the context of Point72 Ventures or early Coltrane references."
+    },
+    "intent": "update_and_request_followup",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Goldman Sachs",
+            "role": "previous_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72 Ventures",
+            "role": "current_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "professional_update",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "employed_at",
+            "subject": "Sam",
+            "timestamp": "[current_date - 2 months] to [current_date - 1 month]"
+          },
+          {
+            "object": "Point72 Ventures",
+            "predicate": "employed_at",
+            "subject": "Sam",
+            "timestamp": "[current_date - 1 month] to present"
+          }
+        ],
+        "statement": "Sam left Goldman Sachs last month and joined Point72 Ventures as of [current_date - 1 month]."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Bill Evans",
+            "role": "ongoing_interest",
+            "type": "artist"
+          },
+          {
+            "name": "John Coltrane (early works)",
+            "role": "recent_interest",
+            "type": "artist"
+          },
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "personal_interest_update",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "listens_to",
+            "subject": "Sam",
+            "temporal_qualifier": "ongoing"
+          },
+          {
+            "object": "John Coltrane (early works)",
+            "predicate": "listens_to",
+            "subject": "Sam",
+            "temporal_qualifier": "recently_increased"
+          }
+        ],
+        "statement": "Sam continues to listen to jazz, with a recent shift toward early Coltrane recordings alongside Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "AI infrastructure",
+            "role": "requested_content",
+            "type": "topic"
+          },
+          {
+            "name": "Daniele",
+            "role": "source",
+            "type": "person"
+          },
+          {
+            "name": "Sam",
+            "role": "recipient",
+            "type": "person"
+          }
+        ],
+        "kind": "action_request",
+        "relationships": [
+          {
+            "context": "AI infrastructure article",
+            "object": "Daniele",
+            "predicate": "requested_from",
+            "subject": "Sam"
+          },
+          {
+            "object": "AI infrastructure",
+            "predicate": "plans_to_discuss",
+            "subject": "Sam",
+            "with": "Daniele"
+          }
+        ],
+        "statement": "Sam requested Daniele to share an article related to AI infrastructure for follow-up discussion."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed professional update (Goldman \u2192 Point72).",
+        "Updated personal interests (Coltrane addition).",
+        "Logged pending action (article request)."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"update_and_request_followup\",\n  \"decision\": \"commit_durable_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"professional_update\",\n      \"statement\": \"Sam left Goldman Sachs last month and joined Point72 Ventures as of [current_date - 1 month].\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"previous_employer\"\n        },\n        {\n          \"name\": \"Point72 Ventures\",\n          \"type\": \"organization\",\n          \"role\": \"current_employer\"\n        },\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"employed_at\",\n          \"object\": \"Goldman Sachs\",\n          \"timestamp\": \"[current_date - 2 months] to [current_date - 1 month]\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"employed_at\",\n          \"object\": \"Point72 Ventures\",\n          \"timestamp\": \"[current_date - 1 month] to present\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"personal_interest_update\",\n      \"statement\": \"Sam continues to listen to jazz, with a recent shift toward early Coltrane recordings alongside Bill Evans.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"artist\",\n          \"role\": \"ongoing_interest\"\n        },\n        {\n          \"name\": \"John Coltrane (early works)\",\n          \"type\": \"artist\",\n          \"role\": \"recent_interest\"\n        },\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"listens_to\",\n          \"object\": \"Bill Evans\",\n          \"temporal_qualifier\": \"ongoing\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"listens_to\",\n          \"object\": \"John Coltrane (early works)\",\n          \"temporal_qualifier\": \"recently_increased\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"action_request\",\n      \"statement\": \"Sam requested Daniele to share an article related to AI infrastructure for follow-up discussion.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"AI infrastructure\",\n          \"type\": \"topic\",\n          \"role\": \"requested_content\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"source\"\n        },\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"recipient\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"requested_from\",\n          \"object\": \"Daniele\",\n          \"context\": \"AI infrastructure article\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"plans_to_discuss\",\n          \"object\": \"AI infrastructure\",\n          \"with\": \"Daniele\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_new\",\n    \"entity_id\": null,\n    \"reason\": \"No pre-existing entities match the context of Point72 Ventures or early Coltrane references.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Sam\u2019s professional transition to Point72 Ventures and updated jazz preferences (Coltrane) are durably recorded. The AI infrastructure article request is pending external fulfillment.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Committed professional update (Goldman \u2192 Point72).\",\n      \"Updated personal interests (Coltrane addition).\",\n      \"Logged pending action (article request).\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

@@ -1,0 +1,81 @@
+{
+  "error": null,
+  "fixture_id": "memory_compiler_small_table__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Stored two stated preferences: Sam \u2192 Bill Evans; Daniele \u2192 knowledge graphs.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "assign_new_ids",
+      "entity_id": null,
+      "reason": "No existing entity IDs were provided; create fresh identifiers if needed."
+    },
+    "intent": "store_user_memory_preferences",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "preferrer",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred_item",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam prefers Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "preferrer",
+            "type": "person"
+          },
+          {
+            "name": "knowledge graphs",
+            "role": "preferred_item",
+            "type": "concept"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "knowledge graphs",
+            "predicate": "prefers",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Daniele prefers knowledge graphs."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed table rows into two preference facts.",
+        "No conflicts or deletions indicated."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If 'Sam' or 'Daniele' are ambiguous (multiple people with same name), ask for disambiguation.",
+      "If 'Bill Evans' refers to a specific person vs. another entity, confirm."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"store_user_memory_preferences\",\n  \"decision\": \"commit\",\n  \"conflict_classification\": \"none_detected\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam prefers Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"preferrer\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"preferred_item\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"prefers\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Daniele prefers knowledge graphs.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"preferrer\"\n        },\n        {\n          \"name\": \"knowledge graphs\",\n          \"type\": \"concept\",\n          \"role\": \"preferred_item\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Daniele\",\n          \"predicate\": \"prefers\",\n          \"object\": \"knowledge graphs\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"assign_new_ids\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entity IDs were provided; create fresh identifiers if needed.\"\n  },\n  \"answer\": \"Stored two stated preferences: Sam \u2192 Bill Evans; Daniele \u2192 knowledge graphs.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If 'Sam' or 'Daniele' are ambiguous (multiple people with same name), ask for disambiguation.\",\n    \"If 'Bill Evans' refers to a specific person vs. another entity, confirm.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Parsed table rows into two preference facts.\",\n      \"No conflicts or deletions indicated.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

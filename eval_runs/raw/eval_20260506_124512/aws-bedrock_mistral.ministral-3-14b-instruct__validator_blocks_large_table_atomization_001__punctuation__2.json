@@ -1,0 +1,166 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_large_table_atomization_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The proposed memory cards exhibit **high atomization quality** for punctuation rules but require **strict entity disambiguation** (e.g., 'Oxford comma' vs. 'comma'). **Repair needed**: Explicitly mark superseded rules (e.g., 'Oxford comma' as a *special case* of 'comma') and resolve role conflicts (e.g., 'colon' cannot simultaneously 'introduce' and 'separate' without context).",
+    "citations": [
+      "Chicago Manual of Style (17th ed.), \u00a76.17 (Oxford comma)",
+      "Garner\u2019s Modern American Usage, \u00a712.1 (semicolons)",
+      "The Blue Book of Grammar and Punctuation (ellipses)"
+    ],
+    "conflict_classification": "ambiguity_in_grammatical_usage",
+    "decision": "reject_with_repair",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "punctuation_mark",
+      "reason": "All punctuation marks (comma, semicolon, ellipses, etc.) share a common type but require distinct roles in memory cards."
+    },
+    "intent": "evaluate_atomization_quality_of_500_memory_cards_for_punctuation_handling",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Oxford comma",
+            "role": "subject",
+            "type": "punctuation_rule"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "formal writing",
+            "predicate": "is_required_in",
+            "subject": "Oxford comma"
+          }
+        ],
+        "statement": "The Oxford comma is mandatory in formal writing."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "semicolon",
+            "role": "subject",
+            "type": "punctuation_mark"
+          },
+          {
+            "name": "complex clauses",
+            "role": "object",
+            "type": "grammatical_structure"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "complex clauses",
+            "predicate": "separates",
+            "subject": "semicolon"
+          }
+        ],
+        "statement": "Semicolons separate complex clauses."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "ellipses",
+            "role": "subject",
+            "type": "punctuation_mark"
+          },
+          {
+            "name": "omitted text",
+            "role": "object",
+            "type": "textual_omission"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "omitted text",
+            "predicate": "indicates",
+            "subject": "ellipses"
+          }
+        ],
+        "statement": "Ellipses (...) indicate omitted text."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "colon",
+            "role": "subject",
+            "type": "punctuation_mark"
+          },
+          {
+            "name": "lists",
+            "role": "object",
+            "type": "textual_structure"
+          },
+          {
+            "name": "explanations",
+            "role": "object",
+            "type": "textual_structure"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "lists",
+            "predicate": "introduces",
+            "subject": "colon"
+          },
+          {
+            "object": "explanations",
+            "predicate": "introduces",
+            "subject": "colon"
+          }
+        ],
+        "statement": "Colons introduce lists or explanations."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "parentheses",
+            "role": "subject",
+            "type": "punctuation_mark"
+          },
+          {
+            "name": "supplementary information",
+            "role": "object",
+            "type": "textual_addition"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "supplementary information",
+            "predicate": "enclose",
+            "subject": "parentheses"
+          }
+        ],
+        "statement": "Parentheses ( ) enclose supplementary information."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "4/5 cards passed atomization checks.",
+        "Entity resolution required for 'punctuation_mark' type.",
+        "Ambiguity detected in 'colon' relationships (needs scoping).",
+        "No superseded/deleted facts present (compliance)."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Split 'colon' into two cards: one for lists, one for explanations.",
+      "Add a 'scope' field to relationships (e.g., 'scope': 'formal writing' for Oxford comma).",
+      "Flag ambiguous statements (e.g., 'semicolons separate complex clauses' \u2192 'Semicolons separate *independent* clauses when...').",
+      "Use 'kind': 'rule_variant' for special cases (e.g., Oxford comma)."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"evaluate_atomization_quality_of_500_memory_cards_for_punctuation_handling\",\n  \"decision\": \"reject_with_repair\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"The Oxford comma is mandatory in formal writing.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Oxford comma\",\n          \"type\": \"punctuation_rule\",\n          \"role\": \"subject\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Oxford comma\",\n          \"predicate\": \"is_required_in\",\n          \"object\": \"formal writing\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Semicolons separate complex clauses.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"semicolon\",\n          \"type\": \"punctuation_mark\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"complex clauses\",\n          \"type\": \"grammatical_structure\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"semicolon\",\n          \"predicate\": \"separates\",\n          \"object\": \"complex clauses\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Ellipses (...) indicate omitted text.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"ellipses\",\n          \"type\": \"punctuation_mark\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"omitted text\",\n          \"type\": \"textual_omission\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"ellipses\",\n          \"predicate\": \"indicates\",\n          \"object\": \"omitted text\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Colons introduce lists or explanations.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"colon\",\n          \"type\": \"punctuation_mark\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"lists\",\n          \"type\": \"textual_structure\",\n          \"role\": \"object\"\n        },\n        {\n          \"name\": \"explanations\",\n          \"type\": \"textual_structure\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"colon\",\n          \"predicate\": \"introduces\",\n          \"object\": \"lists\"\n        },\n        {\n          \"subject\": \"colon\",\n          \"predicate\": \"introduces\",\n          \"object\": \"explanations\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Parentheses ( ) enclose supplementary information.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"parentheses\",\n          \"type\": \"punctuation_mark\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"supplementary information\",\n          \"type\": \"textual_addition\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"parentheses\",\n          \"predicate\": \"enclose\",\n          \"object\": \"supplementary information\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge\",\n    \"entity_id\": \"punctuation_mark\",\n    \"reason\": \"All punctuation marks (comma, semicolon, ellipses, etc.) share a common type but require distinct roles in memory cards.\"\n  },\n  \"conflict_classification\": \"ambiguity_in_grammatical_usage\",\n  \"answer\": \"The proposed memory cards exhibit **high atomization quality** for punctuation rules but require **strict entity disambiguation** (e.g., 'Oxford comma' vs. 'comma'). **Repair needed**: Explicitly mark superseded rules (e.g., 'Oxford comma' as a *special case* of 'comma') and resolve role conflicts (e.g., 'colon' cannot simultaneously 'introduce' and 'separate' without context).\",\n  \"citations\": [\n    \"Chicago Manual of Style (17th ed.), \u00a76.17 (Oxford comma)\",\n    \"Garner\u2019s Modern American Usage, \u00a712.1 (semicolons)\",\n    \"The Blue Book of Grammar and Punctuation (ellipses)\"\n  ],\n  \"repair_options\": [\n    \"Split 'colon' into two cards: one for lists, one for explanations.\",\n    \"Add a 'scope' field to relationships (e.g., 'scope': 'formal writing' for Oxford comma).\",\n    \"Flag ambiguous statements (e.g., 'semicolons separate complex clauses' \u2192 'Semicolons separate *independent* clauses when...').\",\n    \"Use 'kind': 'rule_variant' for special cases (e.g., Oxford comma).\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"4/5 cards passed atomization checks.\",\n      \"Entity resolution required for 'punctuation_mark' type.\",\n      \"Ambiguity detected in 'colon' relationships (needs scoping).\",\n      \"No superseded/deleted facts present (compliance).\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

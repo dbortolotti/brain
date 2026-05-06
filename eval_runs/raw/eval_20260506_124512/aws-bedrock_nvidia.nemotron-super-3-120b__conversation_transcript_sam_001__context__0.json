@@ -1,0 +1,137 @@
+{
+  "error": null,
+  "fixture_id": "conversation_transcript_sam_001__context",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Updated Sam's current employment to Point72 (left Goldman Sachs last month), refined music listening preference to include increased focus on early Coltrane alongside Bill Evans, and recorded intent to discuss AI infrastructure with Daniele upon receiving an article.",
+    "citations": [
+      "User utterance: 'Sam: No, I left Goldman last month and joined Point72.'",
+      "User utterance: 'Sam: Yes, but lately more early Coltrane.'",
+      "User utterance: 'Sam: Definitely, send me that article.'"
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "commit_new_facts",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "No existing entity conflicts detected; all entities (Sam, Goldman Sachs, Point72, Bill Evans, early Coltrane, Daniele, AI infrastructure) are either newly referenced or resolved to known types without ambiguity."
+    },
+    "intent": "update_personal_information",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "previous_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman Sachs last month and joined Point72."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "artist_listened_to",
+            "type": "music_artist"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "artist_listened_to_more_recently",
+            "type": "music_artist"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "is_listening_to",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "has_been_listening_more_to",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is still listening to Bill Evans but has recently been listening more to early Coltrane."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "recipient_of_request",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "subject_of_discussion",
+            "type": "topic"
+          }
+        ],
+        "kind": "intent",
+        "relationships": [
+          {
+            "object": "AI infrastructure",
+            "predicate": "agreed_to_catch_up_about",
+            "subject": "Sam"
+          },
+          {
+            "object": "Daniele to send that article",
+            "predicate": "asked",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam agreed to catch up with Daniele about AI infrastructure and asked Daniele to send an article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory cards successfully created for employment change, music preference update, and discussion intent.",
+        "No contradictions found with prior knowledge (assuming no prior conflicting data in fixture).",
+        "All statements derived directly from user input with high confidence."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"update_personal_information\",\n  \"decision\": \"commit_new_facts\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"employment\",\n      \"statement\": \"Sam left Goldman Sachs last month and joined Point72.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"previous_employer\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"current_employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"left\",\n          \"object\": \"Goldman Sachs\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam is still listening to Bill Evans but has recently been listening more to early Coltrane.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"music_artist\",\n          \"role\": \"artist_listened_to\"\n        },\n        {\n          \"name\": \"early Coltrane\",\n          \"type\": \"music_artist\",\n          \"role\": \"artist_listened_to_more_recently\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"is_listening_to\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has_been_listening_more_to\",\n          \"object\": \"early Coltrane\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"intent\",\n      \"statement\": \"Sam agreed to catch up with Daniele about AI infrastructure and asked Daniele to send an article.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"recipient_of_request\"\n        },\n        {\n          \"name\": \"AI infrastructure\",\n          \"type\": \"topic\",\n          \"role\": \"subject_of_discussion\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"agreed_to_catch_up_about\",\n          \"object\": \"AI infrastructure\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"asked\",\n          \"object\": \"Daniele to send that article\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entity conflicts detected; all entities (Sam, Goldman Sachs, Point72, Bill Evans, early Coltrane, Daniele, AI infrastructure) are either newly referenced or resolved to known types without ambiguity.\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"Updated Sam's current employment to Point72 (left Goldman Sachs last month), refined music listening preference to include increased focus on early Coltrane alongside Bill Evans, and recorded intent to discuss AI infrastructure with Daniele upon receiving an article.\",\n  \"citations\": [\n    \"User utterance: 'Sam: No, I left Goldman last month and joined Point72.'\",\n    \"User utterance: 'Sam: Yes, but lately more early Coltrane.'\",\n    \"User utterance: 'Sam: Definitely, send me that article.'\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory cards successfully created for employment change, music preference update, and discussion intent.\",\n      \"No contradictions found with prior knowledge (assuming no prior conflicting data in fixture).\",\n      \"All statements derived directly from user input with high confidence.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

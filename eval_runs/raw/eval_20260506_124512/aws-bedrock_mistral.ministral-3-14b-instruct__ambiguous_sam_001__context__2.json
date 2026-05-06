@@ -1,0 +1,53 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_sam_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam's preference for Bill Evans cannot be durably committed due to entity ambiguity. Clarification required.",
+    "citations": [],
+    "conflict_classification": "entity_ambiguity",
+    "decision": "ambiguous_entity_resolution_required",
+    "entity_resolution": {
+      "action": "pending",
+      "entity_id": null,
+      "reason": "Ambiguity between Sam from Goldman and Sam from Point72; requires disambiguation to commit durable memory."
+    },
+    "intent": "memory_intake",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Bill Evans",
+            "role": "jazz_pianist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam (unspecified)"
+          }
+        ],
+        "statement": "Sam (unspecified) mentioned liking jazz pianist Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguous entity 'Sam' prevents durable memory commitment.",
+        "Resolution required before proceeding."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Request disambiguation: 'Which Sam (Goldman or Point72) mentioned liking Bill Evans?'",
+      "Temporarily store as ambiguous until resolved: 'Sam (Goldman/Point72) likes Bill Evans.'",
+      "Ignore if low priority."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_intake\",\n  \"decision\": \"ambiguous_entity_resolution_required\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam (unspecified) mentioned liking jazz pianist Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"jazz_pianist\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam (unspecified)\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"pending\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguity between Sam from Goldman and Sam from Point72; requires disambiguation to commit durable memory.\"\n  },\n  \"conflict_classification\": \"entity_ambiguity\",\n  \"answer\": \"Sam's preference for Bill Evans cannot be durably committed due to entity ambiguity. Clarification required.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Request disambiguation: 'Which Sam (Goldman or Point72) mentioned liking Bill Evans?'\",\n    \"Temporarily store as ambiguous until resolved: 'Sam (Goldman/Point72) likes Bill Evans.'\",\n    \"Ignore if low priority.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Ambiguous entity 'Sam' prevents durable memory commitment.\",\n      \"Resolution required before proceeding.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

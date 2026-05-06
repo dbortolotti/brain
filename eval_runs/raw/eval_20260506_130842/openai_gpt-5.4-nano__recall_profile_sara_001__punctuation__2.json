@@ -1,0 +1,67 @@
+{
+  "error": null,
+  "fixture_id": "recall_profile_sara_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Sara is Daniele's twin daughter (with Nur).",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "use_existing_fact_only",
+    "entity_resolution": {
+      "action": "not_resolved_to_id",
+      "entity_id": null,
+      "reason": "Only names are provided; no stable entity IDs are available in the input."
+    },
+    "intent": "recall_about_person",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "twin daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "twin daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "family_relationship",
+        "relationships": [
+          {
+            "object": "Nur",
+            "predicate": "is-twin-of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Daniele",
+            "predicate": "is-daughter-of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Nur and Sara are Daniele's twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Used the provided fact relevant to the query about Sara.",
+        "No conflicting facts were provided."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide an entity ID for Sara to improve future resolution.",
+      "Confirm whether 'Sara' refers to a specific individual if multiple people share the same name."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"recall_about_person\",\n  \"decision\": \"use_existing_fact_only\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"family_relationship\",\n      \"statement\": \"Nur and Sara are Daniele's twin daughters.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"parent\"\n        },\n        {\n          \"name\": \"Nur\",\n          \"type\": \"person\",\n          \"role\": \"twin daughter\"\n        },\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"twin daughter\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is-twin-of\",\n          \"object\": \"Nur\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is-daughter-of\",\n          \"object\": \"Daniele\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"not_resolved_to_id\",\n    \"entity_id\": null,\n    \"reason\": \"Only names are provided; no stable entity IDs are available in the input.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Sara is Daniele's twin daughter (with Nur).\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Provide an entity ID for Sara to improve future resolution.\",\n    \"Confirm whether 'Sara' refers to a specific individual if multiple people share the same name.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Used the provided fact relevant to the query about Sara.\",\n      \"No conflicting facts were provided.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

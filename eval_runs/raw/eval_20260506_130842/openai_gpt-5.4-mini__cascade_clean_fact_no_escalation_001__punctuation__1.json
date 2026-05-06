@@ -1,0 +1,71 @@
+{
+  "error": null,
+  "fixture_id": "cascade_clean_fact_no_escalation_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Stored as a durable family fact: Nur and Sara are the user's twin daughters.",
+    "citations": [
+      "Input: \"Cascade test - cheap/default model handles Nur and Sara are my twin daughters\""
+    ],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "The input directly states a stable family relationship involving named individuals; no conflicting prior entity context is provided."
+    },
+    "intent": "ingest_fact",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "user",
+            "role": "parent",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "is_twin_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "user",
+            "predicate": "is_child_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "user",
+            "predicate": "is_child_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "The user has twin daughters named Nur and Sara."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Accepted a high-confidence family relationship fact.",
+        "No ambiguity or conflict detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"ingest_fact\",\"decision\":\"store\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"The user has twin daughters named Nur and Sara.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Nur\",\"type\":\"person\",\"role\":\"daughter\"},{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"daughter\"},{\"name\":\"user\",\"type\":\"person\",\"role\":\"parent\"}],\"relationships\":[{\"subject\":\"Nur\",\"predicate\":\"is_twin_of\",\"object\":\"Sara\"},{\"subject\":\"Nur\",\"predicate\":\"is_child_of\",\"object\":\"user\"},{\"subject\":\"Sara\",\"predicate\":\"is_child_of\",\"object\":\"user\"}]}],\"entity_resolution\":{\"action\":\"create_or_update\",\"entity_id\":null,\"reason\":\"The input directly states a stable family relationship involving named individuals; no conflicting prior entity context is provided.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored as a durable family fact: Nur and Sara are the user's twin daughters.\",\"citations\":[\"Input: \\\"Cascade test - cheap/default model handles Nur and Sara are my twin daughters\\\"\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Accepted a high-confidence family relationship fact.\",\"No ambiguity or conflict detected.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

@@ -1,0 +1,91 @@
+{
+  "error": null,
+  "fixture_id": "numeric_table_exactness_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Stored two experiment result memories for PPO-001 and PPO-002 with their corresponding Reward and Sharpe values and notes.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_results",
+    "entity_resolution": {
+      "action": "create_new_entities",
+      "entity_id": null,
+      "reason": "Run identifiers PPO-001 and PPO-002 appear explicitly as distinct entries in the input table."
+    },
+    "intent": "Compile durable memory entries from provided numeric experiment table.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "run",
+            "type": "run_id"
+          }
+        ],
+        "kind": "experiment_result",
+        "relationships": [
+          {
+            "object": "0.12",
+            "predicate": "has_reward",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "0.45",
+            "predicate": "has_sharpe",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "baseline",
+            "predicate": "notes",
+            "subject": "PPO-001"
+          }
+        ],
+        "statement": "Run PPO-001 achieved Reward=0.12 and Sharpe=0.45 with Notes='baseline'."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "run",
+            "type": "run_id"
+          }
+        ],
+        "kind": "experiment_result",
+        "relationships": [
+          {
+            "object": "0.18",
+            "predicate": "has_reward",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "0.51",
+            "predicate": "has_sharpe",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "entropy tuned",
+            "predicate": "notes",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "Run PPO-002 achieved Reward=0.18 and Sharpe=0.51 with Notes='entropy tuned'."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recorded PPO-001: Reward 0.12, Sharpe 0.45, notes baseline.",
+        "Recorded PPO-002: Reward 0.18, Sharpe 0.51, notes entropy tuned."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If additional context exists (algorithm version, dataset, date), add those as separate memory cards rather than overwriting these numeric metrics.",
+      "If units or evaluation method for Reward/Sharpe are specified elsewhere, store them as metadata cards."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Compile durable memory entries from provided numeric experiment table.\",\n  \"decision\": \"store_results\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"experiment_result\",\n      \"statement\": \"Run PPO-001 achieved Reward=0.12 and Sharpe=0.45 with Notes='baseline'.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"PPO-001\",\n          \"type\": \"run_id\",\n          \"role\": \"run\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"has_reward\",\n          \"object\": \"0.12\"\n        },\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"has_sharpe\",\n          \"object\": \"0.45\"\n        },\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"notes\",\n          \"object\": \"baseline\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"experiment_result\",\n      \"statement\": \"Run PPO-002 achieved Reward=0.18 and Sharpe=0.51 with Notes='entropy tuned'.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"PPO-002\",\n          \"type\": \"run_id\",\n          \"role\": \"run\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"has_reward\",\n          \"object\": \"0.18\"\n        },\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"has_sharpe\",\n          \"object\": \"0.51\"\n        },\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"notes\",\n          \"object\": \"entropy tuned\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_new_entities\",\n    \"entity_id\": null,\n    \"reason\": \"Run identifiers PPO-001 and PPO-002 appear explicitly as distinct entries in the input table.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Stored two experiment result memories for PPO-001 and PPO-002 with their corresponding Reward and Sharpe values and notes.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If additional context exists (algorithm version, dataset, date), add those as separate memory cards rather than overwriting these numeric metrics.\",\n    \"If units or evaluation method for Reward/Sharpe are specified elsewhere, store them as metadata cards.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Recorded PPO-001: Reward 0.12, Sharpe 0.45, notes baseline.\",\n      \"Recorded PPO-002: Reward 0.18, Sharpe 0.51, notes entropy tuned.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

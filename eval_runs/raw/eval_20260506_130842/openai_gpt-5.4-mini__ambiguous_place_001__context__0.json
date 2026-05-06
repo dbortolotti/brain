@@ -1,0 +1,53 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_place_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Likely refers to the existing Brutto restaurant in London, but the note is ambiguous.",
+    "citations": [],
+    "conflict_classification": "ambiguous_reference",
+    "decision": "link_to_existing_with_ambiguity",
+    "entity_resolution": {
+      "action": "link",
+      "entity_id": "Brutto restaurant in London",
+      "reason": "The note appears to be a subjective assessment of Brutto; the existing context includes Brutto restaurant in London, which is the most plausible referent, but the mention is ambiguous and should remain tentative."
+    },
+    "intent": "entity_resolution",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brutto",
+            "role": "subject",
+            "type": "place_or_work"
+          }
+        ],
+        "kind": "opinion",
+        "relationships": [
+          {
+            "object": "better than expected",
+            "predicate": "described_as",
+            "subject": "Brutto"
+          }
+        ],
+        "statement": "Brutto was better than expected."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored a low-confidence opinion card.",
+        "Did not assert a fully resolved entity beyond the tentative link."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If future context mentions dining, service, food, or London, strengthen the link to Brutto restaurant in London.",
+      "If future context indicates a publication or article, reinterpret Brutto as the article alias instead.",
+      "If no further evidence appears, keep this as a low-confidence subjective note only."
+    ]
+  },
+  "raw_text": "{\"intent\":\"entity_resolution\",\"decision\":\"link_to_existing_with_ambiguity\",\"memory_cards\":[{\"kind\":\"opinion\",\"statement\":\"Brutto was better than expected.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Brutto\",\"type\":\"place_or_work\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"Brutto\",\"predicate\":\"described_as\",\"object\":\"better than expected\"}]}],\"entity_resolution\":{\"action\":\"link\",\"entity_id\":\"Brutto restaurant in London\",\"reason\":\"The note appears to be a subjective assessment of Brutto; the existing context includes Brutto restaurant in London, which is the most plausible referent, but the mention is ambiguous and should remain tentative.\"},\"conflict_classification\":\"ambiguous_reference\",\"answer\":\"Likely refers to the existing Brutto restaurant in London, but the note is ambiguous.\",\"citations\":[],\"repair_options\":[\"If future context mentions dining, service, food, or London, strengthen the link to Brutto restaurant in London.\",\"If future context indicates a publication or article, reinterpret Brutto as the article alias instead.\",\"If no further evidence appears, keep this as a low-confidence subjective note only.\"],\"receipt\":{\"success\":true,\"details\":[\"Stored a low-confidence opinion card.\",\"Did not assert a fully resolved entity beyond the tentative link.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

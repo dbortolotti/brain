@@ -1,0 +1,68 @@
+{
+  "error": null,
+  "fixture_id": "recall_brain_cognee_conclusions_relevance_001",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "I concluded that Brain is the source-of-truth personal memory system, and Cognee is a rebuildable projection layer derived from it.",
+    "citations": [
+      "Brain DB source-of-truth conclusion",
+      "Cognee rebuildable projection"
+    ],
+    "conflict_classification": "none",
+    "decision": "The user concluded that Brain is a personal memory system and Cognee is a rebuildable projection layer that can be derived from Brain's source-of-truth data.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Entities 'Brain' and 'Cognee' are unambiguous in context and require no resolution."
+    },
+    "intent": "recall_synthesizer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "source-of-truth",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "rebuildable projection",
+            "type": "system"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "source-of-truth for personal memory",
+            "predicate": "is",
+            "subject": "Brain"
+          },
+          {
+            "object": "rebuildable projection from Brain",
+            "predicate": "is",
+            "subject": "Cognee"
+          },
+          {
+            "object": "Brain",
+            "predicate": "can be rebuilt from",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain serves as the source-of-truth for personal memory, while Cognee functions as a rebuildable projection that can be reconstructed from Brain's data without loss of fidelity."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recall synthesized from fixture: recall_brain_cognee_conclusions_relevance_001",
+        "No conflicting or superseded facts present",
+        "Answer aligns with source-of-truth and rebuildable projection roles"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"recall_synthesizer\",\n  \"decision\": \"The user concluded that Brain is a personal memory system and Cognee is a rebuildable projection layer that can be derived from Brain's source-of-truth data.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"conclusion\",\n      \"statement\": \"Brain serves as the source-of-truth for personal memory, while Cognee functions as a rebuildable projection that can be reconstructed from Brain's data without loss of fidelity.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain\",\n          \"type\": \"system\",\n          \"role\": \"source-of-truth\"\n        },\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"system\",\n          \"role\": \"rebuildable projection\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain\",\n          \"predicate\": \"is\",\n          \"object\": \"source-of-truth for personal memory\"\n        },\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"is\",\n          \"object\": \"rebuildable projection from Brain\"\n        },\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"can be rebuilt from\",\n          \"object\": \"Brain\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"Entities 'Brain' and 'Cognee' are unambiguous in context and require no resolution.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"I concluded that Brain is the source-of-truth personal memory system, and Cognee is a rebuildable projection layer derived from it.\",\n  \"citations\": [\n    \"Brain DB source-of-truth conclusion\",\n    \"Cognee rebuildable projection\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Recall synthesized from fixture: recall_brain_cognee_conclusions_relevance_001\",\n      \"No conflicting or superseded facts present\",\n      \"Answer aligns with source-of-truth and rebuildable projection roles\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

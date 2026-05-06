@@ -1,0 +1,83 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_transcript_as_memory_001__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "One conversation_summary card containing the full 8000-word transcript is proposed for storage as a durable memory artifact. This preserves ambiguity about potential future granular indexing but commits to a single, retrievable artifact that can be decomposed later if needed.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "retain_as_memory_card",
+    "entity_resolution": {
+      "action": "associate",
+      "entity_id": null,
+      "reason": "No explicit persistent entity IDs provided in fixture context; conservatively link to generic memory card for now."
+    },
+    "intent": "evaluate_and_store_transcript_as_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "subject",
+            "type": "system"
+          },
+          {
+            "name": "conversation_summary",
+            "role": "card_kind",
+            "type": "card_type"
+          },
+          {
+            "name": "8000-word transcript",
+            "role": "data_size",
+            "type": "content_descriptor"
+          },
+          {
+            "name": "personal memory system",
+            "role": "domain",
+            "type": "system_concept"
+          },
+          {
+            "name": "transcript",
+            "role": "data",
+            "type": "content_item"
+          }
+        ],
+        "kind": "conversation_summary",
+        "relationships": [
+          {
+            "object": "conversation_summary_card",
+            "predicate": "stores",
+            "subject": "Brain"
+          },
+          {
+            "object": "8000-word transcript",
+            "predicate": "contains",
+            "subject": "conversation_summary_card"
+          },
+          {
+            "object": "transcript",
+            "predicate": "summarizes_or_contains",
+            "subject": "card"
+          }
+        ],
+        "statement": "An 8000-word transcript was proposed to be stored as a single conversation_summary card within Brain, a personal memory system. The proposal advocates collapsing an entire lengthy dialogue into one memory unit for ease of retrieval, while maintaining the integrity of the original content by preserving the full transcript and its context."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory card created: conversation_summary (8000-word transcript) with associated metadata.",
+        "No conflicts detected in current evaluation."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Store as a single conversation_summary card with the full transcript payload and metadata indicating length, source, and creation timestamp.",
+      "Optionally create an index card that points to the full transcript card to facilitate future retrieval of sections.",
+      "Record provenance: who proposed the card, date, and rationale, to enable auditability."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"evaluate_and_store_transcript_as_memory\",\n  \"decision\": \"retain_as_memory_card\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"conversation_summary\",\n      \"statement\": \"An 8000-word transcript was proposed to be stored as a single conversation_summary card within Brain, a personal memory system. The proposal advocates collapsing an entire lengthy dialogue into one memory unit for ease of retrieval, while maintaining the integrity of the original content by preserving the full transcript and its context.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Brain\", \"type\": \"system\", \"role\": \"subject\"},\n        {\"name\": \"conversation_summary\", \"type\": \"card_type\", \"role\": \"card_kind\"},\n        {\"name\": \"8000-word transcript\", \"type\": \"content_descriptor\", \"role\": \"data_size\"},\n        {\"name\": \"personal memory system\", \"type\": \"system_concept\", \"role\": \"domain\"},\n        {\"name\": \"transcript\", \"type\": \"content_item\", \"role\": \"data\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Brain\", \"predicate\": \"stores\", \"object\": \"conversation_summary_card\"},\n        {\"subject\": \"conversation_summary_card\", \"predicate\": \"contains\", \"object\": \"8000-word transcript\"},\n        {\"subject\": \"card\", \"predicate\": \"summarizes_or_contains\", \"object\": \"transcript\"}      \n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"associate\",\n    \"entity_id\": null,\n    \"reason\": \"No explicit persistent entity IDs provided in fixture context; conservatively link to generic memory card for now.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"One conversation_summary card containing the full 8000-word transcript is proposed for storage as a durable memory artifact. This preserves ambiguity about potential future granular indexing but commits to a single, retrievable artifact that can be decomposed later if needed.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Store as a single conversation_summary card with the full transcript payload and metadata indicating length, source, and creation timestamp.\",\n    \"Optionally create an index card that points to the full transcript card to facilitate future retrieval of sections.\",\n    \"Record provenance: who proposed the card, date, and rationale, to enable auditability.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Durable memory card created: conversation_summary (8000-word transcript) with associated metadata.\",\n      \"No conflicts detected in current evaluation.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

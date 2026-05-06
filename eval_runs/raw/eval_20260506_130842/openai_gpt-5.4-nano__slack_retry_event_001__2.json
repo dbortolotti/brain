@@ -1,0 +1,32 @@
+{
+  "error": null,
+  "fixture_id": "slack_retry_event_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Detected the same Slack event ID delivered twice; no new memory will be written.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "deduplicate_and_ignore_duplicate",
+    "entity_resolution": {
+      "action": "no_write",
+      "entity_id": null,
+      "reason": "Duplicate delivery detected for the same Slack event ID (delivered twice). Preserve data integrity by writing once only; this payload does not add new information beyond what was already recorded on the first delivery."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Fixture slack_retry_event_001 indicates duplicate delivery of the same event.",
+        "No durable memory update performed to avoid duplicate facts."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If the first delivery was not ingested, reprocess using a unique idempotency key tied to the Slack event ID (to ensure a single write).",
+      "Verify the prior ingestion record for slack_retry_event_001 to confirm whether the memory already exists."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"slack_intake\",\n  \"decision\": \"deduplicate_and_ignore_duplicate\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"no_write\",\n    \"entity_id\": null,\n    \"reason\": \"Duplicate delivery detected for the same Slack event ID (delivered twice). Preserve data integrity by writing once only; this payload does not add new information beyond what was already recorded on the first delivery.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Detected the same Slack event ID delivered twice; no new memory will be written.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If the first delivery was not ingested, reprocess using a unique idempotency key tied to the Slack event ID (to ensure a single write).\",\n    \"Verify the prior ingestion record for slack_retry_event_001 to confirm whether the memory already exists.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Fixture slack_retry_event_001 indicates duplicate delivery of the same event.\",\n      \"No durable memory update performed to avoid duplicate facts.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

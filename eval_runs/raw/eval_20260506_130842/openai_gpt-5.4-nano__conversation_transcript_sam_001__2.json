@@ -1,0 +1,145 @@
+{
+  "error": null,
+  "fixture_id": "conversation_transcript_sam_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Stored career change, recent music listening preference, and a planned AI infra follow-up involving sending an article.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_partial_new_facts",
+    "entity_resolution": {
+      "action": "no_external_lookups",
+      "entity_id": null,
+      "reason": "Only transcript-provided identifiers are available; no prior entity IDs to link."
+    },
+    "intent": "compile_personal_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "profile_career",
+        "relationships": [
+          {
+            "object": "joined Point72",
+            "predicate": "employment_status",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "former_employer",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman last month and joined Point72."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "music_artist",
+            "type": "musician"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "music_artist_reference",
+            "type": "musician_period"
+          }
+        ],
+        "kind": "profile_hobbies_music",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "listens_to",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "recent_listening_preference",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is still listening to Bill Evans, but lately more early Coltrane."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "listener",
+            "type": "person"
+          },
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "AI infra",
+            "role": "discussion_topic",
+            "type": "topic"
+          },
+          {
+            "name": "article",
+            "role": "resource_to_send",
+            "type": "document"
+          }
+        ],
+        "kind": "task_followup",
+        "relationships": [
+          {
+            "object": "AI infra",
+            "predicate": "proposed_discussion",
+            "subject": "Daniele"
+          },
+          {
+            "object": "catch up about AI infra",
+            "predicate": "agreed_to",
+            "subject": "Sam"
+          },
+          {
+            "object": "article",
+            "predicate": "will_send",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam and Daniele planned to catch up about AI infrastructure and Sam will send an article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed three memory cards derived directly from the transcript.",
+        "No contradictory statements detected in the provided input."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you have a preferred format for people/organizations (e.g., full company name or canonical IDs), provide it to improve future entity resolution.",
+      "If 'still listening to Bill Evans' should be interpreted as a long-term preference vs. a transient statement, clarify the time horizon."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"compile_personal_memory\",\n  \"decision\": \"store_partial_new_facts\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"profile_career\",\n      \"statement\": \"Sam left Goldman last month and joined Point72.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"former_employer\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"current_employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"employment_status\",\n          \"object\": \"joined Point72\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"former_employer\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"profile_hobbies_music\",\n      \"statement\": \"Sam is still listening to Bill Evans, but lately more early Coltrane.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"musician\",\n          \"role\": \"music_artist\"\n        },\n        {\n          \"name\": \"early Coltrane\",\n          \"type\": \"musician_period\",\n          \"role\": \"music_artist_reference\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"listens_to\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"recent_listening_preference\",\n          \"object\": \"early Coltrane\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"task_followup\",\n      \"statement\": \"Sam and Daniele planned to catch up about AI infrastructure and Sam will send an article.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"listener\"\n        },\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"AI infra\",\n          \"type\": \"topic\",\n          \"role\": \"discussion_topic\"\n        },\n        {\n          \"name\": \"article\",\n          \"type\": \"document\",\n          \"role\": \"resource_to_send\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Daniele\",\n          \"predicate\": \"proposed_discussion\",\n          \"object\": \"AI infra\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"agreed_to\",\n          \"object\": \"catch up about AI infra\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"will_send\",\n          \"object\": \"article\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_external_lookups\",\n    \"entity_id\": null,\n    \"reason\": \"Only transcript-provided identifiers are available; no prior entity IDs to link.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Stored career change, recent music listening preference, and a planned AI infra follow-up involving sending an article.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If you have a preferred format for people/organizations (e.g., full company name or canonical IDs), provide it to improve future entity resolution.\",\n    \"If 'still listening to Bill Evans' should be interpreted as a long-term preference vs. a transient statement, clarify the time horizon.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Committed three memory cards derived directly from the transcript.\",\n      \"No contradictory statements detected in the provided input.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

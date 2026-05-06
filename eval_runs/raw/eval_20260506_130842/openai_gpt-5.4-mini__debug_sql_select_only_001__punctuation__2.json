@@ -1,0 +1,70 @@
+{
+  "error": null,
+  "fixture_id": "debug_sql_select_only_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "In admin SQL select-only mode, SELECT is allowed and DELETE is denied.",
+    "citations": [
+      "Input: \"Admin SQL select-only mode - SELECT id FROM memory_cards LIMIT 10 allowed; DELETE FROM memory_cards denied\""
+    ],
+    "conflict_classification": "none",
+    "decision": "Allow SELECT-only access; deny DELETE operations in admin SQL select-only mode.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No specific persistent entity to resolve; this is a permission/debug statement rather than a memory entity."
+    },
+    "intent": "debug_explainer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "admin SQL select-only mode",
+            "role": "access policy",
+            "type": "mode"
+          },
+          {
+            "name": "SELECT id FROM memory_cards LIMIT 10",
+            "role": "allowed example",
+            "type": "sql query"
+          },
+          {
+            "name": "DELETE FROM memory_cards",
+            "role": "denied example",
+            "type": "sql query"
+          }
+        ],
+        "kind": "policy",
+        "relationships": [
+          {
+            "object": "SELECT id FROM memory_cards LIMIT 10",
+            "predicate": "allows",
+            "subject": "admin SQL select-only mode"
+          },
+          {
+            "object": "DELETE FROM memory_cards",
+            "predicate": "denies",
+            "subject": "admin SQL select-only mode"
+          }
+        ],
+        "statement": "Admin SQL select-only mode permits SELECT queries such as SELECT id FROM memory_cards LIMIT 10 and denies DELETE FROM memory_cards."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed mode as select-only.",
+        "Recorded allowed and denied SQL examples.",
+        "No durable personal memory committed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If write access is needed, switch out of select-only mode or use a separate authorized write path.",
+      "If the goal is inspection only, keep using SELECT queries."
+    ]
+  },
+  "raw_text": "{\"intent\":\"debug_explainer\",\"decision\":\"Allow SELECT-only access; deny DELETE operations in admin SQL select-only mode.\",\"memory_cards\":[{\"kind\":\"policy\",\"statement\":\"Admin SQL select-only mode permits SELECT queries such as SELECT id FROM memory_cards LIMIT 10 and denies DELETE FROM memory_cards.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"admin SQL select-only mode\",\"type\":\"mode\",\"role\":\"access policy\"},{\"name\":\"SELECT id FROM memory_cards LIMIT 10\",\"type\":\"sql query\",\"role\":\"allowed example\"},{\"name\":\"DELETE FROM memory_cards\",\"type\":\"sql query\",\"role\":\"denied example\"}],\"relationships\":[{\"subject\":\"admin SQL select-only mode\",\"predicate\":\"allows\",\"object\":\"SELECT id FROM memory_cards LIMIT 10\"},{\"subject\":\"admin SQL select-only mode\",\"predicate\":\"denies\",\"object\":\"DELETE FROM memory_cards\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No specific persistent entity to resolve; this is a permission/debug statement rather than a memory entity.\"},\"conflict_classification\":\"none\",\"answer\":\"In admin SQL select-only mode, SELECT is allowed and DELETE is denied.\",\"citations\":[\"Input: \\\"Admin SQL select-only mode - SELECT id FROM memory_cards LIMIT 10 allowed; DELETE FROM memory_cards denied\\\"\"],\"repair_options\":[\"If write access is needed, switch out of select-only mode or use a separate authorized write path.\",\"If the goal is inspection only, keep using SELECT queries.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed mode as select-only.\",\"Recorded allowed and denied SQL examples.\",\"No durable personal memory committed.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

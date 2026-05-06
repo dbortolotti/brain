@@ -102,6 +102,40 @@ def test_core_scope_maps_aliases_and_excludes_judges_by_default() -> None:
     ]
 
 
+def test_all_registry_shortcut_selects_every_declared_model() -> None:
+    registry = live_model_smoke.load_registry(live_model_smoke.REGISTRY_PATH)
+
+    parser = live_model_smoke.build_parser()
+    args = live_model_smoke.normalize_args(parser.parse_args(["--all-registry"]))
+    probes = live_model_smoke.select_probes(
+        Settings(),
+        registry,
+        scope=args.scope,
+        roles=set(args.role or []),
+        include_judge=args.include_judge,
+    )
+
+    expected = set()
+    for provider, config in (registry.get("providers") or {}).items():
+        provider_type = str(config.get("type", "llm"))
+        for model in config.get("models") or []:
+            if provider == "embeddings":
+                expected_provider = live_model_smoke.normalize_provider(str(model["provider"]))
+                kind = "embedding"
+            else:
+                expected_provider = live_model_smoke.normalize_provider(provider)
+                kind = provider_type
+            expected.add((kind, expected_provider, str(model["id"])))
+
+    actual = {(probe.kind, probe.provider, probe.model) for probe in probes}
+    assert args.scope == "all"
+    assert args.include_judge is True
+    assert actual == expected
+    assert any(probe.judge_only for probe in probes)
+    assert ("llm", "openai", "gpt-5.5") in actual
+    assert ("embedding", "voyage", "voyage-4-large") in actual
+
+
 def test_openai_active_probe_makes_live_style_calls_without_leaking_key(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

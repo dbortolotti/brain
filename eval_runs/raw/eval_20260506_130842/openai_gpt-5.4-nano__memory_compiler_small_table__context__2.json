@@ -1,0 +1,81 @@
+{
+  "error": null,
+  "fixture_id": "memory_compiler_small_table__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Stored two preferences from the provided context table: Sam \u2192 Bill Evans; Daniele \u2192 knowledge graphs.",
+    "citations": [],
+    "conflict_classification": "no_conflict_detected",
+    "decision": "commit_to_long_term_memory",
+    "entity_resolution": {
+      "action": "link_or_create_if_needed",
+      "entity_id": null,
+      "reason": "No pre-existing entity IDs provided; rely on surface names from the context table."
+    },
+    "intent": "store_preferences_from_context_table",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_target",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam's preference is Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "knowledge graphs",
+            "role": "preference_target",
+            "type": "concept"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "knowledge graphs",
+            "predicate": "prefers",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Daniele's preference is knowledge graphs."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Added preference memory for Sam \u2192 Bill Evans.",
+        "Added preference memory for Daniele \u2192 knowledge graphs."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide entity IDs for Sam and Daniele if available to ensure consistent linking across sessions.",
+      "Clarify whether 'Bill Evans' refers to the musician (most likely) or another entity with the same name."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"store_preferences_from_context_table\",\n  \"decision\": \"commit_to_long_term_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam's preference is Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"preference_target\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"prefers\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Daniele's preference is knowledge graphs.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"knowledge graphs\",\n          \"type\": \"concept\",\n          \"role\": \"preference_target\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Daniele\",\n          \"predicate\": \"prefers\",\n          \"object\": \"knowledge graphs\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"link_or_create_if_needed\",\n    \"entity_id\": null,\n    \"reason\": \"No pre-existing entity IDs provided; rely on surface names from the context table.\"\n  },\n  \"conflict_classification\": \"no_conflict_detected\",\n  \"answer\": \"Stored two preferences from the provided context table: Sam \u2192 Bill Evans; Daniele \u2192 knowledge graphs.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Provide entity IDs for Sam and Daniele if available to ensure consistent linking across sessions.\",\n    \"Clarify whether 'Bill Evans' refers to the musician (most likely) or another entity with the same name.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Added preference memory for Sam \u2192 Bill Evans.\",\n      \"Added preference memory for Daniele \u2192 knowledge graphs.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

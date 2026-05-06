@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "fixture_id": "pdf_ocr_noisy_source_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Extracted two low-confidence directives from OCR: (1) Brain DB as source of truth; (2) Cognee as a rebuildable projection.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "store_with_low_confidence",
+    "entity_resolution": {
+      "action": "partial_match_keep_text_as_quoted",
+      "entity_id": null,
+      "reason": "OCR is noisy; entities are kept using their OCR spellings without asserting definitive identities beyond the extracted text."
+    },
+    "intent": "Extract and store meaning from noisy OCR into Brain memory system.",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth_candidate",
+            "type": "system"
+          }
+        ],
+        "kind": "declarative",
+        "relationships": [
+          {
+            "object": "source of truth (as stated in OCR)",
+            "predicate": "is",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "\u201cBrain DB\u201d is presented as the source of truth."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "projection_candidate",
+            "type": "system"
+          }
+        ],
+        "kind": "normative",
+        "relationships": [
+          {
+            "object": "rebuildable projection (as stated in OCR)",
+            "predicate": "should_be",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "\u201cCognee\u201d should be rebuildable as a projection."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored statements with low confidence due to OCR noise.",
+        "No additional facts added beyond the extracted meanings."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Re-run OCR with higher resolution/denoising and confirm the exact spelling and phrasing for \u201cBrain DB\u201d and \u201cCognee\u201d.",
+      "Check surrounding document context to verify whether \u201cBrain DB\u201d and \u201cCognee\u201d are formally defined components in the system.",
+      "Confirm whether the second sentence is a requirement (should) or a suggestion in the original source."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Extract and store meaning from noisy OCR into Brain memory system.\",\n  \"decision\": \"store_with_low_confidence\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"declarative\",\n      \"statement\": \"\u201cBrain DB\u201d is presented as the source of truth.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"system\",\n          \"role\": \"source_of_truth_candidate\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"is\",\n          \"object\": \"source of truth (as stated in OCR)\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"normative\",\n      \"statement\": \"\u201cCognee\u201d should be rebuildable as a projection.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"system\",\n          \"role\": \"projection_candidate\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"should_be\",\n          \"object\": \"rebuildable projection (as stated in OCR)\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"partial_match_keep_text_as_quoted\",\n    \"entity_id\": null,\n    \"reason\": \"OCR is noisy; entities are kept using their OCR spellings without asserting definitive identities beyond the extracted text.\"\n  },\n  \"conflict_classification\": \"none_detected\",\n  \"answer\": \"Extracted two low-confidence directives from OCR: (1) Brain DB as source of truth; (2) Cognee as a rebuildable projection.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Re-run OCR with higher resolution/denoising and confirm the exact spelling and phrasing for \u201cBrain DB\u201d and \u201cCognee\u201d.\",\n    \"Check surrounding document context to verify whether \u201cBrain DB\u201d and \u201cCognee\u201d are formally defined components in the system.\",\n    \"Confirm whether the second sentence is a requirement (should) or a suggestion in the original source.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Stored statements with low confidence due to OCR noise.\",\n      \"No additional facts added beyond the extracted meanings.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

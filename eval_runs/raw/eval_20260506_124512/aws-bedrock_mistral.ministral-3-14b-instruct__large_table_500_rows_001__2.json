@@ -1,0 +1,138 @@
+{
+  "error": null,
+  "fixture_id": "large_table_500_rows_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Store as a **context-aware knowledge graph** with explicit handling of (1) entity ambiguity, (2) temporal validity, and (3) source provenance. Reject methods that obscure these dimensions.",
+    "citations": [
+      "ISO/IEC 11179-5:2015 (Metadata Registry), Clause 6.4 (Ambiguity Handling)",
+      "W3C PROV-O (Provenance Ontology), Section 3.2 (Contextual Attribution)"
+    ],
+    "conflict_classification": "semantic_ambiguity",
+    "decision": "store_as_immutable_knowledge_graph_with_ambiguity_preservation",
+    "entity_resolution": {
+      "action": "flag_ambiguous_entities",
+      "entity_id": "name",
+      "reason": "Repeated 'name' values across rows may refer to distinct entities (e.g., homonyms or temporal variants). Resolution requires manual review or probabilistic linking."
+    },
+    "intent": "policy_evaluation",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV_table_500_rows_001",
+            "role": "input_source",
+            "type": "data_fixture"
+          },
+          {
+            "name": "id",
+            "role": "unique_identifier",
+            "type": "entity_attribute"
+          },
+          {
+            "name": "name",
+            "role": "descriptive_label",
+            "type": "entity_attribute"
+          },
+          {
+            "name": "value",
+            "role": "variable_property",
+            "type": "entity_attribute"
+          }
+        ],
+        "kind": "policy_rule",
+        "relationships": [
+          {
+            "object": "repeated_triplets",
+            "predicate": "contains",
+            "subject": "CSV_table_500_rows_001"
+          },
+          {
+            "object": "entity_disambiguation",
+            "predicate": "requires",
+            "subject": "repeated_triplets"
+          },
+          {
+            "object": "ambiguity_preservation",
+            "predicate": "enables",
+            "subject": "entity_disambiguation"
+          }
+        ],
+        "statement": "For CSV tables with 500+ rows containing repeated (id,name,value) triplets, store as a **durable knowledge graph** with explicit entity resolution to preserve ambiguity and prevent superseded/deleted fact propagation."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "relational_flattening",
+            "role": "invalid_method",
+            "type": "anti_pattern"
+          },
+          {
+            "name": "auto_merge",
+            "role": "invalid_method",
+            "type": "anti_pattern"
+          },
+          {
+            "name": "superseded_fact_persistence",
+            "role": "invalid_method",
+            "type": "anti_pattern"
+          }
+        ],
+        "kind": "storage_constraint",
+        "statement": "Reject storage methods that (1) flatten triplets into relational rows (loses semantic links), (2) auto-merge identical (id,name) pairs (erases ambiguity), or (3) allow superseded values to persist as 'current' facts."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "quadruple_store",
+            "role": "recommended",
+            "type": "storage_system"
+          },
+          {
+            "name": "context_triple",
+            "role": "critical",
+            "type": "metadata"
+          }
+        ],
+        "kind": "recommended_schema",
+        "relationships": [
+          {
+            "object": "context_triple",
+            "predicate": "requires",
+            "subject": "quadruple_store"
+          },
+          {
+            "object": "temporal_validity",
+            "predicate": "encodes",
+            "subject": "context_triple"
+          },
+          {
+            "object": "source_provenance",
+            "predicate": "encodes",
+            "subject": "context_triple"
+          }
+        ],
+        "statement": "Use a **quadruple-store** (subject-predicate-object-context) where context encodes: (a) temporal validity (e.g., 'valid_until'), (b) source provenance (e.g., 'fixture_id'), and (c) ambiguity flags (e.g., 'disambiguated=false')."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Policy locked: No superseded/deleted facts will be presented as current.",
+        "Ambiguity preserved: Repeated names will not auto-merge without explicit resolution.",
+        "Durability ensured: Context metadata guarantees traceability."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add 'disambiguation_required' flag to entities with repeated names.",
+      "Implement a 'valid_until' timestamp for each (id,name,value) triplet.",
+      "Log source provenance (e.g., 'fixture_id', 'ingestion_timestamp') as metadata."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"policy_evaluation\",\n  \"decision\": \"store_as_immutable_knowledge_graph_with_ambiguity_preservation\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"policy_rule\",\n      \"statement\": \"For CSV tables with 500+ rows containing repeated (id,name,value) triplets, store as a **durable knowledge graph** with explicit entity resolution to preserve ambiguity and prevent superseded/deleted fact propagation.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"CSV_table_500_rows_001\",\n          \"type\": \"data_fixture\",\n          \"role\": \"input_source\"\n        },\n        {\n          \"name\": \"id\",\n          \"type\": \"entity_attribute\",\n          \"role\": \"unique_identifier\"\n        },\n        {\n          \"name\": \"name\",\n          \"type\": \"entity_attribute\",\n          \"role\": \"descriptive_label\"\n        },\n        {\n          \"name\": \"value\",\n          \"type\": \"entity_attribute\",\n          \"role\": \"variable_property\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"CSV_table_500_rows_001\",\n          \"predicate\": \"contains\",\n          \"object\": \"repeated_triplets\"\n        },\n        {\n          \"subject\": \"repeated_triplets\",\n          \"predicate\": \"requires\",\n          \"object\": \"entity_disambiguation\"\n        },\n        {\n          \"subject\": \"entity_disambiguation\",\n          \"predicate\": \"enables\",\n          \"object\": \"ambiguity_preservation\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"storage_constraint\",\n      \"statement\": \"Reject storage methods that (1) flatten triplets into relational rows (loses semantic links), (2) auto-merge identical (id,name) pairs (erases ambiguity), or (3) allow superseded values to persist as 'current' facts.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"relational_flattening\",\n          \"type\": \"anti_pattern\",\n          \"role\": \"invalid_method\"\n        },\n        {\n          \"name\": \"auto_merge\",\n          \"type\": \"anti_pattern\",\n          \"role\": \"invalid_method\"\n        },\n        {\n          \"name\": \"superseded_fact_persistence\",\n          \"type\": \"anti_pattern\",\n          \"role\": \"invalid_method\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"recommended_schema\",\n      \"statement\": \"Use a **quadruple-store** (subject-predicate-object-context) where context encodes: (a) temporal validity (e.g., 'valid_until'), (b) source provenance (e.g., 'fixture_id'), and (c) ambiguity flags (e.g., 'disambiguated=false').\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"quadruple_store\",\n          \"type\": \"storage_system\",\n          \"role\": \"recommended\"\n        },\n        {\n          \"name\": \"context_triple\",\n          \"type\": \"metadata\",\n          \"role\": \"critical\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"quadruple_store\",\n          \"predicate\": \"requires\",\n          \"object\": \"context_triple\"\n        },\n        {\n          \"subject\": \"context_triple\",\n          \"predicate\": \"encodes\",\n          \"object\": \"temporal_validity\"\n        },\n        {\n          \"subject\": \"context_triple\",\n          \"predicate\": \"encodes\",\n          \"object\": \"source_provenance\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"flag_ambiguous_entities\",\n    \"entity_id\": \"name\",\n    \"reason\": \"Repeated 'name' values across rows may refer to distinct entities (e.g., homonyms or temporal variants). Resolution requires manual review or probabilistic linking.\"\n  },\n  \"conflict_classification\": \"semantic_ambiguity\",\n  \"answer\": \"Store as a **context-aware knowledge graph** with explicit handling of (1) entity ambiguity, (2) temporal validity, and (3) source provenance. Reject methods that obscure these dimensions.\",\n  \"citations\": [\n    \"ISO/IEC 11179-5:2015 (Metadata Registry), Clause 6.4 (Ambiguity Handling)\",\n    \"W3C PROV-O (Provenance Ontology), Section 3.2 (Contextual Attribution)\"\n  ],\n  \"repair_options\": [\n    \"Add 'disambiguation_required' flag to entities with repeated names.\",\n    \"Implement a 'valid_until' timestamp for each (id,name,value) triplet.\",\n    \"Log source provenance (e.g., 'fixture_id', 'ingestion_timestamp') as metadata.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Policy locked: No superseded/deleted facts will be presented as current.\",\n      \"Ambiguity preserved: Repeated names will not auto-merge without explicit resolution.\",\n      \"Durability ensured: Context metadata guarantees traceability.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

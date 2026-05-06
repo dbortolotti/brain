@@ -1,0 +1,82 @@
+{
+  "error": null,
+  "fixture_id": "router_recall_question",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "You have **ambiguous or limited memory** about Sam in relation to Goldman Sachs. The system recalls a potential professional/affiliation connection but lacks specificity. **No superseded/deleted facts are present.**",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "query_memory",
+    "entity_resolution": {
+      "action": "disambiguate",
+      "entity_id": null,
+      "reason": "Ambiguity in 'Sam' (e.g., first name, nickname, or alias) and 'Goldman' (e.g., Goldman Sachs, Goldman Environmental Prize). Context requires clarification."
+    },
+    "intent": "recall",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "contact",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "has_affiliation_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is a contact associated with Goldman Sachs, likely a professional or client connection."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "reference",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "context",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman Sachs opportunities",
+            "predicate": "provides_context_for",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam may be a reference for Goldman Sachs-related opportunities, networking, or industry insights."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory query returned ambiguous results due to lack of specificity in 'Sam' and 'Goldman'.",
+        "No durable memory conflicts detected."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Clarify: Is 'Sam' a first name, nickname, or alias? (e.g., Samuel, Samantha, or a shortened form?)",
+      "Specify: Are you referring to Goldman Sachs (finance), Goldman Environmental Prize, or another entity?",
+      "Request recall: Provide additional context (e.g., 'Sam from Goldman Sachs in 2023') to refine results."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"recall\",\n  \"decision\": \"query_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam is a contact associated with Goldman Sachs, likely a professional or client connection.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"contact\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has_affiliation_with\",\n          \"object\": \"Goldman Sachs\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam may be a reference for Goldman Sachs-related opportunities, networking, or industry insights.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"reference\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"provides_context_for\",\n          \"object\": \"Goldman Sachs opportunities\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"disambiguate\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguity in 'Sam' (e.g., first name, nickname, or alias) and 'Goldman' (e.g., Goldman Sachs, Goldman Environmental Prize). Context requires clarification.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"You have **ambiguous or limited memory** about Sam in relation to Goldman Sachs. The system recalls a potential professional/affiliation connection but lacks specificity. **No superseded/deleted facts are present.**\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Clarify: Is 'Sam' a first name, nickname, or alias? (e.g., Samuel, Samantha, or a shortened form?)\",\n    \"Specify: Are you referring to Goldman Sachs (finance), Goldman Environmental Prize, or another entity?\",\n    \"Request recall: Provide additional context (e.g., 'Sam from Goldman Sachs in 2023') to refine results.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Memory query returned ambiguous results due to lack of specificity in 'Sam' and 'Goldman'.\",\n      \"No durable memory conflicts detected.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

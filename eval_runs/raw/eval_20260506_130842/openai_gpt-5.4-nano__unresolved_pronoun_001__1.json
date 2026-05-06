@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "fixture_id": "unresolved_pronoun_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "I can\u2019t store this as a durable memory yet because 'He' and 'the other one' aren\u2019t identified. Please clarify who 'He' is and what 'the other one' refers to.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "do_not_commit_fact_due_to_unresolved_referents",
+    "entity_resolution": {
+      "action": "unresolved_pronoun",
+      "entity_id": null,
+      "reason": "The utterance uses pronouns ('He', 'the other one') without sufficient context to map them to known entities or items."
+    },
+    "intent": "capture_preference_with_unresolved_pronoun",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "He (unresolved)",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "the other one (unresolved)",
+            "role": "object_of_preference",
+            "type": "item_or_option"
+          }
+        ],
+        "kind": "preference_note",
+        "relationships": [
+          {
+            "object": "the other one (unresolved)",
+            "predicate": "prefers",
+            "subject": "He (unresolved)"
+          }
+        ],
+        "statement": "A person referred to as 'He' prefers 'the other one', but the specific identities of 'He' and 'the other one' are not clear."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Logged an ambiguity note rather than committing a durable preference fact."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Tell me who 'He' refers to (name/label).",
+      "Specify what 'the other one' is compared against or which item/option is preferred.",
+      "Provide surrounding context (previous messages or the earlier mentioned pair of options)."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"capture_preference_with_unresolved_pronoun\",\n  \"decision\": \"do_not_commit_fact_due_to_unresolved_referents\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference_note\",\n      \"statement\": \"A person referred to as 'He' prefers 'the other one', but the specific identities of 'He' and 'the other one' are not clear.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"He (unresolved)\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"the other one (unresolved)\",\n          \"type\": \"item_or_option\",\n          \"role\": \"object_of_preference\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"He (unresolved)\",\n          \"predicate\": \"prefers\",\n          \"object\": \"the other one (unresolved)\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"unresolved_pronoun\",\n    \"entity_id\": null,\n    \"reason\": \"The utterance uses pronouns ('He', 'the other one') without sufficient context to map them to known entities or items.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"I can\u2019t store this as a durable memory yet because 'He' and 'the other one' aren\u2019t identified. Please clarify who 'He' is and what 'the other one' refers to.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Tell me who 'He' refers to (name/label).\",\n    \"Specify what 'the other one' is compared against or which item/option is preferred.\",\n    \"Provide surrounding context (previous messages or the earlier mentioned pair of options).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Logged an ambiguity note rather than committing a durable preference fact.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

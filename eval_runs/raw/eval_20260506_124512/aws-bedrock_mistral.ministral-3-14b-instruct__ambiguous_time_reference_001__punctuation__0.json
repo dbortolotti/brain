@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_time_reference_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory intake requires clarification: (1) Confirm the exact date of Sam's statement ('last Friday'). (2) Resolve 'next month' (e.g., 'June 2024' or 'next payroll month'). Ambiguity prevents durable storage.",
+    "citations": [],
+    "conflict_classification": "none",
+    "entity_resolution": {
+      "action": "flag_ambiguity",
+      "entity_id": null,
+      "reason": "Time reference ('last Friday' and 'next month') lacks specificity for durable memory storage. 'Last Friday' is ambiguous without a date, and 'next month' is context-dependent (e.g., calendar month vs. payroll month)."
+    },
+    "intent": "memory_intake",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "intends_to_leave",
+            "subject": "Sam"
+          },
+          {
+            "object": "leaving Goldman Sachs in an ambiguous timeframe ('next month')",
+            "predicate": "stated",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam expressed intent to leave Goldman Sachs in an unspecified future timeframe, referenced as 'next month' by Sam in conversation."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguous time references ('last Friday', 'next month') violate durable memory standards.",
+        "Memory card created as *tentative* for follow-up."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Request Sam to specify: 'Which Friday?' and 'What does 'next month' mean?'",
+      "Store as tentative memory with timestamp: 'Sam *may* leave Goldman Sachs in [unspecified timeframe] (stated [unspecified date]).'",
+      "Defer durable storage until ambiguity is resolved."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_intake\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"durable_memory\",\n      \"statement\": \"Sam expressed intent to leave Goldman Sachs in an unspecified future timeframe, referenced as 'next month' by Sam in conversation.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"intends_to_leave\",\n          \"object\": \"Goldman Sachs\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"stated\",\n          \"object\": \"leaving Goldman Sachs in an ambiguous timeframe ('next month')\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"flag_ambiguity\",\n    \"entity_id\": null,\n    \"reason\": \"Time reference ('last Friday' and 'next month') lacks specificity for durable memory storage. 'Last Friday' is ambiguous without a date, and 'next month' is context-dependent (e.g., calendar month vs. payroll month).\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Memory intake requires clarification: (1) Confirm the exact date of Sam's statement ('last Friday'). (2) Resolve 'next month' (e.g., 'June 2024' or 'next payroll month'). Ambiguity prevents durable storage.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Request Sam to specify: 'Which Friday?' and 'What does 'next month' mean?'\",\n    \"Store as tentative memory with timestamp: 'Sam *may* leave Goldman Sachs in [unspecified timeframe] (stated [unspecified date]).'\",\n    \"Defer durable storage until ambiguity is resolved.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Ambiguous time references ('last Friday', 'next month') violate durable memory standards.\",\n      \"Memory card created as *tentative* for follow-up.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

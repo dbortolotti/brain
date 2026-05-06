@@ -1,0 +1,94 @@
+{
+  "error": null,
+  "fixture_id": "email_source_meeting_followup_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam joined Point72 last month and has requested the sender to provide the AI infrastructure article. No conflicts detected in the provided context.",
+    "citations": [
+      "email_source_meeting_followup_001__context"
+    ],
+    "conflict_classification": "none",
+    "decision": "pending",
+    "entity_resolution": {
+      "action": "create_or_link",
+      "entity_id": null,
+      "reason": "No prior explicit reference to 'AI infrastructure article' exists in durable memory; requires contextual disambiguation (e.g., topic, source, or author)."
+    },
+    "intent": "request_action",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          },
+          {
+            "name": "last month",
+            "role": "temporal_anchor",
+            "type": "time"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          },
+          {
+            "object": "active",
+            "predicate": "has_employment_status",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72 last month (as of the email timestamp)."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "AI infrastructure article",
+            "role": "requested_resource",
+            "type": "document"
+          },
+          {
+            "name": "sender",
+            "role": "responsible_party",
+            "type": "person"
+          }
+        ],
+        "kind": "request",
+        "relationships": [
+          {
+            "object": "AI infrastructure article",
+            "predicate": "must_provide",
+            "subject": "sender"
+          }
+        ],
+        "statement": "Sam requested the AI infrastructure article from the sender."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory updated with Sam\u2019s employment status and pending request.",
+        "Ambiguity preserved for 'AI infrastructure article' pending resolution."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Disambiguate 'AI infrastructure article' (e.g., ask for specifics like author, publication date, or topic).",
+      "Verify if 'Sam' refers to the same individual as in prior interactions (if applicable).",
+      "Confirm if the article is part of a known shared resource (e.g., internal doc, public paper)."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"request_action\",\n  \"decision\": \"pending\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam joined Point72 last month (as of the email timestamp).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        },\n        {\n          \"name\": \"last month\",\n          \"type\": \"time\",\n          \"role\": \"temporal_anchor\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has_employment_status\",\n          \"object\": \"active\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"request\",\n      \"statement\": \"Sam requested the AI infrastructure article from the sender.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"AI infrastructure article\",\n          \"type\": \"document\",\n          \"role\": \"requested_resource\"\n        },\n        {\n          \"name\": \"sender\",\n          \"type\": \"person\",\n          \"role\": \"responsible_party\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"sender\",\n          \"predicate\": \"must_provide\",\n          \"object\": \"AI infrastructure article\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_or_link\",\n    \"entity_id\": null,\n    \"reason\": \"No prior explicit reference to 'AI infrastructure article' exists in durable memory; requires contextual disambiguation (e.g., topic, source, or author).\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Sam joined Point72 last month and has requested the sender to provide the AI infrastructure article. No conflicts detected in the provided context.\",\n  \"citations\": [\n    \"email_source_meeting_followup_001__context\"\n  ],\n  \"repair_options\": [\n    \"Disambiguate 'AI infrastructure article' (e.g., ask for specifics like author, publication date, or topic).\",\n    \"Verify if 'Sam' refers to the same individual as in prior interactions (if applicable).\",\n    \"Confirm if the article is part of a known shared resource (e.g., internal doc, public paper).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Durable memory updated with Sam\u2019s employment status and pending request.\",\n      \"Ambiguity preserved for 'AI infrastructure article' pending resolution.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

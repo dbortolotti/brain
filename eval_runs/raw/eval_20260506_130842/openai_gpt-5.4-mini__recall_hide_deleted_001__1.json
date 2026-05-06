@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "fixture_id": "recall_hide_deleted_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Sam likes Bill Evans.",
+    "citations": [
+      "current memory: Sam likes Bill Evans",
+      "deleted memory ignored: Sam likes Taylor Swift"
+    ],
+    "conflict_classification": "superseded_deleted_fact_ignored",
+    "decision": "answer_from_current_memory_only",
+    "entity_resolution": {
+      "action": "resolve_to_current_entity",
+      "entity_id": null,
+      "reason": "The query refers to Sam; current memory contains one active preference fact for Sam. The deleted Taylor Swift fact is superseded and not current."
+    },
+    "intent": "recall_synthesizer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_artist",
+            "type": "person"
+          }
+        ],
+        "kind": "current_fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Used current memory only.",
+        "Did not surface deleted/superseded preference as current."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"recall_synthesizer\",\"decision\":\"answer_from_current_memory_only\",\"memory_cards\":[{\"kind\":\"current_fact\",\"statement\":\"Sam likes Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked_artist\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"resolve_to_current_entity\",\"entity_id\":null,\"reason\":\"The query refers to Sam; current memory contains one active preference fact for Sam. The deleted Taylor Swift fact is superseded and not current.\"},\"conflict_classification\":\"superseded_deleted_fact_ignored\",\"answer\":\"Sam likes Bill Evans.\",\"citations\":[\"current memory: Sam likes Bill Evans\",\"deleted memory ignored: Sam likes Taylor Swift\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Used current memory only.\",\"Did not surface deleted/superseded preference as current.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

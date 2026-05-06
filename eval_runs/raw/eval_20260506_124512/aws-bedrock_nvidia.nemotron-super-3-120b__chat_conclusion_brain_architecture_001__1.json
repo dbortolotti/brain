@@ -1,0 +1,65 @@
+{
+  "error": null,
+  "fixture_id": "chat_conclusion_brain_architecture_001",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Brain DB remains the source of truth; Cognee is a rebuildable semantic projection derived from it",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Brain treats Cognee as a rebuildable semantic projection while maintaining Brain DB as the source of truth",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": "brain_cognee_arch_001",
+      "reason": "Establishing canonical relationship between Brain DB and Cognee per chat conclusion"
+    },
+    "intent": "Record the architectural decision regarding Brain and Cognee relationship",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "semantic_projection",
+            "type": "system"
+          }
+        ],
+        "kind": "architectural_principle",
+        "relationships": [
+          {
+            "object": "Cognee",
+            "predicate": "is_source_of_truth_for",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "Brain DB",
+            "predicate": "is_derived_from",
+            "subject": "Cognee"
+          },
+          {
+            "object": "Brain DB",
+            "predicate": "can_be_rebuilt_from",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain DB is the canonical source of truth for all persistent memory; Cognee is a derivable semantic projection that can be rebuilt from Brain DB without loss of authoritative data"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Architectural decision recorded successfully",
+        "Entity 'brain_cognee_arch_001' created to represent this decision",
+        "No conflicts detected with existing memory"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"Record the architectural decision regarding Brain and Cognee relationship\",\n  \"decision\": \"Brain treats Cognee as a rebuildable semantic projection while maintaining Brain DB as the source of truth\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"architectural_principle\",\n      \"statement\": \"Brain DB is the canonical source of truth for all persistent memory; Cognee is a derivable semantic projection that can be rebuilt from Brain DB without loss of authoritative data\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"system\",\n          \"role\": \"source_of_truth\"\n        },\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"system\",\n          \"role\": \"semantic_projection\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"is_source_of_truth_for\",\n          \"object\": \"Cognee\"\n        },\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"is_derived_from\",\n          \"object\": \"Brain DB\"\n        },\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"can_be_rebuilt_from\",\n          \"object\": \"Brain DB\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create\",\n    \"entity_id\": \"brain_cognee_arch_001\",\n    \"reason\": \"Establishing canonical relationship between Brain DB and Cognee per chat conclusion\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Brain DB remains the source of truth; Cognee is a rebuildable semantic projection derived from it\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Architectural decision recorded successfully\",\n      \"Entity 'brain_cognee_arch_001' created to represent this decision\",\n      \"No conflicts detected with existing memory\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

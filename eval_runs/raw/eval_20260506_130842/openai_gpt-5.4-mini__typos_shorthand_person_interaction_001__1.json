@@ -1,0 +1,71 @@
+{
+  "error": null,
+  "fixture_id": "typos_shorthand_person_interaction_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Stored as a low-confidence preference note: Sam, apparently from Goldman, likes Bill Evans.",
+    "citations": [
+      "input: \"sam frm goldmn likes bill evns apparently\""
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_with_low_confidence",
+    "entity_resolution": {
+      "action": "partial_resolution",
+      "entity_id": null,
+      "reason": "The shorthand is readable as 'Sam from Goldman likes Bill Evans,' but the source is informal and 'apparently' adds uncertainty; no durable unique identity for Sam or Bill Evans is confirmed."
+    },
+    "intent": "store_person_interaction_fact",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_person",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam, apparently from Goldman, likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed shorthand into a tentative statement.",
+        "Preserved uncertainty via low confidence and 'apparently'.",
+        "No conflicting facts were detected."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If 'frm' means 'from,' keep Sam's Goldman affiliation as tentative.",
+      "If 'Bill Evans' refers to a specific person, provide more context to disambiguate.",
+      "If this was meant as a temporary observation rather than a durable fact, mark it as ephemeral instead."
+    ]
+  },
+  "raw_text": "{\"intent\":\"store_person_interaction_fact\",\"decision\":\"commit_with_low_confidence\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam, apparently from Goldman, likes Bill Evans.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked_person\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"partial_resolution\",\"entity_id\":null,\"reason\":\"The shorthand is readable as 'Sam from Goldman likes Bill Evans,' but the source is informal and 'apparently' adds uncertainty; no durable unique identity for Sam or Bill Evans is confirmed.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored as a low-confidence preference note: Sam, apparently from Goldman, likes Bill Evans.\",\"citations\":[\"input: \\\"sam frm goldmn likes bill evns apparently\\\"\"],\"repair_options\":[\"If 'frm' means 'from,' keep Sam's Goldman affiliation as tentative.\",\"If 'Bill Evans' refers to a specific person, provide more context to disambiguate.\",\"If this was meant as a temporary observation rather than a durable fact, mark it as ephemeral instead.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed shorthand into a tentative statement.\",\"Preserved uncertainty via low confidence and 'apparently'.\",\"No conflicting facts were detected.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

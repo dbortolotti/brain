@@ -1,0 +1,67 @@
+{
+  "error": null,
+  "fixture_id": "slack_conflict_buttons_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "I found a conflict: existing memory says Sam works at Goldman, while the new input says Sam left Goldman and joined Point72. I\u2019m recording the new claim as tentative and conflicting rather than replacing the current fact.",
+    "citations": [],
+    "conflict_classification": "employment_history_conflict",
+    "decision": "store_as_conflicting_tentative",
+    "entity_resolution": {
+      "action": "no_change_pending_resolution",
+      "entity_id": null,
+      "reason": "Existing memory asserts Sam works at Goldman; the new claim conflicts, so no durable replacement is made without confirmation."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "new_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_change",
+        "relationships": [
+          {
+            "object": "joined Point72 (claimed)",
+            "predicate": "employment_status",
+            "subject": "Sam"
+          },
+          {
+            "object": "left Goldman (claimed)",
+            "predicate": "employment_status",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72. (Conflicts with existing memory that Sam works at Goldman; treat as unverified until resolved.)"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recorded new employment-change claim as low-confidence and explicitly conflicting with existing memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm Sam\u2019s current employer (e.g., latest profile/announcement) and I can update the memory accordingly.",
+      "If both statements are true at different times, provide the timeline (when Sam left Goldman and when they started at Point72).",
+      "If the new claim is incorrect, tell me to discard it."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"slack_intake\",\n  \"decision\": \"store_as_conflicting_tentative\",\n  \"conflict_classification\": \"employment_history_conflict\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"employment_change\",\n      \"statement\": \"Sam left Goldman and joined Point72. (Conflicts with existing memory that Sam works at Goldman; treat as unverified until resolved.)\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"former_employer\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"new_employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"employment_status\",\n          \"object\": \"joined Point72 (claimed)\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"employment_status\",\n          \"object\": \"left Goldman (claimed)\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_change_pending_resolution\",\n    \"entity_id\": null,\n    \"reason\": \"Existing memory asserts Sam works at Goldman; the new claim conflicts, so no durable replacement is made without confirmation.\"\n  },\n  \"answer\": \"I found a conflict: existing memory says Sam works at Goldman, while the new input says Sam left Goldman and joined Point72. I\u2019m recording the new claim as tentative and conflicting rather than replacing the current fact.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Confirm Sam\u2019s current employer (e.g., latest profile/announcement) and I can update the memory accordingly.\",\n    \"If both statements are true at different times, provide the timeline (when Sam left Goldman and when they started at Point72).\",\n    \"If the new claim is incorrect, tell me to discard it.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Recorded new employment-change claim as low-confidence and explicitly conflicting with existing memory.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

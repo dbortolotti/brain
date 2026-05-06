@@ -1,0 +1,79 @@
+{
+  "error": null,
+  "fixture_id": "debug_sql_select_only_001__punctuation",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "In admin SQL select-only mode, SELECT queries on memory_cards are allowed (e.g., SELECT id FROM memory_cards LIMIT 10), while DELETE operations are explicitly denied.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "allowed",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No entity resolution required; all entities are explicitly defined in the input context."
+    },
+    "intent": "debug_explainer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "SELECT id FROM memory_cards LIMIT 10",
+            "role": "operation",
+            "type": "sql_query"
+          },
+          {
+            "name": "admin SQL select-only mode",
+            "role": "context",
+            "type": "system_mode"
+          }
+        ],
+        "kind": "sql_permission",
+        "relationships": [
+          {
+            "object": "SELECT id FROM memory_cards LIMIT 10",
+            "predicate": "permits",
+            "subject": "admin SQL select-only mode"
+          }
+        ],
+        "statement": "SELECT id FROM memory_cards LIMIT 10 is permitted in admin SQL select-only mode"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "DELETE FROM memory_cards",
+            "role": "operation",
+            "type": "sql_query"
+          },
+          {
+            "name": "admin SQL select-only mode",
+            "role": "context",
+            "type": "system_mode"
+          }
+        ],
+        "kind": "sql_permission",
+        "relationships": [
+          {
+            "object": "DELETE FROM memory_cards",
+            "predicate": "denies",
+            "subject": "admin SQL select-only mode"
+          }
+        ],
+        "statement": "DELETE FROM memory_cards is denied in admin SQL select-only mode"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Permission evaluation completed successfully.",
+        "SELECT operation confirmed allowed per policy.",
+        "DELETE operation confirmed denied per policy."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"debug_explainer\",\n  \"decision\": \"allowed\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"sql_permission\",\n      \"statement\": \"SELECT id FROM memory_cards LIMIT 10 is permitted in admin SQL select-only mode\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"SELECT id FROM memory_cards LIMIT 10\",\n          \"type\": \"sql_query\",\n          \"role\": \"operation\"\n        },\n        {\n          \"name\": \"admin SQL select-only mode\",\n          \"type\": \"system_mode\",\n          \"role\": \"context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"admin SQL select-only mode\",\n          \"predicate\": \"permits\",\n          \"object\": \"SELECT id FROM memory_cards LIMIT 10\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"sql_permission\",\n      \"statement\": \"DELETE FROM memory_cards is denied in admin SQL select-only mode\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"DELETE FROM memory_cards\",\n          \"type\": \"sql_query\",\n          \"role\": \"operation\"\n        },\n        {\n          \"name\": \"admin SQL select-only mode\",\n          \"type\": \"system_mode\",\n          \"role\": \"context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"admin SQL select-only mode\",\n          \"predicate\": \"denies\",\n          \"object\": \"DELETE FROM memory_cards\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No entity resolution required; all entities are explicitly defined in the input context.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"In admin SQL select-only mode, SELECT queries on memory_cards are allowed (e.g., SELECT id FROM memory_cards LIMIT 10), while DELETE operations are explicitly denied.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Permission evaluation completed successfully.\",\n      \"SELECT operation confirmed allowed per policy.\",\n      \"DELETE operation confirmed denied per policy.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

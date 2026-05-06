@@ -1,0 +1,53 @@
+{
+  "error": null,
+  "fixture_id": "unresolved_pronoun_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The referent of 'other one' cannot be determined without further context. Clarification is needed.",
+    "citations": [],
+    "conflict_classification": "unresolved_ambiguity",
+    "entity_resolution": {
+      "action": "pending",
+      "entity_id": null,
+      "reason": "Ambiguous pronoun ('other one') lacks sufficient context for resolution. Requires clarification of antecedent(s) or additional input."
+    },
+    "intent": "reference_resolution",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "other one",
+            "role": "referent",
+            "type": "pronoun"
+          }
+        ],
+        "kind": "ambiguous_reference",
+        "relationships": [
+          {
+            "object": "other one",
+            "predicate": "refers_to",
+            "subject": "speaker"
+          }
+        ],
+        "statement": "The speaker refers to an unspecified 'other one' without prior context, requiring disambiguation."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguous pronoun detected: 'other one'",
+        "No prior context or entities to anchor resolution",
+        "Action: Await clarification or mark as pending"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Request speaker to specify which 'other one' they mean (e.g., 'other one' of what category? previous topic?)",
+      "Prompt for antecedent options (e.g., 'Do you mean [Option A] or [Option B]?')",
+      "Flag as unresolved for later review if context emerges."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"reference_resolution\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"ambiguous_reference\",\n      \"statement\": \"The speaker refers to an unspecified 'other one' without prior context, requiring disambiguation.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"other one\",\n          \"type\": \"pronoun\",\n          \"role\": \"referent\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"speaker\",\n          \"predicate\": \"refers_to\",\n          \"object\": \"other one\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"pending\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguous pronoun ('other one') lacks sufficient context for resolution. Requires clarification of antecedent(s) or additional input.\"\n  },\n  \"conflict_classification\": \"unresolved_ambiguity\",\n  \"answer\": \"The referent of 'other one' cannot be determined without further context. Clarification is needed.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Request speaker to specify which 'other one' they mean (e.g., 'other one' of what category? previous topic?)\",\n    \"Prompt for antecedent options (e.g., 'Do you mean [Option A] or [Option B]?')\",\n    \"Flag as unresolved for later review if context emerges.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Ambiguous pronoun detected: 'other one'\",\n      \"No prior context or entities to anchor resolution\",\n      \"Action: Await clarification or mark as pending\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

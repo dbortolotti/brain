@@ -1,0 +1,137 @@
+{
+  "error": null,
+  "fixture_id": "cost_latency_token_accounting_001__punctuation",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "The required eval accounting fields are: token counts (input, output, total), provider and model IDs, estimated price, and latency percentiles (p50, p90, p95).",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "The required fields for evaluation accounting are token counts (input/output/total), provider and model IDs, estimated price, and latency percentiles (p50, p90, p95). These fields enable cost analysis, performance benchmarking, and reproducibility in model evaluations.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "All entities are unambiguous and correctly resolved in context."
+    },
+    "intent": "explain_required_eval_accounting_fields",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "token counts",
+            "role": "measured_value",
+            "type": "metric"
+          },
+          {
+            "name": "model evaluations",
+            "role": "context",
+            "type": "process"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "accounting in model evaluations",
+            "predicate": "are_required_for",
+            "subject": "token counts"
+          }
+        ],
+        "statement": "Token counts (input, output, total) are required for accounting in model evaluations to measure computational usage and enable cost estimation."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "provider and model IDs",
+            "role": "metadata",
+            "type": "identifier"
+          },
+          {
+            "name": "traceability",
+            "role": "benefit",
+            "type": "property"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "traceability and reproducibility",
+            "predicate": "ensure",
+            "subject": "provider and model IDs"
+          }
+        ],
+        "statement": "Provider and model IDs must be recorded to ensure traceability, reproducibility, and correct attribution of results to specific model versions and serving infrastructure."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "estimated price",
+            "role": "cost_estimate",
+            "type": "metric"
+          },
+          {
+            "name": "economic cost",
+            "role": "measured_quantity",
+            "type": "concept"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "economic cost of running evaluations",
+            "predicate": "quantifies",
+            "subject": "estimated price"
+          }
+        ],
+        "statement": "Estimated price is required to quantify the economic cost of running evaluations, enabling budget planning and cost-performance tradeoff analysis."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "latency percentiles",
+            "role": "performance_indicator",
+            "type": "metric"
+          },
+          {
+            "name": "p50, p90, p95",
+            "role": "specific_value",
+            "type": "statistical_measure"
+          },
+          {
+            "name": "tail latency",
+            "role": "performance_aspect",
+            "type": "concept"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "response time distribution",
+            "predicate": "characterize",
+            "subject": "latency percentiles (p50, p90, p95)"
+          },
+          {
+            "object": "typical performance and tail latency",
+            "predicate": "capture",
+            "subject": "latency percentiles"
+          }
+        ],
+        "statement": "Latency percentiles (p50, p90, p95) are required to characterize response time distribution, capturing typical performance and tail latency for SLA and user experience assessment."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "All required accounting fields identified and explained.",
+        "No conflicting or deprecated information present.",
+        "Response adheres to schema and constraints."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"explain_required_eval_accounting_fields\",\n  \"decision\": \"The required fields for evaluation accounting are token counts (input/output/total), provider and model IDs, estimated price, and latency percentiles (p50, p90, p95). These fields enable cost analysis, performance benchmarking, and reproducibility in model evaluations.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Token counts (input, output, total) are required for accounting in model evaluations to measure computational usage and enable cost estimation.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"token counts\",\n          \"type\": \"metric\",\n          \"role\": \"measured_value\"\n        },\n        {\n          \"name\": \"model evaluations\",\n          \"type\": \"process\",\n          \"role\": \"context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"token counts\",\n          \"predicate\": \"are_required_for\",\n          \"object\": \"accounting in model evaluations\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Provider and model IDs must be recorded to ensure traceability, reproducibility, and correct attribution of results to specific model versions and serving infrastructure.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"provider and model IDs\",\n          \"type\": \"identifier\",\n          \"role\": \"metadata\"\n        },\n        {\n          \"name\": \"traceability\",\n          \"type\": \"property\",\n          \"role\": \"benefit\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"provider and model IDs\",\n          \"predicate\": \"ensure\",\n          \"object\": \"traceability and reproducibility\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Estimated price is required to quantify the economic cost of running evaluations, enabling budget planning and cost-performance tradeoff analysis.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"estimated price\",\n          \"type\": \"metric\",\n          \"role\": \"cost_estimate\"\n        },\n        {\n          \"name\": \"economic cost\",\n          \"type\": \"concept\",\n          \"role\": \"measured_quantity\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"estimated price\",\n          \"predicate\": \"quantifies\",\n          \"object\": \"economic cost of running evaluations\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Latency percentiles (p50, p90, p95) are required to characterize response time distribution, capturing typical performance and tail latency for SLA and user experience assessment.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"latency percentiles\",\n          \"type\": \"metric\",\n          \"role\": \"performance_indicator\"\n        },\n        {\n          \"name\": \"p50, p90, p95\",\n          \"type\": \"statistical_measure\",\n          \"role\": \"specific_value\"\n        },\n        {\n          \"name\": \"tail latency\",\n          \"type\": \"concept\",\n          \"role\": \"performance_aspect\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"latency percentiles (p50, p90, p95)\",\n          \"predicate\": \"characterize\",\n          \"object\": \"response time distribution\"\n        },\n        {\n          \"subject\": \"latency percentiles\",\n          \"predicate\": \"capture\",\n          \"object\": \"typical performance and tail latency\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"All entities are unambiguous and correctly resolved in context.\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"The required eval accounting fields are: token counts (input, output, total), provider and model IDs, estimated price, and latency percentiles (p50, p90, p95).\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"All required accounting fields identified and explained.\",\n      \"No conflicting or deprecated information present.\",\n      \"Response adheres to schema and constraints.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

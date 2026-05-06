@@ -1,0 +1,59 @@
+{
+  "error": null,
+  "fixture_id": "cascade_clean_fact_no_escalation_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory preserved: Nur and Sara are confirmed as twin daughters. No conflicts or superseded facts detected.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "durable_memory_preservation",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "New entities introduced without prior context; no conflicts detected."
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "twin_daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "twin_daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "is_twin_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Nur and Sara are my twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory committed for 'Nur' and 'Sara' as twin daughters.",
+        "No prior conflicting or superseded facts found."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_ingestion\",\n  \"decision\": \"durable_memory_preservation\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Nur and Sara are my twin daughters.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Nur\",\n          \"type\": \"person\",\n          \"role\": \"twin_daughter\"\n        },\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"twin_daughter\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Nur\",\n          \"predicate\": \"is_twin_of\",\n          \"object\": \"Sara\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is_twin_of\",\n          \"object\": \"Nur\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create\",\n    \"entity_id\": null,\n    \"reason\": \"New entities introduced without prior context; no conflicts detected.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Memory preserved: Nur and Sara are confirmed as twin daughters. No conflicts or superseded facts detected.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Durable memory committed for 'Nur' and 'Sara' as twin daughters.\",\n      \"No prior conflicting or superseded facts found.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

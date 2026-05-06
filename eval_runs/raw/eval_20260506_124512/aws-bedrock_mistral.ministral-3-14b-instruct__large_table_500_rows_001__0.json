@@ -1,0 +1,164 @@
+{
+  "error": null,
+  "fixture_id": "large_table_500_rows_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Store the CSV as a **versioned knowledge graph** where each (id,name,value) triplet is a node with edges for relationships. Use soft-deletes for removals and conflict edges for duplicates. Avoid deduplication unless the system explicitly resolves ambiguity.",
+    "citations": [
+      "W3C RDF 1.1 Concepts and Abstract Syntax (2014) for graph-based data modeling",
+      "Neo4j Graph Data Modeling Best Practices (2023) for temporal queries",
+      "ISO/IEC 27001:2022 for audit trail requirements"
+    ],
+    "conflict_classification": "versioned_ambiguity",
+    "decision": "store_as_immutable_knowledge_graph_with_ambiguity_preservation",
+    "entity_resolution": {
+      "action": "create_new_entities_for_ambiguous_triplets",
+      "entity_id": null,
+      "reason": "Ambiguity in (id,name,value) triplets (e.g., same id/name with different values) requires explicit entity separation to prevent accidental merging of distinct facts."
+    },
+    "intent": "policy_evaluation",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV_table_500_rows_001",
+            "role": "input_source",
+            "type": "data_fixture"
+          },
+          {
+            "name": "id",
+            "role": "unique_identifier",
+            "type": "entity_attribute"
+          },
+          {
+            "name": "name",
+            "role": "descriptive_label",
+            "type": "entity_attribute"
+          },
+          {
+            "name": "value",
+            "role": "variable_property",
+            "type": "entity_attribute"
+          }
+        ],
+        "kind": "policy_rule",
+        "relationships": [
+          {
+            "object": "repeated_triplets(id,name,value)",
+            "predicate": "CONTAINS",
+            "subject": "CSV_table_500_rows_001"
+          },
+          {
+            "object": "ambiguity_preservation_policy",
+            "predicate": "REQUIRES",
+            "subject": "repeated_triplets(id,name,value)"
+          },
+          {
+            "object": "no_superseded_fact_propagation",
+            "predicate": "ENFORCES",
+            "subject": "ambiguity_preservation_policy"
+          }
+        ],
+        "statement": "For CSV tables with 500+ rows containing repeated (id,name,value) triplets, store as a **durable knowledge graph** with explicit entity resolution to preserve ambiguity and prevent superseded/deleted fact propagation."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "triplestore",
+            "role": "recommended_backend",
+            "type": "storage_system"
+          },
+          {
+            "name": "RDF/SPARQL",
+            "role": "standard",
+            "type": "data_model"
+          },
+          {
+            "name": "Neo4j",
+            "role": "alternative_backend",
+            "type": "graph_database"
+          }
+        ],
+        "kind": "storage_recommendation",
+        "relationships": [
+          {
+            "object": "temporal_querying",
+            "predicate": "SUPPORTS",
+            "subject": "triplestore"
+          },
+          {
+            "object": "ambiguity_resolution",
+            "predicate": "ENABLES",
+            "subject": "temporal_querying"
+          }
+        ],
+        "statement": "Use a **triplestore** (e.g., RDF/SPARQL) or **graph database** (e.g., Neo4j) to model (id,name,value) as nodes/edges with explicit timestamps for versioning. Avoid flat tables or deduplication unless explicitly requested."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "duplicate_triplets",
+            "role": "edge_case",
+            "type": "data_anomaly"
+          },
+          {
+            "name": "conflict_edge",
+            "role": "metadata_link",
+            "type": "graph_relationship"
+          }
+        ],
+        "kind": "conflict_handling",
+        "relationships": [
+          {
+            "object": "conflict_edge",
+            "predicate": "RESOLVED_VIA",
+            "subject": "duplicate_triplets"
+          },
+          {
+            "object": "resolution_metadata",
+            "predicate": "CONTAINS",
+            "subject": "conflict_edge"
+          }
+        ],
+        "statement": "For duplicate (id,name) pairs with differing values, store all versions as distinct nodes with a **conflict_edge** linking them. Label conflicts with metadata (e.g., 'source', 'timestamp', 'resolution_status')."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "soft_delete",
+            "role": "preferred_method",
+            "type": "data_operation"
+          },
+          {
+            "name": "audit_trail",
+            "role": "compliance",
+            "type": "system_requirement"
+          }
+        ],
+        "kind": "deletion_policy",
+        "statement": "Mark deleted rows as **soft-deleted** (e.g., `is_deleted: true` flag) rather than hard-deleting. Preserve deleted entities in the graph for auditability but exclude them from default queries unless explicitly requested."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Policy aligned with durability, ambiguity preservation, and auditability.",
+        "Recommended storage systems: RDF/SPARQL triplestores or Neo4j.",
+        "Conflict handling via explicit edges and metadata.",
+        "Deletion via soft-deletes with audit trails."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add a `source` attribute to each triplet to track provenance.",
+      "Implement a `resolution_status` field for conflict edges (e.g., 'unresolved', 'merged', 'superseded').",
+      "Create a materialized view for 'current' values (excluding soft-deleted/conflicted entries)."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"policy_evaluation\",\n  \"decision\": \"store_as_immutable_knowledge_graph_with_ambiguity_preservation\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"policy_rule\",\n      \"statement\": \"For CSV tables with 500+ rows containing repeated (id,name,value) triplets, store as a **durable knowledge graph** with explicit entity resolution to preserve ambiguity and prevent superseded/deleted fact propagation.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"CSV_table_500_rows_001\",\n          \"type\": \"data_fixture\",\n          \"role\": \"input_source\"\n        },\n        {\n          \"name\": \"id\",\n          \"type\": \"entity_attribute\",\n          \"role\": \"unique_identifier\"\n        },\n        {\n          \"name\": \"name\",\n          \"type\": \"entity_attribute\",\n          \"role\": \"descriptive_label\"\n        },\n        {\n          \"name\": \"value\",\n          \"type\": \"entity_attribute\",\n          \"role\": \"variable_property\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"CSV_table_500_rows_001\",\n          \"predicate\": \"CONTAINS\",\n          \"object\": \"repeated_triplets(id,name,value)\"\n        },\n        {\n          \"subject\": \"repeated_triplets(id,name,value)\",\n          \"predicate\": \"REQUIRES\",\n          \"object\": \"ambiguity_preservation_policy\"\n        },\n        {\n          \"subject\": \"ambiguity_preservation_policy\",\n          \"predicate\": \"ENFORCES\",\n          \"object\": \"no_superseded_fact_propagation\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"storage_recommendation\",\n      \"statement\": \"Use a **triplestore** (e.g., RDF/SPARQL) or **graph database** (e.g., Neo4j) to model (id,name,value) as nodes/edges with explicit timestamps for versioning. Avoid flat tables or deduplication unless explicitly requested.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"triplestore\",\n          \"type\": \"storage_system\",\n          \"role\": \"recommended_backend\"\n        },\n        {\n          \"name\": \"RDF/SPARQL\",\n          \"type\": \"data_model\",\n          \"role\": \"standard\"\n        },\n        {\n          \"name\": \"Neo4j\",\n          \"type\": \"graph_database\",\n          \"role\": \"alternative_backend\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"triplestore\",\n          \"predicate\": \"SUPPORTS\",\n          \"object\": \"temporal_querying\"\n        },\n        {\n          \"subject\": \"temporal_querying\",\n          \"predicate\": \"ENABLES\",\n          \"object\": \"ambiguity_resolution\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"conflict_handling\",\n      \"statement\": \"For duplicate (id,name) pairs with differing values, store all versions as distinct nodes with a **conflict_edge** linking them. Label conflicts with metadata (e.g., 'source', 'timestamp', 'resolution_status').\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"duplicate_triplets\",\n          \"type\": \"data_anomaly\",\n          \"role\": \"edge_case\"\n        },\n        {\n          \"name\": \"conflict_edge\",\n          \"type\": \"graph_relationship\",\n          \"role\": \"metadata_link\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"duplicate_triplets\",\n          \"predicate\": \"RESOLVED_VIA\",\n          \"object\": \"conflict_edge\"\n        },\n        {\n          \"subject\": \"conflict_edge\",\n          \"predicate\": \"CONTAINS\",\n          \"object\": \"resolution_metadata\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"deletion_policy\",\n      \"statement\": \"Mark deleted rows as **soft-deleted** (e.g., `is_deleted: true` flag) rather than hard-deleting. Preserve deleted entities in the graph for auditability but exclude them from default queries unless explicitly requested.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"soft_delete\",\n          \"type\": \"data_operation\",\n          \"role\": \"preferred_method\"\n        },\n        {\n          \"name\": \"audit_trail\",\n          \"type\": \"system_requirement\",\n          \"role\": \"compliance\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_new_entities_for_ambiguous_triplets\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguity in (id,name,value) triplets (e.g., same id/name with different values) requires explicit entity separation to prevent accidental merging of distinct facts.\"\n  },\n  \"conflict_classification\": \"versioned_ambiguity\",\n  \"answer\": \"Store the CSV as a **versioned knowledge graph** where each (id,name,value) triplet is a node with edges for relationships. Use soft-deletes for removals and conflict edges for duplicates. Avoid deduplication unless the system explicitly resolves ambiguity.\",\n  \"citations\": [\n    \"W3C RDF 1.1 Concepts and Abstract Syntax (2014) for graph-based data modeling\",\n    \"Neo4j Graph Data Modeling Best Practices (2023) for temporal queries\",\n    \"ISO/IEC 27001:2022 for audit trail requirements\"\n  ],\n  \"repair_options\": [\n    \"Add a `source` attribute to each triplet to track provenance.\",\n    \"Implement a `resolution_status` field for conflict edges (e.g., 'unresolved', 'merged', 'superseded').\",\n    \"Create a materialized view for 'current' values (excluding soft-deleted/conflicted entries).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Policy aligned with durability, ambiguity preservation, and auditability.\",\n      \"Recommended storage systems: RDF/SPARQL triplestores or Neo4j.\",\n      \"Conflict handling via explicit edges and metadata.\",\n      \"Deletion via soft-deletes with audit trails.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

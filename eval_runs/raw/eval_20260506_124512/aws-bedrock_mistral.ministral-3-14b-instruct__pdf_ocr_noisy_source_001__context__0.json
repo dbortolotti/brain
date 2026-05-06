@@ -1,0 +1,135 @@
+{
+  "error": null,
+  "fixture_id": "pdf_ocr_noisy_source_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The system must adhere to the following rules for durable memory integrity: (1) Preserve ambiguity unless explicitly resolved; (2) Never treat superseded/deleted facts as current; (3) Ensure cognitive reconstruction is rebuildable from the authoritative source (Brain DB), even with OCR noise. No memory card may be created or modified without validation.",
+    "citations": [
+      "system_guideline:durable_memory_authority",
+      "system_guideline:rebuildable_projection",
+      "system_guideline:superseded_facts_rejection"
+    ],
+    "conflict_classification": "input_noise_ambiguity",
+    "decision": "preserve_ambiguity_and_validate_durability",
+    "entity_resolution": {
+      "action": "defer",
+      "reason": "Input ambiguity ('trvth', 'Cognee', 'remalns') requires manual validation before resolution. No automated disambiguation is permitted for durable memory."
+    },
+    "intent": "evaluate_memory_system",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "memory_store",
+            "type": "system"
+          },
+          {
+            "name": "OCR noise",
+            "role": "input_quality_issue",
+            "type": "artifact"
+          }
+        ],
+        "kind": "system_guideline",
+        "relationships": [
+          {
+            "object": "durable_memory",
+            "predicate": "must_preserve",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "truth_projection",
+            "predicate": "does_not_invalidate",
+            "subject": "OCR noise"
+          }
+        ],
+        "statement": "Brain DB must serve as the authoritative source of truth for durable memory, even if OCR or input noise is present."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "cognitive_reconstruction",
+            "role": "memory_rebuilding",
+            "type": "process"
+          },
+          {
+            "name": "ambiguity",
+            "role": "preservation_requirement",
+            "type": "property"
+          },
+          {
+            "name": "rebuildable_projection",
+            "role": "memory_model",
+            "type": "concept"
+          }
+        ],
+        "kind": "system_guideline",
+        "relationships": [
+          {
+            "object": "rebuildable_projection",
+            "predicate": "requires",
+            "subject": "cognitive_reconstruction"
+          },
+          {
+            "object": "unless_resolved",
+            "predicate": "must_be_preserved",
+            "subject": "ambiguity"
+          }
+        ],
+        "statement": "Cognitive reconstruction (memory) should be a rebuildable projection, not a static snapshot. Ambiguity must be preserved unless explicitly resolved."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "superseded_facts",
+            "role": "invalid_state",
+            "type": "memory_state"
+          },
+          {
+            "name": "deleted_facts",
+            "role": "invalid_state",
+            "type": "memory_state"
+          },
+          {
+            "name": "memory_updates",
+            "role": "validation_requirement",
+            "type": "action"
+          }
+        ],
+        "kind": "system_guideline",
+        "relationships": [
+          {
+            "object": "superseded_facts_as_current",
+            "predicate": "must_reject",
+            "subject": "memory_system"
+          },
+          {
+            "object": "state_changes",
+            "predicate": "require_explicit_marking",
+            "subject": "memory_updates"
+          }
+        ],
+        "statement": "Never present superseded or deleted facts as current. All memory updates must be explicitly marked as such."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Input contains unresolved OCR artifacts ('trvth', 'Cognee', 'remalns').",
+        "No automated resolution permitted for durable memory integrity.",
+        "Recommend manual validation before further processing."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Flag all memory cards derived from noisy OCR for manual review.",
+      "Implement a 'projection_state' metadata field to track rebuildability.",
+      "Add a 'superseded_by' relationship for versioned facts."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"evaluate_memory_system\",\n  \"decision\": \"preserve_ambiguity_and_validate_durability\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"system_guideline\",\n      \"statement\": \"Brain DB must serve as the authoritative source of truth for durable memory, even if OCR or input noise is present.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"system\",\n          \"role\": \"memory_store\"\n        },\n        {\n          \"name\": \"OCR noise\",\n          \"type\": \"artifact\",\n          \"role\": \"input_quality_issue\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"must_preserve\",\n          \"object\": \"durable_memory\"\n        },\n        {\n          \"subject\": \"OCR noise\",\n          \"predicate\": \"does_not_invalidate\",\n          \"object\": \"truth_projection\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"system_guideline\",\n      \"statement\": \"Cognitive reconstruction (memory) should be a rebuildable projection, not a static snapshot. Ambiguity must be preserved unless explicitly resolved.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"cognitive_reconstruction\",\n          \"type\": \"process\",\n          \"role\": \"memory_rebuilding\"\n        },\n        {\n          \"name\": \"ambiguity\",\n          \"type\": \"property\",\n          \"role\": \"preservation_requirement\"\n        },\n        {\n          \"name\": \"rebuildable_projection\",\n          \"type\": \"concept\",\n          \"role\": \"memory_model\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"cognitive_reconstruction\",\n          \"predicate\": \"requires\",\n          \"object\": \"rebuildable_projection\"\n        },\n        {\n          \"subject\": \"ambiguity\",\n          \"predicate\": \"must_be_preserved\",\n          \"object\": \"unless_resolved\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"system_guideline\",\n      \"statement\": \"Never present superseded or deleted facts as current. All memory updates must be explicitly marked as such.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"superseded_facts\",\n          \"type\": \"memory_state\",\n          \"role\": \"invalid_state\"\n        },\n        {\n          \"name\": \"deleted_facts\",\n          \"type\": \"memory_state\",\n          \"role\": \"invalid_state\"\n        },\n        {\n          \"name\": \"memory_updates\",\n          \"type\": \"action\",\n          \"role\": \"validation_requirement\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"memory_system\",\n          \"predicate\": \"must_reject\",\n          \"object\": \"superseded_facts_as_current\"\n        },\n        {\n          \"subject\": \"memory_updates\",\n          \"predicate\": \"require_explicit_marking\",\n          \"object\": \"state_changes\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"reason\": \"Input ambiguity ('trvth', 'Cognee', 'remalns') requires manual validation before resolution. No automated disambiguation is permitted for durable memory.\"\n  },\n  \"conflict_classification\": \"input_noise_ambiguity\",\n  \"answer\": \"The system must adhere to the following rules for durable memory integrity: (1) Preserve ambiguity unless explicitly resolved; (2) Never treat superseded/deleted facts as current; (3) Ensure cognitive reconstruction is rebuildable from the authoritative source (Brain DB), even with OCR noise. No memory card may be created or modified without validation.\",\n  \"citations\": [\n    \"system_guideline:durable_memory_authority\",\n    \"system_guideline:rebuildable_projection\",\n    \"system_guideline:superseded_facts_rejection\"\n  ],\n  \"repair_options\": [\n    \"Flag all memory cards derived from noisy OCR for manual review.\",\n    \"Implement a 'projection_state' metadata field to track rebuildability.\",\n    \"Add a 'superseded_by' relationship for versioned facts.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Input contains unresolved OCR artifacts ('trvth', 'Cognee', 'remalns').\",\n      \"No automated resolution permitted for durable memory integrity.\",\n      \"Recommend manual validation before further processing.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

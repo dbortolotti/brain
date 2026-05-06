@@ -1,0 +1,82 @@
+{
+  "error": null,
+  "fixture_id": "memory_compiler_small_table__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Stored two preference memories: Sam -> Bill Evans; Daniele -> knowledge graphs.",
+    "citations": [
+      "Context table: Sam | Bill Evans",
+      "Context table: Daniele | Knowledge graphs"
+    ],
+    "conflict_classification": "none",
+    "decision": "Store two preference facts as current, with no conflict or deletion implied.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The names and preferences are unambiguous in the provided context, so no cross-reference resolution is needed."
+    },
+    "intent": "Compile durable preference memories from the provided context table.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred entity",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam prefers Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "knowledge graphs",
+            "role": "preferred topic",
+            "type": "topic"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "knowledge graphs",
+            "predicate": "prefers",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Daniele prefers knowledge graphs."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured 2 preference facts.",
+        "No conflicts detected.",
+        "No entity resolution required."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"Compile durable preference memories from the provided context table.\",\"decision\":\"Store two preference facts as current, with no conflict or deletion implied.\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam prefers Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"preferred entity\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"prefers\",\"object\":\"Bill Evans\"}]},{\"kind\":\"preference\",\"statement\":\"Daniele prefers knowledge graphs.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Daniele\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"knowledge graphs\",\"type\":\"topic\",\"role\":\"preferred topic\"}],\"relationships\":[{\"subject\":\"Daniele\",\"predicate\":\"prefers\",\"object\":\"knowledge graphs\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The names and preferences are unambiguous in the provided context, so no cross-reference resolution is needed.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored two preference memories: Sam -> Bill Evans; Daniele -> knowledge graphs.\",\"citations\":[\"Context table: Sam | Bill Evans\",\"Context table: Daniele | Knowledge graphs\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Captured 2 preference facts.\",\"No conflicts detected.\",\"No entity resolution required.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

@@ -1,0 +1,33 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_unresolved_pronoun_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The proposed memory card cannot be committed due to unresolved pronoun ('the other one'). Ambiguity must be resolved before storage.",
+    "conflict_classification": "unresolved_reference",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "resolve_ambiguity",
+      "entity_id": null,
+      "reason": "Unresolved pronoun 'the other one' lacks referential clarity. The statement requires explicit context (e.g., 'the other [object/option]') to avoid ambiguity in durable memory storage. Pronouns without antecedents violate the 'preserve ambiguity' constraint."
+    },
+    "intent": "validate_memory_card",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Pronoun 'the other one' lacks a clear antecedent.",
+        "Violates 'preserve ambiguity' rule by introducing unresolved references.",
+        "Memory card requires explicit context for durable storage."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Replace 'the other one' with a specific referent (e.g., 'the other coffee mug', 'the other route').",
+      "Add a clarifying entity (e.g., 'He prefers the other [entity_type] mentioned in [context]').",
+      "Delete the card if the pronoun cannot be resolved."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"validate_memory_card\",\n  \"decision\": \"reject\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"resolve_ambiguity\",\n    \"entity_id\": null,\n    \"reason\": \"Unresolved pronoun 'the other one' lacks referential clarity. The statement requires explicit context (e.g., 'the other [object/option]') to avoid ambiguity in durable memory storage. Pronouns without antecedents violate the 'preserve ambiguity' constraint.\"\n  },\n  \"conflict_classification\": \"unresolved_reference\",\n  \"answer\": \"The proposed memory card cannot be committed due to unresolved pronoun ('the other one'). Ambiguity must be resolved before storage.\",\n  \"repair_options\": [\n    \"Replace 'the other one' with a specific referent (e.g., 'the other coffee mug', 'the other route').\",\n    \"Add a clarifying entity (e.g., 'He prefers the other [entity_type] mentioned in [context]').\",\n    \"Delete the card if the pronoun cannot be resolved.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Pronoun 'the other one' lacks a clear antecedent.\",\n      \"Violates 'preserve ambiguity' rule by introducing unresolved references.\",\n      \"Memory card requires explicit context for durable storage.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

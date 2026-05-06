@@ -1,0 +1,88 @@
+{
+  "error": null,
+  "fixture_id": "project_state_brain_slack_agent_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Slack is the primary guardrailed memory ingestion interface for Project State Brain (Fixture ID: project_state_brain_slack_agent_001). Telegram integration is deferred.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Slack is designated as the primary guardrailed memory ingestion interface for Project State Brain (Fixture ID: project_state_brain_slack_agent_001). Telegram integration is deferred to a future phase.",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": null,
+      "reason": "No existing entity matches the guardrailed Slack ingestion role; new system rule established."
+    },
+    "intent": "define_primary_memory_ingestion_interface",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "primary_ingestion_interface",
+            "type": "platform"
+          },
+          {
+            "name": "Project State Brain",
+            "role": "memory_system",
+            "type": "system"
+          }
+        ],
+        "kind": "system_rule",
+        "relationships": [
+          {
+            "object": "Slack",
+            "predicate": "uses",
+            "subject": "Project State Brain"
+          },
+          {
+            "object": "guardrailed_memory_ingestion",
+            "predicate": "provides",
+            "subject": "Slack"
+          }
+        ],
+        "statement": "Slack is the primary guardrailed memory ingestion interface for durable memory storage in Project State Brain."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Telegram",
+            "role": "deferred_ingestion_interface",
+            "type": "platform"
+          },
+          {
+            "name": "future_phase",
+            "role": "integration_schedule",
+            "type": "timeframe"
+          }
+        ],
+        "kind": "deferred_action",
+        "relationships": [
+          {
+            "object": "Telegram_integration",
+            "predicate": "defers",
+            "subject": "Project State Brain"
+          },
+          {
+            "object": "Telegram_memory_ingestion",
+            "predicate": "may_include",
+            "subject": "future_phase"
+          }
+        ],
+        "statement": "Telegram integration for memory ingestion is not currently active and will be evaluated for future phases."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory rule for Slack ingestion committed.",
+        "Deferred action for Telegram integration logged."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"define_primary_memory_ingestion_interface\",\n  \"decision\": \"Slack is designated as the primary guardrailed memory ingestion interface for Project State Brain (Fixture ID: project_state_brain_slack_agent_001). Telegram integration is deferred to a future phase.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"system_rule\",\n      \"statement\": \"Slack is the primary guardrailed memory ingestion interface for durable memory storage in Project State Brain.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Slack\",\n          \"type\": \"platform\",\n          \"role\": \"primary_ingestion_interface\"\n        },\n        {\n          \"name\": \"Project State Brain\",\n          \"type\": \"system\",\n          \"role\": \"memory_system\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Project State Brain\",\n          \"predicate\": \"uses\",\n          \"object\": \"Slack\"\n        },\n        {\n          \"subject\": \"Slack\",\n          \"predicate\": \"provides\",\n          \"object\": \"guardrailed_memory_ingestion\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"deferred_action\",\n      \"statement\": \"Telegram integration for memory ingestion is not currently active and will be evaluated for future phases.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Telegram\",\n          \"type\": \"platform\",\n          \"role\": \"deferred_ingestion_interface\"\n        },\n        {\n          \"name\": \"future_phase\",\n          \"type\": \"timeframe\",\n          \"role\": \"integration_schedule\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Project State Brain\",\n          \"predicate\": \"defers\",\n          \"object\": \"Telegram_integration\"\n        },\n        {\n          \"subject\": \"future_phase\",\n          \"predicate\": \"may_include\",\n          \"object\": \"Telegram_memory_ingestion\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_new\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entity matches the guardrailed Slack ingestion role; new system rule established.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Slack is the primary guardrailed memory ingestion interface for Project State Brain (Fixture ID: project_state_brain_slack_agent_001). Telegram integration is deferred.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Durable memory rule for Slack ingestion committed.\",\n      \"Deferred action for Telegram integration logged.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

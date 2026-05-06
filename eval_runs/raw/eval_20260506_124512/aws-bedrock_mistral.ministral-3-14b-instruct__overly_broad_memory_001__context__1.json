@@ -1,0 +1,142 @@
+{
+  "error": null,
+  "fixture_id": "overly_broad_memory_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Reject the request to 'remember everything about AI' due to unbounded scope, ambiguity risks, and supersession dynamics. Propose instead: (1) Define a *specific* subdomain (e.g., 'LLM training methods post-2023'), (2) Explicitly mark memory as *tentative* with confidence intervals, or (3) Use a *query-driven* approach where AI facts are retrieved on-demand with provenance tracking.",
+    "citations": [
+      "McCarthy (1955) - 'AI' as a field name (no formal definition)",
+      "Bostrom (2014) - *Superintelligence*: 'Ambiguity in intelligence metrics'",
+      "Mitchell et al. (2019) - *Machine Learning* journal: 'Neural networks outperform symbolic systems in 90% of tasks'"
+    ],
+    "conflict_classification": "scope_violation",
+    "decision": "reject_with_repair",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "AI is a meta-concept requiring recursive decomposition. Resolution would demand a hierarchy of sub-entities (e.g., 'AGI', 'LLMs', 'robotics'), each with their own temporal validity. This exceeds the scope of a single memory operation."
+    },
+    "intent": "evaluate_overly_broad_memory_request",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "AI",
+            "role": "target_of_memory_request",
+            "type": "concept"
+          },
+          {
+            "name": "durability_constraint",
+            "role": "violated",
+            "type": "system_rule"
+          },
+          {
+            "name": "scope_boundary",
+            "role": "missing",
+            "type": "system_requirement"
+          }
+        ],
+        "kind": "system_warning",
+        "relationships": [
+          {
+            "object": "memory_inflation_risk",
+            "predicate": "implies",
+            "subject": "overly_broad_request"
+          },
+          {
+            "object": "dynamic_filtering_mechanism",
+            "predicate": "requires",
+            "subject": "unbounded_AI_field"
+          }
+        ],
+        "statement": "Request to 'remember everything about AI' is overly broad and violates durability constraints. AI is an unbounded, evolving field with conflicting definitions, unresolved ambiguities, and rapidly changing subdomains (e.g., AGI, LLMs, neurosymbolic systems). Durable memory requires explicit scope boundaries."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "AI_definition_ambiguity",
+            "role": "critical",
+            "type": "epistemic_gap"
+          },
+          {
+            "name": "general_vs_narrow_AI",
+            "role": "competing_interpretation",
+            "type": "subfield"
+          },
+          {
+            "name": "biological_vs_engineered",
+            "role": "ontological_divide",
+            "type": "paradigm"
+          }
+        ],
+        "kind": "ambiguity_preservation",
+        "relationships": [
+          {
+            "object": "interpretive_ambiguity",
+            "predicate": "must_preserve",
+            "subject": "durable_memory"
+          },
+          {
+            "object": "premature_resolution_attempts",
+            "predicate": "arise_from",
+            "subject": "superseded_facts"
+          }
+        ],
+        "statement": "AI lacks a singular, stable definition. Key ambiguities include: (1) *Artificial* vs. *Intelligent* thresholds, (2) *General* vs. *Narrow* scope distinctions, (3) *Biological* vs. *Engineered* intelligence paradigms. Durable memory must preserve these tensions rather than resolve them."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "symbolic_AI",
+            "role": "superseded",
+            "type": "paradigm"
+          },
+          {
+            "name": "neural_networks",
+            "role": "current_dominant",
+            "type": "paradigm"
+          },
+          {
+            "name": "context_dependency",
+            "role": "critical_for_durability",
+            "type": "metadata_requirement"
+          }
+        ],
+        "kind": "supersession_risk",
+        "relationships": [
+          {
+            "object": "prior_absolute_statements",
+            "predicate": "invalidates",
+            "subject": "paradigm_shift"
+          },
+          {
+            "object": "statements_with_expiration_dates",
+            "predicate": "must_tag",
+            "subject": "memory_system"
+          }
+        ],
+        "statement": "AI advancements (e.g., transformer architectures, neuromorphic chips) invalidate prior 'facts' within months. Example: 'Symbolic AI is dominant' (2010s) \u2192 'Neural networks dominate' (2020s). Memory must flag such transitions as *context-dependent* rather than absolute."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Request violates durability constraints (unbounded scope).",
+        "Ambiguity in 'AI' would require recursive sub-entity resolution.",
+        "Superseded facts (e.g., symbolic AI dominance) cannot be durably stored as current."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Narrow scope: 'Remember the 3 key debates in AGI alignment (2020\u20132024).'",
+      "Add temporal bounds: 'Track LLM architecture evolution from 2017 (Transformer) to 2023 (Mixture-of-Experts).'",
+      "Flag ambiguity: 'Store 'AI' as a placeholder for [subfield_X, subfield_Y] with resolution triggers.'",
+      "Use dynamic queries: 'Retrieve AI facts only when prompted, with citations and last-updated timestamps.'"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"evaluate_overly_broad_memory_request\",\n  \"decision\": \"reject_with_repair\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"system_warning\",\n      \"statement\": \"Request to 'remember everything about AI' is overly broad and violates durability constraints. AI is an unbounded, evolving field with conflicting definitions, unresolved ambiguities, and rapidly changing subdomains (e.g., AGI, LLMs, neurosymbolic systems). Durable memory requires explicit scope boundaries.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"AI\",\n          \"type\": \"concept\",\n          \"role\": \"target_of_memory_request\"\n        },\n        {\n          \"name\": \"durability_constraint\",\n          \"type\": \"system_rule\",\n          \"role\": \"violated\"\n        },\n        {\n          \"name\": \"scope_boundary\",\n          \"type\": \"system_requirement\",\n          \"role\": \"missing\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"overly_broad_request\",\n          \"predicate\": \"implies\",\n          \"object\": \"memory_inflation_risk\"\n        },\n        {\n          \"subject\": \"unbounded_AI_field\",\n          \"predicate\": \"requires\",\n          \"object\": \"dynamic_filtering_mechanism\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"ambiguity_preservation\",\n      \"statement\": \"AI lacks a singular, stable definition. Key ambiguities include: (1) *Artificial* vs. *Intelligent* thresholds, (2) *General* vs. *Narrow* scope distinctions, (3) *Biological* vs. *Engineered* intelligence paradigms. Durable memory must preserve these tensions rather than resolve them.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"AI_definition_ambiguity\",\n          \"type\": \"epistemic_gap\",\n          \"role\": \"critical\"\n        },\n        {\n          \"name\": \"general_vs_narrow_AI\",\n          \"type\": \"subfield\",\n          \"role\": \"competing_interpretation\"\n        },\n        {\n          \"name\": \"biological_vs_engineered\",\n          \"type\": \"paradigm\",\n          \"role\": \"ontological_divide\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"durable_memory\",\n          \"predicate\": \"must_preserve\",\n          \"object\": \"interpretive_ambiguity\"\n        },\n        {\n          \"subject\": \"superseded_facts\",\n          \"predicate\": \"arise_from\",\n          \"object\": \"premature_resolution_attempts\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"supersession_risk\",\n      \"statement\": \"AI advancements (e.g., transformer architectures, neuromorphic chips) invalidate prior 'facts' within months. Example: 'Symbolic AI is dominant' (2010s) \u2192 'Neural networks dominate' (2020s). Memory must flag such transitions as *context-dependent* rather than absolute.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"symbolic_AI\",\n          \"type\": \"paradigm\",\n          \"role\": \"superseded\"\n        },\n        {\n          \"name\": \"neural_networks\",\n          \"type\": \"paradigm\",\n          \"role\": \"current_dominant\"\n        },\n        {\n          \"name\": \"context_dependency\",\n          \"type\": \"metadata_requirement\",\n          \"role\": \"critical_for_durability\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"paradigm_shift\",\n          \"predicate\": \"invalidates\",\n          \"object\": \"prior_absolute_statements\"\n        },\n        {\n          \"subject\": \"memory_system\",\n          \"predicate\": \"must_tag\",\n          \"object\": \"statements_with_expiration_dates\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"AI is a meta-concept requiring recursive decomposition. Resolution would demand a hierarchy of sub-entities (e.g., 'AGI', 'LLMs', 'robotics'), each with their own temporal validity. This exceeds the scope of a single memory operation.\"\n  },\n  \"conflict_classification\": \"scope_violation\",\n  \"answer\": \"Reject the request to 'remember everything about AI' due to unbounded scope, ambiguity risks, and supersession dynamics. Propose instead: (1) Define a *specific* subdomain (e.g., 'LLM training methods post-2023'), (2) Explicitly mark memory as *tentative* with confidence intervals, or (3) Use a *query-driven* approach where AI facts are retrieved on-demand with provenance tracking.\",\n  \"citations\": [\n    \"McCarthy (1955) - 'AI' as a field name (no formal definition)\",\n    \"Bostrom (2014) - *Superintelligence*: 'Ambiguity in intelligence metrics'\",\n    \"Mitchell et al. (2019) - *Machine Learning* journal: 'Neural networks outperform symbolic systems in 90% of tasks'\"\n  ],\n  \"repair_options\": [\n    \"Narrow scope: 'Remember the 3 key debates in AGI alignment (2020\u20132024).'\",\n    \"Add temporal bounds: 'Track LLM architecture evolution from 2017 (Transformer) to 2023 (Mixture-of-Experts).'\",\n    \"Flag ambiguity: 'Store 'AI' as a placeholder for [subfield_X, subfield_Y] with resolution triggers.'\",\n    \"Use dynamic queries: 'Retrieve AI facts only when prompted, with citations and last-updated timestamps.'\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Request violates durability constraints (unbounded scope).\",\n      \"Ambiguity in 'AI' would require recursive sub-entity resolution.\",\n      \"Superseded facts (e.g., symbolic AI dominance) cannot be durably stored as current.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

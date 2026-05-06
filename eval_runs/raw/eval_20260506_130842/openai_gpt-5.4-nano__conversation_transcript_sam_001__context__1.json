@@ -1,0 +1,141 @@
+{
+  "error": null,
+  "fixture_id": "conversation_transcript_sam_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Memory compiled from the transcript: Sam\u2019s employment update, music preference shift, and a planned AI infrastructure catch-up with an article to be sent.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_affirmative_facts_and_preferences_from_transcript",
+    "entity_resolution": {
+      "action": "create_or_map_entities",
+      "entity_id": null,
+      "reason": "Entities are introduced in the conversation; no stable external IDs were provided."
+    },
+    "intent": "compile_memory_for_brain",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "previous employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "profile_employment",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "employed_by",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "left_employer",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman last month and joined Point72."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "artist",
+            "type": "musician"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "artist focus",
+            "type": "musician"
+          }
+        ],
+        "kind": "music_preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "listens_to",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "currently_more_into",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is still listening to Bill Evans, but lately has been more into early Coltrane."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "AI infra",
+            "role": "discussion topic",
+            "type": "topic"
+          },
+          {
+            "name": "article",
+            "role": "shared resource",
+            "type": "document"
+          }
+        ],
+        "kind": "social_planning",
+        "relationships": [
+          {
+            "object": "AI infra",
+            "predicate": "wants_to_catch_up_about",
+            "subject": "Daniele"
+          },
+          {
+            "object": "article",
+            "predicate": "will_send",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Daniele and Sam plan to catch up about AI infra; Sam agreed to send an article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Employment change captured (Goldman -> Point72).",
+        "Ongoing listening preference and recent shift captured (Bill Evans -> more early Coltrane).",
+        "Social planning captured (catch up on AI infra; Sam will send an article)."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If a specific date or timeframe is needed beyond 'last month' for Goldman->Point72, provide the exact month.",
+      "If Bill Evans or Coltrane refer to specific recordings, albums, or contexts, share those details."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"compile_memory_for_brain\",\n  \"decision\": \"store_affirmative_facts_and_preferences_from_transcript\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"profile_employment\",\n      \"statement\": \"Sam left Goldman last month and joined Point72.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"previous employer\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"current employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"employed_by\",\n          \"object\": \"Point72\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"left_employer\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"music_preference\",\n      \"statement\": \"Sam is still listening to Bill Evans, but lately has been more into early Coltrane.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"musician\",\n          \"role\": \"artist\"\n        },\n        {\n          \"name\": \"early Coltrane\",\n          \"type\": \"musician\",\n          \"role\": \"artist focus\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"listens_to\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"currently_more_into\",\n          \"object\": \"early Coltrane\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"social_planning\",\n      \"statement\": \"Daniele and Sam plan to catch up about AI infra; Sam agreed to send an article.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"AI infra\",\n          \"type\": \"topic\",\n          \"role\": \"discussion topic\"\n        },\n        {\n          \"name\": \"article\",\n          \"type\": \"document\",\n          \"role\": \"shared resource\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Daniele\",\n          \"predicate\": \"wants_to_catch_up_about\",\n          \"object\": \"AI infra\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"will_send\",\n          \"object\": \"article\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_or_map_entities\",\n    \"entity_id\": null,\n    \"reason\": \"Entities are introduced in the conversation; no stable external IDs were provided.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Memory compiled from the transcript: Sam\u2019s employment update, music preference shift, and a planned AI infrastructure catch-up with an article to be sent.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If a specific date or timeframe is needed beyond 'last month' for Goldman->Point72, provide the exact month.\",\n    \"If Bill Evans or Coltrane refer to specific recordings, albums, or contexts, share those details.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Employment change captured (Goldman -> Point72).\",\n      \"Ongoing listening preference and recent shift captured (Bill Evans -> more early Coltrane).\",\n      \"Social planning captured (catch up on AI infra; Sam will send an article).\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

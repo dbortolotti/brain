@@ -1,0 +1,63 @@
+{
+  "error": null,
+  "fixture_id": "vague_memory_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "No durable memory exists for 'the thing' from yesterday due to vagueness. Clarification or additional context is required to retrieve or commit a specific memory.",
+    "citations": [],
+    "conflict_classification": "none_applicable",
+    "decision": "abstain",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Lack of specificity in the reference ('the thing') prevents resolution. Ambiguity exceeds threshold for durable memory commitment."
+    },
+    "intent": "retrieve_vague_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "yesterday",
+            "role": "reference_point",
+            "type": "temporal_entity"
+          },
+          {
+            "name": "the thing",
+            "role": "unresolved_object",
+            "type": "vague_reference"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "ambiguous",
+            "predicate": "is",
+            "subject": "the thing"
+          },
+          {
+            "object": "potentially relevant but unspecified events",
+            "predicate": "contains",
+            "subject": "yesterday"
+          }
+        ],
+        "statement": "The specific 'thing' from yesterday remains unresolved due to insufficient contextual specificity. No unambiguous or verifiable memory exists for a singular, identifiable event labeled as 'the thing.'"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory retrieval aborted due to unresolved ambiguity in the input.",
+        "No superseded/deleted facts were consulted; only current, unambiguous memories are preserved."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Request clarification: 'Which specific thing from yesterday?'",
+      "Propose temporal narrowing: 'Do you mean an event, object, or interaction?'",
+      "Suggest contextual anchors: 'Was it related to [X, Y, or Z]?'"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"retrieve_vague_memory\",\n  \"decision\": \"abstain\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"durable_memory\",\n      \"statement\": \"The specific 'thing' from yesterday remains unresolved due to insufficient contextual specificity. No unambiguous or verifiable memory exists for a singular, identifiable event labeled as 'the thing.'\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"yesterday\",\n          \"type\": \"temporal_entity\",\n          \"role\": \"reference_point\"\n        },\n        {\n          \"name\": \"the thing\",\n          \"type\": \"vague_reference\",\n          \"role\": \"unresolved_object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"the thing\",\n          \"predicate\": \"is\",\n          \"object\": \"ambiguous\"\n        },\n        {\n          \"subject\": \"yesterday\",\n          \"predicate\": \"contains\",\n          \"object\": \"potentially relevant but unspecified events\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Lack of specificity in the reference ('the thing') prevents resolution. Ambiguity exceeds threshold for durable memory commitment.\"\n  },\n  \"conflict_classification\": \"none_applicable\",\n  \"answer\": \"No durable memory exists for 'the thing' from yesterday due to vagueness. Clarification or additional context is required to retrieve or commit a specific memory.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Request clarification: 'Which specific thing from yesterday?'\",\n    \"Propose temporal narrowing: 'Do you mean an event, object, or interaction?'\",\n    \"Suggest contextual anchors: 'Was it related to [X, Y, or Z]?'\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Memory retrieval aborted due to unresolved ambiguity in the input.\",\n      \"No superseded/deleted facts were consulted; only current, unambiguous memories are preserved.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

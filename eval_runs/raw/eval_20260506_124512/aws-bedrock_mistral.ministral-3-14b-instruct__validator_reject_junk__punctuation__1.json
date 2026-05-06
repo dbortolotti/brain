@@ -1,0 +1,30 @@
+{
+  "error": null,
+  "fixture_id": "validator_reject_junk__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Input lacks structured intent, factual content, or actionable memory. Punctuation/abbreviations ('lol', 'ok', 'whatever') are non-committal and violate durable memory requirements. No entities, relationships, or citations present.",
+    "citations": [],
+    "conflict_classification": "junk_input",
+    "decision": "reject",
+    "entity_resolution": null,
+    "intent": "invalid",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Input contains no valid memory content or actionable directive.",
+        "Punctuation/abbreviations are insufficient for durable storage.",
+        "Ambiguity cannot be resolved without additional context."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Resubmit with a clear, unambiguous statement or query.",
+      "Provide a structured request (e.g., 'Store: [fact] with [entities]') if committing memory.",
+      "Clarify intent (e.g., 'Is this a joke? A placeholder?') if ambiguity is intentional."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"invalid\",\n  \"decision\": \"reject\",\n  \"memory_cards\": [],\n  \"entity_resolution\": null,\n  \"conflict_classification\": \"junk_input\",\n  \"answer\": \"Input lacks structured intent, factual content, or actionable memory. Punctuation/abbreviations ('lol', 'ok', 'whatever') are non-committal and violate durable memory requirements. No entities, relationships, or citations present.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Resubmit with a clear, unambiguous statement or query.\",\n    \"Provide a structured request (e.g., 'Store: [fact] with [entities]') if committing memory.\",\n    \"Clarify intent (e.g., 'Is this a joke? A placeholder?') if ambiguity is intentional.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Input contains no valid memory content or actionable directive.\",\n      \"Punctuation/abbreviations are insufficient for durable storage.\",\n      \"Ambiguity cannot be resolved without additional context.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

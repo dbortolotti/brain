@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "fixture_id": "italian_memory_note_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Memorizzato in modo ambiguo: Sam associato a Goldman preferisce Bill Evans.",
+    "citations": [
+      "input: \"Ricordami che Sam di Goldman preferisce Bill Evans.\""
+    ],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "unresolved",
+      "entity_id": null,
+      "reason": "'Sam di Goldman' is ambiguous; no unique entity identifier is available from the input."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation/context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam associated with Goldman prefers Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored one tentative preference memory.",
+        "Entity disambiguation remains unresolved."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If needed, specify which Sam at Goldman this refers to.",
+      "If the preference is temporary or outdated, provide an update to revise the memory."
+    ]
+  },
+  "raw_text": "{\"intent\":\"slack_intake\",\"decision\":\"store\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam associated with Goldman prefers Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation/context\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"preferred artist\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"associated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"prefers\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"unresolved\",\"entity_id\":null,\"reason\":\"'Sam di Goldman' is ambiguous; no unique entity identifier is available from the input.\"},\"conflict_classification\":\"none\",\"answer\":\"Memorizzato in modo ambiguo: Sam associato a Goldman preferisce Bill Evans.\",\"citations\":[\"input: \\\"Ricordami che Sam di Goldman preferisce Bill Evans.\\\"\"],\"repair_options\":[\"If needed, specify which Sam at Goldman this refers to.\",\"If the preference is temporary or outdated, provide an update to revise the memory.\"],\"receipt\":{\"success\":true,\"details\":[\"Stored one tentative preference memory.\",\"Entity disambiguation remains unresolved.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

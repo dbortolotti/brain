@@ -1,0 +1,53 @@
+{
+  "error": null,
+  "fixture_id": "recall_absence_claims_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "You have no open loops with Sam.",
+    "citations": [
+      "Relevant open-loop table checked for Sam and contains no open loops."
+    ],
+    "conflict_classification": "none",
+    "decision": "No open loops found for Sam in the checked relevant open-loop table; do not commit any durable memory about outstanding items.",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": null,
+      "reason": "Sam is referenced in the query, but no durable entity linkage is needed because the source only supports an absence claim."
+    },
+    "intent": "Recall open loops with Sam",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "query subject",
+            "type": "person"
+          }
+        ],
+        "kind": "absence_claim",
+        "relationships": [
+          {
+            "object": "Sam",
+            "predicate": "contains open loops for",
+            "subject": "relevant open-loop table"
+          }
+        ],
+        "statement": "The relevant open-loop table for Sam contains no open loops."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Queried Sam's relevant open-loop table.",
+        "No open loops present."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you expected an open loop with Sam, re-check the source records or add a new task/item to the open-loop table."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Recall open loops with Sam\",\"decision\":\"No open loops found for Sam in the checked relevant open-loop table; do not commit any durable memory about outstanding items.\",\"memory_cards\":[{\"kind\":\"absence_claim\",\"statement\":\"The relevant open-loop table for Sam contains no open loops.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"query subject\"}],\"relationships\":[{\"subject\":\"relevant open-loop table\",\"predicate\":\"contains open loops for\",\"object\":\"Sam\"}]}],\"entity_resolution\":{\"action\":\"resolved\",\"entity_id\":null,\"reason\":\"Sam is referenced in the query, but no durable entity linkage is needed because the source only supports an absence claim.\"},\"conflict_classification\":\"none\",\"answer\":\"You have no open loops with Sam.\",\"citations\":[\"Relevant open-loop table checked for Sam and contains no open loops.\"],\"repair_options\":[\"If you expected an open loop with Sam, re-check the source records or add a new task/item to the open-loop table.\"],\"receipt\":{\"success\":true,\"details\":[\"Queried Sam's relevant open-loop table.\",\"No open loops present.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

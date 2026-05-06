@@ -1,0 +1,74 @@
+{
+  "error": null,
+  "fixture_id": "personal_routine_morning_reading_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Stored as a soft preference/routine due to the hedge \"usually\".",
+    "citations": [
+      "Input: \"I usually prefer to read technical papers in the morning before checking email\""
+    ],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No existing entity context was provided for resolution."
+    },
+    "intent": "capture_personal_routine_preference",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "user",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "technical papers",
+            "role": "preferred reading",
+            "type": "content"
+          },
+          {
+            "name": "morning",
+            "role": "preferred time",
+            "type": "time_of_day"
+          },
+          {
+            "name": "email",
+            "role": "postponed activity",
+            "type": "activity"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "read technical papers in the morning before checking email",
+            "predicate": "usually_prefers",
+            "subject": "user"
+          },
+          {
+            "object": "checking email",
+            "predicate": "before",
+            "subject": "read technical papers"
+          }
+        ],
+        "statement": "The user usually prefers to read technical papers in the morning before checking email."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured a morning reading preference.",
+        "Preserved uncertainty by treating it as a usual tendency rather than a strict rule."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If needed, clarify whether this is a stable routine or just an occasional habit.",
+      "If needed, specify whether \"technical papers\" includes arXiv, journals, or work docs."
+    ]
+  },
+  "raw_text": "{\"intent\":\"capture_personal_routine_preference\",\"decision\":\"store\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"The user usually prefers to read technical papers in the morning before checking email.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"user\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"technical papers\",\"type\":\"content\",\"role\":\"preferred reading\"},{\"name\":\"morning\",\"type\":\"time_of_day\",\"role\":\"preferred time\"},{\"name\":\"email\",\"type\":\"activity\",\"role\":\"postponed activity\"}],\"relationships\":[{\"subject\":\"user\",\"predicate\":\"usually_prefers\",\"object\":\"read technical papers in the morning before checking email\"},{\"subject\":\"read technical papers\",\"predicate\":\"before\",\"object\":\"checking email\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No existing entity context was provided for resolution.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored as a soft preference/routine due to the hedge \\\"usually\\\".\",\"citations\":[\"Input: \\\"I usually prefer to read technical papers in the morning before checking email\\\"\"],\"repair_options\":[\"If needed, clarify whether this is a stable routine or just an occasional habit.\",\"If needed, specify whether \\\"technical papers\\\" includes arXiv, journals, or work docs.\"],\"receipt\":{\"success\":true,\"details\":[\"Captured a morning reading preference.\",\"Preserved uncertainty by treating it as a usual tendency rather than a strict rule.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

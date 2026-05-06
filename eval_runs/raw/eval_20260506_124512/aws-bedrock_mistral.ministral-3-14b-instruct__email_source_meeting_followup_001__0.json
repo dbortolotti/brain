@@ -1,0 +1,85 @@
+{
+  "error": null,
+  "fixture_id": "email_source_meeting_followup_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam confirmed joining Point72 last month and requested the AI infrastructure article. No prior conflicting records exist.",
+    "citations": [
+      "email_source_meeting_followup_001"
+    ],
+    "conflict_classification": "none",
+    "decision": "pending",
+    "entity_resolution": {
+      "action": "create_or_link",
+      "entity_id": null,
+      "reason": "No prior durable memory of Sam's employment at Point72 or the requested article exists. New entities require creation."
+    },
+    "intent": "request_action",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "sender",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72 employment (via email)",
+            "predicate": "confirmed",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72 last month (confirmed in follow-up email)."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "AI infrastructure article",
+            "role": "requested_resource",
+            "type": "document"
+          }
+        ],
+        "kind": "request",
+        "relationships": [
+          {
+            "object": "AI infrastructure article",
+            "predicate": "requested",
+            "subject": "Sam"
+          },
+          {
+            "object": "AI infrastructure article",
+            "predicate": "must_provide",
+            "subject": "sender"
+          }
+        ],
+        "statement": "Sam requested the AI infrastructure article from the sender."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "New memory cards created for Sam's employment and article request.",
+        "No conflicts detected with existing durable memory."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"request_action\",\n  \"decision\": \"pending\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam joined Point72 last month (confirmed in follow-up email).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"sender\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"confirmed\",\n          \"object\": \"Point72 employment (via email)\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"request\",\n      \"statement\": \"Sam requested the AI infrastructure article from the sender.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"AI infrastructure article\",\n          \"type\": \"document\",\n          \"role\": \"requested_resource\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"requested\",\n          \"object\": \"AI infrastructure article\"\n        },\n        {\n          \"subject\": \"sender\",\n          \"predicate\": \"must_provide\",\n          \"object\": \"AI infrastructure article\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_or_link\",\n    \"entity_id\": null,\n    \"reason\": \"No prior durable memory of Sam's employment at Point72 or the requested article exists. New entities require creation.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Sam confirmed joining Point72 last month and requested the AI infrastructure article. No prior conflicting records exist.\",\n  \"citations\": [\n    \"email_source_meeting_followup_001\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"New memory cards created for Sam's employment and article request.\",\n      \"No conflicts detected with existing durable memory.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

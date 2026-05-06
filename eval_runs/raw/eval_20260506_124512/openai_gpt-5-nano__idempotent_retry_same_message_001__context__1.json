@@ -1,0 +1,64 @@
+{
+  "error": null,
+  "fixture_id": "idempotent_retry_same_message_001__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Stored memory: Sam from Goldman likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_once",
+    "entity_resolution": {
+      "action": "accept",
+      "entity_id": null,
+      "reason": "Ambiguity preserved; multiple named entities present; resolution deferred."
+    },
+    "intent": "memory_update",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "informant",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "subject_of_affection",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "statement",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "affinity",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "employed_by",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman mentioned that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created for statement: 'Sam from Goldman mentioned that he likes Bill Evans.'",
+        "No conflicting records detected at time of storage."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"memory_update\",\n  \"decision\": \"store_once\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"statement\",\n      \"statement\": \"Sam from Goldman mentioned that he likes Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"informant\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"subject_of_affection\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"affinity\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"employed_by\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    }\n    ],\n  \"entity_resolution\": {\n    \"action\": \"accept\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguity preserved; multiple named entities present; resolution deferred.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Stored memory: Sam from Goldman likes Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card created for statement: 'Sam from Goldman mentioned that he likes Bill Evans.'\",\n      \"No conflicting records detected at time of storage.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

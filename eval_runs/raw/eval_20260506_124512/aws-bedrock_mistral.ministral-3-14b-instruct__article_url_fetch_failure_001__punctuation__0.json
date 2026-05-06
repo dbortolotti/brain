@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "fixture_id": "article_url_fetch_failure_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Ingestion aborted due to malformed URL and network failure. No durable memory committed.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "abort_due_to_failure",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No resolvable entities exist in failed ingestion context."
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https -//examplecom/missing",
+            "role": "target_resource",
+            "type": "url"
+          },
+          {
+            "name": "punctuation/format_error",
+            "role": "root_cause",
+            "type": "error"
+          },
+          {
+            "name": "404_network_error",
+            "role": "observed_failure",
+            "type": "http_status"
+          }
+        ],
+        "kind": "system_event",
+        "relationships": [
+          {
+            "object": "malformed_URL",
+            "predicate": "caused",
+            "subject": "punctuation/format_error"
+          },
+          {
+            "object": "404_network_error",
+            "predicate": "triggered",
+            "subject": "malformed_URL"
+          }
+        ],
+        "statement": "Failed to fetch article at malformed URL (punctuation/format error: 'https -//examplecom/missing'). Network error (404) encountered during mock fetch attempt."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "URL parsing failed: invalid scheme/host (punctuation/whitespace in 'https -//examplecom')",
+        "Mock fetch returned 404 (simulated network error)",
+        "No memory cards persisted due to critical failure"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Validate URL format (e.g., 'https://example.com/missing')",
+      "Check network connectivity for target domain",
+      "Verify article existence via alternative sources"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_ingestion\",\n  \"decision\": \"abort_due_to_failure\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"system_event\",\n      \"statement\": \"Failed to fetch article at malformed URL (punctuation/format error: 'https -//examplecom/missing'). Network error (404) encountered during mock fetch attempt.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"https -//examplecom/missing\",\n          \"type\": \"url\",\n          \"role\": \"target_resource\"\n        },\n        {\n          \"name\": \"punctuation/format_error\",\n          \"type\": \"error\",\n          \"role\": \"root_cause\"\n        },\n        {\n          \"name\": \"404_network_error\",\n          \"type\": \"http_status\",\n          \"role\": \"observed_failure\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"punctuation/format_error\",\n          \"predicate\": \"caused\",\n          \"object\": \"malformed_URL\"\n        },\n        {\n          \"subject\": \"malformed_URL\",\n          \"predicate\": \"triggered\",\n          \"object\": \"404_network_error\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No resolvable entities exist in failed ingestion context.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Ingestion aborted due to malformed URL and network failure. No durable memory committed.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Validate URL format (e.g., 'https://example.com/missing')\",\n    \"Check network connectivity for target domain\",\n    \"Verify article existence via alternative sources\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"URL parsing failed: invalid scheme/host (punctuation/whitespace in 'https -//examplecom')\",\n      \"Mock fetch returned 404 (simulated network error)\",\n      \"No memory cards persisted due to critical failure\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

@@ -1,0 +1,94 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "The statements conflict: Sara cannot simultaneously be Daniele's daughter (implying Daniele is her parent) and the speaker's niece (implying the speaker is Sara's aunt/uncle via a sibling of Sara's parent), unless Daniele is the speaker's sibling and the speaker is Sara's aunt/uncle \u2014 but this is not stated and introduces ambiguity. No sufficient context resolves the relationship.",
+    "citations": [],
+    "conflict_classification": "relational",
+    "decision": "conflict",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No conflicting entity references; conflict is relational, not entity-based."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "sibling",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is daughter of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is twin of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "speaker",
+            "role": "possessor",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "speaker",
+            "predicate": "is niece of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict identified: familial roles are inconsistent without additional relational context.",
+        "No entity duplication or deletion detected.",
+        "Ambiguity preserved; no superseded facts presented as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify the speaker's relationship to Daniele (e.g., 'I am Daniele's sibling').",
+      "Clarify the speaker's relationship to Nur (e.g., 'I am Nur's sibling').",
+      "Retract or qualify one of the statements with uncertainty.",
+      "Seek additional context about Daniele, Nur, and the speaker's familial ties."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"classify_conflict\",\n  \"decision\": \"conflict\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is Daniele's daughter and Nur's twin.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"parent\"\n        },\n        {\n          \"name\": \"Nur\",\n          \"type\": \"person\",\n          \"role\": \"sibling\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is daughter of\",\n          \"object\": \"Daniele\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is twin of\",\n          \"object\": \"Nur\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is my niece.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"speaker\",\n          \"type\": \"person\",\n          \"role\": \"possessor\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is niece of\",\n          \"object\": \"speaker\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No conflicting entity references; conflict is relational, not entity-based.\"\n  },\n  \"conflict_classification\": \"relational\",\n  \"answer\": \"The statements conflict: Sara cannot simultaneously be Daniele's daughter (implying Daniele is her parent) and the speaker's niece (implying the speaker is Sara's aunt/uncle via a sibling of Sara's parent), unless Daniele is the speaker's sibling and the speaker is Sara's aunt/uncle \u2014 but this is not stated and introduces ambiguity. No sufficient context resolves the relationship.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Clarify the speaker's relationship to Daniele (e.g., 'I am Daniele's sibling').\",\n    \"Clarify the speaker's relationship to Nur (e.g., 'I am Nur's sibling').\",\n    \"Retract or qualify one of the statements with uncertainty.\",\n    \"Seek additional context about Daniele, Nur, and the speaker's familial ties.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Conflict identified: familial roles are inconsistent without additional relational context.\",\n      \"No entity duplication or deletion detected.\",\n      \"Ambiguity preserved; no superseded facts presented as current.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

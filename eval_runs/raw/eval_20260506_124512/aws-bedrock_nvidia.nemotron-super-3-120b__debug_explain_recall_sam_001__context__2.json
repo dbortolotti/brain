@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "debug_explain_recall_sam_001__context",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Sam is a former Goldman Sachs investment banker who specialized in M&A advisory for technology clients.",
+    "citations": [
+      "memory://person/sam_goldman_001"
+    ],
+    "conflict_classification": "none",
+    "decision": "retrieve",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": "sam_goldman_001",
+      "reason": "Matched to known profile of Sam with Goldman Sachs employment history in tech M&A"
+    },
+    "intent": "recall",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "person",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "worked_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "M&A advisory for technology clients",
+            "predicate": "specialized_in",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is a former employee of Goldman Sachs who worked in the investment banking division, focusing on M&A advisory for technology clients."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Retrieved memory card for Sam from Goldman Sachs",
+        "No conflicting or deprecated facts found",
+        "Entity resolved to sam_goldman_001 with high confidence"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"recall\",\n  \"decision\": \"retrieve\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"person\",\n      \"statement\": \"Sam is a former employee of Goldman Sachs who worked in the investment banking division, focusing on M&A advisory for technology clients.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"worked_at\",\n          \"object\": \"Goldman Sachs\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"specialized_in\",\n          \"object\": \"M&A advisory for technology clients\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolved\",\n    \"entity_id\": \"sam_goldman_001\",\n    \"reason\": \"Matched to known profile of Sam with Goldman Sachs employment history in tech M&A\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Sam is a former Goldman Sachs investment banker who specialized in M&A advisory for technology clients.\",\n  \"citations\": [\n    \"memory://person/sam_goldman_001\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Retrieved memory card for Sam from Goldman Sachs\",\n      \"No conflicting or deprecated facts found\",\n      \"Entity resolved to sam_goldman_001 with high confidence\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

@@ -1,0 +1,99 @@
+{
+  "error": null,
+  "fixture_id": "small_table_preferences_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Stored two preference memories tied to the specified individuals and firms, with their associated sources/dates.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "accept-as-written",
+      "entity_id": null,
+      "reason": "No existing entity IDs were provided; names/affiliations are taken as-is from the fixture."
+    },
+    "intent": "Compile durable memory cards from the provided fixture table.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "firm"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference",
+            "type": "preference_item"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (Goldman) likes Bill Evans (Source: Dinner 2026-05-05)."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Anna",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "JPM",
+            "role": "affiliation",
+            "type": "firm"
+          },
+          {
+            "name": "Barolo",
+            "role": "preference",
+            "type": "preference_item"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "JPM",
+            "predicate": "works_at",
+            "subject": "Anna"
+          },
+          {
+            "object": "Barolo",
+            "predicate": "likes",
+            "subject": "Anna"
+          }
+        ],
+        "statement": "Anna (JPM) likes Barolo (Source: Lunch 2026-05-01)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Two preference records compiled from the fixture."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If later clarification provides canonical firm/person identifiers, re-resolve entities without changing the preference statements."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Compile durable memory cards from the provided fixture table.\",\n  \"decision\": \"store\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam (Goldman) likes Bill Evans (Source: Dinner 2026-05-05).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"firm\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"preference_item\",\n          \"role\": \"preference\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Anna (JPM) likes Barolo (Source: Lunch 2026-05-01).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Anna\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"JPM\",\n          \"type\": \"firm\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Barolo\",\n          \"type\": \"preference_item\",\n          \"role\": \"preference\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Anna\",\n          \"predicate\": \"works_at\",\n          \"object\": \"JPM\"\n        },\n        {\n          \"subject\": \"Anna\",\n          \"predicate\": \"likes\",\n          \"object\": \"Barolo\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"accept-as-written\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entity IDs were provided; names/affiliations are taken as-is from the fixture.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Stored two preference memories tied to the specified individuals and firms, with their associated sources/dates.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If later clarification provides canonical firm/person identifiers, re-resolve entities without changing the preference statements.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Two preference records compiled from the fixture.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

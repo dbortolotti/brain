@@ -1,0 +1,61 @@
+{
+  "error": null,
+  "fixture_id": "slack_conflict_buttons_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam no longer works at Goldman Sachs; the most recent and reliable information is that Sam works at Point72.",
+    "citations": [
+      "User input: 'Sam left Goldman and joined Point72'"
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "resolve_conflict",
+    "entity_resolution": {
+      "action": "supersede",
+      "entity_id": "goldman_sachs_employment",
+      "reason": "explicit contradiction with new, higher-confidence source ('Sam left Goldman and joined Point72')"
+    },
+    "intent": "memory_update",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Point72 (as of [unspecified date, likely recent])"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded: 'Sam works at Goldman' (confidence: medium)",
+        "Added: 'Sam works at Point72' (confidence: high)",
+        "Conflict resolution: direct contradiction \u2192 supersession"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Delete all references to Goldman Sachs employment for Sam (recommended)",
+      "Flag Goldman Sachs employment as outdated with timestamp",
+      "Merge into a single 'employment history' card with temporal context"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_update\",\n  \"decision\": \"resolve_conflict\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam works at Point72 (as of [unspecified date, likely recent])\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"supersede\",\n    \"entity_id\": \"goldman_sachs_employment\",\n    \"reason\": \"explicit contradiction with new, higher-confidence source ('Sam left Goldman and joined Point72')\"\n  },\n  \"conflict_classification\": \"direct_contradiction\",\n  \"answer\": \"Sam no longer works at Goldman Sachs; the most recent and reliable information is that Sam works at Point72.\",\n  \"citations\": [\n    \"User input: 'Sam left Goldman and joined Point72'\"\n  ],\n  \"repair_options\": [\n    \"Delete all references to Goldman Sachs employment for Sam (recommended)\",\n    \"Flag Goldman Sachs employment as outdated with timestamp\",\n    \"Merge into a single 'employment history' card with temporal context\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Superseded: 'Sam works at Goldman' (confidence: medium)\",\n      \"Added: 'Sam works at Point72' (confidence: high)\",\n      \"Conflict resolution: direct contradiction \u2192 supersession\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

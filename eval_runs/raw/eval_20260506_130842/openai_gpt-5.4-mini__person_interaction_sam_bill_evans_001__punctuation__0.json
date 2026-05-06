@@ -1,0 +1,70 @@
+{
+  "error": null,
+  "fixture_id": "person_interaction_sam_bill_evans_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Captured a low-confidence preference mention: Sam from Goldman likes Bill Evans.",
+    "citations": [
+      "Input: \"Sam from Goldman mentioned that he likes Bill Evans\""
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_with_ambiguity",
+    "entity_resolution": {
+      "action": "partial_resolution",
+      "entity_id": null,
+      "reason": "The mention identifies a person named Sam associated with Goldman, but does not provide enough information to uniquely resolve the individual or confirm which Bill Evans is meant."
+    },
+    "intent": "extract_personal_preference_mention",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object_of_liking",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman was mentioned as liking Bill Evans, though this is based on a brief mention and the exact Sam and which Bill Evans are not fully disambiguated."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed a preference statement",
+        "Preserved ambiguity about identity resolution",
+        "No conflicting prior memory provided"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If needed, clarify which Sam from Goldman this refers to.",
+      "If needed, specify whether Bill Evans refers to the jazz pianist or another person with the same name."
+    ]
+  },
+  "raw_text": "{\"intent\":\"extract_personal_preference_mention\",\"decision\":\"commit_with_ambiguity\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman was mentioned as liking Bill Evans, though this is based on a brief mention and the exact Sam and which Bill Evans are not fully disambiguated.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"object_of_liking\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"partial_resolution\",\"entity_id\":null,\"reason\":\"The mention identifies a person named Sam associated with Goldman, but does not provide enough information to uniquely resolve the individual or confirm which Bill Evans is meant.\"},\"conflict_classification\":\"none\",\"answer\":\"Captured a low-confidence preference mention: Sam from Goldman likes Bill Evans.\",\"citations\":[\"Input: \\\"Sam from Goldman mentioned that he likes Bill Evans\\\"\"],\"repair_options\":[\"If needed, clarify which Sam from Goldman this refers to.\",\"If needed, specify whether Bill Evans refers to the jazz pianist or another person with the same name.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed a preference statement\",\"Preserved ambiguity about identity resolution\",\"No conflicting prior memory provided\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

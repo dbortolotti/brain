@@ -1,0 +1,74 @@
+{
+  "error": null,
+  "fixture_id": "temporal_status_transition_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Update the project state to reflect that the Brain Slack agent is now implemented; the prior planned/open status is superseded.",
+    "citations": [
+      "Existing project state - The Brain Slack agent is planned, status=open",
+      "New - The Brain Slack agent MVP is now implemented"
+    ],
+    "conflict_classification": "temporal_status_transition",
+    "decision": "apply_temporal_transition",
+    "entity_resolution": {
+      "action": "resolve_to_existing_entity",
+      "entity_id": null,
+      "reason": "The input refers to the same Brain Slack agent entity, with a status change rather than a new entity."
+    },
+    "intent": "update_project_status",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain Slack agent",
+            "role": "subject",
+            "type": "project_component"
+          }
+        ],
+        "kind": "status_update",
+        "relationships": [
+          {
+            "object": "planned/open -> implemented",
+            "predicate": "status_transition",
+            "subject": "Brain Slack agent"
+          }
+        ],
+        "statement": "The Brain Slack agent was planned and open; it is now implemented."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain Slack agent",
+            "role": "subject",
+            "type": "project_component"
+          }
+        ],
+        "kind": "state_snapshot",
+        "relationships": [
+          {
+            "object": "implemented",
+            "predicate": "current_status",
+            "subject": "Brain Slack agent"
+          }
+        ],
+        "statement": "The current status of the Brain Slack agent is implemented."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected a direct status transition from planned/open to implemented.",
+        "Committed the new current status while preserving the earlier state as superseded history."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace the prior open/planned status with implemented as the current state.",
+      "Optionally retain the earlier planned/open status only as historical context."
+    ]
+  },
+  "raw_text": "{\"intent\":\"update_project_status\",\"decision\":\"apply_temporal_transition\",\"memory_cards\":[{\"kind\":\"status_update\",\"statement\":\"The Brain Slack agent was planned and open; it is now implemented.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Brain Slack agent\",\"type\":\"project_component\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"Brain Slack agent\",\"predicate\":\"status_transition\",\"object\":\"planned/open -> implemented\"}]},{\"kind\":\"state_snapshot\",\"statement\":\"The current status of the Brain Slack agent is implemented.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Brain Slack agent\",\"type\":\"project_component\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"Brain Slack agent\",\"predicate\":\"current_status\",\"object\":\"implemented\"}]}],\"entity_resolution\":{\"action\":\"resolve_to_existing_entity\",\"entity_id\":null,\"reason\":\"The input refers to the same Brain Slack agent entity, with a status change rather than a new entity.\"},\"conflict_classification\":\"temporal_status_transition\",\"answer\":\"Update the project state to reflect that the Brain Slack agent is now implemented; the prior planned/open status is superseded.\",\"citations\":[\"Existing project state - The Brain Slack agent is planned, status=open\",\"New - The Brain Slack agent MVP is now implemented\"],\"repair_options\":[\"Replace the prior open/planned status with implemented as the current state.\",\"Optionally retain the earlier planned/open status only as historical context.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected a direct status transition from planned/open to implemented.\",\"Committed the new current status while preserving the earlier state as superseded history.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

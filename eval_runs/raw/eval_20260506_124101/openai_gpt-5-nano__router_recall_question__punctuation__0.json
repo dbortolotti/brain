@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "fixture_id": "router_recall_question__punctuation",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Sam is known to be associated with Goldman, but there is insufficient information to specify more about who Sam is (e.g., role, department, or verification) without additional context.",
+    "citations": [],
+    "conflict_classification": "ambiguous_identity",
+    "decision": "provide memory about Sam from Goldman based on prior stored cards; preserve ambiguity and do not invent current facts.",
+    "entity_resolution": {
+      "action": "partial_resolution",
+      "entity_id": null,
+      "reason": "Only a name match with organization; no unique identifier or additional context to disambiguate Sam among possible individuals with same name."
+    },
+    "intent": "recall",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unknown",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "entity",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "employed_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman is known but not enough context to specify role or relationship."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory recall processed with ambiguity preserved."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide additional context about Sam (e.g., full name, role, or department at Goldman).",
+      "Retrieve any existing notes or conversations that mention Sam for disambiguation.",
+      "Clarify if there are multiple Sams at Goldman and identify the correct individual."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"recall\",\n  \"decision\": \"provide memory about Sam from Goldman based on prior stored cards; preserve ambiguity and do not invent current facts.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"entity\",\n      \"statement\": \"Sam from Goldman is known but not enough context to specify role or relationship.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"unknown\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"employed_at\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"partial_resolution\",\n    \"entity_id\": null,\n    \"reason\": \"Only a name match with organization; no unique identifier or additional context to disambiguate Sam among possible individuals with same name.\"\n  },\n  \"conflict_classification\": \"ambiguous_identity\",\n  \"answer\": \"Sam is known to be associated with Goldman, but there is insufficient information to specify more about who Sam is (e.g., role, department, or verification) without additional context.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Provide additional context about Sam (e.g., full name, role, or department at Goldman).\",\n    \"Retrieve any existing notes or conversations that mention Sam for disambiguation.\",\n    \"Clarify if there are multiple Sams at Goldman and identify the correct individual.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory recall processed with ambiguity preserved.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124101",
+  "status": "ok"
+}

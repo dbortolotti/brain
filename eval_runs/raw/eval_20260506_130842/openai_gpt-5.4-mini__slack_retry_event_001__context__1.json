@@ -1,0 +1,35 @@
+{
+  "error": null,
+  "fixture_id": "slack_retry_event_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Ignored duplicate Slack event retry; no memory created or updated.",
+    "citations": [
+      "Fixture slack_retry_event_001__context",
+      "Input: Same Slack event ID delivered twice for: Sam from Goldman likes Bill Evans."
+    ],
+    "conflict_classification": "duplicate_delivery",
+    "decision": "No new durable memory; this appears to be the same Slack event delivered twice, so it should be treated as a retry rather than a new fact.",
+    "entity_resolution": {
+      "action": "no_change",
+      "entity_id": null,
+      "reason": "The input is a duplicate delivery of the same event ID, so no new entity resolution is needed."
+    },
+    "intent": "deduplicate_slack_retry",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected duplicate Slack event delivery.",
+        "Preserved ambiguity and avoided committing duplicate durable memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If this was meant to be a distinct event, provide a new Slack event ID or additional distinguishing context.",
+      "If a memory card was expected, resend the original non-duplicate event payload."
+    ]
+  },
+  "raw_text": "{\"intent\":\"deduplicate_slack_retry\",\"decision\":\"No new durable memory; this appears to be the same Slack event delivered twice, so it should be treated as a retry rather than a new fact.\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"no_change\",\"entity_id\":null,\"reason\":\"The input is a duplicate delivery of the same event ID, so no new entity resolution is needed.\"},\"conflict_classification\":\"duplicate_delivery\",\"answer\":\"Ignored duplicate Slack event retry; no memory created or updated.\",\"citations\":[\"Fixture slack_retry_event_001__context\",\"Input: Same Slack event ID delivered twice for: Sam from Goldman likes Bill Evans.\"],\"repair_options\":[\"If this was meant to be a distinct event, provide a new Slack event ID or additional distinguishing context.\",\"If a memory card was expected, resend the original non-duplicate event payload.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected duplicate Slack event delivery.\",\"Preserved ambiguity and avoided committing duplicate durable memory.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

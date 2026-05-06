@@ -1,0 +1,34 @@
+{
+  "error": null,
+  "fixture_id": "article_url_fetch_failure_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Article fetch failed (HTTP 404) for URL: https://example.com/missing. No content to ingest.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "abort_ingestion",
+    "entity_resolution": {
+      "action": "none",
+      "reason": "no entities extracted from failed fetch"
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "HTTP 404 error encountered during fetch attempt",
+        "No durable memory created due to failure",
+        "Ambiguity preserved: original intent ('useful for memory architecture') retained for potential future resolution"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Verify URL correctness",
+      "Check network connectivity",
+      "Attempt retry with exponential backoff",
+      "Flag as permanently unavailable"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_ingestion\",\n  \"decision\": \"abort_ingestion\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"reason\": \"no entities extracted from failed fetch\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Article fetch failed (HTTP 404) for URL: https://example.com/missing. No content to ingest.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Verify URL correctness\",\n    \"Check network connectivity\",\n    \"Attempt retry with exponential backoff\",\n    \"Flag as permanently unavailable\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"HTTP 404 error encountered during fetch attempt\",\n      \"No durable memory created due to failure\",\n      \"Ambiguity preserved: original intent ('useful for memory architecture') retained for potential future resolution\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

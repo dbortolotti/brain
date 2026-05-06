@@ -1,0 +1,74 @@
+{
+  "error": null,
+  "fixture_id": "recall_brain_cognee_conclusions_relevance_001",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "I concluded that Brain is the source-of-truth personal memory system, and Cognee is a rebuildable projection layer that derives from Brain but does not override it.",
+    "citations": [
+      "Brain DB source-of-truth conclusion",
+      "Slack strict intake",
+      "Family facts"
+    ],
+    "conflict_classification": "none",
+    "decision": "conclude",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": "brain_cognee_relationship_001",
+      "reason": "Explicitly stated in source-of-truth conclusion and confirmed by Slack strict intake and family facts as non-contradictory."
+    },
+    "intent": "recall_synthesizer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "source-of-truth",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "projection-layer",
+            "type": "system"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "source-of-truth",
+            "predicate": "is",
+            "subject": "Brain"
+          },
+          {
+            "object": "rebuildable projection",
+            "predicate": "is",
+            "subject": "Cognee"
+          },
+          {
+            "object": "Brain",
+            "predicate": "derives from",
+            "subject": "Cognee"
+          },
+          {
+            "object": "Brain",
+            "predicate": "does not override",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain is the source-of-truth personal memory system, while Cognee is a rebuildable projection layer that derives from Brain but does not override it."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory synthesized from source-of-truth conclusion",
+        "No conflicts detected with Slack, family, or Sam preferences",
+        "Cognee\u2019s rebuildable nature affirmed without overriding Brain"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"recall_synthesizer\",\n  \"decision\": \"conclude\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"conclusion\",\n      \"statement\": \"Brain is the source-of-truth personal memory system, while Cognee is a rebuildable projection layer that derives from Brain but does not override it.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain\",\n          \"type\": \"system\",\n          \"role\": \"source-of-truth\"\n        },\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"system\",\n          \"role\": \"projection-layer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain\",\n          \"predicate\": \"is\",\n          \"object\": \"source-of-truth\"\n        },\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"is\",\n          \"object\": \"rebuildable projection\"\n        },\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"derives from\",\n          \"object\": \"Brain\"\n        },\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"does not override\",\n          \"object\": \"Brain\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolve\",\n    \"entity_id\": \"brain_cognee_relationship_001\",\n    \"reason\": \"Explicitly stated in source-of-truth conclusion and confirmed by Slack strict intake and family facts as non-contradictory.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"I concluded that Brain is the source-of-truth personal memory system, and Cognee is a rebuildable projection layer that derives from Brain but does not override it.\",\n  \"citations\": [\n    \"Brain DB source-of-truth conclusion\",\n    \"Slack strict intake\",\n    \"Family facts\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory synthesized from source-of-truth conclusion\",\n      \"No conflicts detected with Slack, family, or Sam preferences\",\n      \"Cognee\u2019s rebuildable nature affirmed without overriding Brain\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

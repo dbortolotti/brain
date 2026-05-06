@@ -1,0 +1,70 @@
+{
+  "error": null,
+  "fixture_id": "large_table_500_rows_001",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Store the table using a columnar format with dictionary encoding on the name and value fields to exploit repetition, with id as the primary key for row identification.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "Store as a relational table with deduplication of name and value fields where applicable, using id as primary key, and apply compression for repetitive patterns",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No conflicting or ambiguous entities detected in input; all references are to generic structural elements"
+    },
+    "intent": "Determine storage policy for a large CSV table with repeated id,name,value columns",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "subject",
+            "type": "data_structure"
+          },
+          {
+            "name": "id,name,value",
+            "role": "attribute",
+            "type": "column_schema"
+          },
+          {
+            "name": "columnar format",
+            "role": "method",
+            "type": "storage_technique"
+          }
+        ],
+        "kind": "storage_policy",
+        "relationships": [
+          {
+            "object": "id,name,value",
+            "predicate": "has_column_structure",
+            "subject": "CSV table"
+          },
+          {
+            "object": "columnar format with dictionary encoding",
+            "predicate": "uses",
+            "subject": "storage approach"
+          }
+        ],
+        "statement": "For large CSV tables with repetitive structure (id,name,value), store in a columnar format with dictionary encoding for name and value fields to reduce redundancy"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Input analyzed: 500-row CSV with repeating id,name,value schema",
+        "No superseded or deleted facts present in input",
+        "Storage decision optimized for redundancy and query efficiency",
+        "No entity conflicts requiring resolution"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If query patterns show frequent filtering by name or value, consider creating secondary indexes",
+      "If the table is append-only, use a log-structured merge tree for efficient writes",
+      "If data is static, consider partitioning by id ranges for parallel scanning"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Determine storage policy for a large CSV table with repeated id,name,value columns\",\n  \"decision\": \"Store as a relational table with deduplication of name and value fields where applicable, using id as primary key, and apply compression for repetitive patterns\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"storage_policy\",\n      \"statement\": \"For large CSV tables with repetitive structure (id,name,value), store in a columnar format with dictionary encoding for name and value fields to reduce redundancy\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"CSV table\",\n          \"type\": \"data_structure\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"id,name,value\",\n          \"type\": \"column_schema\",\n          \"role\": \"attribute\"\n        },\n        {\n          \"name\": \"columnar format\",\n          \"type\": \"storage_technique\",\n          \"role\": \"method\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"CSV table\",\n          \"predicate\": \"has_column_structure\",\n          \"object\": \"id,name,value\"\n        },\n        {\n          \"subject\": \"storage approach\",\n          \"predicate\": \"uses\",\n          \"object\": \"columnar format with dictionary encoding\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No conflicting or ambiguous entities detected in input; all references are to generic structural elements\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"Store the table using a columnar format with dictionary encoding on the name and value fields to exploit repetition, with id as the primary key for row identification.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If query patterns show frequent filtering by name or value, consider creating secondary indexes\",\n    \"If the table is append-only, use a log-structured merge tree for efficient writes\",\n    \"If data is static, consider partitioning by id ranges for parallel scanning\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Input analyzed: 500-row CSV with repeating id,name,value schema\",\n      \"No superseded or deleted facts present in input\",\n      \"Storage decision optimized for redundancy and query efficiency\",\n      \"No entity conflicts requiring resolution\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

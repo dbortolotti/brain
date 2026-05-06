@@ -1,0 +1,95 @@
+{
+  "error": null,
+  "fixture_id": "additive_sam_preferences_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Add the new preference; keep the existing one.",
+    "citations": [
+      "Existing memory: Sam from Goldman likes Bill Evans",
+      "New: Sam from Goldman also likes Sonny Rollins"
+    ],
+    "conflict_classification": "no_conflict_additive",
+    "decision": "additive_update",
+    "entity_resolution": {
+      "action": "retain_existing_and_add_new",
+      "entity_id": null,
+      "reason": "The new information is additive and does not contradict the existing preference; both artists can be retained as liked by the same Sam from Goldman."
+    },
+    "intent": "conflict_classifier",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "liked_artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Sonny Rollins",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman also likes Sonny Rollins."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preserved existing preference for Bill Evans.",
+        "Added preference for Sonny Rollins.",
+        "No supersession or deletion required."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Store both preferences as current.",
+      "If future evidence conflicts, reassess whether either preference was superseded."
+    ]
+  },
+  "raw_text": "{\"intent\":\"conflict_classifier\",\"decision\":\"additive_update\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman likes Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked_artist\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]},{\"kind\":\"preference\",\"statement\":\"Sam from Goldman also likes Sonny Rollins.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Sonny Rollins\",\"type\":\"person\",\"role\":\"liked_artist\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Sonny Rollins\"}]}],\"entity_resolution\":{\"action\":\"retain_existing_and_add_new\",\"entity_id\":null,\"reason\":\"The new information is additive and does not contradict the existing preference; both artists can be retained as liked by the same Sam from Goldman.\"},\"conflict_classification\":\"no_conflict_additive\",\"answer\":\"Add the new preference; keep the existing one.\",\"citations\":[\"Existing memory: Sam from Goldman likes Bill Evans\",\"New: Sam from Goldman also likes Sonny Rollins\"],\"repair_options\":[\"Store both preferences as current.\",\"If future evidence conflicts, reassess whether either preference was superseded.\"],\"receipt\":{\"success\":true,\"details\":[\"Preserved existing preference for Bill Evans.\",\"Added preference for Sonny Rollins.\",\"No supersession or deletion required.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

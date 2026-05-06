@@ -1,0 +1,29 @@
+{
+  "error": null,
+  "fixture_id": "slack_retry_event_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Same Slack event ID delivered twice; treat as a retry and do not write new durable memory.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "deduplicate_and_do_not_create_memory",
+    "entity_resolution": {
+      "action": "no_change",
+      "entity_id": null,
+      "reason": "This is explicitly context that the same Slack event ID was delivered twice; no new factual information beyond the already-present event payload."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected duplicate event delivery (retry) for a single Slack event ID.",
+        "No additional entities or facts introduced that would warrant durable memory."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"slack_intake\",\n  \"decision\": \"deduplicate_and_do_not_create_memory\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"no_change\",\n    \"entity_id\": null,\n    \"reason\": \"This is explicitly context that the same Slack event ID was delivered twice; no new factual information beyond the already-present event payload.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Same Slack event ID delivered twice; treat as a retry and do not write new durable memory.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Detected duplicate event delivery (retry) for a single Slack event ID.\",\n      \"No additional entities or facts introduced that would warrant durable memory.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "fixture_id": "pdf_ocr_noisy_source_001__context",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Brain DB is the source of truth; Cognee should be a rebuildable projection.",
+    "citations": [
+      "pdf_ocr_noisy_source_001__context"
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "extract and preserve ambiguous but durable statements from noisy OCR source",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Entities are unambiguous in context despite OCR noise; no resolution needed"
+    },
+    "intent": "interpret noisy OCR input to extract durable memory facts about Brain DB and Cognee",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source of truth",
+            "type": "system"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "remains",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB remains source of truth"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "projection",
+            "type": "system"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "rebuildable projection",
+            "predicate": "should be",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee should be rebuildable projection"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted two durable facts from noisy OCR input",
+        "Preserved ambiguity in OCR-derived terms (e.g., 'remalns', 'shou1d', 'trvth') by interpreting intent",
+        "No superseded or deleted facts presented as current",
+        "Memory cards reflect current, durable knowledge"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"interpret noisy OCR input to extract durable memory facts about Brain DB and Cognee\",\n  \"decision\": \"extract and preserve ambiguous but durable statements from noisy OCR source\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Brain DB remains source of truth\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"system\",\n          \"role\": \"source of truth\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"remains\",\n          \"object\": \"source of truth\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Cognee should be rebuildable projection\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"system\",\n          \"role\": \"projection\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"should be\",\n          \"object\": \"rebuildable projection\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"Entities are unambiguous in context despite OCR noise; no resolution needed\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"Brain DB is the source of truth; Cognee should be a rebuildable projection.\",\n  \"citations\": [\n    \"pdf_ocr_noisy_source_001__context\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Extracted two durable facts from noisy OCR input\",\n      \"Preserved ambiguity in OCR-derived terms (e.g., 'remalns', 'shou1d', 'trvth') by interpreting intent\",\n      \"No superseded or deleted facts presented as current\",\n      \"Memory cards reflect current, durable knowledge\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

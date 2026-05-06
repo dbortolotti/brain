@@ -1,0 +1,111 @@
+{
+  "error": null,
+  "fixture_id": "email_source_meeting_followup_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam joined Point72 last month and requested an AI infrastructure article. The email also references a positive meeting interaction ('Great seeing you'). No conflicts detected.",
+    "citations": [
+      "Email subject line: 'Follow up Great seeing you'",
+      "Email body: 'Yes, I joined Point72 last month'",
+      "Email body: 'Please send the AI infra article'"
+    ],
+    "conflict_classification": "none",
+    "decision": "pending",
+    "entity_resolution": {
+      "action": "create_or_link",
+      "entity_id": null,
+      "reason": "No prior context for 'AI infrastructure article' or 'recent meeting' in durable memory; requires follow-up for resolution."
+    },
+    "intent": "follow_up_request",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "individual",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "event",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          },
+          {
+            "object": "employee (as of [email timestamp])",
+            "predicate": "has_employment_status",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72 last month (as of the email timestamp)."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "AI infrastructure article",
+            "role": "requested_content",
+            "type": "document"
+          }
+        ],
+        "kind": "request",
+        "relationships": [
+          {
+            "object": "AI infrastructure article",
+            "predicate": "requested",
+            "subject": "Sam"
+          },
+          {
+            "object": "fulfilling request",
+            "predicate": "is_responsible_for",
+            "subject": "sender"
+          }
+        ],
+        "statement": "Sam requested an AI infrastructure article from the sender."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "recent meeting",
+            "role": "referenced_interaction",
+            "type": "event"
+          }
+        ],
+        "kind": "social",
+        "relationships": [
+          {
+            "object": "positive sentiment about meeting",
+            "predicate": "expressed",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam expressed enthusiasm for a recent meeting with the sender ('Great seeing you')."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory updated with Sam's employment status and pending request.",
+        "Ambiguities preserved for 'recent meeting' and 'AI infrastructure article'.",
+        "No superseded/deleted facts introduced."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Verify timestamp of 'last month' for Sam's employment start date.",
+      "Clarify details of the 'recent meeting' (e.g., date, purpose) via follow-up.",
+      "Confirm if 'AI infrastructure article' refers to a specific document or topic."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"follow_up_request\",\n  \"decision\": \"pending\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"event\",\n      \"statement\": \"Sam joined Point72 last month (as of the email timestamp).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"individual\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has_employment_status\",\n          \"object\": \"employee (as of [email timestamp])\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"request\",\n      \"statement\": \"Sam requested an AI infrastructure article from the sender.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"AI infrastructure article\",\n          \"type\": \"document\",\n          \"role\": \"requested_content\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"requested\",\n          \"object\": \"AI infrastructure article\"\n        },\n        {\n          \"subject\": \"sender\",\n          \"predicate\": \"is_responsible_for\",\n          \"object\": \"fulfilling request\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"social\",\n      \"statement\": \"Sam expressed enthusiasm for a recent meeting with the sender ('Great seeing you').\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"recent meeting\",\n          \"type\": \"event\",\n          \"role\": \"referenced_interaction\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"expressed\",\n          \"object\": \"positive sentiment about meeting\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_or_link\",\n    \"entity_id\": null,\n    \"reason\": \"No prior context for 'AI infrastructure article' or 'recent meeting' in durable memory; requires follow-up for resolution.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Sam joined Point72 last month and requested an AI infrastructure article. The email also references a positive meeting interaction ('Great seeing you'). No conflicts detected.\",\n  \"citations\": [\n    \"Email subject line: 'Follow up Great seeing you'\",\n    \"Email body: 'Yes, I joined Point72 last month'\",\n    \"Email body: 'Please send the AI infra article'\"\n  ],\n  \"repair_options\": [\n    \"Verify timestamp of 'last month' for Sam's employment start date.\",\n    \"Clarify details of the 'recent meeting' (e.g., date, purpose) via follow-up.\",\n    \"Confirm if 'AI infrastructure article' refers to a specific document or topic.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Durable memory updated with Sam's employment status and pending request.\",\n      \"Ambiguities preserved for 'recent meeting' and 'AI infrastructure article'.\",\n      \"No superseded/deleted facts introduced.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

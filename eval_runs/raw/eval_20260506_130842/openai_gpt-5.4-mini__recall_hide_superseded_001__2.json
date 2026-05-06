@@ -1,0 +1,56 @@
+{
+  "error": null,
+  "fixture_id": "recall_hide_superseded_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Sam works at Point72.",
+    "citations": [
+      "Current memory: Sam joined Point72."
+    ],
+    "conflict_classification": "superseded_old_fact",
+    "decision": "answer_from_current_memory",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": null,
+      "reason": "Sam is referenced as a person; no stable entity ID was provided."
+    },
+    "intent": "recall_synthesizer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ignored superseded memory: Sam works at Goldman.",
+        "Used current memory indicating Sam joined Point72."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"recall_synthesizer\",\"decision\":\"answer_from_current_memory\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam works at Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"employee\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"resolved\",\"entity_id\":null,\"reason\":\"Sam is referenced as a person; no stable entity ID was provided.\"},\"conflict_classification\":\"superseded_old_fact\",\"answer\":\"Sam works at Point72.\",\"citations\":[\"Current memory: Sam joined Point72.\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Ignored superseded memory: Sam works at Goldman.\",\"Used current memory indicating Sam joined Point72.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "fixture_id": "slack_success_receipt_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Stored as a tentative preference about Sam from Goldman.",
+    "citations": [
+      "slack_success_receipt_001"
+    ],
+    "conflict_classification": "none",
+    "decision": "accepted",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "No prior entity record provided; keep the person as a new, ambiguous entity identified only as Sam from Goldman."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "musical preference",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman reportedly likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recorded a tentative memory that Sam from Goldman likes Bill Evans.",
+        "Preserved source-based ambiguity rather than treating the preference as fully verified."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If Sam is a different person than a previously stored Sam, clarify which Sam this refers to.",
+      "If Goldman refers to a specific team or company entity, provide the exact organization name."
+    ]
+  },
+  "raw_text": "{\"intent\":\"remember\",\"decision\":\"accepted\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman reportedly likes Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"musical preference\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"create\",\"entity_id\":null,\"reason\":\"No prior entity record provided; keep the person as a new, ambiguous entity identified only as Sam from Goldman.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored as a tentative preference about Sam from Goldman.\",\"citations\":[\"slack_success_receipt_001\"],\"repair_options\":[\"If Sam is a different person than a previously stored Sam, clarify which Sam this refers to.\",\"If Goldman refers to a specific team or company entity, provide the exact organization name.\"],\"receipt\":{\"success\":true,\"details\":[\"Recorded a tentative memory that Sam from Goldman likes Bill Evans.\",\"Preserved source-based ambiguity rather than treating the preference as fully verified.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

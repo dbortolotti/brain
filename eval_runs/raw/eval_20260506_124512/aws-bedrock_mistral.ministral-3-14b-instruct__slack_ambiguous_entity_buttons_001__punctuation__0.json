@@ -1,0 +1,58 @@
+{
+  "error": null,
+  "fixture_id": "slack_ambiguous_entity_buttons_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Clarification needed: Which Sam (Goldman or Point72) likes Bill Evans? Specify to resolve ambiguity.",
+    "citations": [],
+    "conflict_classification": "entity_ambiguity",
+    "decision": "ambiguous_entity_resolution_required",
+    "entity_resolution": {
+      "action": "pending",
+      "entity_id": null,
+      "reason": "Ambiguity between 'Sam from Goldman' and 'Sam from Point72'\u2014punctuation/semantic disambiguation required before committing durable memory."
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (ambiguous) likes jazz pianist Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory ingestion paused due to entity ambiguity.",
+        "Resolution required before durable storage."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Explicitly state: 'Sam from Goldman likes Bill Evans.'",
+      "Explicitly state: 'Sam from Point72 likes Bill Evans.'",
+      "Provide additional context to disambiguate (e.g., 'Sam in finance...')."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_ingestion\",\n  \"decision\": \"ambiguous_entity_resolution_required\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"durable_memory\",\n      \"statement\": \"Sam (ambiguous) likes jazz pianist Bill Evans.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"pending\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguity between 'Sam from Goldman' and 'Sam from Point72'\u2014punctuation/semantic disambiguation required before committing durable memory.\"\n  },\n  \"conflict_classification\": \"entity_ambiguity\",\n  \"answer\": \"Clarification needed: Which Sam (Goldman or Point72) likes Bill Evans? Specify to resolve ambiguity.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Explicitly state: 'Sam from Goldman likes Bill Evans.'\",\n    \"Explicitly state: 'Sam from Point72 likes Bill Evans.'\",\n    \"Provide additional context to disambiguate (e.g., 'Sam in finance...').\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Memory ingestion paused due to entity ambiguity.\",\n      \"Resolution required before durable storage.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

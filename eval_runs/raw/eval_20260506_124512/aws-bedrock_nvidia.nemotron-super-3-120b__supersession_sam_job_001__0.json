@@ -1,0 +1,96 @@
+{
+  "error": null,
+  "fixture_id": "supersession_sam_job_001",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Sam now works at Point72 after leaving Goldman.",
+    "citations": [
+      "Sam left Goldman and joined Point72."
+    ],
+    "conflict_classification": "supersession",
+    "decision": "supersede",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "Sam",
+      "reason": "Same person referenced in both memory cards; employment status updated."
+    },
+    "intent": "update_employment",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict resolved via supersession: new employment fact replaces old one.",
+        "Entity 'Sam' resolved and merged.",
+        "Memory card for Goldman employment marked as superseded.",
+        "Memory card for Point72 employment retained as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retain both cards with temporal validity markers",
+      "Delete the outdated card and keep only the current one",
+      "Add a timestamp to each card to reflect validity period"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"update_employment\",\n  \"decision\": \"supersede\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"employment\",\n      \"statement\": \"Sam works at Goldman.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"employee\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"employment\",\n      \"statement\": \"Sam left Goldman and joined Point72.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"employee\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"former_employer\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"current_employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"left\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge\",\n    \"entity_id\": \"Sam\",\n    \"reason\": \"Same person referenced in both memory cards; employment status updated.\"\n  },\n  \"conflict_classification\": \"supersession\",\n  \"answer\": \"Sam now works at Point72 after leaving Goldman.\",\n  \"citations\": [\n    \"Sam left Goldman and joined Point72.\"\n  ],\n  \"repair_options\": [\n    \"Retain both cards with temporal validity markers\",\n    \"Delete the outdated card and keep only the current one\",\n    \"Add a timestamp to each card to reflect validity period\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Conflict resolved via supersession: new employment fact replaces old one.\",\n      \"Entity 'Sam' resolved and merged.\",\n      \"Memory card for Goldman employment marked as superseded.\",\n      \"Memory card for Point72 employment retained as current.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

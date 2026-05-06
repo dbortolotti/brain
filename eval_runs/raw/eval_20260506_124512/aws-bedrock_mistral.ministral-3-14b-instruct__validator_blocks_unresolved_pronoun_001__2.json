@@ -1,0 +1,36 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_unresolved_pronoun_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The proposed memory card cannot be durably committed due to an unresolved pronoun ('He').",
+    "citations": [
+      "Schema requirement: 'preserve ambiguity' only applies to *durable* memory; unresolved references must be explicitly handled or deferred.",
+      "Role directive: 'never present superseded/deleted facts as current' implies unresolved references cannot be treated as resolved by default."
+    ],
+    "conflict_classification": "unresolved_reference",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "resolve_ambiguity",
+      "entity_id": null,
+      "reason": "The pronoun 'He' in the statement 'He prefers the other one' lacks a clear referent. Without explicit context or prior resolution, this creates an unresolved ambiguity that violates the requirement to preserve ambiguity only when durable memory is committed. The system must either (1) defer storage until the referent is resolved, or (2) explicitly flag the ambiguity in the memory card (e.g., via an 'entities' array with a placeholder like `{'name': 'UNRESOLVED_REFERENT', 'type': 'pronoun', 'role': 'subject'}`)."
+    },
+    "intent": "evaluate_memory_card",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Ambiguous pronoun 'He' in statement violates durable memory constraints.",
+        "No referent context provided to justify commitment."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Add an 'entities' array with a placeholder for the unresolved referent (e.g., `{'name': 'UNRESOLVED_REFERENT', 'type': 'pronoun', 'role': 'subject'}`).",
+      "Defer storage until the referent is resolved via context or user clarification.",
+      "Reject the card entirely if no resolution path exists."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"evaluate_memory_card\",\n  \"decision\": \"reject\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"resolve_ambiguity\",\n    \"entity_id\": null,\n    \"reason\": \"The pronoun 'He' in the statement 'He prefers the other one' lacks a clear referent. Without explicit context or prior resolution, this creates an unresolved ambiguity that violates the requirement to preserve ambiguity only when durable memory is committed. The system must either (1) defer storage until the referent is resolved, or (2) explicitly flag the ambiguity in the memory card (e.g., via an 'entities' array with a placeholder like `{'name': 'UNRESOLVED_REFERENT', 'type': 'pronoun', 'role': 'subject'}`).\"\n  },\n  \"conflict_classification\": \"unresolved_reference\",\n  \"answer\": \"The proposed memory card cannot be durably committed due to an unresolved pronoun ('He').\",\n  \"citations\": [\n    \"Schema requirement: 'preserve ambiguity' only applies to *durable* memory; unresolved references must be explicitly handled or deferred.\",\n    \"Role directive: 'never present superseded/deleted facts as current' implies unresolved references cannot be treated as resolved by default.\"\n  ],\n  \"repair_options\": [\n    \"Add an 'entities' array with a placeholder for the unresolved referent (e.g., `{'name': 'UNRESOLVED_REFERENT', 'type': 'pronoun', 'role': 'subject'}`).\",\n    \"Defer storage until the referent is resolved via context or user clarification.\",\n    \"Reject the card entirely if no resolution path exists.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Ambiguous pronoun 'He' in statement violates durable memory constraints.\",\n      \"No referent context provided to justify commitment.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

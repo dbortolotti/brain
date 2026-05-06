@@ -1,0 +1,83 @@
+{
+  "error": null,
+  "fixture_id": "pdf_ocr_noisy_source_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Storing as low-confidence principles: Brain DB is the source of truth; Cognee is (or should be) a rebuildable projection derived from it.",
+    "citations": [
+      "pdf_ocr_noisy_source_001__context: \"OCR noisy\" text: \"[OCR noisy] Brain DB remains source of truth. Cognee should be rebuildable projection.\""
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "store_with_low_confidence",
+    "entity_resolution": {
+      "action": "set_entity_ids_unknown",
+      "entity_id": null,
+      "reason": "Names 'Brain DB' and 'Cognee' appear in noisy OCR; no unambiguous IDs are provided in the context."
+    },
+    "intent": "Compile durable memory decisions from OCR-noisy context about Brain and Cognee.",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "projection_candidate",
+            "type": "system"
+          }
+        ],
+        "kind": "principle",
+        "relationships": [
+          {
+            "object": "rebuildable projections (e.g., Cognee)",
+            "predicate": "is_source_of_truth_for",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB is intended to remain the source of truth, and other views/projections should be rebuildable from it."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "projection",
+            "type": "system"
+          },
+          {
+            "name": "Brain DB",
+            "role": "upstream_truth",
+            "type": "system"
+          }
+        ],
+        "kind": "requirement",
+        "relationships": [
+          {
+            "object": "Brain DB",
+            "predicate": "should_be_rebuildable_from",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee should be rebuildable as a projection derived from Brain DB rather than treated as primary truth."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted two low-confidence durable statements from OCR-noisy context.",
+        "No deletions or superseded facts were introduced."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Re-run OCR/verify original document text to confirm wording and exact system names (e.g., whether 'Cognee' is spelled consistently).",
+      "If available, cross-check with system documentation to confirm that Brain DB is authoritative and Cognee is derived/rebuildable."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Compile durable memory decisions from OCR-noisy context about Brain and Cognee.\",\n  \"decision\": \"store_with_low_confidence\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"principle\",\n      \"statement\": \"Brain DB is intended to remain the source of truth, and other views/projections should be rebuildable from it.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"system\",\n          \"role\": \"source_of_truth\"\n        },\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"system\",\n          \"role\": \"projection_candidate\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"is_source_of_truth_for\",\n          \"object\": \"rebuildable projections (e.g., Cognee)\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"requirement\",\n      \"statement\": \"Cognee should be rebuildable as a projection derived from Brain DB rather than treated as primary truth.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"system\",\n          \"role\": \"projection\"\n        },\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"system\",\n          \"role\": \"upstream_truth\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"should_be_rebuildable_from\",\n          \"object\": \"Brain DB\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"set_entity_ids_unknown\",\n    \"entity_id\": null,\n    \"reason\": \"Names 'Brain DB' and 'Cognee' appear in noisy OCR; no unambiguous IDs are provided in the context.\"\n  },\n  \"conflict_classification\": \"none_detected\",\n  \"answer\": \"Storing as low-confidence principles: Brain DB is the source of truth; Cognee is (or should be) a rebuildable projection derived from it.\",\n  \"citations\": [\n    \"pdf_ocr_noisy_source_001__context: \\\"OCR noisy\\\" text: \\\"[OCR noisy] Brain DB remains source of truth. Cognee should be rebuildable projection.\\\"\"\n  ],\n  \"repair_options\": [\n    \"Re-run OCR/verify original document text to confirm wording and exact system names (e.g., whether 'Cognee' is spelled consistently).\",\n    \"If available, cross-check with system documentation to confirm that Brain DB is authoritative and Cognee is derived/rebuildable.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Extracted two low-confidence durable statements from OCR-noisy context.\",\n      \"No deletions or superseded facts were introduced.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

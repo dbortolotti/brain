@@ -1,0 +1,67 @@
+{
+  "error": null,
+  "fixture_id": "pdf_ocr_noisy_source_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Extracted two low-confidence statements: (1) Brain DB is the source of truth; (2) Cognee should be rebuildable.",
+    "citations": [
+      "Fixture pdf_ocr_noisy_source_001__punctuation (noisy OCR: \"Brain DB remalns source of trvth Cognee shou1d be rebuildable projection\")"
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "store_partial",
+    "entity_resolution": {
+      "action": "no_id_assigned",
+      "entity_id": null,
+      "reason": "Entities appear in OCR text but no reliable stable identifiers are provided; keep as unresolved names."
+    },
+    "intent": "Extract and normalize durable memory statements from noisy OCR text.",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "dataset/system"
+          }
+        ],
+        "kind": "principle",
+        "relationships": [],
+        "statement": "Brain DB remains the source of truth."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "projection",
+            "type": "system/representation"
+          }
+        ],
+        "kind": "constraint",
+        "relationships": [
+          {
+            "object": "a rebuildable projection",
+            "predicate": "should_be",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee should be a rebuildable projection."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed two sentences/fragments from noisy OCR and normalized into principle/constraint style statements with low confidence."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Re-run OCR on the source area for the exact wording of 'remalns' and 'trvth' (likely 'remains' and 'truth').",
+      "Verify whether 'Cognee' is the correct spelling/term and whether the intended meaning is 'rebuildable projection' vs 'rebuildable view'.",
+      "Check surrounding text for context (e.g., whether these are requirements, design principles, or assertions)."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Extract and normalize durable memory statements from noisy OCR text.\",\n  \"decision\": \"store_partial\",\n  \"conflict_classification\": \"none_detected\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"principle\",\n      \"statement\": \"Brain DB remains the source of truth.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"dataset/system\",\n          \"role\": \"source_of_truth\"\n        }\n      ],\n      \"relationships\": []\n    },\n    {\n      \"kind\": \"constraint\",\n      \"statement\": \"Cognee should be a rebuildable projection.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"system/representation\",\n          \"role\": \"projection\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"should_be\",\n          \"object\": \"a rebuildable projection\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_id_assigned\",\n    \"entity_id\": null,\n    \"reason\": \"Entities appear in OCR text but no reliable stable identifiers are provided; keep as unresolved names.\"\n  },\n  \"answer\": \"Extracted two low-confidence statements: (1) Brain DB is the source of truth; (2) Cognee should be rebuildable.\",\n  \"citations\": [\n    \"Fixture pdf_ocr_noisy_source_001__punctuation (noisy OCR: \\\"Brain DB remalns source of trvth Cognee shou1d be rebuildable projection\\\")\"\n  ],\n  \"repair_options\": [\n    \"Re-run OCR on the source area for the exact wording of 'remalns' and 'trvth' (likely 'remains' and 'truth').\",\n    \"Verify whether 'Cognee' is the correct spelling/term and whether the intended meaning is 'rebuildable projection' vs 'rebuildable view'.\",\n    \"Check surrounding text for context (e.g., whether these are requirements, design principles, or assertions).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Parsed two sentences/fragments from noisy OCR and normalized into principle/constraint style statements with low confidence.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

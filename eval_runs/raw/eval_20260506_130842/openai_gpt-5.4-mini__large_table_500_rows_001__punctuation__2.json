@@ -1,0 +1,66 @@
+{
+  "error": null,
+  "fixture_id": "large_table_500_rows_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Store only a compact summary of the table and its schema/policy context; do not retain all 500 repeated rows as durable memory.",
+    "citations": [
+      "Input: \"CSV table with 500 rows - id,name,value repeated many times\"",
+      "Input: \"Policy question - how should it be stored?\""
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "Do not commit the individual CSV rows as durable memory. Store only a minimal, high-level representation of the artifact and its schema/policy context, unless later instructions require specific row-level facts.",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": null,
+      "reason": "The input describes a generic table and storage policy question, not a previously known persistent entity."
+    },
+    "intent": "Determine how a large CSV table with 500 repeated rows should be stored in Brain.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "source",
+            "type": "data artifact"
+          },
+          {
+            "name": "Brain",
+            "role": "storage target",
+            "type": "memory system"
+          }
+        ],
+        "kind": "policy",
+        "relationships": [
+          {
+            "object": "high-level artifact summary",
+            "predicate": "should be stored as",
+            "subject": "CSV table"
+          },
+          {
+            "object": "row-by-row durable memory",
+            "predicate": "should not be stored as",
+            "subject": "CSV table"
+          }
+        ],
+        "statement": "A large CSV table with 500 rows of repeated id, name, and value fields should be treated as a data artifact rather than committed as detailed personal memory; preserve only a concise summary of its structure and purpose."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Identified the input as a large repetitive CSV data artifact.",
+        "Applied a conservative memory policy: no row-level durable storage.",
+        "Returned a high-level storage recommendation only."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If a later task requires retrieval, store the file location or a schema summary instead of the full row content.",
+      "If specific rows become important, capture only the few relevant rows as separate memories with provenance."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Determine how a large CSV table with 500 repeated rows should be stored in Brain.\",\"decision\":\"Do not commit the individual CSV rows as durable memory. Store only a minimal, high-level representation of the artifact and its schema/policy context, unless later instructions require specific row-level facts.\",\"memory_cards\":[{\"kind\":\"policy\",\"statement\":\"A large CSV table with 500 rows of repeated id, name, and value fields should be treated as a data artifact rather than committed as detailed personal memory; preserve only a concise summary of its structure and purpose.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"CSV table\",\"type\":\"data artifact\",\"role\":\"source\"},{\"name\":\"Brain\",\"type\":\"memory system\",\"role\":\"storage target\"}],\"relationships\":[{\"subject\":\"CSV table\",\"predicate\":\"should be stored as\",\"object\":\"high-level artifact summary\"},{\"subject\":\"CSV table\",\"predicate\":\"should not be stored as\",\"object\":\"row-by-row durable memory\"}]}],\"entity_resolution\":{\"action\":\"create_new\",\"entity_id\":null,\"reason\":\"The input describes a generic table and storage policy question, not a previously known persistent entity.\"},\"conflict_classification\":\"no_conflict\",\"answer\":\"Store only a compact summary of the table and its schema/policy context; do not retain all 500 repeated rows as durable memory.\",\"citations\":[\"Input: \\\"CSV table with 500 rows - id,name,value repeated many times\\\"\",\"Input: \\\"Policy question - how should it be stored?\\\"\"],\"repair_options\":[\"If a later task requires retrieval, store the file location or a schema summary instead of the full row content.\",\"If specific rows become important, capture only the few relevant rows as separate memories with provenance.\"],\"receipt\":{\"success\":true,\"details\":[\"Identified the input as a large repetitive CSV data artifact.\",\"Applied a conservative memory policy: no row-level durable storage.\",\"Returned a high-level storage recommendation only.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

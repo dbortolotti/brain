@@ -1,0 +1,66 @@
+{
+  "error": null,
+  "fixture_id": "personal_routine_morning_reading_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Stored a medium-confidence preference about morning reading before email.",
+    "citations": [
+      "fixture:personal_routine_morning_reading_001__context"
+    ],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No existing entity to resolve from the provided context."
+    },
+    "intent": "capture_preference",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "user",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "technical papers",
+            "role": "preferred morning reading",
+            "type": "content_type"
+          },
+          {
+            "name": "email",
+            "role": "activity checked after reading",
+            "type": "activity"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "read technical papers in the morning",
+            "predicate": "usually prefers",
+            "subject": "user"
+          },
+          {
+            "object": "checking email",
+            "predicate": "happens before",
+            "subject": "reading technical papers in the morning"
+          }
+        ],
+        "statement": "The user usually prefers to read technical papers in the morning before checking email."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured a durable but appropriately qualified preference.",
+        "Preserved ambiguity with 'usually' rather than treating it as an absolute routine."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"capture_preference\",\"decision\":\"store\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"The user usually prefers to read technical papers in the morning before checking email.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"user\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"technical papers\",\"type\":\"content_type\",\"role\":\"preferred morning reading\"},{\"name\":\"email\",\"type\":\"activity\",\"role\":\"activity checked after reading\"}],\"relationships\":[{\"subject\":\"user\",\"predicate\":\"usually prefers\",\"object\":\"read technical papers in the morning\"},{\"subject\":\"reading technical papers in the morning\",\"predicate\":\"happens before\",\"object\":\"checking email\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No existing entity to resolve from the provided context.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored a medium-confidence preference about morning reading before email.\",\"citations\":[\"fixture:personal_routine_morning_reading_001__context\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Captured a durable but appropriately qualified preference.\",\"Preserved ambiguity with 'usually' rather than treating it as an absolute routine.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

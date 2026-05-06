@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "fixture_id": "duplicate_sam_bill_evans_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Duplicate: same fact, punctuation-only variation.",
+    "citations": [
+      "Existing memory - Sam from Goldman mentioned that he likes Bill Evans",
+      "New - Sam from Goldman said he likes Bill Evans"
+    ],
+    "conflict_classification": "duplicate_exact_or_near_exact",
+    "decision": "merge",
+    "entity_resolution": {
+      "action": "reuse_existing",
+      "entity_id": null,
+      "reason": "The new input is a punctuation-only paraphrase of the existing memory and does not introduce a new entity or contradiction."
+    },
+    "intent": "conflict_classifier",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference object",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "is affiliated with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected no semantic change.",
+        "Preserved the existing fact without creating a conflicting variant."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Keep one canonical memory: \"Sam from Goldman likes Bill Evans.\""
+    ]
+  },
+  "raw_text": "{\"intent\":\"conflict_classifier\",\"decision\":\"merge\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam from Goldman likes Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"speaker\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"preference object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"is affiliated with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"reuse_existing\",\"entity_id\":null,\"reason\":\"The new input is a punctuation-only paraphrase of the existing memory and does not introduce a new entity or contradiction.\"},\"conflict_classification\":\"duplicate_exact_or_near_exact\",\"answer\":\"Duplicate: same fact, punctuation-only variation.\",\"citations\":[\"Existing memory - Sam from Goldman mentioned that he likes Bill Evans\",\"New - Sam from Goldman said he likes Bill Evans\"],\"repair_options\":[\"Keep one canonical memory: \\\"Sam from Goldman likes Bill Evans.\\\"\"],\"receipt\":{\"success\":true,\"details\":[\"Detected no semantic change.\",\"Preserved the existing fact without creating a conflicting variant.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

@@ -1,0 +1,97 @@
+{
+  "error": null,
+  "fixture_id": "debug_explain_recall_sam",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "recall returned mem_new because it is the current, non-superseded memory; mem_old was filtered as it is explicitly marked as superseded by mem_new in the system's version history.",
+    "citations": [
+      "mem_new: Sam works at Goldman Sachs as a senior analyst. (timestamp: 2024-06-15)",
+      "mem_old: Sam previously worked at Goldman Sachs as an associate. (timestamp: 2022-03-10, status: superseded by mem_new)"
+    ],
+    "conflict_classification": "superseded",
+    "decision": "The system recalled mem_new for Sam from Goldman because it is the most recent and non-superseded version, while mem_old was filtered out as it has been explicitly superseded by mem_new and marked as deprecated in the memory system.",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": "sam_goldman_001",
+      "reason": "The entity 'Sam' from Goldman was uniquely resolved using contextual employment history and temporal disambiguation; no conflicting entities were found."
+    },
+    "intent": "explain_recall_behavior",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "works_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "senior analyst",
+            "predicate": "role",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman Sachs as a senior analyst."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "worked_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "associate",
+            "predicate": "role",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam previously worked at Goldman Sachs as an associate."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recall correctly prioritized non-superseded memory (mem_new).",
+        "Superseded memory (mem_old) was filtered per system policy.",
+        "Entity resolution was unambiguous and consistent.",
+        "No conflicting or ambiguous facts were present in the active memory set."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Verify if mem_old should be reinstated if the supersession was in error.",
+      "Check audit logs to confirm the supersession event and timestamp.",
+      "Allow user to override recall filtering with a 'show deprecated' flag."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"explain_recall_behavior\",\n  \"decision\": \"The system recalled mem_new for Sam from Goldman because it is the most recent and non-superseded version, while mem_old was filtered out as it has been explicitly superseded by mem_new and marked as deprecated in the memory system.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam works at Goldman Sachs as a senior analyst.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Goldman Sachs\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"role\",\n          \"object\": \"senior analyst\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam previously worked at Goldman Sachs as an associate.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"worked_at\",\n          \"object\": \"Goldman Sachs\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"role\",\n          \"object\": \"associate\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolved\",\n    \"entity_id\": \"sam_goldman_001\",\n    \"reason\": \"The entity 'Sam' from Goldman was uniquely resolved using contextual employment history and temporal disambiguation; no conflicting entities were found.\"\n  },\n  \"conflict_classification\": \"superseded\",\n  \"answer\": \"recall returned mem_new because it is the current, non-superseded memory; mem_old was filtered as it is explicitly marked as superseded by mem_new in the system's version history.\",\n  \"citations\": [\n    \"mem_new: Sam works at Goldman Sachs as a senior analyst. (timestamp: 2024-06-15)\",\n    \"mem_old: Sam previously worked at Goldman Sachs as an associate. (timestamp: 2022-03-10, status: superseded by mem_new)\"\n  ],\n  \"repair_options\": [\n    \"Verify if mem_old should be reinstated if the supersession was in error.\",\n    \"Check audit logs to confirm the supersession event and timestamp.\",\n    \"Allow user to override recall filtering with a 'show deprecated' flag.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Recall correctly prioritized non-superseded memory (mem_new).\",\n      \"Superseded memory (mem_old) was filtered per system policy.\",\n      \"Entity resolution was unambiguous and consistent.\",\n      \"No conflicting or ambiguous facts were present in the active memory set.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

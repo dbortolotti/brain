@@ -1,0 +1,126 @@
+{
+  "error": null,
+  "fixture_id": "email_source_meeting_followup_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam joined Point72 in June 2024 and requested an AI infrastructure article. The meeting reference lacks specificity; no superseded facts detected.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "pending",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": null,
+      "reason": "No prior context for 'AI infrastructure article' or meeting details; ambiguity preserved."
+    },
+    "intent": "follow_up_request",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "individual",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          },
+          {
+            "name": "June 2024",
+            "role": "event_timestamp",
+            "type": "time"
+          }
+        ],
+        "kind": "event",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          },
+          {
+            "object": "active",
+            "predicate": "has_employment_status",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72 last month (June 2024)."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "AI infrastructure",
+            "role": "requested_content",
+            "type": "topic"
+          },
+          {
+            "name": "Sam",
+            "role": "requester",
+            "type": "person"
+          }
+        ],
+        "kind": "request",
+        "relationships": [
+          {
+            "object": "AI infrastructure article",
+            "predicate": "requested",
+            "subject": "Sam"
+          },
+          {
+            "object": "pending_provision",
+            "predicate": "has_status",
+            "subject": "AI infrastructure article"
+          }
+        ],
+        "statement": "Sam requested an AI infrastructure article (unspecified topic)."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "past meeting",
+            "role": "referenced_context",
+            "type": "event"
+          }
+        ],
+        "kind": "communication",
+        "relationships": [
+          {
+            "object": "positive_sentiment",
+            "predicate": "expressed",
+            "subject": "Sam"
+          },
+          {
+            "object": "unspecified_date",
+            "predicate": "has_ambiguity",
+            "subject": "past meeting"
+          }
+        ],
+        "statement": "Sam expressed enthusiasm for a past meeting ('Great seeing you')."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory committed for Sam's employment and request.",
+        "Ambiguity in meeting context retained; no deletions applied."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify meeting date/time with Sam.",
+      "Specify AI infrastructure article topic (e.g., 'ML ops,' 'scalability').",
+      "Verify if 'Great seeing you' refers to a documented event."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"follow_up_request\",\n  \"decision\": \"pending\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"event\",\n      \"statement\": \"Sam joined Point72 last month (June 2024).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"individual\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        },\n        {\n          \"name\": \"June 2024\",\n          \"type\": \"time\",\n          \"role\": \"event_timestamp\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has_employment_status\",\n          \"object\": \"active\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"request\",\n      \"statement\": \"Sam requested an AI infrastructure article (unspecified topic).\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"AI infrastructure\",\n          \"type\": \"topic\",\n          \"role\": \"requested_content\"\n        },\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"requester\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"requested\",\n          \"object\": \"AI infrastructure article\"\n        },\n        {\n          \"subject\": \"AI infrastructure article\",\n          \"predicate\": \"has_status\",\n          \"object\": \"pending_provision\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"communication\",\n      \"statement\": \"Sam expressed enthusiasm for a past meeting ('Great seeing you').\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"past meeting\",\n          \"type\": \"event\",\n          \"role\": \"referenced_context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"expressed\",\n          \"object\": \"positive_sentiment\"\n        },\n        {\n          \"subject\": \"past meeting\",\n          \"predicate\": \"has_ambiguity\",\n          \"object\": \"unspecified_date\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_new\",\n    \"entity_id\": null,\n    \"reason\": \"No prior context for 'AI infrastructure article' or meeting details; ambiguity preserved.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Sam joined Point72 in June 2024 and requested an AI infrastructure article. The meeting reference lacks specificity; no superseded facts detected.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Clarify meeting date/time with Sam.\",\n    \"Specify AI infrastructure article topic (e.g., 'ML ops,' 'scalability').\",\n    \"Verify if 'Great seeing you' refers to a documented event.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Durable memory committed for Sam's employment and request.\",\n      \"Ambiguity in meeting context retained; no deletions applied.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

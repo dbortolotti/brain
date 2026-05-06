@@ -1,0 +1,58 @@
+{
+  "error": null,
+  "fixture_id": "entity_ambiguous_sam_two_people",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Ambiguous reference: Sam could be Sam from Goldman or Sam from Point72. No durable entity update committed.",
+    "citations": [],
+    "conflict_classification": "ambiguous_reference",
+    "decision": "ambiguous; do not merge into either existing Sam entity",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The message mentions only 'Sam', and there are two existing Sam entities; there is insufficient evidence to resolve which one is intended."
+    },
+    "intent": "entity_resolution",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "candidate",
+            "type": "person"
+          },
+          {
+            "name": "Sam from Point72",
+            "role": "candidate",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "A Sam likes early Coltrane, but it is unclear whether this refers to Sam from Goldman or Sam from Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No entity merged.",
+        "No superseded facts created.",
+        "Ambiguous preference preserved without durable attribution."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask a clarifying question to identify which Sam is meant.",
+      "Wait for additional context before attaching this preference to an entity."
+    ]
+  },
+  "raw_text": "{\"intent\":\"entity_resolution\",\"decision\":\"ambiguous; do not merge into either existing Sam entity\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"A Sam likes early Coltrane, but it is unclear whether this refers to Sam from Goldman or Sam from Point72.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam from Goldman\",\"type\":\"person\",\"role\":\"candidate\"},{\"name\":\"Sam from Point72\",\"type\":\"person\",\"role\":\"candidate\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"early Coltrane\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"The message mentions only 'Sam', and there are two existing Sam entities; there is insufficient evidence to resolve which one is intended.\"},\"conflict_classification\":\"ambiguous_reference\",\"answer\":\"Ambiguous reference: Sam could be Sam from Goldman or Sam from Point72. No durable entity update committed.\",\"citations\":[],\"repair_options\":[\"Ask a clarifying question to identify which Sam is meant.\",\"Wait for additional context before attaching this preference to an entity.\"],\"receipt\":{\"success\":true,\"details\":[\"No entity merged.\",\"No superseded facts created.\",\"Ambiguous preference preserved without durable attribution.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

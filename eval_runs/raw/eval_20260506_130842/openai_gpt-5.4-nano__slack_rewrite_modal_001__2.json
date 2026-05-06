@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "fixture_id": "slack_rewrite_modal_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "OK\u2014rewrite memory to: \u201cHe prefers the other one.\u201d (subject/object not uniquely identified).",
+    "citations": [],
+    "conflict_classification": "unknown",
+    "decision": "rewrite_requested",
+    "entity_resolution": {
+      "action": "new_or_unknown",
+      "entity_id": null,
+      "reason": "The subject ('He') and the referenced object ('the other one') are not uniquely identified in the input."
+    },
+    "intent": "rewrite_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "He",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "the other one",
+            "role": "preferred_object",
+            "type": "item"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "He"
+          }
+        ],
+        "statement": "He prefers the other one."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Rewrite memory intent detected from user choice.",
+        "New preference statement captured with low confidence due to ambiguous references."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify who \u201cHe\u201d refers to (name or identifier).",
+      "Specify what \u201cthe other one\u201d is (e.g., product, option, person)."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"rewrite_memory\",\n  \"decision\": \"rewrite_requested\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"He prefers the other one.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"He\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"the other one\",\n          \"type\": \"item\",\n          \"role\": \"preferred_object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"He\",\n          \"predicate\": \"prefers\",\n          \"object\": \"the other one\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"new_or_unknown\",\n    \"entity_id\": null,\n    \"reason\": \"The subject ('He') and the referenced object ('the other one') are not uniquely identified in the input.\"\n  },\n  \"conflict_classification\": \"unknown\",\n  \"answer\": \"OK\u2014rewrite memory to: \u201cHe prefers the other one.\u201d (subject/object not uniquely identified).\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Clarify who \u201cHe\u201d refers to (name or identifier).\",\n    \"Specify what \u201cthe other one\u201d is (e.g., product, option, person).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Rewrite memory intent detected from user choice.\",\n      \"New preference statement captured with low confidence due to ambiguous references.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

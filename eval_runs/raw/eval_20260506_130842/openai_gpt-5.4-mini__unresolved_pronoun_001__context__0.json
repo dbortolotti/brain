@@ -1,0 +1,60 @@
+{
+  "error": null,
+  "fixture_id": "unresolved_pronoun_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Insufficient context to resolve who \"he\" refers to or what \"the other one\" is.",
+    "citations": [
+      "For context, He prefers the other one."
+    ],
+    "conflict_classification": "unresolved_reference",
+    "decision": "do_not_commit",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The pronoun \"he\" is unresolved in the provided context, so no durable entity should be linked."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "he",
+            "role": "unresolved_subject",
+            "type": "pronoun"
+          },
+          {
+            "name": "the other one",
+            "role": "unresolved_preference_target",
+            "type": "unknown_entity"
+          }
+        ],
+        "kind": "ephemeral_context",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "he"
+          }
+        ],
+        "statement": "A contextual preference was mentioned: \"He prefers the other one.\" The referent of \"he\" and the items being compared are unresolved."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured as ephemeral context only.",
+        "No durable memory committed due to unresolved pronoun."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide the antecedent for \"he\".",
+      "Specify the two options being compared.",
+      "Restate the preference with named entities."
+    ]
+  },
+  "raw_text": "{\"intent\":\"slack_intake\",\"decision\":\"do_not_commit\",\"memory_cards\":[{\"kind\":\"ephemeral_context\",\"statement\":\"A contextual preference was mentioned: \\\"He prefers the other one.\\\" The referent of \\\"he\\\" and the items being compared are unresolved.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"he\",\"type\":\"pronoun\",\"role\":\"unresolved_subject\"},{\"name\":\"the other one\",\"type\":\"unknown_entity\",\"role\":\"unresolved_preference_target\"}],\"relationships\":[{\"subject\":\"he\",\"predicate\":\"prefers\",\"object\":\"the other one\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"The pronoun \\\"he\\\" is unresolved in the provided context, so no durable entity should be linked.\"},\"conflict_classification\":\"unresolved_reference\",\"answer\":\"Insufficient context to resolve who \\\"he\\\" refers to or what \\\"the other one\\\" is.\",\"citations\":[\"For context, He prefers the other one.\"],\"repair_options\":[\"Provide the antecedent for \\\"he\\\".\",\"Specify the two options being compared.\",\"Restate the preference with named entities.\"],\"receipt\":{\"success\":true,\"details\":[\"Captured as ephemeral context only.\",\"No durable memory committed due to unresolved pronoun.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

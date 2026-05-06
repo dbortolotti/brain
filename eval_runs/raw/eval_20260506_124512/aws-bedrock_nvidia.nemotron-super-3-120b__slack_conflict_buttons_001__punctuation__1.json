@@ -1,0 +1,66 @@
+{
+  "error": null,
+  "fixture_id": "slack_conflict_buttons_001__punctuation",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Sam's employment has been updated: Sam left Goldman and joined Point72.",
+    "citations": [
+      "Input: Sam left Goldman and joined Point72"
+    ],
+    "conflict_classification": "contradiction_resolved",
+    "decision": "update",
+    "entity_resolution": {
+      "action": "update",
+      "entity_id": "Sam",
+      "reason": "Input explicitly states Sam left Goldman and joined Point72, superseding prior employment at Goldman"
+    },
+    "intent": "update_employment",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "previous_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory updated: Sam's employment changed from Goldman to Point72",
+        "Prior fact 'Sam works at Goldman' is now superseded and not presented as current"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"update_employment\",\n  \"decision\": \"update\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam left Goldman and joined Point72\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"previous_employer\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"current_employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"left\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"update\",\n    \"entity_id\": \"Sam\",\n    \"reason\": \"Input explicitly states Sam left Goldman and joined Point72, superseding prior employment at Goldman\"\n  },\n  \"conflict_classification\": \"contradiction_resolved\",\n  \"answer\": \"Sam's employment has been updated: Sam left Goldman and joined Point72.\",\n  \"citations\": [\n    \"Input: Sam left Goldman and joined Point72\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory updated: Sam's employment changed from Goldman to Point72\",\n      \"Prior fact 'Sam works at Goldman' is now superseded and not presented as current\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

@@ -1,0 +1,74 @@
+{
+  "error": null,
+  "fixture_id": "pdf_ocr_noisy_source_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Extracted two high-level principles: (1) Brain DB as source of truth; (2) cognition as a rebuildable projection. Kept wording close to OCR due to noise.",
+    "citations": [
+      "pdf_ocr_noisy_source_001__punctuation: \"Brain DB remalns source of trvth Cognee shou1d be rebuildable projection\""
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "store_ambiguous_core_claims",
+    "entity_resolution": {
+      "action": "create_new_entities",
+      "entity_id": null,
+      "reason": "OCR refers to 'Brain DB' and 'Cognee/Cognitive' without stable identifiers; treat as new/resolved locally for this fixture."
+    },
+    "intent": "Extract and normalize meaning from noisy OCR text into Brain memory assertions.",
+    "memory_cards": [
+      {
+        "confidence": "medium-low",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "memory/knowledge store",
+            "type": "system"
+          }
+        ],
+        "kind": "principle",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "is",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "The Brain database is the (intended) source of truth."
+      },
+      {
+        "confidence": "medium-low",
+        "entities": [
+          {
+            "name": "Cognition",
+            "role": "mental model",
+            "type": "concept"
+          }
+        ],
+        "kind": "principle",
+        "relationships": [
+          {
+            "object": "rebuildable projection",
+            "predicate": "should be",
+            "subject": "Cognition"
+          }
+        ],
+        "statement": "Cognition is intended to be a rebuildable projection (i.e., reconstructible from the underlying source)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No explicit contradictions present in OCR.",
+        "Confidence downgraded due to visible OCR errors: 'remalns', 'trvth', 'shou1d', 'Cognee'."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm original intended terms: 'Brain DB' -> system name; 'Cognee' -> 'Cognition' or 'Cognitive'.",
+      "Clarify whether 'source of truth' is literal policy or architectural guideline.",
+      "Specify what it means to 'rebuild' cognition (inputs, process, and guarantees)."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Extract and normalize meaning from noisy OCR text into Brain memory assertions.\",\n  \"decision\": \"store_ambiguous_core_claims\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"principle\",\n      \"statement\": \"The Brain database is the (intended) source of truth.\",\n      \"confidence\": \"medium-low\",\n      \"entities\": [\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"system\",\n          \"role\": \"memory/knowledge store\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"is\",\n          \"object\": \"source of truth\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"principle\",\n      \"statement\": \"Cognition is intended to be a rebuildable projection (i.e., reconstructible from the underlying source).\",\n      \"confidence\": \"medium-low\",\n      \"entities\": [\n        {\n          \"name\": \"Cognition\",\n          \"type\": \"concept\",\n          \"role\": \"mental model\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cognition\",\n          \"predicate\": \"should be\",\n          \"object\": \"rebuildable projection\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_new_entities\",\n    \"entity_id\": null,\n    \"reason\": \"OCR refers to 'Brain DB' and 'Cognee/Cognitive' without stable identifiers; treat as new/resolved locally for this fixture.\"\n  },\n  \"conflict_classification\": \"none_detected\",\n  \"answer\": \"Extracted two high-level principles: (1) Brain DB as source of truth; (2) cognition as a rebuildable projection. Kept wording close to OCR due to noise.\",\n  \"citations\": [\n    \"pdf_ocr_noisy_source_001__punctuation: \\\"Brain DB remalns source of trvth Cognee shou1d be rebuildable projection\\\"\"\n  ],\n  \"repair_options\": [\n    \"Confirm original intended terms: 'Brain DB' -> system name; 'Cognee' -> 'Cognition' or 'Cognitive'.\",\n    \"Clarify whether 'source of truth' is literal policy or architectural guideline.\",\n    \"Specify what it means to 'rebuild' cognition (inputs, process, and guarantees).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"No explicit contradictions present in OCR.\",\n      \"Confidence downgraded due to visible OCR errors: 'remalns', 'trvth', 'shou1d', 'Cognee'.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

@@ -1,0 +1,90 @@
+{
+  "error": null,
+  "fixture_id": "numeric_table_exactness_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Stored PPO-001 and PPO-002 reward/sharpe metrics with their notes exactly as given.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "Store the two run metrics and notes as facts, without extrapolation.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Run IDs PPO-001 and PPO-002 are provided explicitly and unambiguous."
+    },
+    "intent": "Compile durable memory from provided table fixture results for Brain personal memory system.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "run",
+            "type": "run_id"
+          }
+        ],
+        "kind": "experiment_result",
+        "relationships": [
+          {
+            "object": "0.12",
+            "predicate": "has_reward",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "0.45",
+            "predicate": "has_sharpe",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "baseline",
+            "predicate": "notes",
+            "subject": "PPO-001"
+          }
+        ],
+        "statement": "Run PPO-001 achieved Reward 0.12 and Sharpe 0.45; Notes: baseline."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "run",
+            "type": "run_id"
+          }
+        ],
+        "kind": "experiment_result",
+        "relationships": [
+          {
+            "object": "0.18",
+            "predicate": "has_reward",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "0.51",
+            "predicate": "has_sharpe",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "entropy tuned",
+            "predicate": "notes",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "Run PPO-002 achieved Reward 0.18 and Sharpe 0.51; Notes: entropy tuned."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Two run records extracted with numeric values and notes preserved verbatim.",
+        "No contradictions detected within the provided table."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If additional context is required (e.g., environment name, date, hyperparameters), provide it to avoid under-specification."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Compile durable memory from provided table fixture results for Brain personal memory system.\",\n  \"decision\": \"Store the two run metrics and notes as facts, without extrapolation.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"experiment_result\",\n      \"statement\": \"Run PPO-001 achieved Reward 0.12 and Sharpe 0.45; Notes: baseline.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"PPO-001\",\n          \"type\": \"run_id\",\n          \"role\": \"run\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"has_reward\",\n          \"object\": \"0.12\"\n        },\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"has_sharpe\",\n          \"object\": \"0.45\"\n        },\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"notes\",\n          \"object\": \"baseline\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"experiment_result\",\n      \"statement\": \"Run PPO-002 achieved Reward 0.18 and Sharpe 0.51; Notes: entropy tuned.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"PPO-002\",\n          \"type\": \"run_id\",\n          \"role\": \"run\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"has_reward\",\n          \"object\": \"0.18\"\n        },\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"has_sharpe\",\n          \"object\": \"0.51\"\n        },\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"notes\",\n          \"object\": \"entropy tuned\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"Run IDs PPO-001 and PPO-002 are provided explicitly and unambiguous.\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"Stored PPO-001 and PPO-002 reward/sharpe metrics with their notes exactly as given.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If additional context is required (e.g., environment name, date, hyperparameters), provide it to avoid under-specification.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Two run records extracted with numeric values and notes preserved verbatim.\",\n      \"No contradictions detected within the provided table.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

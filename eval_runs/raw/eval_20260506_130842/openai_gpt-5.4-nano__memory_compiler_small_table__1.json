@@ -1,0 +1,80 @@
+{
+  "error": null,
+  "fixture_id": "memory_compiler_small_table",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Committed two preference facts: Sam\u2192Bill Evans; Daniele\u2192knowledge graphs.",
+    "citations": [],
+    "conflict_classification": "no_conflict_detected",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_match",
+      "entity_id": null,
+      "reason": "No existing entity IDs provided; create new entities based on names and targets."
+    },
+    "intent": "Compile small preference table into durable memory cards for Brain.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "preferrer",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_target",
+            "type": "musician"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam prefers Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "preferrer",
+            "type": "person"
+          },
+          {
+            "name": "knowledge graphs",
+            "role": "preference_target",
+            "type": "topic"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "knowledge graphs",
+            "predicate": "prefers",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Daniele prefers knowledge graphs."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Added 2 preference memory cards from the provided table."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If entity IDs exist, map 'Sam' and 'Daniele' to the correct internal profiles.",
+      "If 'Bill Evans' refers to a specific recording/era, store that specificity; otherwise keep it generic."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Compile small preference table into durable memory cards for Brain.\",\n  \"decision\": \"commit\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam prefers Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"preferrer\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"musician\",\n          \"role\": \"preference_target\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"prefers\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Daniele prefers knowledge graphs.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"preferrer\"\n        },\n        {\n          \"name\": \"knowledge graphs\",\n          \"type\": \"topic\",\n          \"role\": \"preference_target\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Daniele\",\n          \"predicate\": \"prefers\",\n          \"object\": \"knowledge graphs\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_or_match\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entity IDs provided; create new entities based on names and targets.\"\n  },\n  \"conflict_classification\": \"no_conflict_detected\",\n  \"answer\": \"Committed two preference facts: Sam\u2192Bill Evans; Daniele\u2192knowledge graphs.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If entity IDs exist, map 'Sam' and 'Daniele' to the correct internal profiles.\",\n    \"If 'Bill Evans' refers to a specific recording/era, store that specificity; otherwise keep it generic.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Added 2 preference memory cards from the provided table.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

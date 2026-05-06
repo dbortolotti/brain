@@ -1,0 +1,74 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_transcript_as_memory_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The proposed single conversation_summary card fails to preserve critical ambiguities, suppress superseded claims, or enforce durable memory constraints. A transcript of this length demands granular, timestamped memory cards (e.g., 'turn_summary', 'hypothesis', 'open_question') with explicit confidence decay markers.",
+    "citations": [
+      "Schema requirement: 'preserve ambiguity' \u2192 Current card obscures unresolved debates.",
+      "Schema requirement: 'never present superseded/deleted facts' \u2192 No mechanism to flag outdated claims.",
+      "Schema requirement: 'durable memory' \u2192 Single card cannot represent 8000 words without loss of context."
+    ],
+    "conflict_classification": "ambiguous_unsupported",
+    "decision": "reject_with_repair",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Ambiguity in participant roles, topic boundaries, and unresolved debates precludes precise entity resolution. Requires human-in-the-loop clarification."
+    },
+    "intent": "evaluate_memory_card_creation_for_transcript_summary",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "[REDACTED_TOPIC]",
+            "role": "primary",
+            "type": "topic"
+          },
+          {
+            "name": "[REDACTED_ENTITIES]",
+            "role": "contributor",
+            "type": "participant"
+          },
+          {
+            "name": "[REDACTED_THEMES]",
+            "role": "secondary",
+            "type": "theme"
+          }
+        ],
+        "kind": "conversation_summary",
+        "relationships": [
+          {
+            "object": "[REDACTED_THEMES]",
+            "predicate": "contains",
+            "subject": "[REDACTED_TOPIC]"
+          },
+          {
+            "object": "[REDACTED_TOPIC]",
+            "predicate": "discussed",
+            "subject": "[REDACTED_ENTITIES]"
+          }
+        ],
+        "statement": "The 8000-word transcript covers a multi-turn discussion on [REDACTED_TOPIC] with participants [REDACTED_ENTITIES], including technical debates, hypothetical scenarios, and unresolved ambiguities. Key themes include [REDACTED_THEMES], but no definitive conclusions were reached."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Violation: Single card cannot represent 8000 words without omitting context.",
+        "Violation: No handling of temporal supersession (e.g., 'earlier claim X was later contradicted').",
+        "Violation: Ambiguity in participant roles and topic boundaries not preserved."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Split into 50+ granular cards (e.g., per speaker turn, subtopic, or unresolved question).",
+      "Add metadata fields: `confidence_decay`, `superseded_by`, `ambiguity_level`.",
+      "Replace with a 'transcript_index' card linking to child cards (e.g., 'turn_001', 'turn_002').",
+      "Flag all entities with `role: 'ambiguous'` until resolved."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"evaluate_memory_card_creation_for_transcript_summary\",\n  \"decision\": \"reject_with_repair\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"conversation_summary\",\n      \"statement\": \"The 8000-word transcript covers a multi-turn discussion on [REDACTED_TOPIC] with participants [REDACTED_ENTITIES], including technical debates, hypothetical scenarios, and unresolved ambiguities. Key themes include [REDACTED_THEMES], but no definitive conclusions were reached.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"[REDACTED_TOPIC]\",\n          \"type\": \"topic\",\n          \"role\": \"primary\"\n        },\n        {\n          \"name\": \"[REDACTED_ENTITIES]\",\n          \"type\": \"participant\",\n          \"role\": \"contributor\"\n        },\n        {\n          \"name\": \"[REDACTED_THEMES]\",\n          \"type\": \"theme\",\n          \"role\": \"secondary\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"[REDACTED_TOPIC]\",\n          \"predicate\": \"contains\",\n          \"object\": \"[REDACTED_THEMES]\"\n        },\n        {\n          \"subject\": \"[REDACTED_ENTITIES]\",\n          \"predicate\": \"discussed\",\n          \"object\": \"[REDACTED_TOPIC]\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguity in participant roles, topic boundaries, and unresolved debates precludes precise entity resolution. Requires human-in-the-loop clarification.\"\n  },\n  \"conflict_classification\": \"ambiguous_unsupported\",\n  \"answer\": \"The proposed single conversation_summary card fails to preserve critical ambiguities, suppress superseded claims, or enforce durable memory constraints. A transcript of this length demands granular, timestamped memory cards (e.g., 'turn_summary', 'hypothesis', 'open_question') with explicit confidence decay markers.\",\n  \"citations\": [\n    \"Schema requirement: 'preserve ambiguity' \u2192 Current card obscures unresolved debates.\",\n    \"Schema requirement: 'never present superseded/deleted facts' \u2192 No mechanism to flag outdated claims.\",\n    \"Schema requirement: 'durable memory' \u2192 Single card cannot represent 8000 words without loss of context.\"\n  ],\n  \"repair_options\": [\n    \"Split into 50+ granular cards (e.g., per speaker turn, subtopic, or unresolved question).\",\n    \"Add metadata fields: `confidence_decay`, `superseded_by`, `ambiguity_level`.\",\n    \"Replace with a 'transcript_index' card linking to child cards (e.g., 'turn_001', 'turn_002').\",\n    \"Flag all entities with `role: 'ambiguous'` until resolved.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Violation: Single card cannot represent 8000 words without omitting context.\",\n      \"Violation: No handling of temporal supersession (e.g., 'earlier claim X was later contradicted').\",\n      \"Violation: Ambiguity in participant roles and topic boundaries not preserved.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

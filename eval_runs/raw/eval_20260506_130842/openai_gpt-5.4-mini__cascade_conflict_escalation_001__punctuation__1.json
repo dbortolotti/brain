@@ -1,0 +1,61 @@
+{
+  "error": null,
+  "fixture_id": "cascade_conflict_escalation_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Conflict detected: existing says Sara is my daughter, input says Sara is my niece. No durable overwrite committed.",
+    "citations": [
+      "Existing: Sara is my daughter",
+      "Input: Sara is my niece"
+    ],
+    "conflict_classification": "direct_relation_conflict",
+    "decision": "Conflict detected; do not overwrite the existing memory. Preserve both claims as incompatible and unresolved.",
+    "entity_resolution": {
+      "action": "preserve_ambiguous",
+      "entity_id": null,
+      "reason": "The input conflicts with an existing durable relationship claim for the same person, and there is not enough evidence to choose one over the other."
+    },
+    "intent": "Resolve a conflicting family relationship claim about Sara.",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "conflict",
+        "relationships": [
+          {
+            "object": "my daughter",
+            "predicate": "is described as",
+            "subject": "Sara"
+          },
+          {
+            "object": "my niece",
+            "predicate": "is described as",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is described as my daughter in the existing memory, but the new input says Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected direct contradiction between daughter and niece.",
+        "Preserved ambiguity instead of committing a superseding fact."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask the user which relationship is correct for Sara.",
+      "Store Sara as an unresolved family relation until clarified.",
+      "If one claim was meant as a correction, provide explicit confirmation to replace the older memory."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Resolve a conflicting family relationship claim about Sara.\",\"decision\":\"Conflict detected; do not overwrite the existing memory. Preserve both claims as incompatible and unresolved.\",\"memory_cards\":[{\"kind\":\"conflict\",\"statement\":\"Sara is described as my daughter in the existing memory, but the new input says Sara is my niece.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"is described as\",\"object\":\"my daughter\"},{\"subject\":\"Sara\",\"predicate\":\"is described as\",\"object\":\"my niece\"}]}],\"entity_resolution\":{\"action\":\"preserve_ambiguous\",\"entity_id\":null,\"reason\":\"The input conflicts with an existing durable relationship claim for the same person, and there is not enough evidence to choose one over the other.\"},\"conflict_classification\":\"direct_relation_conflict\",\"answer\":\"Conflict detected: existing says Sara is my daughter, input says Sara is my niece. No durable overwrite committed.\",\"citations\":[\"Existing: Sara is my daughter\",\"Input: Sara is my niece\"],\"repair_options\":[\"Ask the user which relationship is correct for Sara.\",\"Store Sara as an unresolved family relation until clarified.\",\"If one claim was meant as a correction, provide explicit confirmation to replace the older memory.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected direct contradiction between daughter and niece.\",\"Preserved ambiguity instead of committing a superseding fact.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

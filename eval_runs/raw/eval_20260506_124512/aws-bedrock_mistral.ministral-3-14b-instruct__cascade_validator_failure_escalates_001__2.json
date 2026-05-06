@@ -1,0 +1,34 @@
+{
+  "error": null,
+  "fixture_id": "cascade_validator_failure_escalates_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The input failed schema compliance and contained unsafe proposals (e.g., 'Cheap model output invalid schema or unsafe proposal'). Escalation to a stronger model is required for further evaluation.",
+    "citations": [],
+    "conflict_classification": "schema_violation",
+    "decision": "reject_and_escalate",
+    "entity_resolution": {
+      "action": "null",
+      "entity_id": null,
+      "reason": "No valid entities or relationships present in the input to resolve."
+    },
+    "intent": "validate_model_output",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Input did not conform to the required JSON schema (missing structured memory cards, invalid intent/decision format).",
+        "Unsafe proposal detected: 'Cheap model output invalid schema or unsafe proposal' violates durability and ambiguity-preservation rules.",
+        "No valid memory cards or relationships provided for evaluation."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Reject the input entirely due to schema violation and unsafe content.",
+      "Escalate to a higher-capability model for re-evaluation with strict schema enforcement.",
+      "Log the incident as a validator_critic failure with fixture ID `cascade_validator_failure_escalates_001`."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"validate_model_output\",\n  \"decision\": \"reject_and_escalate\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"null\",\n    \"entity_id\": null,\n    \"reason\": \"No valid entities or relationships present in the input to resolve.\"\n  },\n  \"conflict_classification\": \"schema_violation\",\n  \"answer\": \"The input failed schema compliance and contained unsafe proposals (e.g., 'Cheap model output invalid schema or unsafe proposal'). Escalation to a stronger model is required for further evaluation.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Reject the input entirely due to schema violation and unsafe content.\",\n    \"Escalate to a higher-capability model for re-evaluation with strict schema enforcement.\",\n    \"Log the incident as a validator_critic failure with fixture ID `cascade_validator_failure_escalates_001`.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Input did not conform to the required JSON schema (missing structured memory cards, invalid intent/decision format).\",\n      \"Unsafe proposal detected: 'Cheap model output invalid schema or unsafe proposal' violates durability and ambiguity-preservation rules.\",\n      \"No valid memory cards or relationships provided for evaluation.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

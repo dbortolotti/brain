@@ -1,0 +1,98 @@
+{
+  "error": null,
+  "fixture_id": "project_state_brain_slack_agent_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Slack is the current primary guardrailed memory ingestion interface for Brain, with Telegram integration planned but not yet active.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "guardrail_ingestion_priority",
+    "entity_resolution": {
+      "action": "preserve_ambiguity",
+      "entity_id": null,
+      "reason": "Telegram's role is explicitly deferred; no superseded facts exist."
+    },
+    "intent": "memory_compilation",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "primary_ingestion_interface",
+            "type": "platform"
+          },
+          {
+            "name": "Telegram",
+            "role": "secondary_ingestion_interface",
+            "type": "platform"
+          },
+          {
+            "name": "Brain",
+            "role": "memory_compiler",
+            "type": "system"
+          }
+        ],
+        "kind": "system_rule",
+        "relationships": [
+          {
+            "object": "Slack_for_memory_ingestion",
+            "predicate": "prioritizes",
+            "subject": "Brain"
+          },
+          {
+            "object": "Telegram_for_memory_ingestion",
+            "predicate": "defers",
+            "subject": "Brain"
+          },
+          {
+            "object": "guardrails_for_memory_ingestion",
+            "predicate": "has",
+            "subject": "Slack"
+          }
+        ],
+        "statement": "Slack is the primary guardrailed memory ingestion interface for the Brain project."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Telegram",
+            "role": "future_ingestion_interface",
+            "type": "platform"
+          },
+          {
+            "name": "Brain",
+            "role": "memory_compiler",
+            "type": "system"
+          }
+        ],
+        "kind": "system_ambiguity",
+        "relationships": [
+          {
+            "object": "Telegram_integration",
+            "predicate": "plans",
+            "subject": "Brain"
+          },
+          {
+            "object": "not_currently_active",
+            "predicate": "is",
+            "subject": "Telegram_integration"
+          }
+        ],
+        "statement": "Telegram integration for memory ingestion is planned but not yet implemented."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory committed with guardrail priority for Slack.",
+        "Telegram deferred without superseding existing facts."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_compilation\",\n  \"decision\": \"guardrail_ingestion_priority\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"system_rule\",\n      \"statement\": \"Slack is the primary guardrailed memory ingestion interface for the Brain project.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Slack\",\n          \"type\": \"platform\",\n          \"role\": \"primary_ingestion_interface\"\n        },\n        {\n          \"name\": \"Telegram\",\n          \"type\": \"platform\",\n          \"role\": \"secondary_ingestion_interface\"\n        },\n        {\n          \"name\": \"Brain\",\n          \"type\": \"system\",\n          \"role\": \"memory_compiler\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain\",\n          \"predicate\": \"prioritizes\",\n          \"object\": \"Slack_for_memory_ingestion\"\n        },\n        {\n          \"subject\": \"Brain\",\n          \"predicate\": \"defers\",\n          \"object\": \"Telegram_for_memory_ingestion\"\n        },\n        {\n          \"subject\": \"Slack\",\n          \"predicate\": \"has\",\n          \"object\": \"guardrails_for_memory_ingestion\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"system_ambiguity\",\n      \"statement\": \"Telegram integration for memory ingestion is planned but not yet implemented.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Telegram\",\n          \"type\": \"platform\",\n          \"role\": \"future_ingestion_interface\"\n        },\n        {\n          \"name\": \"Brain\",\n          \"type\": \"system\",\n          \"role\": \"memory_compiler\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain\",\n          \"predicate\": \"plans\",\n          \"object\": \"Telegram_integration\"\n        },\n        {\n          \"subject\": \"Telegram_integration\",\n          \"predicate\": \"is\",\n          \"object\": \"not_currently_active\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"preserve_ambiguity\",\n    \"entity_id\": null,\n    \"reason\": \"Telegram's role is explicitly deferred; no superseded facts exist.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Slack is the current primary guardrailed memory ingestion interface for Brain, with Telegram integration planned but not yet active.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Durable memory committed with guardrail priority for Slack.\",\n      \"Telegram deferred without superseding existing facts.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

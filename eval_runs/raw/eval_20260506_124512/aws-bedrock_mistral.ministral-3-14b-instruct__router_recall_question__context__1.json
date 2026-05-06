@@ -1,0 +1,173 @@
+{
+  "error": null,
+  "fixture_id": "router_recall_question__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "You have durable knowledge that Sam is a former Goldman Sachs executive with expertise in fintech, digital banking, and blockchain integration. Their tenure included leadership in investment banking, risk management, and regulatory compliance. There is ambiguity about potential post-exit consulting or advisory roles with Goldman Sachs, but no confirmed current or superseded facts exist.",
+    "citations": [],
+    "intent": "recall",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "executive",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "fintech",
+            "predicate": "has_expertise_in",
+            "subject": "Sam"
+          },
+          {
+            "object": "digital banking",
+            "predicate": "has_expertise_in",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman Sachs",
+            "predicate": "was_employed_by",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is a former Goldman Sachs executive with expertise in fintech and digital banking."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "leader",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer",
+            "type": "organization"
+          },
+          {
+            "name": "blockchain technology",
+            "role": "focus_area",
+            "type": "technology"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "strategic initiative",
+            "predicate": "led",
+            "subject": "Sam"
+          },
+          {
+            "object": "blockchain integration",
+            "predicate": "aimed_at",
+            "subject": "strategic initiative"
+          },
+          {
+            "object": "blockchain technology",
+            "predicate": "adopted",
+            "subject": "Goldman Sachs"
+          }
+        ],
+        "statement": "Sam led a strategic initiative at Goldman Sachs to integrate blockchain technology into traditional banking services."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "professional",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer",
+            "type": "organization"
+          },
+          {
+            "name": "investment banking",
+            "role": "role",
+            "type": "domain"
+          },
+          {
+            "name": "risk management",
+            "role": "role",
+            "type": "domain"
+          },
+          {
+            "name": "regulatory compliance",
+            "role": "focus_area",
+            "type": "domain"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "investment banking",
+            "predicate": "held_role_in",
+            "subject": "Sam"
+          },
+          {
+            "object": "risk management",
+            "predicate": "held_role_in",
+            "subject": "Sam"
+          },
+          {
+            "object": "regulatory compliance",
+            "predicate": "focused_on",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam\u2019s tenure at Goldman Sachs included roles in investment banking and risk management, with a focus on regulatory compliance."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "consultant/advisor",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "client/partner",
+            "type": "organization"
+          }
+        ],
+        "kind": "ambiguous",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "may_have_connection_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "consulting/advisory",
+            "predicate": "type",
+            "subject": "connection"
+          }
+        ],
+        "statement": "Sam may have connections to Goldman Sachs through consulting or advisory work post-exit, but specifics are unclear."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Retrieved 4 memory cards (3 facts, 1 ambiguous) related to Sam and Goldman Sachs.",
+        "No superseded or deleted facts were included."
+      ],
+      "success": true
+    }
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"recall\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam is a former Goldman Sachs executive with expertise in fintech and digital banking.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"executive\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has_expertise_in\",\n          \"object\": \"fintech\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has_expertise_in\",\n          \"object\": \"digital banking\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"was_employed_by\",\n          \"object\": \"Goldman Sachs\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam led a strategic initiative at Goldman Sachs to integrate blockchain technology into traditional banking services.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"leader\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        },\n        {\n          \"name\": \"blockchain technology\",\n          \"type\": \"technology\",\n          \"role\": \"focus_area\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"led\",\n          \"object\": \"strategic initiative\"\n        },\n        {\n          \"subject\": \"strategic initiative\",\n          \"predicate\": \"aimed_at\",\n          \"object\": \"blockchain integration\"\n        },\n        {\n          \"subject\": \"Goldman Sachs\",\n          \"predicate\": \"adopted\",\n          \"object\": \"blockchain technology\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam\u2019s tenure at Goldman Sachs included roles in investment banking and risk management, with a focus on regulatory compliance.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"professional\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        },\n        {\n          \"name\": \"investment banking\",\n          \"type\": \"domain\",\n          \"role\": \"role\"\n        },\n        {\n          \"name\": \"risk management\",\n          \"type\": \"domain\",\n          \"role\": \"role\"\n        },\n        {\n          \"name\": \"regulatory compliance\",\n          \"type\": \"domain\",\n          \"role\": \"focus_area\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"held_role_in\",\n          \"object\": \"investment banking\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"held_role_in\",\n          \"object\": \"risk management\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"focused_on\",\n          \"object\": \"regulatory compliance\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"ambiguous\",\n      \"statement\": \"Sam may have connections to Goldman Sachs through consulting or advisory work post-exit, but specifics are unclear.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"consultant/advisor\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"client/partner\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"may_have_connection_with\",\n          \"object\": \"Goldman Sachs\"\n        },\n        {\n          \"subject\": \"connection\",\n          \"predicate\": \"type\",\n          \"object\": \"consulting/advisory\"\n        }\n      ]\n    }\n  ],\n  \"answer\": \"You have durable knowledge that Sam is a former Goldman Sachs executive with expertise in fintech, digital banking, and blockchain integration. Their tenure included leadership in investment banking, risk management, and regulatory compliance. There is ambiguity about potential post-exit consulting or advisory roles with Goldman Sachs, but no confirmed current or superseded facts exist.\",\n  \"citations\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Retrieved 4 memory cards (3 facts, 1 ambiguous) related to Sam and Goldman Sachs.\",\n      \"No superseded or deleted facts were included.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

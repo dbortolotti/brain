@@ -1,0 +1,55 @@
+{
+  "error": null,
+  "fixture_id": "recall_hide_superseded_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Sam works at Point72.",
+    "citations": [],
+    "conflict_classification": "employment_update_superseded",
+    "decision": "use_current_memory_only",
+    "entity_resolution": {
+      "action": "resolve_to_current_entity",
+      "entity_id": null,
+      "reason": "The only non-superseded employment-related information provided for Sam indicates Point72."
+    },
+    "intent": "answer_question",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "current_memory",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ignored superseded memory 'Sam works at Goldman' and used current memory 'Sam joined Point72'."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If Sam's employer is needed with certainty, confirm whether the relationship is current and whether any additional roles/employments exist."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"answer_question\",\n  \"decision\": \"use_current_memory_only\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"current_memory\",\n      \"statement\": \"Sam joined Point72.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolve_to_current_entity\",\n    \"entity_id\": null,\n    \"reason\": \"The only non-superseded employment-related information provided for Sam indicates Point72.\"\n  },\n  \"conflict_classification\": \"employment_update_superseded\",\n  \"answer\": \"Sam works at Point72.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If Sam's employer is needed with certainty, confirm whether the relationship is current and whether any additional roles/employments exist.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Ignored superseded memory 'Sam works at Goldman' and used current memory 'Sam joined Point72'.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

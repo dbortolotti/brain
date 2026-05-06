@@ -1,0 +1,78 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_time_reference_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory intake complete with flagged ambiguity in time reference. No superseded/deleted facts committed.",
+    "citations": [],
+    "conflict_classification": "none",
+    "entity_resolution": {
+      "action": "flag_for_ambiguity",
+      "entity_id": "ambiguous_time_reference_001__punctuation",
+      "reason": "Time reference 'next month' lacks precise calendar context (e.g., 'next calendar month' vs. 'next payroll month'). Punctuation/grammar does not resolve ambiguity (e.g., missing 'the' or 'this')."
+    },
+    "intent": "memory_intake",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer",
+            "type": "organization"
+          },
+          {
+            "name": "last Friday",
+            "role": "contextual_anchor",
+            "type": "time_reference"
+          },
+          {
+            "name": "next month",
+            "role": "ambiguous_intent",
+            "type": "time_reference"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "leave_employment_at_Goldman_Sachs",
+            "predicate": "expressed_intent_to",
+            "subject": "Sam"
+          },
+          {
+            "object": "verbal_statement_on_last_Friday",
+            "predicate": "communicated_via",
+            "subject": "Sam"
+          },
+          {
+            "object": "unspecified_future_timeframe",
+            "predicate": "ambiguous_reference_to",
+            "subject": "next_month"
+          }
+        ],
+        "statement": "Sam expressed intent to leave Goldman Sachs in an unspecified future timeframe, referenced as 'next month' by the speaker (potentially ambiguous due to lack of calendar context)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory committed with preserved ambiguity.",
+        "No superseded/deleted facts introduced.",
+        "Entity resolution flagged for manual review."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request clarification: 'Do you mean next calendar month (e.g., June 1) or next payroll month (e.g., June 15)?'",
+      "Anchor to calendar: 'Sam\u2019s departure from Goldman Sachs is tentatively scheduled for [unspecified month], pending confirmation.'",
+      "Log as 'intent to leave' without time commitment: 'Sam indicated intent to leave Goldman Sachs, with timing to be confirmed.'"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_intake\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"durable_memory\",\n      \"statement\": \"Sam expressed intent to leave Goldman Sachs in an unspecified future timeframe, referenced as 'next month' by the speaker (potentially ambiguous due to lack of calendar context).\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        },\n        {\n          \"name\": \"last Friday\",\n          \"type\": \"time_reference\",\n          \"role\": \"contextual_anchor\"\n        },\n        {\n          \"name\": \"next month\",\n          \"type\": \"time_reference\",\n          \"role\": \"ambiguous_intent\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"expressed_intent_to\",\n          \"object\": \"leave_employment_at_Goldman_Sachs\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"communicated_via\",\n          \"object\": \"verbal_statement_on_last_Friday\"\n        },\n        {\n          \"subject\": \"next_month\",\n          \"predicate\": \"ambiguous_reference_to\",\n          \"object\": \"unspecified_future_timeframe\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"flag_for_ambiguity\",\n    \"entity_id\": \"ambiguous_time_reference_001__punctuation\",\n    \"reason\": \"Time reference 'next month' lacks precise calendar context (e.g., 'next calendar month' vs. 'next payroll month'). Punctuation/grammar does not resolve ambiguity (e.g., missing 'the' or 'this').\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Memory intake complete with flagged ambiguity in time reference. No superseded/deleted facts committed.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Request clarification: 'Do you mean next calendar month (e.g., June 1) or next payroll month (e.g., June 15)?'\",\n    \"Anchor to calendar: 'Sam\u2019s departure from Goldman Sachs is tentatively scheduled for [unspecified month], pending confirmation.'\",\n    \"Log as 'intent to leave' without time commitment: 'Sam indicated intent to leave Goldman Sachs, with timing to be confirmed.'\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Durable memory committed with preserved ambiguity.\",\n      \"No superseded/deleted facts introduced.\",\n      \"Entity resolution flagged for manual review.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "fixture_id": "article_url_fetch_failure_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Saved fetch failure and the user's intent only; did not save any article content claims.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Store only the access/fetch metadata and the user's stated intent; do not store any claims about article contents because the fetch returned an error (404).",
+    "entity_resolution": {
+      "action": "no_resolve",
+      "entity_id": null,
+      "reason": "No canonical entity IDs provided; only a URL and fetch status are available."
+    },
+    "intent": "Record user-requested memory about an article URL for later use in memory architecture, while accounting for fetch failure.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "article_source",
+            "type": "url"
+          }
+        ],
+        "kind": "memory_access_issue",
+        "relationships": [
+          {
+            "object": "404 network error",
+            "predicate": "fetch_result",
+            "subject": "https://example.com/missing"
+          }
+        ],
+        "statement": "An attempt was made to retrieve the article at https://example.com/missing for memory-architecture purposes, but the mock fetch result was 404 (network error), so the article content was not retrieved."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "article_source",
+            "type": "url"
+          }
+        ],
+        "kind": "user_intent_only",
+        "relationships": [
+          {
+            "object": "memory architecture",
+            "predicate": "user_claims_usefulness_for",
+            "subject": "https://example.com/missing"
+          }
+        ],
+        "statement": "User stated the (unretrieved) article is useful for memory architecture; the usefulness claim is unverified due to the fetch failure."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recorded URL fetch failure (404 network error).",
+        "Recorded that the user described the article as useful for memory architecture, marked as unverified."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide the article text or a working URL so content can be extracted and stored.",
+      "Retry fetching the URL later (in case the 404 was temporary).",
+      "Share key excerpts or a summary that can be stored without relying on live fetch."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Record user-requested memory about an article URL for later use in memory architecture, while accounting for fetch failure.\",\n  \"decision\": \"Store only the access/fetch metadata and the user's stated intent; do not store any claims about article contents because the fetch returned an error (404).\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"memory_access_issue\",\n      \"statement\": \"An attempt was made to retrieve the article at https://example.com/missing for memory-architecture purposes, but the mock fetch result was 404 (network error), so the article content was not retrieved.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"https://example.com/missing\",\n          \"type\": \"url\",\n          \"role\": \"article_source\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"https://example.com/missing\",\n          \"predicate\": \"fetch_result\",\n          \"object\": \"404 network error\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"user_intent_only\",\n      \"statement\": \"User stated the (unretrieved) article is useful for memory architecture; the usefulness claim is unverified due to the fetch failure.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"https://example.com/missing\",\n          \"type\": \"url\",\n          \"role\": \"article_source\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"https://example.com/missing\",\n          \"predicate\": \"user_claims_usefulness_for\",\n          \"object\": \"memory architecture\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_resolve\",\n    \"entity_id\": null,\n    \"reason\": \"No canonical entity IDs provided; only a URL and fetch status are available.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Saved fetch failure and the user's intent only; did not save any article content claims.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Provide the article text or a working URL so content can be extracted and stored.\",\n    \"Retry fetching the URL later (in case the 404 was temporary).\",\n    \"Share key excerpts or a summary that can be stored without relying on live fetch.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Recorded URL fetch failure (404 network error).\",\n      \"Recorded that the user described the article as useful for memory architecture, marked as unverified.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

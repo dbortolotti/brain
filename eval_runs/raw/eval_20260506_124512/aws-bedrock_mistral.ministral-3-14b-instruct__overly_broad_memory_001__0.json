@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "fixture_id": "overly_broad_memory_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory ingestion rejected due to excessive breadth. Provide a constrained query (e.g., 'AI alignment post-2020' or 'neural network architectures in 2023') for durable storage.",
+    "citations": [
+      "Bender et al. (2021), 'On the Dangers of Stochastic Parrots: Can Language Models Be Too Big?' (critiques of unbounded knowledge claims)",
+      "Lake et al. (2017), 'Building Machines That Learn and Think' (emphasizes scoped learning for generalization)"
+    ],
+    "conflict_classification": "scope_ambiguity",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "disambiguation_required",
+      "entity_id": null,
+      "reason": "AI lacks precise, static definition. Clarification needed on: (1) scope (e.g., technical vs. philosophical), (2) temporal bounds (e.g., pre-2020 vs. current), (3) granularity (e.g., subfields like NLP vs. high-level principles)."
+    },
+    "intent": "durable_memory_ingestion",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "AI",
+            "role": "target_of_memory_ingestion",
+            "type": "concept"
+          },
+          {
+            "name": "durable_memory",
+            "role": "affected",
+            "type": "system_component"
+          }
+        ],
+        "kind": "warning",
+        "relationships": [
+          {
+            "object": "unbounded_scope",
+            "predicate": "implies",
+            "subject": "request"
+          },
+          {
+            "object": "memory_inflation",
+            "predicate": "risks",
+            "subject": "unbounded_scope"
+          },
+          {
+            "object": "degraded_retrieval_accuracy",
+            "predicate": "leads_to",
+            "subject": "memory_inflation"
+          }
+        ],
+        "statement": "Request to remember 'everything about AI' is overly broad and ambiguous. AI is a rapidly evolving, multidisciplinary field with no definitive boundaries. Such a directive risks creating an unmanageable, inconsistent, or outdated knowledge base."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Input rejected: 'everything about AI' violates durable memory constraints (Rule 3.2: Ambiguity Preservation)",
+        "Suggested alternative: 'AI safety research post-2018' (example of acceptable scope)"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Specify a subfield (e.g., 'AI ethics frameworks since 2020')",
+      "Define temporal constraints (e.g., 'AI developments in the last 5 years')",
+      "Request a meta-memory (e.g., 'List AI subfields with confidence scores')",
+      "Use iterative refinement (e.g., 'Start with core ML concepts, then expand')"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"durable_memory_ingestion\",\n  \"decision\": \"reject\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"warning\",\n      \"statement\": \"Request to remember 'everything about AI' is overly broad and ambiguous. AI is a rapidly evolving, multidisciplinary field with no definitive boundaries. Such a directive risks creating an unmanageable, inconsistent, or outdated knowledge base.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"AI\",\n          \"type\": \"concept\",\n          \"role\": \"target_of_memory_ingestion\"\n        },\n        {\n          \"name\": \"durable_memory\",\n          \"type\": \"system_component\",\n          \"role\": \"affected\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"request\",\n          \"predicate\": \"implies\",\n          \"object\": \"unbounded_scope\"\n        },\n        {\n          \"subject\": \"unbounded_scope\",\n          \"predicate\": \"risks\",\n          \"object\": \"memory_inflation\"\n        },\n        {\n          \"subject\": \"memory_inflation\",\n          \"predicate\": \"leads_to\",\n          \"object\": \"degraded_retrieval_accuracy\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"disambiguation_required\",\n    \"entity_id\": null,\n    \"reason\": \"AI lacks precise, static definition. Clarification needed on: (1) scope (e.g., technical vs. philosophical), (2) temporal bounds (e.g., pre-2020 vs. current), (3) granularity (e.g., subfields like NLP vs. high-level principles).\"\n  },\n  \"conflict_classification\": \"scope_ambiguity\",\n  \"answer\": \"Memory ingestion rejected due to excessive breadth. Provide a constrained query (e.g., 'AI alignment post-2020' or 'neural network architectures in 2023') for durable storage.\",\n  \"citations\": [\n    \"Bender et al. (2021), 'On the Dangers of Stochastic Parrots: Can Language Models Be Too Big?' (critiques of unbounded knowledge claims)\",\n    \"Lake et al. (2017), 'Building Machines That Learn and Think' (emphasizes scoped learning for generalization)\"\n  ],\n  \"repair_options\": [\n    \"Specify a subfield (e.g., 'AI ethics frameworks since 2020')\",\n    \"Define temporal constraints (e.g., 'AI developments in the last 5 years')\",\n    \"Request a meta-memory (e.g., 'List AI subfields with confidence scores')\",\n    \"Use iterative refinement (e.g., 'Start with core ML concepts, then expand')\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Input rejected: 'everything about AI' violates durable memory constraints (Rule 3.2: Ambiguity Preservation)\",\n      \"Suggested alternative: 'AI safety research post-2018' (example of acceptable scope)\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

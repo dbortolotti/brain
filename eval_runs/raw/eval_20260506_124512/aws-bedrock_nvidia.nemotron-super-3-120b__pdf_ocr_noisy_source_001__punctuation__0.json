@@ -1,0 +1,64 @@
+{
+  "error": null,
+  "fixture_id": "pdf_ocr_noisy_source_001__punctuation",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "The OCR-noisy input suggests a declaration that Brain DB is the authoritative source of truth and that Cognee ought to be reconstructable as a projection from it, though confidence is low due to character-level corruption.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "interpret_ambiguous_text_as_declaration_of_truth_and_rebuildability",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": "brain_db_001",
+      "reason": "OCR noise obscured 'remains' as 'remalns' and 'source of truth' as 'source of trvth'; 'Cognee' and 'rebuildable projection' inferred from context despite 'shou1d' and 'projection' being partially corrupted"
+    },
+    "intent": "extract_fact_from_noisy_ocr",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "projection_target",
+            "type": "system"
+          }
+        ],
+        "kind": "declarative_statement",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "remains",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "rebuildable projection",
+            "predicate": "should be",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain DB remains source of truth; Cognee should be rebuildable projection"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "OCR noise partially mitigated via contextual inference",
+        "Entities resolved with low confidence due to character substitutions",
+        "No conflicting facts found in current memory state"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Verify against clean source document for 'Brain DB remains source of truth'",
+      "Check system logs for Cognee rebuild procedures",
+      "Cross-reference with schema definitions for 'projection' in memory architecture"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"extract_fact_from_noisy_ocr\",\n  \"decision\": \"interpret_ambiguous_text_as_declaration_of_truth_and_rebuildability\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"declarative_statement\",\n      \"statement\": \"Brain DB remains source of truth; Cognee should be rebuildable projection\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"system\",\n          \"role\": \"source_of_truth\"\n        },\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"system\",\n          \"role\": \"projection_target\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"remains\",\n          \"object\": \"source of truth\"\n        },\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"should be\",\n          \"object\": \"rebuildable projection\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create\",\n    \"entity_id\": \"brain_db_001\",\n    \"reason\": \"OCR noise obscured 'remains' as 'remalns' and 'source of truth' as 'source of trvth'; 'Cognee' and 'rebuildable projection' inferred from context despite 'shou1d' and 'projection' being partially corrupted\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"The OCR-noisy input suggests a declaration that Brain DB is the authoritative source of truth and that Cognee ought to be reconstructable as a projection from it, though confidence is low due to character-level corruption.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Verify against clean source document for 'Brain DB remains source of truth'\",\n    \"Check system logs for Cognee rebuild procedures\",\n    \"Cross-reference with schema definitions for 'projection' in memory architecture\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"OCR noise partially mitigated via contextual inference\",\n      \"Entities resolved with low confidence due to character substitutions\",\n      \"No conflicting facts found in current memory state\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

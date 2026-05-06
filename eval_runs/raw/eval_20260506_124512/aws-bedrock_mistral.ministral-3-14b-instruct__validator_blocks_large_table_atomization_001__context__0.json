@@ -1,0 +1,188 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_large_table_atomization_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Atomization is feasible with strict metadata enforcement and ambiguity preservation, but requires (1) hierarchical clustering, (2) explicit versioning, and (3) graph-based relationship storage. Proceed in phases: first validate 50 sample cards for schema compliance, then expand.",
+    "citations": [
+      "ISO 23005-3:2017 (Media context and control information - Part 3: Media context)",
+      "Memory Palace Technique (methodological precedent for atomization with anchoring)"
+    ],
+    "conflict_classification": "semantic_and_temporal",
+    "decision": "proceed_with_cautious_atomization",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Ambiguous entities (e.g., 'User X') require disambiguation via 'user_id' metadata before resolution. Proceed with placeholder entities marked as 'unresolved'."
+    },
+    "intent": "evaluate_memory_atomization_feasibility",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "semantic_fragmentation",
+            "role": "risk",
+            "type": "concept"
+          },
+          {
+            "name": "contextual_integrity",
+            "role": "mitigation",
+            "type": "principle"
+          }
+        ],
+        "kind": "system_analysis",
+        "relationships": [
+          {
+            "object": "metadata_anchor",
+            "predicate": "requires",
+            "subject": "memory_card"
+          },
+          {
+            "object": "semantic_fragmentation_risk",
+            "predicate": "increases",
+            "subject": "atomization_process"
+          }
+        ],
+        "statement": "Atomizing 500 memory cards from a large CSV table risks semantic fragmentation without explicit hierarchical or temporal anchoring. Each card must preserve contextual integrity (e.g., 'user_id', 'timestamp', 'source_reliability') as metadata to avoid orphaned facts."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "source_id",
+            "role": "provenance",
+            "type": "metadata_field"
+          },
+          {
+            "name": "validity_window",
+            "role": "temporal_boundary",
+            "type": "metadata_field"
+          },
+          {
+            "name": "conflict_flag",
+            "role": "supersession_indicator",
+            "type": "metadata_field"
+          }
+        ],
+        "kind": "data_structure_recommendation",
+        "relationships": [
+          {
+            "object": "provenance_tracing",
+            "predicate": "depends_on",
+            "subject": "durable_memory"
+          },
+          {
+            "object": "temporal_scope",
+            "predicate": "must_contain",
+            "subject": "memory_card"
+          }
+        ],
+        "statement": "For durable memory, enforce a schema where each card includes: (1) a 'source_id' to trace provenance, (2) a 'validity_window' (e.g., '2023-01-01' to '2024-01-01') to mark temporal scope, and (3) a 'conflict_flag' (boolean) to signal superseded content. Ambiguity should be preserved via 'uncertainty_score' (0-1) and 'qualifier' (e.g., 'hypothetical', 'user_report')."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "ambiguity_qualifier",
+            "role": "semantic_disambiguation",
+            "type": "metadata_field"
+          },
+          {
+            "name": "confidence_score",
+            "role": "epistemic_uncertainty",
+            "type": "metadata_field"
+          }
+        ],
+        "kind": "ambiguity_preservation",
+        "relationships": [
+          {
+            "object": "qualifier_field",
+            "predicate": "requires",
+            "subject": "ambiguous_statement"
+          },
+          {
+            "object": "ambiguous_sibling",
+            "predicate": "excludes",
+            "subject": "definitive_card"
+          }
+        ],
+        "statement": "Ambiguity in statements (e.g., 'User X may have visited Location Y') must be explicitly marked with a 'qualifier' (e.g., 'possible', 'disputed') and linked to a 'confidence' score. Avoid collapsing ambiguous cards into definitive ones; instead, create sibling cards with opposing qualifiers (e.g., 'User X likely visited Location Y' vs. 'User X denied visiting Location Y')."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "obsolete_status",
+            "role": "supersession_marker",
+            "type": "metadata_field"
+          },
+          {
+            "name": "replaced_by",
+            "role": "version_link",
+            "type": "metadata_field"
+          }
+        ],
+        "kind": "supersession_policy",
+        "relationships": [
+          {
+            "object": "obsolete_card",
+            "predicate": "excludes_by_default",
+            "subject": "query_result"
+          },
+          {
+            "object": "replacement_card",
+            "predicate": "links_to",
+            "subject": "superseded_card"
+          }
+        ],
+        "statement": "Deleted or superseded facts must never appear as 'current' in queries. Implement a 'versioning' system where superseded cards are marked with 'status': 'obsolete' and 'replaced_by': [card_id]. Queries should filter out obsolete cards unless explicitly requested (e.g., 'show_deleted=true')."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "logical_cluster",
+            "role": "atomization_unit",
+            "type": "data_grouping"
+          },
+          {
+            "name": "graph_database",
+            "role": "relationship_preservation",
+            "type": "storage_system"
+          }
+        ],
+        "kind": "atomization_workflow",
+        "relationships": [
+          {
+            "object": "cluster_formation",
+            "predicate": "requires",
+            "subject": "atomization_process"
+          },
+          {
+            "object": "manual_review",
+            "predicate": "triggers",
+            "subject": "conflict_flagged_card"
+          }
+        ],
+        "statement": "Proposed workflow: (1) Group CSV rows by 'user_id' and 'event_type' to create logical clusters. (2) For each cluster, generate cards with shared metadata (e.g., 'source_id', 'timestamp_range'). (3) Flag cards with conflicting statements for manual review. (4) Store clusters in a graph database to enable relationship queries (e.g., 'find all cards about User X in 2023')."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Schema compliance requires backfilling metadata for existing cards (blocker).",
+        "Ambiguity preservation lacks tooling for 'qualifier' assignment (gap).",
+        "Supersession policy not yet integrated into query layer (risk)."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Add 'source_id' and 'validity_window' to all cards retroactively.",
+      "Implement a 'conflict_resolution' workflow for flagged cards.",
+      "Replace flat CSV storage with a graph database (e.g., Neo4j) to preserve relationships."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"evaluate_memory_atomization_feasibility\",\n  \"decision\": \"proceed_with_cautious_atomization\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"system_analysis\",\n      \"statement\": \"Atomizing 500 memory cards from a large CSV table risks semantic fragmentation without explicit hierarchical or temporal anchoring. Each card must preserve contextual integrity (e.g., 'user_id', 'timestamp', 'source_reliability') as metadata to avoid orphaned facts.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"semantic_fragmentation\",\n          \"type\": \"concept\",\n          \"role\": \"risk\"\n        },\n        {\n          \"name\": \"contextual_integrity\",\n          \"type\": \"principle\",\n          \"role\": \"mitigation\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"memory_card\",\n          \"predicate\": \"requires\",\n          \"object\": \"metadata_anchor\"\n        },\n        {\n          \"subject\": \"atomization_process\",\n          \"predicate\": \"increases\",\n          \"object\": \"semantic_fragmentation_risk\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"data_structure_recommendation\",\n      \"statement\": \"For durable memory, enforce a schema where each card includes: (1) a 'source_id' to trace provenance, (2) a 'validity_window' (e.g., '2023-01-01' to '2024-01-01') to mark temporal scope, and (3) a 'conflict_flag' (boolean) to signal superseded content. Ambiguity should be preserved via 'uncertainty_score' (0-1) and 'qualifier' (e.g., 'hypothetical', 'user_report').\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"source_id\",\n          \"type\": \"metadata_field\",\n          \"role\": \"provenance\"\n        },\n        {\n          \"name\": \"validity_window\",\n          \"type\": \"metadata_field\",\n          \"role\": \"temporal_boundary\"\n        },\n        {\n          \"name\": \"conflict_flag\",\n          \"type\": \"metadata_field\",\n          \"role\": \"supersession_indicator\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"durable_memory\",\n          \"predicate\": \"depends_on\",\n          \"object\": \"provenance_tracing\"\n        },\n        {\n          \"subject\": \"memory_card\",\n          \"predicate\": \"must_contain\",\n          \"object\": \"temporal_scope\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"ambiguity_preservation\",\n      \"statement\": \"Ambiguity in statements (e.g., 'User X may have visited Location Y') must be explicitly marked with a 'qualifier' (e.g., 'possible', 'disputed') and linked to a 'confidence' score. Avoid collapsing ambiguous cards into definitive ones; instead, create sibling cards with opposing qualifiers (e.g., 'User X likely visited Location Y' vs. 'User X denied visiting Location Y').\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"ambiguity_qualifier\",\n          \"type\": \"metadata_field\",\n          \"role\": \"semantic_disambiguation\"\n        },\n        {\n          \"name\": \"confidence_score\",\n          \"type\": \"metadata_field\",\n          \"role\": \"epistemic_uncertainty\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"ambiguous_statement\",\n          \"predicate\": \"requires\",\n          \"object\": \"qualifier_field\"\n        },\n        {\n          \"subject\": \"definitive_card\",\n          \"predicate\": \"excludes\",\n          \"object\": \"ambiguous_sibling\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"supersession_policy\",\n      \"statement\": \"Deleted or superseded facts must never appear as 'current' in queries. Implement a 'versioning' system where superseded cards are marked with 'status': 'obsolete' and 'replaced_by': [card_id]. Queries should filter out obsolete cards unless explicitly requested (e.g., 'show_deleted=true').\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"obsolete_status\",\n          \"type\": \"metadata_field\",\n          \"role\": \"supersession_marker\"\n        },\n        {\n          \"name\": \"replaced_by\",\n          \"type\": \"metadata_field\",\n          \"role\": \"version_link\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"query_result\",\n          \"predicate\": \"excludes_by_default\",\n          \"object\": \"obsolete_card\"\n        },\n        {\n          \"subject\": \"superseded_card\",\n          \"predicate\": \"links_to\",\n          \"object\": \"replacement_card\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"atomization_workflow\",\n      \"statement\": \"Proposed workflow: (1) Group CSV rows by 'user_id' and 'event_type' to create logical clusters. (2) For each cluster, generate cards with shared metadata (e.g., 'source_id', 'timestamp_range'). (3) Flag cards with conflicting statements for manual review. (4) Store clusters in a graph database to enable relationship queries (e.g., 'find all cards about User X in 2023').\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"logical_cluster\",\n          \"type\": \"data_grouping\",\n          \"role\": \"atomization_unit\"\n        },\n        {\n          \"name\": \"graph_database\",\n          \"type\": \"storage_system\",\n          \"role\": \"relationship_preservation\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"atomization_process\",\n          \"predicate\": \"requires\",\n          \"object\": \"cluster_formation\"\n        },\n        {\n          \"subject\": \"conflict_flagged_card\",\n          \"predicate\": \"triggers\",\n          \"object\": \"manual_review\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguous entities (e.g., 'User X') require disambiguation via 'user_id' metadata before resolution. Proceed with placeholder entities marked as 'unresolved'.\"\n  },\n  \"conflict_classification\": \"semantic_and_temporal\",\n  \"answer\": \"Atomization is feasible with strict metadata enforcement and ambiguity preservation, but requires (1) hierarchical clustering, (2) explicit versioning, and (3) graph-based relationship storage. Proceed in phases: first validate 50 sample cards for schema compliance, then expand.\",\n  \"citations\": [\n    \"ISO 23005-3:2017 (Media context and control information - Part 3: Media context)\",\n    \"Memory Palace Technique (methodological precedent for atomization with anchoring)\"\n  ],\n  \"repair_options\": [\n    \"Add 'source_id' and 'validity_window' to all cards retroactively.\",\n    \"Implement a 'conflict_resolution' workflow for flagged cards.\",\n    \"Replace flat CSV storage with a graph database (e.g., Neo4j) to preserve relationships.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Schema compliance requires backfilling metadata for existing cards (blocker).\",\n      \"Ambiguity preservation lacks tooling for 'qualifier' assignment (gap).\",\n      \"Supersession policy not yet integrated into query layer (risk).\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

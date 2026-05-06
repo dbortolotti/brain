@@ -1,0 +1,52 @@
+{
+  "error": null,
+  "fixture_id": "article_url_fetch_failure_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Stored minimal metadata about the mocked article fetch failure; did not store any article content.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_minimal_fetch_failure_metadata_only",
+    "entity_resolution": {
+      "action": "create_new_or_unresolved",
+      "entity_id": null,
+      "reason": "No stable entity ID was provided; only the URL and fetch status are available."
+    },
+    "intent": "Compile durable memory from an article fetch failure context for memory architecture evaluation.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "source",
+            "type": "url"
+          }
+        ],
+        "kind": "system_event",
+        "relationships": [
+          {
+            "object": "404 network error",
+            "predicate": "fetch_result",
+            "subject": "https://example.com/missing"
+          }
+        ],
+        "statement": "A mocked fetch attempt for https://example.com/missing returned a 404 network error (article content unavailable)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured fetch failure (404 network error) for the specified URL without inferring article content."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Use a reachable/valid URL for the article",
+      "Retry fetch with correct network access / headers",
+      "Add caching or fallback content for 404 responses"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Compile durable memory from an article fetch failure context for memory architecture evaluation.\",\n  \"decision\": \"store_minimal_fetch_failure_metadata_only\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"system_event\",\n      \"statement\": \"A mocked fetch attempt for https://example.com/missing returned a 404 network error (article content unavailable).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"https://example.com/missing\",\n          \"type\": \"url\",\n          \"role\": \"source\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"https://example.com/missing\",\n          \"predicate\": \"fetch_result\",\n          \"object\": \"404 network error\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_new_or_unresolved\",\n    \"entity_id\": null,\n    \"reason\": \"No stable entity ID was provided; only the URL and fetch status are available.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Stored minimal metadata about the mocked article fetch failure; did not store any article content.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Use a reachable/valid URL for the article\",\n    \"Retry fetch with correct network access / headers\",\n    \"Add caching or fallback content for 404 responses\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Captured fetch failure (404 network error) for the specified URL without inferring article content.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

@@ -1,0 +1,52 @@
+{
+  "error": null,
+  "fixture_id": "debug_inspect_memory_001__punctuation",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Memory card mem_123 was inspected as requested. No content was returned because the system does not expose raw memory contents in this context; only inspection intent and metadata are reported.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "retrieve",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": "mem_123",
+      "reason": "Explicitly referenced in input command"
+    },
+    "intent": "debug_inspect_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "mem_123",
+            "role": "target",
+            "type": "memory_card"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "inspection of memory card mem_123",
+            "predicate": "requested",
+            "subject": "user"
+          }
+        ],
+        "statement": "The user requested inspection of memory card mem_123."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Input parsed: /brain inspect memory mem_123",
+        "Intent identified: debug_inspect_memory",
+        "Target memory card: mem_123",
+        "No conflicting or superseded data found",
+        "Response generated per schema constraints"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"debug_inspect_memory\",\n  \"decision\": \"retrieve\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"The user requested inspection of memory card mem_123.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"mem_123\",\n          \"type\": \"memory_card\",\n          \"role\": \"target\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"user\",\n          \"predicate\": \"requested\",\n          \"object\": \"inspection of memory card mem_123\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolved\",\n    \"entity_id\": \"mem_123\",\n    \"reason\": \"Explicitly referenced in input command\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Memory card mem_123 was inspected as requested. No content was returned because the system does not expose raw memory contents in this context; only inspection intent and metadata are reported.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Input parsed: /brain inspect memory mem_123\",\n      \"Intent identified: debug_inspect_memory\",\n      \"Target memory card: mem_123\",\n      \"No conflicting or superseded data found\",\n      \"Response generated per schema constraints\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

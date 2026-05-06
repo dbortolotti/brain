@@ -1,0 +1,37 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_transcript_as_memory_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The LLM proposal fails to meet durability requirements for Brain's memory system. A single 8000-word transcript summary cannot be committed as a single card without risking loss of context, temporal granularity, or superseded facts. Instead, decompose into atomic memory cards (e.g., 'event', 'decision', 'fact') with explicit relationships and confidence scores.",
+    "citations": [
+      "Brain's durability principle: 'Memory must be decomposable into verifiable, non-overlapping units.'",
+      "Ambiguity preservation rule: 'Unresolved context must be flagged, not collapsed into summaries.'"
+    ],
+    "conflict_classification": "ambiguity_in_scope",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "null",
+      "entity_id": null,
+      "reason": "No explicit entities or relationships were extracted from the LLM proposal due to ambiguity in the 8000-word transcript's scope. The proposed 'conversation_summary' card lacks granularity for durable memory encoding (e.g., no timestamped events, speaker roles, or actionable predicates)."
+    },
+    "intent": "evaluate_memory_card_creation_for_transcript_summary",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Proposed card violates atomicity: 8000 words cannot be a single 'fact' or 'event'.",
+        "No speaker roles or temporal anchors provided\u2014critical for disambiguation.",
+        "Risk of superseding: Later edits to the transcript would invalidate the entire card."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Split transcript into chronological/functional segments (e.g., 'meeting_agenda_2023-10-15', 'technical_debate_topic_X').",
+      "Tag each card with 'confidence:low' if derived from unstructured text, and link to raw transcript for verification.",
+      "Use 'kind:transcript_metadata' for global context (e.g., participants, date) and 'kind:quote' for direct statements with speaker attribution."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"evaluate_memory_card_creation_for_transcript_summary\",\n  \"decision\": \"reject\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"null\",\n    \"entity_id\": null,\n    \"reason\": \"No explicit entities or relationships were extracted from the LLM proposal due to ambiguity in the 8000-word transcript's scope. The proposed 'conversation_summary' card lacks granularity for durable memory encoding (e.g., no timestamped events, speaker roles, or actionable predicates).\"\n  },\n  \"conflict_classification\": \"ambiguity_in_scope\",\n  \"answer\": \"The LLM proposal fails to meet durability requirements for Brain's memory system. A single 8000-word transcript summary cannot be committed as a single card without risking loss of context, temporal granularity, or superseded facts. Instead, decompose into atomic memory cards (e.g., 'event', 'decision', 'fact') with explicit relationships and confidence scores.\",\n  \"citations\": [\n    \"Brain's durability principle: 'Memory must be decomposable into verifiable, non-overlapping units.'\",\n    \"Ambiguity preservation rule: 'Unresolved context must be flagged, not collapsed into summaries.'\"\n  ],\n  \"repair_options\": [\n    \"Split transcript into chronological/functional segments (e.g., 'meeting_agenda_2023-10-15', 'technical_debate_topic_X').\",\n    \"Tag each card with 'confidence:low' if derived from unstructured text, and link to raw transcript for verification.\",\n    \"Use 'kind:transcript_metadata' for global context (e.g., participants, date) and 'kind:quote' for direct statements with speaker attribution.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Proposed card violates atomicity: 8000 words cannot be a single 'fact' or 'event'.\",\n      \"No speaker roles or temporal anchors provided\u2014critical for disambiguation.\",\n      \"Risk of superseding: Later edits to the transcript would invalidate the entire card.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

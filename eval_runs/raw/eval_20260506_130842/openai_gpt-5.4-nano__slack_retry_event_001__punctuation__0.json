@@ -1,0 +1,63 @@
+{
+  "error": null,
+  "fixture_id": "slack_retry_event_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Recorded a single memory from the duplicated Slack event.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "dedupe_and_store",
+    "entity_resolution": {
+      "action": "create_or_reuse",
+      "entity_id": null,
+      "reason": "No existing entity IDs provided; keep entity resolution open for later linking."
+    },
+    "intent": "store_personal_preference",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam (from Goldman)"
+          }
+        ],
+        "statement": "Sam (from Goldman) likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Slack event ID delivered twice; treated as a duplicate.",
+        "Stored the preference statement once."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm whether 'Sam' is a unique person or needs disambiguation (e.g., Sam's last name).",
+      "Confirm the exact affiliation name for 'Goldman' (e.g., Goldman Sachs).",
+      "Confirm whether 'Bill Evans' refers to the jazz pianist (to disambiguate from other people)."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"store_personal_preference\",\n  \"decision\": \"dedupe_and_store\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam (from Goldman) likes Bill Evans.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"liked\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam (from Goldman)\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_or_reuse\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entity IDs provided; keep entity resolution open for later linking.\"\n  },\n  \"conflict_classification\": \"none_detected\",\n  \"answer\": \"Recorded a single memory from the duplicated Slack event.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Confirm whether 'Sam' is a unique person or needs disambiguation (e.g., Sam's last name).\",\n    \"Confirm the exact affiliation name for 'Goldman' (e.g., Goldman Sachs).\",\n    \"Confirm whether 'Bill Evans' refers to the jazz pianist (to disambiguate from other people).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Slack event ID delivered twice; treated as a duplicate.\",\n      \"Stored the preference statement once.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

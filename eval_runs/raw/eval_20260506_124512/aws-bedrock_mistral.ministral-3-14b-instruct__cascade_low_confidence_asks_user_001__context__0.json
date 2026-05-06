@@ -1,0 +1,63 @@
+{
+  "error": null,
+  "fixture_id": "cascade_low_confidence_asks_user_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The note about Sam's mention of 'cascade' cannot be durably committed due to ambiguity. Please clarify: **1)** What did Sam refer to by 'cascade'? (e.g., feature name, workflow step, or data structure?) **2)** Any additional context from the conversation?",
+    "citations": [],
+    "conflict_classification": "ambiguous_reference",
+    "decision": "escalate_to_user_for_resolution",
+    "entity_resolution": {
+      "action": "user_escalation_required",
+      "entity_id": null,
+      "reason": "Ambiguity in 'cascade' reference (could be feature, workflow, or data structure) and low model confidence (\u22640.65) for disambiguation. Cloud escalation disabled per system constraints."
+    },
+    "intent": "clarify_ambiguous_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "user",
+            "type": "person"
+          },
+          {
+            "name": "cascade",
+            "role": "ambiguous_reference",
+            "type": "feature"
+          }
+        ],
+        "kind": "note",
+        "relationships": [
+          {
+            "object": "potential issue with 'cascade'",
+            "predicate": "mentioned",
+            "subject": "Sam"
+          },
+          {
+            "object": "unclear context",
+            "predicate": "has",
+            "subject": "cascade"
+          }
+        ],
+        "statement": "Sam mentioned a potential issue with the 'cascade' feature during the last sync, but the context was unclear."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguous memory blocked from durable storage due to low confidence and disabled cloud escalation.",
+        "User intervention required to resolve ambiguity before further action."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Commit as-is with low-confidence flag (not recommended)",
+      "Delete the ambiguous note (recommended if unresolved)",
+      "Escalate to Sam for clarification (current action)"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"clarify_ambiguous_memory\",\n  \"decision\": \"escalate_to_user_for_resolution\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"note\",\n      \"statement\": \"Sam mentioned a potential issue with the 'cascade' feature during the last sync, but the context was unclear.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"user\"\n        },\n        {\n          \"name\": \"cascade\",\n          \"type\": \"feature\",\n          \"role\": \"ambiguous_reference\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"mentioned\",\n          \"object\": \"potential issue with 'cascade'\"\n        },\n        {\n          \"subject\": \"cascade\",\n          \"predicate\": \"has\",\n          \"object\": \"unclear context\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"user_escalation_required\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguity in 'cascade' reference (could be feature, workflow, or data structure) and low model confidence (\u22640.65) for disambiguation. Cloud escalation disabled per system constraints.\"\n  },\n  \"conflict_classification\": \"ambiguous_reference\",\n  \"answer\": \"The note about Sam's mention of 'cascade' cannot be durably committed due to ambiguity. Please clarify: **1)** What did Sam refer to by 'cascade'? (e.g., feature name, workflow step, or data structure?) **2)** Any additional context from the conversation?\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Commit as-is with low-confidence flag (not recommended)\",\n    \"Delete the ambiguous note (recommended if unresolved)\",\n    \"Escalate to Sam for clarification (current action)\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Ambiguous memory blocked from durable storage due to low confidence and disabled cloud escalation.\",\n      \"User intervention required to resolve ambiguity before further action.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

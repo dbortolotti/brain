@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "fixture_id": "typos_shorthand_person_interaction_001__context",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Recorded low-confidence social observation: Sam from Goldman likes Bill Evans apparently.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_as_ambiguous_social_observation",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": null,
+      "reason": "Ambiguous references: 'Sam frm goldmn' and 'bill evns' contain typos/shorthand; no disambiguating context provided to resolve to known entities."
+    },
+    "intent": "record_social_interaction",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object_of_affection",
+            "type": "person"
+          }
+        ],
+        "kind": "social_observation",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans apparently"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created with low confidence due to ambiguous input",
+        "Entities recorded but not resolved to known IDs",
+        "No conflicts detected with existing memories"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request clarification on Sam's full name or role at Goldman",
+      "Request clarification on which Bill Evans is referenced (e.g., jazz pianist, other)",
+      "Wait for additional context to confirm or refute the observation"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"record_social_interaction\",\n  \"decision\": \"store_as_ambiguous_social_observation\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"social_observation\",\n      \"statement\": \"Sam from Goldman likes Bill Evans apparently\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"object_of_affection\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_new\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguous references: 'Sam frm goldmn' and 'bill evns' contain typos/shorthand; no disambiguating context provided to resolve to known entities.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Recorded low-confidence social observation: Sam from Goldman likes Bill Evans apparently.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Request clarification on Sam's full name or role at Goldman\",\n    \"Request clarification on which Bill Evans is referenced (e.g., jazz pianist, other)\",\n    \"Wait for additional context to confirm or refute the observation\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card created with low confidence due to ambiguous input\",\n      \"Entities recorded but not resolved to known IDs\",\n      \"No conflicts detected with existing memories\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

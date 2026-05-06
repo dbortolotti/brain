@@ -1,0 +1,36 @@
+{
+  "error": null,
+  "fixture_id": "cascade_validator_failure_escalates_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The input violated the required schema by omitting mandatory fields (`kind`, `statement`) and including unsafe/ambiguous proposals. Escalation to a stronger model is required for durable memory evaluation.",
+    "citations": [
+      "Schema validation failed: Missing required properties in memory_cards array items.",
+      "Unsafe proposal detected: Ambiguous or superseded facts were not explicitly marked as such."
+    ],
+    "conflict_classification": "schema_violation",
+    "decision": "reject_and_escalate",
+    "entity_resolution": {
+      "action": "null",
+      "entity_id": null,
+      "reason": "No valid entities or relationships present in invalid schema output."
+    },
+    "intent": "validate_model_output_safety",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Input did not conform to durable memory schema (missing `kind`, `statement`).",
+        "Ambiguity in proposals violates preservation rules.",
+        "Escalation triggered due to schema/ambiguity violations."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Reject output and prompt stronger model for schema-compliant response.",
+      "Flag as 'unsafe' and require explicit conflict resolution before memory commit."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"validate_model_output_safety\",\n  \"decision\": \"reject_and_escalate\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"null\",\n    \"entity_id\": null,\n    \"reason\": \"No valid entities or relationships present in invalid schema output.\"\n  },\n  \"conflict_classification\": \"schema_violation\",\n  \"answer\": \"The input violated the required schema by omitting mandatory fields (`kind`, `statement`) and including unsafe/ambiguous proposals. Escalation to a stronger model is required for durable memory evaluation.\",\n  \"citations\": [\n    \"Schema validation failed: Missing required properties in memory_cards array items.\",\n    \"Unsafe proposal detected: Ambiguous or superseded facts were not explicitly marked as such.\"\n  ],\n  \"repair_options\": [\n    \"Reject output and prompt stronger model for schema-compliant response.\",\n    \"Flag as 'unsafe' and require explicit conflict resolution before memory commit.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Input did not conform to durable memory schema (missing `kind`, `statement`).\",\n      \"Ambiguity in proposals violates preservation rules.\",\n      \"Escalation triggered due to schema/ambiguity violations.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

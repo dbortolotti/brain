@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_place_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Treat 'Brutto was better than expected' as a review/mention about the Brutto restaurant in London.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Link the new note 'Brutto was better than expected' to the existing entity 'Brutto restaurant in London'.",
+    "entity_resolution": {
+      "action": "match_or_link",
+      "entity_id": null,
+      "reason": "The input indicates an existing 'Brutto restaurant in London' and the new note sentiment 'Brutto was better than expected' most plausibly refers to that restaurant; no alternative 'Brutto' context is provided."
+    },
+    "intent": "entity_resolution",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brutto",
+            "role": "subject",
+            "type": "restaurant"
+          },
+          {
+            "name": "London",
+            "role": "location",
+            "type": "city"
+          }
+        ],
+        "kind": "preference_review_mention",
+        "relationships": [
+          {
+            "object": "London",
+            "predicate": "is located in",
+            "subject": "Brutto"
+          }
+        ],
+        "statement": "The user notes that Brutto was better than expected."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed 'Brutto was better than expected' as sentiment about Brutto.",
+        "Linked Brutto to the existing context 'Brutto restaurant in London' due to lack of competing entities."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for clarification if 'Brutto' refers to something other than the London restaurant (e.g., a specific article, venue, or person).",
+      "If clarification is not available, store the note with lower confidence and without adding new location details beyond 'London'."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"entity_resolution\",\n  \"decision\": \"Link the new note 'Brutto was better than expected' to the existing entity 'Brutto restaurant in London'.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference_review_mention\",\n      \"statement\": \"The user notes that Brutto was better than expected.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Brutto\",\n          \"type\": \"restaurant\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"London\",\n          \"type\": \"city\",\n          \"role\": \"location\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brutto\",\n          \"predicate\": \"is located in\",\n          \"object\": \"London\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"match_or_link\",\n    \"entity_id\": null,\n    \"reason\": \"The input indicates an existing 'Brutto restaurant in London' and the new note sentiment 'Brutto was better than expected' most plausibly refers to that restaurant; no alternative 'Brutto' context is provided.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Treat 'Brutto was better than expected' as a review/mention about the Brutto restaurant in London.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Ask for clarification if 'Brutto' refers to something other than the London restaurant (e.g., a specific article, venue, or person).\",\n    \"If clarification is not available, store the note with lower confidence and without adding new location details beyond 'London'.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Parsed 'Brutto was better than expected' as sentiment about Brutto.\",\n      \"Linked Brutto to the existing context 'Brutto restaurant in London' due to lack of competing entities.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

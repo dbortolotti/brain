@@ -1,0 +1,92 @@
+{
+  "error": null,
+  "fixture_id": "pdf_ocr_noisy_source_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "No durable memory committed. Source is flagged for manual curation due to OCR noise and ambiguous cognitive references.",
+    "citations": [],
+    "conflict_classification": "semantic_ambiguity",
+    "decision": "ambiguous_preservation",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Ambiguity in 'trvth'/'truth' and 'Cognee'/'cognitive' prevents definitive resolution. Preserve raw OCR artifacts for manual review."
+    },
+    "intent": "memory_compilation",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "OCR_noisy_source_001",
+            "role": "input_fixture",
+            "type": "document"
+          },
+          {
+            "name": "punctuation_errors",
+            "role": "data_quality_issue",
+            "type": "artifact"
+          }
+        ],
+        "kind": "source_metadata",
+        "relationships": [
+          {
+            "object": "punctuation_errors",
+            "predicate": "has",
+            "subject": "OCR_noisy_source_001"
+          },
+          {
+            "object": "truth_reliability",
+            "predicate": "impairs",
+            "subject": "punctuation_errors"
+          }
+        ],
+        "statement": "OCR output contains high noise and punctuation errors, rendering raw text unreliable for direct cognitive reconstruction."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "rebuildable_projection",
+            "role": "fallback_strategy",
+            "type": "methodology"
+          },
+          {
+            "name": "truth_source",
+            "role": "ambiguous",
+            "type": "concept"
+          }
+        ],
+        "kind": "cognitive_projection",
+        "relationships": [
+          {
+            "object": "semantic_inference",
+            "predicate": "requires",
+            "subject": "rebuildable_projection"
+          },
+          {
+            "object": "ambiguous",
+            "predicate": "is",
+            "subject": "truth_source"
+          }
+        ],
+        "statement": "Cognitive system should prioritize *rebuildable* memory projections over direct OCR extraction when source integrity is compromised."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory compilation aborted due to source unreliability.",
+        "Ambiguous terms ('trvth', 'Cognee') require contextual resolution."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Engage human-in-the-loop validation for OCR artifacts.",
+      "Apply probabilistic semantic parsing to infer likely intent.",
+      "Tag as 'unresolved' and archive for future reprocessing."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_compilation\",\n  \"decision\": \"ambiguous_preservation\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"source_metadata\",\n      \"statement\": \"OCR output contains high noise and punctuation errors, rendering raw text unreliable for direct cognitive reconstruction.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"OCR_noisy_source_001\",\n          \"type\": \"document\",\n          \"role\": \"input_fixture\"\n        },\n        {\n          \"name\": \"punctuation_errors\",\n          \"type\": \"artifact\",\n          \"role\": \"data_quality_issue\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"OCR_noisy_source_001\",\n          \"predicate\": \"has\",\n          \"object\": \"punctuation_errors\"\n        },\n        {\n          \"subject\": \"punctuation_errors\",\n          \"predicate\": \"impairs\",\n          \"object\": \"truth_reliability\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"cognitive_projection\",\n      \"statement\": \"Cognitive system should prioritize *rebuildable* memory projections over direct OCR extraction when source integrity is compromised.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"rebuildable_projection\",\n          \"type\": \"methodology\",\n          \"role\": \"fallback_strategy\"\n        },\n        {\n          \"name\": \"truth_source\",\n          \"type\": \"concept\",\n          \"role\": \"ambiguous\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"rebuildable_projection\",\n          \"predicate\": \"requires\",\n          \"object\": \"semantic_inference\"\n        },\n        {\n          \"subject\": \"truth_source\",\n          \"predicate\": \"is\",\n          \"object\": \"ambiguous\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguity in 'trvth'/'truth' and 'Cognee'/'cognitive' prevents definitive resolution. Preserve raw OCR artifacts for manual review.\"\n  },\n  \"conflict_classification\": \"semantic_ambiguity\",\n  \"answer\": \"No durable memory committed. Source is flagged for manual curation due to OCR noise and ambiguous cognitive references.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Engage human-in-the-loop validation for OCR artifacts.\",\n    \"Apply probabilistic semantic parsing to infer likely intent.\",\n    \"Tag as 'unresolved' and archive for future reprocessing.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Memory compilation aborted due to source unreliability.\",\n      \"Ambiguous terms ('trvth', 'Cognee') require contextual resolution.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

@@ -1,0 +1,56 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_sam_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Captured that a person named Sam likes Bill Evans, but which Sam is ambiguous.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_ambiguous_preference",
+    "entity_resolution": {
+      "action": "ambiguous_match",
+      "entity_id": null,
+      "reason": "There are multiple existing entities named Sam (Goldman and Point72), and the message does not specify which Sam the preference refers to."
+    },
+    "intent": "personal_preference",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unknown_affiliation",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "composer/artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored an ambiguous memory card about the preference without binding it to a specific existing Sam entity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask a clarifying question: which Sam (Goldman or Point72) likes Bill Evans?",
+      "Update with additional context (e.g., team/company, pronouns, or surrounding message)."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"personal_preference\",\n  \"decision\": \"store_ambiguous_preference\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam likes Bill Evans.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"unknown_affiliation\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"composer/artist\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"ambiguous_match\",\n    \"entity_id\": null,\n    \"reason\": \"There are multiple existing entities named Sam (Goldman and Point72), and the message does not specify which Sam the preference refers to.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Captured that a person named Sam likes Bill Evans, but which Sam is ambiguous.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Ask a clarifying question: which Sam (Goldman or Point72) likes Bill Evans?\",\n    \"Update with additional context (e.g., team/company, pronouns, or surrounding message).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Stored an ambiguous memory card about the preference without binding it to a specific existing Sam entity.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

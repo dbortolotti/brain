@@ -1,0 +1,65 @@
+{
+  "error": null,
+  "fixture_id": "project_state_brain_slack_agent_001__context",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Slack is the primary guardrailed memory ingestion interface for Brain; Telegram integration is planned for a later phase.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Slack is designated as the primary guardrailed memory ingestion interface; Telegram is deferred for later implementation.",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": "project_state_brain_slack_agent_001__context",
+      "reason": "Fixture ID matches the context of the Brain project state decision regarding Slack as primary ingestion interface."
+    },
+    "intent": "Establish primary memory ingestion interface for Brain project",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "Slack",
+            "role": "primary_ingestion_channel",
+            "type": "interface"
+          },
+          {
+            "name": "Telegram",
+            "role": "secondary_ingestion_channel",
+            "type": "interface"
+          }
+        ],
+        "kind": "project_decision",
+        "relationships": [
+          {
+            "object": "Slack",
+            "predicate": "uses_as_primary",
+            "subject": "Brain"
+          },
+          {
+            "object": "Telegram",
+            "predicate": "plans_to_integrate_later",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "Slack should be the primary guardrailed memory ingestion interface for the Brain project."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Decision recorded: Slack as primary ingestion interface.",
+        "Telegram deferred per project roadmap.",
+        "No conflicts detected with existing memory state."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"Establish primary memory ingestion interface for Brain project\",\n  \"decision\": \"Slack is designated as the primary guardrailed memory ingestion interface; Telegram is deferred for later implementation.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"project_decision\",\n      \"statement\": \"Slack should be the primary guardrailed memory ingestion interface for the Brain project.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain\",\n          \"type\": \"project\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Slack\",\n          \"type\": \"interface\",\n          \"role\": \"primary_ingestion_channel\"\n        },\n        {\n          \"name\": \"Telegram\",\n          \"type\": \"interface\",\n          \"role\": \"secondary_ingestion_channel\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain\",\n          \"predicate\": \"uses_as_primary\",\n          \"object\": \"Slack\"\n        },\n        {\n          \"subject\": \"Brain\",\n          \"predicate\": \"plans_to_integrate_later\",\n          \"object\": \"Telegram\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolve\",\n    \"entity_id\": \"project_state_brain_slack_agent_001__context\",\n    \"reason\": \"Fixture ID matches the context of the Brain project state decision regarding Slack as primary ingestion interface.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Slack is the primary guardrailed memory ingestion interface for Brain; Telegram integration is planned for a later phase.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Decision recorded: Slack as primary ingestion interface.\",\n      \"Telegram deferred per project roadmap.\",\n      \"No conflicts detected with existing memory state.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

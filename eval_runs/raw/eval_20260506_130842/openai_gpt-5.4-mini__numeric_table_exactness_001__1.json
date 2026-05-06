@@ -1,0 +1,144 @@
+{
+  "error": null,
+  "fixture_id": "numeric_table_exactness_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Extracted exact table facts for PPO-001 and PPO-002.",
+    "citations": [
+      "PPO-001 | Reward 0.12 | Sharpe 0.45 | baseline",
+      "PPO-002 | Reward 0.18 | Sharpe 0.51 | entropy tuned"
+    ],
+    "conflict_classification": "none",
+    "decision": "Store the table entries as low-to-moderate confidence factual memory cards with exact values.",
+    "entity_resolution": {
+      "action": "no_change",
+      "entity_id": null,
+      "reason": "No existing memory entity context was provided to merge or update."
+    },
+    "intent": "Compile exact numeric facts from a small results table.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "row identifier",
+            "type": "run"
+          },
+          {
+            "name": "Reward",
+            "role": "metric",
+            "type": "metric"
+          },
+          {
+            "name": "Sharpe",
+            "role": "metric",
+            "type": "metric"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "0.12",
+            "predicate": "has_reward",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "0.45",
+            "predicate": "has_sharpe",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "baseline",
+            "predicate": "has_notes",
+            "subject": "PPO-001"
+          }
+        ],
+        "statement": "In the provided table, PPO-001 has Reward 0.12, Sharpe 0.45, and Notes 'baseline'."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "row identifier",
+            "type": "run"
+          },
+          {
+            "name": "Reward",
+            "role": "metric",
+            "type": "metric"
+          },
+          {
+            "name": "Sharpe",
+            "role": "metric",
+            "type": "metric"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "0.18",
+            "predicate": "has_reward",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "0.51",
+            "predicate": "has_sharpe",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "entropy tuned",
+            "predicate": "has_notes",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "In the provided table, PPO-002 has Reward 0.18, Sharpe 0.51, and Notes 'entropy tuned'."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "comparison baseline",
+            "type": "run"
+          },
+          {
+            "name": "PPO-002",
+            "role": "comparison target",
+            "type": "run"
+          }
+        ],
+        "kind": "comparison",
+        "relationships": [
+          {
+            "object": "PPO-001",
+            "predicate": "has_greater_reward_than",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "PPO-001",
+            "predicate": "has_greater_sharpe_than",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "Within the provided table, PPO-002 exceeds PPO-001 on both Reward and Sharpe."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed 2 runs from the table.",
+        "Preserved exact numeric values.",
+        "Avoided inventing any unsupported metadata."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If needed, split the comparison card into separate reward and Sharpe comparisons to reduce inference.",
+      "If future context provides prior run identities, merge these rows into existing entities only if names match exactly."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Compile exact numeric facts from a small results table.\",\"decision\":\"Store the table entries as low-to-moderate confidence factual memory cards with exact values.\",\"memory_cards\":[{\"kind\":\"observation\",\"statement\":\"In the provided table, PPO-001 has Reward 0.12, Sharpe 0.45, and Notes 'baseline'.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"PPO-001\",\"type\":\"run\",\"role\":\"row identifier\"},{\"name\":\"Reward\",\"type\":\"metric\",\"role\":\"metric\"},{\"name\":\"Sharpe\",\"type\":\"metric\",\"role\":\"metric\"}],\"relationships\":[{\"subject\":\"PPO-001\",\"predicate\":\"has_reward\",\"object\":\"0.12\"},{\"subject\":\"PPO-001\",\"predicate\":\"has_sharpe\",\"object\":\"0.45\"},{\"subject\":\"PPO-001\",\"predicate\":\"has_notes\",\"object\":\"baseline\"}]},{\"kind\":\"observation\",\"statement\":\"In the provided table, PPO-002 has Reward 0.18, Sharpe 0.51, and Notes 'entropy tuned'.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"PPO-002\",\"type\":\"run\",\"role\":\"row identifier\"},{\"name\":\"Reward\",\"type\":\"metric\",\"role\":\"metric\"},{\"name\":\"Sharpe\",\"type\":\"metric\",\"role\":\"metric\"}],\"relationships\":[{\"subject\":\"PPO-002\",\"predicate\":\"has_reward\",\"object\":\"0.18\"},{\"subject\":\"PPO-002\",\"predicate\":\"has_sharpe\",\"object\":\"0.51\"},{\"subject\":\"PPO-002\",\"predicate\":\"has_notes\",\"object\":\"entropy tuned\"}]},{\"kind\":\"comparison\",\"statement\":\"Within the provided table, PPO-002 exceeds PPO-001 on both Reward and Sharpe.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"PPO-001\",\"type\":\"run\",\"role\":\"comparison baseline\"},{\"name\":\"PPO-002\",\"type\":\"run\",\"role\":\"comparison target\"}],\"relationships\":[{\"subject\":\"PPO-002\",\"predicate\":\"has_greater_reward_than\",\"object\":\"PPO-001\"},{\"subject\":\"PPO-002\",\"predicate\":\"has_greater_sharpe_than\",\"object\":\"PPO-001\"}]}],\"entity_resolution\":{\"action\":\"no_change\",\"entity_id\":null,\"reason\":\"No existing memory entity context was provided to merge or update.\"},\"conflict_classification\":\"none\",\"answer\":\"Extracted exact table facts for PPO-001 and PPO-002.\",\"citations\":[\"PPO-001 | Reward 0.12 | Sharpe 0.45 | baseline\",\"PPO-002 | Reward 0.18 | Sharpe 0.51 | entropy tuned\"],\"repair_options\":[\"If needed, split the comparison card into separate reward and Sharpe comparisons to reduce inference.\",\"If future context provides prior run identities, merge these rows into existing entities only if names match exactly.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed 2 runs from the table.\",\"Preserved exact numeric values.\",\"Avoided inventing any unsupported metadata.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

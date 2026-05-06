@@ -1,0 +1,59 @@
+{
+  "error": null,
+  "fixture_id": "unresolved_pronoun_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Ambiguous; no durable memory committed.",
+    "citations": [],
+    "conflict_classification": "unresolved_reference",
+    "decision": "do_not_commit",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The pronoun \"He\" and the phrase \"the other one\" lack sufficient context to resolve to durable entities."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "He",
+            "role": "subject",
+            "type": "pronoun"
+          },
+          {
+            "name": "other one",
+            "role": "preferred_object",
+            "type": "unspecified_option"
+          }
+        ],
+        "kind": "ambiguous_preference",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "He"
+          }
+        ],
+        "statement": "A person referred to as \"He\" prefers \"the other one,\" but the referent of \"he\" and the compared options are unresolved."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed a preference statement.",
+        "Deferred entity resolution due to unresolved pronoun reference.",
+        "Avoided committing a durable memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide the antecedent for \"he\".",
+      "Specify the two options being compared.",
+      "Restate the preference with named entities."
+    ]
+  },
+  "raw_text": "{\"intent\":\"slack_intake\",\"decision\":\"do_not_commit\",\"memory_cards\":[{\"kind\":\"ambiguous_preference\",\"statement\":\"A person referred to as \\\"He\\\" prefers \\\"the other one,\\\" but the referent of \\\"he\\\" and the compared options are unresolved.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"He\",\"type\":\"pronoun\",\"role\":\"subject\"},{\"name\":\"other one\",\"type\":\"unspecified_option\",\"role\":\"preferred_object\"}],\"relationships\":[{\"subject\":\"He\",\"predicate\":\"prefers\",\"object\":\"the other one\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"The pronoun \\\"He\\\" and the phrase \\\"the other one\\\" lack sufficient context to resolve to durable entities.\"},\"conflict_classification\":\"unresolved_reference\",\"answer\":\"Ambiguous; no durable memory committed.\",\"citations\":[],\"repair_options\":[\"Provide the antecedent for \\\"he\\\".\",\"Specify the two options being compared.\",\"Restate the preference with named entities.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed a preference statement.\",\"Deferred entity resolution due to unresolved pronoun reference.\",\"Avoided committing a durable memory.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

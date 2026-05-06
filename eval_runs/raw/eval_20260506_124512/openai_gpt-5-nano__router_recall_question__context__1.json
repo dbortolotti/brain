@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "fixture_id": "router_recall_question__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Sam from Goldman is referenced but specifics about who he is are not fully determined from the available context.",
+    "citations": [],
+    "conflict_classification": "ambiguous_identity_preserved",
+    "decision": "present_memory",
+    "entity_resolution": {
+      "action": "no_action",
+      "entity_id": null,
+      "reason": "Insufficient detail to uniquely resolve which Sam; ambiguity preserved."
+    },
+    "intent": "recall_context",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unknown",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "memory",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman is associated with the Goldman Sachs context in the current memory as a person referenced in prior discussions."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Context recall generated for 'Sam from Goldman' with preserved ambiguity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide more context to uniquely identify Sam (e.g., full name, role, team, project).",
+      "If you want to narrow down by Goldman entity (e.g., Goldman Sachs vs. a different Goldman), specify which organization.",
+      "Add any known attributes (department, tenure, notable actions) to improve resolution."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"recall_context\",\n  \"decision\": \"present_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"memory\",\n      \"statement\": \"Sam from Goldman is associated with the Goldman Sachs context in the current memory as a person referenced in prior discussions.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"unknown\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"associated_with\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_action\",\n    \"entity_id\": null,\n    \"reason\": \"Insufficient detail to uniquely resolve which Sam; ambiguity preserved.\"\n  },\n  \"conflict_classification\": \"ambiguous_identity_preserved\",\n  \"answer\": \"Sam from Goldman is referenced but specifics about who he is are not fully determined from the available context.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Provide more context to uniquely identify Sam (e.g., full name, role, team, project).\",\n    \"If you want to narrow down by Goldman entity (e.g., Goldman Sachs vs. a different Goldman), specify which organization.\",\n    \"Add any known attributes (department, tenure, notable actions) to improve resolution.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Context recall generated for 'Sam from Goldman' with preserved ambiguity.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

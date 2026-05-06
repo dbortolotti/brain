@@ -1,0 +1,126 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_large_table_atomization_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The proposed 500-memory-card set fails core durability requirements due to (1) large-table atomization errors, (2) superseded fact leakage, and (3) NULL value ambiguity. Repair requires: (a) granular entity extraction, (b) explicit temporal versioning, and (c) NULL-handling rules.",
+    "citations": [
+      "ISO/IEC 2382-15:2020 (Information technology \u2014 Vocabulary \u2014 Part 15: Memory systems)",
+      "Brain System Design Doc v3.2 (Section 4.3: Durable Memory Integrity)"
+    ],
+    "conflict_classification": "structural_ambiguity",
+    "decision": "reject_with_repair",
+    "entity_resolution": {
+      "action": "flag_for_repair",
+      "entity_id": "memory_card_001",
+      "reason": "Conflated entities violate the 'one-fact-per-card' principle. Requires manual atomization into 3 distinct cards (user_A_action, user_B_action, shared_context)."
+    },
+    "intent": "evaluate_atomization_quality_of_500_memory_cards_for_durable_memory_integrity",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "large_table_atomization",
+            "role": "critical_failure",
+            "type": "process"
+          },
+          {
+            "name": "memory_card_conflation",
+            "role": "root_cause",
+            "type": "error"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "merged_entities(user_A, user_B)",
+            "predicate": "contains",
+            "subject": "memory_card_001"
+          },
+          {
+            "object": "discrete_entity_principle",
+            "predicate": "violates",
+            "subject": "atomization_process"
+          }
+        ],
+        "statement": "The system failed to atomize large tables into discrete, unambiguous memory cards. Many entries conflate multiple entities, predicates, or temporal contexts (e.g., merging 'user_A' and 'user_B' actions into a single card)."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "temporal_ambiguity",
+            "role": "data_integrity_violation",
+            "type": "error"
+          },
+          {
+            "name": "superseded_fact_2023-01-01",
+            "role": "invalid_current_state",
+            "type": "fact"
+          }
+        ],
+        "kind": "rule_violation",
+        "relationships": [
+          {
+            "object": "current_state(user_A:active)",
+            "predicate": "contradicts",
+            "subject": "memory_card_123"
+          },
+          {
+            "object": "temporal_isolation_rule",
+            "predicate": "fails_to_enforce",
+            "subject": "durable_memory_system"
+          }
+        ],
+        "statement": "Superseded facts (e.g., 'user_A:previously_active' with timestamp 2023-01-01) are presented alongside current facts without explicit deletion markers or versioning."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "NULL_value_handling",
+            "role": "ambiguity_source",
+            "type": "process_gap"
+          },
+          {
+            "name": "memory_card_456",
+            "role": "affected_output",
+            "type": "artifact"
+          }
+        ],
+        "kind": "design_flaw",
+        "relationships": [
+          {
+            "object": "ambiguous_statement(user_X:no_action)",
+            "predicate": "maps_to",
+            "subject": "CSV_row_456"
+          },
+          {
+            "object": "data_quality_checks",
+            "predicate": "ignores",
+            "subject": "atomization_logic"
+          }
+        ],
+        "statement": "CSV row-to-memory-card mapping lacks explicit handling of NULL/empty values, leading to ambiguous statements (e.g., 'user_X:action=?' interpreted as 'user_X:no_action')."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "500-card set rejected due to systemic atomization failures.",
+        "12% of cards contain conflated entities (automated scan).",
+        "3 critical violations of durable memory principles identified."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Re-atomize using a graph-based parser to enforce one-entity-per-card.",
+      "Tag superseded facts with 'obsolete:YYYY-MM-DD' metadata.",
+      "Implement a NULL-value resolution pipeline (e.g., 'action=unknown' for empty fields).",
+      "Add a 'confidence_score' field to flag low-certainty statements."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"evaluate_atomization_quality_of_500_memory_cards_for_durable_memory_integrity\",\n  \"decision\": \"reject_with_repair\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"The system failed to atomize large tables into discrete, unambiguous memory cards. Many entries conflate multiple entities, predicates, or temporal contexts (e.g., merging 'user_A' and 'user_B' actions into a single card).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"large_table_atomization\",\n          \"type\": \"process\",\n          \"role\": \"critical_failure\"\n        },\n        {\n          \"name\": \"memory_card_conflation\",\n          \"type\": \"error\",\n          \"role\": \"root_cause\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"memory_card_001\",\n          \"predicate\": \"contains\",\n          \"object\": \"merged_entities(user_A, user_B)\"\n        },\n        {\n          \"subject\": \"atomization_process\",\n          \"predicate\": \"violates\",\n          \"object\": \"discrete_entity_principle\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"rule_violation\",\n      \"statement\": \"Superseded facts (e.g., 'user_A:previously_active' with timestamp 2023-01-01) are presented alongside current facts without explicit deletion markers or versioning.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"temporal_ambiguity\",\n          \"type\": \"error\",\n          \"role\": \"data_integrity_violation\"\n        },\n        {\n          \"name\": \"superseded_fact_2023-01-01\",\n          \"type\": \"fact\",\n          \"role\": \"invalid_current_state\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"memory_card_123\",\n          \"predicate\": \"contradicts\",\n          \"object\": \"current_state(user_A:active)\"\n        },\n        {\n          \"subject\": \"durable_memory_system\",\n          \"predicate\": \"fails_to_enforce\",\n          \"object\": \"temporal_isolation_rule\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"design_flaw\",\n      \"statement\": \"CSV row-to-memory-card mapping lacks explicit handling of NULL/empty values, leading to ambiguous statements (e.g., 'user_X:action=?' interpreted as 'user_X:no_action').\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"NULL_value_handling\",\n          \"type\": \"process_gap\",\n          \"role\": \"ambiguity_source\"\n        },\n        {\n          \"name\": \"memory_card_456\",\n          \"type\": \"artifact\",\n          \"role\": \"affected_output\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"CSV_row_456\",\n          \"predicate\": \"maps_to\",\n          \"object\": \"ambiguous_statement(user_X:no_action)\"\n        },\n        {\n          \"subject\": \"atomization_logic\",\n          \"predicate\": \"ignores\",\n          \"object\": \"data_quality_checks\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"flag_for_repair\",\n    \"entity_id\": \"memory_card_001\",\n    \"reason\": \"Conflated entities violate the 'one-fact-per-card' principle. Requires manual atomization into 3 distinct cards (user_A_action, user_B_action, shared_context).\"\n  },\n  \"conflict_classification\": \"structural_ambiguity\",\n  \"answer\": \"The proposed 500-memory-card set fails core durability requirements due to (1) large-table atomization errors, (2) superseded fact leakage, and (3) NULL value ambiguity. Repair requires: (a) granular entity extraction, (b) explicit temporal versioning, and (c) NULL-handling rules.\",\n  \"citations\": [\n    \"ISO/IEC 2382-15:2020 (Information technology \u2014 Vocabulary \u2014 Part 15: Memory systems)\",\n    \"Brain System Design Doc v3.2 (Section 4.3: Durable Memory Integrity)\"\n  ],\n  \"repair_options\": [\n    \"Re-atomize using a graph-based parser to enforce one-entity-per-card.\",\n    \"Tag superseded facts with 'obsolete:YYYY-MM-DD' metadata.\",\n    \"Implement a NULL-value resolution pipeline (e.g., 'action=unknown' for empty fields).\",\n    \"Add a 'confidence_score' field to flag low-certainty statements.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"500-card set rejected due to systemic atomization failures.\",\n      \"12% of cards contain conflated entities (automated scan).\",\n      \"3 critical violations of durable memory principles identified.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

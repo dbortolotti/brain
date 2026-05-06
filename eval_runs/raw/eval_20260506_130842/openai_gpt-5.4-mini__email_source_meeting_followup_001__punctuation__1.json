@@ -1,0 +1,88 @@
+{
+  "error": null,
+  "fixture_id": "email_source_meeting_followup_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Sam joined Point72 last month and requested the AI infra article.",
+    "citations": [
+      "From - sam@examplecom",
+      "Subject - Follow up",
+      "Great seeing you",
+      "Yes, I joined Point72 last month",
+      "Please send the AI infra article"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": null,
+      "reason": "The sender is identified only as Sam with an email address, and there is not enough information to confidently match to an existing entity."
+    },
+    "intent": "Extract durable personal-memory facts from a follow-up email about a recent meeting and requested article.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "email sender",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "new employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "contact_update",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said they joined Point72 last month."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "email sender",
+            "type": "person"
+          },
+          {
+            "name": "AI infra article",
+            "role": "requested item",
+            "type": "document"
+          }
+        ],
+        "kind": "request",
+        "relationships": [
+          {
+            "object": "AI infra article",
+            "predicate": "requested",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam asked for the AI infra article to be sent."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted one employment update and one document request.",
+        "No conflicting facts detected.",
+        "Used cautious entity resolution due to limited sender identity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If Sam is already in the memory system, merge this update into the existing person entity once identity is confirmed.",
+      "If the AI infra article has a known title or link, attach that as a document reference after verification."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Extract durable personal-memory facts from a follow-up email about a recent meeting and requested article.\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"contact_update\",\"statement\":\"Sam said they joined Point72 last month.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"email sender\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"new employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]},{\"kind\":\"request\",\"statement\":\"Sam asked for the AI infra article to be sent.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"email sender\"},{\"name\":\"AI infra article\",\"type\":\"document\",\"role\":\"requested item\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"requested\",\"object\":\"AI infra article\"}]}],\"entity_resolution\":{\"action\":\"create_new\",\"entity_id\":null,\"reason\":\"The sender is identified only as Sam with an email address, and there is not enough information to confidently match to an existing entity.\"},\"conflict_classification\":\"none\",\"answer\":\"Sam joined Point72 last month and requested the AI infra article.\",\"citations\":[\"From - sam@examplecom\",\"Subject - Follow up\",\"Great seeing you\",\"Yes, I joined Point72 last month\",\"Please send the AI infra article\"],\"repair_options\":[\"If Sam is already in the memory system, merge this update into the existing person entity once identity is confirmed.\",\"If the AI infra article has a known title or link, attach that as a document reference after verification.\"],\"receipt\":{\"success\":true,\"details\":[\"Extracted one employment update and one document request.\",\"No conflicting facts detected.\",\"Used cautious entity resolution due to limited sender identity.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

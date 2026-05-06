@@ -1,0 +1,71 @@
+{
+  "error": null,
+  "fixture_id": "recall_daughters_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Your daughters are Nur and Sara.",
+    "citations": [
+      "Fact - Nur and Sara are Daniele's twin daughters"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": null,
+      "reason": "The query asks for the daughters of Daniele; the fact explicitly names Nur and Sara as Daniele's twin daughters."
+    },
+    "intent": "recall_synthesizer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_daughter_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Daniele",
+            "predicate": "is_daughter_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Sara",
+            "predicate": "is_twin_of",
+            "subject": "Nur"
+          }
+        ],
+        "statement": "Daniele has twin daughters named Nur and Sara."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Identified Daniele's daughters as Nur and Sara.",
+        "Stored as a high-confidence family relationship fact."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"recall_synthesizer\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Daniele has twin daughters named Nur and Sara.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Daniele\",\"type\":\"person\",\"role\":\"parent\"},{\"name\":\"Nur\",\"type\":\"person\",\"role\":\"daughter\"},{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"daughter\"}],\"relationships\":[{\"subject\":\"Nur\",\"predicate\":\"is_daughter_of\",\"object\":\"Daniele\"},{\"subject\":\"Sara\",\"predicate\":\"is_daughter_of\",\"object\":\"Daniele\"},{\"subject\":\"Nur\",\"predicate\":\"is_twin_of\",\"object\":\"Sara\"}]}],\"entity_resolution\":{\"action\":\"resolved\",\"entity_id\":null,\"reason\":\"The query asks for the daughters of Daniele; the fact explicitly names Nur and Sara as Daniele's twin daughters.\"},\"conflict_classification\":\"none\",\"answer\":\"Your daughters are Nur and Sara.\",\"citations\":[\"Fact - Nur and Sara are Daniele's twin daughters\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Identified Daniele's daughters as Nur and Sara.\",\"Stored as a high-confidence family relationship fact.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

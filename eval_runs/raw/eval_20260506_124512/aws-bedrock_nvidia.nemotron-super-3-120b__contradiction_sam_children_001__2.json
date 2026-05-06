@@ -1,0 +1,64 @@
+{
+  "error": null,
+  "fixture_id": "contradiction_sam_children_001",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "The existing memory stating that Sam from Goldman has two children is retained. The new claim that Sam has no children contradicts this and is rejected due to lack of supporting evidence and higher confidence in the existing memory.",
+    "citations": [],
+    "conflict_classification": "direct_contradiction",
+    "decision": "reject_new",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No entity conflict; contradiction is about a factual attribute (number of children), not identity."
+    },
+    "intent": "resolve_contradiction",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "two",
+            "predicate": "has_number_of_children",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman has two children."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Contradiction detected: existing memory (two children) vs. new claim (no children).",
+        "Existing memory retained due to higher confidence and lack of evidence to override it.",
+        "No entity resolution needed; conflict is purely factual."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request clarification or additional evidence regarding Sam's children",
+      "Mark the contradiction for human review",
+      "Temporarily suspend both claims pending verification"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"resolve_contradiction\",\n  \"decision\": \"reject_new\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam from Goldman has two children.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"employee\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has_number_of_children\",\n          \"object\": \"two\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No entity conflict; contradiction is about a factual attribute (number of children), not identity.\"\n  },\n  \"conflict_classification\": \"direct_contradiction\",\n  \"answer\": \"The existing memory stating that Sam from Goldman has two children is retained. The new claim that Sam has no children contradicts this and is rejected due to lack of supporting evidence and higher confidence in the existing memory.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Request clarification or additional evidence regarding Sam's children\",\n    \"Mark the contradiction for human review\",\n    \"Temporarily suspend both claims pending verification\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Contradiction detected: existing memory (two children) vs. new claim (no children).\",\n      \"Existing memory retained due to higher confidence and lack of evidence to override it.\",\n      \"No entity resolution needed; conflict is purely factual.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

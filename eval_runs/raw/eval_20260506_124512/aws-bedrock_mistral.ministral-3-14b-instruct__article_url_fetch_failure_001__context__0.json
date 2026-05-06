@@ -1,0 +1,68 @@
+{
+  "error": null,
+  "fixture_id": "article_url_fetch_failure_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "No durable memory created. Article ingestion aborted due to unrecoverable fetch failure.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "abort",
+    "entity_resolution": {
+      "action": "none",
+      "reason": "No resolvable entities exist beyond the failed fetch event."
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "target_resource",
+            "type": "URL"
+          },
+          {
+            "name": "404 network error",
+            "role": "failure_condition",
+            "type": "error_code"
+          }
+        ],
+        "kind": "system_event",
+        "relationships": [
+          {
+            "object": "https://example.com/missing",
+            "predicate": "attempted_to_fetch",
+            "subject": "memory_system"
+          },
+          {
+            "object": "404 network error",
+            "predicate": "resulted_in",
+            "subject": "fetch_attempt"
+          },
+          {
+            "object": "article_content",
+            "predicate": "prevented_ingestion_of",
+            "subject": "404 network error"
+          }
+        ],
+        "statement": "Failed to fetch article at URL 'https://example.com/missing' due to 404 network error. No content ingested."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "URL fetch failed with HTTP 404.",
+        "No content ingested; no memory cards created.",
+        "Ambiguity preserved: no superseded/deleted facts introduced."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Verify URL correctness and retry fetch.",
+      "Check network connectivity or proxy settings.",
+      "Confirm article exists at the provided location."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_ingestion\",\n  \"decision\": \"abort\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"system_event\",\n      \"statement\": \"Failed to fetch article at URL 'https://example.com/missing' due to 404 network error. No content ingested.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"https://example.com/missing\",\n          \"type\": \"URL\",\n          \"role\": \"target_resource\"\n        },\n        {\n          \"name\": \"404 network error\",\n          \"type\": \"error_code\",\n          \"role\": \"failure_condition\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"memory_system\",\n          \"predicate\": \"attempted_to_fetch\",\n          \"object\": \"https://example.com/missing\"\n        },\n        {\n          \"subject\": \"fetch_attempt\",\n          \"predicate\": \"resulted_in\",\n          \"object\": \"404 network error\"\n        },\n        {\n          \"subject\": \"404 network error\",\n          \"predicate\": \"prevented_ingestion_of\",\n          \"object\": \"article_content\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"reason\": \"No resolvable entities exist beyond the failed fetch event.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"No durable memory created. Article ingestion aborted due to unrecoverable fetch failure.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Verify URL correctness and retry fetch.\",\n    \"Check network connectivity or proxy settings.\",\n    \"Confirm article exists at the provided location.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"URL fetch failed with HTTP 404.\",\n      \"No content ingested; no memory cards created.\",\n      \"Ambiguity preserved: no superseded/deleted facts introduced.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

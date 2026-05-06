@@ -1,0 +1,46 @@
+{
+  "error": null,
+  "fixture_id": "unresolved_pronoun_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The statement contains an ambiguous pronoun ('the other one') with no clear referent. Clarification is required before processing.",
+    "conflict_classification": "unresolved_reference",
+    "entity_resolution": {
+      "action": "flag_for_resolution",
+      "entity_id": null,
+      "reason": "Ambiguous pronoun ('other one') lacks clear antecedent in context. Requires disambiguation before durable memory commitment."
+    },
+    "intent": "clarify_reference",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "other_one",
+            "role": "unresolved_reference",
+            "type": "pronoun"
+          }
+        ],
+        "kind": "contextual_ambiguity",
+        "relationships": [
+          {
+            "object": "other_one",
+            "predicate": "prefers",
+            "subject": "user"
+          }
+        ],
+        "statement": "The user prefers the other one, but the antecedent ('one') is unresolved."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Pronoun resolution failed due to ambiguity.",
+        "No durable memory committed pending disambiguation."
+      ],
+      "success": false
+    }
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"clarify_reference\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"contextual_ambiguity\",\n      \"statement\": \"The user prefers the other one, but the antecedent ('one') is unresolved.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"other_one\",\n          \"type\": \"pronoun\",\n          \"role\": \"unresolved_reference\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"user\",\n          \"predicate\": \"prefers\",\n          \"object\": \"other_one\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"flag_for_resolution\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguous pronoun ('other one') lacks clear antecedent in context. Requires disambiguation before durable memory commitment.\"\n  },\n  \"conflict_classification\": \"unresolved_reference\",\n  \"answer\": \"The statement contains an ambiguous pronoun ('the other one') with no clear referent. Clarification is required before processing.\",\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Pronoun resolution failed due to ambiguity.\",\n      \"No durable memory committed pending disambiguation.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

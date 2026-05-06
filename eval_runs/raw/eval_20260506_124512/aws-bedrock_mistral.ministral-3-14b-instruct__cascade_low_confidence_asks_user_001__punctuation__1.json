@@ -1,0 +1,68 @@
+{
+  "error": null,
+  "fixture_id": "cascade_low_confidence_asks_user_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The system cannot process this note due to low confidence in its interpretation. Please clarify the content or context of the 'Sam note' to enable further action.",
+    "citations": [],
+    "conflict_classification": "ambiguity_conflict",
+    "decision": "escalate_to_user_for_resolution",
+    "entity_resolution": {
+      "action": "await_user_input",
+      "reason": "Ambiguity in 'Sam note' content requires human judgment to resolve. Model cannot infer intent or context without user clarification."
+    },
+    "intent": "clarify_ambiguous_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject_of_note",
+            "type": "person"
+          },
+          {
+            "name": "Cloud escalation",
+            "role": "disabled_state",
+            "type": "system_action"
+          },
+          {
+            "name": "model confidence",
+            "role": "low_value",
+            "type": "metric"
+          }
+        ],
+        "kind": "note",
+        "relationships": [
+          {
+            "object": "ambiguous_note",
+            "predicate": "is_disabled_for",
+            "subject": "Cloud escalation"
+          },
+          {
+            "object": "Sam_note",
+            "predicate": "is_low_for",
+            "subject": "model confidence"
+          }
+        ],
+        "statement": "Cloud escalation disabled and model confidence low for ambiguous Sam note"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguous note escalated to user for resolution.",
+        "No durable memory committed due to unresolved ambiguity."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide explicit context for the 'Sam note' (e.g., topic, purpose, or key details).",
+      "Specify whether 'Sam' refers to a person, project, or other entity.",
+      "Confirm if the note is actionable or informational.",
+      "Delete or revise the note if it is no longer relevant."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"clarify_ambiguous_memory\",\n  \"decision\": \"escalate_to_user_for_resolution\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"note\",\n      \"statement\": \"Cloud escalation disabled and model confidence low for ambiguous Sam note\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject_of_note\"\n        },\n        {\n          \"name\": \"Cloud escalation\",\n          \"type\": \"system_action\",\n          \"role\": \"disabled_state\"\n        },\n        {\n          \"name\": \"model confidence\",\n          \"type\": \"metric\",\n          \"role\": \"low_value\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cloud escalation\",\n          \"predicate\": \"is_disabled_for\",\n          \"object\": \"ambiguous_note\"\n        },\n        {\n          \"subject\": \"model confidence\",\n          \"predicate\": \"is_low_for\",\n          \"object\": \"Sam_note\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"await_user_input\",\n    \"reason\": \"Ambiguity in 'Sam note' content requires human judgment to resolve. Model cannot infer intent or context without user clarification.\"\n  },\n  \"conflict_classification\": \"ambiguity_conflict\",\n  \"answer\": \"The system cannot process this note due to low confidence in its interpretation. Please clarify the content or context of the 'Sam note' to enable further action.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Provide explicit context for the 'Sam note' (e.g., topic, purpose, or key details).\",\n    \"Specify whether 'Sam' refers to a person, project, or other entity.\",\n    \"Confirm if the note is actionable or informational.\",\n    \"Delete or revise the note if it is no longer relevant.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Ambiguous note escalated to user for resolution.\",\n      \"No durable memory committed due to unresolved ambiguity.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

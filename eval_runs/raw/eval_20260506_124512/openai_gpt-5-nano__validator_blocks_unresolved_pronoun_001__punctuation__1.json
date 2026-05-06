@@ -1,0 +1,63 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_unresolved_pronoun_001__punctuation",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Cannot resolve referent for 'He' with current data; memory entry remains ambiguous and may require clarification or additional context.",
+    "citations": [],
+    "conflict_classification": "unresolved_pronoun",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Ambiguity: pronoun 'He' lacks explicit referent in the given memory card; cannot resolve to a specific individual without additional context."
+    },
+    "intent": "evaluate_memory_card",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "He",
+            "role": "subject",
+            "type": "pronoun"
+          },
+          {
+            "name": "the other one",
+            "role": "preference_target",
+            "type": "concept"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "He"
+          },
+          {
+            "object": "the other one",
+            "predicate": "has_preference_target",
+            "subject": "He"
+          }
+        ],
+        "statement": "He prefers the other one"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card recorded as-is but marked unresolved due to pronoun ambiguity.",
+        "No deduction of current truth; preserves ambiguity per requirement."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add explicit identity for 'He' (e.g., 'John' or 'the first speaker')",
+      "Provide a non-pronoun substitute (e.g., 'the person') in the statement",
+      "Attach additional contextual memory indicating which entity 'the other one' refers to"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"evaluate_memory_card\",\n  \"decision\": \"reject\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"He prefers the other one\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"He\",\n          \"type\": \"pronoun\",\n          \"role\": \"subject\"\n        }\n        ,\n        {\n          \"name\": \"the other one\",\n          \"type\": \"concept\",\n          \"role\": \"preference_target\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"He\",\n          \"predicate\": \"prefers\",\n          \"object\": \"the other one\"\n        }\n        ,\n        {\n          \"subject\": \"He\",\n          \"predicate\": \"has_preference_target\",\n          \"object\": \"the other one\"\n        }\n        ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguity: pronoun 'He' lacks explicit referent in the given memory card; cannot resolve to a specific individual without additional context.\"\n  },\n  \"conflict_classification\": \"unresolved_pronoun\",\n  \"answer\": \"Cannot resolve referent for 'He' with current data; memory entry remains ambiguous and may require clarification or additional context.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Add explicit identity for 'He' (e.g., 'John' or 'the first speaker')\",\n    \"Provide a non-pronoun substitute (e.g., 'the person') in the statement\",\n    \"Attach additional contextual memory indicating which entity 'the other one' refers to\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card recorded as-is but marked unresolved due to pronoun ambiguity.\",\n      \"No deduction of current truth; preserves ambiguity per requirement.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

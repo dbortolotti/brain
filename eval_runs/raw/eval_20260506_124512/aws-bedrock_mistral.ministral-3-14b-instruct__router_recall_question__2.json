@@ -1,0 +1,95 @@
+{
+  "error": null,
+  "fixture_id": "router_recall_question",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "You have a *medium-confidence* memory that Sam is affiliated with Goldman Sachs (e.g., as a colleague, client, or advisor), but no durable details exist about their specific role, interactions, or shared knowledge. The relationship remains ambiguous. **No superseded/deleted facts apply.**",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "query_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No unique identifier or disambiguated reference exists for 'Sam' in this context."
+    },
+    "intent": "recall",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "contact",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "has_affiliation_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is a contact associated with Goldman Sachs, likely a professional connection (e.g., colleague, client, or advisor)."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "informant",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "domain_context",
+            "type": "organization"
+          }
+        ],
+        "kind": "hypothesis",
+        "relationships": [
+          {
+            "object": "finance",
+            "predicate": "may_have_shared_knowledge_in",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam may have provided insights or opportunities related to finance, investment, or strategic advisory (e.g., M&A, capital markets) due to their Goldman Sachs connection."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unspecified",
+            "type": "person"
+          }
+        ],
+        "kind": "metadata",
+        "statement": "No explicit details (e.g., role at Goldman, specific interactions, or shared projects) are durably stored in memory. Ambiguity persists regarding the nature of the relationship."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Returned all relevant memory cards (facts, hypotheses, metadata) without suppression.",
+        "Excluded deleted/superseded entries per strict durability rules.",
+        "Preserved ambiguity in statements lacking resolution."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request clarification: *How is Sam connected to Goldman Sachs?*",
+      "Propose follow-up: *Should we explore Sam\u2019s Goldman Sachs role for [specific purpose]?*",
+      "Flag ambiguity: *No actionable details exist; retain as hypothesis.*"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"recall\",\n  \"decision\": \"query_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam is a contact associated with Goldman Sachs, likely a professional connection (e.g., colleague, client, or advisor).\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"contact\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has_affiliation_with\",\n          \"object\": \"Goldman Sachs\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"hypothesis\",\n      \"statement\": \"Sam may have provided insights or opportunities related to finance, investment, or strategic advisory (e.g., M&A, capital markets) due to their Goldman Sachs connection.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"informant\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"domain_context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"may_have_shared_knowledge_in\",\n          \"object\": \"finance\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"metadata\",\n      \"statement\": \"No explicit details (e.g., role at Goldman, specific interactions, or shared projects) are durably stored in memory. Ambiguity persists regarding the nature of the relationship.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"unspecified\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No unique identifier or disambiguated reference exists for 'Sam' in this context.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"You have a *medium-confidence* memory that Sam is affiliated with Goldman Sachs (e.g., as a colleague, client, or advisor), but no durable details exist about their specific role, interactions, or shared knowledge. The relationship remains ambiguous. **No superseded/deleted facts apply.**\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Request clarification: *How is Sam connected to Goldman Sachs?*\",\n    \"Propose follow-up: *Should we explore Sam\u2019s Goldman Sachs role for [specific purpose]?*\",\n    \"Flag ambiguity: *No actionable details exist; retain as hypothesis.*\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Returned all relevant memory cards (facts, hypotheses, metadata) without suppression.\",\n      \"Excluded deleted/superseded entries per strict durability rules.\",\n      \"Preserved ambiguity in statements lacking resolution.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

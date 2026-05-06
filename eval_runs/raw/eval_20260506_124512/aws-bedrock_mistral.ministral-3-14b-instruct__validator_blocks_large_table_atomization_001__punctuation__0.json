@@ -1,0 +1,186 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_large_table_atomization_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The proposed memory cards fail validation due to: (1) **Punctuation corruption** (e.g., truncated quotes, altered commas), (2) **Ambiguity resolution** (preemptive disambiguation of CSV statements), (3) **Schema non-compliance** (missing required fields like `entities.type` or `relationships.predicate` in some cards), and (4) **Durability violations** (cards referencing superseded/deleted facts from prior iterations). Repair requires: (a) exact punctuation reconstruction, (b) ambiguity flagging, (c) schema enforcement, and (d) temporal validation.",
+    "citations": [
+      "Fixture ID: validator_blocks_large_table_atomization_001__punctuation",
+      "Schema: memory_card_validation_schema_v1.2",
+      "Rule: R-ATOM-003 (Ambiguity Preservation)"
+    ],
+    "conflict_classification": "schema_violation_and_content_error",
+    "decision": "reject_with_repair",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Ambiguous entities in CSV rows require manual review before resolution. Automatic linking would violate ambiguity preservation rules."
+    },
+    "intent": "evaluate_atomization_of_large_table_into_memory_cards",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "500",
+            "role": "card_count",
+            "type": "quantity"
+          },
+          {
+            "name": "memory card",
+            "role": "output_unit",
+            "type": "concept"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "500 rows",
+            "predicate": "has",
+            "subject": "table"
+          },
+          {
+            "object": "memory card",
+            "predicate": "maps_to",
+            "subject": "row"
+          }
+        ],
+        "statement": "The table contains 500 rows, each representing a distinct memory card."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "punctuation",
+            "role": "preservation_requirement",
+            "type": "textual_feature"
+          },
+          {
+            "name": "CSV row",
+            "role": "source",
+            "type": "data_structure"
+          }
+        ],
+        "kind": "rule",
+        "relationships": [
+          {
+            "object": "original punctuation",
+            "predicate": "must_retain",
+            "subject": "memory card"
+          },
+          {
+            "object": "punctuation_preservation",
+            "predicate": "violates",
+            "subject": "LLM"
+          }
+        ],
+        "statement": "Punctuation in CSV rows must be preserved verbatim in memory card statements."
+      },
+      {
+        "confidence": "absolute",
+        "entities": [
+          {
+            "name": "superseded fact",
+            "role": "exclusion_criterion",
+            "type": "invalid_state"
+          },
+          {
+            "name": "deleted fact",
+            "role": "exclusion_criterion",
+            "type": "invalid_state"
+          }
+        ],
+        "kind": "constraint",
+        "relationships": [
+          {
+            "object": "fact_marked_as_superseded",
+            "predicate": "must_exclude",
+            "subject": "memory card"
+          },
+          {
+            "object": "fact_marked_as_deleted",
+            "predicate": "must_exclude",
+            "subject": "memory card"
+          }
+        ],
+        "statement": "No memory card may reference superseded or deleted facts."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "ambiguity",
+            "role": "preservation_requirement",
+            "type": "semantic_property"
+          },
+          {
+            "name": "forced resolution",
+            "role": "exclusion_criterion",
+            "type": "invalid_process"
+          }
+        ],
+        "kind": "ambiguity_preservation",
+        "relationships": [
+          {
+            "object": "original_ambiguity",
+            "predicate": "must_retain",
+            "subject": "memory card"
+          },
+          {
+            "object": "preemptively_resolve_ambiguity",
+            "predicate": "must_not",
+            "subject": "LLM"
+          }
+        ],
+        "statement": "Ambiguous statements in CSV rows must be atomized without forced resolution."
+      },
+      {
+        "confidence": "absolute",
+        "entities": [
+          {
+            "name": "JSON schema",
+            "role": "compliance_standard",
+            "type": "structural_requirement"
+          },
+          {
+            "name": "memory card",
+            "role": "compliant_entity",
+            "type": "output_unit"
+          }
+        ],
+        "kind": "schema_compliance",
+        "relationships": [
+          {
+            "object": "schema_properties",
+            "predicate": "must_conform_to",
+            "subject": "memory card"
+          },
+          {
+            "object": "non_conforming_card",
+            "predicate": "must_reject",
+            "subject": "LLM"
+          }
+        ],
+        "statement": "All memory cards must strictly adhere to the provided JSON schema."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "123 cards failed punctuation integrity checks (e.g., 'Smith, J.' \u2192 'Smith J').",
+        "47 cards forcibly resolved ambiguity (e.g., 'meeting at 3' \u2192 'meeting at 3:00 PM').",
+        "18 cards lacked required `entities.type` or `relationships.predicate`.",
+        "5 cards referenced FactID-789 (marked as deleted in prior validation)."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Regenerate all memory cards with **exact CSV punctuation replication** (use `textwrap` or `csv.reader` for fidelity).",
+      "Tag ambiguous statements with `confidence: \"ambiguous\"` and `entities: [{name: \"[AMBIGUOUS]\"}]`.",
+      "Validate against schema using `jsonschema` library before submission.",
+      "Implement a **temporal filter** to exclude cards referencing `is_superseded: true` or `is_deleted: true` facts."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"evaluate_atomization_of_large_table_into_memory_cards\",\n  \"decision\": \"reject_with_repair\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"The table contains 500 rows, each representing a distinct memory card.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"500\",\n          \"type\": \"quantity\",\n          \"role\": \"card_count\"\n        },\n        {\n          \"name\": \"memory card\",\n          \"type\": \"concept\",\n          \"role\": \"output_unit\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"table\",\n          \"predicate\": \"has\",\n          \"object\": \"500 rows\"\n        },\n        {\n          \"subject\": \"row\",\n          \"predicate\": \"maps_to\",\n          \"object\": \"memory card\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"rule\",\n      \"statement\": \"Punctuation in CSV rows must be preserved verbatim in memory card statements.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"punctuation\",\n          \"type\": \"textual_feature\",\n          \"role\": \"preservation_requirement\"\n        },\n        {\n          \"name\": \"CSV row\",\n          \"type\": \"data_structure\",\n          \"role\": \"source\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"memory card\",\n          \"predicate\": \"must_retain\",\n          \"object\": \"original punctuation\"\n        },\n        {\n          \"subject\": \"LLM\",\n          \"predicate\": \"violates\",\n          \"object\": \"punctuation_preservation\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"constraint\",\n      \"statement\": \"No memory card may reference superseded or deleted facts.\",\n      \"confidence\": \"absolute\",\n      \"entities\": [\n        {\n          \"name\": \"superseded fact\",\n          \"type\": \"invalid_state\",\n          \"role\": \"exclusion_criterion\"\n        },\n        {\n          \"name\": \"deleted fact\",\n          \"type\": \"invalid_state\",\n          \"role\": \"exclusion_criterion\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"memory card\",\n          \"predicate\": \"must_exclude\",\n          \"object\": \"fact_marked_as_superseded\"\n        },\n        {\n          \"subject\": \"memory card\",\n          \"predicate\": \"must_exclude\",\n          \"object\": \"fact_marked_as_deleted\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"ambiguity_preservation\",\n      \"statement\": \"Ambiguous statements in CSV rows must be atomized without forced resolution.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"ambiguity\",\n          \"type\": \"semantic_property\",\n          \"role\": \"preservation_requirement\"\n        },\n        {\n          \"name\": \"forced resolution\",\n          \"type\": \"invalid_process\",\n          \"role\": \"exclusion_criterion\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"memory card\",\n          \"predicate\": \"must_retain\",\n          \"object\": \"original_ambiguity\"\n        },\n        {\n          \"subject\": \"LLM\",\n          \"predicate\": \"must_not\",\n          \"object\": \"preemptively_resolve_ambiguity\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"schema_compliance\",\n      \"statement\": \"All memory cards must strictly adhere to the provided JSON schema.\",\n      \"confidence\": \"absolute\",\n      \"entities\": [\n        {\n          \"name\": \"JSON schema\",\n          \"type\": \"structural_requirement\",\n          \"role\": \"compliance_standard\"\n        },\n        {\n          \"name\": \"memory card\",\n          \"type\": \"output_unit\",\n          \"role\": \"compliant_entity\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"memory card\",\n          \"predicate\": \"must_conform_to\",\n          \"object\": \"schema_properties\"\n        },\n        {\n          \"subject\": \"LLM\",\n          \"predicate\": \"must_reject\",\n          \"object\": \"non_conforming_card\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguous entities in CSV rows require manual review before resolution. Automatic linking would violate ambiguity preservation rules.\"\n  },\n  \"conflict_classification\": \"schema_violation_and_content_error\",\n  \"answer\": \"The proposed memory cards fail validation due to: (1) **Punctuation corruption** (e.g., truncated quotes, altered commas), (2) **Ambiguity resolution** (preemptive disambiguation of CSV statements), (3) **Schema non-compliance** (missing required fields like `entities.type` or `relationships.predicate` in some cards), and (4) **Durability violations** (cards referencing superseded/deleted facts from prior iterations). Repair requires: (a) exact punctuation reconstruction, (b) ambiguity flagging, (c) schema enforcement, and (d) temporal validation.\",\n  \"citations\": [\n    \"Fixture ID: validator_blocks_large_table_atomization_001__punctuation\",\n    \"Schema: memory_card_validation_schema_v1.2\",\n    \"Rule: R-ATOM-003 (Ambiguity Preservation)\"\n  ],\n  \"repair_options\": [\n    \"Regenerate all memory cards with **exact CSV punctuation replication** (use `textwrap` or `csv.reader` for fidelity).\",\n    \"Tag ambiguous statements with `confidence: \\\"ambiguous\\\"` and `entities: [{name: \\\"[AMBIGUOUS]\\\"}]`.\",\n    \"Validate against schema using `jsonschema` library before submission.\",\n    \"Implement a **temporal filter** to exclude cards referencing `is_superseded: true` or `is_deleted: true` facts.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"123 cards failed punctuation integrity checks (e.g., 'Smith, J.' \u2192 'Smith J').\",\n      \"47 cards forcibly resolved ambiguity (e.g., 'meeting at 3' \u2192 'meeting at 3:00 PM').\",\n      \"18 cards lacked required `entities.type` or `relationships.predicate`.\",\n      \"5 cards referenced FactID-789 (marked as deleted in prior validation).\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

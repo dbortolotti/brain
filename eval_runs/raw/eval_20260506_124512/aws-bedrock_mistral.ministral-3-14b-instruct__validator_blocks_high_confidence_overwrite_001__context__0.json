@@ -1,0 +1,84 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_high_confidence_overwrite_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Reject the proposed fact. The existing memory ('Sara is Daniele's daughter') is high-confidence and lacks superseding evidence. Preserve the original relationship to avoid introducing false or ambiguous information.",
+    "citations": [
+      "No external sources provided; decision based on internal memory consistency rules."
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "preserve_existing",
+      "entity_id": "Sara_Daniele_parent_child",
+      "reason": "The proposed relationship (niece) contradicts the high-confidence existing relationship (daughter). No contextual evidence supports the overwrite, and ambiguity in family structures (e.g., step-relationships) cannot be resolved without additional verification."
+    },
+    "intent": "overwrite_existing_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_daughter_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "niece",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "uncle",
+            "type": "person"
+          }
+        ],
+        "kind": "proposed_fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Overwrite blocked due to high-confidence existing memory.",
+        "Proposed fact discarded to prevent durable inconsistency."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Verify with Sara/Daniele for clarification on the relationship.",
+      "Add a low-confidence 'alternative_relationship' card if ambiguity is intentional (e.g., step-family).",
+      "Flag for human review if context suggests a possible error in the original memory."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"overwrite_existing_memory\",\n  \"decision\": \"reject\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is Daniele's daughter.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"daughter\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"parent\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is_daughter_of\",\n          \"object\": \"Daniele\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"proposed_fact\",\n      \"statement\": \"Sara is Daniele's niece.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"niece\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"uncle\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is_niece_of\",\n          \"object\": \"Daniele\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"preserve_existing\",\n    \"entity_id\": \"Sara_Daniele_parent_child\",\n    \"reason\": \"The proposed relationship (niece) contradicts the high-confidence existing relationship (daughter). No contextual evidence supports the overwrite, and ambiguity in family structures (e.g., step-relationships) cannot be resolved without additional verification.\"\n  },\n  \"conflict_classification\": \"direct_contradiction\",\n  \"answer\": \"Reject the proposed fact. The existing memory ('Sara is Daniele's daughter') is high-confidence and lacks superseding evidence. Preserve the original relationship to avoid introducing false or ambiguous information.\",\n  \"citations\": [\n    \"No external sources provided; decision based on internal memory consistency rules.\"\n  ],\n  \"repair_options\": [\n    \"Verify with Sara/Daniele for clarification on the relationship.\",\n    \"Add a low-confidence 'alternative_relationship' card if ambiguity is intentional (e.g., step-family).\",\n    \"Flag for human review if context suggests a possible error in the original memory.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Overwrite blocked due to high-confidence existing memory.\",\n      \"Proposed fact discarded to prevent durable inconsistency.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

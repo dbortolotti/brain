@@ -1,0 +1,52 @@
+{
+  "error": null,
+  "fixture_id": "slack_rewrite_modal_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Saved a rewritten memory: He prefers the other one (kept ambiguous as written).",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "rewrite_memory",
+    "entity_resolution": {
+      "action": "create_or_update_ambiguous_entity",
+      "entity_id": null,
+      "reason": "Subject ('He') and preference target ('the other one') are not uniquely identifiable from the provided context."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "He",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "He"
+          }
+        ],
+        "statement": "He prefers the other one."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "User selected 'Rewrite memory' and provided the text to store.",
+        "Stored the preference statement with low confidence due to ambiguity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify who 'He' is (name/identifier).",
+      "Clarify what 'the other one' refers to (specific item/person/option)."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"slack_intake\",\n  \"decision\": \"rewrite_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"He prefers the other one.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"He\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"He\",\n          \"predicate\": \"prefers\",\n          \"object\": \"the other one\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_or_update_ambiguous_entity\",\n    \"entity_id\": null,\n    \"reason\": \"Subject ('He') and preference target ('the other one') are not uniquely identifiable from the provided context.\"\n  },\n  \"conflict_classification\": \"none_detected\",\n  \"answer\": \"Saved a rewritten memory: He prefers the other one (kept ambiguous as written).\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Clarify who 'He' is (name/identifier).\",\n    \"Clarify what 'the other one' refers to (specific item/person/option).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"User selected 'Rewrite memory' and provided the text to store.\",\n      \"Stored the preference statement with low confidence due to ambiguity.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

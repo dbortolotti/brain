@@ -1,0 +1,65 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_place_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Likely the existing Brutto restaurant in London, but the note is not explicit enough to commit with high confidence.",
+    "citations": [
+      "Existing: Brutto restaurant in London",
+      "New note: Brutto was better than expected"
+    ],
+    "conflict_classification": "ambiguous_reference",
+    "decision": "attach_to_existing_entity_with_low_confidence",
+    "entity_resolution": {
+      "action": "link_to_existing_entity",
+      "entity_id": null,
+      "reason": "The note appears to refer to Brutto, and the existing entity is Brutto restaurant in London. However, the note does not explicitly confirm the restaurant or location, so the linkage is plausible but not certain."
+    },
+    "intent": "entity_resolution",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Brutto",
+            "role": "subject",
+            "type": "restaurant"
+          },
+          {
+            "name": "London",
+            "role": "associated_location",
+            "type": "location"
+          }
+        ],
+        "kind": "opinion",
+        "relationships": [
+          {
+            "object": "London",
+            "predicate": "located_in",
+            "subject": "Brutto"
+          },
+          {
+            "object": "Brutto",
+            "predicate": "evaluated",
+            "subject": "speaker"
+          }
+        ],
+        "statement": "Brutto was better than expected."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored a low-confidence opinion note.",
+        "Kept entity linkage tentative due ambiguity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If Brutto refers to a different entity, clarify which Brutto this note is about.",
+      "If the note is meant as a general opinion, keep it linked only tentatively to the London restaurant."
+    ]
+  },
+  "raw_text": "{\"intent\":\"entity_resolution\",\"decision\":\"attach_to_existing_entity_with_low_confidence\",\"memory_cards\":[{\"kind\":\"opinion\",\"statement\":\"Brutto was better than expected.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Brutto\",\"type\":\"restaurant\",\"role\":\"subject\"},{\"name\":\"London\",\"type\":\"location\",\"role\":\"associated_location\"}],\"relationships\":[{\"subject\":\"Brutto\",\"predicate\":\"located_in\",\"object\":\"London\"},{\"subject\":\"speaker\",\"predicate\":\"evaluated\",\"object\":\"Brutto\"}]}],\"entity_resolution\":{\"action\":\"link_to_existing_entity\",\"entity_id\":null,\"reason\":\"The note appears to refer to Brutto, and the existing entity is Brutto restaurant in London. However, the note does not explicitly confirm the restaurant or location, so the linkage is plausible but not certain.\"},\"conflict_classification\":\"ambiguous_reference\",\"answer\":\"Likely the existing Brutto restaurant in London, but the note is not explicit enough to commit with high confidence.\",\"citations\":[\"Existing: Brutto restaurant in London\",\"New note: Brutto was better than expected\"],\"repair_options\":[\"If Brutto refers to a different entity, clarify which Brutto this note is about.\",\"If the note is meant as a general opinion, keep it linked only tentatively to the London restaurant.\"],\"receipt\":{\"success\":true,\"details\":[\"Stored a low-confidence opinion note.\",\"Kept entity linkage tentative due ambiguity.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

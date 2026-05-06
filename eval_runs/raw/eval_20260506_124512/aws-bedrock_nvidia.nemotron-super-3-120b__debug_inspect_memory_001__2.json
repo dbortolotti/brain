@@ -1,0 +1,67 @@
+{
+  "error": null,
+  "fixture_id": "debug_inspect_memory_001",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Memory mem_123 contains a user preference for dark mode in the Brain interface.",
+    "citations": [
+      "mem_123"
+    ],
+    "conflict_classification": "none",
+    "decision": "inspect_memory",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": "mem_123",
+      "reason": "Memory ID matched exactly in storage index; no ambiguity detected."
+    },
+    "intent": "debug_explainer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "mem_123",
+            "role": "target",
+            "type": "memory_id"
+          },
+          {
+            "name": "dark mode",
+            "role": "value",
+            "type": "preference"
+          },
+          {
+            "name": "Brain interface",
+            "role": "context",
+            "type": "system_component"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "user preference for dark mode",
+            "predicate": "stores",
+            "subject": "mem_123"
+          },
+          {
+            "object": "Brain interface",
+            "predicate": "applies_to",
+            "subject": "user preference for dark mode"
+          }
+        ],
+        "statement": "Memory mem_123 contains a user preference for dark mode in the Brain interface."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory mem_123 inspected successfully.",
+        "No superseded or deleted facts were present.",
+        "Entity resolution confirmed mem_123 as active and unambiguous."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"debug_explainer\",\n  \"decision\": \"inspect_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Memory mem_123 contains a user preference for dark mode in the Brain interface.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"mem_123\",\n          \"type\": \"memory_id\",\n          \"role\": \"target\"\n        },\n        {\n          \"name\": \"dark mode\",\n          \"type\": \"preference\",\n          \"role\": \"value\"\n        },\n        {\n          \"name\": \"Brain interface\",\n          \"type\": \"system_component\",\n          \"role\": \"context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"mem_123\",\n          \"predicate\": \"stores\",\n          \"object\": \"user preference for dark mode\"\n        },\n        {\n          \"subject\": \"user preference for dark mode\",\n          \"predicate\": \"applies_to\",\n          \"object\": \"Brain interface\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolved\",\n    \"entity_id\": \"mem_123\",\n    \"reason\": \"Memory ID matched exactly in storage index; no ambiguity detected.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Memory mem_123 contains a user preference for dark mode in the Brain interface.\",\n  \"citations\": [\n    \"mem_123\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory mem_123 inspected successfully.\",\n      \"No superseded or deleted facts were present.\",\n      \"Entity resolution confirmed mem_123 as active and unambiguous.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

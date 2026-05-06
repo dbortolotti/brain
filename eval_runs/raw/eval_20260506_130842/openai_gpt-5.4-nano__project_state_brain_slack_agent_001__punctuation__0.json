@@ -1,0 +1,66 @@
+{
+  "error": null,
+  "fixture_id": "project_state_brain_slack_agent_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Committed preference: Slack is primary for guardrailed memory ingestion; Telegram may be added later.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No existing entity IDs or conflicting aliases were provided; statement is self-contained."
+    },
+    "intent": "Compile durable memory from provided project state statement.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "primary_memory_ingestion_interface",
+            "type": "channel_or_platform"
+          },
+          {
+            "name": "Telegram",
+            "role": "secondary_optional_integration",
+            "type": "channel_or_platform"
+          },
+          {
+            "name": "memory ingestion interface",
+            "role": "scope",
+            "type": "system_component"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "primary guardrailed memory ingestion interface",
+            "predicate": "should_be",
+            "subject": "Slack"
+          },
+          {
+            "object": "later",
+            "predicate": "should_be_considered",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "Slack should be the primary guardrailed memory ingestion interface; Telegram can come later."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable preference recorded from fixture statement.",
+        "No contradictions present in provided input."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If guardrails differ by platform, specify the guardrail requirements and operational boundaries per interface."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Compile durable memory from provided project state statement.\",\n  \"decision\": \"commit\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Slack should be the primary guardrailed memory ingestion interface; Telegram can come later.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Slack\",\n          \"type\": \"channel_or_platform\",\n          \"role\": \"primary_memory_ingestion_interface\"\n        },\n        {\n          \"name\": \"Telegram\",\n          \"type\": \"channel_or_platform\",\n          \"role\": \"secondary_optional_integration\"\n        },\n        {\n          \"name\": \"memory ingestion interface\",\n          \"type\": \"system_component\",\n          \"role\": \"scope\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Slack\",\n          \"predicate\": \"should_be\",\n          \"object\": \"primary guardrailed memory ingestion interface\"\n        },\n        {\n          \"subject\": \"Telegram\",\n          \"predicate\": \"should_be_considered\",\n          \"object\": \"later\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entity IDs or conflicting aliases were provided; statement is self-contained.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Committed preference: Slack is primary for guardrailed memory ingestion; Telegram may be added later.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If guardrails differ by platform, specify the guardrail requirements and operational boundaries per interface.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Durable preference recorded from fixture statement.\",\n      \"No contradictions present in provided input.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

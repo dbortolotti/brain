@@ -1,0 +1,60 @@
+{
+  "error": null,
+  "fixture_id": "personal_routine_morning_reading_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Got it\u2014I'll remember that you usually read technical papers in the morning before checking email.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No specific entity IDs provided; store as a general preference."
+    },
+    "intent": "personal_memory_update",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "morning",
+            "role": "when",
+            "type": "time"
+          },
+          {
+            "name": "technical papers",
+            "role": "what",
+            "type": "content"
+          },
+          {
+            "name": "checking email",
+            "role": "before_which",
+            "type": "activity"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "checking email",
+            "predicate": "is_preferred_before",
+            "subject": "reading technical papers"
+          }
+        ],
+        "statement": "You usually prefer to read technical papers in the morning before checking email."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored a morning-first reading-before-email preference."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm whether this is a consistent habit or a preference that sometimes changes."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"personal_memory_update\",\n  \"decision\": \"store\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"You usually prefer to read technical papers in the morning before checking email.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"morning\",\n          \"type\": \"time\",\n          \"role\": \"when\"\n        },\n        {\n          \"name\": \"technical papers\",\n          \"type\": \"content\",\n          \"role\": \"what\"\n        },\n        {\n          \"name\": \"checking email\",\n          \"type\": \"activity\",\n          \"role\": \"before_which\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"reading technical papers\",\n          \"predicate\": \"is_preferred_before\",\n          \"object\": \"checking email\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No specific entity IDs provided; store as a general preference.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Got it\u2014I'll remember that you usually read technical papers in the morning before checking email.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Confirm whether this is a consistent habit or a preference that sometimes changes.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Stored a morning-first reading-before-email preference.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

@@ -1,0 +1,83 @@
+{
+  "error": null,
+  "fixture_id": "email_source_meeting_followup_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Committed Sam's new employer (Point72) and his request for the AI infra article.",
+    "citations": [
+      "From: sam@example.com Subject: Follow up. Great seeing you. Yes, I joined Point72 last month. Please send the AI infra article."
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "The sender is identified only as Sam; no existing entity identifier is available from the input."
+    },
+    "intent": "Extract durable memory from follow-up email: Sam joined Point72 last month and requested the AI infra article.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "sender",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "new employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "person_update",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said he joined Point72 last month."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "requester",
+            "type": "person"
+          },
+          {
+            "name": "AI infra article",
+            "role": "requested item",
+            "type": "document"
+          }
+        ],
+        "kind": "request",
+        "relationships": [
+          {
+            "object": "AI infra article",
+            "predicate": "requested",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam asked to be sent the AI infra article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured employer change for Sam as reported in the email.",
+        "Captured request to send the AI infra article."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If there is already a Sam contact record, link this update to that existing entity.",
+      "If the AI infra article is later identified by title or URL, replace the generic requested-item card with the specific document."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Extract durable memory from follow-up email: Sam joined Point72 last month and requested the AI infra article.\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"person_update\",\"statement\":\"Sam said he joined Point72 last month.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"sender\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"new employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]},{\"kind\":\"request\",\"statement\":\"Sam asked to be sent the AI infra article.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"requester\"},{\"name\":\"AI infra article\",\"type\":\"document\",\"role\":\"requested item\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"requested\",\"object\":\"AI infra article\"}]}],\"entity_resolution\":{\"action\":\"create_or_update\",\"entity_id\":null,\"reason\":\"The sender is identified only as Sam; no existing entity identifier is available from the input.\"},\"conflict_classification\":\"none\",\"answer\":\"Committed Sam's new employer (Point72) and his request for the AI infra article.\",\"citations\":[\"From: sam@example.com Subject: Follow up. Great seeing you. Yes, I joined Point72 last month. Please send the AI infra article.\"],\"repair_options\":[\"If there is already a Sam contact record, link this update to that existing entity.\",\"If the AI infra article is later identified by title or URL, replace the generic requested-item card with the specific document.\"],\"receipt\":{\"success\":true,\"details\":[\"Captured employer change for Sam as reported in the email.\",\"Captured request to send the AI infra article.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

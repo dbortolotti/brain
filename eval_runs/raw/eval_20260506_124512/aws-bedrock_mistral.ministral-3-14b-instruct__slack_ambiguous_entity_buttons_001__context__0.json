@@ -1,0 +1,32 @@
+{
+  "error": null,
+  "fixture_id": "slack_ambiguous_entity_buttons_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Cannot commit memory due to ambiguous entity reference. Please specify which 'Sam' (Goldman Sachs or Point72) likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "entity_ambiguity",
+    "decision": "defer_due_to_ambiguity",
+    "entity_resolution": {
+      "action": "disambiguation_required",
+      "reason": "The input references 'Sam' without clear context distinguishing between Sam from Goldman Sachs and Sam from Point72. No durable memory can be committed without resolution."
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Ambiguous entity 'Sam' detected (Goldman Sachs vs. Point72).",
+        "No memory committed to preserve data integrity."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Explicitly state: 'Sam from Goldman Sachs likes Bill Evans.'",
+      "Explicitly state: 'Sam from Point72 likes Bill Evans.'",
+      "Provide additional context to disambiguate the reference."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_ingestion\",\n  \"decision\": \"defer_due_to_ambiguity\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"disambiguation_required\",\n    \"reason\": \"The input references 'Sam' without clear context distinguishing between Sam from Goldman Sachs and Sam from Point72. No durable memory can be committed without resolution.\"\n  },\n  \"conflict_classification\": \"entity_ambiguity\",\n  \"answer\": \"Cannot commit memory due to ambiguous entity reference. Please specify which 'Sam' (Goldman Sachs or Point72) likes Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Explicitly state: 'Sam from Goldman Sachs likes Bill Evans.'\",\n    \"Explicitly state: 'Sam from Point72 likes Bill Evans.'\",\n    \"Provide additional context to disambiguate the reference.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Ambiguous entity 'Sam' detected (Goldman Sachs vs. Point72).\",\n      \"No memory committed to preserve data integrity.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

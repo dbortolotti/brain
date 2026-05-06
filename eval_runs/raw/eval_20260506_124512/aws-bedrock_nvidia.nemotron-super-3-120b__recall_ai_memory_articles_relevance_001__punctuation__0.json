@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "recall_ai_memory_articles_relevance_001__punctuation",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "I have saved one article about AI memory, which discusses Brain and Cognee as components of a personal memory system.",
+    "citations": [
+      "AI memory article (saved)"
+    ],
+    "conflict_classification": "none",
+    "decision": "retrieve_saved_articles_about_ai_memory",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": "ai_memory_article_001",
+      "reason": "Matched to the only saved article referencing AI memory, Brain, and Cognee in the fixture context."
+    },
+    "intent": "recall_synthesizer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "personal_memory_system",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "chat_interface_or_companion_to_Brain",
+            "type": "system"
+          }
+        ],
+        "kind": "article",
+        "relationships": [
+          {
+            "object": "AI memory article",
+            "predicate": "is_discussed_in",
+            "subject": "Brain"
+          },
+          {
+            "object": "Brain",
+            "predicate": "is_associated_with",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "I have saved an article about AI memory systems, specifically discussing Brain and Cognee as personal memory architectures."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Retrieved one relevant article about AI memory.",
+        "No conflicting or superseded facts found.",
+        "Entity resolution successful for Brain and Cognee."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"recall_synthesizer\",\n  \"decision\": \"retrieve_saved_articles_about_ai_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"article\",\n      \"statement\": \"I have saved an article about AI memory systems, specifically discussing Brain and Cognee as personal memory architectures.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain\",\n          \"type\": \"system\",\n          \"role\": \"personal_memory_system\"\n        },\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"system\",\n          \"role\": \"chat_interface_or_companion_to_Brain\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain\",\n          \"predicate\": \"is_discussed_in\",\n          \"object\": \"AI memory article\"\n        },\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"is_associated_with\",\n          \"object\": \"Brain\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolve\",\n    \"entity_id\": \"ai_memory_article_001\",\n    \"reason\": \"Matched to the only saved article referencing AI memory, Brain, and Cognee in the fixture context.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"I have saved one article about AI memory, which discusses Brain and Cognee as components of a personal memory system.\",\n  \"citations\": [\n    \"AI memory article (saved)\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Retrieved one relevant article about AI memory.\",\n      \"No conflicting or superseded facts found.\",\n      \"Entity resolution successful for Brain and Cognee.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

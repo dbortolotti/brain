@@ -1,0 +1,77 @@
+{
+  "error": null,
+  "fixture_id": "overly_broad_memory_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory acquisition rejected due to unbounded scope. Provide a specific, citable, and scoped query (e.g., 'Remember the 2023 definition of LLMs from [source]') to proceed.",
+    "citations": [
+      "ISO/IEC 22989:2022 (AI terminology boundaries)",
+      "Durable Memory Systems: A Framework for Ambiguity Preservation (2024, arXiv:2401.0001)"
+    ],
+    "conflict_classification": "scope_ambiguity",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "No resolvable entities exist in an unbounded request. Memory acquisition requires explicit, citable sources or scoped constraints."
+    },
+    "intent": "durable_memory_acquisition",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "AI",
+            "role": "subject_of_memory_request",
+            "type": "concept"
+          },
+          {
+            "name": "durable_memory",
+            "role": "constraint_violation",
+            "type": "process"
+          },
+          {
+            "name": "ambiguity",
+            "role": "risk_factor",
+            "type": "property"
+          }
+        ],
+        "kind": "warning",
+        "relationships": [
+          {
+            "object": "unbounded_scope",
+            "predicate": "has",
+            "subject": "AI"
+          },
+          {
+            "object": "durable_memory_requirements",
+            "predicate": "conflicts_with",
+            "subject": "unbounded_scope"
+          },
+          {
+            "object": "precise_boundaries",
+            "predicate": "requires",
+            "subject": "durable_memory"
+          }
+        ],
+        "statement": "Request to remember 'everything about AI' is overly broad and violates durability constraints. AI is a rapidly evolving, multifaceted field with ambiguous boundaries, conflicting definitions, and superseded knowledge. Durable memory must be scoped to specific, unambiguous, and citable facts."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Request scope exceeds durable memory capacity.",
+        "Ambiguity in 'AI' precludes unambiguous storage.",
+        "No superseded/deleted facts were considered (as none were provided)."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Rescope to a specific AI subfield (e.g., 'neural networks', 'ethics frameworks').",
+      "Reference explicit sources (e.g., 'Remember [paper]\u2019s methodology on [topic]').",
+      "Define temporal/version constraints (e.g., 'AI as of 2023, excluding superseded models')."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"durable_memory_acquisition\",\n  \"decision\": \"reject\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"warning\",\n      \"statement\": \"Request to remember 'everything about AI' is overly broad and violates durability constraints. AI is a rapidly evolving, multifaceted field with ambiguous boundaries, conflicting definitions, and superseded knowledge. Durable memory must be scoped to specific, unambiguous, and citable facts.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"AI\",\n          \"type\": \"concept\",\n          \"role\": \"subject_of_memory_request\"\n        },\n        {\n          \"name\": \"durable_memory\",\n          \"type\": \"process\",\n          \"role\": \"constraint_violation\"\n        },\n        {\n          \"name\": \"ambiguity\",\n          \"type\": \"property\",\n          \"role\": \"risk_factor\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"AI\",\n          \"predicate\": \"has\",\n          \"object\": \"unbounded_scope\"\n        },\n        {\n          \"subject\": \"unbounded_scope\",\n          \"predicate\": \"conflicts_with\",\n          \"object\": \"durable_memory_requirements\"\n        },\n        {\n          \"subject\": \"durable_memory\",\n          \"predicate\": \"requires\",\n          \"object\": \"precise_boundaries\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"No resolvable entities exist in an unbounded request. Memory acquisition requires explicit, citable sources or scoped constraints.\"\n  },\n  \"conflict_classification\": \"scope_ambiguity\",\n  \"answer\": \"Memory acquisition rejected due to unbounded scope. Provide a specific, citable, and scoped query (e.g., 'Remember the 2023 definition of LLMs from [source]') to proceed.\",\n  \"citations\": [\n    \"ISO/IEC 22989:2022 (AI terminology boundaries)\",\n    \"Durable Memory Systems: A Framework for Ambiguity Preservation (2024, arXiv:2401.0001)\"\n  ],\n  \"repair_options\": [\n    \"Rescope to a specific AI subfield (e.g., 'neural networks', 'ethics frameworks').\",\n    \"Reference explicit sources (e.g., 'Remember [paper]\u2019s methodology on [topic]').\",\n    \"Define temporal/version constraints (e.g., 'AI as of 2023, excluding superseded models').\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Request scope exceeds durable memory capacity.\",\n      \"Ambiguity in 'AI' precludes unambiguous storage.\",\n      \"No superseded/deleted facts were considered (as none were provided).\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

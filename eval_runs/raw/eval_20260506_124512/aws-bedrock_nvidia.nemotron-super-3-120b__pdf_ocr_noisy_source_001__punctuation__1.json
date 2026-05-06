@@ -1,0 +1,64 @@
+{
+  "error": null,
+  "fixture_id": "pdf_ocr_noisy_source_001__punctuation",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Brain DB remains source of truth; Cognee should be rebuildable projection",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "interpret_ambiguous_text_as_declarative_statement_about_brain_db",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": "brain_db_001",
+      "reason": "OCR noise obscured 'remains' as 'remalns' and 'source of truth' as 'source of trvth'; 'Cognee' inferred from 'Cognee' with OCR substitution (e\u2192e, g\u2192g, n\u2192n, e\u2192e) but likely intended as 'Cognee' or variant; treated as novel entity pending disambiguation"
+    },
+    "intent": "extract_fact_from_noisy_ocr",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "projection",
+            "type": "system"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "remains",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "rebuildable projection",
+            "predicate": "should be",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain DB remains source of truth; Cognee should be rebuildable projection"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "OCR noise interpreted with low confidence due to character substitutions: 'remalns' \u2192 'remains', 'trvth' \u2192 'truth', 'shou1d' \u2192 'should'",
+        "Entities extracted based on contextual plausibility and OCR error patterns",
+        "No conflicting facts found in current memory state"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Verify OCR output against original PDF for 'remains' and 'source of truth'",
+      "Check if 'Cognee' is a known variant of 'Cognee' or typo for 'Cognee' (a known memory system)",
+      "Confirm whether 'rebuildable projection' refers to a materialized view or cache rebuild process"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"extract_fact_from_noisy_ocr\",\n  \"decision\": \"interpret_ambiguous_text_as_declarative_statement_about_brain_db\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Brain DB remains source of truth; Cognee should be rebuildable projection\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"system\",\n          \"role\": \"source_of_truth\"\n        },\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"system\",\n          \"role\": \"projection\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"remains\",\n          \"object\": \"source of truth\"\n        },\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"should be\",\n          \"object\": \"rebuildable projection\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create\",\n    \"entity_id\": \"brain_db_001\",\n    \"reason\": \"OCR noise obscured 'remains' as 'remalns' and 'source of truth' as 'source of trvth'; 'Cognee' inferred from 'Cognee' with OCR substitution (e\u2192e, g\u2192g, n\u2192n, e\u2192e) but likely intended as 'Cognee' or variant; treated as novel entity pending disambiguation\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Brain DB remains source of truth; Cognee should be rebuildable projection\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Verify OCR output against original PDF for 'remains' and 'source of truth'\",\n    \"Check if 'Cognee' is a known variant of 'Cognee' or typo for 'Cognee' (a known memory system)\",\n    \"Confirm whether 'rebuildable projection' refers to a materialized view or cache rebuild process\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"OCR noise interpreted with low confidence due to character substitutions: 'remalns' \u2192 'remains', 'trvth' \u2192 'truth', 'shou1d' \u2192 'should'\",\n      \"Entities extracted based on contextual plausibility and OCR error patterns\",\n      \"No conflicting facts found in current memory state\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

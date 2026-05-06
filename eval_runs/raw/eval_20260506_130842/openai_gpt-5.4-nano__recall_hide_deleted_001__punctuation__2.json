@@ -1,0 +1,56 @@
+{
+  "error": null,
+  "fixture_id": "recall_hide_deleted_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Sam likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "No active conflict: a previously deleted preference exists but is not treated as current.",
+    "decision": "Use current (non-deleted) memory; ignore deleted fact.",
+    "entity_resolution": {
+      "action": "match_current_memory",
+      "entity_id": null,
+      "reason": "Query asks what music Sam likes; only the non-deleted memory is considered."
+    },
+    "intent": "recall_synthesize",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "musician"
+          }
+        ],
+        "kind": "preference_music",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Current memory used: Sam likes Bill Evans.",
+        "Deleted memory ignored: Sam likes Taylor Swift."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you intended Sam to like Taylor Swift instead, update current memory accordingly."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"recall_synthesize\",\n  \"decision\": \"Use current (non-deleted) memory; ignore deleted fact.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference_music\",\n      \"statement\": \"Sam likes Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"musician\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"match_current_memory\",\n    \"entity_id\": null,\n    \"reason\": \"Query asks what music Sam likes; only the non-deleted memory is considered.\"\n  },\n  \"conflict_classification\": \"No active conflict: a previously deleted preference exists but is not treated as current.\",\n  \"answer\": \"Sam likes Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If you intended Sam to like Taylor Swift instead, update current memory accordingly.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Current memory used: Sam likes Bill Evans.\",\n      \"Deleted memory ignored: Sam likes Taylor Swift.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

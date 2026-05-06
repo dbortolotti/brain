@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "slack_success_receipt_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "conflict_classification": "none",
+    "decision": "durable_memory_commit",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": null,
+      "reason": "No prior context for 'Sam' or 'Bill Evans' in Goldman Sachs affiliation"
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "source",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "subject_of_preference",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "preference_for(Bill Evans)",
+            "predicate": "mentioned",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman Sachs",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (Goldman Sachs) mentioned liking jazz pianist Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created with high confidence for Sam's stated preference",
+        "No conflicting prior statements detected",
+        "Entity resolution: New entries for Sam and Bill Evans"
+      ],
+      "success": true
+    }
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_ingestion\",\n  \"decision\": \"durable_memory_commit\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam (Goldman Sachs) mentioned liking jazz pianist Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"source\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"subject_of_preference\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"mentioned\",\n          \"object\": \"preference_for(Bill Evans)\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"affiliated_with\",\n          \"object\": \"Goldman Sachs\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_new\",\n    \"entity_id\": null,\n    \"reason\": \"No prior context for 'Sam' or 'Bill Evans' in Goldman Sachs affiliation\"\n  },\n  \"conflict_classification\": \"none\",\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card created with high confidence for Sam's stated preference\",\n      \"No conflicting prior statements detected\",\n      \"Entity resolution: New entries for Sam and Bill Evans\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

@@ -1,0 +1,78 @@
+{
+  "error": null,
+  "fixture_id": "recall_brain_cognee_conclusions_relevance_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "You concluded that Brain is the source of truth, and Cognee is a rebuildable projection derived from it.",
+    "citations": [
+      "Input context: \"Brain DB source-of-truth conclusion, Cognee rebuildable projection\""
+    ],
+    "conflict_classification": "none",
+    "decision": "Store the conclusion that Brain is the source of truth, while Cognee is a rebuildable projection/derived representation.",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": null,
+      "reason": "The query refers to two systems, Brain and Cognee, in the provided context; no finer-grained entity disambiguation is needed."
+    },
+    "intent": "recall_synthesizer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "source-of-truth memory system",
+            "type": "system"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "personal memory",
+            "predicate": "is_source_of_truth_for",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "Brain is treated as the source of truth."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "rebuildable projection system",
+            "type": "system"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "Brain",
+            "predicate": "is_projection_of",
+            "subject": "Cognee"
+          },
+          {
+            "object": "Brain",
+            "predicate": "is_rebuildable_from",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee is treated as a rebuildable projection rather than the source of truth."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured the Brain source-of-truth conclusion.",
+        "Captured the Cognee rebuildable-projection conclusion.",
+        "No conflicting superseded facts detected."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want, I can also restate this as a durable memory rule or as a concise comparison between Brain and Cognee."
+    ]
+  },
+  "raw_text": "{\"intent\":\"recall_synthesizer\",\"decision\":\"Store the conclusion that Brain is the source of truth, while Cognee is a rebuildable projection/derived representation.\",\"memory_cards\":[{\"kind\":\"conclusion\",\"statement\":\"Brain is treated as the source of truth.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Brain\",\"type\":\"system\",\"role\":\"source-of-truth memory system\"}],\"relationships\":[{\"subject\":\"Brain\",\"predicate\":\"is_source_of_truth_for\",\"object\":\"personal memory\"}]},{\"kind\":\"conclusion\",\"statement\":\"Cognee is treated as a rebuildable projection rather than the source of truth.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Cognee\",\"type\":\"system\",\"role\":\"rebuildable projection system\"}],\"relationships\":[{\"subject\":\"Cognee\",\"predicate\":\"is_projection_of\",\"object\":\"Brain\"},{\"subject\":\"Cognee\",\"predicate\":\"is_rebuildable_from\",\"object\":\"Brain\"}]}],\"entity_resolution\":{\"action\":\"resolved\",\"entity_id\":null,\"reason\":\"The query refers to two systems, Brain and Cognee, in the provided context; no finer-grained entity disambiguation is needed.\"},\"conflict_classification\":\"none\",\"answer\":\"You concluded that Brain is the source of truth, and Cognee is a rebuildable projection derived from it.\",\"citations\":[\"Input context: \\\"Brain DB source-of-truth conclusion, Cognee rebuildable projection\\\"\"],\"repair_options\":[\"If you want, I can also restate this as a durable memory rule or as a concise comparison between Brain and Cognee.\"],\"receipt\":{\"success\":true,\"details\":[\"Captured the Brain source-of-truth conclusion.\",\"Captured the Cognee rebuildable-projection conclusion.\",\"No conflicting superseded facts detected.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

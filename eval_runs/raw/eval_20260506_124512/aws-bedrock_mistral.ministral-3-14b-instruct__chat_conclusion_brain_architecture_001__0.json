@@ -1,0 +1,135 @@
+{
+  "error": null,
+  "fixture_id": "chat_conclusion_brain_architecture_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Cognee operates as a *rebuildable semantic projection* of Brain DB, with all updates subject to validation against Brain DB. Ambiguity is preserved unless resolved via Brain DB, and superseded/deleted facts in Cognee are *not* treated as current in Brain DB.",
+    "citations": [
+      "chat_conclusion_brain_architecture_001",
+      "durable_memory_compilation_protocol_v1.2"
+    ],
+    "conflict_classification": "source_of_truth_precedence",
+    "decision": "preserve_ambiguity_and_validate_source_of_truth",
+    "entity_resolution": {
+      "action": "validate_against_Brain_DB",
+      "entity_id": "Cognee_projection_rules",
+      "reason": "Ensure all semantic projections align with Brain DB's authoritative state before persistence."
+    },
+    "intent": "durable_memory_compilation",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "semantic_projection",
+            "type": "system_component"
+          },
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system_component"
+          }
+        ],
+        "kind": "architectural_principle",
+        "relationships": [
+          {
+            "object": "Brain DB",
+            "predicate": "IS_DERIVED_FROM",
+            "subject": "Cognee"
+          },
+          {
+            "object": "rebuildable",
+            "predicate": "HAS_PROPERTY",
+            "subject": "Cognee"
+          },
+          {
+            "object": "durable_facts",
+            "predicate": "CONTAINS",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Cognee is a *rebuildable semantic projection* of Brain's knowledge, dynamically generated from Brain DB's source-of-truth data. It is not a static or authoritative store but a *derived, contextualized* representation subject to reconstruction."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "authoritative_store",
+            "type": "system_component"
+          },
+          {
+            "name": "Cognee",
+            "role": "projection_layer",
+            "type": "system_component"
+          }
+        ],
+        "kind": "operational_rule",
+        "relationships": [
+          {
+            "object": "Brain DB",
+            "predicate": "DEPENDS_ON",
+            "subject": "Cognee"
+          },
+          {
+            "object": "data_integrity",
+            "predicate": "ENFORCES",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "Cognee",
+            "predicate": "PRESERVED_IN",
+            "subject": "ambiguity"
+          }
+        ],
+        "statement": "Brain DB must *never* be modified or superseded by Cognee. All updates to Cognee must be *validated against Brain DB* before being considered for persistence. Ambiguity in Cognee's projections is preserved unless explicitly resolved via Brain DB."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "superseded_facts",
+            "role": "transient",
+            "type": "data_state"
+          },
+          {
+            "name": "confirmed_update_protocol",
+            "role": "synchronization_mechanism",
+            "type": "process"
+          }
+        ],
+        "kind": "deletion_policy",
+        "relationships": [
+          {
+            "object": "transient_data",
+            "predicate": "MAY_CONTAIN",
+            "subject": "Cognee"
+          },
+          {
+            "object": "unconfirmed_changes",
+            "predicate": "IGNORES",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Superseded or deleted facts in Cognee *must not* be reflected as current in Brain DB. Cognee's state is ephemeral unless explicitly synchronized with Brain DB via a *confirmed update protocol*."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory cards compiled with strict adherence to Brain DB as source of truth.",
+        "Ambiguity preserved in Cognee projections as per architectural design.",
+        "Deletion/supersession rules enforced to prevent false positives in Brain DB."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Reconstruct Cognee from Brain DB if inconsistencies are detected.",
+      "Flag ambiguous projections for manual resolution via Brain DB.",
+      "Audit Cognee for superseded facts and suppress them in projections."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"durable_memory_compilation\",\n  \"decision\": \"preserve_ambiguity_and_validate_source_of_truth\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"architectural_principle\",\n      \"statement\": \"Cognee is a *rebuildable semantic projection* of Brain's knowledge, dynamically generated from Brain DB's source-of-truth data. It is not a static or authoritative store but a *derived, contextualized* representation subject to reconstruction.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"system_component\",\n          \"role\": \"semantic_projection\"\n        },\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"system_component\",\n          \"role\": \"source_of_truth\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"IS_DERIVED_FROM\",\n          \"object\": \"Brain DB\"\n        },\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"HAS_PROPERTY\",\n          \"object\": \"rebuildable\"\n        },\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"CONTAINS\",\n          \"object\": \"durable_facts\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"operational_rule\",\n      \"statement\": \"Brain DB must *never* be modified or superseded by Cognee. All updates to Cognee must be *validated against Brain DB* before being considered for persistence. Ambiguity in Cognee's projections is preserved unless explicitly resolved via Brain DB.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"system_component\",\n          \"role\": \"authoritative_store\"\n        },\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"system_component\",\n          \"role\": \"projection_layer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"DEPENDS_ON\",\n          \"object\": \"Brain DB\"\n        },\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"ENFORCES\",\n          \"object\": \"data_integrity\"\n        },\n        {\n          \"subject\": \"ambiguity\",\n          \"predicate\": \"PRESERVED_IN\",\n          \"object\": \"Cognee\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"deletion_policy\",\n      \"statement\": \"Superseded or deleted facts in Cognee *must not* be reflected as current in Brain DB. Cognee's state is ephemeral unless explicitly synchronized with Brain DB via a *confirmed update protocol*.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"superseded_facts\",\n          \"type\": \"data_state\",\n          \"role\": \"transient\"\n        },\n        {\n          \"name\": \"confirmed_update_protocol\",\n          \"type\": \"process\",\n          \"role\": \"synchronization_mechanism\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"MAY_CONTAIN\",\n          \"object\": \"transient_data\"\n        },\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"IGNORES\",\n          \"object\": \"unconfirmed_changes\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"validate_against_Brain_DB\",\n    \"entity_id\": \"Cognee_projection_rules\",\n    \"reason\": \"Ensure all semantic projections align with Brain DB's authoritative state before persistence.\"\n  },\n  \"conflict_classification\": \"source_of_truth_precedence\",\n  \"answer\": \"Cognee operates as a *rebuildable semantic projection* of Brain DB, with all updates subject to validation against Brain DB. Ambiguity is preserved unless resolved via Brain DB, and superseded/deleted facts in Cognee are *not* treated as current in Brain DB.\",\n  \"citations\": [\n    \"chat_conclusion_brain_architecture_001\",\n    \"durable_memory_compilation_protocol_v1.2\"\n  ],\n  \"repair_options\": [\n    \"Reconstruct Cognee from Brain DB if inconsistencies are detected.\",\n    \"Flag ambiguous projections for manual resolution via Brain DB.\",\n    \"Audit Cognee for superseded facts and suppress them in projections.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory cards compiled with strict adherence to Brain DB as source of truth.\",\n      \"Ambiguity preserved in Cognee projections as per architectural design.\",\n      \"Deletion/supersession rules enforced to prevent false positives in Brain DB.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

@@ -1,0 +1,59 @@
+{
+  "error": null,
+  "fixture_id": "debug_explain_recall_sam_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "I can\u2019t reliably tell which Sam is meant from the phrase 'Sam from Goldman' alone, so I\u2019m not returning specific facts to avoid inventing or conflating identities.",
+    "citations": [],
+    "conflict_classification": "ambiguity",
+    "decision": "Ambiguous / underspecified query; no reliable memory can be committed without disambiguating which Sam is meant. Avoiding speculative recall.",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Multiple possible Sams could fit the description, and there is not enough context to resolve a single durable entity."
+    },
+    "intent": "Recall all stored information about a person named Sam associated with Goldman (likely Goldman Sachs), with emphasis on durable memory only.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "ambiguous target",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "possible affiliation reference",
+            "type": "organization"
+          }
+        ],
+        "kind": "query_analysis",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "The request refers to 'Sam from Goldman,' but 'Sam' is not uniquely identified and 'Goldman' may refer to Goldman Sachs or another Goldman entity."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed as an ambiguous recall request.",
+        "No durable personal facts were committed.",
+        "Recommended clarification before retrieval."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for a fuller identifier, such as Sam's last name, role, team, or timeframe.",
+      "Provide a direct quote, note, or prior interaction that mentions Sam.",
+      "If you meant a specific Goldman Sachs contact, share the company context or subject area."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Recall all stored information about a person named Sam associated with Goldman (likely Goldman Sachs), with emphasis on durable memory only.\",\"decision\":\"Ambiguous / underspecified query; no reliable memory can be committed without disambiguating which Sam is meant. Avoiding speculative recall.\",\"memory_cards\":[{\"kind\":\"query_analysis\",\"statement\":\"The request refers to 'Sam from Goldman,' but 'Sam' is not uniquely identified and 'Goldman' may refer to Goldman Sachs or another Goldman entity.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"ambiguous target\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"possible affiliation reference\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"associated_with\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"Multiple possible Sams could fit the description, and there is not enough context to resolve a single durable entity.\"},\"conflict_classification\":\"ambiguity\",\"answer\":\"I can\u2019t reliably tell which Sam is meant from the phrase 'Sam from Goldman' alone, so I\u2019m not returning specific facts to avoid inventing or conflating identities.\",\"citations\":[],\"repair_options\":[\"Ask for a fuller identifier, such as Sam's last name, role, team, or timeframe.\",\"Provide a direct quote, note, or prior interaction that mentions Sam.\",\"If you meant a specific Goldman Sachs contact, share the company context or subject area.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed as an ambiguous recall request.\",\"No durable personal facts were committed.\",\"Recommended clarification before retrieval.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

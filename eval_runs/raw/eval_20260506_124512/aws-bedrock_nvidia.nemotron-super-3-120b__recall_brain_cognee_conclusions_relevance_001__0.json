@@ -1,0 +1,73 @@
+{
+  "error": null,
+  "fixture_id": "recall_brain_cognee_conclusions_relevance_001",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "I concluded that Brain serves as the durable, source-of-truth personal memory system, while Cognee is a rebuildable projection layer that derives insights from Brain without modifying its canonical state.",
+    "citations": [
+      "Brain DB source-of-truth conclusion",
+      "Cognee rebuildable projection"
+    ],
+    "conflict_classification": "none",
+    "decision": "conclude",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Entities 'Brain' and 'Cognee' are unambiguous in context and require no resolution."
+    },
+    "intent": "recall_synthesizer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "source-of-truth",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "projection-layer",
+            "type": "system"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "source-of-truth for personal memory",
+            "predicate": "is",
+            "subject": "Brain"
+          },
+          {
+            "object": "rebuildable projection of Brain",
+            "predicate": "is",
+            "subject": "Cognee"
+          },
+          {
+            "object": "Brain",
+            "predicate": "derives insights from",
+            "subject": "Cognee"
+          },
+          {
+            "object": "Cognee",
+            "predicate": "remains unaltered by",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "Brain is a personal memory system designed for durable, source-of-truth storage, while Cognee is a rebuildable projection layer that derives insights from Brain without altering its canonical state."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recall synthesized from source-of-truth conclusion and rebuildable projection.",
+        "No conflicting or superseded facts present.",
+        "Answer reflects current, durable understanding."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"recall_synthesizer\",\n  \"decision\": \"conclude\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"conclusion\",\n      \"statement\": \"Brain is a personal memory system designed for durable, source-of-truth storage, while Cognee is a rebuildable projection layer that derives insights from Brain without altering its canonical state.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain\",\n          \"type\": \"system\",\n          \"role\": \"source-of-truth\"\n        },\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"system\",\n          \"role\": \"projection-layer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain\",\n          \"predicate\": \"is\",\n          \"object\": \"source-of-truth for personal memory\"\n        },\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"is\",\n          \"object\": \"rebuildable projection of Brain\"\n        },\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"derives insights from\",\n          \"object\": \"Brain\"\n        },\n        {\n          \"subject\": \"Brain\",\n          \"predicate\": \"remains unaltered by\",\n          \"object\": \"Cognee\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"Entities 'Brain' and 'Cognee' are unambiguous in context and require no resolution.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"I concluded that Brain serves as the durable, source-of-truth personal memory system, while Cognee is a rebuildable projection layer that derives insights from Brain without modifying its canonical state.\",\n  \"citations\": [\n    \"Brain DB source-of-truth conclusion\",\n    \"Cognee rebuildable projection\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Recall synthesized from source-of-truth conclusion and rebuildable projection.\",\n      \"No conflicting or superseded facts present.\",\n      \"Answer reflects current, durable understanding.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

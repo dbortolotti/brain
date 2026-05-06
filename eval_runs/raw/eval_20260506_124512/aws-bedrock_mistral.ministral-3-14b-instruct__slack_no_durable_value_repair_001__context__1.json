@@ -1,0 +1,58 @@
+{
+  "error": null,
+  "fixture_id": "slack_no_durable_value_repair_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Understood. The weather for today is recorded as cloudy, but I cannot commit this to durable memory without clarifying the temporal context (e.g., your local time zone or specific date). Would you like to specify?",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "defer_durable_memory",
+    "entity_resolution": {
+      "action": "pending",
+      "entity_id": null,
+      "reason": "Ambiguous temporal reference ('today') requires contextual grounding (e.g., user's local time zone or explicit date). Durable memory deferred until resolved."
+    },
+    "intent": "memory_intake",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "today",
+            "role": "temporal_anchor",
+            "type": "time_reference"
+          },
+          {
+            "name": "cloudy",
+            "role": "observation",
+            "type": "weather_condition"
+          }
+        ],
+        "kind": "temporal",
+        "relationships": [
+          {
+            "object": "cloudy",
+            "predicate": "has_weather",
+            "subject": "today"
+          }
+        ],
+        "statement": "Today's weather is cloudy."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory deferred due to unresolved temporal ambiguity in 'today'.",
+        "Memory card created in volatile state for potential future repair."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Respecify with explicit date (e.g., '2023-11-15's weather is cloudy').",
+      "Confirm local time zone for 'today' resolution.",
+      "Discard the memory if no longer relevant."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_intake\",\n  \"decision\": \"defer_durable_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"temporal\",\n      \"statement\": \"Today's weather is cloudy.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"today\",\n          \"type\": \"time_reference\",\n          \"role\": \"temporal_anchor\"\n        },\n        {\n          \"name\": \"cloudy\",\n          \"type\": \"weather_condition\",\n          \"role\": \"observation\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"today\",\n          \"predicate\": \"has_weather\",\n          \"object\": \"cloudy\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"pending\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguous temporal reference ('today') requires contextual grounding (e.g., user's local time zone or explicit date). Durable memory deferred until resolved.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Understood. The weather for today is recorded as cloudy, but I cannot commit this to durable memory without clarifying the temporal context (e.g., your local time zone or specific date). Would you like to specify?\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Respecify with explicit date (e.g., '2023-11-15's weather is cloudy').\",\n    \"Confirm local time zone for 'today' resolution.\",\n    \"Discard the memory if no longer relevant.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Durable memory deferred due to unresolved temporal ambiguity in 'today'.\",\n      \"Memory card created in volatile state for potential future repair.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

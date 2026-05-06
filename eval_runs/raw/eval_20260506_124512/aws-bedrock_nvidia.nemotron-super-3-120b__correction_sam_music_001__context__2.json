@@ -1,0 +1,81 @@
+{
+  "error": null,
+  "fixture_id": "correction_sam_music_001__context",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Sam from Goldman likes early Coltrane, not Bill Evans.",
+    "citations": [
+      "User correction: Sam from Goldman actually likes early Coltrane, not Bill Evans."
+    ],
+    "conflict_classification": "correction",
+    "decision": "update",
+    "entity_resolution": {
+      "action": "update",
+      "entity_id": "sam_goldman_preference_001",
+      "reason": "Corrected preference based on user input: Sam from Goldman actually likes early Coltrane, not Bill Evans."
+    },
+    "intent": "correct",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "preferred_artist",
+            "type": "music_artist"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "dispreferred_artist",
+            "type": "music_artist"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "does_not_like",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane, not Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory updated: Sam's musical preference corrected from Bill Evans to early Coltrane.",
+        "Entity 'sam_goldman_preference_001' resolved and updated.",
+        "Conflict classified as correction; no ambiguity retained as fact is now definitive."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace Bill Evans preference with early Coltrane",
+      "Add dispreference for Bill Evans",
+      "Maintain Sam's employment at Goldman as unchanged"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"correct\",\n  \"decision\": \"update\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam from Goldman likes early Coltrane, not Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"employee\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        },\n        {\n          \"name\": \"early Coltrane\",\n          \"type\": \"music_artist\",\n          \"role\": \"preferred_artist\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"music_artist\",\n          \"role\": \"dispreferred_artist\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"early Coltrane\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"does_not_like\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"update\",\n    \"entity_id\": \"sam_goldman_preference_001\",\n    \"reason\": \"Corrected preference based on user input: Sam from Goldman actually likes early Coltrane, not Bill Evans.\"\n  },\n  \"conflict_classification\": \"correction\",\n  \"answer\": \"Sam from Goldman likes early Coltrane, not Bill Evans.\",\n  \"citations\": [\n    \"User correction: Sam from Goldman actually likes early Coltrane, not Bill Evans.\"\n  ],\n  \"repair_options\": [\n    \"Replace Bill Evans preference with early Coltrane\",\n    \"Add dispreference for Bill Evans\",\n    \"Maintain Sam's employment at Goldman as unchanged\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory updated: Sam's musical preference corrected from Bill Evans to early Coltrane.\",\n      \"Entity 'sam_goldman_preference_001' resolved and updated.\",\n      \"Conflict classified as correction; no ambiguity retained as fact is now definitive.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

@@ -1,0 +1,77 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_large_table_atomization_001__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Acknowledged: 500 memory cards proposed; current state treats them as a plan to create per-row entries, but without concrete card contents or unique IDs, individual memory cards remain unresolved. Commitment should avoid superseding existing memories and preserve ambiguity until rows are materialized.",
+    "citations": [
+      "context_proposal:500_memory_cards",
+      "per_row_card_approach"
+    ],
+    "conflict_classification": "ambiguous_or_underdetermined",
+    "decision": "preserve_ambiguous_entries_and_selective_commitment",
+    "entity_resolution": {
+      "action": "tentative_id_assignment",
+      "entity_id": null,
+      "reason": "No unique persistent identifiers provided for each of the 500 potential cards; resolution deferred until concrete content exists."
+    },
+    "intent": "validate_and_consider_memories",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "LLM",
+            "role": "proposer",
+            "type": "actor"
+          },
+          {
+            "name": "500",
+            "role": "quantity",
+            "type": "count"
+          },
+          {
+            "name": "memory cards",
+            "role": "subject",
+            "type": "artifact"
+          },
+          {
+            "name": "CSV row",
+            "role": "unit",
+            "type": "data_unit"
+          }
+        ],
+        "kind": "summary",
+        "relationships": [
+          {
+            "object": "500 memory cards",
+            "predicate": "proposes",
+            "subject": "LLM"
+          },
+          {
+            "object": "CSV rows",
+            "predicate": "correspond_to",
+            "subject": "memory cards"
+          }
+        ],
+        "statement": "Context: LLM proposes 500 memory cards, one per CSV row."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Accepted context of 500-card proposal.",
+        "No committed cards yet; no superseded data detected."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Generate a minimal viable subset of memory cards with concrete content and stable IDs to bootstrap the system.",
+      "Define a global ID scheme and row-level keys derived from CSV row content (e.g., hash) to ensure deduplicated, traceable cards.",
+      "Introduce a staging phase where cards are created as placeholders and incrementally populated with data.",
+      "Implement conflict logging for duplicate or conflicting per-row cards before final commit."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"validate_and_consider_memories\",\n  \"decision\": \"preserve_ambiguous_entries_and_selective_commitment\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"summary\",\n      \"statement\": \"Context: LLM proposes 500 memory cards, one per CSV row.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"LLM\", \"type\": \"actor\", \"role\": \"proposer\"},\n        {\"name\": \"500\", \"type\": \"count\", \"role\": \"quantity\"},\n        {\"name\": \"memory cards\", \"type\": \"artifact\", \"role\": \"subject\"},\n        {\"name\": \"CSV row\", \"type\": \"data_unit\", \"role\": \"unit\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"LLM\", \"predicate\": \"proposes\", \"object\": \"500 memory cards\"},\n        {\"subject\": \"memory cards\", \"predicate\": \"correspond_to\", \"object\": \"CSV rows\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"tentative_id_assignment\",\n    \"entity_id\": null,\n    \"reason\": \"No unique persistent identifiers provided for each of the 500 potential cards; resolution deferred until concrete content exists.\"\n  },\n  \"conflict_classification\": \"ambiguous_or_underdetermined\",\n  \"answer\": \"Acknowledged: 500 memory cards proposed; current state treats them as a plan to create per-row entries, but without concrete card contents or unique IDs, individual memory cards remain unresolved. Commitment should avoid superseding existing memories and preserve ambiguity until rows are materialized.\",\n  \"citations\": [\n    \"context_proposal:500_memory_cards\",\n    \"per_row_card_approach\"\n  ],\n  \"repair_options\": [\n    \"Generate a minimal viable subset of memory cards with concrete content and stable IDs to bootstrap the system.\",\n    \"Define a global ID scheme and row-level keys derived from CSV row content (e.g., hash) to ensure deduplicated, traceable cards.\",\n    \"Introduce a staging phase where cards are created as placeholders and incrementally populated with data.\",\n    \"Implement conflict logging for duplicate or conflicting per-row cards before final commit.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Accepted context of 500-card proposal.\",\n      \"No committed cards yet; no superseded data detected.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

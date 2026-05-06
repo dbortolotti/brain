@@ -1,0 +1,66 @@
+{
+  "error": null,
+  "fixture_id": "personal_routine_morning_reading_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Saved your preference: you usually read technical papers in the morning before checking email.",
+    "citations": [],
+    "conflict_classification": "no_conflict_detected",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "match_or_create",
+      "entity_id": null,
+      "reason": "No existing durable entity IDs were provided for the user\u2019s routine, so a new/implicit routine record is implied."
+    },
+    "intent": "Capture personal routine preference for morning reading order",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "morning",
+            "role": "when",
+            "type": "time_of_day"
+          },
+          {
+            "name": "technical papers",
+            "role": "what",
+            "type": "content_type"
+          },
+          {
+            "name": "email",
+            "role": "what_comes_after",
+            "type": "activity"
+          }
+        ],
+        "kind": "preference_routine",
+        "relationships": [
+          {
+            "object": "reading technical papers",
+            "predicate": "includes",
+            "subject": "my morning routine"
+          },
+          {
+            "object": "checking email",
+            "predicate": "typically happens before",
+            "subject": "reading technical papers"
+          }
+        ],
+        "statement": "In the morning, I usually prefer to read technical papers before checking email."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preference routine captured from context: morning technical paper reading precedes email checking."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If this is not always true, specify how often (e.g., 'most mornings').",
+      "If you want a stricter ordering, confirm whether email is always after reading."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Capture personal routine preference for morning reading order\",\n  \"decision\": \"commit\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference_routine\",\n      \"statement\": \"In the morning, I usually prefer to read technical papers before checking email.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"morning\",\n          \"type\": \"time_of_day\",\n          \"role\": \"when\"\n        },\n        {\n          \"name\": \"technical papers\",\n          \"type\": \"content_type\",\n          \"role\": \"what\"\n        },\n        {\n          \"name\": \"email\",\n          \"type\": \"activity\",\n          \"role\": \"what_comes_after\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"my morning routine\",\n          \"predicate\": \"includes\",\n          \"object\": \"reading technical papers\"\n        },\n        {\n          \"subject\": \"reading technical papers\",\n          \"predicate\": \"typically happens before\",\n          \"object\": \"checking email\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"match_or_create\",\n    \"entity_id\": null,\n    \"reason\": \"No existing durable entity IDs were provided for the user\u2019s routine, so a new/implicit routine record is implied.\"\n  },\n  \"conflict_classification\": \"no_conflict_detected\",\n  \"answer\": \"Saved your preference: you usually read technical papers in the morning before checking email.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If this is not always true, specify how often (e.g., 'most mornings').\",\n    \"If you want a stricter ordering, confirm whether email is always after reading.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Preference routine captured from context: morning technical paper reading precedes email checking.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

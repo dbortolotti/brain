@@ -1,0 +1,70 @@
+{
+  "error": null,
+  "fixture_id": "conflict_correction_like__punctuation",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Sam from Goldman actually likes early Coltrane, not Bill Evans.",
+    "citations": [],
+    "conflict_classification": "correction",
+    "decision": "update",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Entities are unambiguous and correctly resolved; no merging or splitting needed."
+    },
+    "intent": "correct",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "music_artist"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "music_artist"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "does not like",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane, not Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Fact updated: preference corrected from Bill Evans to early Coltrane.",
+        "Previous fact superseded and marked as deprecated.",
+        "No ambiguity remains in the corrected statement."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"correct\",\n  \"decision\": \"update\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam from Goldman likes early Coltrane, not Bill Evans\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"early Coltrane\",\n          \"type\": \"music_artist\",\n          \"role\": \"object\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"music_artist\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam from Goldman\",\n          \"predicate\": \"likes\",\n          \"object\": \"early Coltrane\"\n        },\n        {\n          \"subject\": \"Sam from Goldman\",\n          \"predicate\": \"does not like\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"Entities are unambiguous and correctly resolved; no merging or splitting needed.\"\n  },\n  \"conflict_classification\": \"correction\",\n  \"answer\": \"Sam from Goldman actually likes early Coltrane, not Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Fact updated: preference corrected from Bill Evans to early Coltrane.\",\n      \"Previous fact superseded and marked as deprecated.\",\n      \"No ambiguity remains in the corrected statement.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

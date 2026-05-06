@@ -1,0 +1,67 @@
+{
+  "error": null,
+  "fixture_id": "large_table_500_rows_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Store only a compact summary or source pointer, not the full repeated 500-row CSV, unless a later task explicitly requires row-level persistence.",
+    "citations": [
+      "Input: CSV table with 500 rows: id,name,value repeated many times",
+      "Policy question: how should it be stored?"
+    ],
+    "conflict_classification": "none",
+    "decision": "Do not store the full 500-row CSV as durable memory. If anything is retained, keep only a compact structural summary or source reference, because the content is repetitive and low-signal.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input describes a generic table rather than a uniquely identifiable entity that needs resolution."
+    },
+    "intent": "Evaluate whether a large repetitive CSV table should be committed as durable memory and, if so, in what form.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "input data",
+            "type": "artifact"
+          },
+          {
+            "name": "durable memory",
+            "role": "storage target",
+            "type": "concept"
+          }
+        ],
+        "kind": "policy",
+        "relationships": [
+          {
+            "object": "verbatim durable memory",
+            "predicate": "should not be stored as",
+            "subject": "CSV table"
+          },
+          {
+            "object": "compact summary or source reference",
+            "predicate": "should be retained as",
+            "subject": "CSV table"
+          }
+        ],
+        "statement": "A large CSV table with 500 repeated rows should generally not be stored verbatim as durable memory; prefer a concise schema-level summary or an external reference to the source data."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recognized the input as a large repetitive table.",
+        "Chose non-verbatim storage to preserve memory quality.",
+        "Avoided committing unnecessary row-level details."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If row-level retrieval is needed later, store the original CSV as an external artifact and index it separately.",
+      "If only the pattern matters, store the schema and note that the rows are repetitive.",
+      "If the table is important for provenance, keep a checksum or file reference rather than all rows."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Evaluate whether a large repetitive CSV table should be committed as durable memory and, if so, in what form.\",\"decision\":\"Do not store the full 500-row CSV as durable memory. If anything is retained, keep only a compact structural summary or source reference, because the content is repetitive and low-signal.\",\"memory_cards\":[{\"kind\":\"policy\",\"statement\":\"A large CSV table with 500 repeated rows should generally not be stored verbatim as durable memory; prefer a concise schema-level summary or an external reference to the source data.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"CSV table\",\"type\":\"artifact\",\"role\":\"input data\"},{\"name\":\"durable memory\",\"type\":\"concept\",\"role\":\"storage target\"}],\"relationships\":[{\"subject\":\"CSV table\",\"predicate\":\"should not be stored as\",\"object\":\"verbatim durable memory\"},{\"subject\":\"CSV table\",\"predicate\":\"should be retained as\",\"object\":\"compact summary or source reference\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input describes a generic table rather than a uniquely identifiable entity that needs resolution.\"},\"conflict_classification\":\"none\",\"answer\":\"Store only a compact summary or source pointer, not the full repeated 500-row CSV, unless a later task explicitly requires row-level persistence.\",\"citations\":[\"Input: CSV table with 500 rows: id,name,value repeated many times\",\"Policy question: how should it be stored?\"],\"repair_options\":[\"If row-level retrieval is needed later, store the original CSV as an external artifact and index it separately.\",\"If only the pattern matters, store the schema and note that the rows are repetitive.\",\"If the table is important for provenance, keep a checksum or file reference rather than all rows.\"],\"receipt\":{\"success\":true,\"details\":[\"Recognized the input as a large repetitive table.\",\"Chose non-verbatim storage to preserve memory quality.\",\"Avoided committing unnecessary row-level details.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

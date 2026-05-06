@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "fixture_id": "slack_success_receipt_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Stored as a provisional memory with ambiguous identity.",
+    "citations": [
+      "For context, /brain remember Sam from Goldman mentioned that he likes Bill Evans."
+    ],
+    "conflict_classification": "none",
+    "decision": "accepted",
+    "entity_resolution": {
+      "action": "provisionally_link",
+      "entity_id": null,
+      "reason": "Sam is identified only as 'Sam from Goldman'; the specific person is ambiguous, so no durable unique entity ID should be committed."
+    },
+    "intent": "store_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman reportedly likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured a tentative preference memory.",
+        "Preserved ambiguity about which Sam is meant."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you mean a specific Sam, provide a last name or role at Goldman.",
+      "If 'Goldman' refers to a different affiliation than Goldman Sachs, clarify the organization."
+    ]
+  },
+  "raw_text": "{\"intent\":\"store_memory\",\"decision\":\"accepted\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman reportedly likes Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"preferred artist\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"associated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"provisionally_link\",\"entity_id\":null,\"reason\":\"Sam is identified only as 'Sam from Goldman'; the specific person is ambiguous, so no durable unique entity ID should be committed.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored as a provisional memory with ambiguous identity.\",\"citations\":[\"For context, /brain remember Sam from Goldman mentioned that he likes Bill Evans.\"],\"repair_options\":[\"If you mean a specific Sam, provide a last name or role at Goldman.\",\"If 'Goldman' refers to a different affiliation than Goldman Sachs, clarify the organization.\"],\"receipt\":{\"success\":true,\"details\":[\"Captured a tentative preference memory.\",\"Preserved ambiguity about which Sam is meant.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

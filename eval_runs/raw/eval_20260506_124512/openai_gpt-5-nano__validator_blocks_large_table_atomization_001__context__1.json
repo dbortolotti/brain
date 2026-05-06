@@ -1,0 +1,77 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_large_table_atomization_001__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "The proposal outlines creating 500 memory cards from CSV rows but lacks unique, durable identifiers and deduplication rules. Recommend adopting a stable mapping using row_id as primary key, with de-duplication checks and versioned cards to avoid superseding valid historical data.",
+    "citations": [
+      "fixture: validator_blocks_large_table_atomization_001__context"
+    ],
+    "conflict_classification": "ambiguous_mapping_between_csv_rows_and_memory_cards",
+    "decision": "reject_superseded_or_duplicate_entries",
+    "entity_resolution": {
+      "action": "preserve_ambiguity_and_reduce_bloat",
+      "entity_id": null,
+      "reason": "No durable, unique identifiers provided for individual CSV rows; potential duplicates/overlaps require evidence to resolve."
+    },
+    "intent": "validate_and_summarize_large_memory_card_fixture",
+    "memory_cards": [
+      {
+        "confidence": "0.75",
+        "entities": [
+          {
+            "name": "500 memory cards",
+            "role": "quantity",
+            "type": "count"
+          },
+          {
+            "name": "CSV row",
+            "role": "source",
+            "type": "concept"
+          },
+          {
+            "name": "Brain",
+            "role": "storage_target",
+            "type": "system"
+          }
+        ],
+        "kind": "card",
+        "relationships": [
+          {
+            "object": "CSV row",
+            "predicate": "corresponds_to",
+            "subject": "500 memory cards"
+          },
+          {
+            "object": "dataset",
+            "predicate": "part_of",
+            "subject": "CSV row"
+          },
+          {
+            "object": "Brain",
+            "predicate": "store_in",
+            "subject": "memory cards"
+          }
+        ],
+        "statement": "An approach proposes 500 memory cards, each corresponding to a row in a CSV dataset, to be stored in Brain as discrete memory entries."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Validated schema conformance for the provided object.",
+        "Identified lack of durable identifiers and risk of oversaturation."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Introduce a durable, unique row_id per CSV row and use it as the memory_card.id/primary key.",
+      "Implement de-duplication by comparing row content hashes; merge or link duplicates rather than create duplicates.",
+      "Version memory cards with timestamps and a 'valid_until' flag to preserve history.",
+      "Store provenance metadata for each card (source file, row_number, import_timestamp).",
+      "Limit initial materialization to a subset or offer on-demand creation to manage scale."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"validate_and_summarize_large_memory_card_fixture\",\n  \"decision\": \"reject_superseded_or_duplicate_entries\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"card\",\n      \"statement\": \"An approach proposes 500 memory cards, each corresponding to a row in a CSV dataset, to be stored in Brain as discrete memory entries.\",\n      \"confidence\": \"0.75\",\n      \"entities\": [\n        {\"name\": \"500 memory cards\", \"type\": \"count\", \"role\": \"quantity\"},\n        {\"name\": \"CSV row\", \"type\": \"concept\", \"role\": \"source\"},\n        {\"name\": \"Brain\", \"type\": \"system\", \"role\": \"storage_target\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"500 memory cards\", \"predicate\": \"corresponds_to\", \"object\": \"CSV row\"},\n        {\"subject\": \"CSV row\", \"predicate\": \"part_of\", \"object\": \"dataset\"},\n        {\"subject\": \"memory cards\", \"predicate\": \"store_in\", \"object\": \"Brain\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"preserve_ambiguity_and_reduce_bloat\",\n    \"entity_id\": null,\n    \"reason\": \"No durable, unique identifiers provided for individual CSV rows; potential duplicates/overlaps require evidence to resolve.\"\n  },\n  \"conflict_classification\": \"ambiguous_mapping_between_csv_rows_and_memory_cards\",\n  \"answer\": \"The proposal outlines creating 500 memory cards from CSV rows but lacks unique, durable identifiers and deduplication rules. Recommend adopting a stable mapping using row_id as primary key, with de-duplication checks and versioned cards to avoid superseding valid historical data.\",\n  \"citations\": [\n    \"fixture: validator_blocks_large_table_atomization_001__context\"\n  ],\n  \"repair_options\": [\n    \"Introduce a durable, unique row_id per CSV row and use it as the memory_card.id/primary key.\",\n    \"Implement de-duplication by comparing row content hashes; merge or link duplicates rather than create duplicates.\",\n    \"Version memory cards with timestamps and a 'valid_until' flag to preserve history.\",\n    \"Store provenance metadata for each card (source file, row_number, import_timestamp).\",\n    \"Limit initial materialization to a subset or offer on-demand creation to manage scale.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Validated schema conformance for the provided object.\",\n      \"Identified lack of durable identifiers and risk of oversaturation.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

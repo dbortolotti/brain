@@ -1,0 +1,56 @@
+{
+  "error": null,
+  "fixture_id": "recall_hide_deleted_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Sam likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "no_active_conflict",
+    "decision": "use_current_memory_only",
+    "entity_resolution": {
+      "action": "resolved_from_memory",
+      "entity_id": null,
+      "reason": "Matches the current stored preference for Sam."
+    },
+    "intent": "recall_music_preferences",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_artist",
+            "type": "musician"
+          }
+        ],
+        "kind": "user_preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Used current memory: Sam likes Bill Evans.",
+        "Did not treat deleted memory (Sam likes Taylor Swift) as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want to include previously deleted preferences, re-upload/restore that memory explicitly."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"recall_music_preferences\",\n  \"decision\": \"use_current_memory_only\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"user_preference\",\n      \"statement\": \"Sam likes Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"musician\",\n          \"role\": \"liked_artist\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolved_from_memory\",\n    \"entity_id\": null,\n    \"reason\": \"Matches the current stored preference for Sam.\"\n  },\n  \"conflict_classification\": \"no_active_conflict\",\n  \"answer\": \"Sam likes Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If you want to include previously deleted preferences, re-upload/restore that memory explicitly.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Used current memory: Sam likes Bill Evans.\",\n      \"Did not treat deleted memory (Sam likes Taylor Swift) as current.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

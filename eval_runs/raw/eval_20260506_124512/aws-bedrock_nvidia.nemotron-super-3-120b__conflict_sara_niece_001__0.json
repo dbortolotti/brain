@@ -1,0 +1,94 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "The statements 'Sara is Daniele's daughter and Nur's twin' and 'Sara is my niece' are in direct contradiction unless the speaker is Daniele or Nur's sibling (making Sara their niece via sibling relationship), but no such identity is provided for the speaker. Without evidence linking the speaker to Daniele or Nur's family, the two statements cannot both be true simultaneously.",
+    "citations": [],
+    "conflict_classification": "direct_contradiction",
+    "decision": "conflict",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No entity ambiguity detected; conflict arises from contradictory relational facts about Sara."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "sibling",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is daughter of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is twin of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "speaker",
+            "role": "relative",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "speaker",
+            "predicate": "is niece of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict identified: familial role inconsistency.",
+        "No entity resolution needed; Sara is consistently identified.",
+        "Contradiction hinges on undefined speaker role.",
+        "Classification: direct_contradiction due to incompatible kinship assertions without bridging context."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify the speaker's relationship to Daniele or Nur to determine if 'my niece' is consistent with Sara being Daniele's daughter.",
+      "Request additional context about the speaker's identity to resolve the familial relationship.",
+      "Treat both statements as provisional until speaker identity is established."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"classify_conflict\",\n  \"decision\": \"conflict\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is Daniele's daughter and Nur's twin.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"parent\"\n        },\n        {\n          \"name\": \"Nur\",\n          \"type\": \"person\",\n          \"role\": \"sibling\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is daughter of\",\n          \"object\": \"Daniele\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is twin of\",\n          \"object\": \"Nur\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is my niece.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"speaker\",\n          \"type\": \"person\",\n          \"role\": \"relative\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is niece of\",\n          \"object\": \"speaker\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No entity ambiguity detected; conflict arises from contradictory relational facts about Sara.\"\n  },\n  \"conflict_classification\": \"direct_contradiction\",\n  \"answer\": \"The statements 'Sara is Daniele's daughter and Nur's twin' and 'Sara is my niece' are in direct contradiction unless the speaker is Daniele or Nur's sibling (making Sara their niece via sibling relationship), but no such identity is provided for the speaker. Without evidence linking the speaker to Daniele or Nur's family, the two statements cannot both be true simultaneously.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Clarify the speaker's relationship to Daniele or Nur to determine if 'my niece' is consistent with Sara being Daniele's daughter.\",\n    \"Request additional context about the speaker's identity to resolve the familial relationship.\",\n    \"Treat both statements as provisional until speaker identity is established.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Conflict identified: familial role inconsistency.\",\n      \"No entity resolution needed; Sara is consistently identified.\",\n      \"Contradiction hinges on undefined speaker role.\",\n      \"Classification: direct_contradiction due to incompatible kinship assertions without bridging context.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

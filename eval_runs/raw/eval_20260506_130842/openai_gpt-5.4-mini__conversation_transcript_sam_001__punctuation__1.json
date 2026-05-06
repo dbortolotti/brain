@@ -1,0 +1,134 @@
+{
+  "error": null,
+  "fixture_id": "conversation_transcript_sam_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Stored durable updates: Sam left Goldman last month and joined Point72; he still listens to Bill Evans but lately more early Coltrane; and he wants to catch up about AI infrastructure and receive the article.",
+    "citations": [
+      "Daniele: Still at Goldman? / Sam: No, I left Goldman last month and joined Point72",
+      "Daniele: Still listening to Bill Evans? / Sam: Yes, but lately more early Coltrane",
+      "Daniele: We should catch up about AI infra / Sam: Definitely, send me that article"
+    ],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No prior entity record provided; names appear unambiguous in this transcript."
+    },
+    "intent": "compile_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "self",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "job_update",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said he left Goldman last month and joined Point72."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "self",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "artist",
+            "type": "person"
+          },
+          {
+            "name": "Coltrane",
+            "role": "artist",
+            "type": "person"
+          }
+        ],
+        "kind": "music_preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "listens_to",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "listens_more_lately_to",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said he is still listening to Bill Evans, but lately more early Coltrane."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "self",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "other",
+            "type": "person"
+          }
+        ],
+        "kind": "topic_followup",
+        "relationships": [
+          {
+            "object": "AI infra",
+            "predicate": "wants_to_discuss",
+            "subject": "Sam"
+          },
+          {
+            "object": "article from Daniele",
+            "predicate": "requested",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam was open to following up about AI infrastructure and asked Daniele to send an article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "3 memory cards compiled",
+        "No conflicts detected",
+        "Ambiguity preserved where relevant"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If needed, add a follow-up card with the specific AI infra article once provided."
+    ]
+  },
+  "raw_text": "{\"intent\":\"compile_memory\",\"decision\":\"store\",\"memory_cards\":[{\"kind\":\"job_update\",\"statement\":\"Sam said he left Goldman last month and joined Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"self\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"current employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"left\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]},{\"kind\":\"music_preference\",\"statement\":\"Sam said he is still listening to Bill Evans, but lately more early Coltrane.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"self\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"artist\"},{\"name\":\"Coltrane\",\"type\":\"person\",\"role\":\"artist\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"listens_to\",\"object\":\"Bill Evans\"},{\"subject\":\"Sam\",\"predicate\":\"listens_more_lately_to\",\"object\":\"early Coltrane\"}]},{\"kind\":\"topic_followup\",\"statement\":\"Sam was open to following up about AI infrastructure and asked Daniele to send an article.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"self\"},{\"name\":\"Daniele\",\"type\":\"person\",\"role\":\"other\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"wants_to_discuss\",\"object\":\"AI infra\"},{\"subject\":\"Sam\",\"predicate\":\"requested\",\"object\":\"article from Daniele\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No prior entity record provided; names appear unambiguous in this transcript.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored durable updates: Sam left Goldman last month and joined Point72; he still listens to Bill Evans but lately more early Coltrane; and he wants to catch up about AI infrastructure and receive the article.\",\"citations\":[\"Daniele: Still at Goldman? / Sam: No, I left Goldman last month and joined Point72\",\"Daniele: Still listening to Bill Evans? / Sam: Yes, but lately more early Coltrane\",\"Daniele: We should catch up about AI infra / Sam: Definitely, send me that article\"],\"repair_options\":[\"If needed, add a follow-up card with the specific AI infra article once provided.\"],\"receipt\":{\"success\":true,\"details\":[\"3 memory cards compiled\",\"No conflicts detected\",\"Ambiguity preserved where relevant\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

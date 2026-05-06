@@ -1,0 +1,58 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_unresolved_pronoun_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory card rejected due to unresolved pronoun 'He'. Commitment requires antecedent clarification.",
+    "conflict_classification": "unresolved_reference_conflict",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "block",
+      "entity_id": "He",
+      "reason": "Ambiguous pronoun reference violates durable memory preservation rules (no superseded/deleted facts). Requires explicit antecedent resolution before commitment."
+    },
+    "intent": "resolve_unambiguous_pronoun_reference",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "He",
+            "role": "unresolved_referent",
+            "type": "pronoun"
+          },
+          {
+            "name": "the other one",
+            "role": "preferred_option",
+            "type": "object"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "He"
+          }
+        ],
+        "statement": "The system lacks a resolved referent for 'He' in 'He prefers the other one.'"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Pronoun 'He' lacks a committed antecedent in durable memory.",
+        "Violates strict preservation of ambiguity rules (no implicit assumptions).",
+        "Action: Block until resolved."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Add antecedent context (e.g., 'User prefers the other one' or 'Alex prefers the other one').",
+      "Delete the card and rephrase without pronouns.",
+      "Flag for human review to resolve ambiguity."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"resolve_unambiguous_pronoun_reference\",\n  \"decision\": \"reject\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"The system lacks a resolved referent for 'He' in 'He prefers the other one.'\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"He\",\n          \"type\": \"pronoun\",\n          \"role\": \"unresolved_referent\"\n        },\n        {\n          \"name\": \"the other one\",\n          \"type\": \"object\",\n          \"role\": \"preferred_option\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"He\",\n          \"predicate\": \"prefers\",\n          \"object\": \"the other one\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"block\",\n    \"entity_id\": \"He\",\n    \"reason\": \"Ambiguous pronoun reference violates durable memory preservation rules (no superseded/deleted facts). Requires explicit antecedent resolution before commitment.\"\n  },\n  \"conflict_classification\": \"unresolved_reference_conflict\",\n  \"answer\": \"Memory card rejected due to unresolved pronoun 'He'. Commitment requires antecedent clarification.\",\n  \"repair_options\": [\n    \"Add antecedent context (e.g., 'User prefers the other one' or 'Alex prefers the other one').\",\n    \"Delete the card and rephrase without pronouns.\",\n    \"Flag for human review to resolve ambiguity.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Pronoun 'He' lacks a committed antecedent in durable memory.\",\n      \"Violates strict preservation of ambiguity rules (no implicit assumptions).\",\n      \"Action: Block until resolved.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

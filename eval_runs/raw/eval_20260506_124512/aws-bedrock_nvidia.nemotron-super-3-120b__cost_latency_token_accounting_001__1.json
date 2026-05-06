@@ -1,0 +1,117 @@
+{
+  "error": null,
+  "fixture_id": "cost_latency_token_accounting_001",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "The required eval accounting fields are: token counts (input/output), provider/model IDs, estimated price, and latency percentiles (p50, p90, p95). These enable comprehensive evaluation of cost, performance, and traceability in LLM systems.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "The required evaluation accounting fields are token counts, provider/model IDs, estimated price, and latency percentiles (p50, p90, p95). These are essential for cost, performance, and traceability analysis in LLM system evaluations.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No ambiguous entities require resolution; all terms are explicitly defined in the query and schema context."
+    },
+    "intent": "explain_required_eval_accounting_fields",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "token counts",
+            "role": "measured_value",
+            "type": "metric"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "input and output token usage",
+            "predicate": "measure",
+            "subject": "token counts"
+          }
+        ],
+        "statement": "Token counts measure input and output token usage for cost and efficiency analysis."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "provider/model IDs",
+            "role": "reference",
+            "type": "identifier"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "LLM service and version",
+            "predicate": "identify",
+            "subject": "provider/model IDs"
+          }
+        ],
+        "statement": "Provider and model IDs identify the specific LLM service and version used in evaluation."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "estimated price",
+            "role": "cost_estimate",
+            "type": "metric"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "token usage and provider pricing",
+            "predicate": "based_on",
+            "subject": "estimated price"
+          }
+        ],
+        "statement": "Estimated price calculates the monetary cost based on token usage and provider pricing."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "latency p50",
+            "role": "performance_indicator",
+            "type": "metric"
+          },
+          {
+            "name": "latency p90",
+            "role": "performance_indicator",
+            "type": "metric"
+          },
+          {
+            "name": "latency p95",
+            "role": "performance_indicator",
+            "type": "metric"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "50th, 90th, and 95th percentiles of response time",
+            "predicate": "represent",
+            "subject": "latency p50 p90 p95"
+          }
+        ],
+        "statement": "Latency p50, p90, p95 represent the 50th, 90th, and 95th percentiles of response time, indicating typical and tail performance."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "All required fields explained per schema.",
+        "No conflicting or deprecated information presented.",
+        "Response adheres to JSON format without markdown."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"explain_required_eval_accounting_fields\",\n  \"decision\": \"The required evaluation accounting fields are token counts, provider/model IDs, estimated price, and latency percentiles (p50, p90, p95). These are essential for cost, performance, and traceability analysis in LLM system evaluations.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Token counts measure input and output token usage for cost and efficiency analysis.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"token counts\",\n          \"type\": \"metric\",\n          \"role\": \"measured_value\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"token counts\",\n          \"predicate\": \"measure\",\n          \"object\": \"input and output token usage\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Provider and model IDs identify the specific LLM service and version used in evaluation.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"provider/model IDs\",\n          \"type\": \"identifier\",\n          \"role\": \"reference\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"provider/model IDs\",\n          \"predicate\": \"identify\",\n          \"object\": \"LLM service and version\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Estimated price calculates the monetary cost based on token usage and provider pricing.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"estimated price\",\n          \"type\": \"metric\",\n          \"role\": \"cost_estimate\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"estimated price\",\n          \"predicate\": \"based_on\",\n          \"object\": \"token usage and provider pricing\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Latency p50, p90, p95 represent the 50th, 90th, and 95th percentiles of response time, indicating typical and tail performance.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"latency p50\",\n          \"type\": \"metric\",\n          \"role\": \"performance_indicator\"\n        },\n        {\n          \"name\": \"latency p90\",\n          \"type\": \"metric\",\n          \"role\": \"performance_indicator\"\n        },\n        {\n          \"name\": \"latency p95\",\n          \"type\": \"metric\",\n          \"role\": \"performance_indicator\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"latency p50 p90 p95\",\n          \"predicate\": \"represent\",\n          \"object\": \"50th, 90th, and 95th percentiles of response time\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No ambiguous entities require resolution; all terms are explicitly defined in the query and schema context.\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"The required eval accounting fields are: token counts (input/output), provider/model IDs, estimated price, and latency percentiles (p50, p90, p95). These enable comprehensive evaluation of cost, performance, and traceability in LLM systems.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"All required fields explained per schema.\",\n      \"No conflicting or deprecated information presented.\",\n      \"Response adheres to JSON format without markdown.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

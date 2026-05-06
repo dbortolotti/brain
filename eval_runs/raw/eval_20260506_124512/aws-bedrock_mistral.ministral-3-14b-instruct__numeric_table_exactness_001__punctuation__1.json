@@ -1,0 +1,119 @@
+{
+  "error": null,
+  "fixture_id": "numeric_table_exactness_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The table data has been committed as durable memory with corrected numeric precision (e.g., '012' \u2192 '0.12'). No conflicts or superseded facts exist.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit_durable_memory",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": null,
+      "reason": "No existing entities matched the precision of the input data (e.g., '012' vs '0.12')."
+    },
+    "intent": "evaluate_numeric_table_exactness",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "subject",
+            "type": "run_id"
+          },
+          {
+            "name": "0.12",
+            "role": "reward",
+            "type": "numeric_value"
+          },
+          {
+            "name": "0.45",
+            "role": "sharpe_ratio",
+            "type": "numeric_value"
+          },
+          {
+            "name": "baseline",
+            "role": "notes",
+            "type": "metadata"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "0.12",
+            "predicate": "has_reward",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "0.45",
+            "predicate": "has_sharpe_ratio",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "baseline",
+            "predicate": "classified_as",
+            "subject": "PPO-001"
+          }
+        ],
+        "statement": "Run PPO-001 achieved a reward of 0.12 and a Sharpe ratio of 0.45, serving as the baseline configuration."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "subject",
+            "type": "run_id"
+          },
+          {
+            "name": "0.18",
+            "role": "reward",
+            "type": "numeric_value"
+          },
+          {
+            "name": "0.51",
+            "role": "sharpe_ratio",
+            "type": "numeric_value"
+          },
+          {
+            "name": "entropy_tuned",
+            "role": "notes",
+            "type": "metadata"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "0.18",
+            "predicate": "has_reward",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "0.51",
+            "predicate": "has_sharpe_ratio",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "entropy_tuning",
+            "predicate": "result_of",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "Run PPO-002 achieved a reward of 0.18 and a Sharpe ratio of 0.51, resulting from entropy tuning."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Numeric values normalized to decimal format (e.g., '012' \u2192 '0.12').",
+        "Ambiguity in punctuation (e.g., '045' \u2192 '0.45') resolved via context.",
+        "No superseded facts detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"evaluate_numeric_table_exactness\",\n  \"decision\": \"commit_durable_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Run PPO-001 achieved a reward of 0.12 and a Sharpe ratio of 0.45, serving as the baseline configuration.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"PPO-001\",\n          \"type\": \"run_id\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"0.12\",\n          \"type\": \"numeric_value\",\n          \"role\": \"reward\"\n        },\n        {\n          \"name\": \"0.45\",\n          \"type\": \"numeric_value\",\n          \"role\": \"sharpe_ratio\"\n        },\n        {\n          \"name\": \"baseline\",\n          \"type\": \"metadata\",\n          \"role\": \"notes\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"has_reward\",\n          \"object\": \"0.12\"\n        },\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"has_sharpe_ratio\",\n          \"object\": \"0.45\"\n        },\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"classified_as\",\n          \"object\": \"baseline\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Run PPO-002 achieved a reward of 0.18 and a Sharpe ratio of 0.51, resulting from entropy tuning.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"PPO-002\",\n          \"type\": \"run_id\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"0.18\",\n          \"type\": \"numeric_value\",\n          \"role\": \"reward\"\n        },\n        {\n          \"name\": \"0.51\",\n          \"type\": \"numeric_value\",\n          \"role\": \"sharpe_ratio\"\n        },\n        {\n          \"name\": \"entropy_tuned\",\n          \"type\": \"metadata\",\n          \"role\": \"notes\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"has_reward\",\n          \"object\": \"0.18\"\n        },\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"has_sharpe_ratio\",\n          \"object\": \"0.51\"\n        },\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"result_of\",\n          \"object\": \"entropy_tuning\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_new\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entities matched the precision of the input data (e.g., '012' vs '0.12').\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"The table data has been committed as durable memory with corrected numeric precision (e.g., '012' \u2192 '0.12'). No conflicts or superseded facts exist.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Numeric values normalized to decimal format (e.g., '012' \u2192 '0.12').\",\n      \"Ambiguity in punctuation (e.g., '045' \u2192 '0.45') resolved via context.\",\n      \"No superseded facts detected.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

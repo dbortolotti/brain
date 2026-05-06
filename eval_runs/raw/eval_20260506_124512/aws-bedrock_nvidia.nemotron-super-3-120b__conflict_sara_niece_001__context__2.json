@@ -1,0 +1,96 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001__context",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "The new statement 'Sara is my niece' directly contradicts the existing high-confidence memory that Sara is Daniele's daughter and Nur's twin, as being a daughter implies a parent-child relationship, while being a niece implies an aunt/uncle-niece/nephew relationship\u2014these are mutually exclusive unless Daniele is the speaker's sibling, which is not stated.",
+    "citations": [
+      "Existing high-confidence memory: Sara is Daniele's daughter and Nur's twin.",
+      "New: Sara is my niece."
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "conflict_detected",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Entities are consistent (Sara refers to the same person); conflict arises from incompatible familial relationships."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "sibling",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is daughter of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is twin of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "my",
+            "role": "speaker",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "my",
+            "predicate": "is niece of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict identified: familial roles are incompatible without additional relational context.",
+        "No entity ambiguity detected; Sara is consistently referenced.",
+        "Decision: conflict_detected with classification direct_contradiction."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify the speaker's relationship to Daniele (e.g., if speaker is Daniele's sibling, then Sara being niece is consistent).",
+      "Retract or downgrade confidence in one of the statements pending further evidence.",
+      "Seek additional context to resolve whether Daniele is the speaker's sibling."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"classify_conflict\",\n  \"decision\": \"conflict_detected\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is Daniele's daughter and Nur's twin.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"parent\"\n        },\n        {\n          \"name\": \"Nur\",\n          \"type\": \"person\",\n          \"role\": \"sibling\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is daughter of\",\n          \"object\": \"Daniele\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is twin of\",\n          \"object\": \"Nur\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is my niece.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"my\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is niece of\",\n          \"object\": \"my\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"Entities are consistent (Sara refers to the same person); conflict arises from incompatible familial relationships.\"\n  },\n  \"conflict_classification\": \"direct_contradiction\",\n  \"answer\": \"The new statement 'Sara is my niece' directly contradicts the existing high-confidence memory that Sara is Daniele's daughter and Nur's twin, as being a daughter implies a parent-child relationship, while being a niece implies an aunt/uncle-niece/nephew relationship\u2014these are mutually exclusive unless Daniele is the speaker's sibling, which is not stated.\",\n  \"citations\": [\n    \"Existing high-confidence memory: Sara is Daniele's daughter and Nur's twin.\",\n    \"New: Sara is my niece.\"\n  ],\n  \"repair_options\": [\n    \"Clarify the speaker's relationship to Daniele (e.g., if speaker is Daniele's sibling, then Sara being niece is consistent).\",\n    \"Retract or downgrade confidence in one of the statements pending further evidence.\",\n    \"Seek additional context to resolve whether Daniele is the speaker's sibling.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Conflict identified: familial roles are incompatible without additional relational context.\",\n      \"No entity ambiguity detected; Sara is consistently referenced.\",\n      \"Decision: conflict_detected with classification direct_contradiction.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

@@ -1,0 +1,52 @@
+{
+  "error": null,
+  "fixture_id": "router_recall_question__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "From the current context, Sam is known only as a person associated with Goldman; there are no explicit details about Sam's role or context beyond that affiliation.",
+    "citations": [],
+    "conflict_classification": "ambiguous_entity",
+    "decision": "provide_memory_snapshot",
+    "entity_resolution": {
+      "action": "tentative",
+      "entity_id": null,
+      "reason": "Insufficient detail to disambiguate Sam from Goldman without additional context."
+    },
+    "intent": "recall_context",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unknown",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer_or_affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "memory_card",
+        "relationships": [],
+        "statement": "Sam from Goldman is mentioned as a contact or reference in relation to prior conversations. Specific details about Sam's role, responsibilities, or projects are not provided in the current context."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Context recalled for Sam from Goldman generated.",
+        "No concrete attributes beyond affiliation included due to ambiguity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide more context about which Sam (full name or department) at Goldman.",
+      "Specify roles or projects linked to Sam to refine memory details.",
+      "If this is a new memory, create a dedicated memory card with known attributes (e.g., role, contact info) once provided."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"recall_context\",\n  \"decision\": \"provide_memory_snapshot\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"memory_card\",\n      \"statement\": \"Sam from Goldman is mentioned as a contact or reference in relation to prior conversations. Specific details about Sam's role, responsibilities, or projects are not provided in the current context.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"unknown\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer_or_affiliation\"\n        }\n      ],\n      \"relationships\": []\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"tentative\",\n    \"entity_id\": null,\n    \"reason\": \"Insufficient detail to disambiguate Sam from Goldman without additional context.\"\n  },\n  \"conflict_classification\": \"ambiguous_entity\",\n  \"answer\": \"From the current context, Sam is known only as a person associated with Goldman; there are no explicit details about Sam's role or context beyond that affiliation.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Provide more context about which Sam (full name or department) at Goldman.\",\n    \"Specify roles or projects linked to Sam to refine memory details.\",\n    \"If this is a new memory, create a dedicated memory card with known attributes (e.g., role, contact info) once provided.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Context recalled for Sam from Goldman generated.\",\n      \"No concrete attributes beyond affiliation included due to ambiguity.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124101",
+  "status": "ok"
+}

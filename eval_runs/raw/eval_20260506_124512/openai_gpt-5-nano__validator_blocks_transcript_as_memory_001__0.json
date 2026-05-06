@@ -1,0 +1,42 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_transcript_as_memory_001",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "The proposal to store an entire 8000-word transcript as a single conversation_summary card is acknowledged. Given the need to preserve ambiguity and avoid presenting superseded facts, this plan should be refined into multiple scoped memory cards with clear provenance. Proceed to incremental validation and segmentation rather than a single dense card.",
+    "citations": [],
+    "conflict_classification": "ambiguous_storage_strategy",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "defer_resolution",
+      "entity_id": null,
+      "reason": "Transcript contains numerous participants, topics, and temporal references that require incremental parsing. The plan is to validate and segment into granular memory cards before final persistence to ensure traceability and avoid ambiguity."
+    },
+    "intent": "validate_and_ingest_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [],
+        "kind": "conversation_summary",
+        "relationships": [],
+        "statement": "An 8000-word transcript is proposed to be stored as a single conversation_summary card."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ingest plan acknowledged.",
+        "Ambiguity preservation strategy outlined; multi-card approach recommended over a single long card."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Split the transcript into multiple memory cards by topic, participant, and temporal segment with links back to the original transcript.",
+      "Add provenance metadata (source, timestamp, version) for each card.",
+      "Flag uncertain statements with confidence levels and maintain a rollback mechanism if newer information supersedes earlier cards.",
+      "Create an index card mapping relationships and entities across segments to preserve context without conflating distinct moments."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"validate_and_ingest_memory\",\n  \"decision\": \"commit\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"conversation_summary\",\n      \"statement\": \"An 8000-word transcript is proposed to be stored as a single conversation_summary card.\",\n      \"confidence\": \"low\",\n      \"entities\": [],\n      \"relationships\": []\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer_resolution\",\n    \"entity_id\": null,\n    \"reason\": \"Transcript contains numerous participants, topics, and temporal references that require incremental parsing. The plan is to validate and segment into granular memory cards before final persistence to ensure traceability and avoid ambiguity.\"\n  },\n  \"conflict_classification\": \"ambiguous_storage_strategy\",\n  \"answer\": \"The proposal to store an entire 8000-word transcript as a single conversation_summary card is acknowledged. Given the need to preserve ambiguity and avoid presenting superseded facts, this plan should be refined into multiple scoped memory cards with clear provenance. Proceed to incremental validation and segmentation rather than a single dense card.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Split the transcript into multiple memory cards by topic, participant, and temporal segment with links back to the original transcript.\" ,\n    \"Add provenance metadata (source, timestamp, version) for each card.\",\n    \"Flag uncertain statements with confidence levels and maintain a rollback mechanism if newer information supersedes earlier cards.\",\n    \"Create an index card mapping relationships and entities across segments to preserve context without conflating distinct moments.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Ingest plan acknowledged.\",\n      \"Ambiguity preservation strategy outlined; multi-card approach recommended over a single long card.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

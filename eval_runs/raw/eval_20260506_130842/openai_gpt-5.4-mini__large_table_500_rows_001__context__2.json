@@ -1,0 +1,78 @@
+{
+  "error": null,
+  "fixture_id": "large_table_500_rows_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Store it compactly as a structured dataset/table reference with schema metadata; avoid durable row-by-row memory for the repeated 500-row contents unless a later task requires specific rows.",
+    "citations": [
+      "fixture: large_table_500_rows_001__context"
+    ],
+    "conflict_classification": "none",
+    "decision": "Store it as a compact structured table or dataset reference, not as 500 separate durable memory facts; preserve only the high-level schema/context unless specific rows are later needed.",
+    "entity_resolution": {
+      "action": "create_generic_entity",
+      "entity_id": null,
+      "reason": "The input refers to an unnamed CSV table fixture; no stable real-world entity should be assigned."
+    },
+    "intent": "Determine how a 500-row CSV table with repeated columns/values should be stored in Brain.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "source",
+            "type": "dataset"
+          },
+          {
+            "name": "Brain",
+            "role": "target",
+            "type": "memory_system"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "compact table reference with schema summary",
+            "predicate": "should_be_stored_as",
+            "subject": "CSV table"
+          }
+        ],
+        "statement": "For a large repeated CSV table (500 rows, columns like id, name, value), prefer storing a compact dataset/table reference and schema summary rather than ingesting each row as separate durable memory."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "500-row CSV",
+            "role": "source",
+            "type": "dataset"
+          }
+        ],
+        "kind": "constraint",
+        "relationships": [
+          {
+            "object": "500 separate durable memory entries",
+            "predicate": "not_preferred_as",
+            "subject": "500-row CSV"
+          }
+        ],
+        "statement": "Do not commit all 500 repeated rows as individual long-term memory unless a specific downstream need exists; preserve ambiguity about row-level importance."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Interpreted as a storage-policy question for a large repetitive CSV.",
+        "Chose compact structured storage over exhaustive row-level memorization."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If specific rows matter later, extract only the relevant subset into memory.",
+      "If the table is important as a whole, store its schema, provenance, and a brief summary, not every repeated row."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Determine how a 500-row CSV table with repeated columns/values should be stored in Brain.\",\"decision\":\"Store it as a compact structured table or dataset reference, not as 500 separate durable memory facts; preserve only the high-level schema/context unless specific rows are later needed.\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"For a large repeated CSV table (500 rows, columns like id, name, value), prefer storing a compact dataset/table reference and schema summary rather than ingesting each row as separate durable memory.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"CSV table\",\"type\":\"dataset\",\"role\":\"source\"},{\"name\":\"Brain\",\"type\":\"memory_system\",\"role\":\"target\"}],\"relationships\":[{\"subject\":\"CSV table\",\"predicate\":\"should_be_stored_as\",\"object\":\"compact table reference with schema summary\"}]},{\"kind\":\"constraint\",\"statement\":\"Do not commit all 500 repeated rows as individual long-term memory unless a specific downstream need exists; preserve ambiguity about row-level importance.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"500-row CSV\",\"type\":\"dataset\",\"role\":\"source\"}],\"relationships\":[{\"subject\":\"500-row CSV\",\"predicate\":\"not_preferred_as\",\"object\":\"500 separate durable memory entries\"}]}],\"entity_resolution\":{\"action\":\"create_generic_entity\",\"entity_id\":null,\"reason\":\"The input refers to an unnamed CSV table fixture; no stable real-world entity should be assigned.\"},\"conflict_classification\":\"none\",\"answer\":\"Store it compactly as a structured dataset/table reference with schema metadata; avoid durable row-by-row memory for the repeated 500-row contents unless a later task requires specific rows.\",\"citations\":[\"fixture: large_table_500_rows_001__context\"],\"repair_options\":[\"If specific rows matter later, extract only the relevant subset into memory.\",\"If the table is important as a whole, store its schema, provenance, and a brief summary, not every repeated row.\"],\"receipt\":{\"success\":true,\"details\":[\"Interpreted as a storage-policy question for a large repetitive CSV.\",\"Chose compact structured storage over exhaustive row-level memorization.\"]}}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

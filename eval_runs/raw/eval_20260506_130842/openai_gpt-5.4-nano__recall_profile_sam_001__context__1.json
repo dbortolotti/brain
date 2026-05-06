@@ -1,0 +1,128 @@
+{
+  "error": null,
+  "fixture_id": "recall_profile_sam_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Sam (associated with Goldman) likes Bill Evans and is interested in AI infrastructure. Open loop: send Sam an article about AI infrastructure.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "recall_profile",
+    "entity_resolution": {
+      "action": "match_by_name_context",
+      "entity_id": null,
+      "reason": "No explicit unique identifier provided; matched using the context 'Sam from Goldman'."
+    },
+    "intent": "Recall everything about Sam from Goldman",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "individual",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "association",
+            "type": "organization"
+          }
+        ],
+        "kind": "profile_facts",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "is_associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is associated with Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "individual",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference",
+            "type": "person"
+          }
+        ],
+        "kind": "preferences",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "individual",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "interest",
+            "type": "topic"
+          }
+        ],
+        "kind": "interests",
+        "relationships": [
+          {
+            "object": "AI infrastructure",
+            "predicate": "is_interested_in",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is interested in AI infrastructure."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "recipient",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "article_topic",
+            "type": "topic"
+          }
+        ],
+        "kind": "open_loop",
+        "relationships": [
+          {
+            "object": "send article about AI infrastructure to Sam",
+            "predicate": "requires_action",
+            "subject": "Open loop"
+          }
+        ],
+        "statement": "Open loop: send Sam an article about AI infrastructure."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recalled associated organization, preference, interest, and one open loop action."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm whether 'Sam from Goldman' refers to a specific Sam with a unique identifier (e.g., email/name spelling) to improve entity resolution.",
+      "Provide the preferred article/topic details (or a source link) so the 'send article about AI infrastructure' open loop can be completed."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Recall everything about Sam from Goldman\",\n  \"decision\": \"recall_profile\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"profile_facts\",\n      \"statement\": \"Sam is associated with Goldman.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"individual\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"association\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"is_associated_with\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"preferences\",\n      \"statement\": \"Sam likes Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"individual\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"preference\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"interests\",\n      \"statement\": \"Sam is interested in AI infrastructure.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"individual\"\n        },\n        {\n          \"name\": \"AI infrastructure\",\n          \"type\": \"topic\",\n          \"role\": \"interest\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"is_interested_in\",\n          \"object\": \"AI infrastructure\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"open_loop\",\n      \"statement\": \"Open loop: send Sam an article about AI infrastructure.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"recipient\"\n        },\n        {\n          \"name\": \"AI infrastructure\",\n          \"type\": \"topic\",\n          \"role\": \"article_topic\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Open loop\",\n          \"predicate\": \"requires_action\",\n          \"object\": \"send article about AI infrastructure to Sam\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"match_by_name_context\",\n    \"entity_id\": null,\n    \"reason\": \"No explicit unique identifier provided; matched using the context 'Sam from Goldman'.\"\n  },\n  \"conflict_classification\": \"none_detected\",\n  \"answer\": \"Sam (associated with Goldman) likes Bill Evans and is interested in AI infrastructure. Open loop: send Sam an article about AI infrastructure.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Confirm whether 'Sam from Goldman' refers to a specific Sam with a unique identifier (e.g., email/name spelling) to improve entity resolution.\",\n    \"Provide the preferred article/topic details (or a source link) so the 'send article about AI infrastructure' open loop can be completed.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Recalled associated organization, preference, interest, and one open loop action.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

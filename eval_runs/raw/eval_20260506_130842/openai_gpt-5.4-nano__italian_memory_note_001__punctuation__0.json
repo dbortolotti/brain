@@ -1,0 +1,61 @@
+{
+  "error": null,
+  "fixture_id": "italian_memory_note_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Memorizzato: Sam di Goldman preferisce Bill Evans.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit_memory",
+    "entity_resolution": {
+      "action": "link",
+      "entity_id": null,
+      "reason": "Input specifies 'Sam di Goldman' as the person; no existing entity IDs provided for resolution."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "preferrer",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam (Goldman)"
+          }
+        ],
+        "statement": "Sam di Goldman preferisce Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created a preference memory card from the provided note."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Se 'Sam' o 'Goldman' si riferiscono a identit\u00e0 specifiche diverse, indicami i dettagli per disambiguare.",
+      "Se la preferenza \u00e8 temporanea (o vale solo per certi contesti), specifica l'ambito."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"slack_intake\",\n  \"decision\": \"commit_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam di Goldman preferisce Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"preferrer\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"preferred\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam (Goldman)\",\n          \"predicate\": \"prefers\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"link\",\n    \"entity_id\": null,\n    \"reason\": \"Input specifies 'Sam di Goldman' as the person; no existing entity IDs provided for resolution.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Memorizzato: Sam di Goldman preferisce Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Se 'Sam' o 'Goldman' si riferiscono a identit\u00e0 specifiche diverse, indicami i dettagli per disambiguare.\",\n    \"Se la preferenza \u00e8 temporanea (o vale solo per certi contesti), specifica l'ambito.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Created a preference memory card from the provided note.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}

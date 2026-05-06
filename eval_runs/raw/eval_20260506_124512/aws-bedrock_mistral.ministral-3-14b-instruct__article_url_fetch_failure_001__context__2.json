@@ -1,0 +1,68 @@
+{
+  "error": null,
+  "fixture_id": "article_url_fetch_failure_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Article ingestion aborted due to unrecoverable 404 error. No durable memory created.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "abort",
+    "entity_resolution": {
+      "action": "no_resolution_needed",
+      "reason": "No conflicting entities exist; event is self-contained."
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "target_resource",
+            "type": "URL"
+          },
+          {
+            "name": "404 network error",
+            "role": "failure_condition",
+            "type": "error_code"
+          }
+        ],
+        "kind": "system_event",
+        "relationships": [
+          {
+            "object": "https://example.com/missing",
+            "predicate": "attempted_to_fetch",
+            "subject": "memory_system"
+          },
+          {
+            "object": "404 network error",
+            "predicate": "resulted_in",
+            "subject": "fetch_attempt"
+          },
+          {
+            "object": "404 network error",
+            "predicate": "aborted_ingestion_due_to",
+            "subject": "memory_system"
+          }
+        ],
+        "statement": "Failed to fetch article at URL 'https://example.com/missing' due to 404 network error."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "URL fetch failed with HTTP 404 (Not Found).",
+        "No memory cards generated for missing resource.",
+        "System preserved failure state for audit."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Verify URL correctness and retry fetch.",
+      "Check network connectivity or proxy settings.",
+      "Confirm article exists at alternate location (if known)."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_ingestion\",\n  \"decision\": \"abort\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"system_event\",\n      \"statement\": \"Failed to fetch article at URL 'https://example.com/missing' due to 404 network error.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"https://example.com/missing\",\n          \"type\": \"URL\",\n          \"role\": \"target_resource\"\n        },\n        {\n          \"name\": \"404 network error\",\n          \"type\": \"error_code\",\n          \"role\": \"failure_condition\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"memory_system\",\n          \"predicate\": \"attempted_to_fetch\",\n          \"object\": \"https://example.com/missing\"\n        },\n        {\n          \"subject\": \"fetch_attempt\",\n          \"predicate\": \"resulted_in\",\n          \"object\": \"404 network error\"\n        },\n        {\n          \"subject\": \"memory_system\",\n          \"predicate\": \"aborted_ingestion_due_to\",\n          \"object\": \"404 network error\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_resolution_needed\",\n    \"reason\": \"No conflicting entities exist; event is self-contained.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Article ingestion aborted due to unrecoverable 404 error. No durable memory created.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Verify URL correctness and retry fetch.\",\n    \"Check network connectivity or proxy settings.\",\n    \"Confirm article exists at alternate location (if known).\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"URL fetch failed with HTTP 404 (Not Found).\",\n      \"No memory cards generated for missing resource.\",\n      \"System preserved failure state for audit.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_124512",
+  "status": "ok"
+}

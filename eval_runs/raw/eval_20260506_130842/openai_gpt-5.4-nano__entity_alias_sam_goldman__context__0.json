@@ -1,0 +1,56 @@
+{
+  "error": null,
+  "fixture_id": "entity_alias_sam_goldman__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Treat 'Sam G' as the existing 'Sam from Goldman' entity; add that they like Bill Evans.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Link alias 'Sam G' to existing entity 'Sam from Goldman' and record new relationship.",
+    "entity_resolution": {
+      "action": "merge_alias_into_existing_entity",
+      "entity_id": null,
+      "reason": "Alias 'Sam G' appears to match existing aliases for the same person (Sam G, Goldman Sam) associated with 'Sam from Goldman'."
+    },
+    "intent": "entity_resolution",
+    "memory_cards": [
+      {
+        "confidence": "0.72",
+        "entities": [
+          {
+            "name": "Sam (Goldman)",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam (Goldman)"
+          }
+        ],
+        "statement": "Sam (Goldman) likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Alias mapping applied: Sam G -> Sam from Goldman.",
+        "New preference/relationship recorded: Sam likes Bill Evans."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If 'Sam G' refers to a different person, ask for additional disambiguating details (e.g., context, company, location, or full name)."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"entity_resolution\",\n  \"decision\": \"Link alias 'Sam G' to existing entity 'Sam from Goldman' and record new relationship.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"relationship\",\n      \"statement\": \"Sam (Goldman) likes Bill Evans.\",\n      \"confidence\": \"0.72\",\n      \"entities\": [\n        {\n          \"name\": \"Sam (Goldman)\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam (Goldman)\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge_alias_into_existing_entity\",\n    \"entity_id\": null,\n    \"reason\": \"Alias 'Sam G' appears to match existing aliases for the same person (Sam G, Goldman Sam) associated with 'Sam from Goldman'.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Treat 'Sam G' as the existing 'Sam from Goldman' entity; add that they like Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If 'Sam G' refers to a different person, ask for additional disambiguating details (e.g., context, company, location, or full name).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Alias mapping applied: Sam G -> Sam from Goldman.\",\n      \"New preference/relationship recorded: Sam likes Bill Evans.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_130842",
+  "status": "ok"
+}
