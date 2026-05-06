@@ -31,6 +31,24 @@ def test_invalid_slack_signature_returns_unauthorized(tmp_path, monkeypatch) -> 
     assert response.status_code == 401
 
 
+def test_placeholder_slack_signing_secret_fails_closed(tmp_path, monkeypatch) -> None:
+    settings = slack_settings(tmp_path, brain_slack_signing_secret="replace-me")
+    monkeypatch.setattr(slack_agent_server, "settings", settings)
+    client = TestClient(app)
+    body = {"type": "url_verification", "challenge": "ok"}
+
+    response = client.post(
+        "/slack/events",
+        json=body,
+        headers={
+            "X-Slack-Request-Timestamp": str(int(time.time())),
+            "X-Slack-Signature": "v0=bad",
+        },
+    )
+
+    assert response.status_code == 503
+
+
 def test_stale_slack_timestamp_is_rejected(tmp_path) -> None:
     settings = slack_settings(tmp_path)
     body = b"{}"
@@ -158,11 +176,12 @@ def slack_signature(secret: str, timestamp: str, body: bytes) -> str:
 
 
 def slack_settings(tmp_path, **overrides) -> Settings:
-    return Settings(
-        brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
-        brain_slack_agent_enabled=True,
-        brain_slack_signing_secret="test-secret",
-        brain_slack_allowed_team_ids="T1",
-        brain_slack_allowed_channel_ids="C1",
-        **overrides,
-    )
+    values = {
+        "brain_database_url": f"sqlite:///{tmp_path / 'brain.db'}",
+        "brain_slack_agent_enabled": True,
+        "brain_slack_signing_secret": "test-secret",
+        "brain_slack_allowed_team_ids": "T1",
+        "brain_slack_allowed_channel_ids": "C1",
+    }
+    values.update(overrides)
+    return Settings(**values)

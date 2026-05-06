@@ -119,7 +119,7 @@ def verify_slack_request(
 ) -> None:
     if not active_settings.brain_slack_agent_enabled:
         raise HTTPException(status_code=503, detail="Slack memory agent is disabled.")
-    if not active_settings.brain_slack_signing_secret:
+    if is_placeholder_secret(active_settings.brain_slack_signing_secret):
         raise HTTPException(status_code=503, detail="Slack signing secret is not configured.")
     if not signature or not timestamp:
         raise HTTPException(status_code=401, detail="Missing Slack signature.")
@@ -155,6 +155,10 @@ def require_slack_allowlist(slack_request: SlackAgentRequest, active_settings: S
         slack_request.user_id not in active_settings.brain_slack_allowed_user_id_list
     ):
         raise HTTPException(status_code=403, detail="Slack user is not allowed.")
+
+
+def is_placeholder_secret(value: str | None) -> bool:
+    return not value or value.strip().lower() in {"replace-me", "change-me", "changeme"}
 
 
 def strip_bot_mention(text: str) -> str:
