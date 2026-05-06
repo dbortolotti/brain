@@ -126,11 +126,11 @@ bootstrap confidence intervals, cost, latency, zero-tolerance failures, and
 pairwise model comparisons:
 
 ```bash
-uv run python -m memory_stack.evals.cli models \
+uv run brain eval models \
   --registry brain_model_registry.yaml \
   --fixture-set production \
   --roles slack_intake,memory_compiler,entity_resolution,conflict_classifier,recall_synthesizer \
-  --models openai:gpt-5.4-nano,openai:gpt-5.4-mini,google:gemini-2.5-flash-lite \
+  --model-set model-test-initial \
   --bootstrap-samples 5000 \
   --output eval_runs/prod_$(date +%Y%m%d_%H%M%S).jsonl \
   --report-md eval_reports/model_eval_$(date +%Y%m%d_%H%M%S).md

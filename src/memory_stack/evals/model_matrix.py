@@ -8,6 +8,32 @@ import yaml
 
 
 REGISTRY_PATH = Path(__file__).resolve().parents[3] / "brain_model_registry.yaml"
+MODEL_TEST_INITIAL_REFS = [
+    "openai:gpt-5-nano",
+    "openai:gpt-5.4-nano",
+    "openai:gpt-5.4-mini",
+    "openai:gpt-5.4",
+    "google:gemini-2.5-flash-lite",
+    "google:gemini-2.5-flash",
+    "google:gemini-2.5-pro",
+    "aws-bedrock:mistral.mistral-large-3-675b-instruct",
+    "aws-bedrock:mistral.ministral-3-14b-instruct",
+    "aws-bedrock:nvidia.nemotron-super-3-120b",
+    "aws-bedrock:nvidia.nemotron-nano-2",
+    "groq:llama-3.1-8b-instant",
+    "groq:llama-3.3-70b-versatile",
+    "groq:openai/gpt-oss-120b",
+    "anthropic:claude-haiku-4-5",
+    "anthropic:claude-sonnet-4-6",
+    "anthropic:claude-opus-4-7",
+    "openai:text-embedding-3-small",
+    "openai:text-embedding-3-large",
+    "voyage:voyage-4-lite",
+    "voyage:voyage-4",
+]
+MODEL_SETS = {
+    "model-test-initial": MODEL_TEST_INITIAL_REFS,
+}
 
 
 @dataclass(frozen=True)
@@ -77,7 +103,7 @@ def select_model_candidates(
         index = registry_model_index(registry)
         return dedupe_candidates(
             [
-                candidate_from_ref(ref, index, roles=roles, include_judge=include_judge)
+                candidate_from_ref(ref, index, roles=set(), include_judge=include_judge)
                 for ref in model_refs
             ]
         )
@@ -233,4 +259,3 @@ def price_config(model: dict[str, Any]) -> dict[str, float]:
         for key, value in raw.items()
         if isinstance(value, int | float)
     }
-

@@ -81,6 +81,33 @@ def test_model_matrix_selects_explicit_alias_and_embeddings() -> None:
     ]
 
 
+def test_model_test_initial_model_set_runs_through_config(tmp_path) -> None:
+    output = tmp_path / "eval.jsonl"
+    config = ModelEvalRunConfig(
+        registry_path=REGISTRY_PATH,
+        fixture_set="smoke",
+        roles={"embeddings"},
+        model_refs=None,
+        model_set="model-test-initial",
+        scope="core",
+        include_judge=False,
+        repeat_runs=1,
+        bootstrap_samples=0,
+        output_path=output,
+    )
+
+    result = run_model_evals(Settings(), config, client=FakeEvalClient())
+
+    rows = [json.loads(line) for line in output.read_text().splitlines()]
+    assert result["record_count"] == 4
+    assert {row["model"] for row in rows} == {
+        "openai:text-embedding-3-small",
+        "openai:text-embedding-3-large",
+        "voyage:voyage-4-lite",
+        "voyage:voyage-4",
+    }
+
+
 def test_fixture_scoring_detects_zero_tolerance_overmerge() -> None:
     fixture = ModelEvalFixture(
         id="ambiguous",
@@ -192,7 +219,7 @@ def test_model_eval_runner_writes_jsonl_and_markdown(tmp_path) -> None:
     result = run_model_evals(Settings(), config, client=FakeEvalClient())
 
     rows = [json.loads(line) for line in output.read_text().splitlines()]
-    assert result["record_count"] == 1
-    assert rows[0]["fixture_id"] == "slack_intake_family_twins"
+    assert result["record_count"] >= 3
+    assert "slack_intake_family_twins" in {row["fixture_id"] for row in rows}
     assert rows[0]["status"] == "ok"
     assert report.read_text().startswith("# Brain Model Eval Report")

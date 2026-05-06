@@ -51,6 +51,7 @@ class ModelEvalRunConfig:
     repeat_runs: int
     bootstrap_samples: int
     output_path: Path
+    model_set: str | None = None
     report_md_path: Path | None = None
     raw_output_dir: Path | None = None
 
@@ -62,12 +63,21 @@ def run_model_evals(
     client: EvalModelClient | None = None,
 ) -> dict:
     registry = load_model_registry(config.registry_path)
+    model_refs = config.model_refs
+    if config.model_set:
+        from memory_stack.evals.model_matrix import MODEL_SETS
+
+        if config.model_set not in MODEL_SETS:
+            raise ValueError(f"unsupported model set: {config.model_set}")
+        if model_refs:
+            raise ValueError("pass either --models or --model-set, not both")
+        model_refs = MODEL_SETS[config.model_set]
     candidates = select_model_candidates(
         registry,
-        model_refs=config.model_refs,
+        model_refs=model_refs,
         roles=config.roles,
         scope=config.scope,
-        include_judge=config.include_judge,
+        include_judge=config.include_judge or bool(config.model_set),
     )
     fixtures = select_fixtures(fixture_set=config.fixture_set, roles=config.roles)
     if not candidates:
@@ -186,13 +196,13 @@ def roles_for_candidate(
 ) -> list[str]:
     fixture_roles = {fixture.role for fixture in fixtures}
     if candidate.kind == "embedding":
-        return ["embeddings"]
+        return ["embeddings"] if not requested_roles or "embeddings" in requested_roles else []
     roles = set(candidate.roles)
     if requested_roles:
         roles &= requested_roles
     roles &= fixture_roles
     if requested_roles and not roles:
-        roles = requested_roles & fixture_roles
+        return []
     if not roles:
         roles = fixture_roles
     return sorted(roles)
@@ -252,10 +262,17 @@ def render_markdown_report(result: dict, records: list[dict]) -> str:
         f"- JSONL output: `{result['output_path']}`",
         f"- Records: `{result['record_count']}`",
         "",
-        "## Summary",
+        "## Executive Summary",
         "",
-        "| Model | Role | Variants | Overall | CI 95% | Zero tolerance | Cost USD | p95 ms | Eligible | Rejection |",
-        "|---|---|---:|---:|---:|---:|---:|---:|---|---|",
+        f"- Model-role summaries: `{len(result['summaries'])}`",
+        f"- Provider/schema failures: `{sum(1 for record in records if record['status'] != 'ok')}`",
+        f"- Zero-tolerance failures: `{sum(1 for record in records if record.get('zero_tolerance_failure'))}`",
+        f"- Eligible model-role pairs: `{sum(1 for summary in result['summaries'] if summary['eligible_for_role'])}`",
+        "",
+        "## Eligibility",
+        "",
+        "| Model | Role | Variants | Overall | CI 95% | Zero tolerance | Upper 95% fail rate | Cost / 1k successful | p50/p90/p95 ms | Eligible | Rejection |",
+        "|---|---|---:|---:|---:|---:|---:|---:|---:|---|---|",
     ]
     for summary in result["summaries"]:
         overall = summary["overall_score"]
@@ -269,11 +286,27 @@ def render_markdown_report(result: dict, records: list[dict]) -> str:
             f"{overall['mean']:.3f} | "
             f"{overall['ci95_low']:.3f}-{overall['ci95_high']:.3f} | "
             f"{zero['count']} | "
-            f"{cost['total_usd']:.6f} | "
-            f"{latency['p95']} | "
+            f"{zero['ci95_high']:.3f} | "
+            f"${cost['cost_per_1k_successful']:.4f} | "
+            f"{latency['p50']}/{latency['p90']}/{latency['p95']} | "
             f"{summary['eligible_for_role']} | "
             f"{summary['rejection_reason'] or ''} |"
         )
+    lines.extend(
+        [
+            "",
+            "## Subscores",
+            "",
+            "| Model | Role | Subscore | Mean | 95% CI |",
+            "|---|---|---|---:|---:|",
+        ]
+    )
+    for summary in result["summaries"]:
+        for key, subscore in summary["subscores"].items():
+            lines.append(
+                f"| `{summary['model']}` | `{summary['role']}` | `{key}` | "
+                f"{subscore['mean']:.3f} | {subscore['ci95_low']:.3f}-{subscore['ci95_high']:.3f} |"
+            )
     lines.extend(
         [
             "",
@@ -336,4 +369,68 @@ def render_markdown_report(result: dict, records: list[dict]) -> str:
             )
     else:
         lines.append("| | | | No zero-tolerance failures. |")
+    lines.extend(
+        [
+            "",
+            "## Worst Failure Examples",
+            "",
+            "| Model | Role | Fixture | Overall score | Raw output |",
+            "|---|---|---|---:|---|",
+        ]
+    )
+    worst = sorted(records, key=lambda record: record_mean_score(record))[:10]
+    for record in worst:
+        lines.append(
+            f"| `{record['model']}` | `{record['role']}` | `{record['fixture_id']}` | "
+            f"{record_mean_score(record):.3f} | `{record['raw_output_path']}` |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Recommended Production Defaults",
+            "",
+            *recommended_defaults(result["summaries"]),
+            "",
+            "## Recommended Escalation Rules",
+            "",
+            "- Escalate high-confidence conflicts, ambiguous entity resolution, malformed JSON, and source/material split failures to the strongest eligible model for that role.",
+            "- Prefer user choice over model guessing whenever entity ambiguity or durable-memory overwrite risk remains.",
+            "- Reject or request repair when all models fail a zero-tolerance gate for a fixture family.",
+            "",
+            "## Known Uncertainties",
+            "",
+            "- Provider quotas, account credits, and regional model availability can make a model fail operationally even when the harness is correct.",
+            "- The fixture catalogue is code-backed and broad, but scoring remains heuristic; borderline/failure samples should be judge-audited before production selection.",
+            "- Confidence intervals are scenario-group bootstraps over the configured fixture set; they become meaningful only when enough variants are run.",
+        ]
+    )
     return "\n".join(lines) + "\n"
+
+
+def record_mean_score(record: dict) -> float:
+    scores = record.get("scores") or {}
+    if not scores:
+        return 0.0
+    return sum(float(value) for value in scores.values()) / len(scores)
+
+
+def recommended_defaults(summaries: list[dict]) -> list[str]:
+    by_role: dict[str, list[dict]] = {}
+    for summary in summaries:
+        if not summary["eligible_for_role"]:
+            continue
+        by_role.setdefault(summary["role"], []).append(summary)
+    if not by_role:
+        return ["- No model-role pair met the eligibility gates in this run."]
+    lines: list[str] = []
+    for role, eligible in sorted(by_role.items()):
+        chosen = min(
+            eligible,
+            key=lambda summary: summary["cost"]["cost_per_1k_successful"],
+        )
+        lines.append(
+            f"- `{role}`: `{chosen['model']}` "
+            f"(score {chosen['overall_score']['mean']:.3f}, "
+            f"${chosen['cost']['cost_per_1k_successful']:.4f}/1k successful fixtures)."
+        )
+    return lines
