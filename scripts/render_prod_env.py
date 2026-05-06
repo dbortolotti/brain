@@ -2,8 +2,11 @@
 from __future__ import annotations
 
 import argparse
+import subprocess
 import os
 import shlex
+import sys
+from datetime import UTC, datetime
 from pathlib import Path
 
 
@@ -16,27 +19,33 @@ LOG_DIR = SHARED_DIR / "logs"
 CURRENT_LINK = PROD_ROOT / "current"
 
 
-SECRET_KEYS = {
-    "LLM_API_KEY",
-    "EMBEDDING_API_KEY",
+METADATA_KEYS = {
+    "BRAIN_CONFIG_RENDER_SHA",
+    "BRAIN_CONFIG_RENDERED_AT",
+    "BRAIN_CONFIG_RENDER_SOURCE",
+}
+REQUIRED_CONFIG_KEYS = {
     "OPENAI_API_KEY",
-    "GEMINI_API_KEY",
-    "GOOGLE_API_KEY",
-    "ANTHROPIC_API_KEY",
-    "AWS_ACCESS_KEY_ID",
-    "AWS_SECRET_ACCESS_KEY",
-    "AWS_SESSION_TOKEN",
-    "AWS_BEARER_TOKEN_BEDROCK",
-    "GROQ_API_KEY",
-    "VOYAGE_API_KEY",
     "GRAPH_DATABASE_PASSWORD",
-    "BRAIN_AUTH_TOKEN",
-    "BRAIN_SLACK_SIGNING_SECRET",
-    "BRAIN_SLACK_BOT_TOKEN",
+}
+REQUIRED_EXTERNAL_SECRET_KEYS = {
+    "BRAIN_AUTH_PASSWORD",
+}
+PLACEHOLDER_VALUES = {
+    "",
+    "change-me",
+    "replace-me",
+    "sk-...",
+    "AIza...",
+    "gsk_...",
+    "...",
 }
 
 
 ORDERED_KEYS = [
+    "BRAIN_CONFIG_RENDER_SHA",
+    "BRAIN_CONFIG_RENDERED_AT",
+    "BRAIN_CONFIG_RENDER_SOURCE",
     "PROFILE",
     "LLM_PROVIDER",
     "LLM_MODEL",
@@ -188,19 +197,57 @@ DEFAULTS = {
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", default=str(SECRETS_DIR / "brain.env"))
+    parser.add_argument("--base-output", default=None)
     parser.add_argument("--auth-password-file", default=str(SECRETS_DIR / "brain-auth-password"))
-    parser.add_argument("--no-preserve-existing", action="store_true")
+    parser.add_argument("--auth-password-base-file", default=None)
     args = parser.parse_args()
 
     output = Path(args.output)
+    base_output = Path(args.base_output) if args.base_output else last_deployed_path(output)
     auth_password_file = Path(args.auth_password_file)
+    auth_password_base_file = (
+        Path(args.auth_password_base_file)
+        if args.auth_password_base_file
+        else last_deployed_path(auth_password_file)
+    )
     output.parent.mkdir(parents=True, exist_ok=True)
 
-    existing = {} if args.no_preserve_existing else parse_env_file(output)
-    rendered = render_values(existing)
-    write_env_file(output, rendered)
-    maybe_write_auth_password(auth_password_file)
+    rendered = render_values()
+    missing = missing_required_values(rendered)
+    if missing:
+        print(
+            "missing required GitHub Secrets/Vars: " + ", ".join(sorted(missing)),
+            file=sys.stderr,
+        )
+        return 2
 
+    conflicts = config_conflicts(
+        proposed=rendered,
+        current=parse_env_file(output),
+        base=parse_env_file(base_output),
+        current_exists=output.exists(),
+        base_exists=base_output.exists(),
+    )
+    auth_password_conflict = external_secret_conflict(
+        name="BRAIN_AUTH_PASSWORD",
+        proposed=os.environ.get("BRAIN_AUTH_PASSWORD", ""),
+        current=read_secret_file(auth_password_file),
+        base=read_secret_file(auth_password_base_file),
+        current_exists=auth_password_file.exists(),
+        base_exists=auth_password_base_file.exists(),
+    )
+    if auth_password_conflict:
+        conflicts.append(auth_password_conflict)
+    if conflicts:
+        print("production config conflict; propagate prod edits to GitHub first:", file=sys.stderr)
+        for key in conflicts:
+            print(f"- {key}", file=sys.stderr)
+        return 3
+
+    write_env_file(output, rendered)
+    write_env_file(base_output, rendered)
+    write_secret_file(auth_password_file, os.environ["BRAIN_AUTH_PASSWORD"])
+    write_secret_file(auth_password_base_file, os.environ["BRAIN_AUTH_PASSWORD"])
     print(f"wrote {output}")
     return 0
 
@@ -226,13 +273,14 @@ def parse_env_file(path: Path) -> dict[str, str]:
     return values
 
 
-def render_values(existing: dict[str, str]) -> dict[str, str]:
+def render_values() -> dict[str, str]:
+    metadata = render_metadata()
     values: dict[str, str] = {}
     for key in ORDERED_KEYS:
-        if key in os.environ and os.environ[key] != "":
+        if key in metadata:
+            values[key] = metadata[key]
+        elif key in os.environ and os.environ[key] != "":
             values[key] = os.environ[key]
-        elif key in existing:
-            values[key] = existing[key]
         elif key in DEFAULTS:
             values[key] = DEFAULTS[key]
         else:
@@ -254,12 +302,100 @@ def quote_env(value: str) -> str:
     return value
 
 
-def maybe_write_auth_password(path: Path) -> None:
-    password = os.getenv("BRAIN_AUTH_PASSWORD")
-    if not password:
-        return
+def render_metadata() -> dict[str, str]:
+    return {
+        "BRAIN_CONFIG_RENDER_SHA": render_sha(),
+        "BRAIN_CONFIG_RENDERED_AT": datetime.now(UTC).isoformat(timespec="seconds"),
+        "BRAIN_CONFIG_RENDER_SOURCE": (
+            "github-actions" if os.getenv("GITHUB_ACTIONS") == "true" else "local"
+        ),
+    }
+
+
+def render_sha() -> str:
+    if value := os.getenv("GITHUB_SHA"):
+        return value
+    try:
+        return subprocess.check_output(
+            ["git", "rev-parse", "HEAD"],
+            encoding="utf-8",
+            stderr=subprocess.DEVNULL,
+        ).strip()
+    except (OSError, subprocess.CalledProcessError):
+        return "unknown"
+
+
+def missing_required_values(values: dict[str, str]) -> set[str]:
+    missing = {
+        key
+        for key in REQUIRED_CONFIG_KEYS
+        if is_placeholder_value(values.get(key, ""))
+    }
+    missing.update(
+        key
+        for key in REQUIRED_EXTERNAL_SECRET_KEYS
+        if is_placeholder_value(os.environ.get(key, ""))
+    )
+    return missing
+
+
+def is_placeholder_value(value: str) -> bool:
+    stripped = value.strip()
+    return stripped in PLACEHOLDER_VALUES or stripped.endswith("...")
+
+
+def config_conflicts(
+    *,
+    proposed: dict[str, str],
+    current: dict[str, str],
+    base: dict[str, str],
+    current_exists: bool,
+    base_exists: bool,
+) -> list[str]:
+    if current_exists and not base_exists:
+        return ["brain.env.last-deployed"]
+
+    conflicts: list[str] = []
+    keys = (set(proposed) | set(current) | set(base)) - METADATA_KEYS
+    for key in sorted(keys):
+        proposed_value = proposed.get(key, "")
+        current_value = current.get(key, "")
+        base_value = base.get(key, "")
+        if proposed_value == current_value or current_value == base_value:
+            continue
+        conflicts.append(key)
+    return conflicts
+
+
+def external_secret_conflict(
+    *,
+    name: str,
+    proposed: str,
+    current: str,
+    base: str,
+    current_exists: bool,
+    base_exists: bool,
+) -> str | None:
+    if current_exists and not base_exists:
+        return f"{name}.last-deployed"
+    if proposed == current or current == base:
+        return None
+    return name
+
+
+def last_deployed_path(path: Path) -> Path:
+    return path.with_name(f"{path.name}.last-deployed")
+
+
+def read_secret_file(path: Path) -> str:
+    if not path.exists():
+        return ""
+    return path.read_text(encoding="utf-8").strip()
+
+
+def write_secret_file(path: Path, value: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(password.rstrip("\n") + "\n", encoding="utf-8")
+    path.write_text(value.rstrip("\n") + "\n", encoding="utf-8")
     path.chmod(0o600)
 
 

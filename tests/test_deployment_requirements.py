@@ -13,6 +13,9 @@ def test_github_deploy_action_validates_before_deploying() -> None:
     assert "scripts/render_prod_env.py" in workflow
     assert "secrets.OPENAI_API_KEY" in workflow
     assert "secrets.BRAIN_AUTH_PASSWORD" in workflow
+    renderer = Path("scripts/render_prod_env.py").read_text(encoding="utf-8")
+    assert "brain.env.last-deployed" in renderer
+    assert "BRAIN_CONFIG_RENDER_SHA" in renderer
     assert workflow.index("Validate repository") < workflow.index(
         "Render production config from GitHub Secrets"
     )

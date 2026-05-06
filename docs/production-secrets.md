@@ -5,8 +5,47 @@ self-hosted `brain-prod` runner. The workflow renders
 `/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env` from GitHub Secrets and
 GitHub Variables before running `scripts/deploy-local-production.sh`.
 
-The renderer preserves existing values when a GitHub Secret or Variable is empty, so
-adding the workflow does not blank a working local production config.
+GitHub Secrets and Variables are the source of truth. Production config can still
+be edited directly for an emergency, but the next deploy will fail unless that
+change has been propagated back to GitHub.
+
+## Conflict Rule
+
+The renderer compares three files:
+
+```text
+proposed: newly rendered GitHub Secrets/Vars config
+prod:     /Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env
+base:     /Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env.last-deployed
+```
+
+For each non-metadata key:
+
+```text
+if proposed == prod:
+  no change
+elif prod == base:
+  prod has not been manually edited; overwrite with proposed
+else:
+  fail deploy
+```
+
+After a successful render, both `brain.env` and `brain.env.last-deployed` are
+updated to the proposed config.
+
+The generated config includes metadata for diagnostics:
+
+```text
+BRAIN_CONFIG_RENDER_SHA
+BRAIN_CONFIG_RENDERED_AT
+BRAIN_CONFIG_RENDER_SOURCE
+```
+
+These metadata keys are ignored during conflict comparison.
+
+`BRAIN_AUTH_PASSWORD` is handled similarly, but is written to
+`/Volumes/xpg_usb4/prod/brain/shared/secrets/brain-auth-password` with a matching
+`brain-auth-password.last-deployed` snapshot.
 
 ## Required Secrets
 
