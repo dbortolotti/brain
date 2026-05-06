@@ -47,6 +47,11 @@ def test_datasource_tools_are_listed() -> None:
         "brain.get_source",
         "brain.resolve_conflict",
         "brain.forget",
+        "brain.review_recent",
+        "brain.undo_last",
+        "brain.sync_cognee",
+        "brain.rebuild_cognee",
+        "brain.merge_entities",
     } == tool_names
     assert {
         "add",
@@ -73,6 +78,11 @@ def test_memory_tools_expose_node_set_and_search_options() -> None:
         "brain.get_source",
         "brain.resolve_conflict",
         "brain.forget",
+        "brain.review_recent",
+        "brain.undo_last",
+        "brain.sync_cognee",
+        "brain.rebuild_cognee",
+        "brain.merge_entities",
     } <= set(tools)
 
     remember_properties = tools["brain.remember"]["inputSchema"]["properties"]
@@ -243,6 +253,30 @@ def test_brain_ingest_source_and_get_source_mcp_tools(tmp_path) -> None:
     assert source_payload["source"]["id"] == source_id
     assert source_payload["source"]["kind"] == "markdown"
     assert "Knowledge graphs matter" in source_payload["text"]
+
+
+def test_brain_ingest_source_rest_accepts_source_schema(tmp_path) -> None:
+    previous_settings = mcp_server.settings
+    mcp_server.settings = Settings(brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}")
+    try:
+        client = TestClient(app)
+        response = client.post(
+            "/memory/ingest_source",
+            json={
+                "source": "# Source\nKnowledge graphs matter for Brain.",
+                "source_kind": "markdown",
+                "title": "Knowledge graph note",
+                "metadata": {"origin": "test"},
+            },
+        )
+    finally:
+        mcp_server.settings = previous_settings
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["classification"] == "markdown"
+    assert payload["source"]["created"] is True
+    assert payload["memory_cards"][0]["kind"] == "source_summary"
 
 
 def test_list_datasources_http_endpoint(monkeypatch) -> None:

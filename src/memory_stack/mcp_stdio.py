@@ -2,16 +2,22 @@ from __future__ import annotations
 
 from typing import Any
 
-from memory_stack.brain_models import RecallRequest, RememberRequest
+from memory_stack.brain_models import IngestSourceRequest, RecallRequest, RememberRequest
 from memory_stack.brain_service import (
     forget as brain_forget,
     get_memory as brain_get_memory,
     get_source as brain_get_source,
+    ingest_source as brain_ingest_source,
     list_open_loops as brain_list_open_loops,
+    merge_entities as brain_merge_entities,
     profile_entity as brain_profile_entity,
     recall as brain_recall,
     remember as brain_remember,
+    rebuild_cognee as brain_rebuild_cognee,
     resolve_conflict as brain_resolve_conflict,
+    review_recent as brain_review_recent,
+    sync_cognee as brain_sync_cognee,
+    undo_last as brain_undo_last,
 )
 from memory_stack.config import load_settings
 
@@ -54,19 +60,16 @@ def build_server():
         metadata: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Store source material and optionally extract durable Brain memories."""
-        request = RememberRequest(
-            input=source,
-            input_type=input_type_for_source_kind(source_kind, source),
-            source_policy="source_and_memory" if extract_memories else "source_only",
+        request = IngestSourceRequest(
+            source=source,
+            source_kind=source_kind,
+            title=title,
+            why_saved=why_saved,
+            extract_memories=extract_memories,
             dry_run=dry_run,
-            context={
-                "title": title,
-                "why_saved": why_saved,
-                "metadata": metadata or {},
-                "source_kind": source_kind,
-            },
+            metadata=metadata or {},
         )
-        receipt = brain_remember(request, settings).model_dump(mode="json")
+        receipt = brain_ingest_source(request, settings).model_dump(mode="json")
         return {
             "source_id": receipt.get("source", {}).get("source_id"),
             "status": "processed",
@@ -88,12 +91,12 @@ def build_server():
         limit: int = 20,
     ) -> dict[str, Any]:
         """Answer a user-level memory query with evidence."""
-        del include_conflicts
         request = RecallRequest(
             query=query,
             mode=mode,
             include_sources=include_sources,
             include_superseded=include_superseded,
+            include_conflicts=include_conflicts,
             limit=limit,
         )
         return brain_recall(request, settings).model_dump(mode="json")
@@ -108,13 +111,14 @@ def build_server():
         limit: int = 50,
     ) -> dict[str, Any]:
         """Build an entity-centric Brain profile."""
-        del include_sources, include_conflicts, limit
+        del include_sources, limit
         resolved_type = None if entity_type == "auto" else entity_type
         return brain_profile_entity(
             settings,
             name=name,
             entity_type=resolved_type,
             include_superseded=include_superseded,
+            include_conflicts=include_conflicts,
         ).model_dump(mode="json")
 
     @mcp.tool(name="brain.list_open_loops", structured_output=True)
@@ -205,24 +209,77 @@ def build_server():
             "cognee_sync_status": "stale",
         }
 
+    @mcp.tool(name="brain.review_recent", structured_output=True)
+    async def review_recent(
+        since: str | None = None,
+        limit: int = 20,
+        include_sources: bool = True,
+    ) -> dict[str, Any]:
+        """Review recent Brain ingestion runs, sources, memories, and conflict links."""
+        from datetime import datetime
+
+        parsed_since = None
+        if since:
+            parsed_since = datetime.fromisoformat(since.replace("Z", "+00:00"))
+        return brain_review_recent(
+            settings,
+            since=parsed_since,
+            limit=limit,
+            include_sources=include_sources,
+        )
+
+    @mcp.tool(name="brain.undo_last", structured_output=True)
+    async def undo_last(ingestion_run_id: str | None = None) -> dict[str, Any]:
+        """Soft-delete objects created by one recent ingestion run."""
+        return brain_undo_last(settings, ingestion_run_id=ingestion_run_id)
+
+    @mcp.tool(name="brain.sync_cognee", structured_output=True)
+    async def sync_cognee(
+        object_type: str = "all",
+        object_id: str | None = None,
+        dataset: str = "all",
+        force: bool = False,
+    ) -> dict[str, Any]:
+        """Manually sync pending Brain projections to Cognee."""
+        return brain_sync_cognee(
+            settings,
+            object_type=object_type,
+            object_id=object_id,
+            dataset=dataset,
+            force=force,
+        )
+
+    @mcp.tool(name="brain.rebuild_cognee", structured_output=True)
+    async def rebuild_cognee(
+        dataset: str = "all",
+        prune_first: bool = False,
+        confirm: bool = False,
+    ) -> dict[str, Any]:
+        """Mark Cognee projections stale so they can be rebuilt from Brain DB."""
+        return brain_rebuild_cognee(
+            settings,
+            dataset=dataset,
+            prune_first=prune_first,
+            confirm=confirm,
+        )
+
+    @mcp.tool(name="brain.merge_entities", structured_output=True)
+    async def merge_entities(
+        primary_entity_id: str,
+        duplicate_entity_id: str,
+        reason: str | None = None,
+        confirm: bool = False,
+    ) -> dict[str, Any]:
+        """Merge a duplicate entity into a primary entity after confirmation."""
+        return brain_merge_entities(
+            settings,
+            primary_entity_id=primary_entity_id,
+            duplicate_entity_id=duplicate_entity_id,
+            reason=reason,
+            confirm=confirm,
+        )
+
     return mcp
-
-
-def input_type_for_source_kind(source_kind: str, source: str) -> str:
-    normalized = source_kind.strip().lower()
-    if normalized == "auto":
-        return "article_url" if source.startswith(("http://", "https://")) else "source_text"
-    mapping = {
-        "article": "article_url" if source.startswith(("http://", "https://")) else "article",
-        "transcript": "transcript",
-        "markdown": "markdown",
-        "table": "table",
-        "chat_log": "transcript",
-        "pdf": "source_text",
-        "email": "source_text",
-        "other": "source_text",
-    }
-    return mapping.get(normalized, "source_text")
 
 
 def main() -> None:

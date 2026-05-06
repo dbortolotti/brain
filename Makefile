@@ -1,4 +1,4 @@
-.PHONY: setup up down check smoke ingest-sample recall-sample eval tokens reset reset-hard mcp-config mcp-http ui-proxy deploy-local-production prod-check ui-prod-check backup cloudflare-verify test lint
+.PHONY: setup up down check smoke ingest-sample recall-sample eval brain-eval tokens reset reset-hard mcp-config mcp-http slack-agent ui-proxy deploy-local-production prod-check slack-agent-check ui-prod-check backup cloudflare-verify test lint
 
 setup:
 	uv sync --all-extras
@@ -24,6 +24,9 @@ recall-sample:
 eval:
 	uv run python -m memory_stack.eval_runner --queries eval/queries.yaml --output eval/results/results.csv
 
+brain-eval:
+	uv run python -m memory_stack.evals.cli --output eval/results/brain-golden.json
+
 tokens:
 	uv run python scripts/estimate_tokens.py --input data/samples/synthetic_property_emails.jsonl
 
@@ -39,6 +42,9 @@ mcp-config:
 mcp-http:
 	uv run python -m memory_stack.mcp_server
 
+slack-agent:
+	uv run python -m memory_stack.slack_agent_server
+
 ui-proxy:
 	uv run python -m uvicorn memory_stack.ui_proxy:app --host 127.0.0.1 --port 8002
 
@@ -47,6 +53,9 @@ deploy-local-production:
 
 prod-check:
 	uv run python scripts/verify_mcp_production.py
+
+slack-agent-check:
+	uv run python scripts/verify_slack_agent.py
 
 ui-prod-check:
 	uv run python scripts/verify_cognee_ui_production.py

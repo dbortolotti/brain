@@ -81,6 +81,26 @@ class RememberRequest(BaseModel):
     context: dict[str, Any] = Field(default_factory=dict)
 
 
+class IngestSourceRequest(BaseModel):
+    source: str
+    source_kind: Literal[
+        "auto",
+        "article",
+        "transcript",
+        "markdown",
+        "pdf",
+        "email",
+        "table",
+        "chat_log",
+        "other",
+    ] = "auto"
+    title: str | None = None
+    why_saved: str | None = None
+    extract_memories: bool = True
+    dry_run: bool = False
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+
 class SourceReceipt(BaseModel):
     created: bool
     source_id: str | None = None
@@ -119,6 +139,7 @@ class RecallRequest(BaseModel):
     mode: str = "auto"
     include_sources: bool = True
     include_superseded: bool = False
+    include_conflicts: bool = True
     limit: int = 20
 
 

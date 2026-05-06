@@ -4,6 +4,7 @@ set -euo pipefail
 APP_NAME="brain"
 LABEL="com.brain.mcp"
 UI_LABEL="com.brain.ui"
+SLACK_LABEL="com.brain.slack-agent"
 PROD_ROOT="${BRAIN_PROD_ROOT:-/Volumes/xpg_usb4/prod/brain}"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SHA="${GITHUB_SHA:-$(git -C "$REPO_ROOT" rev-parse HEAD)}"
@@ -20,6 +21,8 @@ PLIST_SRC="$REPO_ROOT/launchd/com.brain.mcp.plist.template"
 PLIST_DST="$HOME/Library/LaunchAgents/$LABEL.plist"
 UI_PLIST_SRC="$REPO_ROOT/launchd/com.brain.ui.plist.template"
 UI_PLIST_DST="$HOME/Library/LaunchAgents/$UI_LABEL.plist"
+SLACK_PLIST_SRC="$REPO_ROOT/launchd/com.brain.slack-agent.plist.template"
+SLACK_PLIST_DST="$HOME/Library/LaunchAgents/$SLACK_LABEL.plist"
 
 log() {
   printf '[deploy] %s\n' "$*"
@@ -98,6 +101,17 @@ BRAIN_UI_BACKEND_PORT=8001
 BRAIN_PUBLIC_UI_PATH=/ui
 BRAIN_PUBLIC_UI_API_PATH=/ui-api
 BRAIN_UI_SESSION_SECONDS=43200
+BRAIN_SLACK_AGENT_ENABLED=true
+BRAIN_SLACK_AGENT_HOST=127.0.0.1
+BRAIN_SLACK_AGENT_PORT=8003
+BRAIN_SLACK_SIGNING_SECRET=
+BRAIN_SLACK_BOT_TOKEN=
+BRAIN_SLACK_ALLOWED_TEAM_IDS=
+BRAIN_SLACK_ALLOWED_CHANNEL_IDS=
+BRAIN_SLACK_ALLOWED_USER_IDS=
+BRAIN_SLACK_ADMIN_USER_IDS=
+BRAIN_SLACK_RULES_PATH=$CURRENT_LINK/config/slack_memory_agent_rules.md
+BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE=false
 EOF
   chmod 600 "$SECRETS_DIR/brain.env"
 fi
@@ -121,6 +135,17 @@ ensure_env_var "BRAIN_UI_BACKEND_PORT" "8001"
 ensure_env_var "BRAIN_PUBLIC_UI_PATH" "/ui"
 ensure_env_var "BRAIN_PUBLIC_UI_API_PATH" "/ui-api"
 ensure_env_var "BRAIN_UI_SESSION_SECONDS" "43200"
+ensure_env_var "BRAIN_SLACK_AGENT_ENABLED" "true"
+ensure_env_var "BRAIN_SLACK_AGENT_HOST" "127.0.0.1"
+ensure_env_var "BRAIN_SLACK_AGENT_PORT" "8003"
+ensure_env_var "BRAIN_SLACK_SIGNING_SECRET" ""
+ensure_env_var "BRAIN_SLACK_BOT_TOKEN" ""
+ensure_env_var "BRAIN_SLACK_ALLOWED_TEAM_IDS" ""
+ensure_env_var "BRAIN_SLACK_ALLOWED_CHANNEL_IDS" ""
+ensure_env_var "BRAIN_SLACK_ALLOWED_USER_IDS" ""
+ensure_env_var "BRAIN_SLACK_ADMIN_USER_IDS" ""
+ensure_env_var "BRAIN_SLACK_RULES_PATH" "$CURRENT_LINK/config/slack_memory_agent_rules.md"
+ensure_env_var "BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE" "false"
 
 if [[ ! -f "$SECRETS_DIR/brain-auth-password" ]]; then
   log "creating Brain OAuth password at $SECRETS_DIR/brain-auth-password"
@@ -168,6 +193,8 @@ cp "$PLIST_SRC" "$PLIST_DST"
 plutil -lint "$PLIST_DST" >/dev/null
 cp "$UI_PLIST_SRC" "$UI_PLIST_DST"
 plutil -lint "$UI_PLIST_DST" >/dev/null
+cp "$SLACK_PLIST_SRC" "$SLACK_PLIST_DST"
+plutil -lint "$SLACK_PLIST_DST" >/dev/null
 
 log "updating current symlink"
 ln -sfn "$RELEASE_DIR" "$CURRENT_LINK"
@@ -179,6 +206,9 @@ if command -v launchctl >/dev/null 2>&1; then
   log "restarting launchd service $UI_LABEL"
   launchctl bootout "gui/$(id -u)" "$UI_PLIST_DST" >/dev/null 2>&1 || true
   launchctl bootstrap "gui/$(id -u)" "$UI_PLIST_DST"
+  log "restarting launchd service $SLACK_LABEL"
+  launchctl bootout "gui/$(id -u)" "$SLACK_PLIST_DST" >/dev/null 2>&1 || true
+  launchctl bootstrap "gui/$(id -u)" "$SLACK_PLIST_DST"
 else
   log "launchctl not found; skipping service restart"
 fi
@@ -207,12 +237,25 @@ for attempt in {1..120}; do
   sleep 1
 done
 
+log "waiting for local Slack agent health"
+for attempt in {1..30}; do
+  if curl -fsS "http://127.0.0.1:8003/slack/healthz" >/dev/null 2>&1; then
+    break
+  fi
+  if [[ "$attempt" == "30" ]]; then
+    echo "local Slack agent health did not become ready" >&2
+    exit 1
+  fi
+  sleep 1
+done
+
 log "running production verifier"
 export ENV_FILE="$SECRETS_DIR/brain.env"
 (
   cd "$RELEASE_DIR"
   uv run python scripts/verify_mcp_production.py --skip-backups
   uv run python scripts/verify_cognee_ui_production.py
+  uv run python scripts/verify_slack_agent.py
 )
 
 log "deployed $APP_NAME $SHA"

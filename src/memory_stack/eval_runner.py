@@ -1,3 +1,7 @@
+"""Legacy Cognee-first eval runner.
+
+New Brain evals live under memory_stack.evals.
+"""
 from __future__ import annotations
 
 import asyncio

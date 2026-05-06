@@ -131,11 +131,11 @@ Objective:
 
 Tasks:
 
-  [ ] Create a branch:
+  [x] Create a branch:
 
         brain/memory-compiler-cognee-projection
 
-  [ ] Run the current tests using the project’s intended environment.
+  [x] Run the current tests using the project’s intended environment.
 
         Prefer:
           uv run pytest
@@ -143,9 +143,9 @@ Tasks:
         If dependencies are missing, install with:
           uv sync
 
-  [ ] Record current failing tests, if any.
+  [x] Record current failing tests, if any.
 
-  [ ] Inspect these files before editing:
+  [x] Inspect these files before editing:
 
         src/memory_stack/brain_schema.py
         src/memory_stack/brain_models.py
@@ -157,14 +157,14 @@ Tasks:
         tests/test_brain_service.py
         tests/test_mcp_server.py
 
-  [ ] Do not delete legacy Cognee eval files yet.
+  [x] Do not delete legacy Cognee eval files yet.
       They can be isolated later, but first preserve working behaviour.
 
 Acceptance criteria:
 
-  [ ] You know current test status.
-  [ ] You understand current MCP tool list.
-  [ ] No behavioural changes yet.
+  [x] You know current test status.
+  [x] You understand current MCP tool list.
+  [x] No behavioural changes yet.
 
 ================================================================================
 PHASE 1 — FIX CURRENT CORRECTNESS BUGS
@@ -205,31 +205,31 @@ Required behaviour:
 
 Implementation:
 
-  [ ] Add a shared helper in brain_store.py or a new module:
+  [x] Add a shared helper in brain_store.py or a new module:
 
         visible_memory_status_filter(
             include_superseded: bool = False,
             include_conflicts: bool = True
         )
 
-  [ ] Use this helper in:
+  [x] Use this helper in:
         - search_memory()
         - entity_profile()
         - any recall/profile code path
 
-  [ ] Ensure deleted memories never appear unless explicitly requested by
+  [x] Ensure deleted memories never appear unless explicitly requested by
       an admin/debug function.
 
 Tests:
 
-  [ ] Add test:
+  [x] Add test:
         - create current memory
         - create deleted memory
         - create archived memory
         - create superseded memory
         - recall query should return only current by default
 
-  [ ] Add test:
+  [x] Add test:
         - include_superseded=true returns superseded but not deleted/rejected
 
 --------------------------------------------------------------------------------
@@ -261,7 +261,7 @@ or semantically:
 
 Implementation:
 
-  [ ] Modify profile relationship output to include:
+  [x] Modify profile relationship output to include:
 
         subject_entity_id
         subject_name
@@ -270,20 +270,20 @@ Implementation:
         object_name
         direction_relative_to_profile_entity
 
-  [ ] Update profile rendering so direction is explicit.
+  [x] Update profile rendering so direction is explicit.
 
 Tests:
 
-  [ ] Add test using:
+  [x] Add test using:
         "Nur and Sara are my twin daughters."
 
-  [ ] Query:
+  [x] Query:
         profile_entity("Daniele")
 
-  [ ] Assert that output does not imply:
+  [x] Assert that output does not imply:
         Daniele daughter_of Nur
 
-  [ ] Assert that it correctly conveys:
+  [x] Assert that it correctly conveys:
         Nur daughter_of Daniele
         Sara daughter_of Daniele
 
@@ -293,7 +293,7 @@ Tests:
 
 Run or add tests for:
 
-  [ ] "Nur and Sara are my twin daughters."
+  [x] "Nur and Sara are my twin daughters."
       Expected:
         - family_fact memory card
         - entities: Daniele, Nur, Sara
@@ -303,14 +303,14 @@ Run or add tests for:
             Nur twin_of Sara
             Sara twin_of Nur
 
-  [ ] "Sam from Goldman mentioned that he likes Bill Evans."
+  [x] "Sam from Goldman mentioned that he likes Bill Evans."
       Expected:
         - person_interaction memory card
         - entities: Sam from Goldman, Goldman, Bill Evans
         - relationship candidate:
             Sam likes Bill Evans
 
-  [ ] "I want to learn more about knowledge graphs."
+  [x] "I want to learn more about knowledge graphs."
       Expected:
         - open_question memory card
         - open_loop row
@@ -318,10 +318,10 @@ Run or add tests for:
 
 Acceptance criteria:
 
-  [ ] Existing behaviour still works.
-  [ ] Status filtering is correct.
-  [ ] Relationship direction is correct.
-  [ ] Tests pass.
+  [x] Existing behaviour still works.
+  [x] Status filtering is correct.
+  [x] Relationship direction is correct.
+  [x] Tests pass.
 
 ================================================================================
 PHASE 2 — ALIGN MCP AND REST REQUEST MODELS
@@ -363,23 +363,23 @@ Add model:
 
 Tasks:
 
-  [ ] Add IngestSourceRequest to brain_models.py.
+  [x] Add IngestSourceRequest to brain_models.py.
 
-  [ ] Update REST endpoint:
+  [x] Update REST endpoint:
         /memory/ingest_source
 
       to accept IngestSourceRequest.
 
-  [ ] Update MCP brain.ingest_source to call the same service method.
+  [x] Update MCP brain.ingest_source to call the same service method.
 
-  [ ] Preserve backwards compatibility only if already used by tests.
+  [x] Preserve backwards compatibility only if already used by tests.
       If compatibility is needed, support both request shapes internally.
 
 Tests:
 
-  [ ] brain.ingest_source with article URL works.
-  [ ] brain.ingest_source with raw markdown works.
-  [ ] dry_run=true does not write DB rows.
+  [x] brain.ingest_source with article URL works.
+  [x] brain.ingest_source with raw markdown works.
+  [x] dry_run=true does not write DB rows.
 
 --------------------------------------------------------------------------------
 2.2 Ensure MCP tools return structured content
@@ -392,17 +392,17 @@ Each MCP tool should return both:
 
 Tasks:
 
-  [ ] Review mcp_server.py and mcp_stdio.py.
+  [x] Review mcp_server.py and mcp_stdio.py.
 
-  [ ] Ensure each tool has stable structured output.
+  [x] Ensure each tool has stable structured output.
 
-  [ ] Do not expose internal SQLAlchemy rows directly.
+  [x] Do not expose internal SQLAlchemy rows directly.
 
 Acceptance criteria:
 
-  [ ] MCP tests confirm tool list contains exactly high-level Brain tools.
-  [ ] Old low-level Cognee tools are not exposed.
-  [ ] Structured responses are stable enough for clients.
+  [x] MCP tests confirm tool list contains exactly high-level Brain tools.
+  [x] Old low-level Cognee tools are not exposed.
+  [x] Structured responses are stable enough for clients.
 
 ================================================================================
 PHASE 3 — RESTRUCTURE WITHOUT BREAKING BEHAVIOUR
@@ -452,28 +452,28 @@ Target structure:
 
 Tasks:
 
-  [ ] Move existing rule-based compile_input logic into:
+  [x] Move existing rule-based compile_input logic into:
         ingestion/rule_compiler.py
 
-  [ ] Keep brain_service.py as an orchestration facade initially.
+  [x] Keep brain_service.py as an orchestration facade initially.
 
-  [ ] Move profile rendering logic into:
+  [x] Move profile rendering logic into:
         recall/profile_builder.py
 
-  [ ] Move recall query planning/retrieval into:
+  [x] Move recall query planning/retrieval into:
         recall/planner.py
         recall/retriever.py
 
-  [ ] Do not change external API behaviour in this phase.
+  [x] Do not change external API behaviour in this phase.
 
-  [ ] Update imports and tests.
+  [x] Update imports and tests.
 
 Acceptance criteria:
 
-  [ ] Existing tests still pass.
-  [ ] brain_service.py is thinner.
-  [ ] Rule-based compiler still handles golden examples.
-  [ ] No new feature work until this refactor is stable.
+  [x] Existing tests still pass.
+  [x] brain_service.py is thinner.
+  [x] Rule-based compiler still handles golden examples.
+  [x] No new feature work until this refactor is stable.
 
 ================================================================================
 PHASE 4 — SOURCE INGESTION PIPELINE
@@ -534,14 +534,14 @@ Implement ingestion/article_loader.py.
 
 MVP behaviour:
 
-  [ ] Accept URL.
-  [ ] Fetch content if network is available in runtime.
-  [ ] Extract readable title and text if possible.
-  [ ] If fetching fails, still store source with:
+  [x] Accept URL.
+  [x] Fetch content if network is available in runtime.
+  [x] Extract readable title and text if possible.
+  [x] If fetching fails, still store source with:
         raw_text = URL or provided text
         status = failed or processed_with_warning
         metadata.fetch_error = ...
-  [ ] Do not fail entire ingestion just because fetch failed.
+  [x] Do not fail entire ingestion just because fetch failed.
 
 Tests must mock network.
 
@@ -553,10 +553,10 @@ Implement ingestion/transcript_parser.py.
 
 MVP behaviour:
 
-  [ ] Detect speaker lines when obvious.
-  [ ] Extract participants.
-  [ ] Preserve full transcript as source.
-  [ ] Feed transcript text into memory compiler for card extraction.
+  [x] Detect speaker lines when obvious.
+  [x] Extract participants.
+  [x] Preserve full transcript as source.
+  [x] Feed transcript text into memory compiler for card extraction.
 
 Do not try to perfectly diarize transcripts in MVP.
 
@@ -568,11 +568,11 @@ Implement ingestion/table_parser.py.
 
 MVP behaviour:
 
-  [ ] Detect markdown table.
-  [ ] Detect CSV-like text.
-  [ ] Parse headers and rows for small tables.
-  [ ] Store original table as source.
-  [ ] Create table_note card with:
+  [x] Detect markdown table.
+  [x] Detect CSV-like text.
+  [x] Parse headers and rows for small tables.
+  [x] Store original table as source.
+  [x] Create table_note card with:
         columns
         row_count
         sample_rows
@@ -599,17 +599,17 @@ Current code appears to mark only memory cards pending.
 
 Tasks:
 
-  [ ] Add source sync marking in source creation path.
-  [ ] Add tests.
+  [x] Add source sync marking in source creation path.
+  [x] Add tests.
 
 Acceptance criteria:
 
-  [ ] Article URL creates source row.
-  [ ] Long markdown creates source row.
-  [ ] Transcript creates source row.
-  [ ] Small table creates source row + table_note.
-  [ ] New source has cognee_sync pending row.
-  [ ] Tests do not require live network.
+  [x] Article URL creates source row.
+  [x] Long markdown creates source row.
+  [x] Transcript creates source row.
+  [x] Small table creates source row + table_note.
+  [x] New source has cognee_sync pending row.
+  [x] Tests do not require live network.
 
 ================================================================================
 PHASE 5 — LLM-BACKED MEMORY COMPILER
@@ -703,13 +703,13 @@ The LLM compiler must return strict JSON:
 
 Rules:
 
-  [ ] Preserve uncertainty.
-  [ ] Do not invent surnames, dates, firms, or relationships.
-  [ ] Direct user statement can be high confidence.
-  [ ] Extract multiple cards when source contains multiple durable memories.
-  [ ] Reject transient chat filler.
-  [ ] Create open loops for "I want to learn..." / "I wonder..." / "need to research..."
-  [ ] Ask questions only when ambiguity materially changes storage.
+  [x] Preserve uncertainty.
+  [x] Do not invent surnames, dates, firms, or relationships.
+  [x] Direct user statement can be high confidence.
+  [x] Extract multiple cards when source contains multiple durable memories.
+  [x] Reject transient chat filler.
+  [x] Create open loops for "I want to learn..." / "I wonder..." / "need to research..."
+  [x] Ask questions only when ambiguity materially changes storage.
 
 --------------------------------------------------------------------------------
 5.3 Compiler routing
@@ -733,10 +733,10 @@ Routing:
 
 Acceptance criteria:
 
-  [ ] Existing tests pass with LLM disabled.
-  [ ] New tests can inject FakeLLMClient.
-  [ ] Messy transcript fixture produces multiple cards via fake LLM output.
-  [ ] Article fixture produces article_note + key_takeaways + open_question.
+  [x] Existing tests pass with LLM disabled.
+  [x] New tests can inject FakeLLMClient.
+  [x] Messy transcript fixture produces multiple cards via fake LLM output.
+  [x] Article fixture produces article_note + key_takeaways + open_question.
 
 ================================================================================
 PHASE 6 — ENTITY RESOLUTION
@@ -773,22 +773,22 @@ EntityResolution result:
 
 Tasks:
 
-  [ ] Extract entity resolution logic out of BrainStore.
-  [ ] Preserve exact/alias behaviour.
-  [ ] Add contextual matching for common patterns:
+  [x] Extract entity resolution logic out of BrainStore.
+  [x] Preserve exact/alias behaviour.
+  [x] Add contextual matching for common patterns:
         "Sam from Goldman"
         "Sam at Goldman Sachs"
         "Sam / Goldman"
-  [ ] Add alias candidate support if not already present.
-  [ ] Do not over-merge low-confidence entities.
+  [x] Add alias candidate support if not already present.
+  [x] Do not over-merge low-confidence entities.
 
 Tests:
 
-  [ ] "Sam from Goldman" then "Sam at Goldman" resolves same entity.
-  [ ] "Sam from Goldman" and "Sam from Point72" do not automatically merge
+  [x] "Sam from Goldman" then "Sam at Goldman" resolves same entity.
+  [x] "Sam from Goldman" and "Sam from Point72" do not automatically merge
       unless strong evidence exists.
-  [ ] Alias lookup works.
-  [ ] Low-confidence ambiguity is stored, not guessed.
+  [x] Alias lookup works.
+  [x] Low-confidence ambiguity is stored, not guessed.
 
 ================================================================================
 PHASE 7 — DUPLICATE AND CONFLICT DETECTION
@@ -830,47 +830,47 @@ Conflict classes:
 
 MVP algorithm:
 
-  [ ] For each new candidate card, find similar current cards:
+  [x] For each new candidate card, find similar current cards:
         - same main entity
         - similar kind
         - overlapping topics
         - lexical similarity / simple embedding later
 
-  [ ] Classify relationship using:
+  [x] Classify relationship using:
         - deterministic heuristics first
         - LLM classifier if enabled
 
-  [ ] Apply safe default:
+  [x] Apply safe default:
         - if uncertain, keep both
         - do not delete
         - surface possible conflict in receipt
 
 Tests:
 
-  [ ] Duplicate:
+  [x] Duplicate:
         Sam likes Bill Evans.
         Sam likes Bill Evans.
       Expected:
         no duplicate current card, or duplicate link if retained.
 
-  [ ] Additive:
+  [x] Additive:
         Sam likes Bill Evans.
         Sam likes Sonny Rollins.
       Expected:
         both current.
 
-  [ ] Supersession:
+  [x] Supersession:
         Sam works at Goldman.
         Sam left Goldman and joined Point72.
       Expected:
         old superseded, new current, supersedes link.
 
-  [ ] Correction:
+  [x] Correction:
         Actually, Sam likes early Coltrane, not Bill Evans.
       Expected:
         old superseded, new current.
 
-  [ ] Contradiction:
+  [x] Contradiction:
         Sam has two children.
         Sam has no children.
       Expected:
@@ -999,12 +999,12 @@ Implement:
 
 Behaviour:
 
-  [ ] Read pending/stale rows from cognee_sync.
-  [ ] Serialize object.
-  [ ] Send to Cognee dataset.
-  [ ] Mark synced with projection_hash.
-  [ ] On failure, mark failed with error_message.
-  [ ] Do not delete Brain DB rows if Cognee sync fails.
+  [x] Read pending/stale rows from cognee_sync.
+  [x] Serialize object.
+  [x] Send to Cognee dataset.
+  [x] Mark synced with projection_hash.
+  [x] On failure, mark failed with error_message.
+  [x] Do not delete Brain DB rows if Cognee sync fails.
 
 --------------------------------------------------------------------------------
 8.4 Rebuild command
@@ -1022,9 +1022,9 @@ Implement CLI or callable:
 
 MVP behaviour:
 
-  [ ] Mark all relevant projections stale.
-  [ ] Optionally prune Cognee dataset only with explicit confirmation.
-  [ ] Reproject all non-deleted Brain records.
+  [x] Mark all relevant projections stale.
+  [x] Optionally prune Cognee dataset only with explicit confirmation.
+  [x] Reproject all non-deleted Brain records.
 
 --------------------------------------------------------------------------------
 8.5 Tests
@@ -1034,18 +1034,18 @@ Use fake Cognee adapter.
 
 Tests:
 
-  [ ] Memory card projection contains memory_id.
-  [ ] Source projection contains source_id.
-  [ ] Pending sync row becomes synced after fake adapter success.
-  [ ] Failed adapter call marks sync failed and preserves Brain DB state.
-  [ ] Source creation creates pending source sync row.
-  [ ] Memory update marks projection stale.
+  [x] Memory card projection contains memory_id.
+  [x] Source projection contains source_id.
+  [x] Pending sync row becomes synced after fake adapter success.
+  [x] Failed adapter call marks sync failed and preserves Brain DB state.
+  [x] Source creation creates pending source sync row.
+  [x] Memory update marks projection stale.
 
 Acceptance criteria:
 
-  [ ] Cognee projection is real but optional.
-  [ ] Brain still works if Cognee unavailable.
-  [ ] Cognee can be rebuilt from Brain DB.
+  [x] Cognee projection is real but optional.
+  [x] Brain still works if Cognee unavailable.
+  [x] Cognee can be rebuilt from Brain DB.
 
 ================================================================================
 PHASE 9 — COGNEE-BACKED RECALL
@@ -1177,17 +1177,17 @@ Concept output sections:
 
 Tests:
 
-  [ ] profile_entity("Sam from Goldman") includes DB facts.
-  [ ] recall("knowledge graphs") returns open_question.
-  [ ] deleted/superseded memories hidden by default.
-  [ ] fake Cognee result with memory_id is hydrated from Brain DB.
-  [ ] Cognee unavailable does not break DB recall.
+  [x] profile_entity("Sam from Goldman") includes DB facts.
+  [x] recall("knowledge graphs") returns open_question.
+  [x] deleted/superseded memories hidden by default.
+  [x] fake Cognee result with memory_id is hydrated from Brain DB.
+  [x] Cognee unavailable does not break DB recall.
 
 Acceptance criteria:
 
-  [ ] Brain recall works without Cognee.
-  [ ] Brain recall improves with Cognee enabled.
-  [ ] Brain never trusts Cognee text without hydrating Brain IDs when possible.
+  [x] Brain recall works without Cognee.
+  [x] Brain recall improves with Cognee enabled.
+  [x] Brain never trusts Cognee text without hydrating Brain IDs when possible.
 
 ================================================================================
 PHASE 10 — ADMIN TOOLS
@@ -1235,9 +1235,9 @@ Use case:
 
 Behaviour:
 
-  [ ] Soft-delete objects created by one ingestion_run.
-  [ ] Mark Cognee projections stale/deleted.
-  [ ] Never hard delete by default.
+  [x] Soft-delete objects created by one ingestion_run.
+  [x] Mark Cognee projections stale/deleted.
+  [x] Never hard delete by default.
 
 --------------------------------------------------------------------------------
 10.3 brain.sync_cognee
@@ -1270,8 +1270,8 @@ Input:
 
 Rules:
 
-  [ ] If prune_first=true, require confirm=true.
-  [ ] Do not let ordinary recall/remember flows call this.
+  [x] If prune_first=true, require confirm=true.
+  [x] Do not let ordinary recall/remember flows call this.
 
 --------------------------------------------------------------------------------
 10.5 brain.merge_entities
@@ -1290,17 +1290,17 @@ Input:
 
 Behaviour:
 
-  [ ] Move aliases.
-  [ ] Repoint memory_entities.
-  [ ] Repoint relationships.
-  [ ] Archive duplicate entity.
-  [ ] Add audit link/metadata.
+  [x] Move aliases.
+  [x] Repoint memory_entities.
+  [x] Repoint relationships.
+  [x] Archive duplicate entity.
+  [x] Add audit link/metadata.
 
 Acceptance criteria:
 
-  [ ] Admin tools are tested.
-  [ ] Dangerous tools require confirmation.
-  [ ] Default MCP flow remains simple.
+  [x] Admin tools are tested.
+  [x] Dangerous tools require confirmation.
+  [x] Default MCP flow remains simple.
 
 ================================================================================
 PHASE 11 — REMINDERS AND OPEN LOOPS
@@ -1332,28 +1332,28 @@ Reminder modes:
 
 Tasks:
 
-  [ ] Add open_loop fields if missing:
+  [x] Add open_loop fields if missing:
         priority
         next_review_at
         last_reminded_at
         reminder_policy
 
-  [ ] Implement:
+  [x] Implement:
         list_due_open_loops()
         mark_reminded(loop_id)
         find_relevant_open_loops(topic/query)
 
-  [ ] Add suppression:
+  [x] Add suppression:
         - do not remind if recently reminded
         - do not remind archived/closed loops
         - require relevance threshold
 
 Tests:
 
-  [ ] Open question creates open_loop.
-  [ ] Closed loop not returned.
-  [ ] Recently reminded loop suppressed unless include_recently_reminded=true.
-  [ ] Topic query retrieves relevant open loop.
+  [x] Open question creates open_loop.
+  [x] Closed loop not returned.
+  [x] Recently reminded loop suppressed unless include_recently_reminded=true.
+  [x] Topic query retrieves relevant open loop.
 
 ================================================================================
 PHASE 12 — SLACK INGESTION AGENT
@@ -1385,10 +1385,10 @@ Commands:
 
 Rules:
 
-  [ ] Slack bot should call Brain API/MCP service methods.
-  [ ] Slack bot should not bypass Brain DB.
-  [ ] Slack receipt should be concise and structured.
-  [ ] Slack undo should soft-delete one ingestion run.
+  [x] Slack bot should call Brain API/MCP service methods.
+  [x] Slack bot should not bypass Brain DB.
+  [x] Slack receipt should be concise and structured.
+  [x] Slack undo should soft-delete one ingestion run.
 
 Receipt example:
 
@@ -1414,9 +1414,9 @@ Receipt example:
 
 Acceptance criteria:
 
-  [ ] Slack commands tested with mocked Slack client.
-  [ ] No secrets committed.
-  [ ] Slack is optional and disabled by default.
+  [x] Slack commands tested with mocked Slack client.
+  [x] No secrets committed.
+  [x] Slack is optional and disabled by default.
 
 ================================================================================
 PHASE 13 — MIGRATIONS AND PACKAGING
@@ -1431,11 +1431,11 @@ Add proper migrations if not already present.
 
 Tasks:
 
-  [ ] Add Alembic if not already configured.
-  [ ] Create initial migration matching current schema.
-  [ ] Add migration for any new columns/tables.
-  [ ] Ensure tests can use in-memory SQLite or test Postgres, depending on current setup.
-  [ ] Document DB setup in README.
+  [x] Add Alembic if not already configured.
+  [x] Create initial migration matching current schema.
+  [x] Add migration for any new columns/tables.
+  [x] Ensure tests can use in-memory SQLite or test Postgres, depending on current setup.
+  [x] Document DB setup in README.
 
 Required docs:
 
@@ -1450,9 +1450,9 @@ Required docs:
 
 Acceptance criteria:
 
-  [ ] Fresh checkout can create schema.
-  [ ] Tests run from clean DB.
-  [ ] No manual schema setup required.
+  [x] Fresh checkout can create schema.
+  [x] Tests run from clean DB.
+  [x] No manual schema setup required.
 
 ================================================================================
 PHASE 14 — EVALUATION HARNESS
@@ -1506,9 +1506,9 @@ Metrics:
 
 Acceptance criteria:
 
-  [ ] Golden fixtures run in CI.
-  [ ] Fake LLM and fake Cognee are supported.
-  [ ] Evals do not require live external services.
+  [x] Golden fixtures run in CI.
+  [x] Fake LLM and fake Cognee are supported.
+  [x] Evals do not require live external services.
 
 ================================================================================
 PHASE 15 — CLEANUP LEGACY STRUCTURE
@@ -1525,22 +1525,22 @@ Current repo has two personalities:
 
 Tasks:
 
-  [ ] Move legacy files under:
+  [x] Move legacy files under:
         src/memory_stack/legacy_eval/
 
       or clearly mark as legacy in docs.
 
-  [ ] Ensure primary README focuses on Brain, not Cognee evals.
+  [x] Ensure primary README focuses on Brain, not Cognee evals.
 
-  [ ] Keep useful eval cases by porting them to Brain eval harness.
+  [x] Keep useful eval cases by porting them to Brain eval harness.
 
-  [ ] Remove dead code only after tests prove it is unused.
+  [x] Remove dead code only after tests prove it is unused.
 
 Acceptance criteria:
 
-  [ ] New contributor sees Brain architecture first.
-  [ ] Legacy tools do not appear as primary interface.
-  [ ] No accidental removal of useful tests.
+  [x] New contributor sees Brain architecture first.
+  [x] Legacy tools do not appear as primary interface.
+  [x] No accidental removal of useful tests.
 
 ================================================================================
 GLOBAL TEST REQUIREMENTS

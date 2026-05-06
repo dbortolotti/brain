@@ -7,7 +7,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from sqlalchemy import Engine, and_, create_engine, insert, or_, select, update
+from sqlalchemy import Engine, and_, create_engine, delete, insert, or_, select, update
 from sqlalchemy.exc import IntegrityError
 
 from memory_stack import brain_schema as schema
@@ -19,6 +19,12 @@ WORD_RE = re.compile(r"[a-z0-9]+")
 
 def now_utc() -> datetime:
     return datetime.now(UTC)
+
+
+def as_utc(value: datetime) -> datetime:
+    if value.tzinfo is None:
+        return value.replace(tzinfo=UTC)
+    return value.astimezone(UTC)
 
 
 def normalize_name(value: str) -> str:
@@ -33,6 +39,19 @@ def content_hash(*values: Any) -> str:
 def stable_id(prefix: str, *values: Any) -> str:
     digest = content_hash(*values).split(":", 1)[1][:16]
     return f"{prefix}_{digest}"
+
+
+def visible_memory_status_filter(
+    *,
+    include_superseded: bool = False,
+    include_conflicts: bool = True,
+) -> Any:
+    statuses = ["current"]
+    if include_conflicts:
+        statuses.append("conflicted")
+    if include_superseded:
+        statuses.append("superseded")
+    return schema.memory_cards.c.status.in_(statuses)
 
 
 def brain_database_url(settings: Settings) -> str:
@@ -157,62 +176,103 @@ class BrainStore:
         confidence: str = "medium",
         metadata_json: dict[str, Any] | None = None,
     ) -> tuple[dict[str, Any], bool]:
-        normalized = normalize_name(canonical_name)
-        normalized_aliases = [normalize_name(alias) for alias in aliases or [] if alias.strip()]
+        from memory_stack.resolution.entity_resolver import EntityResolver
 
+        resolution = EntityResolver(self).resolve_entity(
+            entity_type=entity_type,
+            canonical_name=canonical_name,
+            aliases=aliases,
+            confidence=confidence,
+            metadata_json=metadata_json,
+        )
+        return resolution.entity, resolution.created
+
+    def find_entity_by_normalized_name(
+        self,
+        *,
+        entity_type: str,
+        normalized_name: str,
+    ) -> dict[str, Any] | None:
         with self.engine.begin() as conn:
             row = conn.execute(
                 select(schema.entities).where(
                     and_(
                         schema.entities.c.type == entity_type,
-                        schema.entities.c.normalized_name == normalized,
+                        schema.entities.c.normalized_name == normalized_name,
                     )
                 )
             ).first()
-            if row is None and normalized_aliases:
-                row = conn.execute(
-                    select(schema.entities)
-                    .join(
-                        schema.entity_aliases,
-                        schema.entity_aliases.c.entity_id == schema.entities.c.id,
-                    )
-                    .where(
-                        and_(
-                            schema.entities.c.type == entity_type,
-                            schema.entity_aliases.c.normalized_alias.in_(normalized_aliases),
-                        )
-                    )
-                ).first()
+        return row_dict(row) if row is not None else None
 
-            created = row is None
-            if row is None:
-                entity_id = stable_id("ent", entity_type, normalized)
+    def find_entities_by_alias(
+        self,
+        *,
+        entity_type: str,
+        normalized_alias: str,
+    ) -> list[dict[str, Any]]:
+        with self.engine.begin() as conn:
+            rows = conn.execute(
+                select(schema.entities)
+                .join(
+                    schema.entity_aliases,
+                    schema.entity_aliases.c.entity_id == schema.entities.c.id,
+                )
+                .where(
+                    and_(
+                        schema.entities.c.type == entity_type,
+                        schema.entity_aliases.c.normalized_alias == normalized_alias,
+                    )
+                )
+            ).fetchall()
+        return [row_dict(row) for row in rows]
+
+    def create_entity(
+        self,
+        *,
+        entity_type: str,
+        canonical_name: str,
+        normalized_name: str,
+        confidence: str = "medium",
+        metadata_json: dict[str, Any] | None = None,
+    ) -> tuple[dict[str, Any], bool]:
+        entity_id = stable_id("ent", entity_type, normalized_name)
+        with self.engine.begin() as conn:
+            try:
                 conn.execute(
                     insert(schema.entities).values(
                         id=entity_id,
                         type=entity_type,
                         canonical_name=canonical_name,
-                        normalized_name=normalized,
+                        normalized_name=normalized_name,
                         confidence=confidence,
                         status="current",
                         metadata_json=metadata_json or {},
                     )
                 )
-                row = conn.execute(
-                    select(schema.entities).where(schema.entities.c.id == entity_id)
-                ).one()
+                created = True
+            except IntegrityError:
+                created = False
+            row = conn.execute(
+                select(schema.entities).where(schema.entities.c.id == entity_id)
+            ).one()
+        return row_dict(row), created
 
-            entity = row_dict(row)
-            for alias in aliases or []:
-                self._insert_alias(
-                    conn,
-                    entity_id=entity["id"],
-                    alias=alias,
-                    source_memory_id=None,
-                    confidence=confidence,
-                )
-
-        return entity, created
+    def add_entity_alias(
+        self,
+        *,
+        entity_id: str,
+        alias: str,
+        source_memory_id: str | None = None,
+        confidence: str = "medium",
+    ) -> None:
+        with self.engine.begin() as conn:
+            self._insert_alias(
+                conn,
+                entity_id=entity_id,
+                alias=alias,
+                source_memory_id=source_memory_id,
+                confidence=confidence,
+            )
 
     def _insert_alias(
         self,
@@ -414,6 +474,7 @@ class BrainStore:
                     .values(
                         projection_hash=projection_hash,
                         status="pending",
+                        error_message=None,
                         updated_at=now_utc(),
                     )
                 )
@@ -428,6 +489,31 @@ class BrainStore:
                     status="pending",
                 )
             )
+
+    def mark_cognee_stale(
+        self,
+        *,
+        object_type: str,
+        object_id: str,
+        dataset: str | None = None,
+        projection_hash: str | None = None,
+    ) -> int:
+        filters = [
+            schema.cognee_sync.c.object_type == object_type,
+            schema.cognee_sync.c.object_id == object_id,
+        ]
+        if dataset is not None:
+            filters.append(schema.cognee_sync.c.dataset == dataset)
+        values: dict[str, Any] = {"status": "stale", "updated_at": now_utc()}
+        if projection_hash is not None:
+            values["projection_hash"] = projection_hash
+        with self.engine.begin() as conn:
+            result = conn.execute(
+                update(schema.cognee_sync)
+                .where(and_(*filters))
+                .values(**values)
+            )
+        return result.rowcount
 
     def get_memory(self, memory_id: str) -> dict[str, Any] | None:
         with self.engine.begin() as conn:
@@ -501,19 +587,205 @@ class BrainStore:
             ).fetchall()
         return [row_dict(row) for row in rows]
 
+    def get_cognee_sync_by_id(self, sync_id: str) -> dict[str, Any] | None:
+        with self.engine.begin() as conn:
+            row = conn.execute(
+                select(schema.cognee_sync).where(schema.cognee_sync.c.id == sync_id)
+            ).first()
+        return row_dict(row) if row is not None else None
+
+    def list_cognee_sync(
+        self,
+        *,
+        statuses: list[str] | tuple[str, ...] | None = None,
+        object_type: str | None = None,
+        object_id: str | None = None,
+        dataset: str | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        filters = []
+        if statuses:
+            filters.append(schema.cognee_sync.c.status.in_(list(statuses)))
+        if object_type:
+            filters.append(schema.cognee_sync.c.object_type == object_type)
+        if object_id:
+            filters.append(schema.cognee_sync.c.object_id == object_id)
+        if dataset:
+            filters.append(schema.cognee_sync.c.dataset == dataset)
+        where_clause = and_(*filters) if filters else True
+        with self.engine.begin() as conn:
+            rows = conn.execute(
+                select(schema.cognee_sync)
+                .where(where_clause)
+                .order_by(schema.cognee_sync.c.updated_at.asc())
+                .limit(limit)
+            ).fetchall()
+        return [row_dict(row) for row in rows]
+
+    def update_cognee_sync_status(
+        self,
+        sync_id: str,
+        *,
+        status: str,
+        projection_hash: str | None = None,
+        cognee_reference: str | None = None,
+        error_message: str | None = None,
+        last_synced_at: datetime | None = None,
+    ) -> bool:
+        values: dict[str, Any] = {
+            "status": status,
+            "error_message": error_message,
+            "updated_at": now_utc(),
+        }
+        if projection_hash is not None:
+            values["projection_hash"] = projection_hash
+        if cognee_reference is not None:
+            values["cognee_reference"] = cognee_reference
+        if last_synced_at is not None:
+            values["last_synced_at"] = last_synced_at
+        with self.engine.begin() as conn:
+            result = conn.execute(
+                update(schema.cognee_sync)
+                .where(schema.cognee_sync.c.id == sync_id)
+                .values(**values)
+            )
+        return result.rowcount > 0
+
+    def list_memory_cards(
+        self,
+        *,
+        since: datetime | None = None,
+        source_id: str | None = None,
+        include_deleted: bool = False,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        filters = []
+        if since is not None:
+            filters.append(schema.memory_cards.c.created_at >= since)
+        if source_id is not None:
+            filters.append(schema.memory_cards.c.source_id == source_id)
+        if not include_deleted:
+            filters.append(schema.memory_cards.c.status != "deleted")
+        where_clause = and_(*filters) if filters else True
+        with self.engine.begin() as conn:
+            rows = conn.execute(
+                select(schema.memory_cards)
+                .where(where_clause)
+                .order_by(schema.memory_cards.c.created_at.desc())
+                .limit(limit)
+            ).fetchall()
+        return [row_dict(row) for row in rows]
+
+    def list_memories_by_entity(
+        self,
+        entity_id: str,
+        *,
+        include_superseded: bool = False,
+        include_conflicts: bool = True,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        status_filter = visible_memory_status_filter(
+            include_superseded=include_superseded,
+            include_conflicts=include_conflicts,
+        )
+        with self.engine.begin() as conn:
+            rows = conn.execute(
+                select(schema.memory_cards)
+                .join(
+                    schema.memory_entities,
+                    schema.memory_entities.c.memory_id == schema.memory_cards.c.id,
+                )
+                .where(and_(schema.memory_entities.c.entity_id == entity_id, status_filter))
+                .order_by(schema.memory_cards.c.created_at.desc())
+                .limit(limit)
+            ).fetchall()
+            results = []
+            for row in rows:
+                payload = row_dict(row)
+                payload["entities"] = self._memory_entities(conn, payload["id"])
+                payload["relationships"] = self._memory_relationships(conn, payload["id"])
+                payload["links"] = self._memory_links(conn, payload["id"])
+                results.append(payload)
+        return results
+
+    def list_sources(
+        self,
+        *,
+        since: datetime | None = None,
+        include_deleted: bool = False,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        filters = []
+        if since is not None:
+            filters.append(schema.sources.c.created_at >= since)
+        if not include_deleted:
+            filters.append(schema.sources.c.status != "deleted")
+        where_clause = and_(*filters) if filters else True
+        with self.engine.begin() as conn:
+            rows = conn.execute(
+                select(schema.sources)
+                .where(where_clause)
+                .order_by(schema.sources.c.created_at.desc())
+                .limit(limit)
+            ).fetchall()
+        return [row_dict(row) for row in rows]
+
+    def list_ingestion_runs(
+        self,
+        *,
+        since: datetime | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        filters = []
+        if since is not None:
+            filters.append(schema.ingestion_runs.c.started_at >= since)
+        where_clause = and_(*filters) if filters else True
+        with self.engine.begin() as conn:
+            rows = conn.execute(
+                select(schema.ingestion_runs)
+                .where(where_clause)
+                .order_by(schema.ingestion_runs.c.started_at.desc())
+                .limit(limit)
+            ).fetchall()
+        return [row_dict(row) for row in rows]
+
+    def list_memory_links(
+        self,
+        *,
+        relations: list[str] | tuple[str, ...] | None = None,
+        since: datetime | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        filters = []
+        if relations:
+            filters.append(schema.memory_links.c.relation.in_(list(relations)))
+        if since is not None:
+            filters.append(schema.memory_links.c.created_at >= since)
+        where_clause = and_(*filters) if filters else True
+        with self.engine.begin() as conn:
+            rows = conn.execute(
+                select(schema.memory_links)
+                .where(where_clause)
+                .order_by(schema.memory_links.c.created_at.desc())
+                .limit(limit)
+            ).fetchall()
+        return [row_dict(row) for row in rows]
+
     def search_memory(
         self,
         query: str,
         *,
         include_superseded: bool = False,
+        include_conflicts: bool = True,
         limit: int = 20,
     ) -> list[dict[str, Any]]:
         terms = WORD_RE.findall(query.casefold())
         if not terms:
             return []
 
-        status_filter = (
-            schema.memory_cards.c.status != "superseded" if not include_superseded else None
+        status_filter = visible_memory_status_filter(
+            include_superseded=include_superseded,
+            include_conflicts=include_conflicts,
         )
         text_filters = [
             or_(
@@ -527,7 +799,7 @@ class BrainStore:
         with self.engine.begin() as conn:
             direct = conn.execute(
                 select(schema.memory_cards)
-                .where(and_(*([status_filter] if status_filter is not None else []), or_(*text_filters)))
+                .where(and_(status_filter, or_(*text_filters)))
                 .limit(limit)
             ).fetchall()
             entity_rows = conn.execute(
@@ -539,7 +811,7 @@ class BrainStore:
                 .join(schema.entities, schema.entities.c.id == schema.memory_entities.c.entity_id)
                 .where(
                     and_(
-                        *([status_filter] if status_filter is not None else []),
+                        status_filter,
                         or_(
                             *[
                                 schema.entities.c.normalized_name.ilike(f"%{term}%")
@@ -594,13 +866,17 @@ class BrainStore:
         *,
         entity_type: str | None = None,
         include_superseded: bool = False,
+        include_conflicts: bool = True,
     ) -> dict[str, Any] | None:
         entity = self.resolve_entity(name, entity_type)
         if entity is None:
             return None
-        status_filter = (
-            schema.memory_cards.c.status != "superseded" if not include_superseded else True
+        status_filter = visible_memory_status_filter(
+            include_superseded=include_superseded,
+            include_conflicts=include_conflicts,
         )
+        subject_entities = schema.entities.alias("subject_entities")
+        object_entities = schema.entities.alias("object_entities")
         with self.engine.begin() as conn:
             memory_rows = conn.execute(
                 select(schema.memory_cards, schema.memory_entities.c.role)
@@ -617,24 +893,34 @@ class BrainStore:
                 .order_by(schema.memory_cards.c.created_at.desc())
             ).fetchall()
             relationship_rows = conn.execute(
-                select(schema.relationships, schema.entities.c.canonical_name.label("other_name"))
+                select(
+                    schema.relationships,
+                    subject_entities.c.canonical_name.label("subject_name"),
+                    object_entities.c.canonical_name.label("object_name"),
+                )
                 .join(
-                    schema.entities,
-                    or_(
-                        and_(
-                            schema.relationships.c.subject_entity_id == entity["id"],
-                            schema.relationships.c.object_entity_id == schema.entities.c.id,
-                        ),
-                        and_(
-                            schema.relationships.c.object_entity_id == entity["id"],
-                            schema.relationships.c.subject_entity_id == schema.entities.c.id,
-                        ),
-                    ),
+                    subject_entities,
+                    subject_entities.c.id == schema.relationships.c.subject_entity_id,
+                )
+                .join(
+                    object_entities,
+                    object_entities.c.id == schema.relationships.c.object_entity_id,
+                )
+                .outerjoin(
+                    schema.memory_cards,
+                    schema.memory_cards.c.id == schema.relationships.c.evidence_memory_id,
                 )
                 .where(
-                    or_(
-                        schema.relationships.c.subject_entity_id == entity["id"],
-                        schema.relationships.c.object_entity_id == entity["id"],
+                    and_(
+                        or_(
+                            schema.relationships.c.subject_entity_id == entity["id"],
+                            schema.relationships.c.object_entity_id == entity["id"],
+                        ),
+                        schema.relationships.c.status == "current",
+                        or_(
+                            schema.relationships.c.evidence_memory_id.is_(None),
+                            status_filter,
+                        ),
                     )
                 )
             ).fetchall()
@@ -649,6 +935,7 @@ class BrainStore:
                     and_(
                         schema.memory_entities.c.entity_id == entity["id"],
                         schema.open_loops.c.status == "open",
+                        status_filter,
                     )
                 )
             ).fetchall()
@@ -663,7 +950,13 @@ class BrainStore:
         relationships = [
             {
                 **row_dict(row),
-                "other_name": row._mapping["other_name"],
+                "subject_name": row._mapping["subject_name"],
+                "object_name": row._mapping["object_name"],
+                "direction_relative_to_profile_entity": (
+                    "outgoing"
+                    if row._mapping[schema.relationships.c.subject_entity_id] == entity["id"]
+                    else "incoming"
+                ),
             }
             for row in relationship_rows
         ]
@@ -692,7 +985,7 @@ class BrainStore:
             rows = conn.execute(
                 select(schema.open_loops, schema.memory_cards)
                 .join(schema.memory_cards, schema.memory_cards.c.id == schema.open_loops.c.memory_id)
-                .where(and_(*filters))
+                .where(and_(*filters, visible_memory_status_filter()))
                 .order_by(schema.open_loops.c.next_review_at.is_(None), schema.open_loops.c.created_at.desc())
                 .limit(limit)
             ).fetchall()
@@ -710,6 +1003,63 @@ class BrainStore:
             }
             for row in rows
         ]
+
+    def list_due_open_loops(
+        self,
+        *,
+        now: datetime | None = None,
+        include_recently_reminded: bool = False,
+        recent_seconds: int = 60 * 60 * 24,
+        limit: int = 20,
+    ) -> list[dict[str, Any]]:
+        active_now = as_utc(now or now_utc())
+        loops = self.list_open_loops(status="open", limit=limit * 5)
+        due: list[dict[str, Any]] = []
+        for loop in loops:
+            next_review_at = loop.get("next_review_at")
+            if next_review_at is not None and as_utc(next_review_at) > active_now:
+                continue
+            last_reminded_at = loop.get("last_reminded_at")
+            if (
+                not include_recently_reminded
+                and last_reminded_at is not None
+                and (active_now - as_utc(last_reminded_at)).total_seconds() < recent_seconds
+            ):
+                continue
+            due.append(loop)
+            if len(due) >= limit:
+                break
+        return due
+
+    def mark_open_loop_reminded(
+        self,
+        loop_id: str,
+        *,
+        reminded_at: datetime | None = None,
+        next_review_at: datetime | None = None,
+    ) -> bool:
+        values: dict[str, Any] = {
+            "last_reminded_at": reminded_at or now_utc(),
+            "updated_at": now_utc(),
+        }
+        if next_review_at is not None:
+            values["next_review_at"] = next_review_at
+        with self.engine.begin() as conn:
+            result = conn.execute(
+                update(schema.open_loops)
+                .where(schema.open_loops.c.id == loop_id)
+                .values(**values)
+            )
+        return result.rowcount > 0
+
+    def update_open_loop_status(self, loop_id: str, status: str) -> bool:
+        with self.engine.begin() as conn:
+            result = conn.execute(
+                update(schema.open_loops)
+                .where(schema.open_loops.c.id == loop_id)
+                .values(status=status, updated_at=now_utc())
+            )
+        return result.rowcount > 0
 
     def forget(self, *, object_type: str, object_id: str, hard: bool = False) -> bool:
         if hard:
@@ -732,6 +1082,17 @@ class BrainStore:
                 .where(table.c.id == object_id)
                 .values(status="deleted", updated_at=now_utc())
             )
+            if result.rowcount > 0 and object_type in {"memory", "source"}:
+                conn.execute(
+                    update(schema.cognee_sync)
+                    .where(
+                        and_(
+                            schema.cognee_sync.c.object_type == object_type,
+                            schema.cognee_sync.c.object_id == object_id,
+                        )
+                    )
+                    .values(status="stale", updated_at=now_utc())
+                )
         return result.rowcount > 0
 
     def update_memory_status(self, memory_id: str, status: str) -> bool:
@@ -741,7 +1102,202 @@ class BrainStore:
                 .where(schema.memory_cards.c.id == memory_id)
                 .values(status=status, updated_at=now_utc())
             )
+            if result.rowcount > 0:
+                conn.execute(
+                    update(schema.cognee_sync)
+                    .where(
+                        and_(
+                            schema.cognee_sync.c.object_type == "memory",
+                            schema.cognee_sync.c.object_id == memory_id,
+                        )
+                    )
+                    .values(status="stale", updated_at=now_utc())
+                )
         return result.rowcount > 0
+
+    def update_source_status(self, source_id: str, status: str) -> bool:
+        with self.engine.begin() as conn:
+            result = conn.execute(
+                update(schema.sources)
+                .where(schema.sources.c.id == source_id)
+                .values(status=status, updated_at=now_utc())
+            )
+            if result.rowcount > 0:
+                conn.execute(
+                    update(schema.cognee_sync)
+                    .where(
+                        and_(
+                            schema.cognee_sync.c.object_type == "source",
+                            schema.cognee_sync.c.object_id == source_id,
+                        )
+                    )
+                    .values(status="stale", updated_at=now_utc())
+                )
+        return result.rowcount > 0
+
+    def update_entity_status(
+        self,
+        entity_id: str,
+        status: str,
+        *,
+        metadata_updates: dict[str, Any] | None = None,
+    ) -> bool:
+        values: dict[str, Any] = {"status": status, "updated_at": now_utc()}
+        if metadata_updates:
+            entity = self.get_entity(entity_id)
+            metadata = dict(entity.get("metadata_json") or {}) if entity else {}
+            metadata.update(metadata_updates)
+            values["metadata_json"] = metadata
+        with self.engine.begin() as conn:
+            result = conn.execute(
+                update(schema.entities)
+                .where(schema.entities.c.id == entity_id)
+                .values(**values)
+            )
+        return result.rowcount > 0
+
+    def merge_entities(
+        self,
+        *,
+        primary_entity_id: str,
+        duplicate_entity_id: str,
+        reason: str | None = None,
+    ) -> dict[str, Any]:
+        primary = self.get_entity(primary_entity_id)
+        duplicate = self.get_entity(duplicate_entity_id)
+        if primary is None or duplicate is None:
+            raise ValueError("Both primary_entity_id and duplicate_entity_id must exist.")
+        if primary_entity_id == duplicate_entity_id:
+            raise ValueError("primary_entity_id and duplicate_entity_id must be different.")
+
+        moved_aliases = 0
+        repointed_memories = 0
+        repointed_relationships = 0
+        archived = False
+        with self.engine.begin() as conn:
+            canonical_alias_exists = conn.execute(
+                select(schema.entity_aliases).where(
+                    and_(
+                        schema.entity_aliases.c.entity_id == primary_entity_id,
+                        schema.entity_aliases.c.normalized_alias
+                        == normalize_name(duplicate["canonical_name"]),
+                    )
+                )
+            ).first()
+            if canonical_alias_exists is None:
+                self._insert_alias(
+                    conn,
+                    entity_id=primary_entity_id,
+                    alias=duplicate["canonical_name"],
+                    source_memory_id=None,
+                    confidence=duplicate.get("confidence") or "medium",
+                )
+                moved_aliases += 1
+            duplicate_alias_rows = conn.execute(
+                select(schema.entity_aliases).where(
+                    schema.entity_aliases.c.entity_id == duplicate_entity_id
+                )
+            ).fetchall()
+            for alias_row in duplicate_alias_rows:
+                alias = row_dict(alias_row)
+                before = conn.execute(
+                    select(schema.entity_aliases).where(
+                        and_(
+                            schema.entity_aliases.c.entity_id == primary_entity_id,
+                            schema.entity_aliases.c.normalized_alias == alias["normalized_alias"],
+                        )
+                    )
+                ).first()
+                if before is None:
+                    self._insert_alias(
+                        conn,
+                        entity_id=primary_entity_id,
+                        alias=alias["alias"],
+                        source_memory_id=alias.get("source_memory_id"),
+                        confidence=alias.get("confidence") or "medium",
+                    )
+                    moved_aliases += 1
+            conn.execute(
+                delete(schema.entity_aliases).where(
+                    schema.entity_aliases.c.entity_id == duplicate_entity_id
+                )
+            )
+
+            duplicate_memory_rows = conn.execute(
+                select(schema.memory_entities).where(
+                    schema.memory_entities.c.entity_id == duplicate_entity_id
+                )
+            ).fetchall()
+            for memory_row in duplicate_memory_rows:
+                memory_link = row_dict(memory_row)
+                existing = conn.execute(
+                    select(schema.memory_entities).where(
+                        and_(
+                            schema.memory_entities.c.memory_id == memory_link["memory_id"],
+                            schema.memory_entities.c.entity_id == primary_entity_id,
+                            schema.memory_entities.c.role == memory_link["role"],
+                        )
+                    )
+                ).first()
+                if existing is None:
+                    conn.execute(
+                        insert(schema.memory_entities).values(
+                            memory_id=memory_link["memory_id"],
+                            entity_id=primary_entity_id,
+                            role=memory_link["role"],
+                            confidence=memory_link["confidence"],
+                        )
+                    )
+                    repointed_memories += 1
+                conn.execute(
+                    delete(schema.memory_entities).where(
+                        and_(
+                            schema.memory_entities.c.memory_id == memory_link["memory_id"],
+                            schema.memory_entities.c.entity_id == duplicate_entity_id,
+                            schema.memory_entities.c.role == memory_link["role"],
+                        )
+                    )
+                )
+
+            subject_result = conn.execute(
+                update(schema.relationships)
+                .where(schema.relationships.c.subject_entity_id == duplicate_entity_id)
+                .values(subject_entity_id=primary_entity_id, updated_at=now_utc())
+            )
+            object_result = conn.execute(
+                update(schema.relationships)
+                .where(schema.relationships.c.object_entity_id == duplicate_entity_id)
+                .values(object_entity_id=primary_entity_id, updated_at=now_utc())
+            )
+            repointed_relationships = subject_result.rowcount + object_result.rowcount
+
+            duplicate_metadata = dict(duplicate.get("metadata_json") or {})
+            duplicate_metadata.update(
+                {
+                    "merged_into": primary_entity_id,
+                    "merge_reason": reason,
+                    "merged_at": now_utc().isoformat(),
+                }
+            )
+            archive_result = conn.execute(
+                update(schema.entities)
+                .where(schema.entities.c.id == duplicate_entity_id)
+                .values(
+                    status="archived",
+                    metadata_json=duplicate_metadata,
+                    updated_at=now_utc(),
+                )
+            )
+            archived = archive_result.rowcount > 0
+
+        return {
+            "primary_entity_id": primary_entity_id,
+            "duplicate_entity_id": duplicate_entity_id,
+            "moved_aliases": moved_aliases,
+            "repointed_memories": repointed_memories,
+            "repointed_relationships": repointed_relationships,
+            "duplicate_status": "archived" if archived else duplicate["status"],
+        }
 
     def log_recall(
         self,

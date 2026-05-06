@@ -84,6 +84,28 @@ class Settings(BaseSettings):
     brain_service_name: str = "Brain"
     brain_database_url: str = "sqlite:///.data/brain/brain.db"
     brain_owner_name: str = "Daniele"
+    brain_llm_enabled: bool = False
+    brain_llm_provider: str | None = None
+    brain_llm_model: str | None = None
+    brain_cognee_enabled: bool = False
+    brain_cognee_recall_enabled: bool = False
+    brain_cognee_memory_dataset: str = "memory"
+    brain_cognee_sources_dataset: str = "sources"
+    brain_cognee_data_dataset: str = "data"
+    brain_cognee_recall_top_k: int = 10
+    brain_slack_enabled: bool = False
+    brain_slack_agent_enabled: bool = False
+    brain_slack_agent_host: str = "127.0.0.1"
+    brain_slack_agent_port: int = 8003
+    brain_slack_signing_secret: str | None = None
+    brain_slack_bot_token: str | None = None
+    brain_slack_allowed_team_ids: str = ""
+    brain_slack_allowed_channel_ids: str = ""
+    brain_slack_allowed_user_ids: str = ""
+    brain_slack_admin_user_ids: str = ""
+    brain_slack_rules_path: str = "./config/slack_memory_agent_rules.md"
+    brain_slack_auto_commit_high_confidence: bool = False
+    brain_log_level: str = "INFO"
     brain_prod_root: str = "/Volumes/xpg_usb4/prod/brain"
     brain_launchd_label: str = "com.brain.mcp"
     brain_health_path: str = "/healthz"
@@ -186,12 +208,32 @@ class Settings(BaseSettings):
     def brain_auth_scope_list(self) -> list[str]:
         return self.oauth_scopes
 
+    @property
+    def brain_slack_allowed_team_id_list(self) -> list[str]:
+        return split_csv_setting(self.brain_slack_allowed_team_ids)
+
+    @property
+    def brain_slack_allowed_channel_id_list(self) -> list[str]:
+        return split_csv_setting(self.brain_slack_allowed_channel_ids)
+
+    @property
+    def brain_slack_allowed_user_id_list(self) -> list[str]:
+        return split_csv_setting(self.brain_slack_allowed_user_ids)
+
+    @property
+    def brain_slack_admin_user_id_list(self) -> list[str]:
+        return split_csv_setting(self.brain_slack_admin_user_ids)
+
 
 def normalize_path(value: str) -> str:
     stripped = value.strip()
     if not stripped:
         return "/"
     return "/" + stripped.strip("/")
+
+
+def split_csv_setting(value: str) -> list[str]:
+    return [item.strip() for item in value.split(",") if item.strip()]
 
 
 def load_settings(env_file: str | Path | None = None) -> Settings:
@@ -256,6 +298,28 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "BRAIN_REQUEST_LOG_MAX_BODY_BYTES": str(settings.brain_request_log_max_body_bytes),
         "BRAIN_DATABASE_URL": settings.brain_database_url,
         "BRAIN_OWNER_NAME": settings.brain_owner_name,
+        "BRAIN_LLM_ENABLED": str(settings.brain_llm_enabled).lower(),
+        "BRAIN_LLM_PROVIDER": settings.brain_llm_provider or "",
+        "BRAIN_LLM_MODEL": settings.brain_llm_model or "",
+        "BRAIN_COGNEE_ENABLED": str(settings.brain_cognee_enabled).lower(),
+        "BRAIN_COGNEE_RECALL_ENABLED": str(settings.brain_cognee_recall_enabled).lower(),
+        "BRAIN_COGNEE_MEMORY_DATASET": settings.brain_cognee_memory_dataset,
+        "BRAIN_COGNEE_SOURCES_DATASET": settings.brain_cognee_sources_dataset,
+        "BRAIN_COGNEE_DATA_DATASET": settings.brain_cognee_data_dataset,
+        "BRAIN_COGNEE_RECALL_TOP_K": str(settings.brain_cognee_recall_top_k),
+        "BRAIN_SLACK_ENABLED": str(settings.brain_slack_enabled).lower(),
+        "BRAIN_SLACK_AGENT_ENABLED": str(settings.brain_slack_agent_enabled).lower(),
+        "BRAIN_SLACK_AGENT_HOST": settings.brain_slack_agent_host,
+        "BRAIN_SLACK_AGENT_PORT": str(settings.brain_slack_agent_port),
+        "BRAIN_SLACK_ALLOWED_TEAM_IDS": settings.brain_slack_allowed_team_ids,
+        "BRAIN_SLACK_ALLOWED_CHANNEL_IDS": settings.brain_slack_allowed_channel_ids,
+        "BRAIN_SLACK_ALLOWED_USER_IDS": settings.brain_slack_allowed_user_ids,
+        "BRAIN_SLACK_ADMIN_USER_IDS": settings.brain_slack_admin_user_ids,
+        "BRAIN_SLACK_RULES_PATH": settings.brain_slack_rules_path,
+        "BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE": str(
+            settings.brain_slack_auto_commit_high_confidence
+        ).lower(),
+        "BRAIN_LOG_LEVEL": settings.brain_log_level,
         "BRAIN_UI_ENABLED": str(settings.brain_ui_enabled).lower(),
         "BRAIN_UI_HOST": settings.brain_ui_host,
         "BRAIN_UI_PROXY_PORT": str(settings.brain_ui_proxy_port),
@@ -273,6 +337,8 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "BRAIN_AUTH_TOKEN": settings.brain_auth_token,
         "BRAIN_AUTH_PASSWORD": settings.brain_auth_password,
         "BRAIN_GOOGLE_DRIVE_LOCAL_PATH": settings.brain_google_drive_local_path,
+        "BRAIN_SLACK_SIGNING_SECRET": settings.brain_slack_signing_secret,
+        "BRAIN_SLACK_BOT_TOKEN": settings.brain_slack_bot_token,
     }
     for key, value in optional_values.items():
         if value:
