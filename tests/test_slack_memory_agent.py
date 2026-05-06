@@ -36,6 +36,8 @@ def test_explicit_remember_produces_dry_run_and_writes_nothing(tmp_path) -> None
     assert response.decision == "dry_run"
     assert response.payload["dry_run"]["dry_run"] is True
     assert response.payload["requires_confirmation"] is True
+    assert response.blocks
+    assert response.blocks[1]["elements"][0]["text"]["text"] == "Confirm"
     assert BrainStore(settings).search_memory("Bill Evans") == []
 
 

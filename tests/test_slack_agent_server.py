@@ -121,6 +121,41 @@ def test_slack_command_dry_run_returns_confirmation_payload(tmp_path, monkeypatc
     assert response.status_code == 200
     assert payload["payload"]["requires_confirmation"] is True
     assert payload["payload"]["dry_run"]["dry_run"] is True
+    assert payload["blocks"][1]["elements"][0]["action_id"] == "brain_confirm_memory"
+
+
+def test_slack_interaction_confirmation_commits_proposed_memory(tmp_path, monkeypatch) -> None:
+    settings = slack_settings(tmp_path)
+    monkeypatch.setattr(slack_agent_server, "settings", settings)
+    client = TestClient(app)
+    command = command_body("remember Sam likes Bill Evans.", user_id="U1")
+    command_response = client.post(
+        "/slack/commands",
+        content=command,
+        headers={**signed_headers(settings, command), "Content-Type": "application/x-www-form-urlencoded"},
+    )
+    action_value = command_response.json()["blocks"][1]["elements"][0]["value"]
+    interaction = urlencode(
+        {
+            "payload": json.dumps(
+                {
+                    "user": {"id": "U1"},
+                    "channel": {"id": "C1"},
+                    "team": {"id": "T1"},
+                    "actions": [{"value": action_value}],
+                }
+            )
+        }
+    ).encode("utf-8")
+
+    response = client.post(
+        "/slack/interactions",
+        content=interaction,
+        headers={**signed_headers(settings, interaction), "Content-Type": "application/x-www-form-urlencoded"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["payload"]["receipt"]["dry_run"] is False
 
 
 def test_admin_debug_works_for_admin_and_rejects_non_admin(tmp_path, monkeypatch) -> None:

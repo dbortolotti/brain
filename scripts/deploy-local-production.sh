@@ -16,6 +16,7 @@ SECRETS_DIR="$SHARED_DIR/secrets"
 DATA_DIR="$SHARED_DIR/data"
 BACKUP_DIR="$SHARED_DIR/backups"
 LOG_DIR="$SHARED_DIR/logs"
+DATABASE_URL="sqlite:///$DATA_DIR/brain/brain.db"
 LOCAL_SUPPORT_DIR="$HOME/Library/Application Support/brain"
 PLIST_SRC="$REPO_ROOT/launchd/com.brain.mcp.plist.template"
 PLIST_DST="$HOME/Library/LaunchAgents/$LABEL.plist"
@@ -74,6 +75,7 @@ DB_PROVIDER=sqlite
 DB_NAME=cognee_db
 SYSTEM_ROOT_DIRECTORY=$DATA_DIR/system
 DATA_ROOT_DIRECTORY=$DATA_DIR/data
+BRAIN_DATABASE_URL=$DATABASE_URL
 BRAIN_MCP_HOST=127.0.0.1
 BRAIN_MCP_PORT=8000
 BRAIN_MCP_PATH=/mcp
@@ -126,6 +128,7 @@ ensure_env_var "BRAIN_AUTH_REFRESH_TOKEN_SECONDS" "2592000"
 ensure_env_var "BRAIN_REQUEST_LOG_ENABLED" "true"
 ensure_env_var "BRAIN_REQUEST_LOG_PATH" "$LOG_DIR/requests.jsonl"
 ensure_env_var "BRAIN_REQUEST_LOG_MAX_BODY_BYTES" "0"
+ensure_env_var "BRAIN_DATABASE_URL" "$DATABASE_URL"
 ensure_env_var "ENABLE_BACKEND_ACCESS_CONTROL" "false"
 ensure_env_var "BRAIN_UI_ENABLED" "true"
 ensure_env_var "BRAIN_UI_HOST" "127.0.0.1"

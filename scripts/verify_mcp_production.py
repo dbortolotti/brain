@@ -77,6 +77,7 @@ def check_runtime_paths(settings, shared_data: Path, failures: list[str]) -> Non
         "SYSTEM_ROOT_DIRECTORY": Path(settings.system_root_directory),
         "DATA_ROOT_DIRECTORY": Path(settings.data_root_directory),
         "VECTOR_DB_URL": Path(settings.vector_db_url),
+        "BRAIN_DATABASE_URL": sqlite_path(settings.brain_database_url),
     }
     for label, path in paths.items():
         if not path.is_absolute():
@@ -87,6 +88,13 @@ def check_runtime_paths(settings, shared_data: Path, failures: list[str]) -> Non
             console.print(f"[green][OK][/green] {label} under shared/data")
         except ValueError:
             failures.append(f"{label} is not under shared/data: {path}")
+
+
+def sqlite_path(database_url: str) -> Path:
+    prefix = "sqlite:///"
+    if database_url.startswith(prefix):
+        return Path(database_url.removeprefix(prefix))
+    return Path(database_url)
 
 
 def check_launchd(label: str, failures: list[str]) -> int | None:

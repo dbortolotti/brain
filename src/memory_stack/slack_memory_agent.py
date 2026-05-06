@@ -61,13 +61,17 @@ class SlackAgentResponse:
     text: str
     response_type: str = "ephemeral"
     payload: dict[str, Any] = field(default_factory=dict)
+    blocks: list[dict[str, Any]] = field(default_factory=list)
 
     def as_slack_payload(self) -> dict[str, Any]:
-        return {
+        payload = {
             "response_type": self.response_type,
             "text": self.text,
             "payload": self.payload,
         }
+        if self.blocks:
+            payload["blocks"] = self.blocks
+        return payload
 
 
 class SlackDebugInspector:
@@ -248,16 +252,20 @@ class SlackMemoryAgent:
             self.settings,
         )
         if not allow_commit:
+            response_text = accepted.user_message or "I can store this memory after you confirm."
             return SlackAgentResponse(
                 decision="dry_run",
-                text=accepted.user_message
-                or "I can store this memory after you confirm.",
+                text=response_text,
                 payload={
                     "requires_confirmation": True,
                     "proposal": accepted.model_dump(mode="json"),
                     "dry_run": dry_run_receipt.model_dump(mode="json"),
-                    "verification_hint": "Reply with a confirmation action to commit this proposal.",
+                    "verification_hint": "Click Confirm or run /brain confirm <same text>.",
                 },
+                blocks=confirmation_blocks(
+                    response_text,
+                    accepted.proposed_memory.model_dump(mode="json"),
+                ),
             )
 
         receipt = remember(
@@ -300,6 +308,7 @@ class SlackMemoryAgent:
             text=response.text,
             response_type=response.response_type,
             payload={**response.payload, "proposal": proposal.model_dump(mode="json")},
+            blocks=response.blocks,
         )
 
     def _handle_recall(self, query: str, request: SlackAgentRequest) -> SlackAgentResponse:
@@ -612,6 +621,30 @@ def receipt_text(receipt: dict[str, Any]) -> str:
     if receipt.get("conflicts"):
         lines.append(f"Conflicts detected: {len(receipt['conflicts'])}.")
     return "\n".join(lines)
+
+
+def confirmation_blocks(text: str, proposed_memory: dict[str, Any]) -> list[dict[str, Any]]:
+    value = json.dumps({"proposed_memory": proposed_memory}, separators=(",", ":"))
+    if len(value) > 1900:
+        return []
+    return [
+        {
+            "type": "section",
+            "text": {"type": "mrkdwn", "text": text},
+        },
+        {
+            "type": "actions",
+            "elements": [
+                {
+                    "type": "button",
+                    "text": {"type": "plain_text", "text": "Confirm"},
+                    "style": "primary",
+                    "action_id": "brain_confirm_memory",
+                    "value": value,
+                }
+            ],
+        },
+    ]
 
 
 class InteractionPayload(BaseModel):
