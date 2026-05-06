@@ -54,6 +54,7 @@ class Probe:
     label: str
     roles: tuple[str, ...] = ()
     judge_only: bool = False
+    skip_reason: str | None = None
 
 
 @dataclass(frozen=True)
@@ -229,6 +230,8 @@ def core_registry_probes(
             continue
         for ref in refs or []:
             probe = probe_from_ref(str(ref), index, role=role)
+            if probe.skip_reason:
+                continue
             if probe.judge_only and not include_judge:
                 continue
             probes.append(probe)
@@ -246,6 +249,8 @@ def provider_registry_probes(
     for provider, config in (registry.get("providers") or {}).items():
         provider_type = config.get("type", "llm")
         for model in config.get("models") or []:
+            if model_skip_reason(model):
+                continue
             if enabled_only and not model.get("enabled_by_default", False):
                 continue
             if model.get("judge_only", False) and not include_judge:
@@ -290,6 +295,7 @@ def registry_model_index(registry: dict[str, Any]) -> dict[str, Probe]:
                 label=f"{probe_provider}:{model['id']}",
                 roles=tuple(str(role) for role in model.get("roles", ())),
                 judge_only=bool(model.get("judge_only", False)),
+                skip_reason=model_skip_reason(model),
             )
             index[f"{probe_provider}:{probe.model}"] = probe
             if alias := model.get("alias"):
@@ -348,6 +354,7 @@ def dedupe_probes(probes: list[Probe]) -> list[Probe]:
             existing,
             roles=tuple(dict.fromkeys((*existing.roles, *probe.roles))),
             judge_only=existing.judge_only or probe.judge_only,
+            skip_reason=existing.skip_reason or probe.skip_reason,
         )
     return list(deduped.values())
 
@@ -373,6 +380,11 @@ def run_probes(
         else:
             results.append(ProbeResult(probe, "ok", "live call succeeded"))
     return results
+
+
+def model_skip_reason(model: dict[str, Any]) -> str | None:
+    reason = model.get("skip_reason")
+    return str(reason) if reason else None
 
 
 def missing_credential(settings: Settings, probe: Probe) -> str | None:

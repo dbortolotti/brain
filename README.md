@@ -120,7 +120,7 @@ ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env \
 Use `--scope core`, `--scope enabled`, or `--scope all` for registry-wide checks.
 Judge-only models are excluded unless `--include-judge` is set.
 
-To run one tiny live probe against every unique model declared in
+To run one tiny live probe against every unique non-skipped model declared in
 `brain_model_registry.yaml`, including disabled and judge-only entries:
 
 ```bash

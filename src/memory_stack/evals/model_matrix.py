@@ -16,7 +16,6 @@ MODEL_TEST_INITIAL_REFS = [
     "google:gemini-2.5-flash-lite",
     "google:gemini-2.5-flash",
     "google:gemini-2.5-pro",
-    "aws-bedrock:mistral.mistral-large-3-675b-instruct",
     "aws-bedrock:mistral.ministral-3-14b-instruct",
     "aws-bedrock:nvidia.nemotron-super-3-120b",
     "aws-bedrock:nvidia.nemotron-nano-2",
@@ -44,6 +43,7 @@ class ModelCandidate:
     roles: tuple[str, ...] = ()
     judge_only: bool = False
     price_per_1m: dict[str, float] = field(default_factory=dict)
+    skip_reason: str | None = None
     requested_ref: str | None = None
 
     @property
@@ -76,6 +76,7 @@ def registry_model_index(registry: dict[str, Any]) -> dict[str, ModelCandidate]:
                 roles=tuple(str(role) for role in model.get("roles", ())),
                 judge_only=bool(model.get("judge_only", False)),
                 price_per_1m=price,
+                skip_reason=model_skip_reason(model),
             )
             index[candidate.ref] = candidate
             if alias := model.get("alias"):
@@ -86,6 +87,7 @@ def registry_model_index(registry: dict[str, Any]) -> dict[str, ModelCandidate]:
                     roles=candidate.roles,
                     judge_only=candidate.judge_only,
                     price_per_1m=candidate.price_per_1m,
+                    skip_reason=candidate.skip_reason,
                     requested_ref=f"{model_provider}:{alias}",
                 )
     return index
@@ -135,6 +137,8 @@ def core_candidates(
             continue
         for ref in refs or []:
             candidate = candidate_from_ref(str(ref), index, roles={role}, include_judge=True)
+            if candidate.skip_reason:
+                continue
             if candidate.judge_only and not include_judge:
                 continue
             candidates.append(candidate)
@@ -152,6 +156,8 @@ def provider_candidates(
     for provider, config in (registry.get("providers") or {}).items():
         provider_type = str(config.get("type", "llm"))
         for model in config.get("models") or []:
+            if model_skip_reason(model):
+                continue
             if enabled_only and not model.get("enabled_by_default", False):
                 continue
             if model.get("judge_only", False) and not include_judge:
@@ -196,6 +202,7 @@ def candidate_from_ref(
             roles=tuple(dict.fromkeys((*candidate.roles, *roles))),
             judge_only=candidate.judge_only,
             price_per_1m=candidate.price_per_1m,
+            skip_reason=candidate.skip_reason,
             requested_ref=ref,
         )
 
@@ -225,6 +232,7 @@ def dedupe_candidates(candidates: list[ModelCandidate]) -> list[ModelCandidate]:
             roles=tuple(dict.fromkeys((*existing.roles, *candidate.roles))),
             judge_only=existing.judge_only or candidate.judge_only,
             price_per_1m=existing.price_per_1m or candidate.price_per_1m,
+            skip_reason=existing.skip_reason or candidate.skip_reason,
             requested_ref=existing.requested_ref or candidate.requested_ref,
         )
     return list(deduped.values())
@@ -259,3 +267,8 @@ def price_config(model: dict[str, Any]) -> dict[str, float]:
         for key, value in raw.items()
         if isinstance(value, int | float)
     }
+
+
+def model_skip_reason(model: dict[str, Any]) -> str | None:
+    reason = model.get("skip_reason")
+    return str(reason) if reason else None

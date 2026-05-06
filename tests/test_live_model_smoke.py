@@ -119,6 +119,8 @@ def test_all_registry_shortcut_selects_every_declared_model() -> None:
     for provider, config in (registry.get("providers") or {}).items():
         provider_type = str(config.get("type", "llm"))
         for model in config.get("models") or []:
+            if model.get("skip_reason"):
+                continue
             if provider == "embeddings":
                 expected_provider = live_model_smoke.normalize_provider(str(model["provider"]))
                 kind = "embedding"
@@ -134,6 +136,7 @@ def test_all_registry_shortcut_selects_every_declared_model() -> None:
     assert any(probe.judge_only for probe in probes)
     assert ("llm", "openai", "gpt-5.5") in actual
     assert ("embedding", "voyage", "voyage-4-large") in actual
+    assert ("llm", "aws-bedrock", "mistral.mistral-large-3-675b-instruct") not in actual
 
 
 def test_openai_active_probe_makes_live_style_calls_without_leaking_key(
