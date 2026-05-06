@@ -32,7 +32,6 @@ from memory_stack.evals.scoring import (
     classify_failure_class,
     is_stack_deployable,
     paired_model_comparisons,
-    role_category_for,
     score_model_output,
 )
 
