@@ -12,7 +12,15 @@ PROVIDER_ENV_VARS = (
     "GEMINI_API_KEY",
     "GOOGLE_API_KEY",
     "ANTHROPIC_API_KEY",
+    "AWS_REGION",
+    "AWS_DEFAULT_REGION",
+    "AWS_PROFILE",
+    "AWS_ACCESS_KEY_ID",
+    "AWS_SECRET_ACCESS_KEY",
+    "AWS_SESSION_TOKEN",
+    "AWS_BEARER_TOKEN_BEDROCK",
     "GROQ_API_KEY",
+    "VOYAGE_API_KEY",
 )
 
 
@@ -137,15 +145,43 @@ def test_provider_key_lookup_supports_non_active_benchmark_providers(
                 "EMBEDDING_DIMENSIONS=768",
                 "GROQ_API_KEY=gsk-provider",
                 "ANTHROPIC_API_KEY=sk-ant-provider",
+                "VOYAGE_API_KEY=pa-provider",
+                "AWS_REGION=eu-west-2",
+                "AWS_BEARER_TOKEN_BEDROCK=bedrock-provider",
             ]
         ),
         encoding="utf-8",
     )
 
     settings = Settings(_env_file=str(env_file))
+    env = runtime_env(settings)
 
     assert settings.provider_api_key("groq:llama-3.1-8b-instant") == "gsk-provider"
     assert settings.provider_api_key("anthropic/claude-sonnet-4.6") == "sk-ant-provider"
+    assert settings.provider_api_key("voyage:voyage-4-lite") == "pa-provider"
+    assert (
+        settings.provider_api_key("aws-bedrock:nvidia.nemotron-super-3-120b")
+        == "bedrock-provider"
+    )
+    assert env["GROQ_API_KEY"] == "gsk-provider"
+    assert env["ANTHROPIC_API_KEY"] == "sk-ant-provider"
+    assert env["VOYAGE_API_KEY"] == "pa-provider"
+    assert env["AWS_REGION"] == "eu-west-2"
+    assert env["AWS_BEARER_TOKEN_BEDROCK"] == "bedrock-provider"
+
+
+def test_local_profile_rejects_provider_level_cloud_keys() -> None:
+    with pytest.raises(ValueError):
+        Settings(
+            profile="local",
+            llm_provider="ollama",
+            llm_model="qwen3:8b",
+            llm_api_key="ollama",
+            embedding_provider="fastembed",
+            embedding_model="sentence-transformers/all-MiniLM-L6-v2",
+            embedding_dimensions=384,
+            openai_api_key="sk-provider",
+        )
 
 
 def test_public_mcp_url() -> None:

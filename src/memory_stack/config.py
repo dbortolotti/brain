@@ -19,15 +19,47 @@ PROVIDER_API_KEY_FIELDS: dict[str, tuple[str, ...]] = {
     "gemini": ("gemini_api_key", "google_api_key"),
     "google": ("google_api_key", "gemini_api_key"),
     "anthropic": ("anthropic_api_key",),
+    "aws-bedrock": ("aws_bearer_token_bedrock",),
+    "bedrock": ("aws_bearer_token_bedrock",),
     "groq": ("groq_api_key",),
+    "voyage": ("voyage_api_key",),
 }
 PROVIDER_API_KEY_ENV_NAMES: dict[str, tuple[str, ...]] = {
     "openai": ("OPENAI_API_KEY",),
     "gemini": ("GEMINI_API_KEY", "GOOGLE_API_KEY"),
     "google": ("GOOGLE_API_KEY", "GEMINI_API_KEY"),
     "anthropic": ("ANTHROPIC_API_KEY",),
+    "aws-bedrock": ("AWS_BEARER_TOKEN_BEDROCK",),
+    "bedrock": ("AWS_BEARER_TOKEN_BEDROCK",),
     "groq": ("GROQ_API_KEY",),
+    "voyage": ("VOYAGE_API_KEY",),
 }
+PROVIDER_RUNTIME_ENV_FIELDS: dict[str, tuple[tuple[str, str], ...]] = {
+    "aws-bedrock": (
+        ("AWS_REGION", "aws_region"),
+        ("AWS_DEFAULT_REGION", "aws_default_region"),
+        ("AWS_PROFILE", "aws_profile"),
+        ("AWS_ACCESS_KEY_ID", "aws_access_key_id"),
+        ("AWS_SECRET_ACCESS_KEY", "aws_secret_access_key"),
+        ("AWS_SESSION_TOKEN", "aws_session_token"),
+    ),
+    "bedrock": (
+        ("AWS_REGION", "aws_region"),
+        ("AWS_DEFAULT_REGION", "aws_default_region"),
+        ("AWS_PROFILE", "aws_profile"),
+        ("AWS_ACCESS_KEY_ID", "aws_access_key_id"),
+        ("AWS_SECRET_ACCESS_KEY", "aws_secret_access_key"),
+        ("AWS_SESSION_TOKEN", "aws_session_token"),
+    ),
+}
+CANONICAL_PROVIDER_API_KEY_PROVIDERS = (
+    "openai",
+    "gemini",
+    "anthropic",
+    "aws-bedrock",
+    "groq",
+    "voyage",
+)
 
 
 class Settings(BaseSettings):
@@ -56,7 +88,15 @@ class Settings(BaseSettings):
     gemini_api_key: str | None = None
     google_api_key: str | None = None
     anthropic_api_key: str | None = None
+    aws_region: str | None = None
+    aws_default_region: str | None = None
+    aws_profile: str | None = None
+    aws_access_key_id: str | None = None
+    aws_secret_access_key: str | None = None
+    aws_session_token: str | None = None
+    aws_bearer_token_bedrock: str | None = None
     groq_api_key: str | None = None
+    voyage_api_key: str | None = None
 
     graph_database_provider: str = "neo4j"
     graph_database_url: str = "bolt://localhost:7687"
@@ -166,6 +206,13 @@ class Settings(BaseSettings):
                     self.embedding_api_key and self.embedding_api_key.startswith("sk-"),
                     self.llm_api_key and self.llm_api_key.startswith("AIza"),
                     self.embedding_api_key and self.embedding_api_key.startswith("AIza"),
+                    self.openai_api_key,
+                    self.gemini_api_key,
+                    self.google_api_key,
+                    self.anthropic_api_key,
+                    self.aws_bearer_token_bedrock,
+                    self.groq_api_key,
+                    self.voyage_api_key,
                     self.llm_provider in {"openai", "gemini"},
                     self.embedding_provider in {"openai", "gemini"},
                 ]
@@ -313,6 +360,13 @@ def provider_api_key_env_names(provider: str | None) -> tuple[str, ...]:
     return PROVIDER_API_KEY_ENV_NAMES.get(normalized, (f"{normalized.upper()}_API_KEY",))
 
 
+def provider_runtime_env_fields(provider: str | None) -> tuple[tuple[str, str], ...]:
+    normalized = normalize_provider_name(provider)
+    if not normalized:
+        return ()
+    return PROVIDER_RUNTIME_ENV_FIELDS.get(normalized, ())
+
+
 def load_settings(env_file: str | Path | None = None) -> Settings:
     if env_file is None:
         env_file = os.getenv("ENV_FILE")
@@ -334,8 +388,13 @@ def provider_api_environment(settings: Settings) -> dict[str, str]:
         normalize_provider_name(settings.embedding_provider),
         normalize_provider_name(settings.brain_llm_provider),
     }
+    providers.update(CANONICAL_PROVIDER_API_KEY_PROVIDERS)
     values: dict[str, str] = {}
     for provider in providers:
+        for env_name, field_name in provider_runtime_env_fields(provider):
+            value = getattr(settings, field_name, None)
+            if value:
+                values[env_name] = value
         api_key = settings.provider_api_key(provider)
         if not api_key:
             continue
