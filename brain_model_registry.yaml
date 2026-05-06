@@ -1,0 +1,569 @@
+# brain_model_registry.yaml
+#
+# Purpose:
+#   Canonical model list for Brain model-eval tests.
+#
+# Design rule:
+#   Do not hardcode provider models in test logic.
+#   Load this registry and run fixtures by role/model/provider.
+#
+# Notes:
+#   - Prices are indicative USD per 1M tokens where known.
+#   - Keep provider IDs separate from logical aliases.
+#   - Use "enabled_by_default: true" only for the core eval matrix.
+#   - Use "judge_only: true" for expensive adjudication models.
+#   - Use "skip_reason" for model families intentionally excluded.
+
+version: 1
+
+selection_policy:
+  objective: "Find the cheapest model that saturates Brain memory quality."
+  zero_tolerance_failures:
+    - silent_high_confidence_overwrite
+    - entity_overmerge
+    - unresolved_pronoun_committed
+    - long_source_as_single_memory_card
+    - large_table_atomized_by_default
+    - malformed_json_unrepairable
+    - deleted_or_superseded_memory_returned_as_current
+  choose_model_rule: >
+    For each role, choose the cheapest model with zero zero-tolerance failures
+    and no statistically meaningful quality gap versus the next stronger model.
+
+roles:
+  router:
+    description: "Intent classification for Slack/free-form messages."
+    preferred_models:
+      - openai:gpt-5-nano
+      - groq:llama-3.1-8b-instant
+      - google:gemini-2.5-flash-lite
+
+  slack_intake:
+    description: "Convert Slack messages into MemoryProposal and IngestionDecision."
+    preferred_models:
+      - openai:gpt-5.4-nano
+      - google:gemini-2.5-flash-lite
+      - google:gemini-2.5-flash
+      - aws-bedrock:nvidia.nemotron-super-3-120b
+      - aws-bedrock:mistral.mistral-large-3-675b-instruct
+
+  memory_compiler:
+    description: "Extract atomic memory cards from notes, articles, summaries, transcripts."
+    preferred_models:
+      - openai:gpt-5.4-nano
+      - google:gemini-2.5-flash-lite
+      - google:gemini-2.5-flash
+      - aws-bedrock:mistral.mistral-large-3-675b-instruct
+      - aws-bedrock:nvidia.nemotron-super-3-120b
+      - groq:openai/gpt-oss-120b
+
+  validator_critic:
+    description: "Optional cheap LLM critic; deterministic validator remains authoritative."
+    preferred_models:
+      - openai:gpt-5-nano
+      - google:gemini-2.5-flash-lite
+      - groq:llama-3.1-8b-instant
+
+  entity_resolution:
+    description: "Resolve ambiguous entity mentions; prefer asking over unsafe merge."
+    preferred_models:
+      - openai:gpt-5.4-nano
+      - openai:gpt-5.4-mini
+      - google:gemini-2.5-flash
+      - anthropic:claude-haiku-4-5
+      - aws-bedrock:mistral.mistral-large-3-675b-instruct
+
+  conflict_classifier:
+    description: "Classify duplicate/additive/supersedes/contradicts/correction."
+    preferred_models:
+      - openai:gpt-5.4-mini
+      - google:gemini-2.5-flash
+      - anthropic:claude-haiku-4-5
+      - anthropic:claude-sonnet-4-6
+      - aws-bedrock:mistral.mistral-large-3-675b-instruct
+      - aws-bedrock:nvidia.nemotron-super-3-120b
+
+  recall_synthesizer:
+    description: "Synthesize DB/Cognee retrieved records into grounded answers."
+    preferred_models:
+      - openai:gpt-5.4-nano
+      - google:gemini-2.5-flash-lite
+      - google:gemini-2.5-flash
+      - aws-bedrock:mistral.mistral-large-3-675b-instruct
+      - groq:openai/gpt-oss-120b
+
+  debug_explainer:
+    description: "Explain recall plans, filtered candidates, sync/debug state."
+    preferred_models:
+      - openai:gpt-5.4-mini
+      - google:gemini-2.5-flash
+      - aws-bedrock:mistral.mistral-large-3-675b-instruct
+      - groq:llama-3.3-70b-versatile
+
+  eval_judge:
+    description: "Offline judge for model output quality. Not normal runtime."
+    preferred_models:
+      - openai:gpt-5.4
+      - anthropic:claude-sonnet-4-6
+      - anthropic:claude-opus-4-7
+    judge_only: true
+
+  embeddings:
+    description: "Embedding models for retrieval tests."
+    preferred_models:
+      - openai:text-embedding-3-small
+      - openai:text-embedding-3-large
+      - voyage:voyage-4-lite
+      - voyage:voyage-4
+      - voyage:voyage-4-large
+
+
+providers:
+  openai:
+    type: "llm"
+    default_endpoint_env: "OPENAI_API_KEY"
+    notes:
+      - "Primary production candidate."
+      - "Use Standard pricing for normal eval estimates."
+      - "Batch/Flex can be tested separately for non-interactive jobs."
+    models:
+      - id: "gpt-5-nano"
+        enabled_by_default: true
+        roles:
+          - router
+          - validator_critic
+        price_per_1m:
+          input: 0.05
+          cached_input: 0.005
+          output: 0.40
+        expected_use: "Very cheap routing, classification, and lightweight checks."
+
+      - id: "gpt-5.4-nano"
+        enabled_by_default: true
+        roles:
+          - slack_intake
+          - memory_compiler
+          - recall_synthesizer
+          - entity_resolution
+        price_per_1m:
+          input: 0.20
+          cached_input: 0.02
+          output: 1.25
+        expected_use: "Main default candidate for Brain."
+
+      - id: "gpt-5.4-mini"
+        enabled_by_default: true
+        roles:
+          - conflict_classifier
+          - entity_resolution
+          - debug_explainer
+          - slack_intake
+          - memory_compiler
+          - recall_synthesizer
+        price_per_1m:
+          input: 0.75
+          cached_input: 0.075
+          output: 4.50
+        expected_use: "Escalation model for conflicts, messy extraction, debug."
+
+      - id: "gpt-5.4"
+        enabled_by_default: true
+        roles:
+          - eval_judge
+          - hard_adjudicator
+        judge_only: true
+        price_per_1m:
+          input: 2.50
+          cached_input: 0.25
+          output: 15.00
+        expected_use: "Rare judge/adjudicator, not runtime default."
+
+      - id: "gpt-5.5"
+        enabled_by_default: false
+        roles:
+          - eval_judge
+          - hard_adjudicator
+        judge_only: true
+        price_per_1m:
+          input: 5.00
+          cached_input: 0.50
+          output: 30.00
+        expected_use: "Optional upper-bound judge; probably overkill."
+
+  google:
+    type: "llm"
+    default_endpoint_env: "GEMINI_API_KEY"
+    notes:
+      - "Main low-cost challenger."
+      - "Use paid tier for real personal memory if privacy posture matters."
+      - "Free tier is acceptable only for synthetic/non-sensitive eval fixtures."
+    models:
+      - id: "gemini-2.5-flash-lite"
+        enabled_by_default: true
+        roles:
+          - router
+          - slack_intake
+          - memory_compiler
+          - validator_critic
+          - recall_synthesizer
+        price_per_1m:
+          input: 0.10
+          cached_input: 0.01
+          output: 0.40
+        expected_use: "Cheapest serious proprietary challenger."
+
+      - id: "gemini-2.5-flash"
+        enabled_by_default: true
+        roles:
+          - slack_intake
+          - memory_compiler
+          - conflict_classifier
+          - entity_resolution
+          - recall_synthesizer
+          - debug_explainer
+        price_per_1m:
+          input: 0.30
+          cached_input: 0.03
+          output: 2.50
+        expected_use: "Stronger Gemini candidate for source and conflict work."
+
+      - id: "gemini-2.5-pro"
+        enabled_by_default: true
+        roles:
+          - eval_judge
+          - hard_adjudicator
+          - conflict_classifier
+        judge_only: true
+        price_per_1m:
+          input_under_200k: 1.25
+          cached_input_under_200k: 0.125
+          output_under_200k: 10.00
+          input_over_200k: 2.50
+          cached_input_over_200k: 0.25
+          output_over_200k: 15.00
+        expected_use: "Judge/adjudicator or long complex sources."
+
+      - id: "gemini-3.1-flash-lite-preview"
+        enabled_by_default: false
+        roles:
+          - router
+          - slack_intake
+          - memory_compiler
+          - recall_synthesizer
+        preview: true
+        expected_use: "Optional preview challenger; do not use as default until stable."
+
+      - id: "gemini-3.1-pro-preview"
+        enabled_by_default: false
+        roles:
+          - eval_judge
+          - hard_adjudicator
+        preview: true
+        judge_only: true
+        expected_use: "Optional preview judge; not default."
+
+  anthropic:
+    type: "llm"
+    default_endpoint_env: "ANTHROPIC_API_KEY"
+    notes:
+      - "High-quality judge/escalation provider."
+      - "Not expected to be cheapest runtime default."
+    models:
+      - id: "claude-haiku-4-5-20251001"
+        alias: "claude-haiku-4-5"
+        enabled_by_default: true
+        roles:
+          - entity_resolution
+          - conflict_classifier
+          - recall_synthesizer
+        price_per_1m:
+          input: 1.00
+          output: 5.00
+        expected_use: "Cheapest Claude; compare as conflict/entity model."
+
+      - id: "claude-sonnet-4-6"
+        alias: "claude-sonnet-4-6"
+        enabled_by_default: true
+        roles:
+          - eval_judge
+          - hard_adjudicator
+          - conflict_classifier
+          - debug_explainer
+        judge_only: true
+        price_per_1m:
+          input: 3.00
+          output: 15.00
+        expected_use: "Main external quality judge."
+
+      - id: "claude-opus-4-7"
+        alias: "claude-opus-4-7"
+        enabled_by_default: false
+        roles:
+          - eval_judge
+          - hard_adjudicator
+        judge_only: true
+        price_per_1m:
+          input: 5.00
+          output: 25.00
+        expected_use: "Optional upper-bound judge; expensive."
+
+  aws-bedrock:
+    type: "llm"
+    default_endpoint_env:
+      - "AWS_REGION"
+      - "AWS_BEARER_TOKEN_BEDROCK"
+    notes:
+      - "Controlled infrastructure / region-control challenger."
+      - "Prefer eu-west-2 or eu-west-1 if EU/UK routing matters."
+      - "Prices vary by region."
+    models:
+      - id: "mistral.mistral-large-3-675b-instruct"
+        enabled_by_default: true
+        provider_brand: "mistral"
+        roles:
+          - slack_intake
+          - memory_compiler
+          - entity_resolution
+          - conflict_classifier
+          - recall_synthesizer
+          - debug_explainer
+        price_per_1m_us_regions:
+          input: 0.50
+          output: 1.50
+        expected_use: "Strong controlled-infra candidate."
+
+      - id: "mistral.ministral-3-14b-instruct"
+        enabled_by_default: true
+        provider_brand: "mistral"
+        roles:
+          - router
+          - validator_critic
+          - slack_intake
+          - memory_compiler
+        price_per_1m_us_regions:
+          input: 0.20
+          output: 0.20
+        expected_use: "Cheap Bedrock/Mistral challenger."
+
+      - id: "mistral.ministral-3-8b-instruct"
+        enabled_by_default: false
+        provider_brand: "mistral"
+        roles:
+          - router
+          - validator_critic
+        expected_use: "Optional ultra-cheap Mistral router/checker."
+
+      - id: "nvidia.nemotron-super-3-120b"
+        enabled_by_default: true
+        provider_brand: "nvidia"
+        roles:
+          - slack_intake
+          - memory_compiler
+          - conflict_classifier
+          - recall_synthesizer
+          - debug_explainer
+        price_per_1m_us_regions:
+          input: 0.15
+          output: 0.65
+        expected_use: "Very competitive Bedrock challenger."
+
+      - id: "nvidia.nemotron-nano-2"
+        enabled_by_default: false
+        provider_brand: "nvidia"
+        roles:
+          - router
+          - validator_critic
+          - slack_intake
+        price_per_1m_us_regions:
+          input: 0.06
+          output: 0.23
+        expected_use: "Optional cheap classification/extraction candidate."
+
+      - id: "nvidia.nemotron-nano-3-30b-a3b"
+        enabled_by_default: false
+        provider_brand: "nvidia"
+        roles:
+          - router
+          - validator_critic
+          - slack_intake
+          - memory_compiler
+        price_per_1m_us_regions:
+          input: 0.06
+          output: 0.24
+        expected_use: "Optional cheap Bedrock challenger."
+
+  groq:
+    type: "llm"
+    default_endpoint_env: "GROQ_API_KEY"
+    notes:
+      - "Fast/cheap auxiliary provider."
+      - "Use for routing, cheap classification, draft proposals, not final high-confidence conflict authority unless evals prove safe."
+    models:
+      - id: "llama-3.1-8b-instant"
+        enabled_by_default: true
+        provider_brand: "meta"
+        roles:
+          - router
+          - validator_critic
+          - slack_intake
+        price_per_1m:
+          input: 0.05
+          output: 0.08
+        expected_use: "Fast cheap router/classifier."
+
+      - id: "llama-3.3-70b-versatile"
+        enabled_by_default: true
+        provider_brand: "meta"
+        roles:
+          - debug_explainer
+          - recall_synthesizer
+          - memory_compiler
+        price_per_1m:
+          input: 0.59
+          output: 0.79
+        expected_use: "Open-weight 70B comparison."
+
+      - id: "openai/gpt-oss-120b"
+        enabled_by_default: true
+        provider_brand: "openai_open_weight"
+        roles:
+          - memory_compiler
+          - recall_synthesizer
+          - conflict_classifier
+          - debug_explainer
+        price_per_1m:
+          input: 0.15
+          output: 0.60
+        expected_use: "Cheap strong open-weight challenger."
+
+      - id: "openai/gpt-oss-20b"
+        enabled_by_default: false
+        provider_brand: "openai_open_weight"
+        roles:
+          - router
+          - validator_critic
+          - slack_intake
+        price_per_1m:
+          input: 0.075
+          output: 0.30
+        expected_use: "Optional cheaper GPT-OSS candidate."
+
+  embeddings:
+    type: "embedding"
+    notes:
+      - "Embedding models should be evaluated after memory-card quality is stable."
+      - "Default should probably be text-embedding-3-small."
+    models:
+      - provider: "openai"
+        id: "text-embedding-3-small"
+        enabled_by_default: true
+        price_per_1m:
+          input: 0.02
+        expected_use: "Default embedding model."
+
+      - provider: "openai"
+        id: "text-embedding-3-large"
+        enabled_by_default: true
+        price_per_1m:
+          input: 0.13
+        expected_use: "Retrieval-quality challenger."
+
+      - provider: "voyage"
+        id: "voyage-4-lite"
+        enabled_by_default: true
+        price_per_1m:
+          input: 0.02
+        expected_use: "Cheap embedding challenger."
+
+      - provider: "voyage"
+        id: "voyage-4"
+        enabled_by_default: false
+        price_per_1m:
+          input: 0.06
+        expected_use: "Mid-tier embedding challenger."
+
+      - provider: "voyage"
+        id: "voyage-4-large"
+        enabled_by_default: false
+        price_per_1m:
+          input: 0.12
+        expected_use: "High-quality embedding challenger."
+
+
+core_eval_matrix:
+  # Run all golden fixtures against these first.
+  router:
+    - openai:gpt-5-nano
+    - groq:llama-3.1-8b-instant
+    - google:gemini-2.5-flash-lite
+
+  slack_intake:
+    - openai:gpt-5.4-nano
+    - google:gemini-2.5-flash-lite
+    - google:gemini-2.5-flash
+    - aws-bedrock:mistral.mistral-large-3-675b-instruct
+    - aws-bedrock:nvidia.nemotron-super-3-120b
+    - groq:openai/gpt-oss-120b
+
+  memory_compiler:
+    - openai:gpt-5.4-nano
+    - google:gemini-2.5-flash-lite
+    - google:gemini-2.5-flash
+    - aws-bedrock:mistral.mistral-large-3-675b-instruct
+    - aws-bedrock:nvidia.nemotron-super-3-120b
+    - groq:openai/gpt-oss-120b
+
+  conflict_classifier:
+    - openai:gpt-5.4-mini
+    - google:gemini-2.5-flash
+    - anthropic:claude-haiku-4-5
+    - anthropic:claude-sonnet-4-6
+    - aws-bedrock:mistral.mistral-large-3-675b-instruct
+    - aws-bedrock:nvidia.nemotron-super-3-120b
+
+  recall_synthesizer:
+    - openai:gpt-5.4-nano
+    - google:gemini-2.5-flash-lite
+    - google:gemini-2.5-flash
+    - aws-bedrock:mistral.mistral-large-3-675b-instruct
+    - groq:openai/gpt-oss-120b
+
+  eval_judge:
+    - openai:gpt-5.4
+    - anthropic:claude-sonnet-4-6
+    - anthropic:claude-opus-4-7
+
+  embeddings:
+    - openai:text-embedding-3-small
+    - openai:text-embedding-3-large
+    - voyage:voyage-4-lite
+
+
+excluded_for_now:
+  chinese_linked_model_brands:
+    reason: "User preference: respectable brands with servers/model brands not in China."
+    skip:
+      - deepseek
+      - qwen
+      - moonshot
+      - kimi
+      - zhipu
+      - glm
+      - minimax
+      - z.ai
+
+  xai_grok:
+    reason: >
+      Not excluded on geography, but not necessary for this Brain eval matrix.
+      Add later only if there is a specific reason to test Grok for structured memory intake.
+    skip:
+      - grok-4.1-fast
+      - grok-4.20
+
+  local_models:
+    reason: "Curiosity/offline mode only; not production baseline for this eval."
+    skip:
+      - qwen3-local
+      - llama-local
+      - gemma-local
+      - deepseek-local
