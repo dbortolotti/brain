@@ -11,8 +11,10 @@ def test_github_deploy_action_validates_before_deploying() -> None:
     assert "uv run pytest" in workflow
     assert "Render production config from GitHub Secrets" in workflow
     assert "scripts/render_prod_env.py" in workflow
-    assert "force_config_override" not in workflow
-    assert "--force-config-override" not in workflow
+    assert "force_config_override" in workflow
+    assert "default: false" in workflow
+    assert "--force-config-override" in workflow
+    assert 'inputs.force_config_override }}" == "true"' in workflow
     assert "secrets.OPENAI_API_KEY" in workflow
     assert "secrets.BRAIN_AUTH_PASSWORD" in workflow
     renderer = Path("scripts/render_prod_env.py").read_text(encoding="utf-8")

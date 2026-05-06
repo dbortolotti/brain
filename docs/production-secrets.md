@@ -33,10 +33,14 @@ else:
 After a successful render, both `brain.env` and `brain.env.last-deployed` are
 updated to the proposed config.
 
-The GitHub Actions deploy workflow does not expose a force override. Resolve a
-conflict by propagating the production change back to GitHub Secrets/Variables or
-by intentionally reconciling production back to the last deployed baseline before
-redeploying.
+The GitHub Actions deploy workflow exposes `force_config_override` only as an
+explicit manual-dispatch option, and it defaults to `false`. Normal push deploys,
+and manual deploys without that option enabled, use the conflict rule above.
+
+Use `force_config_override=true` only for an intentional bootstrap or
+re-baseline. Otherwise, resolve a conflict by propagating the production change
+back to GitHub Secrets/Variables or by intentionally reconciling production back
+to the last deployed baseline before redeploying.
 
 The generated config includes metadata for diagnostics:
 

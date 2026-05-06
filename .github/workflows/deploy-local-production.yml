@@ -5,6 +5,12 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      force_config_override:
+        description: "Bypass prod config conflict checks and establish a new baseline"
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: brain-prod
@@ -74,7 +80,12 @@ jobs:
           BRAIN_SLACK_ALLOWED_CHANNEL_IDS: ${{ vars.BRAIN_SLACK_ALLOWED_CHANNEL_IDS }}
           BRAIN_SLACK_ALLOWED_USER_IDS: ${{ vars.BRAIN_SLACK_ALLOWED_USER_IDS }}
           BRAIN_SLACK_ADMIN_USER_IDS: ${{ vars.BRAIN_SLACK_ADMIN_USER_IDS }}
-        run: uv run python scripts/render_prod_env.py
+        run: |
+          args=()
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.force_config_override }}" == "true" ]]; then
+            args+=(--force-config-override)
+          fi
+          uv run python scripts/render_prod_env.py "${args[@]}"
 
       - name: Deploy to local LaunchAgents
         run: ./scripts/deploy-local-production.sh
