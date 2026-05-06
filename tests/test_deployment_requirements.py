@@ -9,7 +9,26 @@ def test_github_deploy_action_validates_before_deploying() -> None:
     assert "uv sync --all-extras" in workflow
     assert "uv run ruff check src tests scripts" in workflow
     assert "uv run pytest" in workflow
-    assert workflow.index("Validate repository") < workflow.index("Deploy to local LaunchAgents")
+    assert "Render production config from GitHub Secrets" in workflow
+    assert "scripts/render_prod_env.py" in workflow
+    assert "secrets.OPENAI_API_KEY" in workflow
+    assert "secrets.BRAIN_AUTH_PASSWORD" in workflow
+    assert workflow.index("Validate repository") < workflow.index(
+        "Render production config from GitHub Secrets"
+    )
+    assert workflow.index("Render production config from GitHub Secrets") < workflow.index(
+        "Deploy to local LaunchAgents"
+    )
+
+
+def test_validation_workflow_runs_without_production_secrets() -> None:
+    workflow = Path(".github/workflows/validate.yml").read_text(encoding="utf-8")
+
+    assert "pull_request:" in workflow
+    assert "uv sync --all-extras" in workflow
+    assert "uv run ruff check src tests scripts" in workflow
+    assert "uv run pytest" in workflow
+    assert "secrets." not in workflow
 
 
 def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
