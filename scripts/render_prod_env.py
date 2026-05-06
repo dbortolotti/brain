@@ -25,20 +25,22 @@ METADATA_KEYS = {
     "BRAIN_CONFIG_RENDER_SOURCE",
 }
 REQUIRED_CONFIG_KEYS = {
-    "OPENAI_API_KEY",
-    "GRAPH_DATABASE_PASSWORD",
+    "OPENAI_API_KEY": {
+        "",
+        "replace-me",
+        "sk-...",
+        "...",
+    },
+    "GRAPH_DATABASE_PASSWORD": {
+        "",
+    },
 }
 REQUIRED_EXTERNAL_SECRET_KEYS = {
-    "BRAIN_AUTH_PASSWORD",
-}
-PLACEHOLDER_VALUES = {
-    "",
-    "change-me",
-    "replace-me",
-    "sk-...",
-    "AIza...",
-    "gsk_...",
-    "...",
+    "BRAIN_AUTH_PASSWORD": {
+        "",
+        "replace-me",
+        "...",
+    },
 }
 
 
@@ -200,6 +202,11 @@ def main() -> int:
     parser.add_argument("--base-output", default=None)
     parser.add_argument("--auth-password-file", default=str(SECRETS_DIR / "brain-auth-password"))
     parser.add_argument("--auth-password-base-file", default=None)
+    parser.add_argument(
+        "--force-config-override",
+        action="store_true",
+        help="Bypass three-way conflict checks and establish a new prod config baseline.",
+    )
     args = parser.parse_args()
 
     output = Path(args.output)
@@ -221,28 +228,30 @@ def main() -> int:
         )
         return 2
 
-    conflicts = config_conflicts(
-        proposed=rendered,
-        current=parse_env_file(output),
-        base=parse_env_file(base_output),
-        current_exists=output.exists(),
-        base_exists=base_output.exists(),
-    )
-    auth_password_conflict = external_secret_conflict(
-        name="BRAIN_AUTH_PASSWORD",
-        proposed=os.environ.get("BRAIN_AUTH_PASSWORD", ""),
-        current=read_secret_file(auth_password_file),
-        base=read_secret_file(auth_password_base_file),
-        current_exists=auth_password_file.exists(),
-        base_exists=auth_password_base_file.exists(),
-    )
-    if auth_password_conflict:
-        conflicts.append(auth_password_conflict)
-    if conflicts:
-        print("production config conflict; propagate prod edits to GitHub first:", file=sys.stderr)
-        for key in conflicts:
-            print(f"- {key}", file=sys.stderr)
-        return 3
+    if not args.force_config_override:
+        conflicts = config_conflicts(
+            proposed=rendered,
+            current=parse_env_file(output),
+            base=parse_env_file(base_output),
+            current_exists=output.exists(),
+            base_exists=base_output.exists(),
+        )
+        auth_password_conflict = external_secret_conflict(
+            name="BRAIN_AUTH_PASSWORD",
+            proposed=os.environ.get("BRAIN_AUTH_PASSWORD", ""),
+            current=read_secret_file(auth_password_file),
+            base=read_secret_file(auth_password_base_file),
+            current_exists=auth_password_file.exists(),
+            base_exists=auth_password_base_file.exists(),
+        )
+        if auth_password_conflict:
+            conflicts.append(auth_password_conflict)
+        if conflicts:
+            print("production config conflict; propagate prod edits to GitHub first:", file=sys.stderr)
+            for key in conflicts:
+                print(f"- {key}", file=sys.stderr)
+            print("Use --force-config-override only to intentionally re-baseline prod.", file=sys.stderr)
+            return 3
 
     write_env_file(output, rendered)
     write_env_file(base_output, rendered)
@@ -328,20 +337,20 @@ def render_sha() -> str:
 def missing_required_values(values: dict[str, str]) -> set[str]:
     missing = {
         key
-        for key in REQUIRED_CONFIG_KEYS
-        if is_placeholder_value(values.get(key, ""))
+        for key, disallowed_values in REQUIRED_CONFIG_KEYS.items()
+        if is_placeholder_value(values.get(key, ""), disallowed_values)
     }
     missing.update(
         key
-        for key in REQUIRED_EXTERNAL_SECRET_KEYS
-        if is_placeholder_value(os.environ.get(key, ""))
+        for key, disallowed_values in REQUIRED_EXTERNAL_SECRET_KEYS.items()
+        if is_placeholder_value(os.environ.get(key, ""), disallowed_values)
     )
     return missing
 
 
-def is_placeholder_value(value: str) -> bool:
+def is_placeholder_value(value: str, disallowed_values: set[str]) -> bool:
     stripped = value.strip()
-    return stripped in PLACEHOLDER_VALUES or stripped.endswith("...")
+    return stripped in disallowed_values or stripped.endswith("...")
 
 
 def config_conflicts(

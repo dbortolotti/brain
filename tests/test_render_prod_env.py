@@ -34,6 +34,36 @@ def run_renderer(tmp_path, env_overrides, *, check=True):
     return result, output, auth_password_file
 
 
+def run_renderer_with_args(tmp_path, env_overrides, extra_args, *, check=True):
+    output = tmp_path / "brain.env"
+    auth_password_file = tmp_path / "brain-auth-password"
+    env = {
+        **os.environ,
+        "BRAIN_PROD_ROOT": str(tmp_path / "prod" / "brain"),
+        "OPENAI_API_KEY": "sk-prod-openai",
+        "GRAPH_DATABASE_PASSWORD": "prod-graph-password",
+        "BRAIN_AUTH_PASSWORD": "prod-auth-password",
+        "GITHUB_SHA": "abc123",
+        **env_overrides,
+    }
+    result = subprocess.run(
+        [
+            sys.executable,
+            "scripts/render_prod_env.py",
+            "--output",
+            str(output),
+            "--auth-password-file",
+            str(auth_password_file),
+            *extra_args,
+        ],
+        check=check,
+        capture_output=True,
+        encoding="utf-8",
+        env=env,
+    )
+    return result, output, auth_password_file
+
+
 def test_render_prod_env_writes_github_secret_values_without_printing_them(tmp_path) -> None:
     result, output, auth_password_file = run_renderer(
         tmp_path,
@@ -154,3 +184,29 @@ def test_render_prod_env_fails_when_last_deployed_snapshot_is_missing(tmp_path) 
 
     assert result.returncode == 3
     assert "brain.env.last-deployed" in result.stderr
+
+
+def test_render_prod_env_force_config_override_rebaselines_prod(tmp_path) -> None:
+    output = tmp_path / "brain.env"
+    output.write_text(
+        "PROFILE=openai\nOPENAI_API_KEY=sk-manual-openai\nGRAPH_DATABASE_PASSWORD=manual\n",
+        encoding="utf-8",
+    )
+
+    result, _, auth_password_file = run_renderer_with_args(
+        tmp_path,
+        {"OPENAI_API_KEY": "sk-github-openai"},
+        ["--force-config-override"],
+    )
+
+    rendered = output.read_text(encoding="utf-8")
+    assert result.returncode == 0
+    assert "OPENAI_API_KEY=sk-github-openai" in rendered
+    assert "GRAPH_DATABASE_PASSWORD=prod-graph-password" in rendered
+    assert output.with_name("brain.env.last-deployed").read_text(encoding="utf-8") == rendered
+    assert (
+        auth_password_file.with_name("brain-auth-password.last-deployed")
+        .read_text(encoding="utf-8")
+        .strip()
+        == "prod-auth-password"
+    )
