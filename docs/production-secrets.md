@@ -33,15 +33,10 @@ else:
 After a successful render, both `brain.env` and `brain.env.last-deployed` are
 updated to the proposed config.
 
-To intentionally establish a new baseline, run the deploy workflow manually with
-`force_config_override=true`, or run:
-
-```bash
-uv run python scripts/render_prod_env.py --force-config-override
-```
-
-Use this only for an intentional bootstrap or re-baseline. Normal push deploys do
-not use force mode.
+The GitHub Actions deploy workflow does not expose a force override. Resolve a
+conflict by propagating the production change back to GitHub Secrets/Variables or
+by intentionally reconciling production back to the last deployed baseline before
+redeploying.
 
 The generated config includes metadata for diagnostics:
 
