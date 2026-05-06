@@ -120,6 +120,22 @@ ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env \
 Use `--scope core`, `--scope enabled`, or `--scope all` for registry-wide checks.
 Judge-only models are excluded unless `--include-judge` is set.
 
+For statistical model-role evals, use the Brain eval CLI. It writes one JSONL
+record per model/role/fixture/repeat, plus an optional Markdown report with
+bootstrap confidence intervals, cost, latency, zero-tolerance failures, and
+pairwise model comparisons:
+
+```bash
+uv run python -m memory_stack.evals.cli models \
+  --registry brain_model_registry.yaml \
+  --fixture-set production \
+  --roles slack_intake,memory_compiler,entity_resolution,conflict_classifier,recall_synthesizer \
+  --models openai:gpt-5.4-nano,openai:gpt-5.4-mini,google:gemini-2.5-flash-lite \
+  --bootstrap-samples 5000 \
+  --output eval_runs/prod_$(date +%Y%m%d_%H%M%S).jsonl \
+  --report-md eval_reports/model_eval_$(date +%Y%m%d_%H%M%S).md
+```
+
 ## Environment Variables
 
 Core Brain settings:
