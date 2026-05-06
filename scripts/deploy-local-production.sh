@@ -59,11 +59,10 @@ if [[ ! -f "$SECRETS_DIR/brain.env" ]]; then
 PROFILE=gemini
 LLM_PROVIDER=gemini
 LLM_MODEL=gemini/gemini-3.1-flash-lite-preview
-LLM_API_KEY=replace-me
 EMBEDDING_PROVIDER=gemini
 EMBEDDING_MODEL=gemini/gemini-embedding-001
-EMBEDDING_API_KEY=replace-me
 EMBEDDING_DIMENSIONS=768
+GEMINI_API_KEY=replace-me
 GRAPH_DATABASE_PROVIDER=neo4j
 GRAPH_DATABASE_URL=bolt://localhost:7687
 GRAPH_DATABASE_NAME=neo4j

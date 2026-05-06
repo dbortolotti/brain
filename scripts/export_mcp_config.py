@@ -10,7 +10,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from rich.console import Console
 
-from memory_stack.config import PROJECT_ROOT, load_settings, repo_path
+from memory_stack.config import (
+    PROJECT_ROOT,
+    load_settings,
+    provider_api_environment,
+    repo_path,
+)
 
 
 console = Console()
@@ -26,31 +31,33 @@ def main() -> int:
     args = parser.parse_args()
 
     settings = load_settings()
+    env = {
+        "PROFILE": settings.profile,
+        "LLM_PROVIDER": settings.llm_provider,
+        "LLM_MODEL": settings.llm_model,
+        "LLM_API_KEY": settings.llm_api_key or "",
+        "EMBEDDING_PROVIDER": settings.embedding_provider,
+        "EMBEDDING_MODEL": settings.embedding_model,
+        "EMBEDDING_API_KEY": settings.embedding_api_key or "",
+        "GRAPH_DATABASE_PROVIDER": settings.graph_database_provider,
+        "GRAPH_DATABASE_URL": settings.graph_database_url,
+        "GRAPH_DATABASE_USERNAME": settings.graph_database_username,
+        "GRAPH_DATABASE_PASSWORD": settings.graph_database_password,
+        "VECTOR_DB_PROVIDER": settings.vector_db_provider,
+        "VECTOR_DB_URL": str(repo_path(settings.vector_db_url)),
+        "DB_PROVIDER": settings.db_provider,
+        "DB_NAME": settings.db_name,
+        "SYSTEM_ROOT_DIRECTORY": str(repo_path(settings.system_root_directory)),
+        "DATA_ROOT_DIRECTORY": str(repo_path(settings.data_root_directory)),
+    }
+    env.update(provider_api_environment(settings))
     config = {
         "mcpServers": {
             "brain": {
                 "command": sys.executable,
                 "args": ["-m", "memory_stack.mcp_stdio"],
                 "cwd": str(PROJECT_ROOT),
-                "env": {
-                    "PROFILE": settings.profile,
-                    "LLM_PROVIDER": settings.llm_provider,
-                    "LLM_MODEL": settings.llm_model,
-                    "LLM_API_KEY": settings.llm_api_key or "",
-                    "EMBEDDING_PROVIDER": settings.embedding_provider,
-                    "EMBEDDING_MODEL": settings.embedding_model,
-                    "EMBEDDING_API_KEY": settings.embedding_api_key or "",
-                    "GRAPH_DATABASE_PROVIDER": settings.graph_database_provider,
-                    "GRAPH_DATABASE_URL": settings.graph_database_url,
-                    "GRAPH_DATABASE_USERNAME": settings.graph_database_username,
-                    "GRAPH_DATABASE_PASSWORD": settings.graph_database_password,
-                    "VECTOR_DB_PROVIDER": settings.vector_db_provider,
-                    "VECTOR_DB_URL": str(repo_path(settings.vector_db_url)),
-                    "DB_PROVIDER": settings.db_provider,
-                    "DB_NAME": settings.db_name,
-                    "SYSTEM_ROOT_DIRECTORY": str(repo_path(settings.system_root_directory)),
-                    "DATA_ROOT_DIRECTORY": str(repo_path(settings.data_root_directory)),
-                },
+                "env": env,
             }
         }
     }

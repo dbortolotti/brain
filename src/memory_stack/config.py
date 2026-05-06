@@ -14,6 +14,22 @@ DEFAULT_ENV_FILE = PROJECT_ROOT / ".env"
 FALLBACK_ENV_FILE = PROJECT_ROOT / ".env.example"
 
 
+PROVIDER_API_KEY_FIELDS: dict[str, tuple[str, ...]] = {
+    "openai": ("openai_api_key",),
+    "gemini": ("gemini_api_key", "google_api_key"),
+    "google": ("google_api_key", "gemini_api_key"),
+    "anthropic": ("anthropic_api_key",),
+    "groq": ("groq_api_key",),
+}
+PROVIDER_API_KEY_ENV_NAMES: dict[str, tuple[str, ...]] = {
+    "openai": ("OPENAI_API_KEY",),
+    "gemini": ("GEMINI_API_KEY", "GOOGLE_API_KEY"),
+    "google": ("GOOGLE_API_KEY", "GEMINI_API_KEY"),
+    "anthropic": ("ANTHROPIC_API_KEY",),
+    "groq": ("GROQ_API_KEY",),
+}
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=str(DEFAULT_ENV_FILE if DEFAULT_ENV_FILE.exists() else FALLBACK_ENV_FILE),
@@ -35,6 +51,12 @@ class Settings(BaseSettings):
     embedding_model: str = "gemini/gemini-embedding-001"
     embedding_api_key: str | None = None
     embedding_dimensions: int = 768
+
+    openai_api_key: str | None = None
+    gemini_api_key: str | None = None
+    google_api_key: str | None = None
+    anthropic_api_key: str | None = None
+    groq_api_key: str | None = None
 
     graph_database_provider: str = "neo4j"
     graph_database_url: str = "bolt://localhost:7687"
@@ -121,6 +143,14 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_profile(self) -> "Settings":
+        self.llm_api_key = self.llm_api_key or self.configured_provider_api_key(
+            self.llm_provider
+        )
+        self.embedding_api_key = (
+            self.embedding_api_key
+            or self.configured_provider_api_key(self.embedding_provider)
+        )
+
         if self.profile == "local":
             if self.llm_provider != "ollama":
                 raise ValueError("PROFILE=local requires LLM_PROVIDER=ollama")
@@ -163,6 +193,30 @@ class Settings(BaseSettings):
         self.brain_public_ui_path = normalize_path(self.brain_public_ui_path)
         self.brain_public_ui_api_path = normalize_path(self.brain_public_ui_api_path)
         return self
+
+    def configured_provider_api_key(self, provider: str | None) -> str | None:
+        for field_name in provider_api_key_fields(provider):
+            value = getattr(self, field_name, None)
+            if value:
+                return value
+        return None
+
+    def provider_api_key(self, provider: str | None) -> str | None:
+        direct_key = self.configured_provider_api_key(provider)
+        if direct_key:
+            return direct_key
+
+        normalized = normalize_provider_name(provider)
+        if not normalized:
+            return None
+        if normalize_provider_name(self.llm_provider) == normalized and self.llm_api_key:
+            return self.llm_api_key
+        if (
+            normalize_provider_name(self.embedding_provider) == normalized
+            and self.embedding_api_key
+        ):
+            return self.embedding_api_key
+        return None
 
     @property
     def public_mcp_url(self) -> str:
@@ -236,6 +290,29 @@ def split_csv_setting(value: str) -> list[str]:
     return [item.strip() for item in value.split(",") if item.strip()]
 
 
+def normalize_provider_name(provider: str | None) -> str | None:
+    if provider is None:
+        return None
+    normalized = provider.strip().lower()
+    if not normalized:
+        return None
+    return normalized.split(":", maxsplit=1)[0].split("/", maxsplit=1)[0]
+
+
+def provider_api_key_fields(provider: str | None) -> tuple[str, ...]:
+    normalized = normalize_provider_name(provider)
+    if not normalized:
+        return ()
+    return PROVIDER_API_KEY_FIELDS.get(normalized, (f"{normalized}_api_key",))
+
+
+def provider_api_key_env_names(provider: str | None) -> tuple[str, ...]:
+    normalized = normalize_provider_name(provider)
+    if not normalized:
+        return ()
+    return PROVIDER_API_KEY_ENV_NAMES.get(normalized, (f"{normalized.upper()}_API_KEY",))
+
+
 def load_settings(env_file: str | Path | None = None) -> Settings:
     if env_file is None:
         env_file = os.getenv("ENV_FILE")
@@ -249,6 +326,22 @@ def repo_path(path: str | Path) -> Path:
     if candidate.is_absolute():
         return candidate
     return PROJECT_ROOT / candidate
+
+
+def provider_api_environment(settings: Settings) -> dict[str, str]:
+    providers = {
+        normalize_provider_name(settings.llm_provider),
+        normalize_provider_name(settings.embedding_provider),
+        normalize_provider_name(settings.brain_llm_provider),
+    }
+    values: dict[str, str] = {}
+    for provider in providers:
+        api_key = settings.provider_api_key(provider)
+        if not api_key:
+            continue
+        for env_name in provider_api_key_env_names(provider):
+            values[env_name] = api_key
+    return values
 
 
 def runtime_env(settings: Settings) -> dict[str, str]:
@@ -333,13 +426,13 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "LLM_API_KEY": settings.llm_api_key,
         "LLM_ENDPOINT": settings.llm_endpoint,
         "EMBEDDING_API_KEY": settings.embedding_api_key,
-        "OPENAI_API_KEY": settings.llm_api_key if settings.llm_provider == "openai" else None,
         "BRAIN_AUTH_TOKEN": settings.brain_auth_token,
         "BRAIN_AUTH_PASSWORD": settings.brain_auth_password,
         "BRAIN_GOOGLE_DRIVE_LOCAL_PATH": settings.brain_google_drive_local_path,
         "BRAIN_SLACK_SIGNING_SECRET": settings.brain_slack_signing_secret,
         "BRAIN_SLACK_BOT_TOKEN": settings.brain_slack_bot_token,
     }
+    optional_values.update(provider_api_environment(settings))
     for key, value in optional_values.items():
         if value:
             values[key] = value

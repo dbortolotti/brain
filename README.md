@@ -163,6 +163,22 @@ variables:
 - `openai` for the OpenAI lane
 - `local` for Ollama/Fastembed no-cloud use
 
+Provider API keys can be stored once and reused across every model for that
+provider:
+
+```env
+OPENAI_API_KEY=sk-...
+GEMINI_API_KEY=AIza...
+GOOGLE_API_KEY=AIza...
+ANTHROPIC_API_KEY=sk-ant-...
+GROQ_API_KEY=gsk_...
+```
+
+`LLM_API_KEY` and `EMBEDDING_API_KEY` are still supported as role-specific
+overrides. If they are unset, the active `LLM_PROVIDER` and
+`EMBEDDING_PROVIDER` use the matching provider key, so benchmarking can switch
+`LLM_MODEL` without duplicating credentials.
+
 ## Legacy Cognee Eval Tools
 
 The old Cognee-first scripts are retained for compatibility and are marked as
