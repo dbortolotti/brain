@@ -172,7 +172,7 @@ def test_model_matrix_selects_openrouter_quantized_variants() -> None:
         registry,
         model_refs=[
             "openrouter:qwen/qwen3.5-9b-fp8",
-            "openrouter:google/gemma-3n-e4b-it-fp8",
+            "openrouter:google/gemma-3n-e4b-it",
             "openrouter:google/gemma-4-31b-it-fp8",
             "openrouter:qwen/qwen3.5-27b-fp8",
         ],
@@ -183,7 +183,7 @@ def test_model_matrix_selects_openrouter_quantized_variants() -> None:
 
     assert [(candidate.api_model, candidate.quantizations) for candidate in candidates] == [
         ("qwen/qwen3.5-9b", ("fp8",)),
-        ("google/gemma-3n-e4b-it", ("fp8",)),
+        ("google/gemma-3n-e4b-it", ()),
         ("google/gemma-4-31b-it", ("fp8",)),
         ("qwen/qwen3.5-27b", ("fp8",)),
     ]
@@ -205,7 +205,7 @@ def test_fine_grained_model_matrix_selects_targeted_role_models() -> None:
         "openai:gpt-5-nano",
         "google:gemini-2.5-flash-lite",
         "openrouter:qwen/qwen3.5-9b-fp8",
-        "openrouter:google/gemma-3n-e4b-it-fp8",
+        "openrouter:google/gemma-3n-e4b-it",
         "openrouter:google/gemma-4-31b-it-fp8",
         "openrouter:qwen/qwen3.5-27b-fp8",
     ]
@@ -701,7 +701,7 @@ def test_build_work_items_interleaves_endpoints_within_repeat() -> None:
         "openai:gpt-5-nano:llm",
         "google:gemini-2.5-flash-lite:llm",
         "openrouter:qwen/qwen3.5-9b:llm:fp8",
-        "openrouter:google/gemma-3n-e4b-it:llm:fp8",
+        "openrouter:google/gemma-3n-e4b-it:llm",
         "openrouter:google/gemma-4-31b-it:llm:fp8",
         "openrouter:qwen/qwen3.5-27b:llm:fp8",
     }
