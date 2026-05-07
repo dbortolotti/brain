@@ -248,18 +248,59 @@ def render_html(
         "</tr>"
         for model, stats in model_summary_rows
     )
-    role_html = "\n".join(
-        "<tr>"
-        f"<td><code>{row['model']}</code></td>"
-        f"<td><code>{row['role']}</code></td>"
-        f"<td>{row['feasibility']}</td>"
-        f"<td><code>{row['seen']} / {row['total']}</code></td>"
-        f"<td>{row['ok']}</td>"
-        f"<td>{row['schema']}</td>"
-        f"<td>{row['fail']}</td>"
-        "</tr>"
-        for row in model_role_rows
-    )
+    family_model_role: dict[str, dict[str, list[dict[str, str | int]]]] = {}
+    for row in model_role_rows:
+        model = str(row["model"])
+        family = model.split(":", 1)[0] if ":" in model else "unknown"
+        family_model_role.setdefault(family, {}).setdefault(model, []).append(row)
+    role_tree_by_family_parts: list[str] = []
+    for family in sorted(family_model_role):
+        family_models = family_model_role[family]
+        family_seen = sum(int(row["seen"]) for rows in family_models.values() for row in rows)
+        family_total = sum(int(row["total"]) for rows in family_models.values() for row in rows)
+        role_tree_by_family_parts.append(
+            "<details class=\"tree-node\" open>"
+            f"<summary><code>{family}</code> <span class=\"muted\">({len(family_models)} models, {family_seen} / {family_total})</span></summary>"
+            "<div class=\"tree-children\">"
+        )
+        for model in sorted(
+            family_models,
+            key=lambda item: (
+                -sum(int(row["seen"]) for row in family_models[item]),
+                item,
+            ),
+        ):
+            rows = sorted(
+                family_models[model],
+                key=lambda item: (-int(item["seen"]), str(item["role"])),
+            )
+            issue_roles = sum(1 for row in rows if str(row["feasibility"]) == "issues seen")
+            clean_roles = sum(1 for row in rows if str(row["feasibility"]) == "clean so far")
+            model_class = "issues-seen" if issue_roles else ("clean-so-far" if clean_roles else "pending")
+            model_seen = sum(int(row["seen"]) for row in rows)
+            model_total = sum(int(row["total"]) for row in rows)
+            role_tree_by_family_parts.append(
+                "<details class=\"tree-leaf\">"
+                f"<summary><code class=\"model-name {model_class}\">{model}</code> <span class=\"muted\">({model_seen} / {model_total})</span></summary>"
+                "<div class=\"tree-children\">"
+            )
+            for row in rows:
+                role_class = str(row["feasibility"]).replace(" ", "-")
+                role_tree_by_family_parts.append(
+                    "<details class=\"tree-leaf\">"
+                    f"<summary><code class=\"model-name {role_class}\">{row['role']}</code></summary>"
+                    "<div class=\"tree-metrics\">"
+                    f"<div><strong>Status:</strong> {row['feasibility']}</div>"
+                    f"<div><strong>Seen / Total:</strong> <code>{row['seen']} / {row['total']}</code></div>"
+                    f"<div><strong>Ok:</strong> {row['ok']}</div>"
+                    f"<div><strong>Schema:</strong> {row['schema']}</div>"
+                    f"<div><strong>Fail:</strong> {row['fail']}</div>"
+                    "</div>"
+                    "</details>"
+                )
+            role_tree_by_family_parts.append("</div></details>")
+        role_tree_by_family_parts.append("</div></details>")
+    role_tree_by_family_html = "\n".join(role_tree_by_family_parts)
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -436,15 +477,8 @@ def render_html(
         </table>
       </section>
       <section id="role" class="tab-panel">
-        <p class="small">Preliminary feasibility is directional only. `clean so far` means no observed failures yet on the seen subset; `issues seen` means schema or operational failures already appeared.</p>
-        <table>
-          <thead>
-            <tr><th>Model</th><th>Role</th><th>Feasibility</th><th>Seen / Total</th><th>Ok</th><th>Schema</th><th>Fail</th></tr>
-          </thead>
-          <tbody>
-            {role_html}
-          </tbody>
-        </table>
+        <p class="small">Preliminary feasibility is directional only. This view groups observed rows as family, then model, then role.</p>
+        {role_tree_by_family_html}
       </section>
     </section>
   </main>
