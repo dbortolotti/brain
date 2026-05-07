@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "fixture_id": "article_url_ai_memory_001",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Stored summary of article on AI memory design emphasizing graph memory, provenance, and update semantics.",
+    "citations": [
+      "https://example.com/ai-memory"
+    ],
+    "conflict_classification": "none",
+    "decision": "create_memory_card",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "No existing entities matched; new concepts introduced from article summary."
+    },
+    "intent": "store_article_summary",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Graph memory",
+            "role": "subject",
+            "type": "concept"
+          },
+          {
+            "name": "agents",
+            "role": "beneficiary",
+            "type": "concept"
+          },
+          {
+            "name": "provenance",
+            "role": "requirement",
+            "type": "concept"
+          },
+          {
+            "name": "update semantics",
+            "role": "requirement",
+            "type": "concept"
+          }
+        ],
+        "kind": "article_summary",
+        "relationships": [
+          {
+            "object": "agents preserve relationships",
+            "predicate": "helps",
+            "subject": "Graph memory"
+          },
+          {
+            "object": "provenance and update semantics",
+            "predicate": "requires",
+            "subject": "Graph memory"
+          }
+        ],
+        "statement": "Graph memory helps agents preserve relationships; provenance and update semantics are needed."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created successfully.",
+        "No conflicts detected.",
+        "Citation recorded."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"store_article_summary\",\n  \"decision\": \"create_memory_card\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"article_summary\",\n      \"statement\": \"Graph memory helps agents preserve relationships; provenance and update semantics are needed.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Graph memory\",\n          \"type\": \"concept\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"agents\",\n          \"type\": \"concept\",\n          \"role\": \"beneficiary\"\n        },\n        {\n          \"name\": \"provenance\",\n          \"type\": \"concept\",\n          \"role\": \"requirement\"\n        },\n        {\n          \"name\": \"update semantics\",\n          \"type\": \"concept\",\n          \"role\": \"requirement\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Graph memory\",\n          \"predicate\": \"helps\",\n          \"object\": \"agents preserve relationships\"\n        },\n        {\n          \"subject\": \"Graph memory\",\n          \"predicate\": \"requires\",\n          \"object\": \"provenance and update semantics\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entities matched; new concepts introduced from article summary.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Stored summary of article on AI memory design emphasizing graph memory, provenance, and update semantics.\",\n  \"citations\": [\n    \"https://example.com/ai-memory\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card created successfully.\",\n      \"No conflicts detected.\",\n      \"Citation recorded.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

@@ -1,0 +1,55 @@
+{
+  "error": null,
+  "fixture_id": "recall_hide_superseded_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Sam works at Point72.",
+    "citations": [],
+    "conflict_classification": "superseded_memory_present; current_fact_preferred",
+    "decision": "use_current_memory_excluding_superseded",
+    "entity_resolution": {
+      "action": "resolve_to_known_entity",
+      "entity_id": null,
+      "reason": "Use the current memory that specifies Sam joined Point72; the older Goldman fact is explicitly superseded."
+    },
+    "intent": "recall_answer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "current_fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ignored superseded memory (Sam works at Goldman) and used current memory (Sam joined Point72)."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If multiple current employers exist for Sam, confirm which one is most recent."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"recall_answer\",\n  \"decision\": \"use_current_memory_excluding_superseded\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"current_fact\",\n      \"statement\": \"Sam joined Point72.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works at\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolve_to_known_entity\",\n    \"entity_id\": null,\n    \"reason\": \"Use the current memory that specifies Sam joined Point72; the older Goldman fact is explicitly superseded.\"\n  },\n  \"conflict_classification\": \"superseded_memory_present; current_fact_preferred\",\n  \"answer\": \"Sam works at Point72.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If multiple current employers exist for Sam, confirm which one is most recent.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Ignored superseded memory (Sam works at Goldman) and used current memory (Sam joined Point72).\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

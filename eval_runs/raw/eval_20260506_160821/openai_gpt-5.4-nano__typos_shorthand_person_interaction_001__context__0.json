@@ -1,0 +1,67 @@
+{
+  "error": null,
+  "fixture_id": "typos_shorthand_person_interaction_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Captured as low-confidence contextual preference/interaction due to shorthand and ambiguous entity resolution.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "create_memory_cards",
+    "entity_resolution": {
+      "action": "no_match",
+      "entity_id": null,
+      "reason": "Ambiguous names (e.g., 'Sam', 'Bill Evans') and shorthand 'frm goldmn' lack enough detail to reliably resolve to specific entities."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": null,
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer_or_context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": null,
+            "type": "person"
+          }
+        ],
+        "kind": "person_interaction_like_context",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "is_from",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (from Goldman) likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created one low-confidence memory card from the provided shorthand."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm Sam\u2019s full name (and whether 'Goldman' refers to Goldman Sachs).",
+      "Confirm which Bill Evans (full name or identifying details).",
+      "Clarify whether 'likes' refers to a professional relationship, personal preference, or a specific activity."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"slack_intake\",\n  \"decision\": \"create_memory_cards\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"person_interaction_like_context\",\n      \"statement\": \"Sam (from Goldman) likes Bill Evans.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": null\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer_or_context\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": null\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"is_from\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_match\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguous names (e.g., 'Sam', 'Bill Evans') and shorthand 'frm goldmn' lack enough detail to reliably resolve to specific entities.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Captured as low-confidence contextual preference/interaction due to shorthand and ambiguous entity resolution.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Confirm Sam\u2019s full name (and whether 'Goldman' refers to Goldman Sachs).\",\n    \"Confirm which Bill Evans (full name or identifying details).\",\n    \"Clarify whether 'likes' refers to a professional relationship, personal preference, or a specific activity.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Created one low-confidence memory card from the provided shorthand.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

@@ -1,0 +1,68 @@
+{
+  "fixture_id": "cascade_clean_fact_no_escalation_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Durable memory committed: Nur and Sara are confirmed as twin daughters. No conflicts detected.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "durable_memory_commit",
+    "entity_resolution": {
+      "action": "create_new_entities",
+      "reason": "No prior references to 'Nur' or 'Sara' exist in durable memory."
+    },
+    "intent": "memory_intake",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "twin_daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "twin_daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "is_twin_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Sara",
+            "predicate": "has_relationship_with",
+            "role": "twin",
+            "subject": "Nur"
+          },
+          {
+            "object": "Nur",
+            "predicate": "has_relationship_with",
+            "role": "twin",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Nur and Sara are my twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "New entities 'Nur' and 'Sara' created with role 'twin_daughter'.",
+        "Relationships 'is_twin_of' and 'has_relationship_with' established between them.",
+        "No superseded or deleted facts detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_165259"
+}

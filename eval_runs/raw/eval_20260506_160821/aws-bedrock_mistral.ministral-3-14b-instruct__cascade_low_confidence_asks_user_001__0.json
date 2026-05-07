@@ -1,0 +1,63 @@
+{
+  "error": null,
+  "fixture_id": "cascade_low_confidence_asks_user_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The system cannot commit this note to durable memory due to low confidence and ambiguity. Please clarify or provide additional context for 'Sam's note about cloud escalation' to resolve.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "defer_to_user",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Ambiguity prevents resolution; requires user clarification."
+    },
+    "intent": "clarify_ambiguous_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "author",
+            "type": "person"
+          },
+          {
+            "name": "cloud escalation",
+            "role": "topic",
+            "type": "concept"
+          }
+        ],
+        "kind": "note",
+        "relationships": [
+          {
+            "object": "note about cloud escalation",
+            "predicate": "created",
+            "subject": "Sam"
+          },
+          {
+            "object": "low confidence",
+            "predicate": "has",
+            "subject": "note about cloud escalation"
+          }
+        ],
+        "statement": "Sam's note about cloud escalation is ambiguous and lacks sufficient context for durable memory storage."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory storage deferred due to low-confidence/ambiguous input.",
+        "User action required to resolve."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask Sam to rephrase or provide context for the note.",
+      "Request clarification on whether 'cloud escalation' refers to a process, tool, or other specific meaning.",
+      "Flag the note for review by a human moderator if ambiguity persists."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"clarify_ambiguous_memory\",\n  \"decision\": \"defer_to_user\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"note\",\n      \"statement\": \"Sam's note about cloud escalation is ambiguous and lacks sufficient context for durable memory storage.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"author\"\n        },\n        {\n          \"name\": \"cloud escalation\",\n          \"type\": \"concept\",\n          \"role\": \"topic\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"created\",\n          \"object\": \"note about cloud escalation\"\n        },\n        {\n          \"subject\": \"note about cloud escalation\",\n          \"predicate\": \"has\",\n          \"object\": \"low confidence\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguity prevents resolution; requires user clarification.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"The system cannot commit this note to durable memory due to low confidence and ambiguity. Please clarify or provide additional context for 'Sam's note about cloud escalation' to resolve.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Ask Sam to rephrase or provide context for the note.\",\n    \"Request clarification on whether 'cloud escalation' refers to a process, tool, or other specific meaning.\",\n    \"Flag the note for review by a human moderator if ambiguity persists.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Memory storage deferred due to low-confidence/ambiguous input.\",\n      \"User action required to resolve.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

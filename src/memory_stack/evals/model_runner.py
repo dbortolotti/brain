@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from statistics import mean
+from threading import Lock
 from typing import Any, Protocol
 
 from memory_stack.config import Settings
@@ -65,6 +66,8 @@ class ModelEvalRunConfig:
     report_md_path: Path | None = None
     raw_output_dir: Path | None = None
     max_workers: int = 1
+    retry_attempts: int = 2
+    retry_backoff_seconds: float = 1.0
 
 
 def run_model_evals(
@@ -98,7 +101,11 @@ def run_model_evals(
         raise ValueError("no fixtures selected")
 
     run_id = f"eval_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}"
-    active_client = client or LiveProviderClient(settings)
+    active_client = client or LiveProviderClient(
+        settings,
+        retry_attempts=config.retry_attempts,
+        retry_backoff_seconds=config.retry_backoff_seconds,
+    )
     raw_output_dir = config.raw_output_dir or config.output_path.parent / "raw" / run_id
     parsed_output_dir = config.output_path.parent / "parsed" / run_id
 
@@ -109,80 +116,46 @@ def run_model_evals(
     ]
     total_records = sum(len(tasks) for _candidate, tasks in candidate_task_groups)
     completed = 0
+    progress_lock = Lock()
 
-    for candidate, tasks in candidate_task_groups:
-        if not tasks:
-            continue
-
-        first_fixture, first_repeat_idx = tasks[0]
-        first_record = run_one_fixture(
-            active_client,
-            candidate=candidate,
-            fixture=first_fixture,
-            run_id=run_id,
-            repeat_idx=first_repeat_idx,
-            raw_output_dir=raw_output_dir,
-            parsed_output_dir=parsed_output_dir,
-        )
-        records.append(first_record)
-        completed += 1
+    def report_progress(record: dict[str, Any]) -> None:
+        nonlocal completed
+        with progress_lock:
+            records.append(record)
+            completed += 1
+            done = completed
         if progress_callback:
-            progress_callback(completed, total_records, first_record)
+            progress_callback(done, total_records, record)
 
-        remaining = tasks[1:]
-        if first_record["status"] == "fail":
-            for fixture, repeat_idx in remaining:
-                record = synthetic_failure_record(
-                    candidate=candidate,
-                    fixture=fixture,
-                    run_id=run_id,
-                    repeat_idx=repeat_idx,
-                    raw_output_dir=raw_output_dir,
-                    parsed_output_dir=parsed_output_dir,
-                    error=f"candidate preflight failed: {first_record['failure_message']}",
-                )
-                records.append(record)
-                completed += 1
-                if progress_callback:
-                    progress_callback(completed, total_records, record)
-            continue
-
-        if config.max_workers <= 1 or len(remaining) <= 1:
-            for fixture, repeat_idx in remaining:
-                record = run_one_fixture(
+    work_items = [(candidate, tasks) for candidate, tasks in candidate_task_groups if tasks]
+    if config.max_workers <= 1 or len(work_items) <= 1:
+        for candidate, tasks in work_items:
+            for record in evaluate_candidate_tasks(
+                active_client,
+                candidate=candidate,
+                tasks=tasks,
+                run_id=run_id,
+                raw_output_dir=raw_output_dir,
+                parsed_output_dir=parsed_output_dir,
+            ):
+                report_progress(record)
+    else:
+        with ThreadPoolExecutor(max_workers=min(config.max_workers, len(work_items))) as executor:
+            futures = [
+                executor.submit(
+                    evaluate_candidate_tasks,
                     active_client,
                     candidate=candidate,
-                    fixture=fixture,
+                    tasks=tasks,
                     run_id=run_id,
-                    repeat_idx=repeat_idx,
                     raw_output_dir=raw_output_dir,
                     parsed_output_dir=parsed_output_dir,
                 )
-                records.append(record)
-                completed += 1
-                if progress_callback:
-                    progress_callback(completed, total_records, record)
-        else:
-            with ThreadPoolExecutor(max_workers=config.max_workers) as executor:
-                futures = [
-                    executor.submit(
-                        run_one_fixture,
-                        active_client,
-                        candidate=candidate,
-                        fixture=fixture,
-                        run_id=run_id,
-                        repeat_idx=repeat_idx,
-                        raw_output_dir=raw_output_dir,
-                        parsed_output_dir=parsed_output_dir,
-                    )
-                    for fixture, repeat_idx in remaining
-                ]
-                for future in as_completed(futures):
-                    record = future.result()
-                    records.append(record)
-                    completed += 1
-                    if progress_callback:
-                        progress_callback(completed, total_records, record)
+                for candidate, tasks in work_items
+            ]
+            for future in as_completed(futures):
+                for record in future.result():
+                    report_progress(record)
 
     config.output_path.parent.mkdir(parents=True, exist_ok=True)
     write_jsonl(config.output_path, records)
@@ -229,6 +202,59 @@ def candidate_tasks(
             for repeat_idx in range(repeat_runs):
                 tasks.append((fixture, repeat_idx))
     return tasks
+
+
+def evaluate_candidate_tasks(
+    client: EvalModelClient,
+    *,
+    candidate: ModelCandidate,
+    tasks: list[tuple[ModelEvalFixture, int]],
+    run_id: str,
+    raw_output_dir: Path,
+    parsed_output_dir: Path,
+) -> list[dict[str, Any]]:
+    records: list[dict[str, Any]] = []
+    first_fixture, first_repeat_idx = tasks[0]
+    first_record = run_one_fixture(
+        client,
+        candidate=candidate,
+        fixture=first_fixture,
+        run_id=run_id,
+        repeat_idx=first_repeat_idx,
+        raw_output_dir=raw_output_dir,
+        parsed_output_dir=parsed_output_dir,
+    )
+    records.append(first_record)
+
+    remaining = tasks[1:]
+    if first_record["status"] == "fail":
+        for fixture, repeat_idx in remaining:
+            records.append(
+                synthetic_failure_record(
+                    candidate=candidate,
+                    fixture=fixture,
+                    run_id=run_id,
+                    repeat_idx=repeat_idx,
+                    raw_output_dir=raw_output_dir,
+                    parsed_output_dir=parsed_output_dir,
+                    error=f"candidate preflight failed: {first_record['failure_message']}",
+                )
+            )
+        return records
+
+    for fixture, repeat_idx in remaining:
+        records.append(
+            run_one_fixture(
+                client,
+                candidate=candidate,
+                fixture=fixture,
+                run_id=run_id,
+                repeat_idx=repeat_idx,
+                raw_output_dir=raw_output_dir,
+                parsed_output_dir=parsed_output_dir,
+            )
+        )
+    return records
 
 
 def run_one_fixture(

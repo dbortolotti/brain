@@ -1,0 +1,74 @@
+{
+  "error": null,
+  "fixture_id": "recall_daughters_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Your daughters are Nur and Sara.",
+    "citations": [
+      "Fact: Nur and Sara are Daniele's twin daughters."
+    ],
+    "conflict_classification": "none",
+    "decision": "answer from provided context with a single durable memory card",
+    "entity_resolution": {
+      "action": "resolve_to_known_entity",
+      "entity_id": null,
+      "reason": "The query refers to the speaker's daughters; the only provided context identifies Nur and Sara as Daniele's twin daughters, so answer with those names while preserving that this is the available context."
+    },
+    "intent": "recall personal family relationship",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_daughter_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Daniele",
+            "predicate": "is_daughter_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Sara",
+            "predicate": "is_twin_of",
+            "subject": "Nur"
+          }
+        ],
+        "statement": "Nur and Sara are Daniele's twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Identified daughters as Nur and Sara from provided fact.",
+        "Stored one high-confidence memory card without adding extra assumptions."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want, I can also store that Nur and Sara are twins.",
+      "If your family context changes, update me and I will avoid treating this as current."
+    ]
+  },
+  "raw_text": "{\"intent\":\"recall personal family relationship\",\"decision\":\"answer from provided context with a single durable memory card\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Nur and Sara are Daniele's twin daughters.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Nur\",\"type\":\"person\",\"role\":\"daughter\"},{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"daughter\"},{\"name\":\"Daniele\",\"type\":\"person\",\"role\":\"parent\"}],\"relationships\":[{\"subject\":\"Nur\",\"predicate\":\"is_daughter_of\",\"object\":\"Daniele\"},{\"subject\":\"Sara\",\"predicate\":\"is_daughter_of\",\"object\":\"Daniele\"},{\"subject\":\"Nur\",\"predicate\":\"is_twin_of\",\"object\":\"Sara\"}]}],\"entity_resolution\":{\"action\":\"resolve_to_known_entity\",\"entity_id\":null,\"reason\":\"The query refers to the speaker's daughters; the only provided context identifies Nur and Sara as Daniele's twin daughters, so answer with those names while preserving that this is the available context.\"},\"conflict_classification\":\"none\",\"answer\":\"Your daughters are Nur and Sara.\",\"citations\":[\"Fact: Nur and Sara are Daniele's twin daughters.\"],\"repair_options\":[\"If you want, I can also store that Nur and Sara are twins.\",\"If your family context changes, update me and I will avoid treating this as current.\"],\"receipt\":{\"success\":true,\"details\":[\"Identified daughters as Nur and Sara from provided fact.\",\"Stored one high-confidence memory card without adding extra assumptions.\"]}}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

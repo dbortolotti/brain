@@ -1,0 +1,137 @@
+{
+  "fixture_id": "chat_conclusion_brain_architecture_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Cognee is a *rebuildable semantic projection* of Brain DB, dynamically reconstructing context while preserving ambiguity. Brain DB remains the sole source of truth, and Cognee must never present superseded or deleted facts as current. All outputs require traceability to Brain DB; unresolved ambiguity in Cognee reflects Brain DB\u2019s state, not factual uncertainty.",
+    "citations": [
+      "chat_conclusion_brain_architecture_001",
+      "durable_memory_compilation_protocol_v1.2"
+    ],
+    "conflict_classification": "semantic_projection_vs_source_of_truth",
+    "decision": "preserve_ambiguity_and_validate_source_of_truth",
+    "entity_resolution": {
+      "action": "defer_to_Brain_DB",
+      "entity_id": null,
+      "reason": "Cognee\u2019s role is to project, not resolve. Ambiguity in Cognee must align with Brain DB\u2019s unresolved state, not introduce new interpretations."
+    },
+    "intent": "durable_memory_compilation",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "semantic_projection",
+            "type": "system_component"
+          },
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system_component"
+          }
+        ],
+        "kind": "architectural_principle",
+        "relationships": [
+          {
+            "object": "rebuildable_semantic_projection",
+            "predicate": "IS_A",
+            "subject": "Cognee"
+          },
+          {
+            "object": "Brain_DB",
+            "predicate": "DEPENDS_ON",
+            "subject": "Cognee"
+          },
+          {
+            "object": "durable_memory",
+            "predicate": "CONTAINS",
+            "subject": "Brain_DB"
+          }
+        ],
+        "statement": "Cognee is a *rebuildable semantic projection* of Brain DB, not a standalone source of truth. It must dynamically reconstruct context from Brain DB while preserving ambiguity where unresolved."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "memory_compiler",
+            "type": "system"
+          },
+          {
+            "name": "superseded_facts",
+            "role": "excluded",
+            "type": "memory_state"
+          },
+          {
+            "name": "deleted_facts",
+            "role": "excluded",
+            "type": "memory_state"
+          }
+        ],
+        "kind": "constraint",
+        "relationships": [
+          {
+            "object": "factual_consistency",
+            "predicate": "ENFORCES",
+            "subject": "Brain"
+          },
+          {
+            "object": "Brain_DB_state",
+            "predicate": "MIRRORS",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain must *never* present superseded or deleted facts as current in Cognee. Ambiguity in Cognee reflects unresolved state in Brain DB, not factual uncertainty."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognee_outputs",
+            "role": "validated",
+            "type": "semantic_projection"
+          },
+          {
+            "name": "Brain_DB",
+            "role": "validation_source",
+            "type": "system_component"
+          },
+          {
+            "name": "unresolved_facts",
+            "role": "flagged",
+            "type": "memory_state"
+          }
+        ],
+        "kind": "validation_rule",
+        "relationships": [
+          {
+            "object": "Brain_DB_traceability",
+            "predicate": "REQUIRES",
+            "subject": "Cognee_outputs"
+          },
+          {
+            "object": "ambiguity_preservation",
+            "predicate": "INDICATES",
+            "subject": "unresolved_facts"
+          }
+        ],
+        "statement": "All Cognee outputs must be traceable to Brain DB. If a fact cannot be validated against Brain DB, it must be flagged as *unresolved* (not omitted)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory cards compiled with strict source-of-truth adherence.",
+        "Ambiguity preservation enforced via traceability rules.",
+        "No superseded/deleted facts included in projections."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Audit Cognee for orphaned facts lacking Brain DB validation.",
+      "Implement real-time sync hooks between Cognee and Brain DB to prevent stale projections.",
+      "Log unresolved ambiguity in Cognee with Brain DB timestamps for auditability."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

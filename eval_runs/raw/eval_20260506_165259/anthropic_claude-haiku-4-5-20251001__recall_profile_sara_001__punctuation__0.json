@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "fixture_id": "recall_profile_sara_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "payload": {
+    "answer": "Sara is one of Daniele's twin daughters. Her twin sibling is Nur. No additional information about Sara is currently stored in memory.",
+    "citations": [
+      "Fact: Nur and Sara are Daniele's twin daughters"
+    ],
+    "conflict_classification": "none",
+    "decision": "Synthesize available facts about Sara while preserving ambiguity about her identity beyond the twin relationship",
+    "entity_resolution": {
+      "action": "identify",
+      "entity_id": "sara_daniele_twin_001",
+      "reason": "Sara identified as one of Daniele's twin daughters; insufficient data for further disambiguation"
+    },
+    "intent": "Recall information about Sara from stored facts",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "twin_sibling",
+            "type": "person"
+          }
+        ],
+        "kind": "relational_fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_twin_daughter_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is_twin_sibling_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is one of Daniele's twin daughters"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Fact successfully recalled",
+        "Relationship chain established: Sara \u2192 twin_of \u2192 Nur; Sara \u2192 daughter_of \u2192 Daniele",
+        "No conflicting information detected",
+        "Ambiguity preserved regarding Sara's other attributes"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request additional biographical details about Sara",
+      "Clarify Sara's age, occupation, or other distinguishing characteristics",
+      "Provide context about Sara's relationship to the querent"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Recall information about Sara from stored facts\",\n  \"decision\": \"Synthesize available facts about Sara while preserving ambiguity about her identity beyond the twin relationship\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"relational_fact\",\n      \"statement\": \"Sara is one of Daniele's twin daughters\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"daughter\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"parent\"\n        },\n        {\n          \"name\": \"Nur\",\n          \"type\": \"person\",\n          \"role\": \"twin_sibling\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is_twin_daughter_of\",\n          \"object\": \"Daniele\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is_twin_sibling_of\",\n          \"object\": \"Nur\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"identify\",\n    \"entity_id\": \"sara_daniele_twin_001\",\n    \"reason\": \"Sara identified as one of Daniele's twin daughters; insufficient data for further disambiguation\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Sara is one of Daniele's twin daughters. Her twin sibling is Nur. No additional information about Sara is currently stored in memory.\",\n  \"citations\": [\n    \"Fact: Nur and Sara are Daniele's twin daughters\"\n  ],\n  \"repair_options\": [\n    \"Request additional biographical details about Sara\",\n    \"Clarify Sara's age, occupation, or other distinguishing characteristics\",\n    \"Provide context about Sara's relationship to the querent\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Fact successfully recalled\",\n      \"Relationship chain established: Sara \u2192 twin_of \u2192 Nur; Sara \u2192 daughter_of \u2192 Daniele\",\n      \"No conflicting information detected\",\n      \"Ambiguity preserved regarding Sara's other attributes\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

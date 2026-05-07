@@ -1,0 +1,78 @@
+{
+  "error": null,
+  "fixture_id": "memory_compiler_small_table__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Committed 2 preference memories: Sam -> Bill Evans; Daniele -> knowledge graphs.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "commit_new_entities",
+      "entity_id": null,
+      "reason": "No prior entity IDs were provided; create new durable preference memories for the named people."
+    },
+    "intent": "compile_person_preferences",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "owner",
+            "type": "Person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred_item",
+            "type": "Artist"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam's preference is Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "owner",
+            "type": "Person"
+          },
+          {
+            "name": "knowledge graphs",
+            "role": "preferred_item",
+            "type": "Concept"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "knowledge graphs",
+            "predicate": "prefers",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Daniele's preference is knowledge graphs."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored Sam's preference for Bill Evans.",
+        "Stored Daniele's preference for knowledge graphs."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"compile_person_preferences\",\n  \"decision\": \"commit\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam's preference is Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"Person\",\n          \"role\": \"owner\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"Artist\",\n          \"role\": \"preferred_item\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"prefers\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Daniele's preference is knowledge graphs.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"Person\",\n          \"role\": \"owner\"\n        },\n        {\n          \"name\": \"knowledge graphs\",\n          \"type\": \"Concept\",\n          \"role\": \"preferred_item\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Daniele\",\n          \"predicate\": \"prefers\",\n          \"object\": \"knowledge graphs\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"commit_new_entities\",\n    \"entity_id\": null,\n    \"reason\": \"No prior entity IDs were provided; create new durable preference memories for the named people.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Committed 2 preference memories: Sam -> Bill Evans; Daniele -> knowledge graphs.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Stored Sam's preference for Bill Evans.\",\n      \"Stored Daniele's preference for knowledge graphs.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

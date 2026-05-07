@@ -1,0 +1,75 @@
+{
+  "fixture_id": "memory_compiler_small_table__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Committed 2 preference memories: Sam -> Bill Evans; Daniele -> knowledge graphs.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "commit_new_entities",
+      "entity_id": null,
+      "reason": "No prior entity IDs were provided; create new durable preference memories for the named people."
+    },
+    "intent": "compile_person_preferences",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "owner",
+            "type": "Person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred_item",
+            "type": "Artist"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam's preference is Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "owner",
+            "type": "Person"
+          },
+          {
+            "name": "knowledge graphs",
+            "role": "preferred_item",
+            "type": "Concept"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "knowledge graphs",
+            "predicate": "prefers",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Daniele's preference is knowledge graphs."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored Sam's preference for Bill Evans.",
+        "Stored Daniele's preference for knowledge graphs."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_160821"
+}

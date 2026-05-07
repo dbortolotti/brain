@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "fixture_id": "person_interaction_sam_bill_evans_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Stored as an ambiguous preference tied to Sam from Goldman.",
+    "citations": [
+      "fixture:person_interaction_sam_bill_evans_001__punctuation"
+    ],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "create_ambiguous_entity",
+      "entity_id": null,
+      "reason": "'Sam from Goldman' does not uniquely identify which Sam this is; the memory is kept tied to the provided affiliation only."
+    },
+    "intent": "extract_preference",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object of liking",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured a preference statement.",
+        "Preserved ambiguity around Sam\u2019s identity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If Sam\u2019s full name becomes available, link this preference to the resolved person entity.",
+      "If 'Bill Evans' was meant as a topic rather than a person, \u0443\u0442\u043e\u0447ify/clarify in a future interaction."
+    ]
+  },
+  "raw_text": "{\"intent\":\"extract_preference\",\"decision\":\"store\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman likes Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"object of liking\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"create_ambiguous_entity\",\"entity_id\":null,\"reason\":\"'Sam from Goldman' does not uniquely identify which Sam this is; the memory is kept tied to the provided affiliation only.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored as an ambiguous preference tied to Sam from Goldman.\",\"citations\":[\"fixture:person_interaction_sam_bill_evans_001__punctuation\"],\"repair_options\":[\"If Sam\u2019s full name becomes available, link this preference to the resolved person entity.\",\"If 'Bill Evans' was meant as a topic rather than a person, \u0443\u0442\u043e\u0447ify/clarify in a future interaction.\"],\"receipt\":{\"success\":true,\"details\":[\"Captured a preference statement.\",\"Preserved ambiguity around Sam\u2019s identity.\"]}}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

@@ -1,0 +1,65 @@
+{
+  "error": null,
+  "fixture_id": "personal_routine_morning_reading_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Saved your morning preference: read technical papers before checking email.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "link_or_create",
+      "entity_id": null,
+      "reason": "No existing entity identifiers were provided; store as a new preference card."
+    },
+    "intent": "Store user preference for morning routine reading order",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "technical papers",
+            "role": "read target",
+            "type": "content"
+          },
+          {
+            "name": "morning",
+            "role": "reading time",
+            "type": "time"
+          },
+          {
+            "name": "email",
+            "role": "checked after reading",
+            "type": "activity"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "read technical papers in the morning",
+            "predicate": "prefers to",
+            "subject": "user"
+          },
+          {
+            "object": "checking email",
+            "predicate": "before",
+            "subject": "reading technical papers in the morning"
+          }
+        ],
+        "statement": "User usually prefers to read technical papers in the morning before checking email."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created a preference memory card for morning reading order relative to email."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want this to be conditional (e.g., 'on weekdays'), specify the condition so the preference can be scoped."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Store user preference for morning routine reading order\",\n  \"decision\": \"store\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"User usually prefers to read technical papers in the morning before checking email.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"technical papers\",\n          \"type\": \"content\",\n          \"role\": \"read target\"\n        },\n        {\n          \"name\": \"morning\",\n          \"type\": \"time\",\n          \"role\": \"reading time\"\n        },\n        {\n          \"name\": \"email\",\n          \"type\": \"activity\",\n          \"role\": \"checked after reading\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"user\",\n          \"predicate\": \"prefers to\",\n          \"object\": \"read technical papers in the morning\"\n        },\n        {\n          \"subject\": \"reading technical papers in the morning\",\n          \"predicate\": \"before\",\n          \"object\": \"checking email\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"link_or_create\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entity identifiers were provided; store as a new preference card.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Saved your morning preference: read technical papers before checking email.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If you want this to be conditional (e.g., 'on weekdays'), specify the condition so the preference can be scoped.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Created a preference memory card for morning reading order relative to email.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

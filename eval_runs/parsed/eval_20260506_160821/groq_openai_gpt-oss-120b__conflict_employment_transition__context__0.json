@@ -1,0 +1,87 @@
+{
+  "fixture_id": "conflict_employment_transition__context",
+  "model": "groq:openai/gpt-oss-120b",
+  "payload": {
+    "answer": "The new fact indicates Sam changed employers, which conflicts with the existing fact that Sam works at Goldman. The memory should be updated to reflect Sam now works at Point72 and the previous fact is superseded.",
+    "citations": [
+      "Existing current fact",
+      "New fact"
+    ],
+    "conflict_classification": "employment_transition",
+    "decision": "update_memory",
+    "entity_resolution": {
+      "action": "update",
+      "entity_id": null,
+      "reason": "New fact supersedes previous employment information."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Existing fact superseded",
+        "New fact added"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "override existing fact",
+      "add new fact with timestamp",
+      "mark old fact as superseded"
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

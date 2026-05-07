@@ -1,0 +1,70 @@
+{
+  "error": null,
+  "fixture_id": "typos_shorthand_person_interaction_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Stored tentatively: Sam from Goldman apparently likes Bill Evans.",
+    "citations": [
+      "input: sam frm goldmn likes bill evns apparently"
+    ],
+    "conflict_classification": "none",
+    "decision": "store_tentatively",
+    "entity_resolution": {
+      "action": "ambiguous",
+      "entity_id": null,
+      "reason": "Input contains shorthand/typos and no reliable disambiguation for Sam or Goldman; 'apparently' further lowers confidence."
+    },
+    "intent": "capture_person_preference",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_or_source",
+            "type": "organization_or_surname"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object_of_preference",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman apparently likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Accepted as a tentative preference memory.",
+        "Marked low confidence due to shorthand and hearsay marker 'apparently'."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm whether 'Sam' refers to a specific person and whether 'Goldman' is the company or surname.",
+      "Confirm whether 'Bill Evans' is the jazz musician or another person.",
+      "If needed, restate in full spelling for a durable memory."
+    ]
+  },
+  "raw_text": "{\"intent\":\"capture_person_preference\",\"decision\":\"store_tentatively\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman apparently likes Bill Evans.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization_or_surname\",\"role\":\"affiliation_or_source\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"object_of_preference\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"},{\"subject\":\"Sam\",\"predicate\":\"associated_with\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"ambiguous\",\"entity_id\":null,\"reason\":\"Input contains shorthand/typos and no reliable disambiguation for Sam or Goldman; 'apparently' further lowers confidence.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored tentatively: Sam from Goldman apparently likes Bill Evans.\",\"citations\":[\"input: sam frm goldmn likes bill evns apparently\"],\"repair_options\":[\"Confirm whether 'Sam' refers to a specific person and whether 'Goldman' is the company or surname.\",\"Confirm whether 'Bill Evans' is the jazz musician or another person.\",\"If needed, restate in full spelling for a durable memory.\"],\"receipt\":{\"success\":true,\"details\":[\"Accepted as a tentative preference memory.\",\"Marked low confidence due to shorthand and hearsay marker 'apparently'.\"]}}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

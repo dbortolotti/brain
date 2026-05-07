@@ -1,0 +1,89 @@
+{
+  "error": null,
+  "fixture_id": "contradiction_sam_children_001__punctuation",
+  "model": "anthropic:claude-sonnet-4-6",
+  "payload": {
+    "answer": "There is a direct contradiction between the existing memory ('Sam from Goldman has two children') and the new claim ('Sam from Goldman has no children'). These statements are mutually exclusive on the same attribute for the same entity. The existing memory has not been updated. Clarification is required before any change is committed.",
+    "citations": [
+      "Existing memory: Sam from Goldman has two children",
+      "New input: Sam from Goldman has no children"
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "Flag as direct factual contradiction; do not silently overwrite existing memory. Request clarification or confirmation before updating.",
+    "entity_resolution": {
+      "action": "matched_existing",
+      "entity_id": "sam_goldman",
+      "reason": "Both the existing memory and the new claim refer to the same individual: Sam, affiliated with Goldman. Entity is resolved as the same person; the conflict is on the attribute 'number of children'."
+    },
+    "intent": "classify_conflict_between_existing_and_new_memory_about_sam_from_goldman_children",
+    "memory_cards": [
+      {
+        "confidence": "was_committed",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "existing_fact",
+        "relationships": [
+          {
+            "object": "two",
+            "predicate": "has_number_of_children",
+            "subject": "Sam (Goldman)"
+          }
+        ],
+        "statement": "Sam from Goldman has two children."
+      },
+      {
+        "confidence": "unverified_pending_resolution",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "incoming_claim",
+        "relationships": [
+          {
+            "object": "zero",
+            "predicate": "has_number_of_children",
+            "subject": "Sam (Goldman)"
+          }
+        ],
+        "statement": "Sam from Goldman has no children."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict detected: direct contradiction on attribute 'number of children' for entity Sam (Goldman).",
+        "Existing committed fact: two children.",
+        "Incoming claim: no children.",
+        "No memory update performed pending resolution.",
+        "User or authoritative source confirmation required."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Confirm the new claim is correct and replace the existing memory: update Sam's child count from two to zero.",
+      "Confirm the existing memory is correct and discard the new claim.",
+      "Mark both facts as uncertain and flag for user review, preserving the original until resolved.",
+      "Investigate whether the two references to 'Sam from Goldman' refer to different individuals, in which case entity disambiguation is needed before resolution."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"classify_conflict_between_existing_and_new_memory_about_sam_from_goldman_children\",\n  \"decision\": \"Flag as direct factual contradiction; do not silently overwrite existing memory. Request clarification or confirmation before updating.\",\n  \"conflict_classification\": \"direct_contradiction\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"existing_fact\",\n      \"statement\": \"Sam from Goldman has two children.\",\n      \"confidence\": \"was_committed\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam (Goldman)\",\n          \"predicate\": \"has_number_of_children\",\n          \"object\": \"two\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"incoming_claim\",\n      \"statement\": \"Sam from Goldman has no children.\",\n      \"confidence\": \"unverified_pending_resolution\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam (Goldman)\",\n          \"predicate\": \"has_number_of_children\",\n          \"object\": \"zero\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"matched_existing\",\n    \"entity_id\": \"sam_goldman\",\n    \"reason\": \"Both the existing memory and the new claim refer to the same individual: Sam, affiliated with Goldman. Entity is resolved as the same person; the conflict is on the attribute 'number of children'.\"\n  },\n  \"answer\": \"There is a direct contradiction between the existing memory ('Sam from Goldman has two children') and the new claim ('Sam from Goldman has no children'). These statements are mutually exclusive on the same attribute for the same entity. The existing memory has not been updated. Clarification is required before any change is committed.\",\n  \"citations\": [\n    \"Existing memory: Sam from Goldman has two children\",\n    \"New input: Sam from Goldman has no children\"\n  ],\n  \"repair_options\": [\n    \"Confirm the new claim is correct and replace the existing memory: update Sam's child count from two to zero.\",\n    \"Confirm the existing memory is correct and discard the new claim.\",\n    \"Mark both facts as uncertain and flag for user review, preserving the original until resolved.\",\n    \"Investigate whether the two references to 'Sam from Goldman' refer to different individuals, in which case entity disambiguation is needed before resolution.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Conflict detected: direct contradiction on attribute 'number of children' for entity Sam (Goldman).\",\n      \"Existing committed fact: two children.\",\n      \"Incoming claim: no children.\",\n      \"No memory update performed pending resolution.\",\n      \"User or authoritative source confirmation required.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

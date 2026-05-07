@@ -1,0 +1,65 @@
+{
+  "fixture_id": "typos_shorthand_person_interaction_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Captured a tentative note: Sam (from Goldman) apparently likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "commit_partial",
+    "entity_resolution": {
+      "action": "request_clarification",
+      "entity_id": null,
+      "reason": "Names are ambiguous (e.g., which Sam/Bill Evans; 'Goldmn' likely 'Goldman' but not confirmed). Input includes 'apparently', so certainty is low."
+    },
+    "intent": "extract_person_interaction_preference",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "personal_fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "is_from",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (from Goldman) likes Bill Evans, apparently."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created a low-confidence memory card for the stated like relationship with affiliation context.",
+        "Set entity resolution to require clarification due to ambiguous names and spelling."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm whether 'goldmn' means 'Goldman Sachs' (or another Goldman).",
+      "Confirm the identities of 'Sam' and 'Bill Evans' (e.g., full names or context).",
+      "Remove or confirm the uncertainty implied by 'apparently' if it's known to be true."
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

@@ -1,0 +1,52 @@
+{
+  "error": null,
+  "fixture_id": "recall_absence_claims_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "You currently have no open loops with Sam.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "no_open_loops_found",
+    "entity_resolution": {
+      "action": "confirmed_from_table_check",
+      "entity_id": null,
+      "reason": "The input states the open-loop table was checked for Sam and returned no open loops."
+    },
+    "intent": "recall_open_loops_with_person",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "counterparty",
+            "type": "person"
+          }
+        ],
+        "kind": "open_loop_absence",
+        "relationships": [
+          {
+            "object": "Sam",
+            "predicate": "have_open_loops_with",
+            "subject": "you"
+          }
+        ],
+        "statement": "There are no open loops with Sam (open-loop table checked; none found)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Used the provided open-loop table check result for Sam.",
+        "Reported absence of open loops as the answer."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you meant a different Sam, specify which one (e.g., full name or context) and re-check.",
+      "If new tasks/commitments were added after the table check, rerun the open-loop scan."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"recall_open_loops_with_person\",\n  \"decision\": \"no_open_loops_found\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"open_loop_absence\",\n      \"statement\": \"There are no open loops with Sam (open-loop table checked; none found).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"counterparty\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"you\",\n          \"predicate\": \"have_open_loops_with\",\n          \"object\": \"Sam\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"confirmed_from_table_check\",\n    \"entity_id\": null,\n    \"reason\": \"The input states the open-loop table was checked for Sam and returned no open loops.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"You currently have no open loops with Sam.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If you meant a different Sam, specify which one (e.g., full name or context) and re-check.\",\n    \"If new tasks/commitments were added after the table check, rerun the open-loop scan.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Used the provided open-loop table check result for Sam.\",\n      \"Reported absence of open loops as the answer.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

@@ -1,0 +1,74 @@
+{
+  "error": null,
+  "fixture_id": "recall_profile_sara_001__punctuation",
+  "model": "google:gemini-2.5-flash",
+  "payload": {
+    "answer": "Sara is Daniele's twin daughter.",
+    "citations": [
+      "Fact - Nur and Sara are Daniele's twin daughters"
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "recalled_information_about_entity",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": null,
+      "reason": "Query entity 'Sara' matches known entity 'Sara' from fact."
+    },
+    "intent": "recall",
+    "memory_cards": [
+      {
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "Person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "Person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "Person"
+          }
+        ],
+        "kind": "Fact",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "is twin of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is twin of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Daniele",
+            "predicate": "is daughter of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Daniele",
+            "predicate": "is daughter of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Nur and Sara are Daniele's twin daughters"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Successfully recalled information about Sara."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"recall\",\n  \"decision\": \"recalled_information_about_entity\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"Fact\",\n      \"statement\": \"Nur and Sara are Daniele's twin daughters\",\n      \"entities\": [\n        {\n          \"name\": \"Nur\",\n          \"type\": \"Person\",\n          \"role\": \"daughter\"\n        },\n        {\n          \"name\": \"Sara\",\n          \"type\": \"Person\",\n          \"role\": \"daughter\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"Person\",\n          \"role\": \"parent\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Nur\",\n          \"predicate\": \"is twin of\",\n          \"object\": \"Sara\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is twin of\",\n          \"object\": \"Nur\"\n        },\n        {\n          \"subject\": \"Nur\",\n          \"predicate\": \"is daughter of\",\n          \"object\": \"Daniele\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is daughter of\",\n          \"object\": \"Daniele\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolved\",\n    \"entity_id\": null,\n    \"reason\": \"Query entity 'Sara' matches known entity 'Sara' from fact.\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"Sara is Daniele's twin daughter.\",\n  \"citations\": [\n    \"Fact - Nur and Sara are Daniele's twin daughters\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Successfully recalled information about Sara.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

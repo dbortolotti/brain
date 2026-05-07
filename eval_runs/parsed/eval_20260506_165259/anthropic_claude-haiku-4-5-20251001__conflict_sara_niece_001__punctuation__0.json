@@ -1,0 +1,103 @@
+{
+  "fixture_id": "conflict_sara_niece_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "payload": {
+    "answer": "No conflict. The new statement 'Sara is my niece' is logically consistent with the existing memory that Sara is Daniele's daughter. This indicates the speaker is Daniele's sibling.",
+    "citations": [
+      "Existing: Sara is Daniele's daughter (high confidence)",
+      "Existing: Sara is Nur's twin (high confidence)",
+      "New: Sara is my niece (medium confidence)"
+    ],
+    "conflict_classification": "CONSISTENT_EXPANSION",
+    "decision": "ACCEPT_NEW_WITH_CONSISTENCY_CHECK",
+    "entity_resolution": {
+      "action": "merge_consistent",
+      "entity_id": "sara_001",
+      "reason": "New claim (Sara is my niece) is consistent with existing facts (Sara is Daniele's daughter). Speaker is sibling of Daniele."
+    },
+    "intent": "Classify conflict between existing kinship memory and new relationship claim",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_child_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Nur's twin"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sara",
+            "type": "person"
+          },
+          {
+            "name": "speaker",
+            "role": "uncle_or_aunt",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "speaker",
+            "predicate": "is_niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict classification complete",
+        "No contradictions detected",
+        "New memory card added with medium confidence",
+        "Kinship chain remains coherent"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Accept new fact and infer speaker relationship to Daniele",
+      "Request clarification on speaker's name and relationship to Daniele for full consistency"
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

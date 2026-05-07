@@ -1,0 +1,155 @@
+{
+  "fixture_id": "long_markdown_chat_summary_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Brain DB is the authoritative source of truth, with Cognee as a semantic projection and Slack as the strict intake agent. Telegram may be added later, and cost-performance optimization is a priority for model selection.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit_durable_memory",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": null,
+      "reason": "No existing entity matches the described system roles or constraints."
+    },
+    "intent": "system_architecture_evaluation",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "primary_memory_store",
+            "type": "database"
+          }
+        ],
+        "kind": "system_role",
+        "relationships": [
+          {
+            "object": "the source of truth",
+            "predicate": "IS",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB is the authoritative source of truth for all durable memory storage."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "projection",
+            "type": "semantic_layer"
+          },
+          {
+            "name": "Brain DB",
+            "role": "source",
+            "type": "database"
+          }
+        ],
+        "kind": "system_role",
+        "relationships": [
+          {
+            "object": "rebuildable semantic projection of Brain DB",
+            "predicate": "IS_A",
+            "subject": "Cognee"
+          },
+          {
+            "object": "Brain DB",
+            "predicate": "DEPENDS_ON",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee is a rebuildable semantic projection of Brain DB, designed for query flexibility and interpretability."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "memory_validation",
+            "type": "intake_agent"
+          },
+          {
+            "name": "Brain DB",
+            "role": "target_store",
+            "type": "database"
+          }
+        ],
+        "kind": "system_role",
+        "relationships": [
+          {
+            "object": "Brain DB",
+            "predicate": "ROUTES_TO",
+            "subject": "Slack"
+          },
+          {
+            "object": "strict intake validation",
+            "predicate": "ENFORCES",
+            "subject": "Slack"
+          }
+        ],
+        "statement": "Slack is a strict memory intake agent, responsible for ingesting and validating user interactions before durable storage."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Telegram",
+            "role": "potential_intake_channel",
+            "type": "platform"
+          },
+          {
+            "name": "Slack",
+            "role": "current_intake_channel",
+            "type": "platform"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [
+          {
+            "object": "secondary intake channel",
+            "predicate": "MAY_BE_ADDED_AS",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "Telegram integration is under consideration for future expansion as a secondary intake channel."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "target_system",
+            "type": "database"
+          },
+          {
+            "name": "cost-performance",
+            "role": "optimization_criteria",
+            "type": "metric"
+          }
+        ],
+        "kind": "system_constraint",
+        "relationships": [
+          {
+            "object": "cost-performance optimization",
+            "predicate": "REQUIRES",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Cost-performance optimization is required: the cheapest model that saturates performance must be selected for Brain DB operations."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed durable memory for Brain DB as source of truth.",
+        "Established Cognee as rebuildable semantic projection.",
+        "Validated Slack as strict intake agent.",
+        "Logged open question for Telegram integration.",
+        "Noted cost-performance optimization requirement."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_160821"
+}

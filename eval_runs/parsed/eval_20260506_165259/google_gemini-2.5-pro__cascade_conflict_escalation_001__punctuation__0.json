@@ -1,0 +1,67 @@
+{
+  "fixture_id": "cascade_conflict_escalation_001__punctuation",
+  "model": "google:gemini-2.5-pro",
+  "payload": {
+    "answer": "I have a note that Sara is your daughter, but you just said she is your niece. Which is correct?",
+    "citations": [],
+    "conflict_classification": "direct_contradiction",
+    "decision": "CONFLICT",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The entity 'Sara' is consistently identified in both the existing memory and the new input."
+    },
+    "intent": "INFORM",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "existing",
+        "relationships": [
+          {
+            "object": "user",
+            "predicate": "is the daughter of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my daughter"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "new",
+        "relationships": [
+          {
+            "object": "user",
+            "predicate": "is the niece of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict detected. New information was not committed to memory."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Confirm Sara is my daughter",
+      "Confirm Sara is my niece"
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

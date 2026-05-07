@@ -1,0 +1,58 @@
+{
+  "error": null,
+  "fixture_id": "recall_hide_superseded_001__context",
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "payload": {
+    "answer": "Sam works at Point72",
+    "citations": [
+      "Current memory: Sam joined Point72"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "Return current memory as authoritative; suppress superseded fact",
+    "entity_resolution": {
+      "action": "retain_current",
+      "entity_id": "sam_employment_point72",
+      "reason": "Current memory supersedes prior state; Goldman employment marked superseded"
+    },
+    "intent": "Determine Sam's current employer given conflicting memory states",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded fact (Goldman) excluded from response",
+        "Current fact (Point72) returned as authoritative",
+        "No ambiguity preserved; clear state transition documented"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm Point72 employment date if temporal precision needed",
+      "Verify Goldman employment end date for historical record"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Determine Sam's current employer given conflicting memory states\",\n  \"decision\": \"Return current memory as authoritative; suppress superseded fact\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam joined Point72\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"retain_current\",\n    \"entity_id\": \"sam_employment_point72\",\n    \"reason\": \"Current memory supersedes prior state; Goldman employment marked superseded\"\n  },\n  \"conflict_classification\": \"supersession\",\n  \"answer\": \"Sam works at Point72\",\n  \"citations\": [\n    \"Current memory: Sam joined Point72\"\n  ],\n  \"repair_options\": [\n    \"Confirm Point72 employment date if temporal precision needed\",\n    \"Verify Goldman employment end date for historical record\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Superseded fact (Goldman) excluded from response\",\n      \"Current fact (Point72) returned as authoritative\",\n      \"No ambiguity preserved; clear state transition documented\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

@@ -1,0 +1,52 @@
+{
+  "fixture_id": "ambiguous_sam_001__punctuation",
+  "model": "google:gemini-2.5-flash-lite",
+  "payload": {
+    "answer": "I've stored that Sam likes Bill Evans. I noticed there are multiple people named Sam in your contacts. Can you clarify which Sam you meant?",
+    "citations": [
+      "new_message"
+    ],
+    "conflict_classification": "ambiguous",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": null,
+      "reason": "Ambiguity detected: 'Sam' could refer to 'Sam from Goldman' or 'Sam from Point72'. No distinguishing information provided in the new message."
+    },
+    "intent": "store_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "PERSON"
+          },
+          {
+            "name": "Bill Evans",
+            "type": "PERSON"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory stored: Sam likes Bill Evans."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify which Sam you are referring to."
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

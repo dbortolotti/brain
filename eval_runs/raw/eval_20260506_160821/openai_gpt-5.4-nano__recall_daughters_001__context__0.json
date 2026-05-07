@@ -1,0 +1,71 @@
+{
+  "error": null,
+  "fixture_id": "recall_daughters_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Your daughters are Nur and Sara.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "use_context_fact",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Query asks for 'my daughters' and context specifies Daniele's daughters; no additional identifiers are provided."
+    },
+    "intent": "recall_synthesizer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "father",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "context_fact",
+        "relationships": [
+          {
+            "object": "Nur",
+            "predicate": "has_daughter",
+            "subject": "Daniele"
+          },
+          {
+            "object": "Sara",
+            "predicate": "has_daughter",
+            "subject": "Daniele"
+          },
+          {
+            "object": "Sara",
+            "predicate": "is_twin_of",
+            "subject": "Nur"
+          }
+        ],
+        "statement": "Nur and Sara are Daniele's twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Used provided context fact to answer the daughters query."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If 'Daniele' is not the referenced 'you', clarify whose daughters you mean.",
+      "If you want only daughters and not twin status, confirm that twin detail can be omitted."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"recall_synthesizer\",\n  \"decision\": \"use_context_fact\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"context_fact\",\n      \"statement\": \"Nur and Sara are Daniele's twin daughters.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"father\"\n        },\n        {\n          \"name\": \"Nur\",\n          \"type\": \"person\",\n          \"role\": \"daughter\"\n        },\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"daughter\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Daniele\",\n          \"predicate\": \"has_daughter\",\n          \"object\": \"Nur\"\n        },\n        {\n          \"subject\": \"Daniele\",\n          \"predicate\": \"has_daughter\",\n          \"object\": \"Sara\"\n        },\n        {\n          \"subject\": \"Nur\",\n          \"predicate\": \"is_twin_of\",\n          \"object\": \"Sara\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"Query asks for 'my daughters' and context specifies Daniele's daughters; no additional identifiers are provided.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Your daughters are Nur and Sara.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If 'Daniele' is not the referenced 'you', clarify whose daughters you mean.\",\n    \"If you want only daughters and not twin status, confirm that twin detail can be omitted.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Used provided context fact to answer the daughters query.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

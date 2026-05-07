@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "unresolved_pronoun_001",
+  "model": "aws-bedrock:nvidia.nemotron-nano-9b-v2",
+  "payload": {
+    "answer": "The statement contains unresolved pronouns requiring clarification",
+    "citations": [],
+    "conflict_classification": "unresolved_pronoun_001",
+    "decision": "clarification_required",
+    "entity_resolution": {
+      "action": "request_clarification",
+      "entity_id": null,
+      "reason": "Ambiguous pronoun reference"
+    },
+    "intent": "preference_expression",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "he",
+            "role": "subject",
+            "type": "pronoun"
+          },
+          {
+            "name": "the other one",
+            "role": "object",
+            "type": "pronoun"
+          }
+        ],
+        "kind": "statement",
+        "statement": "He prefers the other one"
+      },
+      {
+        "confidence": "medium",
+        "entities": [],
+        "kind": "entity_resolution",
+        "relationships": [
+          {
+            "object": "unresolved",
+            "predicate": "referent",
+            "subject": "he"
+          }
+        ],
+        "statement": "Pronoun 'he' unresolved"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguous pronoun references detected"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Specify who 'he' refers to",
+      "Define 'the other one' contextually"
+    ]
+  },
+  "raw_text": "Okay, let's tackle this query. The user input is \"He prefers the other one.\" The role is slack_intake, and the fixture ID is unresolved_pronoun_001. The task is to return a JSON object following the specified schema.\n\nFirst, I need to parse the input. The sentence is ambiguous because \"he\" and \"the other one\" aren't clearly defined. The pronoun \"he\" could refer to someone previously mentioned, but since there's no context, it's unresolved. The entity resolution part should note that \"he\" isn't resolved. \n\nFor intent, maybe the user is trying to express a preference but the pronouns are unclear. The decision might be to ask for clarification. Memory cards should capture the statement with low confidence since the pronouns are ambiguous. The entities array would include \"he\" and \"the other one\" with their roles as pronouns. \n\nConflict classification could be \"unresolved_pronoun\" as per the fixture ID. The answer should indicate that clarification is needed. Citations might be empty, and repair options could suggest specifying who \"he\" is. The receipt should show success as false because the input is ambiguous. \n\nI need to make sure that the JSON doesn't include any superseded facts and preserves the ambiguity. Also, check that all required fields are present. Let me structure each part step by step to ensure compliance with the schema.\n</think>\n\n{\"intent\":\"preference_expression\",\"decision\":\"clarification_required\",\"memory_cards\":[{\"kind\":\"statement\",\"statement\":\"He prefers the other one\",\"confidence\":\"low\",\"entities\":[{\"name\":\"he\",\"type\":\"pronoun\",\"role\":\"subject\"},{\"name\":\"the other one\",\"type\":\"pronoun\",\"role\":\"object\"}]},{\"kind\":\"entity_resolution\",\"statement\":\"Pronoun 'he' unresolved\",\"confidence\":\"medium\",\"entities\":[],\"relationships\":[{\"subject\":\"he\",\"predicate\":\"referent\",\"object\":\"unresolved\"}]}],\"entity_resolution\":{\"action\":\"request_clarification\",\"entity_id\":null,\"reason\":\"Ambiguous pronoun reference\"},\"conflict_classification\":\"unresolved_pronoun_001\",\"answer\":\"The statement contains unresolved pronouns requiring clarification\",\"citations\":[],\"repair_options\":[\"Specify who 'he' refers to\",\"Define 'the other one' contextually\"],\"receipt\":{\"success\":false,\"details\":[\"Ambiguous pronoun references detected\"]}}\n",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

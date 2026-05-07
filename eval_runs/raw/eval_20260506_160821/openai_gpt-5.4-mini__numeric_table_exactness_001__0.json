@@ -1,0 +1,124 @@
+{
+  "error": null,
+  "fixture_id": "numeric_table_exactness_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Stored exact table facts for PPO-001 and PPO-002, including values and notes.",
+    "citations": [
+      "PPO-001 | Reward 0.12 | Sharpe 0.45 | baseline",
+      "PPO-002 | Reward 0.18 | Sharpe 0.51 | entropy tuned"
+    ],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input provides unique run identifiers only; no external entity linking is required."
+    },
+    "intent": "Compile exact numeric facts from the provided table into durable memory.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "experiment run",
+            "type": "run"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "0.12",
+            "predicate": "has_reward",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "0.45",
+            "predicate": "has_sharpe",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "baseline",
+            "predicate": "notes",
+            "subject": "PPO-001"
+          }
+        ],
+        "statement": "PPO-001 had Reward 0.12 and Sharpe 0.45, with notes labeled baseline."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "experiment run",
+            "type": "run"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "0.18",
+            "predicate": "has_reward",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "0.51",
+            "predicate": "has_sharpe",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "entropy tuned",
+            "predicate": "notes",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "PPO-002 had Reward 0.18 and Sharpe 0.51, with notes labeled entropy tuned."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "comparison baseline",
+            "type": "run"
+          },
+          {
+            "name": "PPO-002",
+            "role": "comparison candidate",
+            "type": "run"
+          }
+        ],
+        "kind": "comparison",
+        "relationships": [
+          {
+            "object": "PPO-001",
+            "predicate": "greater_than_reward",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "PPO-001",
+            "predicate": "greater_than_sharpe",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "Within the table, PPO-002 outperformed PPO-001 on both Reward and Sharpe."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed 2 runs from the table.",
+        "Committed exact numeric values and notes.",
+        "Added one comparison fact derived directly from the table."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If desired, I can also store a normalized summary of best-performing run by metric.",
+      "If desired, I can extract the table into key-value memory cards only, without comparison facts."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Compile exact numeric facts from the provided table into durable memory.\",\"decision\":\"store\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"PPO-001 had Reward 0.12 and Sharpe 0.45, with notes labeled baseline.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"PPO-001\",\"type\":\"run\",\"role\":\"experiment run\"}],\"relationships\":[{\"subject\":\"PPO-001\",\"predicate\":\"has_reward\",\"object\":\"0.12\"},{\"subject\":\"PPO-001\",\"predicate\":\"has_sharpe\",\"object\":\"0.45\"},{\"subject\":\"PPO-001\",\"predicate\":\"notes\",\"object\":\"baseline\"}]},{\"kind\":\"fact\",\"statement\":\"PPO-002 had Reward 0.18 and Sharpe 0.51, with notes labeled entropy tuned.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"PPO-002\",\"type\":\"run\",\"role\":\"experiment run\"}],\"relationships\":[{\"subject\":\"PPO-002\",\"predicate\":\"has_reward\",\"object\":\"0.18\"},{\"subject\":\"PPO-002\",\"predicate\":\"has_sharpe\",\"object\":\"0.51\"},{\"subject\":\"PPO-002\",\"predicate\":\"notes\",\"object\":\"entropy tuned\"}]},{\"kind\":\"comparison\",\"statement\":\"Within the table, PPO-002 outperformed PPO-001 on both Reward and Sharpe.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"PPO-001\",\"type\":\"run\",\"role\":\"comparison baseline\"},{\"name\":\"PPO-002\",\"type\":\"run\",\"role\":\"comparison candidate\"}],\"relationships\":[{\"subject\":\"PPO-002\",\"predicate\":\"greater_than_reward\",\"object\":\"PPO-001\"},{\"subject\":\"PPO-002\",\"predicate\":\"greater_than_sharpe\",\"object\":\"PPO-001\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input provides unique run identifiers only; no external entity linking is required.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored exact table facts for PPO-001 and PPO-002, including values and notes.\",\"citations\":[\"PPO-001 | Reward 0.12 | Sharpe 0.45 | baseline\",\"PPO-002 | Reward 0.18 | Sharpe 0.51 | entropy tuned\"],\"repair_options\":[\"If desired, I can also store a normalized summary of best-performing run by metric.\",\"If desired, I can extract the table into key-value memory cards only, without comparison facts.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed 2 runs from the table.\",\"Committed exact numeric values and notes.\",\"Added one comparison fact derived directly from the table.\"]}}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

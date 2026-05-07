@@ -1,0 +1,77 @@
+{
+  "error": null,
+  "fixture_id": "entity_alias_sam_goldman__punctuation",
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "payload": {
+    "answer": "Entity resolved. Sam G (alias for Sam from Goldman) likes Bill Evans. Preference recorded.",
+    "citations": [
+      "Existing entity: Sam from Goldman, aliases Sam G, Goldman Sam",
+      "New message: Sam G likes Bill Evans"
+    ],
+    "conflict_classification": "none",
+    "decision": "merge_and_record",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "entity_alias_sam_goldman__punctuation",
+      "reason": "Sam G matches existing alias for Sam from Goldman; new preference attributed to resolved entity"
+    },
+    "intent": "resolve_entity_and_record_preference",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "primary",
+            "type": "person"
+          },
+          {
+            "name": "Sam G",
+            "role": "alias",
+            "type": "person"
+          }
+        ],
+        "kind": "entity_alias",
+        "relationships": [],
+        "statement": "Sam G is an alias for Sam from Goldman"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam G",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam G"
+          }
+        ],
+        "statement": "Sam G likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Entity alias confirmed: Sam G \u2192 Sam from Goldman",
+        "Preference recorded: likes Bill Evans",
+        "No conflicts detected",
+        "Memory card committed"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"resolve_entity_and_record_preference\",\n  \"decision\": \"merge_and_record\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"entity_alias\",\n      \"statement\": \"Sam G is an alias for Sam from Goldman\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam from Goldman\",\n          \"type\": \"person\",\n          \"role\": \"primary\"\n        },\n        {\n          \"name\": \"Sam G\",\n          \"type\": \"person\",\n          \"role\": \"alias\"\n        }\n      ],\n      \"relationships\": []\n    },\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam G likes Bill Evans\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam G\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam G\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge\",\n    \"entity_id\": \"entity_alias_sam_goldman__punctuation\",\n    \"reason\": \"Sam G matches existing alias for Sam from Goldman; new preference attributed to resolved entity\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Entity resolved. Sam G (alias for Sam from Goldman) likes Bill Evans. Preference recorded.\",\n  \"citations\": [\n    \"Existing entity: Sam from Goldman, aliases Sam G, Goldman Sam\",\n    \"New message: Sam G likes Bill Evans\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Entity alias confirmed: Sam G \u2192 Sam from Goldman\",\n      \"Preference recorded: likes Bill Evans\",\n      \"No conflicts detected\",\n      \"Memory card committed\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

@@ -1,0 +1,83 @@
+{
+  "fixture_id": "slack_ambiguous_entity_buttons_001__context",
+  "model": "aws-bedrock:nvidia.nemotron-nano-9b-v2",
+  "payload": {
+    "answer": "Please specify which Sam (Goldman or Point72) you're referring to",
+    "citations": [
+      "Existing memory: Sam likes Bill Evans"
+    ],
+    "conflict_classification": "ambiguous_entity",
+    "decision": "clarify_sam_identity",
+    "entity_resolution": {
+      "action": "clarify",
+      "entity_id": null,
+      "reason": "Multiple entities named 'Sam' exist with different affiliations"
+    },
+    "intent": "ambiguous_entity_resolution",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "Goldman",
+            "type": "person"
+          },
+          {
+            "name": "Sam",
+            "role": "Point72",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unspecified",
+            "type": "person"
+          }
+        ],
+        "kind": "memory",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Existing memory of Sam liking Bill Evans"
+      },
+      {
+        "confidence": "high",
+        "entities": [],
+        "kind": "ambiguity_note",
+        "relationships": [],
+        "statement": "Two distinct Sams exist (Goldman and Point72)"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguity preserved in memory cards",
+        "No superseded facts presented"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify Sam's affiliation",
+      "Create separate memory cards for each Sam",
+      "Merge entities if same person"
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

@@ -1,0 +1,66 @@
+{
+  "error": null,
+  "fixture_id": "recall_daughters_001__punctuation",
+  "model": "groq:llama-3.3-70b-versatile",
+  "payload": {
+    "answer": "Nur and Sara",
+    "citations": [
+      "recall_daughters_001__punctuation"
+    ],
+    "conflict_classification": "none",
+    "decision": "recall_from_memory",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": "Daniele",
+      "reason": "matched_query_context"
+    },
+    "intent": "identify_daughters",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "child",
+            "type": "daughter"
+          },
+          {
+            "name": "Sara",
+            "role": "child",
+            "type": "daughter"
+          },
+          {
+            "name": "Daniele",
+            "role": "mother",
+            "type": "parent"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_daughter_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Daniele",
+            "predicate": "is_daughter_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Nur and Sara are Daniele's twin daughters"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "memory_card_retrieved",
+        "entity_resolution_successful"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"identify_daughters\",\n   \"decision\": \"recall_from_memory\",\n   \"memory_cards\": [\n       {\n           \"kind\": \"fact\",\n           \"statement\": \"Nur and Sara are Daniele's twin daughters\",\n           \"confidence\": \"high\",\n           \"entities\": [\n               {\n                   \"name\": \"Nur\",\n                   \"type\": \"daughter\",\n                   \"role\": \"child\"\n               },\n               {\n                   \"name\": \"Sara\",\n                   \"type\": \"daughter\",\n                   \"role\": \"child\"\n               },\n               {\n                   \"name\": \"Daniele\",\n                   \"type\": \"parent\",\n                   \"role\": \"mother\"\n               }\n           ],\n           \"relationships\": [\n               {\n                   \"subject\": \"Nur\",\n                   \"predicate\": \"is_daughter_of\",\n                   \"object\": \"Daniele\"\n               },\n               {\n                   \"subject\": \"Sara\",\n                   \"predicate\": \"is_daughter_of\",\n                   \"object\": \"Daniele\"\n               }\n           ]\n       }\n   ],\n   \"entity_resolution\": {\n       \"action\": \"resolved\",\n       \"entity_id\": \"Daniele\",\n       \"reason\": \"matched_query_context\"\n   },\n   \"conflict_classification\": \"none\",\n   \"answer\": \"Nur and Sara\",\n   \"citations\": [\n       \"recall_daughters_001__punctuation\"\n   ],\n   \"repair_options\": [],\n   \"receipt\": {\n       \"success\": true,\n       \"details\": [\n           \"memory_card_retrieved\",\n           \"entity_resolution_successful\"\n       ]\n   }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

@@ -1,0 +1,66 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_time_reference_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Recorded only as a tentative, time-relative statement; not committed as durable memory due to unresolved temporal anchoring.",
+    "citations": [
+      "Sam said last Friday that he is leaving Goldman next month."
+    ],
+    "conflict_classification": "ambiguous_time_reference",
+    "decision": "do_not_commit_as_durable_memory_without_temporal_resolution",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The reference to \"Sam\" is not uniquely resolved, and the statement contains relative time markers (\"last Friday,\" \"next month\") that cannot be safely anchored to a durable timestamp from the provided input alone."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker/subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "tentative_fact",
+        "relationships": [
+          {
+            "object": "he is leaving Goldman next month",
+            "predicate": "reported_to_have_said",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam reportedly said, at an unspecified point described as \"last Friday,\" that he is leaving Goldman sometime \"next month.\" The timing is relative and not anchored to a specific date, so this should be treated as ambiguous and non-durable for now."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Input recognized as a time-relative report.",
+        "Durable memory withheld due to ambiguity.",
+        "Tentative memory card created with low confidence."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide an absolute date for \"last Friday\" so the report can be anchored precisely.",
+      "Clarify which Sam is meant if there are multiple possible entities.",
+      "Confirm whether \"Goldman\" refers to Goldman Sachs or another organization."
+    ]
+  },
+  "raw_text": "{\"intent\":\"slack_intake\",\"decision\":\"do_not_commit_as_durable_memory_without_temporal_resolution\",\"memory_cards\":[{\"kind\":\"tentative_fact\",\"statement\":\"Sam reportedly said, at an unspecified point described as \\\"last Friday,\\\" that he is leaving Goldman sometime \\\"next month.\\\" The timing is relative and not anchored to a specific date, so this should be treated as ambiguous and non-durable for now.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"speaker/subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"reported_to_have_said\",\"object\":\"he is leaving Goldman next month\"},{\"subject\":\"Sam\",\"predicate\":\"associated_with\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"The reference to \\\"Sam\\\" is not uniquely resolved, and the statement contains relative time markers (\\\"last Friday,\\\" \\\"next month\\\") that cannot be safely anchored to a durable timestamp from the provided input alone.\"},\"conflict_classification\":\"ambiguous_time_reference\",\"answer\":\"Recorded only as a tentative, time-relative statement; not committed as durable memory due to unresolved temporal anchoring.\",\"citations\":[\"Sam said last Friday that he is leaving Goldman next month.\"],\"repair_options\":[\"Provide an absolute date for \\\"last Friday\\\" so the report can be anchored precisely.\",\"Clarify which Sam is meant if there are multiple possible entities.\",\"Confirm whether \\\"Goldman\\\" refers to Goldman Sachs or another organization.\"],\"receipt\":{\"success\":true,\"details\":[\"Input recognized as a time-relative report.\",\"Durable memory withheld due to ambiguity.\",\"Tentative memory card created with low confidence.\"]}}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

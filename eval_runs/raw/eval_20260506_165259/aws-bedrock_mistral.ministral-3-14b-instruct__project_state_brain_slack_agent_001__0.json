@@ -1,0 +1,118 @@
+{
+  "error": null,
+  "fixture_id": "project_state_brain_slack_agent_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Slack is the primary guardrailed memory ingestion interface for Brain in the current project phase (project_state_brain_slack_agent_001). Telegram ingestion is deferred.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Slack is designated as the primary guardrailed memory ingestion interface for Brain, with Telegram deferred to a future phase",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": "slack_ingestion_interface_001",
+      "reason": "Explicit designation in project state for primary memory ingestion."
+    },
+    "intent": "define_primary_ingestion_interface",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "primary_ingestion_interface",
+            "type": "platform"
+          },
+          {
+            "name": "Telegram",
+            "role": "deferred_ingestion_interface",
+            "type": "platform"
+          },
+          {
+            "name": "project_state_brain_slack_agent_001",
+            "role": "current_phase",
+            "type": "project_fixture"
+          }
+        ],
+        "kind": "system_policy",
+        "relationships": [
+          {
+            "object": "memory_ingestion",
+            "predicate": "IS_AUTHORIZED_FOR",
+            "subject": "Slack"
+          },
+          {
+            "object": "future_phase",
+            "predicate": "IS_DEFFERED_FOR",
+            "subject": "Telegram"
+          },
+          {
+            "object": "guardrailed_ingestion",
+            "predicate": "CONTAINS",
+            "subject": "project_state_brain_slack_agent_001"
+          }
+        ],
+        "statement": "Slack is the sole authorized interface for memory ingestion in the current project phase (project_state_brain_slack_agent_001)."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "guardrails",
+            "role": "compliance_mechanism",
+            "type": "system_constraint"
+          },
+          {
+            "name": "durability",
+            "role": "requirement",
+            "type": "memory_property"
+          },
+          {
+            "name": "ambiguity_preservation",
+            "role": "requirement",
+            "type": "memory_property"
+          },
+          {
+            "name": "superseded_facts",
+            "role": "exclusion_criterion",
+            "type": "memory_property"
+          }
+        ],
+        "kind": "guardrail",
+        "relationships": [
+          {
+            "object": "guardrails",
+            "predicate": "ENFORCES",
+            "subject": "Slack"
+          },
+          {
+            "object": "durability",
+            "predicate": "ENSURE",
+            "subject": "guardrails"
+          },
+          {
+            "object": "ambiguity_preservation",
+            "predicate": "ENSURE",
+            "subject": "guardrails"
+          },
+          {
+            "object": "superseded_facts",
+            "predicate": "SUPPRESS",
+            "subject": "guardrails"
+          }
+        ],
+        "statement": "All memory ingestion must pass through Slack's guardrails to ensure compliance with durability, ambiguity preservation, and suppression of superseded/deleted facts."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory cards for Slack as primary interface and guardrail constraints committed.",
+        "Telegram deferred to future phase with no current ingestion permissions."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"define_primary_ingestion_interface\",\n  \"decision\": \"Slack is designated as the primary guardrailed memory ingestion interface for Brain, with Telegram deferred to a future phase\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"system_policy\",\n      \"statement\": \"Slack is the sole authorized interface for memory ingestion in the current project phase (project_state_brain_slack_agent_001).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Slack\",\n          \"type\": \"platform\",\n          \"role\": \"primary_ingestion_interface\"\n        },\n        {\n          \"name\": \"Telegram\",\n          \"type\": \"platform\",\n          \"role\": \"deferred_ingestion_interface\"\n        },\n        {\n          \"name\": \"project_state_brain_slack_agent_001\",\n          \"type\": \"project_fixture\",\n          \"role\": \"current_phase\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Slack\",\n          \"predicate\": \"IS_AUTHORIZED_FOR\",\n          \"object\": \"memory_ingestion\"\n        },\n        {\n          \"subject\": \"Telegram\",\n          \"predicate\": \"IS_DEFFERED_FOR\",\n          \"object\": \"future_phase\"\n        },\n        {\n          \"subject\": \"project_state_brain_slack_agent_001\",\n          \"predicate\": \"CONTAINS\",\n          \"object\": \"guardrailed_ingestion\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"guardrail\",\n      \"statement\": \"All memory ingestion must pass through Slack's guardrails to ensure compliance with durability, ambiguity preservation, and suppression of superseded/deleted facts.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"guardrails\",\n          \"type\": \"system_constraint\",\n          \"role\": \"compliance_mechanism\"\n        },\n        {\n          \"name\": \"durability\",\n          \"type\": \"memory_property\",\n          \"role\": \"requirement\"\n        },\n        {\n          \"name\": \"ambiguity_preservation\",\n          \"type\": \"memory_property\",\n          \"role\": \"requirement\"\n        },\n        {\n          \"name\": \"superseded_facts\",\n          \"type\": \"memory_property\",\n          \"role\": \"exclusion_criterion\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Slack\",\n          \"predicate\": \"ENFORCES\",\n          \"object\": \"guardrails\"\n        },\n        {\n          \"subject\": \"guardrails\",\n          \"predicate\": \"ENSURE\",\n          \"object\": \"durability\"\n        },\n        {\n          \"subject\": \"guardrails\",\n          \"predicate\": \"ENSURE\",\n          \"object\": \"ambiguity_preservation\"\n        },\n        {\n          \"subject\": \"guardrails\",\n          \"predicate\": \"SUPPRESS\",\n          \"object\": \"superseded_facts\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create\",\n    \"entity_id\": \"slack_ingestion_interface_001\",\n    \"reason\": \"Explicit designation in project state for primary memory ingestion.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Slack is the primary guardrailed memory ingestion interface for Brain in the current project phase (project_state_brain_slack_agent_001). Telegram ingestion is deferred.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory cards for Slack as primary interface and guardrail constraints committed.\",\n      \"Telegram deferred to future phase with no current ingestion permissions.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

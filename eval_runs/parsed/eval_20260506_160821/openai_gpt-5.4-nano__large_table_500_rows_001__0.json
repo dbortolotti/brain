@@ -1,0 +1,103 @@
+{
+  "fixture_id": "large_table_500_rows_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Use a normalized, deduplicated table representation: parse CSV into typed columns (id,name,value), store unique tuples in a primary/deduped table (or a dimension+fact design if repeated names/ids are common), and index on id (and optionally (id,name)). Preserve duplicates only if they encode distinct events or provenance; otherwise store multiplicity or remove redundant repeats.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "Store as a normalized, deduplicated table (fact table + optional dimension tables) rather than as a raw verbatim CSV blob; index on id (and optionally composite {id,name}) and keep value as a typed field, preserving duplicates only if they carry semantic meaning.",
+    "entity_resolution": {
+      "action": "use_fixture_context_as_scope",
+      "entity_id": "large_table_500_rows_001",
+      "reason": "The fixture identifier provides the scope of the input dataset for the storage-policy decision."
+    },
+    "intent": "Determine an appropriate storage strategy for a CSV table (fixture: large_table_500_rows_001) consisting of 500 rows with repeated {id,name,value} patterns, and compile Brain memory accordingly.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "large_table_500_rows_001",
+            "role": "source_data",
+            "type": "fixture_id"
+          }
+        ],
+        "kind": "storage_policy",
+        "relationships": [
+          {
+            "object": "repeated id,name,value rows",
+            "predicate": "requires_storage_strategy_for",
+            "subject": "large_table_500_rows_001"
+          }
+        ],
+        "statement": "For a large repeated CSV table (500 rows) with repeated {id,name,value} tuples, prefer a normalized representation with deduplication, indexing, and typed columns, unless duplicates are semantically meaningful."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "{id,name,value}",
+            "role": "data_shape",
+            "type": "row_schema"
+          }
+        ],
+        "kind": "assumption",
+        "relationships": [
+          {
+            "object": "whether duplicates are redundant or events",
+            "predicate": "drives_decision_on",
+            "subject": "{id,name,value}"
+          }
+        ],
+        "statement": "If repeated rows are purely redundant (same id/name/value with no additional metadata like timestamps or provenance), deduplication is appropriate; if repetitions represent distinct events, keep a row-level event table or include a multiplicity/provenance field."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "id",
+            "role": "key_candidate",
+            "type": "field"
+          },
+          {
+            "name": "name",
+            "role": "attribute",
+            "type": "field"
+          },
+          {
+            "name": "value",
+            "role": "measure",
+            "type": "field"
+          }
+        ],
+        "kind": "data_model",
+        "relationships": [
+          {
+            "object": "id",
+            "predicate": "has_index_on",
+            "subject": "fact_table(id,name,value)"
+          },
+          {
+            "object": "(id,name)",
+            "predicate": "optionally_has_index_on",
+            "subject": "fact_table(id,name,value)"
+          }
+        ],
+        "statement": "Represent as a fact table with columns (id, name, value) using appropriate types (e.g., value numeric/text), add primary key or surrogate key, and create indexes on id and optionally (id,name) to speed lookups."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Interpreted fixture as a repeated-row CSV and selected a deduped normalized storage policy.",
+        "Flagged the ambiguity about whether duplicates carry semantic meaning."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If duplicates represent distinct events, add an event identifier or timestamp/provenance column and store duplicates in an append-only event table.",
+      "If value type is ambiguous, infer and store value as numeric when consistent; otherwise store as text with a separate typed_value field when possible.",
+      "If id is not unique, use a composite key (id,name) or introduce a surrogate key plus a uniqueness constraint only when duplicates are confirmed redundant."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

@@ -1,0 +1,63 @@
+{
+  "error": null,
+  "fixture_id": "slack_no_durable_value_repair_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory deferred due to ambiguous temporal scope. Use `/brain remember [explicit_date] [weather]` for durable storage.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "defer_durable_commit",
+    "entity_resolution": {
+      "action": "ambiguous_temporal_anchor",
+      "entity_id": null,
+      "reason": "Temporal reference 'today' lacks explicit date context; cannot guarantee durability beyond current session."
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "cloudy",
+            "role": "value",
+            "type": "weather_condition"
+          },
+          {
+            "name": "today",
+            "role": "time_anchor",
+            "type": "temporal_reference"
+          }
+        ],
+        "kind": "temporal_fact",
+        "relationships": [
+          {
+            "object": "cloudy",
+            "predicate": "is",
+            "subject": "weather"
+          },
+          {
+            "object": "weather",
+            "predicate": "has",
+            "subject": "today"
+          }
+        ],
+        "statement": "Today's weather is cloudy."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguous temporal reference 'today' prevents durable commit.",
+        "Memory stored as ephemeral context only."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Explicitly specify date (e.g., '2023-11-15 weather is cloudy')",
+      "Tag as session-only (e.g., 'Today (session) weather is cloudy')",
+      "Reject as non-durable"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_ingestion\",\n  \"decision\": \"defer_durable_commit\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"temporal_fact\",\n      \"statement\": \"Today's weather is cloudy.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"cloudy\",\n          \"type\": \"weather_condition\",\n          \"role\": \"value\"\n        },\n        {\n          \"name\": \"today\",\n          \"type\": \"temporal_reference\",\n          \"role\": \"time_anchor\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"weather\",\n          \"predicate\": \"is\",\n          \"object\": \"cloudy\"\n        },\n        {\n          \"subject\": \"today\",\n          \"predicate\": \"has\",\n          \"object\": \"weather\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"ambiguous_temporal_anchor\",\n    \"entity_id\": null,\n    \"reason\": \"Temporal reference 'today' lacks explicit date context; cannot guarantee durability beyond current session.\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"Memory deferred due to ambiguous temporal scope. Use `/brain remember [explicit_date] [weather]` for durable storage.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Explicitly specify date (e.g., '2023-11-15 weather is cloudy')\",\n    \"Tag as session-only (e.g., 'Today (session) weather is cloudy')\",\n    \"Reject as non-durable\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Ambiguous temporal reference 'today' prevents durable commit.\",\n      \"Memory stored as ephemeral context only.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

@@ -1,0 +1,105 @@
+{
+  "fixture_id": "correction_sam_music_001__context",
+  "model": "anthropic:claude-sonnet-4-6",
+  "payload": {
+    "answer": "The existing memory that Sam from Goldman likes Bill Evans has been identified as incorrect. The corrected and current fact is that Sam from Goldman likes early Coltrane. The Bill Evans preference has been retracted and must not be presented as current.",
+    "citations": [
+      "Existing memory: Sam from Goldman likes Bill Evans.",
+      "Correction input: Sam from Goldman actually likes early Coltrane, not Bill Evans."
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "Supersede the existing memory card stating Sam from Goldman likes Bill Evans, and replace it with the corrected fact that Sam from Goldman likes early Coltrane.",
+    "entity_resolution": {
+      "action": "update",
+      "entity_id": "sam_goldman",
+      "reason": "Sam from Goldman is an existing entity in memory. The preference attribute is being corrected from Bill Evans to early Coltrane. No new entity is created; the existing entity record is updated."
+    },
+    "intent": "correct_existing_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object_of_preference",
+            "type": "person"
+          }
+        ],
+        "kind": "retraction",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "FORMERLY_BELIEVED_TO_LIKE",
+            "subject": "Sam (Goldman)"
+          }
+        ],
+        "statement": "SUPERSEDED: Sam from Goldman likes Bill Evans. (Replaced by correction: Sam from Goldman actually likes early Coltrane, not Bill Evans.)"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "John Coltrane",
+            "role": "object_of_preference",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "preference_qualifier",
+            "type": "music_era_or_style"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam (Goldman)"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "does_not_like (corrected)",
+            "subject": "Sam (Goldman)"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane (not Bill Evans, as previously recorded)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Old memory card (Sam likes Bill Evans) marked as SUPERSEDED/retracted.",
+        "New memory card created: Sam from Goldman likes early Coltrane.",
+        "Conflict classification: direct_contradiction.",
+        "Entity record for Sam (Goldman) updated with corrected music preference.",
+        "No ambiguity preserved \u2014 correction was explicit and unambiguous."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "1. Fully replace the old memory card (Bill Evans) with the new one (early Coltrane) and mark the old as retracted.",
+      "2. Annotate the old memory card as superseded with a timestamp and link to the corrected card.",
+      "3. Flag for human review if the source of the correction is uncertain before committing the change."
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

@@ -1,0 +1,111 @@
+{
+  "error": null,
+  "fixture_id": "large_table_500_rows_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Store only a compact representation of the table (schema + summary statistics) and a reference to the source for detailed retrieval; do not commit the full 500-row dataset contents to durable memory.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Do not store the full table as durable memory. Store only a compact schema/summary and, if needed, a pointer/attachment to the original dataset with indexing for retrieval; treat row-level data as non-durable/ephemeral unless explicitly requested.",
+    "entity_resolution": {
+      "action": "map_or_leave_unknown",
+      "entity_id": null,
+      "reason": "The input is a generic fixture description; no stable dataset identifier is provided beyond the fixture ID, so only abstract storage guidance can be committed."
+    },
+    "intent": "Determine how Brain should store a large CSV table (~500 rows repeated id/name/value) as personal memory.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "memory_compiler",
+            "type": "system"
+          },
+          {
+            "name": "CSV table (id,name,value)",
+            "role": "input",
+            "type": "dataset"
+          }
+        ],
+        "kind": "policy",
+        "relationships": [
+          {
+            "object": "compact summary and/or source reference (not full row-level contents)",
+            "predicate": "should_store",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "For large tabular datasets (e.g., hundreds of rows), avoid committing the full row-level contents to durable personal memory; instead store a summary (schema + key statistics) and optionally a reference to the source file for later retrieval."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "id",
+            "role": "field",
+            "type": "column"
+          },
+          {
+            "name": "name",
+            "role": "field",
+            "type": "column"
+          },
+          {
+            "name": "value",
+            "role": "field",
+            "type": "column"
+          }
+        ],
+        "kind": "storage_design",
+        "relationships": [
+          {
+            "object": "persisted as memory metadata",
+            "predicate": "is",
+            "subject": "Table schema"
+          }
+        ],
+        "statement": "Persist metadata describing the table (columns, types, uniqueness expectations, and aggregation-friendly fields) so future queries can be answered without re-ingesting the entire dataset."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "row-level lookup",
+            "role": "requirement",
+            "type": "use_case"
+          },
+          {
+            "name": "external index or attachment",
+            "role": "implementation",
+            "type": "storage"
+          }
+        ],
+        "kind": "retrieval_guideline",
+        "relationships": [
+          {
+            "object": "external index/pointer",
+            "predicate": "uses",
+            "subject": "Row-level lookup"
+          }
+        ],
+        "statement": "If row-level lookup is required, index the table externally (or attach the file) and store only an index/pointers in durable memory; keep the bulk data outside the durable memory store."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Chose durable-memory minimization for large tabular data.",
+        "Avoided committing unspecified row-level contents."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If the user later requests specific rows or answers that require exact values, store only those requested row subsets (or an index plus pointer), rather than the entire dataset.",
+      "If the dataset must be queryable offline, store an external attachment with an index and keep durable memory limited to metadata and retrieval keys.",
+      "If privacy concerns exist, further reduce stored information to aggregated statistics and omit raw rows."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Determine how Brain should store a large CSV table (~500 rows repeated id/name/value) as personal memory.\",\n  \"decision\": \"Do not store the full table as durable memory. Store only a compact schema/summary and, if needed, a pointer/attachment to the original dataset with indexing for retrieval; treat row-level data as non-durable/ephemeral unless explicitly requested.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"policy\",\n      \"statement\": \"For large tabular datasets (e.g., hundreds of rows), avoid committing the full row-level contents to durable personal memory; instead store a summary (schema + key statistics) and optionally a reference to the source file for later retrieval.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain\",\n          \"type\": \"system\",\n          \"role\": \"memory_compiler\"\n        },\n        {\n          \"name\": \"CSV table (id,name,value)\",\n          \"type\": \"dataset\",\n          \"role\": \"input\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain\",\n          \"predicate\": \"should_store\",\n          \"object\": \"compact summary and/or source reference (not full row-level contents)\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"storage_design\",\n      \"statement\": \"Persist metadata describing the table (columns, types, uniqueness expectations, and aggregation-friendly fields) so future queries can be answered without re-ingesting the entire dataset.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"id\",\n          \"type\": \"column\",\n          \"role\": \"field\"\n        },\n        {\n          \"name\": \"name\",\n          \"type\": \"column\",\n          \"role\": \"field\"\n        },\n        {\n          \"name\": \"value\",\n          \"type\": \"column\",\n          \"role\": \"field\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Table schema\",\n          \"predicate\": \"is\",\n          \"object\": \"persisted as memory metadata\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"retrieval_guideline\",\n      \"statement\": \"If row-level lookup is required, index the table externally (or attach the file) and store only an index/pointers in durable memory; keep the bulk data outside the durable memory store.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"row-level lookup\",\n          \"type\": \"use_case\",\n          \"role\": \"requirement\"\n        },\n        {\n          \"name\": \"external index or attachment\",\n          \"type\": \"storage\",\n          \"role\": \"implementation\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Row-level lookup\",\n          \"predicate\": \"uses\",\n          \"object\": \"external index/pointer\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"map_or_leave_unknown\",\n    \"entity_id\": null,\n    \"reason\": \"The input is a generic fixture description; no stable dataset identifier is provided beyond the fixture ID, so only abstract storage guidance can be committed.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Store only a compact representation of the table (schema + summary statistics) and a reference to the source for detailed retrieval; do not commit the full 500-row dataset contents to durable memory.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If the user later requests specific rows or answers that require exact values, store only those requested row subsets (or an index plus pointer), rather than the entire dataset.\",\n    \"If the dataset must be queryable offline, store an external attachment with an index and keep durable memory limited to metadata and retrieval keys.\",\n    \"If privacy concerns exist, further reduce stored information to aggregated statistics and omit raw rows.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Chose durable-memory minimization for large tabular data.\",\n      \"Avoided committing unspecified row-level contents.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

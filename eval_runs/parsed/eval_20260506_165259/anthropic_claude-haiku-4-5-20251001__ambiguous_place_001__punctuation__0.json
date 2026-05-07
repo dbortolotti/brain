@@ -1,0 +1,75 @@
+{
+  "fixture_id": "ambiguous_place_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "payload": {
+    "answer": "Single entity confirmed. Existing Brutto restaurant record in London should be updated with new observation about quality/experience.",
+    "citations": [
+      "Existing: Brutto restaurant in London",
+      "New note: Brutto was better than expected"
+    ],
+    "conflict_classification": "none",
+    "decision": "merge_with_confidence_preservation",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "brutto_london_restaurant",
+      "reason": "Both references resolve to the same entity (Brutto restaurant in London). New note provides subjective evaluation that enriches existing entity record without contradiction."
+    },
+    "intent": "resolve_entity_reference",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brutto",
+            "role": "subject",
+            "type": "restaurant"
+          },
+          {
+            "name": "London",
+            "role": "location",
+            "type": "location"
+          }
+        ],
+        "kind": "entity",
+        "relationships": [
+          {
+            "object": "London",
+            "predicate": "located_in",
+            "subject": "Brutto"
+          }
+        ],
+        "statement": "Brutto is a restaurant located in London"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brutto",
+            "role": "subject",
+            "type": "restaurant"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "user_experience",
+            "predicate": "exceeded_expectations",
+            "subject": "Brutto"
+          }
+        ],
+        "statement": "Brutto exceeded expectations in quality or experience"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Entity reference resolved to single canonical entity",
+        "No punctuation or naming ambiguity detected",
+        "Observation merged without superseding existing facts",
+        "Memory state preserved with confidence levels maintained"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_165259"
+}

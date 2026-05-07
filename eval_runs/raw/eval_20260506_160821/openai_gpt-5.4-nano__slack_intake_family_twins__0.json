@@ -1,0 +1,76 @@
+{
+  "error": null,
+  "fixture_id": "slack_intake_family_twins",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Got it\u2014Nur and Sara are your twin daughters.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_memory",
+    "entity_resolution": {
+      "action": "create_or_link",
+      "entity_id": null,
+      "reason": "No existing entity identifiers were provided; creating new entities or linking by name."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "twin_daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "twin_daughter",
+            "type": "person"
+          },
+          {
+            "name": "speaker",
+            "role": "parent",
+            "type": "person"
+          }
+        ],
+        "kind": "profile/family_relationship",
+        "relationships": [
+          {
+            "object": "Nur",
+            "predicate": "has_child",
+            "subject": "speaker"
+          },
+          {
+            "object": "Sara",
+            "predicate": "has_child",
+            "subject": "speaker"
+          },
+          {
+            "object": "Sara",
+            "predicate": "is_twin_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Nur and Sara are the speaker's twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured family relationship: Nur and Sara are twin daughters of the speaker."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If 'twin daughters' is inaccurate, specify the correct relationship (e.g., stepdaughters, sisters, or twins with different parent).",
+      "If either name is spelled differently, provide the correct spelling."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"slack_intake\",\n  \"decision\": \"store_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"profile/family_relationship\",\n      \"statement\": \"Nur and Sara are the speaker's twin daughters.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Nur\",\n          \"type\": \"person\",\n          \"role\": \"twin_daughter\"\n        },\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"twin_daughter\"\n        },\n        {\n          \"name\": \"speaker\",\n          \"type\": \"person\",\n          \"role\": \"parent\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"speaker\",\n          \"predicate\": \"has_child\",\n          \"object\": \"Nur\"\n        },\n        {\n          \"subject\": \"speaker\",\n          \"predicate\": \"has_child\",\n          \"object\": \"Sara\"\n        },\n        {\n          \"subject\": \"Nur\",\n          \"predicate\": \"is_twin_of\",\n          \"object\": \"Sara\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is_twin_of\",\n          \"object\": \"Nur\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_or_link\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entity identifiers were provided; creating new entities or linking by name.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Got it\u2014Nur and Sara are your twin daughters.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If 'twin daughters' is inaccurate, specify the correct relationship (e.g., stepdaughters, sisters, or twins with different parent).\",\n    \"If either name is spelled differently, provide the correct spelling.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Captured family relationship: Nur and Sara are twin daughters of the speaker.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

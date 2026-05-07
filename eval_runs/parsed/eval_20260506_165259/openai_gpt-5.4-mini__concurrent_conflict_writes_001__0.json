@@ -1,0 +1,68 @@
+{
+  "fixture_id": "concurrent_conflict_writes_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Conflict detected: Sam is linked to both Goldman and Point72. Treat as unresolved rather than asserting a current employer.",
+    "citations": [
+      "Input: Concurrent writes: Sam works at Goldman. Sam joined Point72."
+    ],
+    "conflict_classification": "concurrent_conflicting_facts_same_slot",
+    "decision": "Do not commit either employment as a settled current fact; preserve the conflict as unresolved",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The two writes conflict on current employment and there is not enough evidence to resolve whether they refer to the same employer, a move, or two separate facts."
+    },
+    "intent": "Classify concurrent conflicting writes for the same person entity",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer-mentioned",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "employer-mentioned",
+            "type": "organization"
+          }
+        ],
+        "kind": "conflict",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "has_employment_relation_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "has_employment_relation_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is associated with both Goldman and Point72 in concurrent writes; current employer is ambiguous and unresolved."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected same-entity, same-slot conflict.",
+        "Avoided committing a single current employer.",
+        "Preserved ambiguity for future repair."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for temporal clarification on whether Sam left Goldman before joining Point72.",
+      "Store both as competing assertions with low confidence until confirmed.",
+      "If later evidence shows a move, replace the older employer with the newer one only after chronology is established."
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

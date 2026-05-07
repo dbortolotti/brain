@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "fixture_id": "pdf_ocr_noisy_source_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Extracted two high-level principles: Brain DB as source of truth, and 'cognitive' as a rebuildable projection (confidence limited by OCR noise).",
+    "citations": [],
+    "conflict_classification": "no_explicit_conflict_detected",
+    "decision": "store_tentative_principles",
+    "entity_resolution": {
+      "action": "unresolved_due_to_ambiguity",
+      "entity_id": null,
+      "reason": "The OCR text is noisy; 'Cognee/Cognitive' is ambiguous, and only a general principle-level meaning is extractable."
+    },
+    "intent": "Compile memory cards from noisy OCR text for Brain personal memory system.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "primary reference",
+            "type": "system"
+          }
+        ],
+        "kind": "principle",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "is intended as",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB is intended to be the source of truth."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "cognitive",
+            "role": "described subject",
+            "type": "component"
+          }
+        ],
+        "kind": "principle",
+        "relationships": [
+          {
+            "object": "rebuildable projection",
+            "predicate": "should be",
+            "subject": "cognitive"
+          }
+        ],
+        "statement": "The 'cognitive' component should be a rebuildable projection."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Mapped noisy OCR fragments to principle-level memory cards without committing to implementation specifics.",
+        "Kept confidence conservative due to OCR ambiguity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm whether 'Cognee' refers to 'cognitive' and what specific subsystem it names.",
+      "Provide the original non-OCR text or higher-quality OCR to raise confidence and resolve entity names.",
+      "Clarify whether 'rebuildable projection' refers to a cache, derived index, view, or another projection mechanism."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Compile memory cards from noisy OCR text for Brain personal memory system.\",\n  \"decision\": \"store_tentative_principles\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"principle\",\n      \"statement\": \"Brain DB is intended to be the source of truth.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"system\",\n          \"role\": \"primary reference\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"is intended as\",\n          \"object\": \"source of truth\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"principle\",\n      \"statement\": \"The 'cognitive' component should be a rebuildable projection.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"cognitive\",\n          \"type\": \"component\",\n          \"role\": \"described subject\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"cognitive\",\n          \"predicate\": \"should be\",\n          \"object\": \"rebuildable projection\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"unresolved_due_to_ambiguity\",\n    \"entity_id\": null,\n    \"reason\": \"The OCR text is noisy; 'Cognee/Cognitive' is ambiguous, and only a general principle-level meaning is extractable.\"\n  },\n  \"conflict_classification\": \"no_explicit_conflict_detected\",\n  \"answer\": \"Extracted two high-level principles: Brain DB as source of truth, and 'cognitive' as a rebuildable projection (confidence limited by OCR noise).\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Confirm whether 'Cognee' refers to 'cognitive' and what specific subsystem it names.\",\n    \"Provide the original non-OCR text or higher-quality OCR to raise confidence and resolve entity names.\",\n    \"Clarify whether 'rebuildable projection' refers to a cache, derived index, view, or another projection mechanism.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Mapped noisy OCR fragments to principle-level memory cards without committing to implementation specifics.\",\n      \"Kept confidence conservative due to OCR ambiguity.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

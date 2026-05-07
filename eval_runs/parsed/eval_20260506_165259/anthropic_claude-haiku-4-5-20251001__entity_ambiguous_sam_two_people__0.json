@@ -1,0 +1,54 @@
+{
+  "fixture_id": "entity_ambiguous_sam_two_people",
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "payload": {
+    "answer": "Cannot assign 'likes early Coltrane' to either Sam. Requires clarification: which Sam?",
+    "citations": [
+      "Existing entities: Sam from Goldman (person), Sam from Point72 (person)"
+    ],
+    "conflict_classification": "unresolvable_without_context",
+    "decision": "defer_assignment",
+    "entity_resolution": {
+      "action": "hold_pending_clarification",
+      "entity_id": null,
+      "reason": "Two distinct entities named Sam exist (Sam from Goldman, Sam from Point72). New attribute cannot be reliably assigned without disambiguation. Preserving ambiguity rather than guessing."
+    },
+    "intent": "resolve_ambiguous_entity_reference",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "unresolved_attribute",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes early Coltrane"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Entity reference ambiguous",
+        "Memory card created in unresolved state",
+        "No assignment made to either existing Sam entity",
+        "Awaiting user clarification"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide full name or additional context (e.g., 'Sam from Goldman likes early Coltrane')",
+      "Reference by organization: 'The Sam at Goldman likes early Coltrane'",
+      "Ask user to disambiguate before storing attribute"
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

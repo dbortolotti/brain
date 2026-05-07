@@ -1,0 +1,64 @@
+{
+  "fixture_id": "slack_success_receipt_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Captured the note: Sam (from Goldman) likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_memory",
+    "entity_resolution": {
+      "action": "no_external_lookup",
+      "entity_id": null,
+      "reason": "Only names were provided; no unique identifiers were available to resolve to specific entities."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [
+      {
+        "confidence": "0.68",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_target",
+            "type": "person"
+          }
+        ],
+        "kind": "personal_preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "is_from",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (from Goldman) likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed statement and identified preference relationship (Sam likes Bill Evans).",
+        "Interpreted 'from Goldman' as Sam's affiliation."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm whether 'Sam' refers to a specific individual (e.g., full name) if there are multiple Sams.",
+      "Confirm what 'Bill Evans' refers to if there are multiple notable individuals with that name."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

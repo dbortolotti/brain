@@ -1,0 +1,75 @@
+{
+  "fixture_id": "cascade_conflict_escalation_001",
+  "model": "anthropic:claude-sonnet-4-6",
+  "payload": {
+    "answer": "A direct conflict exists: existing memory states Sara is your daughter, but the new input states Sara is your niece. These are mutually exclusive familial relationships. The incoming fact has not been committed. Please clarify which is correct, or confirm whether these refer to two different people named Sara.",
+    "citations": [
+      "Existing memory: 'Sara is my daughter.'",
+      "Incoming input: 'Sara is my niece.'"
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "conflict_detected_no_commit",
+    "entity_resolution": {
+      "action": "ambiguous_match",
+      "entity_id": "sara_001",
+      "reason": "Both statements refer to a person named Sara in a familial relationship with the user, but the relationship type is mutually exclusive (daughter vs. niece). Cannot confirm these refer to the same Sara without clarification."
+    },
+    "intent": "update_relationship",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "family_member",
+            "type": "person"
+          }
+        ],
+        "kind": "existing_fact",
+        "relationships": [
+          {
+            "object": "user",
+            "predicate": "is_daughter_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my daughter."
+      },
+      {
+        "confidence": "unresolved",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "family_member",
+            "type": "person"
+          }
+        ],
+        "kind": "incoming_fact",
+        "relationships": [
+          {
+            "object": "user",
+            "predicate": "is_niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Incoming fact NOT committed due to direct contradiction with existing memory.",
+        "Existing fact 'Sara is my daughter' remains active and unchanged.",
+        "Conflict flagged for user resolution.",
+        "No memory state was modified."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Confirm Sara is your daughter and discard the incoming 'niece' statement.",
+      "Correct the existing memory to reflect Sara is your niece, retiring the 'daughter' fact.",
+      "Clarify that there are two different people named Sara \u2014 one a daughter and one a niece \u2014 and disambiguate by adding distinguishing details (e.g., last name, age, context).",
+      "Mark the relationship as ambiguous pending user confirmation, suppressing both facts from active use until resolved."
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

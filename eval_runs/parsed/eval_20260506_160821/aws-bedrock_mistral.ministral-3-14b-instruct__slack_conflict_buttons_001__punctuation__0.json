@@ -1,0 +1,59 @@
+{
+  "fixture_id": "slack_conflict_buttons_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam no longer works at Goldman Sachs. The most recent and unambiguous fact is that Sam works at Point72. The Goldman Sachs employment record is superseded unless a specific date for departure is provided.",
+    "citations": [
+      "User input: 'Sam left Goldman and joined Point72' (implied recency)",
+      "Original memory: 'Sam works at Goldman' (no temporal context)"
+    ],
+    "conflict_classification": "temporal_supersession",
+    "decision": "resolve_conflict",
+    "entity_resolution": {
+      "action": "supersede",
+      "entity_id": "goldman_sachs_employment",
+      "reason": "explicit contradiction in temporal context (no date provided for Goldman departure, but 'joined Point72' implies recency). Original 'Goldman' fact lacks temporal anchoring and is ambiguous. New fact is unambiguous and actionable."
+    },
+    "intent": "memory_update",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Point72 (as of [unspecified date, likely recent])"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded Goldman Sachs employment fact (no temporal anchor).",
+        "Committed Point72 employment as current fact with high confidence.",
+        "Preserved ambiguity in original statement by omitting temporal context."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add a timestamp to the Goldman Sachs employment fact (e.g., 'Sam worked at Goldman until [YYYY-MM]')",
+      "Flag for user clarification if recency of Point72 employment is uncertain",
+      "Retain both facts as alternatives with explicit ambiguity markers"
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

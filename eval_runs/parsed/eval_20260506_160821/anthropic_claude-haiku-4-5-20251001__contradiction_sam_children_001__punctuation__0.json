@@ -1,0 +1,82 @@
+{
+  "fixture_id": "contradiction_sam_children_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "payload": {
+    "answer": "Cannot commit either fact to durable memory. Direct contradiction on cardinality of children (two vs. zero) for same entity requires source verification and human adjudication.",
+    "citations": [],
+    "conflict_classification": "direct_contradiction",
+    "decision": "Flag as direct contradiction requiring human review",
+    "entity_resolution": {
+      "action": "merge_candidates",
+      "entity_id": "sam_goldman_001",
+      "reason": "Both statements reference same person (Sam from Goldman) but assert contradictory facts about number of children"
+    },
+    "intent": "Classify contradiction between existing and new memory about Sam's children",
+    "memory_cards": [
+      {
+        "confidence": "unknown",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          }
+        ],
+        "kind": "existing_fact",
+        "relationships": [
+          {
+            "object": "two",
+            "predicate": "has_children",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman has two children"
+      },
+      {
+        "confidence": "unknown",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          }
+        ],
+        "kind": "new_fact",
+        "relationships": [
+          {
+            "object": "zero",
+            "predicate": "has_children",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman has no children"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Contradiction detected on predicate: has_children",
+        "Entity identity confirmed: Sam from Goldman",
+        "Conflict type: cardinality mismatch (2 vs 0)",
+        "Recommendation: Hold both facts in suspended state pending source verification"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request source/timestamp for each claim to determine which is more recent",
+      "Verify identity of Sam - confirm both references are same person",
+      "Check for life event (e.g., custody change, adoption reversal) that would explain transition",
+      "Mark both as disputed and preserve both with conflict flag pending clarification"
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

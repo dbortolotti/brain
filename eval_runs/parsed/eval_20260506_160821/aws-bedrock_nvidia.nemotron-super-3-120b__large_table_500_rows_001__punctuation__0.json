@@ -1,0 +1,68 @@
+{
+  "fixture_id": "large_table_500_rows_001__punctuation",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Store the CSV table as a single memory card containing a summary of its repetitive structure (500 rows of id,name,value) rather than individual rows to maintain efficiency and avoid redundancy.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store as a single memory card with aggregated statistical summary and note on repetition pattern",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": "mem_large_table_500_rows_001__punctuation_policy",
+      "reason": "New policy entity created to encapsulate storage decision for repetitive large CSV tables; no prior entity exists for this specific fixture."
+    },
+    "intent": "determine storage policy for large CSV table with repeated id,name,value columns",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "subject",
+            "type": "data_structure"
+          },
+          {
+            "name": "id,name,value",
+            "role": "attribute",
+            "type": "column_schema"
+          },
+          {
+            "name": "500 rows",
+            "role": "scale",
+            "type": "quantity"
+          }
+        ],
+        "kind": "policy",
+        "relationships": [
+          {
+            "object": "id,name,value",
+            "predicate": "has_column_structure",
+            "subject": "CSV table"
+          },
+          {
+            "object": "500",
+            "predicate": "has_row_count",
+            "subject": "CSV table"
+          },
+          {
+            "object": "aggregate summary storage for repetitive data",
+            "predicate": "recommends",
+            "subject": "storage policy"
+          }
+        ],
+        "statement": "For large CSV tables with repetitive structure (id,name,value repeated 500 times), store as a single memory card summarizing the pattern, row count, and column semantics rather than individual rows to avoid redundancy and preserve storage efficiency."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Policy decision made for storage of large repetitive CSV table.",
+        "Memory card created with high confidence.",
+        "No conflicts detected with existing memories.",
+        "Entity resolved and registered under new ID."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_160821"
+}

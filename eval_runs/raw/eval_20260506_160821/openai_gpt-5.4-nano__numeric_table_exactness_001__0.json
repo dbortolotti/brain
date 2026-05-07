@@ -1,0 +1,112 @@
+{
+  "error": null,
+  "fixture_id": "numeric_table_exactness_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Compiled two experiment result records from the provided table (PPO-001 baseline; PPO-002 entropy tuned) with corresponding Reward and Sharpe values.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_summary",
+    "entity_resolution": {
+      "action": "new_ids",
+      "entity_id": null,
+      "reason": "Run identifiers PPO-001 and PPO-002 appear as distinct entries; no existing entity IDs were provided."
+    },
+    "intent": "compile_evaluation_results_into_memory_cards",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "experiment_run",
+            "type": "run"
+          },
+          {
+            "name": "Reward",
+            "role": "metric",
+            "type": "metric"
+          },
+          {
+            "name": "Sharpe",
+            "role": "metric",
+            "type": "metric"
+          }
+        ],
+        "kind": "experiment_result",
+        "relationships": [
+          {
+            "object": "0.12",
+            "predicate": "has_reward",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "0.45",
+            "predicate": "has_sharpe",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "baseline",
+            "predicate": "notes",
+            "subject": "PPO-001"
+          }
+        ],
+        "statement": "For PPO-001, Reward=0.12 and Sharpe=0.45; Notes: baseline."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "experiment_run",
+            "type": "run"
+          },
+          {
+            "name": "Reward",
+            "role": "metric",
+            "type": "metric"
+          },
+          {
+            "name": "Sharpe",
+            "role": "metric",
+            "type": "metric"
+          }
+        ],
+        "kind": "experiment_result",
+        "relationships": [
+          {
+            "object": "0.18",
+            "predicate": "has_reward",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "0.51",
+            "predicate": "has_sharpe",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "entropy tuned",
+            "predicate": "notes",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "For PPO-002, Reward=0.18 and Sharpe=0.51; Notes: entropy tuned."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed 2 rows and mapped Reward and Sharpe per run",
+        "Preserved note text verbatim for each run"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add run metadata (date, environment, dataset) if available",
+      "Include units and evaluation horizon for Reward/Sharpe if known",
+      "Provide parameter differences to link 'entropy tuned' to specific hyperparameter changes"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"compile_evaluation_results_into_memory_cards\",\n  \"decision\": \"store_summary\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"experiment_result\",\n      \"statement\": \"For PPO-001, Reward=0.12 and Sharpe=0.45; Notes: baseline.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"PPO-001\",\n          \"type\": \"run\",\n          \"role\": \"experiment_run\"\n        },\n        {\n          \"name\": \"Reward\",\n          \"type\": \"metric\",\n          \"role\": \"metric\"\n        },\n        {\n          \"name\": \"Sharpe\",\n          \"type\": \"metric\",\n          \"role\": \"metric\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"has_reward\",\n          \"object\": \"0.12\"\n        },\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"has_sharpe\",\n          \"object\": \"0.45\"\n        },\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"notes\",\n          \"object\": \"baseline\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"experiment_result\",\n      \"statement\": \"For PPO-002, Reward=0.18 and Sharpe=0.51; Notes: entropy tuned.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"PPO-002\",\n          \"type\": \"run\",\n          \"role\": \"experiment_run\"\n        },\n        {\n          \"name\": \"Reward\",\n          \"type\": \"metric\",\n          \"role\": \"metric\"\n        },\n        {\n          \"name\": \"Sharpe\",\n          \"type\": \"metric\",\n          \"role\": \"metric\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"has_reward\",\n          \"object\": \"0.18\"\n        },\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"has_sharpe\",\n          \"object\": \"0.51\"\n        },\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"notes\",\n          \"object\": \"entropy tuned\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"new_ids\",\n    \"entity_id\": null,\n    \"reason\": \"Run identifiers PPO-001 and PPO-002 appear as distinct entries; no existing entity IDs were provided.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Compiled two experiment result records from the provided table (PPO-001 baseline; PPO-002 entropy tuned) with corresponding Reward and Sharpe values.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Add run metadata (date, environment, dataset) if available\",\n    \"Include units and evaluation horizon for Reward/Sharpe if known\",\n    \"Provide parameter differences to link 'entropy tuned' to specific hyperparameter changes\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Parsed 2 rows and mapped Reward and Sharpe per run\",\n      \"Preserved note text verbatim for each run\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

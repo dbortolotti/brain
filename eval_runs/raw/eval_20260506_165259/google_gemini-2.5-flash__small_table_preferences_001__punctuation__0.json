@@ -1,0 +1,100 @@
+{
+  "error": null,
+  "fixture_id": "small_table_preferences_001__punctuation",
+  "model": "google:gemini-2.5-flash",
+  "payload": {
+    "answer": "Successfully compiled personal preferences for Sam and Anna.",
+    "citations": [
+      "Dinner 2026-05-05",
+      "Lunch 2026-05-01"
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "Memory cards compiled successfully.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No entity ambiguity detected."
+    },
+    "intent": "Compile personal preferences into durable memory cards.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "organization",
+            "type": "firm"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Anna",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "JPM",
+            "role": "organization",
+            "type": "firm"
+          },
+          {
+            "name": "Barolo",
+            "role": "object",
+            "type": "wine"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "JPM",
+            "predicate": "works_at",
+            "subject": "Anna"
+          },
+          {
+            "object": "Barolo",
+            "predicate": "likes",
+            "subject": "Anna"
+          }
+        ],
+        "statement": "Anna from JPM likes Barolo."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Two memory cards created."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"Compile personal preferences into durable memory cards.\",\n  \"decision\": \"Memory cards compiled successfully.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam from Goldman likes Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"firm\",\n          \"role\": \"organization\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Anna from JPM likes Barolo.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Anna\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"JPM\",\n          \"type\": \"firm\",\n          \"role\": \"organization\"\n        },\n        {\n          \"name\": \"Barolo\",\n          \"type\": \"wine\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Anna\",\n          \"predicate\": \"works_at\",\n          \"object\": \"JPM\"\n        },\n        {\n          \"subject\": \"Anna\",\n          \"predicate\": \"likes\",\n          \"object\": \"Barolo\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No entity ambiguity detected.\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"Successfully compiled personal preferences for Sam and Anna.\",\n  \"citations\": [\n    \"Dinner 2026-05-05\",\n    \"Lunch 2026-05-01\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Two memory cards created.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

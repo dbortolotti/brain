@@ -1,0 +1,66 @@
+{
+  "fixture_id": "conflict_employment_transition",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Replace the current fact \"Sam works at Goldman\" with \"Sam left Goldman and joined Point72.\"",
+    "citations": [],
+    "conflict_classification": "direct_contradiction_employment_transition",
+    "decision": "Supersede the prior current employment fact with the new employment transition fact.",
+    "entity_resolution": {
+      "action": "keep_same_entity",
+      "entity_id": null,
+      "reason": "The new fact refers to the same person, Sam, with an employment change rather than a different entity."
+    },
+    "intent": "Resolve a conflicting employment update for Sam.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "new employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left_employer",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined_employer",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected a direct conflict in current employment.",
+        "Recorded the newer fact as the current state.",
+        "Avoided retaining the old employment as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark the Goldman employment fact as superseded.",
+      "Store the Point72 role as the current employment if no additional constraints exist.",
+      "If available, add the transition date to preserve chronology."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

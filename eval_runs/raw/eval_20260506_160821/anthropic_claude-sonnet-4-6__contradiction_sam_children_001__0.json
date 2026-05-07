@@ -1,0 +1,83 @@
+{
+  "error": null,
+  "fixture_id": "contradiction_sam_children_001",
+  "model": "anthropic:claude-sonnet-4-6",
+  "payload": {
+    "answer": "A direct contradiction exists: the existing memory says Sam from Goldman has two children, while the new input says he has no children. No update has been committed. Human clarification is required before either fact is treated as authoritative.",
+    "citations": [
+      "Existing memory: 'Sam from Goldman has two children.'",
+      "New input: 'Sam from Goldman has no children.'"
+    ],
+    "conflict_classification": "hard_contradiction",
+    "decision": "Flag as a hard contradiction requiring human clarification before committing any update. Supersede the old fact only upon confirmation.",
+    "entity_resolution": {
+      "action": "hold_pending_clarification",
+      "entity_id": "sam_goldman",
+      "reason": "Both statements refer to the same entity (Sam from Goldman) but assert mutually exclusive facts about number of children. Cannot reconcile without authoritative clarification."
+    },
+    "intent": "classify and resolve a direct factual contradiction about Sam's number of children",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "conflict_flag",
+        "relationships": [
+          {
+            "object": "2 vs 0",
+            "predicate": "has_children_count_DISPUTED",
+            "subject": "Sam (Goldman)"
+          }
+        ],
+        "statement": "CONFLICT: Existing memory states Sam from Goldman has two children; new input states Sam from Goldman has no children. These are mutually exclusive and cannot both be true."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "superseded_candidate",
+        "relationships": [
+          {
+            "object": "two children",
+            "predicate": "previously_recorded_as_having",
+            "subject": "Sam (Goldman)"
+          }
+        ],
+        "statement": "[UNCONFIRMED \u2014 DO NOT PRESENT AS CURRENT] Sam from Goldman has two children. This fact is under dispute and must not be treated as current until resolved."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Hard contradiction detected between existing and new facts.",
+        "No memory card committed or overwritten.",
+        "Conflict flagged and held pending human resolution.",
+        "Superseded fact not presented as current."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "1. Confirm with the user which fact is correct and update accordingly, retiring the superseded version.",
+      "2. If the new information comes from a trusted, timestamped source more recent than the original, prefer the new fact and mark the old one as superseded.",
+      "3. If context suggests a different 'Sam from Goldman' (disambiguation), create a separate entity record rather than overwriting.",
+      "4. Preserve both statements as disputed until resolution, surfacing the conflict to the user on next relevant query."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"classify and resolve a direct factual contradiction about Sam's number of children\",\n  \"decision\": \"Flag as a hard contradiction requiring human clarification before committing any update. Supersede the old fact only upon confirmation.\",\n  \"conflict_classification\": \"hard_contradiction\",\n  \"entity_resolution\": {\n    \"action\": \"hold_pending_clarification\",\n    \"entity_id\": \"sam_goldman\",\n    \"reason\": \"Both statements refer to the same entity (Sam from Goldman) but assert mutually exclusive facts about number of children. Cannot reconcile without authoritative clarification.\"\n  },\n  \"memory_cards\": [\n    {\n      \"kind\": \"conflict_flag\",\n      \"statement\": \"CONFLICT: Existing memory states Sam from Goldman has two children; new input states Sam from Goldman has no children. These are mutually exclusive and cannot both be true.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam (Goldman)\",\n          \"predicate\": \"has_children_count_DISPUTED\",\n          \"object\": \"2 vs 0\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"superseded_candidate\",\n      \"statement\": \"[UNCONFIRMED \u2014 DO NOT PRESENT AS CURRENT] Sam from Goldman has two children. This fact is under dispute and must not be treated as current until resolved.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam (Goldman)\",\n          \"predicate\": \"previously_recorded_as_having\",\n          \"object\": \"two children\"\n        }\n      ]\n    }\n  ],\n  \"repair_options\": [\n    \"1. Confirm with the user which fact is correct and update accordingly, retiring the superseded version.\",\n    \"2. If the new information comes from a trusted, timestamped source more recent than the original, prefer the new fact and mark the old one as superseded.\",\n    \"3. If context suggests a different 'Sam from Goldman' (disambiguation), create a separate entity record rather than overwriting.\",\n    \"4. Preserve both statements as disputed until resolution, surfacing the conflict to the user on next relevant query.\"\n  ],\n  \"answer\": \"A direct contradiction exists: the existing memory says Sam from Goldman has two children, while the new input says he has no children. No update has been committed. Human clarification is required before either fact is treated as authoritative.\",\n  \"citations\": [\n    \"Existing memory: 'Sam from Goldman has two children.'\",\n    \"New input: 'Sam from Goldman has no children.'\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Hard contradiction detected between existing and new facts.\",\n      \"No memory card committed or overwritten.\",\n      \"Conflict flagged and held pending human resolution.\",\n      \"Superseded fact not presented as current.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

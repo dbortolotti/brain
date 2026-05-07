@@ -1,0 +1,66 @@
+{
+  "fixture_id": "conflict_sara_niece_001__context",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "The new statement 'Sara is my niece' contradicts the existing high-confidence memory that Sara is Daniele's daughter and Nur's twin. Being a daughter implies a first-degree lineal relationship, whereas being a niece implies a sibling-of-parent relationship. These are mutually exclusive unless Daniele is the speaker's sibling, which is not stated. Therefore, the new claim is rejected.",
+    "citations": [],
+    "conflict_classification": "direct_contradiction",
+    "decision": "reject_new",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No new entity introduced; conflict is about relationship assertion."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "twin",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is daughter of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is twin of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict identified: niece vs. daughter/twin.",
+        "Existing memory retained due to high confidence.",
+        "No memory cards updated or deleted."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify the speaker's relationship to Daniele (e.g., if Daniele is the speaker's sibling, then Sara could be both Daniele's daughter and the speaker's niece).",
+      "Request source or context for the new claim to assess reliability.",
+      "Flag for user review due to high-confidence existing memory."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

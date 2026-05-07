@@ -1,0 +1,63 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_place_001",
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "payload": {
+    "answer": "Committed observation to Brutto restaurant entity. Brutto article alias remains distinct and unmerged due to insufficient evidence of identity.",
+    "citations": [
+      "Existing: Brutto restaurant in London",
+      "New note: Brutto was better than expected"
+    ],
+    "conflict_classification": "ambiguous_reference_partially_resolved",
+    "decision": "Link new note to existing Brutto restaurant entity while preserving ambiguity about article alias",
+    "entity_resolution": {
+      "action": "merge_with_existing",
+      "entity_id": "brutto_restaurant_london",
+      "reason": "New note references Brutto restaurant in London context; existing entity matches. Article alias remains unresolved and not linked to this observation."
+    },
+    "intent": "Resolve ambiguous reference to 'Brutto' and commit new subjective observation",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brutto",
+            "role": "subject",
+            "type": "restaurant"
+          },
+          {
+            "name": "London",
+            "role": "context",
+            "type": "location"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "user_experience",
+            "predicate": "exceeded_expectations",
+            "subject": "Brutto"
+          }
+        ],
+        "statement": "Brutto restaurant in London exceeded expectations"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created for restaurant observation",
+        "Entity linked to existing Brutto restaurant in London",
+        "Article alias preserved as separate unresolved reference",
+        "Ambiguity maintained per strict preservation policy"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Explicitly confirm whether article alias refers to restaurant or separate entity",
+      "Add timestamp to observation for temporal context",
+      "Clarify 'better than expected' against prior baseline expectation"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Resolve ambiguous reference to 'Brutto' and commit new subjective observation\",\n  \"decision\": \"Link new note to existing Brutto restaurant entity while preserving ambiguity about article alias\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"observation\",\n      \"statement\": \"Brutto restaurant in London exceeded expectations\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brutto\",\n          \"type\": \"restaurant\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"London\",\n          \"type\": \"location\",\n          \"role\": \"context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brutto\",\n          \"predicate\": \"exceeded_expectations\",\n          \"object\": \"user_experience\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge_with_existing\",\n    \"entity_id\": \"brutto_restaurant_london\",\n    \"reason\": \"New note references Brutto restaurant in London context; existing entity matches. Article alias remains unresolved and not linked to this observation.\"\n  },\n  \"conflict_classification\": \"ambiguous_reference_partially_resolved\",\n  \"answer\": \"Committed observation to Brutto restaurant entity. Brutto article alias remains distinct and unmerged due to insufficient evidence of identity.\",\n  \"citations\": [\n    \"Existing: Brutto restaurant in London\",\n    \"New note: Brutto was better than expected\"\n  ],\n  \"repair_options\": [\n    \"Explicitly confirm whether article alias refers to restaurant or separate entity\",\n    \"Add timestamp to observation for temporal context\",\n    \"Clarify 'better than expected' against prior baseline expectation\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card created for restaurant observation\",\n      \"Entity linked to existing Brutto restaurant in London\",\n      \"Article alias preserved as separate unresolved reference\",\n      \"Ambiguity maintained per strict preservation policy\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

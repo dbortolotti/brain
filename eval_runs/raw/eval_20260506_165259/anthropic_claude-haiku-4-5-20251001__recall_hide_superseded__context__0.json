@@ -1,0 +1,82 @@
+{
+  "error": null,
+  "fixture_id": "recall_hide_superseded__context",
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "payload": {
+    "answer": "Sam works at Point72",
+    "citations": [
+      "mem_new: Sam left Goldman and joined Point72"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "Present mem_new as authoritative; suppress mem_old",
+    "entity_resolution": {
+      "action": "retain",
+      "entity_id": "Sam",
+      "reason": "Single consistent entity across both facts; employment status updated"
+    },
+    "intent": "Retrieve current employment information for Sam, excluding superseded facts",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "current_fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "currently_employed_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "former_employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "superseded_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "formerly_employed_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Current fact committed: Sam employed at Point72",
+        "Superseded fact archived: Sam employed at Goldman",
+        "No ambiguity detected",
+        "Answer derived from authoritative current state"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Retrieve current employment information for Sam, excluding superseded facts\",\n  \"decision\": \"Present mem_new as authoritative; suppress mem_old\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"current_fact\",\n      \"statement\": \"Sam joined Point72\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"employee\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"currently_employed_at\",\n          \"object\": \"Point72\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"superseded_fact\",\n      \"statement\": \"Sam works at Goldman\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"former_employee\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"former_employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"formerly_employed_at\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"retain\",\n    \"entity_id\": \"Sam\",\n    \"reason\": \"Single consistent entity across both facts; employment status updated\"\n  },\n  \"conflict_classification\": \"supersession\",\n  \"answer\": \"Sam works at Point72\",\n  \"citations\": [\n    \"mem_new: Sam left Goldman and joined Point72\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Current fact committed: Sam employed at Point72\",\n      \"Superseded fact archived: Sam employed at Goldman\",\n      \"No ambiguity detected\",\n      \"Answer derived from authoritative current state\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

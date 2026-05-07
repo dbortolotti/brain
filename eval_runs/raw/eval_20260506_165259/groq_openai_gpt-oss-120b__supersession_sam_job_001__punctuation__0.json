@@ -1,0 +1,75 @@
+{
+  "error": null,
+  "fixture_id": "supersession_sam_job_001__punctuation",
+  "model": "groq:openai/gpt-oss-120b",
+  "payload": {
+    "answer": "The later memory that Sam left Goldman and joined Point72 supersedes the earlier claim that Sam works at Goldman.",
+    "citations": [
+      "Existing memory - Sam works at Goldman",
+      "Sam left Goldman and joined Point72"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "supersede",
+    "entity_resolution": {
+      "action": "supersede",
+      "entity_id": null,
+      "reason": "Newer information indicates Sam changed employer"
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "statement",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "statement",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict identified and classified as supersession",
+        "Memory updated accordingly"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark the Goldman employment statement as outdated",
+      "Add timestamp to differentiate",
+      "Retain both with supersession flag"
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict\",\"decision\":\"supersede\",\"memory_cards\":[{\"kind\":\"statement\",\"statement\":\"Sam works at Goldman\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Goldman\"}]},{\"kind\":\"statement\",\"statement\":\"Sam left Goldman and joined Point72\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"supersede\",\"entity_id\":null,\"reason\":\"Newer information indicates Sam changed employer\"},\"conflict_classification\":\"supersession\",\"answer\":\"The later memory that Sam left Goldman and joined Point72 supersedes the earlier claim that Sam works at Goldman.\",\"citations\":[\"Existing memory - Sam works at Goldman\",\"Sam left Goldman and joined Point72\"],\"repair_options\":[\"Mark the Goldman employment statement as outdated\",\"Add timestamp to differentiate\",\"Retain both with supersession flag\"],\"receipt\":{\"success\":true,\"details\":[\"Conflict identified and classified as supersession\",\"Memory updated accordingly\"]}}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

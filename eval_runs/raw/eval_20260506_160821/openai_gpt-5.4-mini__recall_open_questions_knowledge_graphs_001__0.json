@@ -1,0 +1,70 @@
+{
+  "error": null,
+  "fixture_id": "recall_open_questions_knowledge_graphs_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "The open idea is to learn more about knowledge graphs.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Identify the current open idea as learning more about knowledge graphs; keep the closed-loop item about learning basic Python separate.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No persistent entity resolution is needed from the provided input."
+    },
+    "intent": "recall_synthesizer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "knowledge graphs",
+            "role": "topic",
+            "type": "concept"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [
+          {
+            "object": "knowledge graphs",
+            "predicate": "wants_to_learn_more_about",
+            "subject": "user"
+          }
+        ],
+        "statement": "There is an open idea to learn more about knowledge graphs."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Python",
+            "role": "topic",
+            "type": "skill"
+          }
+        ],
+        "kind": "closed_loop",
+        "relationships": [
+          {
+            "object": "basic Python",
+            "predicate": "has_closed_loop_on",
+            "subject": "user"
+          }
+        ],
+        "statement": "Learning basic Python is a closed-loop item and should not be treated as an open idea about knowledge graphs."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed one open question: learn more about knowledge graphs.",
+        "Parsed one closed loop: learn basic Python."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you meant a different knowledge-graphs-related idea, provide the specific phrasing and I can separate it from the closed-loop Python item."
+    ]
+  },
+  "raw_text": "{\"intent\":\"recall_synthesizer\",\"decision\":\"Identify the current open idea as learning more about knowledge graphs; keep the closed-loop item about learning basic Python separate.\",\"memory_cards\":[{\"kind\":\"open_question\",\"statement\":\"There is an open idea to learn more about knowledge graphs.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"knowledge graphs\",\"type\":\"concept\",\"role\":\"topic\"}],\"relationships\":[{\"subject\":\"user\",\"predicate\":\"wants_to_learn_more_about\",\"object\":\"knowledge graphs\"}]},{\"kind\":\"closed_loop\",\"statement\":\"Learning basic Python is a closed-loop item and should not be treated as an open idea about knowledge graphs.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Python\",\"type\":\"skill\",\"role\":\"topic\"}],\"relationships\":[{\"subject\":\"user\",\"predicate\":\"has_closed_loop_on\",\"object\":\"basic Python\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No persistent entity resolution is needed from the provided input.\"},\"conflict_classification\":\"none\",\"answer\":\"The open idea is to learn more about knowledge graphs.\",\"citations\":[],\"repair_options\":[\"If you meant a different knowledge-graphs-related idea, provide the specific phrasing and I can separate it from the closed-loop Python item.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed one open question: learn more about knowledge graphs.\",\"Parsed one closed loop: learn basic Python.\"]}}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

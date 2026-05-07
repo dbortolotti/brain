@@ -1,0 +1,61 @@
+{
+  "fixture_id": "ambiguous_time_reference_001",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Sam stated last Friday that he is leaving Goldman next month.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_ambiguous",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Ambiguous temporal references ('last Friday', 'next month') prevent anchoring to specific dates; no disambiguation possible without current date context."
+    },
+    "intent": "extract_statement",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "statement",
+        "relationships": [
+          {
+            "object": "he is leaving Goldman next month",
+            "predicate": "said",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "is leaving",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said last Friday that he is leaving Goldman next month."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Statement stored with low confidence due to ambiguous time references.",
+        "No entity resolution performed; temporal ambiguity preserved.",
+        "No conflicts detected."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request clarification on the date of 'last Friday' relative to the current date.",
+      "Request clarification on the meaning of 'next month' (e.g., calendar month vs. 30 days).",
+      "Wait for additional context to anchor the temporal references."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

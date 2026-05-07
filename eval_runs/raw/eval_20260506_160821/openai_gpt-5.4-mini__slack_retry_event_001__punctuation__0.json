@@ -1,0 +1,70 @@
+{
+  "error": null,
+  "fixture_id": "slack_retry_event_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Duplicate event received; no new memory committed.",
+    "citations": [
+      "Same Slack event ID delivered twice for - Sam from Goldman likes Bill Evans"
+    ],
+    "conflict_classification": "duplicate_delivery",
+    "decision": "no_op_duplicate",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "This input indicates a duplicate delivery of the same Slack event ID, so it should not create a new durable memory or alter existing memory."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "mentioned",
+            "type": "person"
+          }
+        ],
+        "kind": "event",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "from",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "A Slack event with the same event ID was delivered twice for the message 'Sam from Goldman likes Bill Evans'."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected duplicate Slack event ID.",
+        "Preserved ambiguity about any underlying user intent beyond the quoted message.",
+        "No durable memory committed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ignore as duplicate event delivery.",
+      "If the original event is missing, ingest only the first unique delivery."
+    ]
+  },
+  "raw_text": "{\"intent\":\"slack_intake\",\"decision\":\"no_op_duplicate\",\"memory_cards\":[{\"kind\":\"event\",\"statement\":\"A Slack event with the same event ID was delivered twice for the message 'Sam from Goldman likes Bill Evans'.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"mentioned\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"},{\"subject\":\"Sam\",\"predicate\":\"from\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"This input indicates a duplicate delivery of the same Slack event ID, so it should not create a new durable memory or alter existing memory.\"},\"conflict_classification\":\"duplicate_delivery\",\"answer\":\"Duplicate event received; no new memory committed.\",\"citations\":[\"Same Slack event ID delivered twice for - Sam from Goldman likes Bill Evans\"],\"repair_options\":[\"Ignore as duplicate event delivery.\",\"If the original event is missing, ingest only the first unique delivery.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected duplicate Slack event ID.\",\"Preserved ambiguity about any underlying user intent beyond the quoted message.\",\"No durable memory committed.\"]}}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

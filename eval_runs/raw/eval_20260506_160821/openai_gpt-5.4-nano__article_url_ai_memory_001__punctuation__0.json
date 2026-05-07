@@ -1,0 +1,74 @@
+{
+  "error": null,
+  "fixture_id": "article_url_ai_memory_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Stored a summary focused on graph memory preserving relationships and the importance of provenance and update semantics.",
+    "citations": [
+      "https -//examplecom/ai-memory (malformed input; citation source uncertain)"
+    ],
+    "conflict_classification": "none",
+    "decision": "create_memory_card",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Article identifier/URL is malformed ('https -//examplecom/ai-memory'); only high-level summarized concepts were reliably extracted."
+    },
+    "intent": "remember_article",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "knowledge graph memory design",
+            "role": "topic",
+            "type": "concept"
+          },
+          {
+            "name": "graph memory",
+            "role": "key idea",
+            "type": "concept"
+          },
+          {
+            "name": "provenance",
+            "role": "requirement",
+            "type": "concept"
+          },
+          {
+            "name": "update semantics",
+            "role": "requirement",
+            "type": "concept"
+          }
+        ],
+        "kind": "article_summary",
+        "relationships": [
+          {
+            "object": "relationships",
+            "predicate": "helps_agents_preserve",
+            "subject": "graph memory"
+          },
+          {
+            "object": "provenance and update semantics",
+            "predicate": "requires",
+            "subject": "knowledge graph memory design"
+          }
+        ],
+        "statement": "The article argues that graph-based memory helps agents preserve relationships, and that provenance and update semantics are needed for effective knowledge graph memory design."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created one durable memory card based on provided fetched-article summary.",
+        "Did not store the malformed URL as a precise reference target."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Re-provide the correct canonical URL (fix 'https -//examplecom/...' to a valid URL).",
+      "Provide additional excerpts to improve confidence and capture any missing details (e.g., specific provenance/update semantics models)."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"remember_article\",\n  \"decision\": \"create_memory_card\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"article_summary\",\n      \"statement\": \"The article argues that graph-based memory helps agents preserve relationships, and that provenance and update semantics are needed for effective knowledge graph memory design.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"knowledge graph memory design\",\n          \"type\": \"concept\",\n          \"role\": \"topic\"\n        },\n        {\n          \"name\": \"graph memory\",\n          \"type\": \"concept\",\n          \"role\": \"key idea\"\n        },\n        {\n          \"name\": \"provenance\",\n          \"type\": \"concept\",\n          \"role\": \"requirement\"\n        },\n        {\n          \"name\": \"update semantics\",\n          \"type\": \"concept\",\n          \"role\": \"requirement\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"graph memory\",\n          \"predicate\": \"helps_agents_preserve\",\n          \"object\": \"relationships\"\n        },\n        {\n          \"subject\": \"knowledge graph memory design\",\n          \"predicate\": \"requires\",\n          \"object\": \"provenance and update semantics\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"Article identifier/URL is malformed ('https -//examplecom/ai-memory'); only high-level summarized concepts were reliably extracted.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Stored a summary focused on graph memory preserving relationships and the importance of provenance and update semantics.\",\n  \"citations\": [\n    \"https -//examplecom/ai-memory (malformed input; citation source uncertain)\"\n  ],\n  \"repair_options\": [\n    \"Re-provide the correct canonical URL (fix 'https -//examplecom/...' to a valid URL).\",\n    \"Provide additional excerpts to improve confidence and capture any missing details (e.g., specific provenance/update semantics models).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Created one durable memory card based on provided fetched-article summary.\",\n      \"Did not store the malformed URL as a precise reference target.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

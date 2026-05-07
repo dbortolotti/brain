@@ -1,0 +1,45 @@
+{
+  "error": null,
+  "fixture_id": "unresolved_pronoun_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The statement expresses a preference for an unspecified alternative ('the other one'), but the reference is unresolved due to ambiguity. Clarification is needed to commit this to durable memory.",
+    "conflict_classification": "none",
+    "entity_resolution": {
+      "action": "defer",
+      "reason": "Ambiguous pronoun ('the other one') lacks sufficient context to resolve. Requires clarification of prior/alternative entities."
+    },
+    "intent": "preference_expression",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "other_one",
+            "role": "preferred_alternative",
+            "type": "entity"
+          }
+        ],
+        "kind": "ambiguous_reference",
+        "relationships": [
+          {
+            "object": "other_one",
+            "predicate": "prefers",
+            "subject": "subject"
+          }
+        ],
+        "statement": "The subject prefers an unspecified alternative ('the other one') without clear context."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguous pronoun 'the other one' cannot be resolved without additional context.",
+        "Memory not committed to preserve ambiguity and avoid superseding/deleted facts."
+      ],
+      "success": false
+    }
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"preference_expression\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"ambiguous_reference\",\n      \"statement\": \"The subject prefers an unspecified alternative ('the other one') without clear context.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"other_one\",\n          \"type\": \"entity\",\n          \"role\": \"preferred_alternative\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"subject\",\n          \"predicate\": \"prefers\",\n          \"object\": \"other_one\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"reason\": \"Ambiguous pronoun ('the other one') lacks sufficient context to resolve. Requires clarification of prior/alternative entities.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"The statement expresses a preference for an unspecified alternative ('the other one'), but the reference is unresolved due to ambiguity. Clarification is needed to commit this to durable memory.\",\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Ambiguous pronoun 'the other one' cannot be resolved without additional context.\",\n      \"Memory not committed to preserve ambiguity and avoid superseding/deleted facts.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

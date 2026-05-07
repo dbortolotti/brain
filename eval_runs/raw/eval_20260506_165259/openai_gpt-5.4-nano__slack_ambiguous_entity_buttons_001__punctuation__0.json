@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "fixture_id": "slack_ambiguous_entity_buttons_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Which Sam do you mean\u2014Sam from Goldman or Sam from Point72\u2014when you say 'Sam likes Bill Evans'?",
+    "citations": [],
+    "conflict_classification": "ambiguous_entities",
+    "decision": "request_clarification",
+    "entity_resolution": {
+      "action": "needs_disambiguation",
+      "entity_id": null,
+      "reason": "There are two existing 'Sam' entities (Sam from Goldman; Sam from Point72), but the instruction does not specify which Sam should be linked to 'likes Bill Evans'."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "ambiguous_between_entities",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_by",
+            "type": "person"
+          }
+        ],
+        "kind": "memory_suggestion",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Could not safely commit the memory because the referenced 'Sam' is ambiguous."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Reply: 'Sam from Goldman likes Bill Evans'",
+      "Reply: 'Sam from Point72 likes Bill Evans'",
+      "Provide the identifying context for the correct Sam"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"slack_intake\",\n  \"decision\": \"request_clarification\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"memory_suggestion\",\n      \"statement\": \"Sam likes Bill Evans.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"ambiguous_between_entities\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"liked_by\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"needs_disambiguation\",\n    \"entity_id\": null,\n    \"reason\": \"There are two existing 'Sam' entities (Sam from Goldman; Sam from Point72), but the instruction does not specify which Sam should be linked to 'likes Bill Evans'.\"\n  },\n  \"conflict_classification\": \"ambiguous_entities\",\n  \"answer\": \"Which Sam do you mean\u2014Sam from Goldman or Sam from Point72\u2014when you say 'Sam likes Bill Evans'?\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Reply: 'Sam from Goldman likes Bill Evans'\",\n    \"Reply: 'Sam from Point72 likes Bill Evans'\",\n    \"Provide the identifying context for the correct Sam\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Could not safely commit the memory because the referenced 'Sam' is ambiguous.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

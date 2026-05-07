@@ -1,0 +1,96 @@
+{
+  "fixture_id": "large_table_500_rows_001",
+  "model": "groq:llama-3.3-70b-versatile",
+  "payload": {
+    "answer": "store as entity relationships",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_as_entity_relationships",
+    "entity_resolution": {
+      "action": "create_new_entities",
+      "entity_id": null,
+      "reason": "new data"
+    },
+    "intent": "store_large_table",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "id",
+            "role": "identifier",
+            "type": "integer"
+          }
+        ],
+        "kind": "entity",
+        "relationships": [
+          {
+            "object": "value",
+            "predicate": "has_value",
+            "subject": "id"
+          }
+        ],
+        "statement": "id is a unique identifier"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "name",
+            "role": "descriptor",
+            "type": "string"
+          }
+        ],
+        "kind": "entity",
+        "relationships": [
+          {
+            "object": "id",
+            "predicate": "describes",
+            "subject": "name"
+          }
+        ],
+        "statement": "name is a string"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "id",
+            "role": "identifier",
+            "type": "integer"
+          },
+          {
+            "name": "name",
+            "role": "descriptor",
+            "type": "string"
+          },
+          {
+            "name": "value",
+            "role": "value",
+            "type": "string"
+          }
+        ],
+        "kind": "relationship",
+        "relationships": [
+          {
+            "object": "value",
+            "predicate": "has_value",
+            "subject": "id"
+          },
+          {
+            "object": "id",
+            "predicate": "describes",
+            "subject": "name"
+          }
+        ],
+        "statement": "id and name are related to value"
+      }
+    ],
+    "receipt": {
+      "details": [],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_165259"
+}

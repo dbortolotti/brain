@@ -1,0 +1,82 @@
+{
+  "error": null,
+  "fixture_id": "concurrent_conflict_writes_001__context",
+  "model": "google:gemini-2.5-flash",
+  "payload": {
+    "answer": "Both statements, 'Sam works at Goldman' and 'Sam joined Point72', are recorded as facts. A potential temporal conflict exists regarding Sam's current employment status, as 'joined' often implies a new or updated employment, which may or may not supersede previous employment. The system preserves ambiguity by recording both as stated.",
+    "citations": [],
+    "conflict_classification": "Temporal Conflict - Ambiguous Update",
+    "decision": "Record both statements as facts and classify the potential temporal conflict.",
+    "entity_resolution": {
+      "action": "identify",
+      "entity_id": null,
+      "reason": "The entity 'Sam' in both statements refers to the same person. 'Goldman' and 'Point72' are distinct organizations."
+    },
+    "intent": "Record employment information for Sam.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "object",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "object",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Potential temporal conflict identified regarding Sam's employment.",
+        "Ambiguity exists whether 'Sam works at Goldman' is still current after 'Sam joined Point72' without further context or temporal information."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Clarify Sam's current employment status (e.g., does he still work at Goldman? Is he working at both concurrently?).",
+      "Add explicit temporal markers to the statements (e.g., start/end dates for employment).",
+      "Establish a policy for handling concurrent employment facts (e.g., assume exclusive employment unless specified, or allow multiple jobs)."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Record employment information for Sam.\",\n  \"decision\": \"Record both statements as facts and classify the potential temporal conflict.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam works at Goldman.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works at\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam joined Point72.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"identify\",\n    \"entity_id\": null,\n    \"reason\": \"The entity 'Sam' in both statements refers to the same person. 'Goldman' and 'Point72' are distinct organizations.\"\n  },\n  \"conflict_classification\": \"Temporal Conflict - Ambiguous Update\",\n  \"answer\": \"Both statements, 'Sam works at Goldman' and 'Sam joined Point72', are recorded as facts. A potential temporal conflict exists regarding Sam's current employment status, as 'joined' often implies a new or updated employment, which may or may not supersede previous employment. The system preserves ambiguity by recording both as stated.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Clarify Sam's current employment status (e.g., does he still work at Goldman? Is he working at both concurrently?).\",\n    \"Add explicit temporal markers to the statements (e.g., start/end dates for employment).\",\n    \"Establish a policy for handling concurrent employment facts (e.g., assume exclusive employment unless specified, or allow multiple jobs).\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Potential temporal conflict identified regarding Sam's employment.\",\n      \"Ambiguity exists whether 'Sam works at Goldman' is still current after 'Sam joined Point72' without further context or temporal information.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

@@ -1,0 +1,65 @@
+{
+  "fixture_id": "cascade_clean_fact_no_escalation_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Stored as a family relationship fact with moderate confidence.",
+    "citations": [
+      "input: \"Cascade test - cheap/default model handles Nur and Sara are my twin daughters\""
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "The message appears to state a stable family relationship involving Nur and Sara, but no prior entity mapping is available here."
+    },
+    "intent": "store_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "personal_relationship",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "is twin of",
+            "subject": "Nur"
+          },
+          {
+            "object": "user",
+            "predicate": "is daughter of",
+            "subject": "Nur"
+          },
+          {
+            "object": "user",
+            "predicate": "is daughter of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Nur and Sara are the user's twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured a relationship fact about Nur and Sara.",
+        "No conflict detected."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If Nur or Sara refer to different people, clarify their full names or whether the relationship is temporary or approximate."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

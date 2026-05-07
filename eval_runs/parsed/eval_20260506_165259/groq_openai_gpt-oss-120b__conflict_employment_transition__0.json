@@ -1,0 +1,82 @@
+{
+  "fixture_id": "conflict_employment_transition",
+  "model": "groq:openai/gpt-oss-120b",
+  "payload": {
+    "answer": "The new fact indicates an employment transition, so the prior fact is marked superseded and the new fact is added as current.",
+    "citations": [],
+    "conflict_classification": "employment_transition",
+    "decision": "update",
+    "entity_resolution": {
+      "action": "update",
+      "entity_id": null,
+      "reason": "New employment information supersedes previous fact."
+    },
+    "intent": "conflict_classification",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "type": "organization"
+          }
+        ],
+        "kind": "superseded",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "employed_by",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "type": "organization"
+          }
+        ],
+        "kind": "assertion",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "former_employee_of",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "employee_of",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded old employment fact",
+        "Added new employment fact"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark previous fact as superseded and add new fact"
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

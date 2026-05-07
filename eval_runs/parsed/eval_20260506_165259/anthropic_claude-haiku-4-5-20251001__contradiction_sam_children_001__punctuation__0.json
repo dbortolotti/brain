@@ -1,0 +1,83 @@
+{
+  "fixture_id": "contradiction_sam_children_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "payload": {
+    "answer": "Cannot commit either fact without additional evidence. Existing memory and new input directly contradict on a factual claim (two children vs. no children). This requires source verification or temporal context to resolve.",
+    "citations": [],
+    "conflict_classification": "direct_contradiction",
+    "decision": "Flag as direct contradiction requiring human review",
+    "entity_resolution": {
+      "action": "merge_candidates",
+      "entity_id": "sam_goldman_001",
+      "reason": "Both statements reference same person (Sam from Goldman) but assert contradictory facts about number of children"
+    },
+    "intent": "Classify contradiction between existing and new memory about Sam's children",
+    "memory_cards": [
+      {
+        "confidence": "unknown",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          }
+        ],
+        "kind": "existing_fact",
+        "relationships": [
+          {
+            "object": "two",
+            "predicate": "has_children",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman has two children"
+      },
+      {
+        "confidence": "unknown",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          }
+        ],
+        "kind": "new_fact",
+        "relationships": [
+          {
+            "object": "zero",
+            "predicate": "has_children",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman has no children"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Contradiction identified: cardinality mismatch on children attribute",
+        "Entity identity confirmed: same Sam from Goldman referenced",
+        "No superseding information provided to resolve conflict",
+        "Ambiguity preserved - neither fact committed as current truth"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request source/timestamp for new information to determine if it supersedes existing memory",
+      "Request source/timestamp for existing memory to establish baseline reliability",
+      "Clarify if 'Sam from Goldman' refers to same individual in both statements",
+      "Store both claims with conflict flag pending human review",
+      "Request additional context: did family status change between memory dates?"
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

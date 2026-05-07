@@ -1,0 +1,52 @@
+{
+  "fixture_id": "slack_rewrite_modal_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory rewritten to reflect the user's preference for 'the other one' without assuming context. Original ambiguity preserved in statement.",
+    "citations": [],
+    "conflict_classification": "rewrite_to_resolve_ambiguity",
+    "decision": "rewrite",
+    "entity_resolution": {
+      "action": "disambiguate",
+      "entity_id": null,
+      "reason": "Original statement lacked specificity; rewrite clarifies ambiguity while preserving intent."
+    },
+    "intent": "rewrite_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "user",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "other option",
+            "role": "preferred_entity",
+            "type": "object"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "other option",
+            "predicate": "prefers",
+            "subject": "user"
+          }
+        ],
+        "statement": "The user prefers the other option (unspecified context)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Original memory: 'He prefers the other one.' \u2192 Rewritten with explicit subject/object roles.",
+        "Confidence downgraded to 'medium' due to unresolved context.",
+        "No superseded facts retained; only current rewrite committed."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_165259"
+}

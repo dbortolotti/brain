@@ -1,0 +1,95 @@
+{
+  "fixture_id": "conflict_sara_niece_001__context",
+  "model": "anthropic:claude-sonnet-4-6",
+  "payload": {
+    "answer": "There's a potential ambiguity here. Memory already records Sara as Daniele's daughter and Nur's twin. Calling Sara your niece would be consistent if you're a sibling of Daniele (or Daniele's partner) \u2014 but that connection isn't established yet. Could you confirm your relationship to Daniele or Sara's other parent? That way I can commit this accurately.",
+    "citations": [
+      "Existing memory: Sara is Daniele's daughter and Nur's twin (high confidence).",
+      "New input: Sara is the user's niece (unverified, pending clarification)."
+    ],
+    "conflict_classification": "potential_conflict_ambiguous",
+    "decision": "Flag as potential conflict requiring clarification before committing. The existing memory states Sara is Daniele's daughter. 'Sara is my niece' is consistent only if the user is a sibling of Daniele (or Daniele's partner). This is not necessarily contradictory, but the relationship between the user and Daniele/Sara's family is unestablished, so the new fact cannot be confirmed as consistent or conflicting without more context.",
+    "entity_resolution": {
+      "action": "hold_pending_clarification",
+      "entity_id": "Sara",
+      "reason": "Sara is already known as Daniele's daughter. The new claim that Sara is the user's niece is consistent only if the user is a sibling of Daniele or Daniele's co-parent. This relationship is not established in memory. Committing without clarification risks encoding an unverified or contradictory family structure."
+    },
+    "intent": "Add relational fact that Sara is the user's niece",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "twin_sibling",
+            "type": "person"
+          }
+        ],
+        "kind": "relational_fact_existing",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_daughter_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "niece",
+            "type": "person"
+          },
+          {
+            "name": "user",
+            "role": "aunt_or_uncle",
+            "type": "person"
+          }
+        ],
+        "kind": "relational_fact_pending",
+        "relationships": [
+          {
+            "object": "user",
+            "predicate": "is_niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is the user's niece (unconfirmed; pending resolution of whether user is a sibling of Daniele or Daniele's partner)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "New fact 'Sara is user's niece' NOT committed to memory.",
+        "Existing fact 'Sara is Daniele's daughter and Nur's twin' preserved unchanged.",
+        "Conflict classification: potential_conflict_ambiguous \u2014 new fact may be consistent but cannot be confirmed without additional relational context.",
+        "User prompted to clarify relationship to Daniele or Sara's co-parent before memory is updated."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Confirm whether the user is a sibling of Daniele, which would make Sara the user's niece and be fully consistent with existing memory.",
+      "Confirm whether the user is a sibling of Daniele's partner/co-parent, which would also be consistent.",
+      "If the user is not related to Daniele, clarify whether 'Sara' refers to a different person than the Sara already in memory.",
+      "If the user misspoke or used 'niece' loosely (e.g., a close family friend's child), note that distinction explicitly."
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

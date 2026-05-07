@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "fixture_id": "slack_ambiguous_entity_buttons_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory ingestion deferred due to ambiguous entity 'Sam'. Resolve to Goldman Sachs or Point72 before proceeding.",
+    "citations": [],
+    "conflict_classification": "entity_ambiguity",
+    "decision": "ambiguous_entity_resolution_required",
+    "entity_resolution": {
+      "action": "pending",
+      "entity_id": null,
+      "reason": "Ambiguous reference to 'Sam' (Goldman Sachs vs. Point72). Requires disambiguation before committing durable memory."
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguous entity 'Sam' detected. Memory not committed to durable storage."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Disambiguate 'Sam' as Goldman Sachs entity",
+      "Disambiguate 'Sam' as Point72 entity",
+      "Merge Goldman Sachs and Point72 'Sam' entities (if applicable)"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_ingestion\",\n  \"decision\": \"ambiguous_entity_resolution_required\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam likes Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"pending\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguous reference to 'Sam' (Goldman Sachs vs. Point72). Requires disambiguation before committing durable memory.\"\n  },\n  \"conflict_classification\": \"entity_ambiguity\",\n  \"answer\": \"Memory ingestion deferred due to ambiguous entity 'Sam'. Resolve to Goldman Sachs or Point72 before proceeding.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Disambiguate 'Sam' as Goldman Sachs entity\",\n    \"Disambiguate 'Sam' as Point72 entity\",\n    \"Merge Goldman Sachs and Point72 'Sam' entities (if applicable)\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Ambiguous entity 'Sam' detected. Memory not committed to durable storage.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

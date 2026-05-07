@@ -1,0 +1,63 @@
+{
+  "error": null,
+  "fixture_id": "slack_success_receipt_001__context",
+  "model": "google:gemini-2.5-flash",
+  "payload": {
+    "answer": null,
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "commit_to_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "no_resolution_needed_or_possible"
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "is_affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created successfully."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"remember\",\n  \"decision\": \"commit_to_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam from Goldman likes Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"is_affiliated_with\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"no_resolution_needed_or_possible\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": null,\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card created successfully.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

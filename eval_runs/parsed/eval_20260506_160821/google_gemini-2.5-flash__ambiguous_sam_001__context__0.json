@@ -1,0 +1,52 @@
+{
+  "fixture_id": "ambiguous_sam_001__context",
+  "model": "google:gemini-2.5-flash",
+  "payload": {
+    "answer": "I've noted that 'Sam' mentioned liking Bill Evans, but I need clarification on which 'Sam' you are referring to (Sam from Goldman or Sam from Point72) before I can commit this memory.",
+    "citations": [],
+    "conflict_classification": "ambiguity",
+    "decision": "disambiguation_required",
+    "entity_resolution": {
+      "action": "disambiguate",
+      "entity_id": null,
+      "reason": "The name 'Sam' is ambiguous, matching multiple existing entities (Sam from Goldman, Sam from Point72) without sufficient context in the new message to resolve."
+    },
+    "intent": "record_information",
+    "memory_cards": [
+      {
+        "confidence": "pending_disambiguation",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam mentioned that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory not durably committed due to entity ambiguity.",
+        "Disambiguation required for 'Sam'."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask for clarification: 'Which Sam are you referring to?'",
+      "Provide more context about Sam in the current conversation."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

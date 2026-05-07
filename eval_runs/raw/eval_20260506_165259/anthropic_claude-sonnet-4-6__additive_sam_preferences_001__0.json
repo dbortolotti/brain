@@ -1,0 +1,93 @@
+{
+  "error": null,
+  "fixture_id": "additive_sam_preferences_001",
+  "model": "anthropic:claude-sonnet-4-6",
+  "payload": {
+    "answer": "Sam from Goldman has two recorded music preferences: Bill Evans and Sonny Rollins. Both are committed to memory.",
+    "citations": [
+      "Existing memory: Sam from Goldman likes Bill Evans.",
+      "New input: Sam from Goldman also likes Sonny Rollins."
+    ],
+    "conflict_classification": "NO_CONFLICT",
+    "decision": "ADDITIVE \u2014 no conflict detected. The new preference (Sonny Rollins) is independent of and compatible with the existing preference (Bill Evans). Both facts should be committed to memory.",
+    "entity_resolution": {
+      "action": "MERGE_INTO_EXISTING",
+      "entity_id": "sam_goldman",
+      "reason": "Sam from Goldman is already known in memory. The new preference is appended to the same entity profile without ambiguity."
+    },
+    "intent": "Add a new music preference for Sam from Goldman without conflicting with existing preference.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object_of_preference",
+            "type": "musician"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam (Goldman)"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "object_of_preference",
+            "type": "musician"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Sonny Rollins",
+            "predicate": "likes",
+            "subject": "Sam (Goldman)"
+          }
+        ],
+        "statement": "Sam from Goldman likes Sonny Rollins."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Existing preference for Bill Evans retained unchanged.",
+        "New preference for Sonny Rollins added to Sam (Goldman) entity profile.",
+        "No conflict detected; no repair required.",
+        "Both memory cards committed at high confidence."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"Add a new music preference for Sam from Goldman without conflicting with existing preference.\",\n  \"decision\": \"ADDITIVE \u2014 no conflict detected. The new preference (Sonny Rollins) is independent of and compatible with the existing preference (Bill Evans). Both facts should be committed to memory.\",\n  \"conflict_classification\": \"NO_CONFLICT\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam from Goldman likes Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"musician\",\n          \"role\": \"object_of_preference\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam (Goldman)\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam from Goldman likes Sonny Rollins.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Sonny Rollins\",\n          \"type\": \"musician\",\n          \"role\": \"object_of_preference\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam (Goldman)\",\n          \"predicate\": \"likes\",\n          \"object\": \"Sonny Rollins\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"MERGE_INTO_EXISTING\",\n    \"entity_id\": \"sam_goldman\",\n    \"reason\": \"Sam from Goldman is already known in memory. The new preference is appended to the same entity profile without ambiguity.\"\n  },\n  \"answer\": \"Sam from Goldman has two recorded music preferences: Bill Evans and Sonny Rollins. Both are committed to memory.\",\n  \"citations\": [\n    \"Existing memory: Sam from Goldman likes Bill Evans.\",\n    \"New input: Sam from Goldman also likes Sonny Rollins.\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Existing preference for Bill Evans retained unchanged.\",\n      \"New preference for Sonny Rollins added to Sam (Goldman) entity profile.\",\n      \"No conflict detected; no repair required.\",\n      \"Both memory cards committed at high confidence.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

@@ -1,0 +1,73 @@
+{
+  "fixture_id": "ambiguous_time_reference_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory intake complete with low confidence due to ambiguous time references. No conflicts detected.",
+    "citations": [],
+    "conflict_classification": "none",
+    "entity_resolution": {
+      "action": "flag_for_ambiguity",
+      "entity_id": null,
+      "reason": "Time references ('last Friday' and 'next month') are ambiguous without calendar context. No superseded/deleted facts are present."
+    },
+    "intent": "memory_intake",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer",
+            "type": "organization"
+          },
+          {
+            "name": "last Friday",
+            "role": "conversation_timestamp",
+            "type": "time_reference"
+          },
+          {
+            "name": "next month",
+            "role": "intended_departure_timestamp",
+            "type": "time_reference"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "expressed_intent_to_leave",
+            "subject": "Sam"
+          },
+          {
+            "object": "next month",
+            "predicate": "stated_departure_timeframe",
+            "subject": "Sam"
+          },
+          {
+            "object": "Sam's statement",
+            "predicate": "ambiguous_conversation_timestamp",
+            "subject": "last Friday"
+          }
+        ],
+        "statement": "Sam expressed intent to leave Goldman Sachs in an unspecified future timeframe, referenced as 'next month' by Sam in a conversation on an ambiguous date ('last Friday')."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory created with preserved ambiguity.",
+        "No superseded/deleted facts introduced."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request clarification from Sam on the exact dates ('last Friday' and 'next month').",
+      "Log as-is with timestamp ambiguity noted, pending resolution."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

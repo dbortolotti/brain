@@ -1,0 +1,70 @@
+{
+  "error": null,
+  "fixture_id": "project_state_brain_slack_agent_001__context",
+  "model": "groq:llama-3.3-70b-versatile",
+  "payload": {
+    "answer": "Slack is the primary interface for Brain project",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Slack as primary interface",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "no conflict"
+    },
+    "intent": "evaluate Brain project state",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "primary",
+            "type": "interface"
+          },
+          {
+            "name": "Brain",
+            "role": "subject",
+            "type": "project"
+          }
+        ],
+        "kind": "project_state",
+        "relationships": [
+          {
+            "object": "Slack",
+            "predicate": "uses",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "Slack is the primary guardrailed memory ingestion interface"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Telegram",
+            "role": "alternative",
+            "type": "interface"
+          }
+        ],
+        "kind": "project_state",
+        "relationships": [
+          {
+            "object": "Telegram",
+            "predicate": "may_use",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "Telegram can be considered later"
+      }
+    ],
+    "receipt": {
+      "details": [],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"evaluate Brain project state\",\n   \"decision\": \"Slack as primary interface\",\n   \"memory_cards\": [\n       {\n           \"kind\": \"project_state\",\n           \"statement\": \"Slack is the primary guardrailed memory ingestion interface\",\n           \"confidence\": \"high\",\n           \"entities\": [\n               {\n                   \"name\": \"Slack\",\n                   \"type\": \"interface\",\n                   \"role\": \"primary\"\n               },\n               {\n                   \"name\": \"Brain\",\n                   \"type\": \"project\",\n                   \"role\": \"subject\"\n               }\n           ],\n           \"relationships\": [\n               {\n                   \"subject\": \"Brain\",\n                   \"predicate\": \"uses\",\n                   \"object\": \"Slack\"\n               }\n           ]\n       },\n       {\n           \"kind\": \"project_state\",\n           \"statement\": \"Telegram can be considered later\",\n           \"confidence\": \"medium\",\n           \"entities\": [\n               {\n                   \"name\": \"Telegram\",\n                   \"type\": \"interface\",\n                   \"role\": \"alternative\"\n               }\n           ],\n           \"relationships\": [\n               {\n                   \"subject\": \"Brain\",\n                   \"predicate\": \"may_use\",\n                   \"object\": \"Telegram\"\n               }\n           ]\n       }\n   ],\n   \"entity_resolution\": {\n       \"action\": \"none\",\n       \"entity_id\": null,\n       \"reason\": \"no conflict\"\n   },\n   \"conflict_classification\": \"none\",\n   \"answer\": \"Slack is the primary interface for Brain project\",\n   \"citations\": [],\n   \"repair_options\": [],\n   \"receipt\": {\n       \"success\": true,\n       \"details\": []\n   }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

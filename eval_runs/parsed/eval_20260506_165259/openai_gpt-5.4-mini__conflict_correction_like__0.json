@@ -1,0 +1,59 @@
+{
+  "fixture_id": "conflict_correction_like",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Update the current fact to: Sam from Goldman likes early Coltrane, not Bill Evans.",
+    "citations": [],
+    "conflict_classification": "correction_replaces_previous_fact",
+    "decision": "update",
+    "entity_resolution": {
+      "action": "no_change",
+      "entity_id": null,
+      "reason": "The identity of Sam from Goldman is unchanged; only the preference is corrected."
+    },
+    "intent": "correct_preference",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "preference",
+            "type": "artist/music"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Existing fact corrected.",
+        "Superseded preference should not be treated as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace the existing preference with early Coltrane.",
+      "Do not retain Bill Evans as the current preference."
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

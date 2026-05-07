@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "fixture_id": "slack_ambiguous_entity_buttons_001__context",
+  "model": "google:gemini-2.5-flash",
+  "payload": {
+    "answer": "I found multiple people named 'Sam'. Which 'Sam' likes Bill Evans?",
+    "citations": [],
+    "conflict_classification": "ambiguous_entity",
+    "decision": "ambiguous_entity_resolution_required",
+    "entity_resolution": {
+      "action": "resolve_ambiguity",
+      "entity_id": null,
+      "reason": "Multiple existing entities match 'Sam'. Please specify which 'Sam' you mean."
+    },
+    "intent": "remember_fact",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory not committed due to ambiguous entity 'Sam'."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Sam from Goldman",
+      "Sam from Point72",
+      "A new Sam"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"remember_fact\",\n  \"decision\": \"ambiguous_entity_resolution_required\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam likes Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolve_ambiguity\",\n    \"entity_id\": null,\n    \"reason\": \"Multiple existing entities match 'Sam'. Please specify which 'Sam' you mean.\"\n  },\n  \"conflict_classification\": \"ambiguous_entity\",\n  \"answer\": \"I found multiple people named 'Sam'. Which 'Sam' likes Bill Evans?\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Sam from Goldman\",\n    \"Sam from Point72\",\n    \"A new Sam\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Memory not committed due to ambiguous entity 'Sam'.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_162328",
+  "status": "ok"
+}

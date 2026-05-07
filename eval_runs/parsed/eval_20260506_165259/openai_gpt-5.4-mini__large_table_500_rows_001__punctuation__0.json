@@ -1,0 +1,97 @@
+{
+  "fixture_id": "large_table_500_rows_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Store it as a compact summary/schema, not as full durable memory; retain only clearly important rows or derived facts if needed.",
+    "citations": [
+      "Input: \"CSV table with 500 rows - id,name,value repeated many times Policy question - how should it be stored?\""
+    ],
+    "conflict_classification": "none",
+    "decision": "Do not commit the full table as durable memory. Store only a compact structural summary and any user-confirmed, non-redundant facts that appear important; treat the bulk rows as transient data unless there is explicit need to preserve them.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No persistent real-world entity is identified beyond a generic CSV table fixture."
+    },
+    "intent": "Determine how to store a large CSV table (500 rows) with repeated fields as memory.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "source",
+            "type": "data artifact"
+          },
+          {
+            "name": "500 rows",
+            "role": "scale",
+            "type": "quantity"
+          },
+          {
+            "name": "id,name,value",
+            "role": "repeated structure",
+            "type": "schema fields"
+          }
+        ],
+        "kind": "policy",
+        "relationships": [
+          {
+            "object": "500 rows",
+            "predicate": "has_scale",
+            "subject": "CSV table"
+          },
+          {
+            "object": "id,name,value",
+            "predicate": "contains_fields",
+            "subject": "CSV table"
+          },
+          {
+            "object": "summary over full retention",
+            "predicate": "prefers",
+            "subject": "storage_policy"
+          }
+        ],
+        "statement": "A large CSV table with 500 rows and repeated id/name/value patterns should generally be stored as a summarized representation rather than as full row-by-row durable memory."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "rows",
+            "role": "granular units",
+            "type": "record entries"
+          },
+          {
+            "name": "salient facts",
+            "role": "preserved subset",
+            "type": "memory content"
+          }
+        ],
+        "kind": "policy",
+        "relationships": [
+          {
+            "object": "entire table",
+            "predicate": "may_be_stored_instead_of",
+            "subject": "salient rows/facts"
+          }
+        ],
+        "statement": "If individual rows become important later, store only the specific salient rows or derived facts, not the entire repeated table by default."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Classified as storage policy question rather than factual memory content.",
+        "Avoided committing the full repeated table as durable memory.",
+        "Preserved ambiguity about whether any individual rows are important."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If the table contains user-specific facts, extract and store only those confirmed facts.",
+      "If exact row preservation is required, store it as external data reference rather than personal memory.",
+      "If a schema is needed, store the field pattern and table size only."
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

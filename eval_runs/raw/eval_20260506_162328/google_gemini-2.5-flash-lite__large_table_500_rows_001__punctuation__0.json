@@ -1,0 +1,83 @@
+{
+  "error": null,
+  "fixture_id": "large_table_500_rows_001__punctuation",
+  "model": "google:gemini-2.5-flash-lite",
+  "payload": {
+    "answer": "The CSV table with 500 rows and columns 'id', 'name', 'value' should be stored as structured data.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_as_structured_data",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "The input describes a new data storage requirement."
+    },
+    "intent": "store_data",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "data_source",
+            "type": "data_format"
+          },
+          {
+            "name": "500 rows",
+            "role": "data_characteristic",
+            "type": "data_size"
+          },
+          {
+            "name": "id",
+            "role": "data_field",
+            "type": "column_name"
+          },
+          {
+            "name": "name",
+            "role": "data_field",
+            "type": "column_name"
+          },
+          {
+            "name": "value",
+            "role": "data_field",
+            "type": "column_name"
+          }
+        ],
+        "kind": "structured_data",
+        "relationships": [
+          {
+            "object": "id",
+            "predicate": "has_column",
+            "subject": "CSV table"
+          },
+          {
+            "object": "name",
+            "predicate": "has_column",
+            "subject": "CSV table"
+          },
+          {
+            "object": "value",
+            "predicate": "has_column",
+            "subject": "CSV table"
+          },
+          {
+            "object": "500 rows",
+            "predicate": "has_row_count",
+            "subject": "CSV table"
+          }
+        ],
+        "statement": "The CSV table with 500 rows, containing 'id', 'name', and 'value' columns, should be stored as structured data."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card for structured data storage created."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"store_data\",\n  \"decision\": \"store_as_structured_data\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"structured_data\",\n      \"statement\": \"The CSV table with 500 rows, containing 'id', 'name', and 'value' columns, should be stored as structured data.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"CSV table\",\n          \"type\": \"data_format\",\n          \"role\": \"data_source\"\n        },\n        {\n          \"name\": \"500 rows\",\n          \"type\": \"data_size\",\n          \"role\": \"data_characteristic\"\n        },\n        {\n          \"name\": \"id\",\n          \"type\": \"column_name\",\n          \"role\": \"data_field\"\n        },\n        {\n          \"name\": \"name\",\n          \"type\": \"column_name\",\n          \"role\": \"data_field\"\n        },\n        {\n          \"name\": \"value\",\n          \"type\": \"column_name\",\n          \"role\": \"data_field\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"CSV table\",\n          \"predicate\": \"has_column\",\n          \"object\": \"id\"\n        },\n        {\n          \"subject\": \"CSV table\",\n          \"predicate\": \"has_column\",\n          \"object\": \"name\"\n        },\n        {\n          \"subject\": \"CSV table\",\n          \"predicate\": \"has_column\",\n          \"object\": \"value\"\n        },\n        {\n          \"subject\": \"CSV table\",\n          \"predicate\": \"has_row_count\",\n          \"object\": \"500 rows\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create\",\n    \"entity_id\": null,\n    \"reason\": \"The input describes a new data storage requirement.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"The CSV table with 500 rows and columns 'id', 'name', 'value' should be stored as structured data.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card for structured data storage created.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_162328",
+  "status": "ok"
+}

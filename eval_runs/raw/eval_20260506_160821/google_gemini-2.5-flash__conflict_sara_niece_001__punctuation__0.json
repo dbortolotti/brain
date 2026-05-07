@@ -1,0 +1,82 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001__punctuation",
+  "model": "google:gemini-2.5-flash",
+  "payload": {
+    "answer": "The new information that Sara is your niece can be integrated with the existing knowledge that Sara is Daniele's daughter and Nur's twin, as there is no direct contradiction.",
+    "citations": [],
+    "conflict_classification": "additive_information",
+    "decision": "integrate_new_information",
+    "entity_resolution": {
+      "action": "confirm_identity",
+      "entity_id": null,
+      "reason": "The entity 'Sara' in both statements refers to the same individual."
+    },
+    "intent": "add_new_relationship",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "daughter_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "twin_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin"
+      },
+      {
+        "entities": [
+          {
+            "name": "Sara",
+            "type": "person"
+          },
+          {
+            "name": "my",
+            "role": "speaker",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "my",
+            "predicate": "niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "New relationship information integrated successfully."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"add_new_relationship\",\n  \"decision\": \"integrate_new_information\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is Daniele's daughter and Nur's twin\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\"\n        },\n        {\n          \"name\": \"Nur\",\n          \"type\": \"person\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"daughter_of\",\n          \"object\": \"Daniele\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"twin_of\",\n          \"object\": \"Nur\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is my niece\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\"\n        },\n        {\n          \"name\": \"my\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"niece_of\",\n          \"object\": \"my\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"confirm_identity\",\n    \"entity_id\": null,\n    \"reason\": \"The entity 'Sara' in both statements refers to the same individual.\"\n  },\n  \"conflict_classification\": \"additive_information\",\n  \"answer\": \"The new information that Sara is your niece can be integrated with the existing knowledge that Sara is Daniele's daughter and Nur's twin, as there is no direct contradiction.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"New relationship information integrated successfully.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

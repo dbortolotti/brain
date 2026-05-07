@@ -1,0 +1,53 @@
+{
+  "fixture_id": "ambiguous_place_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Store the note as ambiguous user feedback about 'Brutto,' likely the London restaurant, with low confidence due to missing context.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "Link ambiguous note to existing 'Brutto restaurant in London' with low confidence; keep statement context as unconfirmed.",
+    "entity_resolution": {
+      "action": "link_to_existing",
+      "entity_id": null,
+      "reason": "The note only says 'Brutto was better than expected' without specifying whether it refers to the London restaurant or the article alias; however, the phrase most plausibly matches the restaurant context given prior existing info."
+    },
+    "intent": "entity_resolution",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Brutto",
+            "role": "subject",
+            "type": "ambiguous_name"
+          },
+          {
+            "name": "Brutto restaurant",
+            "role": "likely_referent",
+            "type": "place"
+          }
+        ],
+        "kind": "user_note",
+        "relationships": [
+          {
+            "object": "better_than_expected (context unclear)",
+            "predicate": "user_feedback",
+            "subject": "Brutto"
+          }
+        ],
+        "statement": "User commented that 'Brutto was better than expected,' but the exact referent (restaurant vs. article alias) is not explicitly stated; likely refers to the Brutto restaurant."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Added low-confidence memory card for user feedback about 'Brutto' with context marked as unclear."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask the user to confirm whether 'Brutto' in this note refers to the London restaurant or the article alias.",
+      "Record the note with explicit attribution once the referent is confirmed (e.g., 'Brutto restaurant in London was better than expected')."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

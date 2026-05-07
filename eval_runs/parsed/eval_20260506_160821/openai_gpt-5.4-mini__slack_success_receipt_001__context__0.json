@@ -1,0 +1,66 @@
+{
+  "fixture_id": "slack_success_receipt_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Stored as a contextual preference note with unresolved identity for Sam from Goldman.",
+    "citations": [
+      "slack_success_receipt_001__context"
+    ],
+    "conflict_classification": "none",
+    "decision": "accept",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "'Sam from Goldman' is not uniquely identified; keep the affiliation/context without resolving to a specific durable entity record."
+    },
+    "intent": "store_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "mentioned person",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation/context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "mentioned_like_of",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman mentioned that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recorded a tentative preference for Bill Evans.",
+        "Preserved ambiguity about Sam's identity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you later identify which Sam this is, I can merge this note into the correct person record.",
+      "If 'Goldman' was meant to refer to a different organization or context, I can revise the affiliation."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

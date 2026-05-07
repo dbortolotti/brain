@@ -1,0 +1,61 @@
+{
+  "fixture_id": "slack_retry_event_001__context",
+  "model": "google:gemini-2.5-flash-lite",
+  "payload": {
+    "answer": "Stored: Sam from Goldman likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "allow",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": null,
+      "reason": "New entities detected: Sam, Goldman, Bill Evans."
+    },
+    "intent": "store_fact",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "liker",
+            "type": "PERSON"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "ORGANIZATION"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked",
+            "type": "PERSON"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "works for",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Duplicate event detected and handled.",
+        "Fact stored successfully."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_162328"
+}

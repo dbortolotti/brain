@@ -1,0 +1,145 @@
+{
+  "fixture_id": "long_markdown_chat_summary_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Brain DB is the definitive memory store, with Cognee as a queryable semantic layer and Slack as the validated intake pipeline. Telegram may be added later, pending cost-performance tradeoff analysis.",
+    "citations": [
+      "Chat Summary: Brain Architecture (input context)"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_durable_memory",
+    "entity_resolution": {
+      "action": "resolve_ambiguity",
+      "entity_id": null,
+      "reason": "Telegram's role is not yet defined; deferring to future evaluation."
+    },
+    "intent": "system_architecture_evaluation",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "database"
+          }
+        ],
+        "kind": "system_role",
+        "relationships": [
+          {
+            "object": "authoritative_memory_store",
+            "predicate": "serves_as",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB is the authoritative source of truth for all durable memory storage."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "rebuildable_interface",
+            "type": "semantic_projection"
+          },
+          {
+            "name": "Brain DB",
+            "role": "semantic_source",
+            "type": "database"
+          }
+        ],
+        "kind": "system_role",
+        "relationships": [
+          {
+            "object": "Brain DB",
+            "predicate": "projects_from",
+            "subject": "Cognee"
+          },
+          {
+            "object": "true",
+            "predicate": "is_rebuildable",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee is a rebuildable semantic projection of Brain DB, designed for query flexibility and interpretability."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "memory_validation_gateway",
+            "type": "intake_agent"
+          }
+        ],
+        "kind": "system_role",
+        "relationships": [
+          {
+            "object": "user_input",
+            "predicate": "ingests",
+            "subject": "Slack"
+          },
+          {
+            "object": "durable_storage",
+            "predicate": "validates_before",
+            "subject": "Slack"
+          }
+        ],
+        "statement": "Slack is a strict memory intake agent, responsible for ingesting and validating user input before durable storage."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Telegram",
+            "role": "potential_intake_channel",
+            "type": "platform"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [
+          {
+            "object": "future_memory_intake",
+            "predicate": "is_considered_for",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "Telegram integration is under consideration for future expansion as a secondary intake channel."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "cost-efficiency",
+            "role": "primary_optimization",
+            "type": "constraint"
+          },
+          {
+            "name": "performance_saturation",
+            "role": "non-negotiable_requirement",
+            "type": "constraint"
+          }
+        ],
+        "kind": "system_requirement",
+        "relationships": [
+          {
+            "object": "cost_efficiency_and_performance",
+            "predicate": "balances",
+            "subject": "system"
+          }
+        ],
+        "statement": "The system must prioritize cost-efficiency while maintaining performance saturation for all memory operations."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory committed with strict source-of-truth adherence.",
+        "Ambiguities preserved for Telegram integration (open question).",
+        "No superseded/deleted facts included."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_160821"
+}

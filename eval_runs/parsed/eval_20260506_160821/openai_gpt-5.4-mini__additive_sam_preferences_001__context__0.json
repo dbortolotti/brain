@@ -1,0 +1,65 @@
+{
+  "fixture_id": "additive_sam_preferences_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Stored as an additional preference for Sam from Goldman.",
+    "citations": [
+      "Existing memory: Sam from Goldman likes Bill Evans.",
+      "New: Sam from Goldman also likes Sonny Rollins."
+    ],
+    "conflict_classification": "no_conflict_addition",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "link_if_same_entity",
+      "entity_id": null,
+      "reason": "The new preference appears additive and refers to the same Sam from Goldman contextually, but no explicit durable entity identifier is provided."
+    },
+    "intent": "add_fact",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "preference_object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Sonny Rollins",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman also likes Sonny Rollins."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Added a non-conflicting preference.",
+        "Did not overwrite or negate existing Bill Evans preference.",
+        "Preserved ambiguity about entity identity beyond context."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_160821"
+}

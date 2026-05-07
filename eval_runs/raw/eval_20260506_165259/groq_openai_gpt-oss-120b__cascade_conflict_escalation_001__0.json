@@ -1,0 +1,75 @@
+{
+  "error": null,
+  "fixture_id": "cascade_conflict_escalation_001",
+  "model": "groq:openai/gpt-oss-120b",
+  "payload": {
+    "answer": "The system has detected a conflict: existing memory states Sara is your daughter, while new input states Sara is your niece. These relationships are mutually exclusive.",
+    "citations": [
+      "Existing memory: Sara is my daughter.",
+      "New input: Sara is my niece."
+    ],
+    "conflict_classification": "relationship_conflict",
+    "decision": "flag_conflict",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Conflicting familial relationships cannot be merged"
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "parent_of",
+            "subject": "I"
+          }
+        ],
+        "statement": "Sara is my daughter."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "niece",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship",
+        "relationships": [
+          {
+            "object": "I",
+            "predicate": "niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict identified",
+        "Memory cards updated with both statements"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask the user to clarify Sara's exact relationship to you.",
+      "Mark one of the statements as uncertain and lower its confidence.",
+      "Retain both statements with their respective confidence levels."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict\",\"decision\":\"flag_conflict\",\"memory_cards\":[{\"kind\":\"relationship\",\"statement\":\"Sara is my daughter.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"daughter\"}],\"relationships\":[{\"subject\":\"I\",\"predicate\":\"parent_of\",\"object\":\"Sara\"}]},{\"kind\":\"relationship\",\"statement\":\"Sara is my niece.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"niece\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"niece_of\",\"object\":\"I\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"Conflicting familial relationships cannot be merged\"},\"conflict_classification\":\"relationship_conflict\",\"answer\":\"The system has detected a conflict: existing memory states Sara is your daughter, while new input states Sara is your niece. These relationships are mutually exclusive.\",\"citations\":[\"Existing memory: Sara is my daughter.\",\"New input: Sara is my niece.\"],\"repair_options\":[\"Ask the user to clarify Sara's exact relationship to you.\",\"Mark one of the statements as uncertain and lower its confidence.\",\"Retain both statements with their respective confidence levels.\"],\"receipt\":{\"success\":true,\"details\":[\"Conflict identified\",\"Memory cards updated with both statements\"]}}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

@@ -1,0 +1,61 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_sam_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Ambiguous referent: the message says Sam likes Bill Evans, but it is unclear whether this is Sam from Goldman or Sam from Point72.",
+    "citations": [
+      "Existing entities - Sam from Goldman; Sam from Point72",
+      "New message - Sam mentioned that he likes Bill Evans"
+    ],
+    "conflict_classification": "ambiguous_entity_reference",
+    "decision": "defer_due_to_ambiguity",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The message refers to 'Sam', but there are multiple existing entities (Sam from Goldman and Sam from Point72), so the referent cannot be resolved confidently."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "ambiguous referent",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "musician",
+            "type": "person"
+          }
+        ],
+        "kind": "preference_mention",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "A Sam mentioned liking Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed incoming message.",
+        "Detected ambiguous reference to Sam.",
+        "Avoided committing the fact to a specific Sam entity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify which Sam is meant before committing the preference.",
+      "If needed, store the preference only as an unresolved note tied to an ambiguous Sam."
+    ]
+  },
+  "raw_text": "{\"intent\":\"slack_intake\",\"decision\":\"defer_due_to_ambiguity\",\"memory_cards\":[{\"kind\":\"preference_mention\",\"statement\":\"A Sam mentioned liking Bill Evans.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"ambiguous referent\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"musician\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"The message refers to 'Sam', but there are multiple existing entities (Sam from Goldman and Sam from Point72), so the referent cannot be resolved confidently.\"},\"conflict_classification\":\"ambiguous_entity_reference\",\"answer\":\"Ambiguous referent: the message says Sam likes Bill Evans, but it is unclear whether this is Sam from Goldman or Sam from Point72.\",\"citations\":[\"Existing entities - Sam from Goldman; Sam from Point72\",\"New message - Sam mentioned that he likes Bill Evans\"],\"repair_options\":[\"Clarify which Sam is meant before committing the preference.\",\"If needed, store the preference only as an unresolved note tied to an ambiguous Sam.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed incoming message.\",\"Detected ambiguous reference to Sam.\",\"Avoided committing the fact to a specific Sam entity.\"]}}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

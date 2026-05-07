@@ -1,0 +1,82 @@
+{
+  "fixture_id": "concurrent_conflict_writes_001__punctuation",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Two conflicting employment statements for Sam: one states Sam works at Goldman, the other states Sam joined Point72. These cannot both be true as current employment without temporal or contextual clarification.",
+    "citations": [],
+    "conflict_classification": "concurrent_contradiction",
+    "decision": "concurrent_writes",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Entity 'Sam' is consistent across both statements; conflict is in employment facts, not entity identity."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict identified: concurrent writes about Sam's employment",
+        "Entities resolved: Sam is unambiguous",
+        "Classification: concurrent_contradiction",
+        "No superseded facts presented as current"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add temporal context (e.g., 'Sam worked at Goldman until 2023, then joined Point72')",
+      "Specify role or department to distinguish possible dual roles",
+      "Mark one statement as historical or outdated",
+      "Request clarification on which is current"
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

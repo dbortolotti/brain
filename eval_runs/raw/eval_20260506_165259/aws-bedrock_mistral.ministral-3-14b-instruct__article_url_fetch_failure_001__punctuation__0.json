@@ -1,0 +1,74 @@
+{
+  "error": null,
+  "fixture_id": "article_url_fetch_failure_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory ingestion aborted due to unrecoverable fetch failure (malformed URL + 404). No durable memory created.",
+    "citations": [],
+    "conflict_classification": "none_applicable",
+    "decision": "abort_due_to_failure",
+    "entity_resolution": {
+      "action": "discard",
+      "entity_id": null,
+      "reason": "Malformed URL cannot be resolved; no valid resource exists to reference."
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https -//examplecom/missing",
+            "role": "target_resource",
+            "type": "url"
+          },
+          {
+            "name": "404",
+            "role": "error_code",
+            "type": "http_status"
+          },
+          {
+            "name": "network_error",
+            "role": "failure_type",
+            "type": "system_event"
+          }
+        ],
+        "kind": "system_event",
+        "relationships": [
+          {
+            "object": "https -//examplecom/missing",
+            "predicate": "attempted_to_fetch",
+            "subject": "memory_system"
+          },
+          {
+            "object": "404 network_error",
+            "predicate": "triggered",
+            "subject": "https -//examplecom/missing"
+          },
+          {
+            "object": "memory_ingestion",
+            "predicate": "prevented",
+            "subject": "404 network_error"
+          }
+        ],
+        "statement": "Failed to fetch article at malformed URL (punctuation/format error: missing ':' after 'https' and invalid domain 'examplecom'). Network error: 404 (Not Found)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "URL parsing failed: 'https -//examplecom/missing' is invalid.",
+        "HTTP 404 received (resource not found).",
+        "No memory cards persisted due to critical failure."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Verify URL format (e.g., 'https://example.com/missing') and retry.",
+      "Check network connectivity before retrying.",
+      "Confirm article exists at intended location."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_ingestion\",\n  \"decision\": \"abort_due_to_failure\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"system_event\",\n      \"statement\": \"Failed to fetch article at malformed URL (punctuation/format error: missing ':' after 'https' and invalid domain 'examplecom'). Network error: 404 (Not Found).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"https -//examplecom/missing\",\n          \"type\": \"url\",\n          \"role\": \"target_resource\"\n        },\n        {\n          \"name\": \"404\",\n          \"type\": \"http_status\",\n          \"role\": \"error_code\"\n        },\n        {\n          \"name\": \"network_error\",\n          \"type\": \"system_event\",\n          \"role\": \"failure_type\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"memory_system\",\n          \"predicate\": \"attempted_to_fetch\",\n          \"object\": \"https -//examplecom/missing\"\n        },\n        {\n          \"subject\": \"https -//examplecom/missing\",\n          \"predicate\": \"triggered\",\n          \"object\": \"404 network_error\"\n        },\n        {\n          \"subject\": \"404 network_error\",\n          \"predicate\": \"prevented\",\n          \"object\": \"memory_ingestion\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"discard\",\n    \"entity_id\": null,\n    \"reason\": \"Malformed URL cannot be resolved; no valid resource exists to reference.\"\n  },\n  \"conflict_classification\": \"none_applicable\",\n  \"answer\": \"Memory ingestion aborted due to unrecoverable fetch failure (malformed URL + 404). No durable memory created.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Verify URL format (e.g., 'https://example.com/missing') and retry.\",\n    \"Check network connectivity before retrying.\",\n    \"Confirm article exists at intended location.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"URL parsing failed: 'https -//examplecom/missing' is invalid.\",\n      \"HTTP 404 received (resource not found).\",\n      \"No memory cards persisted due to critical failure.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

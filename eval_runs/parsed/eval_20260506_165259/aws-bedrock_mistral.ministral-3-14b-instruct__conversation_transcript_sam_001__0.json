@@ -1,0 +1,145 @@
+{
+  "fixture_id": "conversation_transcript_sam_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Durable memory updated with Sam's employment change (Goldman \u2192 Point72) and jazz preference shift (Coltrane > Evans). Pending action logged for AI infrastructure article.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit_with_ambiguity_preserved",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": null,
+      "reason": "No prior durable memory of Sam's employment at Point72 or jazz preference shift exists. Ambiguity preserved for temporal context (e.g., 'last month' not resolved to exact date)."
+    },
+    "intent": "update_durable_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Goldman Sachs",
+            "role": "previous_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72 Ventures",
+            "role": "current_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "professional",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "left_employment_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72 Ventures",
+            "predicate": "joined_employment_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman Sachs in [unspecified month, likely June 2024] and joined Point72 Ventures as of [unspecified date, likely June 2024]."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Bill Evans",
+            "role": "previous_primary_interest",
+            "type": "artist"
+          },
+          {
+            "name": "John Coltrane",
+            "role": "current_primary_interest",
+            "type": "artist"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "specific_preference",
+            "type": "artistic_period"
+          },
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "personal_interest",
+        "relationships": [
+          {
+            "object": "jazz_music",
+            "predicate": "maintains_interest_in",
+            "subject": "Sam"
+          },
+          {
+            "object": "early_Coltrane_over_Bill_Evans",
+            "predicate": "prefers_recently",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam continues to listen to jazz, with a recent shift toward early John Coltrane recordings (pre-1960s) over Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "requested_party",
+            "type": "person"
+          },
+          {
+            "name": "Sam",
+            "role": "requester",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "subject_matter",
+            "type": "topic"
+          },
+          {
+            "name": "article",
+            "role": "pending_delivery",
+            "type": "document"
+          }
+        ],
+        "kind": "pending_action",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "requested_from",
+            "subject": "Sam"
+          },
+          {
+            "object": "AI_infrastructure",
+            "predicate": "relates_to",
+            "subject": "article"
+          },
+          {
+            "object": "Sam",
+            "predicate": "has_pending_task_to",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Sam requested Daniele to share an article about AI infrastructure for further discussion."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed professional and personal interest updates with preserved ambiguity for temporal context.",
+        "Logged pending action without superseding prior facts.",
+        "No conflicts detected with existing memory."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_165259"
+}

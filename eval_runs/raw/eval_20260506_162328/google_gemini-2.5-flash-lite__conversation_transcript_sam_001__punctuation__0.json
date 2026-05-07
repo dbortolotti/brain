@@ -1,0 +1,131 @@
+{
+  "error": null,
+  "fixture_id": "conversation_transcript_sam_001__punctuation",
+  "model": "google:gemini-2.5-flash-lite",
+  "payload": {
+    "answer": "Okay, I've updated your memory. Sam left Goldman last month and joined Point72. He's been listening to early Coltrane lately. You also discussed catching up about AI infra.",
+    "citations": [],
+    "conflict_classification": "no conflict",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": null,
+      "reason": "New information about Sam's employment and musical preferences was provided."
+    },
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "PERSON"
+          },
+          {
+            "name": "Goldman",
+            "role": "previous_employer",
+            "type": "ORGANIZATION"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "ORGANIZATION"
+          }
+        ],
+        "kind": "event",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman last month and joined Point72."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "PERSON"
+          },
+          {
+            "name": "Coltrane",
+            "role": "artist",
+            "type": "MUSICIAN"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "listens to",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is listening to early Coltrane lately."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "speaker",
+            "type": "PERSON"
+          },
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "PERSON"
+          },
+          {
+            "name": "AI infra",
+            "role": "subject",
+            "type": "TOPIC"
+          }
+        ],
+        "kind": "topic",
+        "relationships": [
+          {
+            "object": "AI infra",
+            "predicate": "wants to catch up about",
+            "subject": "Daniele"
+          },
+          {
+            "object": "AI infra",
+            "predicate": "wants to catch up about",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Daniele and Sam should catch up about AI infra."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "memory_cards.0.statement",
+        "memory_cards.0.entities",
+        "memory_cards.0.relationships",
+        "memory_cards.1.statement",
+        "memory_cards.1.entities",
+        "memory_cards.1.relationships",
+        "memory_cards.2.statement",
+        "memory_cards.2.entities",
+        "memory_cards.2.relationships",
+        "entity_resolution.action",
+        "entity_resolution.reason",
+        "conflict_classification",
+        "answer"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"memory_cards\": [\n    {\n      \"kind\": \"event\",\n      \"statement\": \"Sam left Goldman last month and joined Point72.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Sam\", \"type\": \"PERSON\", \"role\": \"speaker\"},\n        {\"name\": \"Goldman\", \"type\": \"ORGANIZATION\", \"role\": \"previous_employer\"},\n        {\"name\": \"Point72\", \"type\": \"ORGANIZATION\", \"role\": \"current_employer\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sam\", \"predicate\": \"left\", \"object\": \"Goldman\"},\n        {\"subject\": \"Sam\", \"predicate\": \"joined\", \"object\": \"Point72\"}\n      ]\n    },\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam is listening to early Coltrane lately.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Sam\", \"type\": \"PERSON\", \"role\": \"speaker\"},\n        {\"name\": \"Coltrane\", \"type\": \"MUSICIAN\", \"role\": \"artist\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sam\", \"predicate\": \"listens to\", \"object\": \"early Coltrane\"}\n      ]\n    },\n    {\n      \"kind\": \"topic\",\n      \"statement\": \"Daniele and Sam should catch up about AI infra.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Daniele\", \"type\": \"PERSON\", \"role\": \"speaker\"},\n        {\"name\": \"Sam\", \"type\": \"PERSON\", \"role\": \"speaker\"},\n        {\"name\": \"AI infra\", \"type\": \"TOPIC\", \"role\": \"subject\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Daniele\", \"predicate\": \"wants to catch up about\", \"object\": \"AI infra\"},\n        {\"subject\": \"Sam\", \"predicate\": \"wants to catch up about\", \"object\": \"AI infra\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolve\",\n    \"entity_id\": null,\n    \"reason\": \"New information about Sam's employment and musical preferences was provided.\"\n  },\n  \"conflict_classification\": \"no conflict\",\n  \"answer\": \"Okay, I've updated your memory. Sam left Goldman last month and joined Point72. He's been listening to early Coltrane lately. You also discussed catching up about AI infra.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"memory_cards.0.statement\",\n      \"memory_cards.0.entities\",\n      \"memory_cards.0.relationships\",\n      \"memory_cards.1.statement\",\n      \"memory_cards.1.entities\",\n      \"memory_cards.1.relationships\",\n      \"memory_cards.2.statement\",\n      \"memory_cards.2.entities\",\n      \"memory_cards.2.relationships\",\n      \"entity_resolution.action\",\n      \"entity_resolution.reason\",\n      \"conflict_classification\",\n      \"answer\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_162328",
+  "status": "ok"
+}

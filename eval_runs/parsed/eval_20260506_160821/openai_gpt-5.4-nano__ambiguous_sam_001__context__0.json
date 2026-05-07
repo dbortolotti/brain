@@ -1,0 +1,53 @@
+{
+  "fixture_id": "ambiguous_sam_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Recorded as an ambiguous preference for 'Sam' liking 'Bill Evans' without linking to a specific Sam entity.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_ambiguous_preference",
+    "entity_resolution": {
+      "action": "no_resolution",
+      "entity_id": null,
+      "reason": "There are existing entities named Sam (Goldman and Point72) but the message does not specify which one, so the reference is ambiguous."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject (ambiguous which Sam)",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked by Sam",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "In a message, Sam said that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created an ambiguous preference memory card for Sam -> Bill Evans (confidence low due to unresolved Sam identity)."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If the sender or context indicates which Sam (Goldman vs Point72), link the preference to the correct entity.",
+      "If more context is provided (e.g., team/company, profile link, or handle), re-run entity resolution."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

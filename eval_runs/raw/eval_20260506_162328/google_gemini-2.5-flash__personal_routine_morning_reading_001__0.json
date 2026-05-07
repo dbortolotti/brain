@@ -1,0 +1,99 @@
+{
+  "error": null,
+  "fixture_id": "personal_routine_morning_reading_001",
+  "model": "google:gemini-2.5-flash",
+  "payload": {
+    "answer": "Understood. I've noted your preference to read technical papers in the morning before checking email.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Committed a personal routine and preference regarding morning activities.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No existing entities to resolve or new entities to create beyond implicit 'user'."
+    },
+    "intent": "Record personal routine and preferences",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "user",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "technical papers",
+            "role": "object",
+            "type": "content"
+          },
+          {
+            "name": "morning",
+            "role": "time",
+            "type": "time_of_day"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "technical papers",
+            "predicate": "prefers_to_read",
+            "subject": "user"
+          },
+          {
+            "object": "reading technical papers",
+            "predicate": "prefers_activity_time",
+            "subject": "user",
+            "time": "morning"
+          }
+        ],
+        "statement": "The user prefers to read technical papers in the morning."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "user",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "reading technical papers",
+            "role": "activity_1",
+            "type": "activity"
+          },
+          {
+            "name": "checking email",
+            "role": "activity_2",
+            "type": "activity"
+          }
+        ],
+        "kind": "routine",
+        "relationships": [
+          {
+            "before_activity": "checking email",
+            "object": "reading technical papers",
+            "predicate": "performs_activity_before",
+            "subject": "user"
+          },
+          {
+            "object": "checking email",
+            "predicate": "precedes",
+            "subject": "reading technical papers"
+          }
+        ],
+        "statement": "The user usually reads technical papers before checking email."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory cards created successfully for personal routine and preferences."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n\"intent\": \"Record personal routine and preferences\",\n\"decision\": \"Committed a personal routine and preference regarding morning activities.\",\n\"memory_cards\": [\n{\n\"kind\": \"preference\",\n\"statement\": \"The user prefers to read technical papers in the morning.\",\n\"confidence\": \"high\",\n\"entities\": [\n{\n\"name\": \"user\",\n\"type\": \"person\",\n\"role\": \"subject\"\n},\n{\n\"name\": \"technical papers\",\n\"type\": \"content\",\n\"role\": \"object\"\n},\n{\n\"name\": \"morning\",\n\"type\": \"time_of_day\",\n\"role\": \"time\"\n}\n],\n\"relationships\": [\n{\n\"subject\": \"user\",\n\"predicate\": \"prefers_to_read\",\n\"object\": \"technical papers\"\n},\n{\n\"subject\": \"user\",\n\"predicate\": \"prefers_activity_time\",\n\"object\": \"reading technical papers\",\n\"time\": \"morning\"\n}\n]\n},\n{\n\"kind\": \"routine\",\n\"statement\": \"The user usually reads technical papers before checking email.\",\n\"confidence\": \"high\",\n\"entities\": [\n{\n\"name\": \"user\",\n\"type\": \"person\",\n\"role\": \"subject\"\n},\n{\n\"name\": \"reading technical papers\",\n\"type\": \"activity\",\n\"role\": \"activity_1\"\n},\n{\n\"name\": \"checking email\",\n\"type\": \"activity\",\n\"role\": \"activity_2\"\n}\n],\n\"relationships\": [\n{\n\"subject\": \"user\",\n\"predicate\": \"performs_activity_before\",\n\"object\": \"reading technical papers\",\n\"before_activity\": \"checking email\"\n},\n{\n\"subject\": \"reading technical papers\",\n\"predicate\": \"precedes\",\n\"object\": \"checking email\"\n}\n]\n}\n],\n\"entity_resolution\": {\n\"action\": \"none\",\n\"entity_id\": null,\n\"reason\": \"No existing entities to resolve or new entities to create beyond implicit 'user'.\"\n},\n\"conflict_classification\": \"none\",\n\"answer\": \"Understood. I've noted your preference to read technical papers in the morning before checking email.\",\n\"citations\": [],\n\"repair_options\": [],\n\"receipt\": {\n\"success\": true,\n\"details\": [\n\"Memory cards created successfully for personal routine and preferences.\"\n]\n}\n}",
+  "run_id": "eval_20260506_162328",
+  "status": "ok"
+}

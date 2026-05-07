@@ -1,0 +1,54 @@
+{
+  "error": null,
+  "fixture_id": "slack_ambiguous_entity_buttons_001",
+  "model": "google:gemini-2.5-flash-lite",
+  "payload": {
+    "answer": "Which Sam are you referring to? Sam from Goldman or Sam from Point72?",
+    "citations": [],
+    "conflict_classification": "ambiguous_entity",
+    "decision": "ambiguous_entity",
+    "entity_resolution": {
+      "action": "disambiguate",
+      "entity_id": null,
+      "reason": "Multiple entities named Sam exist. Please specify which Sam you are referring to."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "PERSON"
+          },
+          {
+            "name": "Bill Evans",
+            "type": "PERSON"
+          }
+        ],
+        "kind": "statement",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Failed to commit memory due to ambiguous entity."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Sam from Goldman",
+      "Sam from Point72"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"remember\",\n  \"decision\": \"ambiguous_entity\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"statement\",\n      \"statement\": \"Sam likes Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"PERSON\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"PERSON\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"disambiguate\",\n    \"entity_id\": null,\n    \"reason\": \"Multiple entities named Sam exist. Please specify which Sam you are referring to.\"\n  },\n  \"conflict_classification\": \"ambiguous_entity\",\n  \"answer\": \"Which Sam are you referring to? Sam from Goldman or Sam from Point72?\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Sam from Goldman\",\n    \"Sam from Point72\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Failed to commit memory due to ambiguous entity.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_162328",
+  "status": "ok"
+}

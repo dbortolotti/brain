@@ -1,0 +1,53 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_place_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Saved an impression about \u201cBrutto\u201d with uncertain linkage to the Brutto London restaurant, since \u201cBrutto\u201d may also refer to an article alias.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Preserve ambiguity: treat the note \u201cBrutto was better than expected\u201d as likely referring to the existing Brutto London restaurant, but do not fully resolve between restaurant vs. article alias without more context.",
+    "entity_resolution": {
+      "action": "link_with_uncertainty",
+      "entity_id": null,
+      "reason": "Existing context contains \u201cBrutto restaurant in London\u201d and \u201cBrutto article alias.\u201d The new note is a generic statement about \u201cBrutto,\u201d which could refer to either. Record it as an assessment of \u201cBrutto\u201d and associate with the restaurant only as a best-effort, low-to-medium confidence."
+    },
+    "intent": "entity_resolution",
+    "memory_cards": [
+      {
+        "confidence": "0.55",
+        "entities": [
+          {
+            "name": "Brutto",
+            "role": "subject",
+            "type": "ambiguous_alias"
+          }
+        ],
+        "kind": "preference_or_impression",
+        "relationships": [
+          {
+            "object": "Brutto restaurant in London",
+            "predicate": "possibly_refers_to",
+            "subject": "Brutto"
+          }
+        ],
+        "statement": "Recorded impression: \u201cBrutto was better than expected.\u201d (Ambiguous: could refer to the Brutto London restaurant or another Brutto alias.)"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created a new memory card for an impression statement about \u201cBrutto.\u201d",
+        "Maintained ambiguity about whether it refers to the London restaurant vs. the article alias."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for clarification whether the comment refers to dining at the Brutto restaurant in London.",
+      "If available, include metadata (e.g., date, location, link) to disambiguate restaurant vs. article.",
+      "If the user intended the article alias, store the impression under the article entity instead."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"entity_resolution\",\n  \"decision\": \"Preserve ambiguity: treat the note \u201cBrutto was better than expected\u201d as likely referring to the existing Brutto London restaurant, but do not fully resolve between restaurant vs. article alias without more context.\",\n  \"entity_resolution\": {\n    \"action\": \"link_with_uncertainty\",\n    \"entity_id\": null,\n    \"reason\": \"Existing context contains \u201cBrutto restaurant in London\u201d and \u201cBrutto article alias.\u201d The new note is a generic statement about \u201cBrutto,\u201d which could refer to either. Record it as an assessment of \u201cBrutto\u201d and associate with the restaurant only as a best-effort, low-to-medium confidence.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference_or_impression\",\n      \"statement\": \"Recorded impression: \u201cBrutto was better than expected.\u201d (Ambiguous: could refer to the Brutto London restaurant or another Brutto alias.)\",\n      \"confidence\": \"0.55\",\n      \"entities\": [\n        {\n          \"name\": \"Brutto\",\n          \"type\": \"ambiguous_alias\",\n          \"role\": \"subject\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brutto\",\n          \"predicate\": \"possibly_refers_to\",\n          \"object\": \"Brutto restaurant in London\"\n        }\n      ]\n    }\n  ],\n  \"answer\": \"Saved an impression about \u201cBrutto\u201d with uncertain linkage to the Brutto London restaurant, since \u201cBrutto\u201d may also refer to an article alias.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Ask for clarification whether the comment refers to dining at the Brutto restaurant in London.\",\n    \"If available, include metadata (e.g., date, location, link) to disambiguate restaurant vs. article.\",\n    \"If the user intended the article alias, store the impression under the article entity instead.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Created a new memory card for an impression statement about \u201cBrutto.\u201d\",\n      \"Maintained ambiguity about whether it refers to the London restaurant vs. the article alias.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

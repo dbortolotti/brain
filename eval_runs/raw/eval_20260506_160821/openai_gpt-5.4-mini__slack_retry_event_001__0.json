@@ -1,0 +1,71 @@
+{
+  "error": null,
+  "fixture_id": "slack_retry_event_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Processed as a duplicate Slack event ID; one memory card may be created, but the second delivery is ignored.",
+    "citations": [
+      "fixture:slack_retry_event_001",
+      "input:Same Slack event ID delivered twice for: Sam from Goldman likes Bill Evans."
+    ],
+    "conflict_classification": "duplicate_delivery",
+    "decision": "store_once_and_deduplicate_duplicate_delivery",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No prior entity context provided; preserve ambiguity about which Sam is meant."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_entity",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Duplicate event detected by Slack event ID.",
+        "Committed at most one new memory card.",
+        "No superseded or deleted fact was treated as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If this was meant to update an existing memory, provide the prior entity or a correction event.",
+      "If 'Bill Evans' refers to a different entity type, clarify the intended identity."
+    ]
+  },
+  "raw_text": "{\"intent\":\"slack_intake\",\"decision\":\"store_once_and_deduplicate_duplicate_delivery\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman likes Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked_entity\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No prior entity context provided; preserve ambiguity about which Sam is meant.\"},\"conflict_classification\":\"duplicate_delivery\",\"answer\":\"Processed as a duplicate Slack event ID; one memory card may be created, but the second delivery is ignored.\",\"citations\":[\"fixture:slack_retry_event_001\",\"input:Same Slack event ID delivered twice for: Sam from Goldman likes Bill Evans.\"],\"repair_options\":[\"If this was meant to update an existing memory, provide the prior entity or a correction event.\",\"If 'Bill Evans' refers to a different entity type, clarify the intended identity.\"],\"receipt\":{\"success\":true,\"details\":[\"Duplicate event detected by Slack event ID.\",\"Committed at most one new memory card.\",\"No superseded or deleted fact was treated as current.\"]}}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

@@ -1,0 +1,104 @@
+{
+  "fixture_id": "conflict_sara_niece_001",
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "payload": {
+    "answer": "No conflict detected. Sara being the speaker's niece is logically consistent with Sara being Daniele's daughter, provided the speaker is Daniele's sibling. Both facts can coexist in durable memory.",
+    "citations": [
+      "Existing: Sara is Daniele's daughter (high confidence)",
+      "Existing: Sara is Nur's twin (high confidence)",
+      "New: Sara is my niece (medium confidence)"
+    ],
+    "conflict_classification": "CONSISTENT_INFERENCE",
+    "decision": "ACCEPT_WITH_CLARIFICATION",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "Sara",
+      "reason": "All statements refer to same individual; niece relationship is consistent with Sara being Daniele's daughter if speaker is Daniele's sibling"
+    },
+    "intent": "Classify conflict between existing family relationship facts and new niece claim",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_child_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Nur's twin"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sara",
+            "type": "person"
+          },
+          {
+            "name": "speaker",
+            "role": "observer",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "speaker",
+            "predicate": "is_niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is the speaker's niece"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict classification complete",
+        "No superseded facts identified",
+        "All three facts preserved in memory",
+        "Ambiguity preserved regarding speaker's exact kinship to Daniele"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Accept both facts as complementary; infer speaker is Daniele's sibling",
+      "Request clarification: confirm speaker's relationship to Daniele",
+      "Flag for manual review if speaker-Daniele relationship unknown"
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

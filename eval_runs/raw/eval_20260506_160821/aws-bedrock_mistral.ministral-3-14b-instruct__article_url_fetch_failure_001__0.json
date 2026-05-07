@@ -1,0 +1,34 @@
+{
+  "error": null,
+  "fixture_id": "article_url_fetch_failure_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Article fetch failed (HTTP 404). No memory created. Preserve ambiguity: no superseded facts exist.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "abort",
+    "entity_resolution": {
+      "action": "none",
+      "reason": "no entities to resolve (fetch failed)"
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "HTTP 404 error encountered during fetch of 'https://example.com/missing'",
+        "No content ingested; memory integrity preserved",
+        "Reason: 'useful for memory architecture' noted but unactionable without source"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Retry fetch with exponential backoff",
+      "Verify URL validity (e.g., typo in 'example.com')",
+      "Check network connectivity",
+      "Use cached metadata if available"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_ingestion\",\n  \"decision\": \"abort\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"reason\": \"no entities to resolve (fetch failed)\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Article fetch failed (HTTP 404). No memory created. Preserve ambiguity: no superseded facts exist.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Retry fetch with exponential backoff\",\n    \"Verify URL validity (e.g., typo in 'example.com')\",\n    \"Check network connectivity\",\n    \"Use cached metadata if available\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"HTTP 404 error encountered during fetch of 'https://example.com/missing'\",\n      \"No content ingested; memory integrity preserved\",\n      \"Reason: 'useful for memory architecture' noted but unactionable without source\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

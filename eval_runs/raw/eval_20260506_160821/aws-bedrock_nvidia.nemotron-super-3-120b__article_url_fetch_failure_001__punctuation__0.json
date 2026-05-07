@@ -1,0 +1,54 @@
+{
+  "error": null,
+  "fixture_id": "article_url_fetch_failure_001__punctuation",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Failed to fetch article due to 404 network error on malformed URL.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_failed",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "URL is malformed and unreachable; no valid entity can be resolved"
+    },
+    "intent": "store_article",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "https -//examplecom/missing why - useful for memory architecture",
+            "role": "source",
+            "type": "url"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "unreachable due to 404 network error",
+            "predicate": "is",
+            "subject": "https -//examplecom/missing why - useful for memory architecture"
+          }
+        ],
+        "statement": "Attempted to fetch article from URL: https -//examplecom/missing why - useful for memory architecture"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Network request failed with status 404",
+        "URL provided: https -//examplecom/missing why - useful for memory architecture",
+        "URL appears malformed: missing colon after 'https', incorrect spacing/delimiters"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Verify URL syntax (e.g., add '://' after 'https', correct domain format)",
+      "Check if the resource exists at a corrected URL",
+      "Use a search engine to locate the article by title or content hints"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"store_article\",\n  \"decision\": \"store_failed\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Attempted to fetch article from URL: https -//examplecom/missing why - useful for memory architecture\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"https -//examplecom/missing why - useful for memory architecture\",\n          \"type\": \"url\",\n          \"role\": \"source\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"https -//examplecom/missing why - useful for memory architecture\",\n          \"predicate\": \"is\",\n          \"object\": \"unreachable due to 404 network error\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"URL is malformed and unreachable; no valid entity can be resolved\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Failed to fetch article due to 404 network error on malformed URL.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Verify URL syntax (e.g., add '://' after 'https', correct domain format)\",\n    \"Check if the resource exists at a corrected URL\",\n    \"Use a search engine to locate the article by title or content hints\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Network request failed with status 404\",\n      \"URL provided: https -//examplecom/missing why - useful for memory architecture\",\n      \"URL appears malformed: missing colon after 'https', incorrect spacing/delimiters\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

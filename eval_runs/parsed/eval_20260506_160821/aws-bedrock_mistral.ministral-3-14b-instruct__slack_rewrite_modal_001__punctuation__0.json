@@ -1,0 +1,55 @@
+{
+  "fixture_id": "slack_rewrite_modal_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory rewritten to reflect the user's explicit preference for the unspecified 'other one,' with context preserved as ambiguous.",
+    "citations": [],
+    "conflict_classification": "direct_supersession",
+    "decision": "supersede",
+    "entity_resolution": {
+      "action": "disambiguate",
+      "entity_id": null,
+      "reason": "Original statement lacked specificity about the 'other one' (e.g., product, choice, tool). Retained ambiguity to avoid false precision."
+    },
+    "intent": "rewrite_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "User",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "other option",
+            "role": "preferred_entity",
+            "type": "object"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "other option",
+            "predicate": "prefers",
+            "subject": "User"
+          }
+        ],
+        "statement": "User prefers the other option (unspecified context)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Original memory deleted: 'He prefers the other one.'",
+        "New memory committed with preserved ambiguity.",
+        "No superseded facts retained in active memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify the context of 'the other one' (e.g., 'other product,' 'other team member') if future interactions require specificity.",
+      "Flag for follow-up if the user later references a specific 'other' to resolve ambiguity."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

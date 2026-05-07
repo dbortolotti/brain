@@ -1,0 +1,84 @@
+{
+  "error": null,
+  "fixture_id": "contradiction_sam_children_001",
+  "model": "groq:openai/gpt-oss-120b",
+  "payload": {
+    "answer": "The new information contradicts the existing memory that Sam has two children.",
+    "citations": [],
+    "conflict_classification": "contradiction",
+    "decision": "conflict_detected",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Conflicting statements about Sam's children count."
+    },
+    "intent": "conflict_classification",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "existing",
+        "relationships": [
+          {
+            "object": "two children",
+            "predicate": "hasChildren",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman has two children."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "new",
+        "relationships": [
+          {
+            "object": "no children",
+            "predicate": "hasChildren",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman has no children."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed existing memory",
+        "Parsed new memory",
+        "Detected contradiction",
+        "Generated conflict classification response"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Verify the correct number of children for Sam using an authoritative source.",
+      "Retain both statements with an uncertainty flag until clarification is obtained.",
+      "Update the memory to reflect the most recent verified information."
+    ]
+  },
+  "raw_text": "{\"intent\":\"conflict_classification\",\"decision\":\"conflict_detected\",\"memory_cards\":[{\"kind\":\"existing\",\"statement\":\"Sam from Goldman has two children.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"hasChildren\",\"object\":\"two children\"}]},{\"kind\":\"new\",\"statement\":\"Sam from Goldman has no children.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"hasChildren\",\"object\":\"no children\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"Conflicting statements about Sam's children count.\"},\"conflict_classification\":\"contradiction\",\"answer\":\"The new information contradicts the existing memory that Sam has two children.\",\"citations\":[],\"repair_options\":[\"Verify the correct number of children for Sam using an authoritative source.\",\"Retain both statements with an uncertainty flag until clarification is obtained.\",\"Update the memory to reflect the most recent verified information.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed existing memory\",\"Parsed new memory\",\"Detected contradiction\",\"Generated conflict classification response\"]}}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

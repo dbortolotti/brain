@@ -1,0 +1,94 @@
+{
+  "fixture_id": "conflict_sara_niece_001__punctuation",
+  "model": "anthropic:claude-sonnet-4-6",
+  "payload": {
+    "answer": "There is a potential indirect conflict. Existing memory records Sara as Daniele's daughter and Nur's twin. Calling Sara your niece implies you are Daniele's sibling (or sibling-in-law), which is not yet established. Could you confirm whether you are related to Daniele, or clarify if this is a different Sara?",
+    "citations": [
+      "Existing memory: Sara is Daniele's daughter and Nur's twin",
+      "New input: Sara is my niece"
+    ],
+    "conflict_classification": "indirect_conflict",
+    "decision": "Conflict detected. The existing memory states Sara is Daniele's daughter. If Sara is the user's niece, this implies the user is a sibling of Daniele (or Daniele's partner), which may or may not be consistent. The new statement is not directly contradictory but introduces an unverified relational chain. Flagging as a potential indirect conflict requiring clarification before committing.",
+    "entity_resolution": {
+      "action": "hold",
+      "entity_id": "Sara",
+      "reason": "Sara is already known as Daniele's daughter. Accepting 'Sara is my niece' would imply the user is Daniele's sibling or sibling-in-law. This inference is plausible but unverified and could conflict with other unstated facts. Holding until clarification."
+    },
+    "intent": "Add new relational fact: Sara is the user's niece",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "twin_sibling",
+            "type": "person"
+          }
+        ],
+        "kind": "existing",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_daughter_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin"
+      },
+      {
+        "confidence": "pending",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "niece",
+            "type": "person"
+          },
+          {
+            "name": "user",
+            "role": "aunt_or_uncle",
+            "type": "person"
+          }
+        ],
+        "kind": "candidate",
+        "relationships": [
+          {
+            "object": "user",
+            "predicate": "is_niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is the user's niece"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "New fact not committed pending conflict resolution.",
+        "Indirect conflict flagged: 'niece' relationship implies user-Daniele sibling link not present in memory.",
+        "User clarification required before updating memory."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Confirm whether the user is a sibling of Daniele, which would make Sara the user's niece consistently with existing memory.",
+      "Confirm whether 'Sara' in the new statement refers to the same Sara who is Daniele's daughter and Nur's twin.",
+      "If confirmed consistent, add 'Sara is the user's niece' and optionally infer 'user is sibling of Daniele'.",
+      "If a different Sara is intended, create a new distinct entity to avoid conflation."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

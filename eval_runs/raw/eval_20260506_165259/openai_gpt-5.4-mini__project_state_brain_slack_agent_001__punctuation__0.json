@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "fixture_id": "project_state_brain_slack_agent_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Slack is the primary guardrailed memory ingestion interface for Brain; Telegram can come later.",
+    "citations": [
+      "Input: \"Brain project state - Slack should be the primary guardrailed memory ingestion interface; Telegram can come later\""
+    ],
+    "conflict_classification": "none",
+    "decision": "Slack is the primary guardrailed memory ingestion interface for Brain; Telegram may be added later.",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "The project-state statement appears to introduce or confirm a current interface preference rather than resolve an existing named entity."
+    },
+    "intent": "Record the current project-state preference for memory ingestion interfaces.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "system",
+            "type": "project"
+          },
+          {
+            "name": "Slack",
+            "role": "primary memory ingestion interface",
+            "type": "platform"
+          },
+          {
+            "name": "Telegram",
+            "role": "deferred future interface",
+            "type": "platform"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Slack",
+            "predicate": "uses_as_primary_guardrailed_ingestion_interface",
+            "subject": "Brain"
+          },
+          {
+            "object": "Telegram",
+            "predicate": "may_add_later",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "Slack should be the primary guardrailed memory ingestion interface for Brain, with Telegram deferred for later consideration."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured a current project-state preference.",
+        "Preserved Telegram as deferred rather than current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If this preference changes, replace the current interface note rather than adding a contradictory duplicate.",
+      "If Telegram becomes active, record it as a later-stage addition instead of a current primary interface."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Record the current project-state preference for memory ingestion interfaces.\",\"decision\":\"Slack is the primary guardrailed memory ingestion interface for Brain; Telegram may be added later.\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Slack should be the primary guardrailed memory ingestion interface for Brain, with Telegram deferred for later consideration.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Brain\",\"type\":\"project\",\"role\":\"system\"},{\"name\":\"Slack\",\"type\":\"platform\",\"role\":\"primary memory ingestion interface\"},{\"name\":\"Telegram\",\"type\":\"platform\",\"role\":\"deferred future interface\"}],\"relationships\":[{\"subject\":\"Brain\",\"predicate\":\"uses_as_primary_guardrailed_ingestion_interface\",\"object\":\"Slack\"},{\"subject\":\"Brain\",\"predicate\":\"may_add_later\",\"object\":\"Telegram\"}]}],\"entity_resolution\":{\"action\":\"create_or_update\",\"entity_id\":null,\"reason\":\"The project-state statement appears to introduce or confirm a current interface preference rather than resolve an existing named entity.\"},\"conflict_classification\":\"none\",\"answer\":\"Slack is the primary guardrailed memory ingestion interface for Brain; Telegram can come later.\",\"citations\":[\"Input: \\\"Brain project state - Slack should be the primary guardrailed memory ingestion interface; Telegram can come later\\\"\"],\"repair_options\":[\"If this preference changes, replace the current interface note rather than adding a contradictory duplicate.\",\"If Telegram becomes active, record it as a later-stage addition instead of a current primary interface.\"],\"receipt\":{\"success\":true,\"details\":[\"Captured a current project-state preference.\",\"Preserved Telegram as deferred rather than current.\"]}}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

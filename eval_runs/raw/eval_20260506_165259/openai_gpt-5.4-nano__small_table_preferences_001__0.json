@@ -1,0 +1,114 @@
+{
+  "error": null,
+  "fixture_id": "small_table_preferences_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Committed two preference memory entries for Sam\u2192Bill Evans and Anna\u2192Barolo, each with the stated event date/source context.",
+    "citations": [
+      "Dinner 2026-05-05: Sam (Goldman) Likes Bill Evans",
+      "Lunch 2026-05-01: Anna (JPM) Likes Barolo"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_use_existing",
+      "entity_id": null,
+      "reason": "New preference facts tied to named persons; no existing entity IDs provided."
+    },
+    "intent": "Store personal music/wine dinner/lunch preferences as durable memory entries.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "guest",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "associated_firm",
+            "type": "firm"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_target",
+            "type": "artist"
+          },
+          {
+            "name": "Dinner 2026-05-05",
+            "role": "source_context",
+            "type": "event"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "2026-05-05",
+            "predicate": "preference_source_event_date",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (Goldman) likes Bill Evans (noted from Dinner on 2026-05-05)."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Anna",
+            "role": "guest",
+            "type": "person"
+          },
+          {
+            "name": "JPM",
+            "role": "associated_firm",
+            "type": "firm"
+          },
+          {
+            "name": "Barolo",
+            "role": "preference_target",
+            "type": "wine"
+          },
+          {
+            "name": "Lunch 2026-05-01",
+            "role": "source_context",
+            "type": "event"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Barolo",
+            "predicate": "likes",
+            "subject": "Anna"
+          },
+          {
+            "object": "2026-05-01",
+            "predicate": "preference_source_event_date",
+            "subject": "Anna"
+          }
+        ],
+        "statement": "Anna (JPM) likes Barolo (noted from Lunch on 2026-05-01)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored Sam preference for Bill Evans with source date 2026-05-05",
+        "Stored Anna preference for Barolo with source date 2026-05-01"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If 'Goldman' or 'JPM' should map to specific firm entity IDs, provide those IDs for normalization.",
+      "If Bill Evans refers to a specific album/performance rather than the artist, clarify."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Store personal music/wine dinner/lunch preferences as durable memory entries.\",\n  \"decision\": \"commit\",\n  \"conflict_classification\": \"none\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam (Goldman) likes Bill Evans (noted from Dinner on 2026-05-05).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"guest\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"firm\",\n          \"role\": \"associated_firm\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"artist\",\n          \"role\": \"preference_target\"\n        },\n        {\n          \"name\": \"Dinner 2026-05-05\",\n          \"type\": \"event\",\n          \"role\": \"source_context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"preference_source_event_date\",\n          \"object\": \"2026-05-05\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Anna (JPM) likes Barolo (noted from Lunch on 2026-05-01).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Anna\",\n          \"type\": \"person\",\n          \"role\": \"guest\"\n        },\n        {\n          \"name\": \"JPM\",\n          \"type\": \"firm\",\n          \"role\": \"associated_firm\"\n        },\n        {\n          \"name\": \"Barolo\",\n          \"type\": \"wine\",\n          \"role\": \"preference_target\"\n        },\n        {\n          \"name\": \"Lunch 2026-05-01\",\n          \"type\": \"event\",\n          \"role\": \"source_context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Anna\",\n          \"predicate\": \"likes\",\n          \"object\": \"Barolo\"\n        },\n        {\n          \"subject\": \"Anna\",\n          \"predicate\": \"preference_source_event_date\",\n          \"object\": \"2026-05-01\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_or_use_existing\",\n    \"entity_id\": null,\n    \"reason\": \"New preference facts tied to named persons; no existing entity IDs provided.\"\n  },\n  \"answer\": \"Committed two preference memory entries for Sam\u2192Bill Evans and Anna\u2192Barolo, each with the stated event date/source context.\",\n  \"citations\": [\n    \"Dinner 2026-05-05: Sam (Goldman) Likes Bill Evans\",\n    \"Lunch 2026-05-01: Anna (JPM) Likes Barolo\"\n  ],\n  \"repair_options\": [\n    \"If 'Goldman' or 'JPM' should map to specific firm entity IDs, provide those IDs for normalization.\",\n    \"If Bill Evans refers to a specific album/performance rather than the artist, clarify.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Stored Sam preference for Bill Evans with source date 2026-05-05\",\n      \"Stored Anna preference for Barolo with source date 2026-05-01\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

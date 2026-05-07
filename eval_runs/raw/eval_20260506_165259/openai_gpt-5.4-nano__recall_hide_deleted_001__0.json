@@ -1,0 +1,56 @@
+{
+  "error": null,
+  "fixture_id": "recall_hide_deleted_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Sam likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "no_active_conflict",
+    "decision": "use_current_memory_only",
+    "entity_resolution": {
+      "action": "resolved_to_known_current_fact",
+      "entity_id": null,
+      "reason": "A current memory states Sam likes Bill Evans. The deleted memory about Taylor Swift is not used."
+    },
+    "intent": "recall_synthesizer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "musician"
+          }
+        ],
+        "kind": "preference_music_likes",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Used only the current memory fact.",
+        "Did not present the deleted preference as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If additional preferences exist, query those specific stored memories."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"recall_synthesizer\",\n  \"decision\": \"use_current_memory_only\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference_music_likes\",\n      \"statement\": \"Sam likes Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"musician\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolved_to_known_current_fact\",\n    \"entity_id\": null,\n    \"reason\": \"A current memory states Sam likes Bill Evans. The deleted memory about Taylor Swift is not used.\"\n  },\n  \"conflict_classification\": \"no_active_conflict\",\n  \"answer\": \"Sam likes Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If additional preferences exist, query those specific stored memories.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Used only the current memory fact.\",\n      \"Did not present the deleted preference as current.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

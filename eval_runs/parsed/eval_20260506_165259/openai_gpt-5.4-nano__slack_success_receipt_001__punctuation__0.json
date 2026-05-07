@@ -1,0 +1,58 @@
+{
+  "fixture_id": "slack_success_receipt_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Receipt captured.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "Only a name and affiliation context ('Sam from Goldman') were provided; no stable identifier to resolve to an existing entity."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_target",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (from Goldman) likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored preference: Sam (from Goldman) likes Bill Evans."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm which Sam (full name or additional context) if needed.",
+      "Confirm what 'Bill Evans' refers to if ambiguous (e.g., musician vs. another person)."
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

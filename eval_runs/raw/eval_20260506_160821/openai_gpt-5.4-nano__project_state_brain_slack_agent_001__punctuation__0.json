@@ -1,0 +1,66 @@
+{
+  "error": null,
+  "fixture_id": "project_state_brain_slack_agent_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Committed preference: Slack is the primary guardrailed memory ingestion interface; Telegram is for later.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "no_op",
+      "entity_id": null,
+      "reason": "Entities are clear (Slack, Telegram, Brain); no external IDs provided."
+    },
+    "intent": "Evaluate and store durable memory about the primary ingestion interface for Brain.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "primary memory ingestion interface",
+            "type": "platform"
+          },
+          {
+            "name": "Telegram",
+            "role": "secondary/in future memory ingestion interface",
+            "type": "platform"
+          },
+          {
+            "name": "Brain",
+            "role": "personal memory system",
+            "type": "system"
+          }
+        ],
+        "kind": "preference/guardrail",
+        "relationships": [
+          {
+            "object": "Slack",
+            "predicate": "should_use_primary_ingestion_interface",
+            "subject": "Brain"
+          },
+          {
+            "object": "Telegram",
+            "predicate": "should_use_secondary_ingestion_interface_later",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "Slack should be the primary guardrailed memory ingestion interface; Telegram can come later."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored single durable preference about primary vs later ingestion interfaces."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If the system later needs Telegram, add a new card specifying the timeline/conditions for enabling it.",
+      "If 'guardrailed' needs operational definition, add a follow-up card detailing the guardrails (e.g., validation steps)."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Evaluate and store durable memory about the primary ingestion interface for Brain.\",\n  \"decision\": \"commit\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference/guardrail\",\n      \"statement\": \"Slack should be the primary guardrailed memory ingestion interface; Telegram can come later.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Slack\",\n          \"type\": \"platform\",\n          \"role\": \"primary memory ingestion interface\"\n        },\n        {\n          \"name\": \"Telegram\",\n          \"type\": \"platform\",\n          \"role\": \"secondary/in future memory ingestion interface\"\n        },\n        {\n          \"name\": \"Brain\",\n          \"type\": \"system\",\n          \"role\": \"personal memory system\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain\",\n          \"predicate\": \"should_use_primary_ingestion_interface\",\n          \"object\": \"Slack\"\n        },\n        {\n          \"subject\": \"Brain\",\n          \"predicate\": \"should_use_secondary_ingestion_interface_later\",\n          \"object\": \"Telegram\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_op\",\n    \"entity_id\": null,\n    \"reason\": \"Entities are clear (Slack, Telegram, Brain); no external IDs provided.\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"Committed preference: Slack is the primary guardrailed memory ingestion interface; Telegram is for later.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If the system later needs Telegram, add a new card specifying the timeline/conditions for enabling it.\",\n    \"If 'guardrailed' needs operational definition, add a follow-up card detailing the guardrails (e.g., validation steps).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Stored single durable preference about primary vs later ingestion interfaces.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

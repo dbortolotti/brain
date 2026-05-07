@@ -1,0 +1,99 @@
+{
+  "error": null,
+  "fixture_id": "email_source_meeting_followup_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam confirmed joining Point72 last month and requested the AI infrastructure article discussed in the meeting. Action pending: retrieve or clarify the article's identity.",
+    "citations": [
+      "email_source_meeting_followup_001__punctuation"
+    ],
+    "conflict_classification": "none",
+    "decision": "pending",
+    "entity_resolution": {
+      "action": "create_or_link",
+      "entity_id": null,
+      "reason": "Ambiguous reference to 'AI infra article'\u2014requires disambiguation with Sam or source material."
+    },
+    "intent": "follow_up_request",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "individual",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          },
+          {
+            "name": "last month",
+            "role": "temporal_anchor",
+            "type": "time"
+          }
+        ],
+        "kind": "event",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          },
+          {
+            "object": "email_followup_001__punctuation",
+            "predicate": "confirmed_join_via",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72 last month (confirmed via email follow-up)."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "AI infrastructure article",
+            "role": "pending_retrieval",
+            "type": "document"
+          },
+          {
+            "name": "meeting",
+            "role": "contextual_reference",
+            "type": "event"
+          }
+        ],
+        "kind": "request",
+        "relationships": [
+          {
+            "object": "AI_infrastructure_article",
+            "predicate": "requested",
+            "subject": "Sam"
+          },
+          {
+            "object": "meeting_followup_001__punctuation",
+            "predicate": "mentioned_in",
+            "subject": "AI_infrastructure_article"
+          }
+        ],
+        "statement": "Sam requested the AI infrastructure article referenced in the meeting."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory committed for Sam's employment status and pending request.",
+        "Ambiguity in article reference preserved for resolution."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Flag for Sam to specify the article's title/source.",
+      "Search internal knowledge base for 'AI infrastructure' references from the meeting.",
+      "Request clarification via follow-up email."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"follow_up_request\",\n  \"decision\": \"pending\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"event\",\n      \"statement\": \"Sam joined Point72 last month (confirmed via email follow-up).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"individual\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        },\n        {\n          \"name\": \"last month\",\n          \"type\": \"time\",\n          \"role\": \"temporal_anchor\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"confirmed_join_via\",\n          \"object\": \"email_followup_001__punctuation\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"request\",\n      \"statement\": \"Sam requested the AI infrastructure article referenced in the meeting.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"AI infrastructure article\",\n          \"type\": \"document\",\n          \"role\": \"pending_retrieval\"\n        },\n        {\n          \"name\": \"meeting\",\n          \"type\": \"event\",\n          \"role\": \"contextual_reference\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"requested\",\n          \"object\": \"AI_infrastructure_article\"\n        },\n        {\n          \"subject\": \"AI_infrastructure_article\",\n          \"predicate\": \"mentioned_in\",\n          \"object\": \"meeting_followup_001__punctuation\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_or_link\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguous reference to 'AI infra article'\u2014requires disambiguation with Sam or source material.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Sam confirmed joining Point72 last month and requested the AI infrastructure article discussed in the meeting. Action pending: retrieve or clarify the article's identity.\",\n  \"citations\": [\n    \"email_source_meeting_followup_001__punctuation\"\n  ],\n  \"repair_options\": [\n    \"Flag for Sam to specify the article's title/source.\",\n    \"Search internal knowledge base for 'AI infrastructure' references from the meeting.\",\n    \"Request clarification via follow-up email.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Durable memory committed for Sam's employment status and pending request.\",\n      \"Ambiguity in article reference preserved for resolution.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

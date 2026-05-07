@@ -1,0 +1,66 @@
+{
+  "fixture_id": "slack_intake_family_twins",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Stored: Nur and Sara are my twin daughters.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No existing entities found for Nur or Sara; new entities created."
+    },
+    "intent": "store_family_relationship",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "is_twin_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "speaker",
+            "predicate": "is_daughter_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "speaker",
+            "predicate": "is_daughter_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Nur and Sara are my twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created for twin daughters Nur and Sara.",
+        "Relationships established: mutual twin, daughter-of speaker."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_160821"
+}

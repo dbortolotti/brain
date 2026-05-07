@@ -1,0 +1,137 @@
+{
+  "error": null,
+  "fixture_id": "article_url_ai_memory_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "citations": [
+      "https://example.com/ai-memory"
+    ],
+    "conflict_classification": "none",
+    "decision": "preserve_with_ambiguity",
+    "entity_resolution": {
+      "action": "create_new",
+      "reason": "No existing entities match the semantic roles described in the article."
+    },
+    "intent": "durable_memory_ingestion",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "graph_memory",
+            "role": "primary_subject",
+            "type": "memory_system"
+          },
+          {
+            "name": "agents",
+            "role": "user",
+            "type": "system_entity"
+          },
+          {
+            "name": "relationships",
+            "role": "preserved_property",
+            "type": "semantic_connection"
+          }
+        ],
+        "kind": "conceptual",
+        "relationships": [
+          {
+            "object": "agents_to_preserve_relationships",
+            "predicate": "enables",
+            "subject": "graph_memory"
+          },
+          {
+            "object": "isolated_fact_storage",
+            "predicate": "differs_from",
+            "subject": "graph_memory"
+          }
+        ],
+        "statement": "Graph memory systems enable agents to preserve relationships between entities, not just isolated facts."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "provenance",
+            "role": "critical_feature",
+            "type": "metadata_property"
+          },
+          {
+            "name": "trust",
+            "role": "outcome",
+            "type": "system_property"
+          },
+          {
+            "name": "auditability",
+            "role": "outcome",
+            "type": "system_property"
+          }
+        ],
+        "kind": "requirement",
+        "relationships": [
+          {
+            "object": "trust_in_graph_memory",
+            "predicate": "enables",
+            "subject": "provenance"
+          },
+          {
+            "object": "auditability_of_updates",
+            "predicate": "enables",
+            "subject": "provenance"
+          }
+        ],
+        "statement": "Provenance tracking is essential for graph memory systems to maintain trust and auditability."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "update_semantics",
+            "role": "required_feature",
+            "type": "system_rule"
+          },
+          {
+            "name": "temporal_evolution",
+            "role": "use_case",
+            "type": "dynamic_property"
+          },
+          {
+            "name": "versioning",
+            "role": "use_case",
+            "type": "system_property"
+          }
+        ],
+        "kind": "requirement",
+        "relationships": [
+          {
+            "object": "graph_memory_systems",
+            "predicate": "must_be_defined_for",
+            "subject": "update_semantics"
+          },
+          {
+            "object": "temporal_evolution",
+            "predicate": "supports",
+            "subject": "update_semantics"
+          },
+          {
+            "object": "versioning",
+            "predicate": "supports",
+            "subject": "update_semantics"
+          }
+        ],
+        "statement": "Update semantics must be explicitly defined in graph memory systems to handle temporal evolution and versioning."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory committed with preserved ambiguity regarding implementation specifics.",
+        "No superseded/deleted facts introduced.",
+        "Provenance and update semantics marked as high-confidence requirements."
+      ],
+      "success": true
+    }
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"durable_memory_ingestion\",\n  \"decision\": \"preserve_with_ambiguity\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"conceptual\",\n      \"statement\": \"Graph memory systems enable agents to preserve relationships between entities, not just isolated facts.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"graph_memory\",\n          \"type\": \"memory_system\",\n          \"role\": \"primary_subject\"\n        },\n        {\n          \"name\": \"agents\",\n          \"type\": \"system_entity\",\n          \"role\": \"user\"\n        },\n        {\n          \"name\": \"relationships\",\n          \"type\": \"semantic_connection\",\n          \"role\": \"preserved_property\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"graph_memory\",\n          \"predicate\": \"enables\",\n          \"object\": \"agents_to_preserve_relationships\"\n        },\n        {\n          \"subject\": \"graph_memory\",\n          \"predicate\": \"differs_from\",\n          \"object\": \"isolated_fact_storage\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"requirement\",\n      \"statement\": \"Provenance tracking is essential for graph memory systems to maintain trust and auditability.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"provenance\",\n          \"type\": \"metadata_property\",\n          \"role\": \"critical_feature\"\n        },\n        {\n          \"name\": \"trust\",\n          \"type\": \"system_property\",\n          \"role\": \"outcome\"\n        },\n        {\n          \"name\": \"auditability\",\n          \"type\": \"system_property\",\n          \"role\": \"outcome\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"provenance\",\n          \"predicate\": \"enables\",\n          \"object\": \"trust_in_graph_memory\"\n        },\n        {\n          \"subject\": \"provenance\",\n          \"predicate\": \"enables\",\n          \"object\": \"auditability_of_updates\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"requirement\",\n      \"statement\": \"Update semantics must be explicitly defined in graph memory systems to handle temporal evolution and versioning.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"update_semantics\",\n          \"type\": \"system_rule\",\n          \"role\": \"required_feature\"\n        },\n        {\n          \"name\": \"temporal_evolution\",\n          \"type\": \"dynamic_property\",\n          \"role\": \"use_case\"\n        },\n        {\n          \"name\": \"versioning\",\n          \"type\": \"system_property\",\n          \"role\": \"use_case\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"update_semantics\",\n          \"predicate\": \"must_be_defined_for\",\n          \"object\": \"graph_memory_systems\"\n        },\n        {\n          \"subject\": \"update_semantics\",\n          \"predicate\": \"supports\",\n          \"object\": \"temporal_evolution\"\n        },\n        {\n          \"subject\": \"update_semantics\",\n          \"predicate\": \"supports\",\n          \"object\": \"versioning\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_new\",\n    \"reason\": \"No existing entities match the semantic roles described in the article.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"citations\": [\n    \"https://example.com/ai-memory\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Durable memory committed with preserved ambiguity regarding implementation specifics.\",\n      \"No superseded/deleted facts introduced.\",\n      \"Provenance and update semantics marked as high-confidence requirements.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

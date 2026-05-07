@@ -1,0 +1,66 @@
+{
+  "fixture_id": "article_url_fetch_failure_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The article at 'https://example.com/missing' could not be retrieved due to a 404 error. No durable memory was committed.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "abort",
+    "entity_resolution": {
+      "action": "none",
+      "reason": "No resolvable entities beyond the failed fetch event."
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "target_resource",
+            "type": "URL"
+          },
+          {
+            "name": "404 network error",
+            "role": "failure_condition",
+            "type": "error_code"
+          }
+        ],
+        "kind": "system_event",
+        "relationships": [
+          {
+            "object": "https://example.com/missing",
+            "predicate": "attempted_to_fetch",
+            "subject": "memory_system"
+          },
+          {
+            "object": "404 network error",
+            "predicate": "resulted_in",
+            "subject": "fetch_attempt"
+          },
+          {
+            "object": "https://example.com/missing",
+            "predicate": "aborted_ingestion_for",
+            "subject": "memory_system"
+          }
+        ],
+        "statement": "Failed to fetch article at URL 'https://example.com/missing' due to 404 network error."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Fetch attempt failed with HTTP 404.",
+        "No content ingested; memory integrity preserved.",
+        "Ambiguity retained: Cause of 404 (temporary/permanent) unresolved."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Retry fetch with exponential backoff.",
+      "Verify URL validity or redirect status.",
+      "Check network connectivity or proxy configurations.",
+      "Mark as permanently unavailable if confirmed."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

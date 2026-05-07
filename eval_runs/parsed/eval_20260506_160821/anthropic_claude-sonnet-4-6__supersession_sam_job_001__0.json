@@ -1,0 +1,99 @@
+{
+  "fixture_id": "supersession_sam_job_001",
+  "model": "anthropic:claude-sonnet-4-6",
+  "payload": {
+    "answer": "Sam no longer works at Goldman. He has left Goldman and joined Point72. The prior record has been superseded.",
+    "citations": [
+      "Existing memory: 'Sam works at Goldman' \u2014 now superseded",
+      "New input: 'Sam left Goldman and joined Point72'"
+    ],
+    "conflict_classification": "SUPERSESSION \u2014 the new information directly contradicts and replaces the existing fact about Sam's current employer. The old fact is no longer current.",
+    "decision": "Supersede the existing memory card stating Sam works at Goldman with a new memory card stating Sam now works at Point72. Retain a historical record of prior employment at Goldman.",
+    "entity_resolution": {
+      "action": "update",
+      "entity_id": "sam_employment_record",
+      "reason": "Sam's current employer has changed. The Goldman record is retired as historical; Point72 is now the active employer."
+    },
+    "intent": "Update Sam's employment record to reflect job change from Goldman to Point72",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact_current",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "currently_employed_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "formerly_employed_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam currently works at Point72, having left Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact_historical",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "formerly_employed_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam previously worked at Goldman (superseded; Sam has since left Goldman)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Existing fact 'Sam works at Goldman' classified as SUPERSEDED and archived as historical.",
+        "New current fact 'Sam works at Point72' committed to memory.",
+        "No ambiguity detected; transition is explicit and unambiguous.",
+        "Historical employment at Goldman preserved for longitudinal accuracy."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retire the 'Sam works at Goldman' card and create a new current-employment card for Point72.",
+      "Mark the Goldman card as SUPERSEDED with a timestamp and link it to the new Point72 card.",
+      "Request confirmation of the transition date to add temporal precision to both records."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

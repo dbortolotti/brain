@@ -1,0 +1,94 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "The statements conflict: Sara cannot simultaneously be Daniele's daughter (implying Daniele is her parent) and the speaker's niece (implying the speaker is Daniele's sibling or Daniele is the speaker's sibling's spouse) without additional context about family structure. The first statement establishes Sara's parentage and twin status; the second introduces a niece relationship that contradicts the implied generational role unless Daniele is the speaker's sibling and Sara is Daniele's child \u2014 but even then, Sara would be the speaker's niece only if Daniele is the speaker's sibling, which is not stated. Thus, the niece claim introduces an unsupported generational shift.",
+    "citations": [],
+    "conflict_classification": "direct",
+    "decision": "conflict",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No conflicting entity references; conflict is relational, not entity-based."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "sibling",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is daughter of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is twin of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "speaker",
+            "role": "relative",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "speaker",
+            "predicate": "is niece of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict identified: parent/child vs. aunt/uncle-niece relationship.",
+        "No entity duplication or ambiguity in naming.",
+        "Resolution requires external familial context not provided in memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify the speaker's relationship to Daniele (e.g., 'I am Daniele's sibling' or 'I am Daniele's spouse').",
+      "Verify whether 'niece' was intended metaphorically or in a non-biological sense.",
+      "Check if Daniele is the speaker's sibling, making Sara (Daniele's daughter) the speaker's niece \u2014 this would resolve the conflict if confirmed.",
+      "Retain both statements as potentially true under different contextual interpretations (e.g., step-family, adoption, cultural kinship)."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"classify_conflict\",\n  \"decision\": \"conflict\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is Daniele's daughter and Nur's twin.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"parent\"\n        },\n        {\n          \"name\": \"Nur\",\n          \"type\": \"person\",\n          \"role\": \"sibling\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is daughter of\",\n          \"object\": \"Daniele\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is twin of\",\n          \"object\": \"Nur\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is my niece.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"speaker\",\n          \"type\": \"person\",\n          \"role\": \"relative\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is niece of\",\n          \"object\": \"speaker\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No conflicting entity references; conflict is relational, not entity-based.\"\n  },\n  \"conflict_classification\": \"direct\",\n  \"answer\": \"The statements conflict: Sara cannot simultaneously be Daniele's daughter (implying Daniele is her parent) and the speaker's niece (implying the speaker is Daniele's sibling or Daniele is the speaker's sibling's spouse) without additional context about family structure. The first statement establishes Sara's parentage and twin status; the second introduces a niece relationship that contradicts the implied generational role unless Daniele is the speaker's sibling and Sara is Daniele's child \u2014 but even then, Sara would be the speaker's niece only if Daniele is the speaker's sibling, which is not stated. Thus, the niece claim introduces an unsupported generational shift.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Clarify the speaker's relationship to Daniele (e.g., 'I am Daniele's sibling' or 'I am Daniele's spouse').\",\n    \"Verify whether 'niece' was intended metaphorically or in a non-biological sense.\",\n    \"Check if Daniele is the speaker's sibling, making Sara (Daniele's daughter) the speaker's niece \u2014 this would resolve the conflict if confirmed.\",\n    \"Retain both statements as potentially true under different contextual interpretations (e.g., step-family, adoption, cultural kinship).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Conflict identified: parent/child vs. aunt/uncle-niece relationship.\",\n      \"No entity duplication or ambiguity in naming.\",\n      \"Resolution requires external familial context not provided in memory.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

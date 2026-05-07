@@ -1,0 +1,82 @@
+{
+  "fixture_id": "concurrent_conflict_writes_001__context",
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "payload": {
+    "answer": "Two concurrent assertions about Sam's employment create a conflict. Goldman and Point72 are mutually exclusive current employers unless Sam holds dual roles. The 'joined' language suggests Point72 is more recent, but without timestamps, both facts are preserved as asserted with conflict flagged.",
+    "citations": [
+      "Input statement: 'Sam works at Goldman'",
+      "Input statement: 'Sam joined Point72'"
+    ],
+    "conflict_classification": "temporal_employment_conflict",
+    "decision": "Record both facts with temporal ambiguity; flag as potential conflict requiring clarification",
+    "entity_resolution": {
+      "action": "merge_with_conflict_flag",
+      "entity_id": "Sam",
+      "reason": "Same person referenced in both statements; employment status is contradictory without temporal ordering"
+    },
+    "intent": "Classify concurrent writes about Sam's employment status",
+    "memory_cards": [
+      {
+        "confidence": "asserted",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman"
+      },
+      {
+        "confidence": "asserted",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_transition",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict recorded without resolution",
+        "Both employment facts preserved",
+        "Temporal ambiguity preserved",
+        "Requires user clarification for durable memory commit"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request timestamp or sequence indicator for employment transition",
+      "Clarify if Sam maintains dual employment or if one role is historical",
+      "Mark Goldman employment as superseded if Point72 join date is confirmed as later"
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

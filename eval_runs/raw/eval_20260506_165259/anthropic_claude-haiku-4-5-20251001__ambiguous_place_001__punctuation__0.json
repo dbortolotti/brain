@@ -1,0 +1,78 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_place_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "payload": {
+    "answer": "Single entity confirmed. Existing Brutto restaurant record in London should be updated with new observation about quality/experience.",
+    "citations": [
+      "Existing: Brutto restaurant in London",
+      "New note: Brutto was better than expected"
+    ],
+    "conflict_classification": "none",
+    "decision": "merge_with_confidence_preservation",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "brutto_london_restaurant",
+      "reason": "Both references resolve to the same entity (Brutto restaurant in London). New note provides subjective evaluation that enriches existing entity record without contradiction."
+    },
+    "intent": "resolve_entity_reference",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brutto",
+            "role": "subject",
+            "type": "restaurant"
+          },
+          {
+            "name": "London",
+            "role": "location",
+            "type": "location"
+          }
+        ],
+        "kind": "entity",
+        "relationships": [
+          {
+            "object": "London",
+            "predicate": "located_in",
+            "subject": "Brutto"
+          }
+        ],
+        "statement": "Brutto is a restaurant located in London"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brutto",
+            "role": "subject",
+            "type": "restaurant"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "user_experience",
+            "predicate": "exceeded_expectations",
+            "subject": "Brutto"
+          }
+        ],
+        "statement": "Brutto exceeded expectations in quality or experience"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Entity reference resolved to single canonical entity",
+        "No punctuation or naming ambiguity detected",
+        "Observation merged without superseding existing facts",
+        "Memory state preserved with confidence levels maintained"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"resolve_entity_reference\",\n  \"decision\": \"merge_with_confidence_preservation\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"entity\",\n      \"statement\": \"Brutto is a restaurant located in London\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brutto\",\n          \"type\": \"restaurant\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"London\",\n          \"type\": \"location\",\n          \"role\": \"location\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brutto\",\n          \"predicate\": \"located_in\",\n          \"object\": \"London\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"observation\",\n      \"statement\": \"Brutto exceeded expectations in quality or experience\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Brutto\",\n          \"type\": \"restaurant\",\n          \"role\": \"subject\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brutto\",\n          \"predicate\": \"exceeded_expectations\",\n          \"object\": \"user_experience\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge\",\n    \"entity_id\": \"brutto_london_restaurant\",\n    \"reason\": \"Both references resolve to the same entity (Brutto restaurant in London). New note provides subjective evaluation that enriches existing entity record without contradiction.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Single entity confirmed. Existing Brutto restaurant record in London should be updated with new observation about quality/experience.\",\n  \"citations\": [\n    \"Existing: Brutto restaurant in London\",\n    \"New note: Brutto was better than expected\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Entity reference resolved to single canonical entity\",\n      \"No punctuation or naming ambiguity detected\",\n      \"Observation merged without superseding existing facts\",\n      \"Memory state preserved with confidence levels maintained\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

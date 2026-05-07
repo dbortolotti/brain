@@ -1,0 +1,65 @@
+{
+  "error": null,
+  "fixture_id": "slack_intake_family_twins__punctuation",
+  "model": "google:gemini-2.5-flash",
+  "payload": {
+    "conflict_classification": "no_conflict",
+    "decision": "memory_card_created",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No entity resolution performed as no existing entities were referenced or needed disambiguation."
+    },
+    "intent": "record_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "speaker",
+            "predicate": "is_daughter_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "speaker",
+            "predicate": "is_daughter_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Sara",
+            "predicate": "is_twin_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Nur and Sara are my twin daughters"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created successfully."
+      ],
+      "success": true
+    }
+  },
+  "raw_text": "{\n  \"intent\": \"record_memory\",\n  \"decision\": \"memory_card_created\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Nur and Sara are my twin daughters\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Nur\",\n          \"type\": \"person\",\n          \"role\": \"daughter\"\n        },\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"daughter\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Nur\",\n          \"predicate\": \"is_daughter_of\",\n          \"object\": \"speaker\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is_daughter_of\",\n          \"object\": \"speaker\"\n        },\n        {\n          \"subject\": \"Nur\",\n          \"predicate\": \"is_twin_of\",\n          \"object\": \"Sara\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is_twin_of\",\n          \"object\": \"Nur\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No entity resolution performed as no existing entities were referenced or needed disambiguation.\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card created successfully.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_162328",
+  "status": "ok"
+}

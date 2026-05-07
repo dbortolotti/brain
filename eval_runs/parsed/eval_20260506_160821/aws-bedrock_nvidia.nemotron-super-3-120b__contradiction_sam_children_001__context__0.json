@@ -1,0 +1,81 @@
+{
+  "fixture_id": "contradiction_sam_children_001__context",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "The statements 'Sam from Goldman has two children' and 'Sam from Goldman has no children' are in direct contradiction regarding the number of children Sam has.",
+    "citations": [],
+    "conflict_classification": "direct_contradiction",
+    "decision": "contradiction_detected",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "Sam_from_Goldman",
+      "reason": "Both statements refer to the same individual (Sam) with identical affiliation (Goldman), creating a direct contradiction on the number of children."
+    },
+    "intent": "detect_contradiction",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "two",
+            "predicate": "has_number_of_children",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman has two children."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "zero",
+            "predicate": "has_number_of_children",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman has no children."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Contradiction detected between two high-confidence facts about Sam from Goldman's children.",
+        "Entity resolved as 'Sam_from_Goldman' based on name and affiliation match.",
+        "Conflict classified as direct_contradiction due to mutually exclusive values for 'has_number_of_children'."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request clarification from the source of the conflicting information",
+      "Mark both statements as uncertain pending verification",
+      "Retain the older statement as default unless newer evidence is verified",
+      "Flag for human review to resolve the discrepancy"
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

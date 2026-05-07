@@ -1,0 +1,66 @@
+{
+  "fixture_id": "recall_open_questions_knowledge_graphs_001__context",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "You have one open idea: learning more about knowledge graphs. This remains an active area of interest, distinct from your completed goal of learning basic Python.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "synthesize_open_ideas_from_context",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No conflicting or ambiguous entities detected; 'knowledge graphs' and 'basic Python' are clearly distinct and resolved."
+    },
+    "intent": "recall_open_questions",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "knowledge graphs",
+            "role": "topic_of_interest",
+            "type": "concept"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [
+          {
+            "object": "knowledge graphs",
+            "predicate": "wants_to_learn_about",
+            "subject": "user"
+          }
+        ],
+        "statement": "learn more about knowledge graphs"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "basic Python",
+            "role": "completed_goal",
+            "type": "skill"
+          }
+        ],
+        "kind": "closed_loop",
+        "relationships": [
+          {
+            "object": "learn basic Python",
+            "predicate": "has_completed",
+            "subject": "user"
+          }
+        ],
+        "statement": "learn basic Python"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recall synthesized successfully from fixture context.",
+        "Open question preserved as current intent.",
+        "Closed loop correctly marked as completed and not presented as open."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_160821"
+}

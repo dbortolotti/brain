@@ -1,0 +1,83 @@
+{
+  "fixture_id": "conflict_employment_transition__punctuation",
+  "model": "groq:openai/gpt-oss-120b",
+  "payload": {
+    "answer": "The new fact that Sam left Goldman and joined Point72 overrides the previous fact that Sam works at Goldman.",
+    "citations": [],
+    "conflict_classification": "employment_transition",
+    "decision": "replace",
+    "entity_resolution": {
+      "action": "replace",
+      "entity_id": null,
+      "reason": "New fact indicates employment transition superseding previous fact"
+    },
+    "intent": "update_employment",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Old employment fact superseded",
+        "New employment fact recorded"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Update Sam's current employer to Point72",
+      "Mark previous employment at Goldman as past"
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

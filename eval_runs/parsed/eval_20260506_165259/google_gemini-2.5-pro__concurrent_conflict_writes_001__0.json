@@ -1,0 +1,78 @@
+{
+  "fixture_id": "concurrent_conflict_writes_001",
+  "model": "google:gemini-2.5-pro",
+  "payload": {
+    "answer": "I have conflicting information about where Sam works. Is it Goldman or Point72?",
+    "citations": [],
+    "conflict_classification": "mutually_exclusive_fact",
+    "decision": "identify_conflict",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No entity ambiguity."
+    },
+    "intent": "add_memory",
+    "memory_cards": [
+      {
+        "confidence": "High",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "object",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "High",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "object",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Successfully identified a conflict between two concurrent writes regarding Sam's employer."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Sam works at Goldman.",
+      "Sam works at Point72.",
+      "Provide more context, like dates of employment."
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

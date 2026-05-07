@@ -1,0 +1,139 @@
+{
+  "error": null,
+  "fixture_id": "conversation_transcript_sam_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Stored: Sam\u2019s employment change to Point72; Sam\u2019s music listening preferences (Bill Evans and recent shift to early Coltrane); a plan to catch up on AI infra with Sam sending an article.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_selected_facts",
+    "entity_resolution": {
+      "action": "resolved_partially",
+      "entity_id": null,
+      "reason": "No external identifiers were provided in the transcript; entities are recorded by surface names."
+    },
+    "intent": "compile_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "personal_status/employment",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "was_employed_by",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman last month and joined Point72."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "music preference",
+            "type": "artist"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "recent preference",
+            "type": "artist_period"
+          }
+        ],
+        "kind": "preference/music",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "listens_to",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "has_recent_preference_for",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam still listens to Bill Evans, but lately more early Coltrane."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "other participant",
+            "type": "person"
+          },
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "AI infra",
+            "role": "discussion topic",
+            "type": "topic"
+          },
+          {
+            "name": "article",
+            "role": "shared resource",
+            "type": "document"
+          }
+        ],
+        "kind": "relationship_plans",
+        "relationships": [
+          {
+            "object": "AI infra",
+            "predicate": "planned_to_discuss",
+            "subject": "Daniele"
+          },
+          {
+            "object": "article",
+            "predicate": "agreed_to_send",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Daniele and Sam planned to catch up about AI infra; Sam agreed to send an article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted durable personal status and preferences with medium/high confidence.",
+        "Captured the interpersonal plan as a lower-confidence relationship/next-action memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If available, provide exact start date for Sam\u2019s Point72 role and the specific article title/link to improve future recall."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"compile_memory\",\n  \"decision\": \"store_selected_facts\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"personal_status/employment\",\n      \"statement\": \"Sam left Goldman last month and joined Point72.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"former employer\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"current employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"was_employed_by\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"preference/music\",\n      \"statement\": \"Sam still listens to Bill Evans, but lately more early Coltrane.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"artist\",\n          \"role\": \"music preference\"\n        },\n        {\n          \"name\": \"early Coltrane\",\n          \"type\": \"artist_period\",\n          \"role\": \"recent preference\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"listens_to\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has_recent_preference_for\",\n          \"object\": \"early Coltrane\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"relationship_plans\",\n      \"statement\": \"Daniele and Sam planned to catch up about AI infra; Sam agreed to send an article.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"other participant\"\n        },\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"AI infra\",\n          \"type\": \"topic\",\n          \"role\": \"discussion topic\"\n        },\n        {\n          \"name\": \"article\",\n          \"type\": \"document\",\n          \"role\": \"shared resource\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Daniele\",\n          \"predicate\": \"planned_to_discuss\",\n          \"object\": \"AI infra\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"agreed_to_send\",\n          \"object\": \"article\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolved_partially\",\n    \"entity_id\": null,\n    \"reason\": \"No external identifiers were provided in the transcript; entities are recorded by surface names.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Stored: Sam\u2019s employment change to Point72; Sam\u2019s music listening preferences (Bill Evans and recent shift to early Coltrane); a plan to catch up on AI infra with Sam sending an article.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If available, provide exact start date for Sam\u2019s Point72 role and the specific article title/link to improve future recall.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Extracted durable personal status and preferences with medium/high confidence.\",\n      \"Captured the interpersonal plan as a lower-confidence relationship/next-action memory.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

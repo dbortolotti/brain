@@ -1,0 +1,64 @@
+{
+  "fixture_id": "recall_hide_superseded__punctuation",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Sam works at Point72.",
+    "citations": [
+      "Sam left Goldman and joined Point72 [mem_new]"
+    ],
+    "conflict_classification": "superseded",
+    "decision": "Answer based on current facts, ignoring superseded information.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No ambiguity in entity resolution; 'Sam' is clearly identified."
+    },
+    "intent": "recall_synthesizer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "previous_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded fact 'Sam works at Goldman [mem_old]' was correctly ignored.",
+        "Current fact used to derive answer.",
+        "No conflict remains after resolution."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_160821"
+}

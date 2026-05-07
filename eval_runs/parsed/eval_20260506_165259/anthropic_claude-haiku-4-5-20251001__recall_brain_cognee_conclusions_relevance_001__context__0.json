@@ -1,0 +1,57 @@
+{
+  "fixture_id": "recall_brain_cognee_conclusions_relevance_001__context",
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "payload": {
+    "answer": "No conclusions can be synthesized. The fixture references Brain DB source-of-truth, Cognee projection, Slack intake, family facts, and Sam preferences as context sources, but none were provided in the input. To answer this query, supply actual records from these sources.",
+    "citations": [],
+    "conflict_classification": "missing_source_data",
+    "decision": "Unable to return specific conclusions\u2014no source-of-truth records provided in input",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "No concrete conclusions exist in provided context; fixture references data sources but does not supply them"
+    },
+    "intent": "Retrieve synthesized conclusions about Brain and Cognee systems from durable memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "personal memory system",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "rebuildable projection",
+            "type": "system"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "Cognee",
+            "predicate": "compared_with",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "Query requests conclusions about Brain and Cognee but input contains no actual records, only fixture metadata"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Query intent recognized",
+        "No durable memory records available to synthesize",
+        "Ambiguity preserved: conclusions remain uncommitted pending source data"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide actual conclusion records from Brain DB source-of-truth",
+      "Supply Cognee rebuildable projection data",
+      "Include relevant Slack intake entries",
+      "Provide family facts and Sam preferences relevant to Brain/Cognee evaluation"
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

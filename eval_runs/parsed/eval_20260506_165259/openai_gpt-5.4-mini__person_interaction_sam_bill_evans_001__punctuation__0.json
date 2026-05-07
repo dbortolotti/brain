@@ -1,0 +1,67 @@
+{
+  "fixture_id": "person_interaction_sam_bill_evans_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "store as a low-confidence preference mention for Sam from Goldman",
+    "citations": [
+      "Input: \"Sam from Goldman mentioned that he likes Bill Evans\""
+    ],
+    "conflict_classification": "none",
+    "decision": "store_with_low_confidence",
+    "entity_resolution": {
+      "action": "create_or_link_ambiguous_entity",
+      "entity_id": null,
+      "reason": "'Sam from Goldman' identifies a likely person by name and affiliation, but the exact identity is unclear; keep unresolved to preserve ambiguity."
+    },
+    "intent": "extract_personal_preference",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman reportedly likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted a tentative preference mention.",
+        "Preserved ambiguity about which Sam is referenced.",
+        "No conflicting prior facts were provided."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If later confirmed, upgrade Sam's preference for Bill Evans to higher confidence.",
+      "If 'Sam' refers to multiple people, disambiguate using Goldman affiliation or additional context."
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

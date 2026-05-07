@@ -1,0 +1,61 @@
+{
+  "error": null,
+  "fixture_id": "person_interaction_sam_bill_evans_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Recorded that Sam (Goldman) likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit_memory",
+    "entity_resolution": {
+      "action": "link_or_create",
+      "entity_id": null,
+      "reason": "Sam and Bill Evans are referenced without unique identifiers; store as-is with minimal assumptions."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "artist_mentioned",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_context",
+            "type": "organization"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (from Goldman) said he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created a durable memory card for Sam's stated preference for Bill Evans."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you can provide Sam's full name or identifier, link this preference to the correct Sam profile.",
+      "If Bill Evans refers to a different individual than the well-known musician, specify which one."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"slack_intake\",\n  \"decision\": \"commit_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam (from Goldman) said he likes Bill Evans.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"artist_mentioned\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation_context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"link_or_create\",\n    \"entity_id\": null,\n    \"reason\": \"Sam and Bill Evans are referenced without unique identifiers; store as-is with minimal assumptions.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Recorded that Sam (Goldman) likes Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If you can provide Sam's full name or identifier, link this preference to the correct Sam profile.\",\n    \"If Bill Evans refers to a different individual than the well-known musician, specify which one.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Created a durable memory card for Sam's stated preference for Bill Evans.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

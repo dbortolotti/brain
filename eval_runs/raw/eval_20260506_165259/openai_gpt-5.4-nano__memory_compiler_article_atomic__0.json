@@ -1,0 +1,77 @@
+{
+  "error": null,
+  "fixture_id": "memory_compiler_article_atomic",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Created three atomic guideline memory cards capturing durable evidence, traceable card granularity, and the division of responsibilities between a semantic index and the application database for lifecycle/conflict management.",
+    "citations": [],
+    "conflict_classification": "none_observed",
+    "decision": "store_guidelines_as_atomic_cards",
+    "entity_resolution": {
+      "action": "no_external_resolution",
+      "entity_id": null,
+      "reason": "The fixture describes general system design requirements without named entities that require cross-document identity resolution."
+    },
+    "intent": "Compile atomic, durable-memory candidates for the Brain system from the provided fixture text.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [],
+        "kind": "principle",
+        "relationships": [],
+        "statement": "AI memory systems need durable source evidence for stored information."
+      },
+      {
+        "confidence": "high",
+        "entities": [],
+        "kind": "principle",
+        "relationships": [],
+        "statement": "Atomic memory cards should be small and traceable."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "semantic index",
+            "role": "tool_for_recall",
+            "type": "system_component"
+          },
+          {
+            "name": "application database",
+            "role": "source_of_truth_for_lifecycle_and_conflicts",
+            "type": "system_component"
+          }
+        ],
+        "kind": "principle",
+        "relationships": [
+          {
+            "object": "improved recall",
+            "predicate": "supports",
+            "subject": "semantic index"
+          },
+          {
+            "object": "lifecycle and conflict state",
+            "predicate": "owns",
+            "subject": "application database"
+          }
+        ],
+        "statement": "A semantic index can improve recall, but the application database must own lifecycle and conflict state."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Only guideline-like statements were captured; no unverifiable runtime claims were added.",
+        "No superseded or deleted facts were asserted."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Attach source evidence requirements by referencing the specific components or schemas that define 'durable source evidence' in the target system.",
+      "If 'traceable' needs operational meaning, add an explicit criterion (e.g., required provenance fields, hashing, or audit log references).",
+      "Clarify what constitutes 'conflict state' (e.g., precedence rules, resolution strategy, or versioning model) for the application database."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Compile atomic, durable-memory candidates for the Brain system from the provided fixture text.\",\n  \"decision\": \"store_guidelines_as_atomic_cards\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"principle\",\n      \"statement\": \"AI memory systems need durable source evidence for stored information.\",\n      \"confidence\": \"high\",\n      \"entities\": [],\n      \"relationships\": []\n    },\n    {\n      \"kind\": \"principle\",\n      \"statement\": \"Atomic memory cards should be small and traceable.\",\n      \"confidence\": \"high\",\n      \"entities\": [],\n      \"relationships\": []\n    },\n    {\n      \"kind\": \"principle\",\n      \"statement\": \"A semantic index can improve recall, but the application database must own lifecycle and conflict state.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"semantic index\",\n          \"type\": \"system_component\",\n          \"role\": \"tool_for_recall\"\n        },\n        {\n          \"name\": \"application database\",\n          \"type\": \"system_component\",\n          \"role\": \"source_of_truth_for_lifecycle_and_conflicts\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"semantic index\",\n          \"predicate\": \"supports\",\n          \"object\": \"improved recall\"\n        },\n        {\n          \"subject\": \"application database\",\n          \"predicate\": \"owns\",\n          \"object\": \"lifecycle and conflict state\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_external_resolution\",\n    \"entity_id\": null,\n    \"reason\": \"The fixture describes general system design requirements without named entities that require cross-document identity resolution.\"\n  },\n  \"conflict_classification\": \"none_observed\",\n  \"answer\": \"Created three atomic guideline memory cards capturing durable evidence, traceable card granularity, and the division of responsibilities between a semantic index and the application database for lifecycle/conflict management.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Attach source evidence requirements by referencing the specific components or schemas that define 'durable source evidence' in the target system.\",\n    \"If 'traceable' needs operational meaning, add an explicit criterion (e.g., required provenance fields, hashing, or audit log references).\",\n    \"Clarify what constitutes 'conflict state' (e.g., precedence rules, resolution strategy, or versioning model) for the application database.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Only guideline-like statements were captured; no unverifiable runtime claims were added.\",\n      \"No superseded or deleted facts were asserted.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

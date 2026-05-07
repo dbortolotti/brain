@@ -1,0 +1,60 @@
+{
+  "fixture_id": "slack_no_durable_value_repair_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory ingestion rejected due to lack of durable temporal anchoring. The statement 'Today's weather is cloudy' cannot be committed as a durable fact without a specific date or context to resolve ambiguity.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "durable_memory_rejected",
+    "entity_resolution": {
+      "action": "no_resolution_needed",
+      "entity_id": null,
+      "reason": "No existing entities conflict with the new statement. Temporal reference ('today') is ambiguous without a specific date."
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "cloudy",
+            "role": "subject",
+            "type": "weather_condition"
+          },
+          {
+            "name": "today",
+            "role": "time_anchor",
+            "type": "temporal_reference"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "cloudy",
+            "predicate": "is",
+            "subject": "weather"
+          },
+          {
+            "object": "today",
+            "predicate": "observed_on",
+            "subject": "weather"
+          }
+        ],
+        "statement": "Today's weather is cloudy."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguous temporal reference ('today') prevents durable storage.",
+        "No superseded/deleted facts exist to conflict with."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Specify a date (e.g., 'The weather on 2023-11-15 was cloudy.')",
+      "Clarify temporal scope (e.g., 'Today (2023-11-15) is cloudy.')",
+      "Mark as ephemeral (e.g., 'Note: Today\u2019s weather is cloudy (context: 2023-11-15).')"
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

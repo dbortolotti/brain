@@ -1,0 +1,122 @@
+{
+  "error": null,
+  "fixture_id": "article_url_ai_memory_001__punctuation",
+  "model": "google:gemini-2.5-flash",
+  "payload": {
+    "answer": "I have remembered an article about 'AI memory' from example.com, noting its relevance to knowledge graph memory design. The article highlights that graph memory assists agents in preserving relationships and requires provenance and update semantics.",
+    "citations": [
+      "https://example.com/ai-memory"
+    ],
+    "conflict_classification": "none",
+    "decision": "Committed new memory cards based on the provided article URL, its stated usefulness, and a mock fetched summary.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No specific entity resolution requested or required for new information."
+    },
+    "intent": "Remember an article and its content.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "article",
+            "type": "document"
+          },
+          {
+            "name": "example.com",
+            "type": "website"
+          },
+          {
+            "name": "AI memory",
+            "type": "concept"
+          },
+          {
+            "name": "knowledge graph memory design",
+            "type": "concept"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "example.com",
+            "predicate": "is from",
+            "subject": "article"
+          },
+          {
+            "object": "AI memory",
+            "predicate": "is titled",
+            "subject": "article"
+          },
+          {
+            "object": "knowledge graph memory design",
+            "predicate": "is useful for",
+            "subject": "AI memory"
+          }
+        ],
+        "statement": "An article from example.com titled 'AI memory' is considered useful for thinking about knowledge graph memory design."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "graph memory",
+            "type": "concept"
+          },
+          {
+            "name": "agents",
+            "type": "role"
+          },
+          {
+            "name": "relationships",
+            "type": "concept"
+          },
+          {
+            "name": "provenance",
+            "type": "concept"
+          },
+          {
+            "name": "update semantics",
+            "type": "concept"
+          }
+        ],
+        "kind": "summary",
+        "relationships": [
+          {
+            "object": "agents",
+            "predicate": "helps",
+            "subject": "graph memory"
+          },
+          {
+            "object": "relationships",
+            "predicate": "preserve",
+            "subject": "agents"
+          },
+          {
+            "object": "graph memory",
+            "predicate": "is needed for",
+            "subject": "provenance"
+          },
+          {
+            "object": "graph memory",
+            "predicate": "is needed for",
+            "subject": "update semantics"
+          }
+        ],
+        "statement": "The article content indicates that graph memory aids agents in preserving relationships, and emphasizes the necessity of provenance and update semantics."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Successfully created 2 new memory cards.",
+        "Extracted URL: https://example.com/ai-memory",
+        "Identified key concepts: AI memory, knowledge graph memory design, graph memory, agents, relationships, provenance, update semantics."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n    \"intent\": \"Remember an article and its content.\",\n    \"decision\": \"Committed new memory cards based on the provided article URL, its stated usefulness, and a mock fetched summary.\",\n    \"memory_cards\": [\n        {\n            \"kind\": \"fact\",\n            \"statement\": \"An article from example.com titled 'AI memory' is considered useful for thinking about knowledge graph memory design.\",\n            \"confidence\": \"high\",\n            \"entities\": [\n                {\n                    \"name\": \"article\",\n                    \"type\": \"document\"\n                },\n                {\n                    \"name\": \"example.com\",\n                    \"type\": \"website\"\n                },\n                {\n                    \"name\": \"AI memory\",\n                    \"type\": \"concept\"\n                },\n                {\n                    \"name\": \"knowledge graph memory design\",\n                    \"type\": \"concept\"\n                }\n            ],\n            \"relationships\": [\n                {\n                    \"subject\": \"article\",\n                    \"predicate\": \"is from\",\n                    \"object\": \"example.com\"\n                },\n                {\n                    \"subject\": \"article\",\n                    \"predicate\": \"is titled\",\n                    \"object\": \"AI memory\"\n                },\n                {\n                    \"subject\": \"AI memory\",\n                    \"predicate\": \"is useful for\",\n                    \"object\": \"knowledge graph memory design\"\n                }\n            ]\n        },\n        {\n            \"kind\": \"summary\",\n            \"statement\": \"The article content indicates that graph memory aids agents in preserving relationships, and emphasizes the necessity of provenance and update semantics.\",\n            \"confidence\": \"high\",\n            \"entities\": [\n                {\n                    \"name\": \"graph memory\",\n                    \"type\": \"concept\"\n                },\n                {\n                    \"name\": \"agents\",\n                    \"type\": \"role\"\n                },\n                {\n                    \"name\": \"relationships\",\n                    \"type\": \"concept\"\n                },\n                {\n                    \"name\": \"provenance\",\n                    \"type\": \"concept\"\n                },\n                {\n                    \"name\": \"update semantics\",\n                    \"type\": \"concept\"\n                }\n            ],\n            \"relationships\": [\n                {\n                    \"subject\": \"graph memory\",\n                    \"predicate\": \"helps\",\n                    \"object\": \"agents\"\n                },\n                {\n                    \"subject\": \"agents\",\n                    \"predicate\": \"preserve\",\n                    \"object\": \"relationships\"\n                },\n                {\n                    \"subject\": \"provenance\",\n                    \"predicate\": \"is needed for\",\n                    \"object\": \"graph memory\"\n                },\n                {\n                    \"subject\": \"update semantics\",\n                    \"predicate\": \"is needed for\",\n                    \"object\": \"graph memory\"\n                }\n            ]\n        }\n    ],\n    \"entity_resolution\": {\n        \"action\": \"none\",\n        \"entity_id\": null,\n        \"reason\": \"No specific entity resolution requested or required for new information.\"\n    },\n    \"conflict_classification\": \"none\",\n    \"answer\": \"I have remembered an article about 'AI memory' from example.com, noting its relevance to knowledge graph memory design. The article highlights that graph memory assists agents in preserving relationships and requires provenance and update semantics.\",\n    \"citations\": [\n        \"https://example.com/ai-memory\"\n    ],\n    \"repair_options\": [],\n    \"receipt\": {\n        \"success\": true,\n        \"details\": [\n            \"Successfully created 2 new memory cards.\",\n            \"Extracted URL: https://example.com/ai-memory\",\n            \"Identified key concepts: AI memory, knowledge graph memory design, graph memory, agents, relationships, provenance, update semantics.\"\n        ]\n    }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

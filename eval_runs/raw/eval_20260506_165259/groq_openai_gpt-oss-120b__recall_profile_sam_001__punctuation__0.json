@@ -1,0 +1,131 @@
+{
+  "error": null,
+  "fixture_id": "recall_profile_sam_001__punctuation",
+  "model": "groq:openai/gpt-oss-120b",
+  "payload": {
+    "answer": "Sam is a person affiliated with Goldman. He likes the musician Bill Evans and is interested in AI infrastructure. There is a pending action to send Sam an article about AI infrastructure.",
+    "citations": [
+      "card1",
+      "card2",
+      "card3",
+      "card4"
+    ],
+    "conflict_classification": "none",
+    "decision": "provide",
+    "entity_resolution": {
+      "action": "lookup",
+      "entity_id": null,
+      "reason": "resolve Sam from Goldman for query"
+    },
+    "intent": "recall",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "object",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is associated with Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "object",
+            "type": "concept"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "AI infrastructure",
+            "predicate": "interested_in",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is interested in AI infrastructure."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "recipient",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure article",
+            "role": "object",
+            "type": "document"
+          }
+        ],
+        "kind": "action",
+        "relationships": [
+          {
+            "object": "AI infrastructure article to Sam",
+            "predicate": "send",
+            "subject": "system"
+          }
+        ],
+        "statement": "Send Sam article about AI infrastructure."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Retrieved 4 memory cards",
+        "Generated answer"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"recall\",\"decision\":\"provide\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam likes Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]},{\"kind\":\"fact\",\"statement\":\"Sam is associated with Goldman.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"associated_with\",\"object\":\"Goldman\"}]},{\"kind\":\"fact\",\"statement\":\"Sam is interested in AI infrastructure.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"AI infrastructure\",\"type\":\"concept\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"interested_in\",\"object\":\"AI infrastructure\"}]},{\"kind\":\"action\",\"statement\":\"Send Sam article about AI infrastructure.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"recipient\"},{\"name\":\"AI infrastructure article\",\"type\":\"document\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"system\",\"predicate\":\"send\",\"object\":\"AI infrastructure article to Sam\"}]}],\"entity_resolution\":{\"action\":\"lookup\",\"entity_id\":null,\"reason\":\"resolve Sam from Goldman for query\"},\"conflict_classification\":\"none\",\"answer\":\"Sam is a person affiliated with Goldman. He likes the musician Bill Evans and is interested in AI infrastructure. There is a pending action to send Sam an article about AI infrastructure.\",\"citations\":[\"card1\",\"card2\",\"card3\",\"card4\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Retrieved 4 memory cards\",\"Generated answer\"]}}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

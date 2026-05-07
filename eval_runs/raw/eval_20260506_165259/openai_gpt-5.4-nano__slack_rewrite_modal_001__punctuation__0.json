@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "fixture_id": "slack_rewrite_modal_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Queued a rewritten memory card based on: 'He prefers the other one.'",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "rewrite_memory",
+    "entity_resolution": {
+      "action": "no_change",
+      "entity_id": null,
+      "reason": "The pronoun 'he' and the referent 'the other one' are not uniquely identified from the provided input."
+    },
+    "intent": "slack_intake_rewrite_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "he",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "the other one",
+            "role": "preferred_object",
+            "type": "item"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "he"
+          }
+        ],
+        "statement": "He prefers the other one."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Rewrite intent detected ('User chooses Rewrite memory').",
+        "Stored an ambiguous preference statement with low confidence due to unresolved references."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify who 'he' refers to (name or identifier).",
+      "Clarify what 'the other one' refers to (e.g., Option A vs Option B, product/model, link)."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"slack_intake_rewrite_memory\",\n  \"decision\": \"rewrite_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"He prefers the other one.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"he\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"the other one\",\n          \"type\": \"item\",\n          \"role\": \"preferred_object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"he\",\n          \"predicate\": \"prefers\",\n          \"object\": \"the other one\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_change\",\n    \"entity_id\": null,\n    \"reason\": \"The pronoun 'he' and the referent 'the other one' are not uniquely identified from the provided input.\"\n  },\n  \"conflict_classification\": \"none_detected\",\n  \"answer\": \"Queued a rewritten memory card based on: 'He prefers the other one.'\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Clarify who 'he' refers to (name or identifier).\",\n    \"Clarify what 'the other one' refers to (e.g., Option A vs Option B, product/model, link).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Rewrite intent detected ('User chooses Rewrite memory').\",\n      \"Stored an ambiguous preference statement with low confidence due to unresolved references.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

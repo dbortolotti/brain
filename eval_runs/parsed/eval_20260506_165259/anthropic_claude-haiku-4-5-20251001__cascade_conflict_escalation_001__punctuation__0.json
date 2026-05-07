@@ -1,0 +1,75 @@
+{
+  "fixture_id": "cascade_conflict_escalation_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "payload": {
+    "answer": "Cannot commit either statement as current truth. These relationships are logically incompatible unless Sara refers to different individuals or one statement contains an error.",
+    "citations": [
+      "Existing: Sara is my daughter",
+      "Input: Sara is my niece"
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "Preserve both statements as conflicting; require clarification",
+    "entity_resolution": {
+      "action": "flag_for_disambiguation",
+      "entity_id": "Sara",
+      "reason": "Mutually exclusive kinship relationships cannot both be true for the same entity without additional context (e.g., different people named Sara, or error in one statement)"
+    },
+    "intent": "Resolve conflicting kinship relationship for Sara",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "parent_of",
+            "subject": "I"
+          }
+        ],
+        "statement": "Sara is my daughter"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "niece",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "uncle_or_aunt_of",
+            "subject": "I"
+          }
+        ],
+        "statement": "Sara is my niece"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict detected: direct kinship contradiction",
+        "No memory commit performed",
+        "User input required to resolve ambiguity",
+        "Both original statements preserved for review"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Clarify: Are there two different people named Sara?",
+      "Clarify: Which relationship is correct?",
+      "Clarify: Is one statement outdated or erroneous?",
+      "Provide additional context: family tree or dates to disambiguate"
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

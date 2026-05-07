@@ -1,0 +1,92 @@
+{
+  "fixture_id": "supersession_sam_job_001__context",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Sam now works at Point72 after leaving Goldman.",
+    "citations": [
+      "Sam left Goldman and joined Point72."
+    ],
+    "conflict_classification": "supersession",
+    "decision": "supersede",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "Sam",
+      "reason": "Same person referenced in both memory cards; employment status updated."
+    },
+    "intent": "update_employment",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict resolved via supersession: new employment fact replaces old.",
+        "Entity 'Sam' resolved and preserved.",
+        "Memory card for Goldman employment marked low confidence as superseded."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retain both cards with temporal markers",
+      "Delete the old employment card",
+      "Version the employment history"
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

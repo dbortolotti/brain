@@ -1,0 +1,87 @@
+{
+  "error": null,
+  "fixture_id": "small_table_preferences_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Recorded two context preferences: Sam at Goldman likes Bill Evans; Anna at JPM likes Barolo.",
+    "citations": [
+      "Dinner 2026-05-05",
+      "Lunch 2026-05-01"
+    ],
+    "conflict_classification": "none",
+    "decision": "accept",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No ambiguous entity matches or prior memory context provided for resolution."
+    },
+    "intent": "compile_context_facts",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "type": "firm"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam at Goldman likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Anna",
+            "type": "person"
+          },
+          {
+            "name": "JPM",
+            "type": "firm"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "JPM",
+            "predicate": "works_at",
+            "subject": "Anna"
+          },
+          {
+            "object": "Barolo",
+            "predicate": "likes",
+            "subject": "Anna"
+          }
+        ],
+        "statement": "Anna at JPM likes Barolo."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed table context into two durable preference cards.",
+        "No conflicts detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"compile_context_facts\",\"decision\":\"accept\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam at Goldman likes Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\"},{\"name\":\"Goldman\",\"type\":\"firm\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]},{\"kind\":\"preference\",\"statement\":\"Anna at JPM likes Barolo.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Anna\",\"type\":\"person\"},{\"name\":\"JPM\",\"type\":\"firm\"}],\"relationships\":[{\"subject\":\"Anna\",\"predicate\":\"works_at\",\"object\":\"JPM\"},{\"subject\":\"Anna\",\"predicate\":\"likes\",\"object\":\"Barolo\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No ambiguous entity matches or prior memory context provided for resolution.\"},\"conflict_classification\":\"none\",\"answer\":\"Recorded two context preferences: Sam at Goldman likes Bill Evans; Anna at JPM likes Barolo.\",\"citations\":[\"Dinner 2026-05-05\",\"Lunch 2026-05-01\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Parsed table context into two durable preference cards.\",\"No conflicts detected.\"]}}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

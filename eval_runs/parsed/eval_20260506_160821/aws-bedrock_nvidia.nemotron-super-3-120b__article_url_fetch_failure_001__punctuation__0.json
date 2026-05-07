@@ -1,0 +1,51 @@
+{
+  "fixture_id": "article_url_fetch_failure_001__punctuation",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Failed to fetch article due to 404 network error on malformed URL.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_failed",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "URL is malformed and unreachable; no valid entity can be resolved"
+    },
+    "intent": "store_article",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "https -//examplecom/missing why - useful for memory architecture",
+            "role": "source",
+            "type": "url"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "unreachable due to 404 network error",
+            "predicate": "is",
+            "subject": "https -//examplecom/missing why - useful for memory architecture"
+          }
+        ],
+        "statement": "Attempted to fetch article from URL: https -//examplecom/missing why - useful for memory architecture"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Network request failed with status 404",
+        "URL provided: https -//examplecom/missing why - useful for memory architecture",
+        "URL appears malformed: missing colon after 'https', incorrect spacing/delimiters"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Verify URL syntax (e.g., add '://' after 'https', correct domain format)",
+      "Check if the resource exists at a corrected URL",
+      "Use a search engine to locate the article by title or content hints"
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

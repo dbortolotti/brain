@@ -1,0 +1,49 @@
+{
+  "error": null,
+  "fixture_id": "conflict_correction_like__punctuation",
+  "model": "google:gemini-2.5-pro",
+  "payload": {
+    "answer": "Got it. I've updated my memory that Sam from Goldman likes early Coltrane, not Bill Evans.",
+    "conflict_classification": "correction",
+    "decision": "The user is providing a direct correction to a previously stored fact. The system should supersede the old fact and add the new one.",
+    "intent": "correction",
+    "memory_cards": [
+      {
+        "kind": "supersede",
+        "statement": "Sam from Goldman likes Bill Evans"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "music"
+          }
+        ],
+        "kind": "add",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      }
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"correction\",\n  \"decision\": \"The user is providing a direct correction to a previously stored fact. The system should supersede the old fact and add the new one.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"supersede\",\n      \"statement\": \"Sam from Goldman likes Bill Evans\"\n    },\n    {\n      \"kind\": \"add\",\n      \"statement\": \"Sam from Goldman likes early Coltrane.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"early Coltrane\",\n          \"type\": \"music\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"early Coltrane\"\n        }\n      ]\n    }\n  ],\n  \"conflict_classification\": \"correction\",\n  \"answer\": \"Got it. I've updated my memory that Sam from Goldman likes early Coltrane, not Bill Evans.\"\n}",
+  "run_id": "eval_20260506_162328",
+  "status": "ok"
+}

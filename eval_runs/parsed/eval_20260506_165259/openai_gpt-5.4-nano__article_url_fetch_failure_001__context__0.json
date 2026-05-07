@@ -1,0 +1,84 @@
+{
+  "fixture_id": "article_url_fetch_failure_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Stored the mock fetch failure details for https://example.com/missing (404 'network error') and a note that the article was intended for memory architecture but could not be retrieved.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_only_fetch_failure",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Only a specific URL and failure metadata were provided; no stable entity ID mapping was requested or determinable."
+    },
+    "intent": "record fetch failure context for memory architecture evaluation",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "target",
+            "type": "url"
+          },
+          {
+            "name": "404",
+            "role": "status",
+            "type": "http_status"
+          },
+          {
+            "name": "network error",
+            "role": "error",
+            "type": "error_message"
+          }
+        ],
+        "kind": "error_event",
+        "relationships": [
+          {
+            "object": "404",
+            "predicate": "fetch_result_status_was",
+            "subject": "https://example.com/missing"
+          },
+          {
+            "object": "network error",
+            "predicate": "fetch_result_included_message",
+            "subject": "https://example.com/missing"
+          }
+        ],
+        "statement": "Attempted to fetch the article at https://example.com/missing and received a 404 with a 'network error' mock result."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "memory architecture",
+            "role": "intended_use",
+            "type": "topic"
+          }
+        ],
+        "kind": "context_note",
+        "relationships": [
+          {
+            "object": "memory architecture",
+            "predicate": "intended_for",
+            "subject": "missing article reference"
+          }
+        ],
+        "statement": "The provided context indicates the missing article was intended to be useful for memory architecture, but the content could not be retrieved due to the mock fetch failure."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured mock 404 + 'network error' for the provided URL",
+        "Did not assert or store article contents due to fetch failure"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retry the fetch with a working URL or correct path/slug",
+      "Verify network connectivity and retry if the error is transient",
+      "Use an alternative source or cached copy of the article"
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

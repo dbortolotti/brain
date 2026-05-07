@@ -1,0 +1,53 @@
+{
+  "fixture_id": "slack_rewrite_modal_001__punctuation",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Memory rewritten: He prefers the other one",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "proceed",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No specific entities require resolution; 'He' and 'the other one' are contextually ambiguous but intentionally preserved as-is per instruction to preserve ambiguity."
+    },
+    "intent": "rewrite_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "He",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "the other one",
+            "role": "preference_target",
+            "type": "object"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "He"
+          }
+        ],
+        "statement": "He prefers the other one"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory successfully rewritten under slack_intake role.",
+        "Fixture ID: slack_rewrite_modal_001__punctuation",
+        "Input processed: /brain remember He prefers the other one User chooses Rewrite memory",
+        "No conflicts detected; ambiguity preserved as instructed."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_160821"
+}

@@ -1,0 +1,71 @@
+{
+  "error": null,
+  "fixture_id": "cascade_low_confidence_asks_user_001__context",
+  "model": "google:gemini-2.5-flash",
+  "payload": {
+    "decision": "ingest_context",
+    "intent": "provide_context",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cloud escalation",
+            "type": "system_feature"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "disabled",
+            "predicate": "is",
+            "subject": "Cloud escalation"
+          }
+        ],
+        "statement": "Cloud escalation is disabled."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "model confidence",
+            "type": "system_attribute"
+          },
+          {
+            "name": "Sam note",
+            "role": "target",
+            "type": "document"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "low",
+            "predicate": "is",
+            "subject": "model confidence"
+          },
+          {
+            "object": "ambiguous",
+            "predicate": "is",
+            "subject": "Sam note"
+          },
+          {
+            "object": "Sam note",
+            "predicate": "pertains_to",
+            "subject": "model confidence"
+          }
+        ],
+        "statement": "Model confidence is low for an ambiguous Sam note."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Context information ingested successfully."
+      ],
+      "success": true
+    }
+  },
+  "raw_text": "{\n  \"intent\": \"provide_context\",\n  \"decision\": \"ingest_context\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Cloud escalation is disabled.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Cloud escalation\",\n          \"type\": \"system_feature\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cloud escalation\",\n          \"predicate\": \"is\",\n          \"object\": \"disabled\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Model confidence is low for an ambiguous Sam note.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"model confidence\",\n          \"type\": \"system_attribute\"\n        },\n        {\n          \"name\": \"Sam note\",\n          \"type\": \"document\",\n          \"role\": \"target\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"model confidence\",\n          \"predicate\": \"is\",\n          \"object\": \"low\"\n        },\n        {\n          \"subject\": \"Sam note\",\n          \"predicate\": \"is\",\n          \"object\": \"ambiguous\"\n        },\n        {\n          \"subject\": \"model confidence\",\n          \"predicate\": \"pertains_to\",\n          \"object\": \"Sam note\"\n        }\n      ]\n    }\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Context information ingested successfully.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_162328",
+  "status": "ok"
+}

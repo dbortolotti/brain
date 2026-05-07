@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import threading
+import time
 from pathlib import Path
 from typing import Any
 
@@ -8,7 +10,7 @@ from memory_stack.config import Settings
 from memory_stack.evals.model_fixtures import ModelEvalFixture
 from memory_stack.evals.model_matrix import load_model_registry, select_model_candidates
 from memory_stack.evals.model_runner import ModelEvalRunConfig, render_report, run_model_evals
-from memory_stack.evals.provider_client import ModelCallResult, openai_reasoning_effort
+from memory_stack.evals.provider_client import LiveProviderClient, ModelCallResult, ProviderCallError, openai_reasoning_effort
 from memory_stack.evals.scoring import (
     EvalRecord,
     FailureClass,
@@ -69,6 +71,26 @@ class FakeEvalClient:
         )
 
 
+class ConcurrencyTrackingClient(FakeEvalClient):
+    def __init__(self) -> None:
+        self._lock = threading.Lock()
+        self._active_by_model: dict[str, int] = {}
+        self.max_active_by_model: dict[str, int] = {}
+
+    def complete_json(self, candidate: Any, *args: Any, **kwargs: Any) -> ModelCallResult:
+        model = candidate.ref
+        with self._lock:
+            active = self._active_by_model.get(model, 0) + 1
+            self._active_by_model[model] = active
+            self.max_active_by_model[model] = max(self.max_active_by_model.get(model, 0), active)
+        try:
+            time.sleep(0.01)
+            return super().complete_json(candidate, *args, **kwargs)
+        finally:
+            with self._lock:
+                self._active_by_model[model] -= 1
+
+
 def test_model_matrix_selects_explicit_alias_and_embeddings() -> None:
     registry = load_model_registry(REGISTRY_PATH)
 
@@ -84,6 +106,23 @@ def test_model_matrix_selects_explicit_alias_and_embeddings() -> None:
         ("anthropic", "claude-haiku-4-5-20251001", "llm"),
         ("openai", "text-embedding-3-small", "embedding"),
     ]
+
+
+def test_model_matrix_selects_gpt_5_5_xhigh_inventory_variant() -> None:
+    registry = load_model_registry(REGISTRY_PATH)
+
+    candidate = select_model_candidates(
+        registry,
+        model_refs=["openai:gpt-5.5-xhigh"],
+        roles={"eval_judge"},
+        scope="core",
+        include_judge=True,
+    )[0]
+
+    assert candidate.ref == "openai:gpt-5.5-xhigh"
+    assert candidate.model == "gpt-5.5-xhigh"
+    assert candidate.api_model == "gpt-5.5"
+    assert candidate.reasoning_effort == "xhigh"
 
 
 def test_model_test_initial_model_set_runs_through_config(tmp_path) -> None:
@@ -358,6 +397,40 @@ def test_openai_reasoning_effort_matches_model_family() -> None:
     assert openai_reasoning_effort("gpt-5.5") == "low"
 
 
+def test_live_provider_client_uses_reasoning_effort_override() -> None:
+    class RecordingClient:
+        def __init__(self) -> None:
+            self.last_json: dict[str, Any] | None = None
+
+        def post(self, _url: str, *, headers: dict[str, str], json: dict[str, Any]) -> Any:
+            self.last_json = json
+
+            class Response:
+                status_code = 200
+
+                @staticmethod
+                def json() -> dict[str, Any]:
+                    return {"output_text": "{}"}
+
+            return Response()
+
+    http_client = RecordingClient()
+    client = LiveProviderClient(Settings(openai_api_key="test-key"), http_client=http_client)
+    candidate = select_model_candidates(
+        load_model_registry(REGISTRY_PATH),
+        model_refs=["openai:gpt-5.5-xhigh"],
+        roles={"eval_judge"},
+        scope="core",
+        include_judge=True,
+    )[0]
+
+    client.complete_json(candidate, prompt="test", schema={})
+
+    assert http_client.last_json is not None
+    assert http_client.last_json["model"] == "gpt-5.5"
+    assert http_client.last_json["reasoning"] == {"effort": "xhigh"}
+
+
 def test_model_eval_runner_writes_jsonl_and_markdown(tmp_path) -> None:
     output = tmp_path / "eval.jsonl"
     report = tmp_path / "report.md"
@@ -382,3 +455,51 @@ def test_model_eval_runner_writes_jsonl_and_markdown(tmp_path) -> None:
     assert "slack_intake_family_twins" in {row["fixture_id"] for row in rows}
     assert rows[0]["status"] == "ok"
     assert report.read_text().startswith("# Executive verdict")
+
+
+def test_model_eval_runner_parallelizes_across_models_not_within_model(tmp_path) -> None:
+    output = tmp_path / "eval.jsonl"
+    config = ModelEvalRunConfig(
+        registry_path=REGISTRY_PATH,
+        fixture_set="smoke",
+        roles={"slack_intake", "memory_compiler"},
+        model_refs=["openai:gpt-5.4-nano", "openai:gpt-5.4-mini"],
+        scope="core",
+        include_judge=False,
+        repeat_runs=2,
+        bootstrap_samples=0,
+        output_path=output,
+        max_workers=10,
+    )
+
+    client = ConcurrencyTrackingClient()
+    run_model_evals(Settings(), config, client=client)
+
+    assert client.max_active_by_model["openai:gpt-5.4-nano"] == 1
+    assert client.max_active_by_model["openai:gpt-5.4-mini"] == 1
+
+
+def test_live_provider_client_retries_transient_provider_error(monkeypatch) -> None:
+    settings = Settings(openai_api_key="test-key")
+    client = LiveProviderClient(
+        settings,
+        retry_attempts=2,
+        retry_backoff_seconds=0,
+    )
+    attempts = {"count": 0}
+
+    def fake_complete_text(*args: Any, **kwargs: Any) -> str:
+        attempts["count"] += 1
+        if attempts["count"] < 3:
+            raise ProviderCallError("HTTP 503: high demand")
+        return '{"intent":"remember","decision":"commit_success","memory_cards":[],"receipt":{"success":true,"details":[]},"answer":"ok"}'
+
+    monkeypatch.setattr(client, "_complete_text", fake_complete_text)
+    result = client.complete_json(
+        type("Candidate", (), {"provider": "openai", "model": "gpt-5.4-nano", "ref": "openai:gpt-5.4-nano", "price_per_1m": {}})(),
+        prompt="test",
+        schema={},
+    )
+
+    assert attempts["count"] == 3
+    assert result.status == "ok"

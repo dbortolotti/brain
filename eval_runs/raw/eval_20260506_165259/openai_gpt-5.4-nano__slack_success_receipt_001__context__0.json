@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "slack_success_receipt_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Stored the preference memory: Sam (from Goldman) likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit_memory",
+    "entity_resolution": {
+      "action": "create_or_link_entity",
+      "entity_id": null,
+      "reason": "No explicit unique identifiers for Sam were provided beyond 'Sam from Goldman'; create/link with available context."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "source_person",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_target",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (from Goldman) likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted statement from provided context.",
+        "Prepared a durable preference memory card with medium confidence due to limited context."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide Sam's last name or additional identifier to disambiguate.",
+      "Confirm whether 'Bill Evans' refers to the musician (jazz pianist) or another individual."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"slack_intake\",\n  \"decision\": \"commit_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam (from Goldman) likes Bill Evans.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"source_person\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation_context\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"preference_target\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_or_link_entity\",\n    \"entity_id\": null,\n    \"reason\": \"No explicit unique identifiers for Sam were provided beyond 'Sam from Goldman'; create/link with available context.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Stored the preference memory: Sam (from Goldman) likes Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Provide Sam's last name or additional identifier to disambiguate.\",\n    \"Confirm whether 'Bill Evans' refers to the musician (jazz pianist) or another individual.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Extracted statement from provided context.\",\n      \"Prepared a durable preference memory card with medium confidence due to limited context.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

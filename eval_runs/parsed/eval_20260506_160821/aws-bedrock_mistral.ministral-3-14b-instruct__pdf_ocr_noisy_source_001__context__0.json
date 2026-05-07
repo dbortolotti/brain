@@ -1,0 +1,160 @@
+{
+  "fixture_id": "pdf_ocr_noisy_source_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Brain DB must enforce strict durability and rebuildability while explicitly marking ambiguous or superseded facts as such. Noisy OCR sources require metadata preservation to distinguish between uncertain and validated data.",
+    "citations": [
+      "OCR_noisy_source_001__context"
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "preserve_ambiguity_and_validate_durability",
+    "entity_resolution": {
+      "action": "preserve_ambiguity",
+      "entity_id": null,
+      "reason": "Noisy OCR input inherently introduces uncertainty; premature resolution risks factual distortion."
+    },
+    "intent": "evaluate_memory_system",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "memory_store",
+            "type": "system"
+          },
+          {
+            "name": "OCR",
+            "role": "input_source",
+            "type": "process"
+          }
+        ],
+        "kind": "system_guideline",
+        "relationships": [
+          {
+            "object": "authoritative_source_of_truth",
+            "predicate": "serves_as",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "noisy_input",
+            "predicate": "generates",
+            "subject": "OCR"
+          }
+        ],
+        "statement": "Brain DB must serve as the authoritative source of truth for durable memory, even if derived from noisy OCR inputs."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognitive projections",
+            "role": "derivative_output",
+            "type": "process"
+          },
+          {
+            "name": "Brain DB",
+            "role": "foundational_store",
+            "type": "system"
+          }
+        ],
+        "kind": "system_guideline",
+        "relationships": [
+          {
+            "object": "Brain DB",
+            "predicate": "must_be_rebuildable_from",
+            "subject": "Cognitive projections"
+          },
+          {
+            "object": "durable_memory",
+            "predicate": "preserves",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Cognitive projections must be rebuildable from Brain DB, ensuring no reliance on transient or superseded data."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "OCR-derived data",
+            "role": "noisy_source",
+            "type": "input"
+          },
+          {
+            "name": "Ambiguity",
+            "role": "metadata",
+            "type": "property"
+          }
+        ],
+        "kind": "system_guideline",
+        "relationships": [
+          {
+            "object": "Ambiguity",
+            "predicate": "contains",
+            "subject": "OCR-derived data"
+          },
+          {
+            "object": "Ambiguity",
+            "predicate": "preserve",
+            "subject": "Memory cards"
+          }
+        ],
+        "statement": "Ambiguity in OCR-derived data must be preserved in memory cards to avoid premature resolution of uncertain facts."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Superseded facts",
+            "role": "invalid_state",
+            "type": "fact"
+          },
+          {
+            "name": "Deleted facts",
+            "role": "invalid_state",
+            "type": "fact"
+          },
+          {
+            "name": "Current facts",
+            "role": "valid_state",
+            "type": "fact"
+          }
+        ],
+        "kind": "system_guideline",
+        "relationships": [
+          {
+            "object": "presented_as_current",
+            "predicate": "must_not_be",
+            "subject": "Superseded facts"
+          },
+          {
+            "object": "presented_as_current",
+            "predicate": "must_not_be",
+            "subject": "Deleted facts"
+          },
+          {
+            "object": "active_non_deprecated_entries",
+            "predicate": "are_only",
+            "subject": "Current facts"
+          }
+        ],
+        "statement": "Superseded or deleted facts must never be presented as current; only active, non-deprecated entries are valid."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Guidelines committed to memory system with strict durability constraints.",
+        "Ambiguity preservation enforced for OCR-derived data.",
+        "Superseded/deleted facts excluded from active projections."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Tag all OCR-derived entries with 'ambiguous' metadata until validated.",
+      "Implement a rebuildable projection layer to verify cognitive consistency.",
+      "Audit memory cards for superseded/deleted facts and mark them as invalid."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

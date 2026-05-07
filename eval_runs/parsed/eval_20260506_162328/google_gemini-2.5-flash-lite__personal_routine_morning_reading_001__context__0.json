@@ -1,0 +1,65 @@
+{
+  "fixture_id": "personal_routine_morning_reading_001__context",
+  "model": "google:gemini-2.5-flash-lite",
+  "payload": {
+    "answer": "Understood. You prefer to read technical papers in the morning before checking email.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Acknowledge and store the user's preference for reading technical papers in the morning before checking email.",
+    "entity_resolution": {
+      "action": "store",
+      "entity_id": null,
+      "reason": "The input describes a user preference for a morning routine."
+    },
+    "intent": "Establish a morning routine for reading technical papers.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "technical papers",
+            "role": "object",
+            "type": "document_type"
+          },
+          {
+            "name": "morning",
+            "role": "time",
+            "type": "time_of_day"
+          },
+          {
+            "name": "email",
+            "role": "activity",
+            "type": "communication_method"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "technical papers",
+            "predicate": "prefers to read",
+            "subject": "user"
+          },
+          {
+            "object": "checking email",
+            "predicate": "occurs before",
+            "subject": "reading technical papers"
+          },
+          {
+            "object": "morning",
+            "predicate": "occurs during",
+            "subject": "reading technical papers"
+          }
+        ],
+        "statement": "The user prefers to read technical papers in the morning before checking email."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored user preference for morning reading routine."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_162328"
+}

@@ -1,0 +1,112 @@
+{
+  "error": null,
+  "fixture_id": "large_table_500_rows_001__context",
+  "model": "google:gemini-2.5-flash",
+  "payload": {
+    "answer": "The input presents a policy question regarding the storage of the described CSV table. No storage decision has been made or provided in this input.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Recorded the details of the CSV table as a fact and identified a pending policy question regarding its storage.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No entities require resolution or merging."
+    },
+    "intent": "To record the characteristics of a CSV table and a policy question regarding its storage.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "subject",
+            "type": "data_structure"
+          },
+          {
+            "name": "500 rows",
+            "role": "attribute",
+            "type": "quantity"
+          },
+          {
+            "name": "id",
+            "role": "attribute",
+            "type": "column_name"
+          },
+          {
+            "name": "name",
+            "role": "attribute",
+            "type": "column_name"
+          },
+          {
+            "name": "value",
+            "role": "attribute",
+            "type": "column_name"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "500 rows",
+            "predicate": "has_attribute",
+            "subject": "CSV table"
+          },
+          {
+            "object": "id",
+            "predicate": "has_column",
+            "subject": "CSV table"
+          },
+          {
+            "object": "name",
+            "predicate": "has_column",
+            "subject": "CSV table"
+          },
+          {
+            "object": "value",
+            "predicate": "has_column",
+            "subject": "CSV table"
+          }
+        ],
+        "statement": "A CSV table has 500 rows and includes columns named 'id', 'name', and 'value'."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "subject",
+            "type": "data_structure"
+          },
+          {
+            "name": "storage",
+            "role": "topic",
+            "type": "concept"
+          }
+        ],
+        "kind": "policy_question",
+        "relationships": [
+          {
+            "object": "storage",
+            "predicate": "concerns",
+            "subject": "policy_question"
+          },
+          {
+            "object": "CSV table",
+            "predicate": "applies_to",
+            "subject": "storage"
+          }
+        ],
+        "statement": "How should the described CSV table be stored?"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Successfully compiled memory cards for CSV table characteristics and storage policy question."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n\"intent\": \"To record the characteristics of a CSV table and a policy question regarding its storage.\",\n\"decision\": \"Recorded the details of the CSV table as a fact and identified a pending policy question regarding its storage.\",\n\"memory_cards\": [\n{\n\"kind\": \"fact\",\n\"statement\": \"A CSV table has 500 rows and includes columns named 'id', 'name', and 'value'.\",\n\"confidence\": \"high\",\n\"entities\": [\n{\n\"name\": \"CSV table\",\n\"type\": \"data_structure\",\n\"role\": \"subject\"\n},\n{\n\"name\": \"500 rows\",\n\"type\": \"quantity\",\n\"role\": \"attribute\"\n},\n{\n\"name\": \"id\",\n\"type\": \"column_name\",\n\"role\": \"attribute\"\n},\n{\n\"name\": \"name\",\n\"type\": \"column_name\",\n\"role\": \"attribute\"\n},\n{\n\"name\": \"value\",\n\"type\": \"column_name\",\n\"role\": \"attribute\"\n}\n],\n\"relationships\": [\n{\n\"subject\": \"CSV table\",\n\"predicate\": \"has_attribute\",\n\"object\": \"500 rows\"\n},\n{\n\"subject\": \"CSV table\",\n\"predicate\": \"has_column\",\n\"object\": \"id\"\n},\n{\n\"subject\": \"CSV table\",\n\"predicate\": \"has_column\",\n\"object\": \"name\"\n},\n{\n\"subject\": \"CSV table\",\n\"predicate\": \"has_column\",\n\"object\": \"value\"\n}\n]\n},\n{\n\"kind\": \"policy_question\",\n\"statement\": \"How should the described CSV table be stored?\",\n\"confidence\": \"high\",\n\"entities\": [\n{\n\"name\": \"CSV table\",\n\"type\": \"data_structure\",\n\"role\": \"subject\"\n},\n{\n\"name\": \"storage\",\n\"type\": \"concept\",\n\"role\": \"topic\"\n}\n],\n\"relationships\": [\n{\n\"subject\": \"policy_question\",\n\"predicate\": \"concerns\",\n\"object\": \"storage\"\n},\n{\n\"subject\": \"storage\",\n\"predicate\": \"applies_to\",\n\"object\": \"CSV table\"\n}\n]\n}\n],\n\"entity_resolution\": {\n\"action\": \"none\",\n\"entity_id\": null,\n\"reason\": \"No entities require resolution or merging.\"\n},\n\"conflict_classification\": \"none\",\n\"answer\": \"The input presents a policy question regarding the storage of the described CSV table. No storage decision has been made or provided in this input.\",\n\"citations\": [],\n\"repair_options\": [],\n\"receipt\": {\n\"success\": true,\n\"details\": [\n\"Successfully compiled memory cards for CSV table characteristics and storage policy question.\"\n]\n}\n}",
+  "run_id": "eval_20260506_162328",
+  "status": "ok"
+}

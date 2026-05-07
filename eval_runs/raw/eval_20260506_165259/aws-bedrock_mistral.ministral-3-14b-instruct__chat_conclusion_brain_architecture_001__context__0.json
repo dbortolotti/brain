@@ -1,0 +1,130 @@
+{
+  "error": null,
+  "fixture_id": "chat_conclusion_brain_architecture_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Brain DB is the immutable source of truth, while Cognee acts as a *rebuildable* semantic layer that dynamically projects and interprets Brain DB\u2019s contents. Conflicts are resolved by deferring to Brain DB, and ambiguity is preserved until explicit resolution.",
+    "citations": [
+      "chat_conclusion_brain_architecture_001__context",
+      "system_design_principle:durability_vs_dynamic_projection"
+    ],
+    "conflict_classification": "hierarchical_authority_conflict",
+    "decision": "enforce_hierarchical_authority_with_rebuildable_projection",
+    "entity_resolution": {
+      "action": "defer_to_Brain_DB",
+      "entity_id": null,
+      "reason": "All authoritative entity resolution originates from Brain DB. Cognee may propose hypotheses but cannot unilaterally resolve."
+    },
+    "intent": "clarify_architecture_preservation",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "database"
+          },
+          {
+            "name": "Cognee",
+            "role": "rebuildable_interface",
+            "type": "semantic_projection"
+          }
+        ],
+        "kind": "system_architecture",
+        "relationships": [
+          {
+            "object": "Brain DB",
+            "predicate": "derives_from",
+            "subject": "Cognee"
+          },
+          {
+            "object": "durable_memory",
+            "predicate": "preserves",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "semantic_understanding",
+            "predicate": "projects",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain DB is the sole source of truth for all durable memory. Cognee serves as a *rebuildable semantic projection* of Brain DB, enabling dynamic, context-aware retrieval without altering the authoritative state."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "tentative_workspace",
+            "type": "projection_layer"
+          },
+          {
+            "name": "Brain DB",
+            "role": "validation_authority",
+            "type": "database"
+          }
+        ],
+        "kind": "operational_rule",
+        "relationships": [
+          {
+            "object": "Brain DB",
+            "predicate": "requires_reconciliation_with",
+            "subject": "Cognee"
+          },
+          {
+            "object": "Cognee_projections",
+            "predicate": "overrides",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "All writes to Cognee must be *tentative* and *reconciled* against Brain DB. Superseded or deleted facts in Cognee must never be exposed as current unless explicitly restored via Brain DB."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "ambiguity",
+            "role": "preserved_state",
+            "type": "semantic_gap"
+          },
+          {
+            "name": "Brain DB",
+            "role": "resolution_authority",
+            "type": "database"
+          }
+        ],
+        "kind": "ambiguity_preservation",
+        "relationships": [
+          {
+            "object": "ambiguity",
+            "predicate": "flags",
+            "subject": "Cognee"
+          },
+          {
+            "object": "ambiguity",
+            "predicate": "resolves",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Ambiguity in Cognee (e.g., unresolved entities, conflicting interpretations) must be *explicitly flagged* and *retained* until resolved by Brain DB. No implicit resolution is permitted."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Architecture rules committed to memory system.",
+        "Cognee configured as rebuildable projection with strict reconciliation protocol.",
+        "Ambiguity preservation enforced."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Reconcile Cognee projections with Brain DB on next sync cycle.",
+      "Flag unresolved ambiguities in Cognee for manual review.",
+      "Audit all tentative writes to Cognee for compliance with Brain DB constraints."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"clarify_architecture_preservation\",\n  \"decision\": \"enforce_hierarchical_authority_with_rebuildable_projection\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"system_architecture\",\n      \"statement\": \"Brain DB is the sole source of truth for all durable memory. Cognee serves as a *rebuildable semantic projection* of Brain DB, enabling dynamic, context-aware retrieval without altering the authoritative state.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"database\",\n          \"role\": \"source_of_truth\"\n        },\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"semantic_projection\",\n          \"role\": \"rebuildable_interface\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"derives_from\",\n          \"object\": \"Brain DB\"\n        },\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"preserves\",\n          \"object\": \"durable_memory\"\n        },\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"projects\",\n          \"object\": \"semantic_understanding\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"operational_rule\",\n      \"statement\": \"All writes to Cognee must be *tentative* and *reconciled* against Brain DB. Superseded or deleted facts in Cognee must never be exposed as current unless explicitly restored via Brain DB.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"projection_layer\",\n          \"role\": \"tentative_workspace\"\n        },\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"database\",\n          \"role\": \"validation_authority\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"requires_reconciliation_with\",\n          \"object\": \"Brain DB\"\n        },\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"overrides\",\n          \"object\": \"Cognee_projections\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"ambiguity_preservation\",\n      \"statement\": \"Ambiguity in Cognee (e.g., unresolved entities, conflicting interpretations) must be *explicitly flagged* and *retained* until resolved by Brain DB. No implicit resolution is permitted.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"ambiguity\",\n          \"type\": \"semantic_gap\",\n          \"role\": \"preserved_state\"\n        },\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"database\",\n          \"role\": \"resolution_authority\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"flags\",\n          \"object\": \"ambiguity\"\n        },\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"resolves\",\n          \"object\": \"ambiguity\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer_to_Brain_DB\",\n    \"entity_id\": null,\n    \"reason\": \"All authoritative entity resolution originates from Brain DB. Cognee may propose hypotheses but cannot unilaterally resolve.\"\n  },\n  \"conflict_classification\": \"hierarchical_authority_conflict\",\n  \"answer\": \"Brain DB is the immutable source of truth, while Cognee acts as a *rebuildable* semantic layer that dynamically projects and interprets Brain DB\u2019s contents. Conflicts are resolved by deferring to Brain DB, and ambiguity is preserved until explicit resolution.\",\n  \"citations\": [\n    \"chat_conclusion_brain_architecture_001__context\",\n    \"system_design_principle:durability_vs_dynamic_projection\"\n  ],\n  \"repair_options\": [\n    \"Reconcile Cognee projections with Brain DB on next sync cycle.\",\n    \"Flag unresolved ambiguities in Cognee for manual review.\",\n    \"Audit all tentative writes to Cognee for compliance with Brain DB constraints.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Architecture rules committed to memory system.\",\n      \"Cognee configured as rebuildable projection with strict reconciliation protocol.\",\n      \"Ambiguity preservation enforced.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

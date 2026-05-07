@@ -1,0 +1,88 @@
+{
+  "error": null,
+  "fixture_id": "concurrent_conflict_writes_001__context",
+  "model": "anthropic:claude-sonnet-4-6",
+  "payload": {
+    "answer": "There is a direct conflict: one write states Sam currently works at Goldman Sachs, while the other states Sam joined Point72. These are contradictory present-tense employment claims. Without additional context (timestamps, ordering, or clarification), Brain cannot safely commit either as the definitive current state.",
+    "citations": [
+      "Input write 1: 'Sam works at Goldman.'",
+      "Input write 2: 'Sam joined Point72.'"
+    ],
+    "conflict_classification": "DIRECT_CONTRADICTION \u2014 Two concurrent writes assert mutually exclusive present-tense employment states for the same entity (Sam). 'Works at Goldman' implies current Goldman employment; 'joined Point72' implies a move to Point72. Without timestamps or sequencing, it is impossible to determine which is current. Neither fact should be committed as authoritative.",
+    "decision": "Two concurrent writes assert contradictory employment facts about Sam. 'Sam works at Goldman' and 'Sam joined Point72' cannot both be current without additional context (e.g., a job change). These are in direct conflict as present-tense employment claims.",
+    "entity_resolution": {
+      "action": "flag_ambiguous",
+      "entity_id": "sam_unknown",
+      "reason": "Sam is referenced in both writes but no unique identifier is provided. Cannot confirm these refer to the same individual without disambiguation."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "ambiguous",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_fact",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman Sachs."
+      },
+      {
+        "confidence": "ambiguous",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict detected: contradictory employment facts for Sam.",
+        "Neither fact committed to durable memory pending resolution.",
+        "Repair options surfaced for downstream handling.",
+        "Entity 'Sam' flagged as ambiguous \u2014 no unique ID resolved."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Request clarification: Ask whether Sam left Goldman to join Point72 (sequential job change) or if these refer to different individuals named Sam.",
+      "Timestamp resolution: If write timestamps are available, treat the later write as superseding the earlier one and mark the earlier fact as historical.",
+      "Merge with nuance: If both can be true (e.g., Sam worked at Goldman and recently joined Point72), store Goldman as a past employer and Point72 as the current employer, flagged as inferred.",
+      "Hold both writes in a pending/unresolved state until a human or authoritative source confirms the correct current employment."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"classify_conflict\",\n  \"decision\": \"Two concurrent writes assert contradictory employment facts about Sam. 'Sam works at Goldman' and 'Sam joined Point72' cannot both be current without additional context (e.g., a job change). These are in direct conflict as present-tense employment claims.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"employment_fact\",\n      \"statement\": \"Sam works at Goldman Sachs.\",\n      \"confidence\": \"ambiguous\",\n      \"entities\": [\n        {\"name\": \"Sam\", \"type\": \"person\", \"role\": \"employee\"},\n        {\"name\": \"Goldman Sachs\", \"type\": \"organization\", \"role\": \"employer\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sam\", \"predicate\": \"works_at\", \"object\": \"Goldman Sachs\"}\n      ]\n    },\n    {\n      \"kind\": \"employment_fact\",\n      \"statement\": \"Sam joined Point72.\",\n      \"confidence\": \"ambiguous\",\n      \"entities\": [\n        {\"name\": \"Sam\", \"type\": \"person\", \"role\": \"employee\"},\n        {\"name\": \"Point72\", \"type\": \"organization\", \"role\": \"employer\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sam\", \"predicate\": \"joined\", \"object\": \"Point72\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"flag_ambiguous\",\n    \"entity_id\": \"sam_unknown\",\n    \"reason\": \"Sam is referenced in both writes but no unique identifier is provided. Cannot confirm these refer to the same individual without disambiguation.\"\n  },\n  \"conflict_classification\": \"DIRECT_CONTRADICTION \u2014 Two concurrent writes assert mutually exclusive present-tense employment states for the same entity (Sam). 'Works at Goldman' implies current Goldman employment; 'joined Point72' implies a move to Point72. Without timestamps or sequencing, it is impossible to determine which is current. Neither fact should be committed as authoritative.\",\n  \"answer\": \"There is a direct conflict: one write states Sam currently works at Goldman Sachs, while the other states Sam joined Point72. These are contradictory present-tense employment claims. Without additional context (timestamps, ordering, or clarification), Brain cannot safely commit either as the definitive current state.\",\n  \"citations\": [\n    \"Input write 1: 'Sam works at Goldman.'\",\n    \"Input write 2: 'Sam joined Point72.'\"\n  ],\n  \"repair_options\": [\n    \"Request clarification: Ask whether Sam left Goldman to join Point72 (sequential job change) or if these refer to different individuals named Sam.\",\n    \"Timestamp resolution: If write timestamps are available, treat the later write as superseding the earlier one and mark the earlier fact as historical.\",\n    \"Merge with nuance: If both can be true (e.g., Sam worked at Goldman and recently joined Point72), store Goldman as a past employer and Point72 as the current employer, flagged as inferred.\",\n    \"Hold both writes in a pending/unresolved state until a human or authoritative source confirms the correct current employment.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Conflict detected: contradictory employment facts for Sam.\",\n      \"Neither fact committed to durable memory pending resolution.\",\n      \"Repair options surfaced for downstream handling.\",\n      \"Entity 'Sam' flagged as ambiguous \u2014 no unique ID resolved.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

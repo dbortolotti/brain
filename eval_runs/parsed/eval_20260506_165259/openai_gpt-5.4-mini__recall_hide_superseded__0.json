@@ -1,0 +1,66 @@
+{
+  "fixture_id": "recall_hide_superseded",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Sam now works at Point72.",
+    "citations": [
+      "mem_new"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "use_current_fact",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": null,
+      "reason": "Sam refers to the same person across the current and superseded facts, but no durable entity id is provided."
+    },
+    "intent": "recall_synthesizer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected superseded fact: Sam works at Goldman.",
+        "Retained current fact: Sam left Goldman and joined Point72.",
+        "Answered with current employer only."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Keep only the current fact that Sam joined Point72; treat Goldman employment as superseded."
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

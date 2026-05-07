@@ -1,0 +1,51 @@
+{
+  "fixture_id": "cascade_conflict_escalation_001",
+  "model": "google:gemini-2.5-pro",
+  "payload": {
+    "answer": "I have a conflict. You previously told me that Sara is your daughter, but now you're saying she is your niece. A person cannot be both. Which is correct?",
+    "citations": [
+      "Sara is my daughter."
+    ],
+    "conflict_classification": "DIRECT_CONFLICT",
+    "decision": "ESCALATE",
+    "entity_resolution": {
+      "action": "NONE",
+      "entity_id": null,
+      "reason": "The conflict is regarding a relationship, not entity identity."
+    },
+    "intent": "ADD_FACT",
+    "memory_cards": [
+      {
+        "confidence": "asserted",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "user",
+            "predicate": "is niece of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict detected. Escalating to user for resolution."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Keep the existing fact: 'Sara is my daughter.'",
+      "Accept the new fact: 'Sara is my niece.'",
+      "Cancel the operation."
+    ]
+  },
+  "run_id": "eval_20260506_162328"
+}

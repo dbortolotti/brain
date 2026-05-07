@@ -1,0 +1,56 @@
+{
+  "fixture_id": "conflict_employment_transition",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Sam now works at Point72 after leaving Goldman.",
+    "citations": [],
+    "conflict_classification": "direct_contradiction",
+    "decision": "replace",
+    "entity_resolution": {
+      "action": "update",
+      "entity_id": "Sam",
+      "reason": "Employment status changed from Goldman to Point72; prior fact superseded."
+    },
+    "intent": "update_employment",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Previous fact 'Sam works at Goldman' has been archived as superseded.",
+        "New fact 'Sam works at Point72' is now current.",
+        "Conflict resolved via replacement due to explicit transition."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retain both facts with temporal validity",
+      "Mark Goldman employment as historical",
+      "Add transition date if available"
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

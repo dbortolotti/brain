@@ -1,0 +1,99 @@
+{
+  "error": null,
+  "fixture_id": "additive_sam_preferences_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Add as a new compatible preference; preserve the existing Bill Evans preference and also record Sonny Rollins.",
+    "citations": [],
+    "conflict_classification": "no_conflict_additive",
+    "decision": "accept",
+    "entity_resolution": {
+      "action": "link_existing",
+      "entity_id": null,
+      "reason": "The new information adds another compatible preference and does not contradict the existing memory."
+    },
+    "intent": "add_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "preferred artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Sonny Rollins",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman also likes Sonny Rollins."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No contradiction detected.",
+        "Existing preference retained.",
+        "New preference added as supplementary information."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"add_memory\",\"decision\":\"accept\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman likes Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"preferred artist\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"},{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Goldman\"}]},{\"kind\":\"preference\",\"statement\":\"Sam from Goldman also likes Sonny Rollins.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Sonny Rollins\",\"type\":\"person\",\"role\":\"preferred artist\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Sonny Rollins\"},{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"link_existing\",\"entity_id\":null,\"reason\":\"The new information adds another compatible preference and does not contradict the existing memory.\"},\"conflict_classification\":\"no_conflict_additive\",\"answer\":\"Add as a new compatible preference; preserve the existing Bill Evans preference and also record Sonny Rollins.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"No contradiction detected.\",\"Existing preference retained.\",\"New preference added as supplementary information.\"]}}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

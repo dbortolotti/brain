@@ -1,0 +1,86 @@
+{
+  "error": null,
+  "fixture_id": "email_source_meeting_followup_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Captured that Sam joined Point72 last month, and noted a follow-up request to send the AI infra article.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_pending_request_and_update_contact_context",
+    "entity_resolution": {
+      "action": "create_or_update_sender_contact_context",
+      "entity_id": null,
+      "reason": "Sender email appears as sam@examplecom; no existing entity id provided in input."
+    },
+    "intent": "email_followup_request",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "sam@examplecom",
+            "role": "sender",
+            "type": "email"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          },
+          {
+            "name": "Sam",
+            "role": "sender_name",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "sam@examplecom"
+          }
+        ],
+        "statement": "Sam (sam@examplecom) said he joined Point72 last month."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "sam@examplecom",
+            "role": "recipient",
+            "type": "email"
+          },
+          {
+            "name": "AI infra article",
+            "role": "requested_item",
+            "type": "document_request"
+          }
+        ],
+        "kind": "task_request",
+        "relationships": [
+          {
+            "object": "AI infra article",
+            "predicate": "requested",
+            "subject": "sam@examplecom"
+          }
+        ],
+        "statement": "Send the AI infra article to the sender (sam@examplecom)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted sender context and stated employer change (with medium confidence).",
+        "Extracted explicit action request to send an 'AI infra article' (high confidence)."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm whether 'Point72' is the correct organization spelling/capitalization.",
+      "Ask which specific 'AI infra article' the sender means (title/link) if not known."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"email_followup_request\",\n  \"decision\": \"store_pending_request_and_update_contact_context\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam (sam@examplecom) said he joined Point72 last month.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"sam@examplecom\",\n          \"type\": \"email\",\n          \"role\": \"sender\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        },\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"sender_name\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"sam@examplecom\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"task_request\",\n      \"statement\": \"Send the AI infra article to the sender (sam@examplecom).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"sam@examplecom\",\n          \"type\": \"email\",\n          \"role\": \"recipient\"\n        },\n        {\n          \"name\": \"AI infra article\",\n          \"type\": \"document_request\",\n          \"role\": \"requested_item\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"sam@examplecom\",\n          \"predicate\": \"requested\",\n          \"object\": \"AI infra article\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_or_update_sender_contact_context\",\n    \"entity_id\": null,\n    \"reason\": \"Sender email appears as sam@examplecom; no existing entity id provided in input.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Captured that Sam joined Point72 last month, and noted a follow-up request to send the AI infra article.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Confirm whether 'Point72' is the correct organization spelling/capitalization.\",\n    \"Ask which specific 'AI infra article' the sender means (title/link) if not known.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Extracted sender context and stated employer change (with medium confidence).\",\n      \"Extracted explicit action request to send an 'AI infra article' (high confidence).\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

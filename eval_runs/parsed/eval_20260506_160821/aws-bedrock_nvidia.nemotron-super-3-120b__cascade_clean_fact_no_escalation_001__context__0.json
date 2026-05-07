@@ -1,0 +1,67 @@
+{
+  "fixture_id": "cascade_clean_fact_no_escalation_001__context",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Stored: Nur and Sara are my twin daughters.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "New entities Nur and Sara introduced; no prior resolution needed."
+    },
+    "intent": "store_fact",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "is_twin_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "speaker",
+            "predicate": "is_daughter_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "speaker",
+            "predicate": "is_daughter_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Nur and Sara are my twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Fact stored successfully.",
+        "Entities Nur and Sara resolved as new person entities.",
+        "Relationships established: twin and daughter links."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_160821"
+}

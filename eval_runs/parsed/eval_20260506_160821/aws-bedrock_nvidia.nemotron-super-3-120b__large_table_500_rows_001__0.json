@@ -1,0 +1,118 @@
+{
+  "fixture_id": "large_table_500_rows_001",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Store the CSV table in a columnar format (e.g., Parquet) with dictionary encoding and an index on the id column to efficiently handle repetition and enable fast lookups.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Store as a structured table in a columnar format with deduplication and indexing on id for efficient retrieval",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": "large_table_500_rows_001_storage_policy",
+      "reason": "New storage policy entity created for this fixture to avoid ambiguity and ensure durable memory"
+    },
+    "intent": "Determine appropriate storage strategy for a large CSV table with repeated id,name,value columns",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "input",
+            "type": "data_structure"
+          },
+          {
+            "name": "id",
+            "role": "identifier",
+            "type": "column"
+          },
+          {
+            "name": "name",
+            "role": "attribute",
+            "type": "column"
+          },
+          {
+            "name": "value",
+            "role": "attribute",
+            "type": "column"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "id",
+            "predicate": "has_column",
+            "subject": "CSV table"
+          },
+          {
+            "object": "name",
+            "predicate": "has_column",
+            "subject": "CSV table"
+          },
+          {
+            "object": "value",
+            "predicate": "has_column",
+            "subject": "CSV table"
+          }
+        ],
+        "statement": "The input is a CSV table with 500 rows containing repeated columns: id, name, value"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "columnar storage",
+            "role": "solution",
+            "type": "storage_format"
+          },
+          {
+            "name": "Parquet",
+            "role": "example",
+            "type": "technology"
+          },
+          {
+            "name": "dictionary encoding",
+            "role": "method",
+            "type": "optimization_technique"
+          },
+          {
+            "name": "id index",
+            "role": "access_method",
+            "type": "index"
+          }
+        ],
+        "kind": "recommendation",
+        "relationships": [
+          {
+            "object": "dictionary encoding",
+            "predicate": "uses",
+            "subject": "columnar storage"
+          },
+          {
+            "object": "id index",
+            "predicate": "supports",
+            "subject": "columnar storage"
+          },
+          {
+            "object": "CSV table",
+            "predicate": "applies_to",
+            "subject": "recommendation"
+          }
+        ],
+        "statement": "For large repetitive CSV data, use columnar storage (e.g., Parquet) with dictionary encoding and indexing on id to minimize redundancy and optimize query performance"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Input analyzed: 500-row CSV with id,name,value repetition",
+        "Storage recommendation generated based on data characteristics",
+        "Entity resolved: large_table_500_rows_001_storage_policy",
+        "No conflicts detected",
+        "Decision committed to durable memory"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_160821"
+}

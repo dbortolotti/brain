@@ -1,0 +1,73 @@
+{
+  "error": null,
+  "fixture_id": "article_url_ai_memory_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Stored article context: graph memory preserves relationships and needs provenance and update semantics for knowledge-graph memory design.",
+    "citations": [
+      "https://example.com/ai-memory"
+    ],
+    "conflict_classification": "no_conflict_detected",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "create_or_reference_new",
+      "entity_id": null,
+      "reason": "Only a URL and general concepts were provided; no stable entity IDs were given."
+    },
+    "intent": "Store durable memory for Brain about a referenced article and its relevance to knowledge-graph memory design.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "https://example.com/ai-memory",
+            "role": "source",
+            "type": "url"
+          },
+          {
+            "name": "graph memory",
+            "role": "topic",
+            "type": "concept"
+          },
+          {
+            "name": "provenance",
+            "role": "design requirement",
+            "type": "concept"
+          },
+          {
+            "name": "update semantics",
+            "role": "design requirement",
+            "type": "concept"
+          }
+        ],
+        "kind": "article_context",
+        "relationships": [
+          {
+            "object": "preserving relationships",
+            "predicate": "supports",
+            "subject": "graph memory"
+          },
+          {
+            "object": "provenance and update semantics",
+            "predicate": "requires",
+            "subject": "graph memory"
+          }
+        ],
+        "statement": "An article at https://example.com/ai-memory (recalled context) suggests that graph memory helps agents preserve relationships, and that provenance plus update semantics are important for knowledge-graph memory design."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created one memory card of kind article_context with medium confidence based on provided mocked excerpt."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If more of the article is available, extract precise claims and any terminology used for provenance and update semantics.",
+      "Confirm whether the article explicitly states requirements or if they were inferred from the mocked snippet, then adjust confidence."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Store durable memory for Brain about a referenced article and its relevance to knowledge-graph memory design.\",\n  \"decision\": \"store\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"article_context\",\n      \"statement\": \"An article at https://example.com/ai-memory (recalled context) suggests that graph memory helps agents preserve relationships, and that provenance plus update semantics are important for knowledge-graph memory design.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"https://example.com/ai-memory\",\n          \"type\": \"url\",\n          \"role\": \"source\"\n        },\n        {\n          \"name\": \"graph memory\",\n          \"type\": \"concept\",\n          \"role\": \"topic\"\n        },\n        {\n          \"name\": \"provenance\",\n          \"type\": \"concept\",\n          \"role\": \"design requirement\"\n        },\n        {\n          \"name\": \"update semantics\",\n          \"type\": \"concept\",\n          \"role\": \"design requirement\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"graph memory\",\n          \"predicate\": \"supports\",\n          \"object\": \"preserving relationships\"\n        },\n        {\n          \"subject\": \"graph memory\",\n          \"predicate\": \"requires\",\n          \"object\": \"provenance and update semantics\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_or_reference_new\",\n    \"entity_id\": null,\n    \"reason\": \"Only a URL and general concepts were provided; no stable entity IDs were given.\"\n  },\n  \"conflict_classification\": \"no_conflict_detected\",\n  \"answer\": \"Stored article context: graph memory preserves relationships and needs provenance and update semantics for knowledge-graph memory design.\",\n  \"citations\": [\n    \"https://example.com/ai-memory\"\n  ],\n  \"repair_options\": [\n    \"If more of the article is available, extract precise claims and any terminology used for provenance and update semantics.\",\n    \"Confirm whether the article explicitly states requirements or if they were inferred from the mocked snippet, then adjust confidence.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Created one memory card of kind article_context with medium confidence based on provided mocked excerpt.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

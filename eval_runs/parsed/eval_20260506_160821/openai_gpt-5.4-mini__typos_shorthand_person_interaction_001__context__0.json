@@ -1,0 +1,68 @@
+{
+  "fixture_id": "typos_shorthand_person_interaction_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Captured as a tentative statement: Sam from Goldman apparently likes Bill Evans.",
+    "citations": [
+      "input: For context, sam frm goldmn likes bill evns apparently"
+    ],
+    "conflict_classification": "no_conflict_tentative_statement",
+    "decision": "store_with_low_confidence_and_preserve_uncertainty",
+    "entity_resolution": {
+      "action": "partial_resolution",
+      "entity_id": null,
+      "reason": "Input uses shorthand and typos; names are plausible but not fully certain, so no durable canonical entity merge is committed."
+    },
+    "intent": "record_tentative_person_preference_from_shorthand_input",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_or_origin",
+            "type": "organization_or_location"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "person_relationship",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "from",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman apparently likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored one low-confidence memory card.",
+        "Preserved uncertainty via 'apparently'.",
+        "No superseded or deleted facts involved."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you meant specific full names, provide them for canonicalization.",
+      "If Goldman is an employer, location, or group, clarify the affiliation.",
+      "If Bill Evans refers to a different person than the well-known musician, specify which one."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

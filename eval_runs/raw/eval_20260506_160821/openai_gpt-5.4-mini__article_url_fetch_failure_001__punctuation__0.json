@@ -1,0 +1,58 @@
+{
+  "error": null,
+  "fixture_id": "article_url_fetch_failure_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Cannot store article content because the fetch failed (404/network error) and the URL is malformed.",
+    "citations": [],
+    "conflict_classification": "no_durable_memory",
+    "decision": "Do not commit durable content memory; the source could not be fetched and the URL is malformed, so only a transient failure should be recorded.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No durable source entity can be reliably resolved from the malformed URL and fetch failure."
+    },
+    "intent": "Remember an article from a malformed URL-like input and assess whether it can be committed to memory.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "article",
+            "role": "target",
+            "type": "document"
+          },
+          {
+            "name": "404 network error",
+            "role": "fetch failure",
+            "type": "error"
+          }
+        ],
+        "kind": "transient_event",
+        "relationships": [
+          {
+            "object": "404 network error",
+            "predicate": "fetch_result",
+            "subject": "article"
+          }
+        ],
+        "statement": "An attempt was made to remember an article from the input, but the fetch failed with a 404/network error."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Fetch failed with 404/network error.",
+        "No article content available to encode as durable memory."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide a valid URL or article text.",
+      "Retry with a reachable source.",
+      "If the goal is to remember the fetch failure itself, store it as a transient event only."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Remember an article from a malformed URL-like input and assess whether it can be committed to memory.\",\"decision\":\"Do not commit durable content memory; the source could not be fetched and the URL is malformed, so only a transient failure should be recorded.\",\"memory_cards\":[{\"kind\":\"transient_event\",\"statement\":\"An attempt was made to remember an article from the input, but the fetch failed with a 404/network error.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"article\",\"type\":\"document\",\"role\":\"target\"},{\"name\":\"404 network error\",\"type\":\"error\",\"role\":\"fetch failure\"}],\"relationships\":[{\"subject\":\"article\",\"predicate\":\"fetch_result\",\"object\":\"404 network error\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No durable source entity can be reliably resolved from the malformed URL and fetch failure.\"},\"conflict_classification\":\"no_durable_memory\",\"answer\":\"Cannot store article content because the fetch failed (404/network error) and the URL is malformed.\",\"citations\":[],\"repair_options\":[\"Provide a valid URL or article text.\",\"Retry with a reachable source.\",\"If the goal is to remember the fetch failure itself, store it as a transient event only.\"],\"receipt\":{\"success\":false,\"details\":[\"Fetch failed with 404/network error.\",\"No article content available to encode as durable memory.\"]}}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

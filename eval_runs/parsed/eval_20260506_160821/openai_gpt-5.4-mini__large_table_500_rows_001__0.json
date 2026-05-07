@@ -1,0 +1,61 @@
+{
+  "fixture_id": "large_table_500_rows_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Store the 500-row CSV as structured data rather than committing each repeated row to memory. If a memory entry is needed, keep a compact schema-level summary and any stable patterns or exceptions; avoid duplicating repetitive rows.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Do not store all 500 rows as durable memory by default. Preserve it as structured external data or a compact summarized reference, and only promote stable, semantically meaningful patterns or exceptions into memory.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No single persistent entity in the fixture requires resolution; the input describes a generic CSV table and a storage policy question."
+    },
+    "intent": "Determine how a large CSV table (500 repeated rows of id,name,value) should be represented in memory.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "large table",
+            "role": "input",
+            "type": "dataset"
+          },
+          {
+            "name": "durable memory",
+            "role": "target",
+            "type": "storage"
+          }
+        ],
+        "kind": "policy",
+        "relationships": [
+          {
+            "object": "structured data externally",
+            "predicate": "should be stored as",
+            "subject": "large table"
+          },
+          {
+            "object": "summary or notable exceptions",
+            "predicate": "should retain only",
+            "subject": "durable memory"
+          }
+        ],
+        "statement": "Large repetitive tables should generally be stored outside durable memory as structured data, with only concise summaries, schema notes, or notable exceptions kept in memory if needed."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected a large repetitive CSV table.",
+        "Chose non-durable storage for raw rows.",
+        "Kept only a general policy summary in memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If the table contains meaningful unique facts, extract only those facts into separate memory cards.",
+      "If the dataset must be retrievable later, store a reference or pointer to the file/source instead of the full contents.",
+      "If repeated rows encode a pattern, store the pattern and examples rather than all instances."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

@@ -1,0 +1,49 @@
+{
+  "error": null,
+  "fixture_id": "slack_rewrite_modal_001",
+  "model": "google:gemini-2.5-flash",
+  "payload": {
+    "conflict_classification": "ambiguous_rewrite",
+    "decision": "rewrite_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "ambiguous_entity"
+    },
+    "intent": "rewrite_memory",
+    "memory_cards": [
+      {
+        "entities": [
+          {
+            "name": "He",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "the other one",
+            "role": "object",
+            "type": "item"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "He"
+          }
+        ],
+        "statement": "He prefers the other one."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory rewrite initiated. Awaiting selection of the memory to be rewritten."
+      ],
+      "success": true
+    }
+  },
+  "raw_text": "{\n  \"intent\": \"rewrite_memory\",\n  \"decision\": \"rewrite_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"He prefers the other one.\",\n      \"entities\": [\n        {\n          \"name\": \"He\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"the other one\",\n          \"type\": \"item\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"He\",\n          \"predicate\": \"prefers\",\n          \"object\": \"the other one\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"ambiguous_entity\"\n  },\n  \"conflict_classification\": \"ambiguous_rewrite\",\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory rewrite initiated. Awaiting selection of the memory to be rewritten.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

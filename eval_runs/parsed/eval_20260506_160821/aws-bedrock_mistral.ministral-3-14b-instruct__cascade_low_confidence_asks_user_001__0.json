@@ -1,0 +1,60 @@
+{
+  "fixture_id": "cascade_low_confidence_asks_user_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The system cannot commit this note to durable memory due to low confidence and ambiguity. Please clarify or provide additional context for 'Sam's note about cloud escalation' to resolve.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "defer_to_user",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Ambiguity prevents resolution; requires user clarification."
+    },
+    "intent": "clarify_ambiguous_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "author",
+            "type": "person"
+          },
+          {
+            "name": "cloud escalation",
+            "role": "topic",
+            "type": "concept"
+          }
+        ],
+        "kind": "note",
+        "relationships": [
+          {
+            "object": "note about cloud escalation",
+            "predicate": "created",
+            "subject": "Sam"
+          },
+          {
+            "object": "low confidence",
+            "predicate": "has",
+            "subject": "note about cloud escalation"
+          }
+        ],
+        "statement": "Sam's note about cloud escalation is ambiguous and lacks sufficient context for durable memory storage."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory storage deferred due to low-confidence/ambiguous input.",
+        "User action required to resolve."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask Sam to rephrase or provide context for the note.",
+      "Request clarification on whether 'cloud escalation' refers to a process, tool, or other specific meaning.",
+      "Flag the note for review by a human moderator if ambiguity persists."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

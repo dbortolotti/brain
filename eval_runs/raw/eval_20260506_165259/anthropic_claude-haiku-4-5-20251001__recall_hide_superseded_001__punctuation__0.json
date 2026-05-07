@@ -1,0 +1,58 @@
+{
+  "error": null,
+  "fixture_id": "recall_hide_superseded_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "payload": {
+    "answer": "Sam works at Point72",
+    "citations": [
+      "Current memory: Sam joined Point72"
+    ],
+    "conflict_classification": "supersession_explicit",
+    "decision": "Return current memory as authoritative; superseded memory excluded from answer",
+    "entity_resolution": {
+      "action": "retain_current",
+      "entity_id": "Sam",
+      "reason": "Superseded memory (Goldman) explicitly marked as outdated; current memory (Point72) is authoritative"
+    },
+    "intent": "Resolve current employment status for Sam given superseded and current memory entries",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "type": "organization"
+          }
+        ],
+        "kind": "current_fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded memory (Goldman) excluded from answer",
+        "Current memory (Point72) returned as definitive response",
+        "No ambiguity preserved in answer; status markers were explicit"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If Goldman employment is recent and Point72 is outdated, reverse memory status",
+      "Request timestamp metadata to establish chronological order if status markers are unreliable"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Resolve current employment status for Sam given superseded and current memory entries\",\n  \"decision\": \"Return current memory as authoritative; superseded memory excluded from answer\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"current_fact\",\n      \"statement\": \"Sam joined Point72\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"retain_current\",\n    \"entity_id\": \"Sam\",\n    \"reason\": \"Superseded memory (Goldman) explicitly marked as outdated; current memory (Point72) is authoritative\"\n  },\n  \"conflict_classification\": \"supersession_explicit\",\n  \"answer\": \"Sam works at Point72\",\n  \"citations\": [\n    \"Current memory: Sam joined Point72\"\n  ],\n  \"repair_options\": [\n    \"If Goldman employment is recent and Point72 is outdated, reverse memory status\",\n    \"Request timestamp metadata to establish chronological order if status markers are unreliable\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Superseded memory (Goldman) excluded from answer\",\n      \"Current memory (Point72) returned as definitive response\",\n      \"No ambiguity preserved in answer; status markers were explicit\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

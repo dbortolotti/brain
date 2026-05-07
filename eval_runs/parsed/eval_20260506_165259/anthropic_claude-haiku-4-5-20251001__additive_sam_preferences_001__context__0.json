@@ -1,0 +1,90 @@
+{
+  "fixture_id": "additive_sam_preferences_001__context",
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "payload": {
+    "answer": "Both preferences are compatible and should be retained. Sam can like multiple musicians.",
+    "citations": [
+      "Existing memory: Sam from Goldman likes Bill Evans",
+      "New input: Sam from Goldman also likes Sonny Rollins"
+    ],
+    "conflict_classification": "NO_CONFLICT",
+    "decision": "ACCEPT_ADDITIVE",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "sam_goldman",
+      "reason": "Same person (Sam from Goldman) referenced in both existing and new statements"
+    },
+    "intent": "Add new preference fact to existing memory about Sam",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Sonny Rollins",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Sonny Rollins"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Additive fact accepted",
+        "No contradiction detected",
+        "Both memory cards committed",
+        "Entity Sam from Goldman unified"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_165259"
+}

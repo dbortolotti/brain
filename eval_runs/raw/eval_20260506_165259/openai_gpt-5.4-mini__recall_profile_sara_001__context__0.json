@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "fixture_id": "recall_profile_sara_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Sara is Daniele's twin daughter. The only other fact provided is that Nur is her twin sibling. I don't have any more details about Sara from this context.",
+    "citations": [
+      "Fixture ID: recall_profile_sara_001__context"
+    ],
+    "conflict_classification": "none",
+    "decision": "answer_with_limited_known_facts",
+    "entity_resolution": {
+      "action": "resolve_to_known_person",
+      "entity_id": null,
+      "reason": "Sara is identified only from the provided context as Daniele's twin daughter; no additional distinguishing information is available."
+    },
+    "intent": "answer_user_query",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "sibling",
+            "type": "person"
+          }
+        ],
+        "kind": "relation",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "child_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "twin_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is one of Daniele's twin daughters; Nur is the other twin daughter."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Identified Sara from the provided context.",
+        "Avoided adding unsupported personal details.",
+        "Preserved ambiguity beyond the known relationship facts."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want, provide more context about Sara, such as age, interests, or relationships, and I can refine the memory."
+    ]
+  },
+  "raw_text": "{\"intent\":\"answer_user_query\",\"decision\":\"answer_with_limited_known_facts\",\"memory_cards\":[{\"kind\":\"relation\",\"statement\":\"Sara is one of Daniele's twin daughters; Nur is the other twin daughter.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Daniele\",\"type\":\"person\",\"role\":\"parent\"},{\"name\":\"Nur\",\"type\":\"person\",\"role\":\"sibling\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"child_of\",\"object\":\"Daniele\"},{\"subject\":\"Sara\",\"predicate\":\"twin_of\",\"object\":\"Nur\"}]}],\"entity_resolution\":{\"action\":\"resolve_to_known_person\",\"entity_id\":null,\"reason\":\"Sara is identified only from the provided context as Daniele's twin daughter; no additional distinguishing information is available.\"},\"conflict_classification\":\"none\",\"answer\":\"Sara is Daniele's twin daughter. The only other fact provided is that Nur is her twin sibling. I don't have any more details about Sara from this context.\",\"citations\":[\"Fixture ID: recall_profile_sara_001__context\"],\"repair_options\":[\"If you want, provide more context about Sara, such as age, interests, or relationships, and I can refine the memory.\"],\"receipt\":{\"success\":true,\"details\":[\"Identified Sara from the provided context.\",\"Avoided adding unsupported personal details.\",\"Preserved ambiguity beyond the known relationship facts.\"]}}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

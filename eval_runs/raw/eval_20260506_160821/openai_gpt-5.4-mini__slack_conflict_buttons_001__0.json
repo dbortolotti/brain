@@ -1,0 +1,77 @@
+{
+  "error": null,
+  "fixture_id": "slack_conflict_buttons_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Recorded with temporal qualification: Sam was at Goldman and then left to join Point72. The previous 'works at Goldman' state is superseded if this update is correct.",
+    "citations": [
+      "Existing: Sam works at Goldman.",
+      "/brain remember Sam left Goldman and joined Point72."
+    ],
+    "conflict_classification": "direct_temporal_contradiction",
+    "decision": "accept_with_temporal_update",
+    "entity_resolution": {
+      "action": "merge_with_ambiguity",
+      "entity_id": null,
+      "reason": "The input refers to the same likely person 'Sam' as the existing memory, but the update introduces a career change that conflicts with the prior current-employment fact; temporal qualification preserves both without presenting the superseded fact as current."
+    },
+    "intent": "memory_update",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "worked_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam previously worked at Goldman; Sam later left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected a direct conflict between current employment at Goldman and the new statement that Sam left Goldman and joined Point72.",
+        "Stored a temporally qualified memory rather than an unqualified replacement.",
+        "Did not present the superseded Goldman employment as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want a strict overwrite, confirm that this is the same Sam and that Point72 is the current employer.",
+      "If you want to preserve history, keep both facts with timestamps/temporal qualifiers.",
+      "If 'Sam' could refer to different people, provide additional identifiers to disambiguate."
+    ]
+  },
+  "raw_text": "{\"intent\":\"memory_update\",\"decision\":\"accept_with_temporal_update\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam previously worked at Goldman; Sam later left Goldman and joined Point72.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"current employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"worked_at\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"left\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"merge_with_ambiguity\",\"entity_id\":null,\"reason\":\"The input refers to the same likely person 'Sam' as the existing memory, but the update introduces a career change that conflicts with the prior current-employment fact; temporal qualification preserves both without presenting the superseded fact as current.\"},\"conflict_classification\":\"direct_temporal_contradiction\",\"answer\":\"Recorded with temporal qualification: Sam was at Goldman and then left to join Point72. The previous 'works at Goldman' state is superseded if this update is correct.\",\"citations\":[\"Existing: Sam works at Goldman.\",\"/brain remember Sam left Goldman and joined Point72.\"],\"repair_options\":[\"If you want a strict overwrite, confirm that this is the same Sam and that Point72 is the current employer.\",\"If you want to preserve history, keep both facts with timestamps/temporal qualifiers.\",\"If 'Sam' could refer to different people, provide additional identifiers to disambiguate.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected a direct conflict between current employment at Goldman and the new statement that Sam left Goldman and joined Point72.\",\"Stored a temporally qualified memory rather than an unqualified replacement.\",\"Did not present the superseded Goldman employment as current.\"]}}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

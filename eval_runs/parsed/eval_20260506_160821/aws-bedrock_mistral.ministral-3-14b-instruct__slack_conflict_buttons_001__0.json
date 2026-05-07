@@ -1,0 +1,69 @@
+{
+  "fixture_id": "slack_conflict_buttons_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam no longer works at Goldman Sachs and now works at Point72 (employer type ambiguous). The previous memory ('Sam works at Goldman') is superseded.",
+    "citations": [
+      "User input: 'Sam left Goldman and joined Point72.'",
+      "Existing memory: 'Sam works at Goldman.' (superseded)"
+    ],
+    "conflict_classification": "superseded_fact_with_ambiguity",
+    "decision": "supersede_existing_with_ambiguity_preserved",
+    "entity_resolution": {
+      "action": "disambiguate_organization",
+      "entity_id": "Point72",
+      "reason": "Ambiguity between Point72 Asset Management and Point72 Ventures; preserve ambiguity in durable memory."
+    },
+    "intent": "memory_update_conflict_resolution",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "past_employer",
+            "type": "organization"
+          },
+          {
+            "ambiguity": "Point72 Asset Management or Point72 Ventures",
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "left_employer",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined_employer",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman Sachs and joined Point72 Ventures (exact employer ambiguous; could be Point72 Asset Management or Point72 Ventures)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded 'Sam works at Goldman' with updated memory.",
+        "Preserved ambiguity in 'Point72' entity.",
+        "No deleted facts presented as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify Point72's specific division (Asset Management/Ventures) if possible.",
+      "Flag for user review if ambiguity is critical to context."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

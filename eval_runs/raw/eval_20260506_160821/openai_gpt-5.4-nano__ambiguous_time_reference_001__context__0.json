@@ -1,0 +1,67 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_time_reference_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Stored as a low-confidence, time-relative note: Sam said last Friday that he plans to leave Goldman next month.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_tentatively",
+    "entity_resolution": {
+      "action": "no_resolution",
+      "entity_id": null,
+      "reason": "Only 'Sam' and 'Goldman' are mentioned without unique identifiers; time anchors ('last Friday', 'next month') are relative/ambiguous."
+    },
+    "intent": "extract_personal_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "statement",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "plans_to_leave_employer",
+            "subject": "Sam"
+          },
+          {
+            "object": "last Friday",
+            "predicate": "said_on",
+            "subject": "Sam"
+          },
+          {
+            "object": "next month",
+            "predicate": "leaves_in",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said that he is leaving Goldman next month (he said this last Friday)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created a tentative memory card with relative time ('last Friday', 'next month')."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm Sam's full identity (e.g., last name) to disambiguate.",
+      "Convert 'next month' and 'last Friday' into exact dates.",
+      "Confirm whether the plan is definite or subject to change."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"extract_personal_memory\",\n  \"decision\": \"store_tentatively\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"statement\",\n      \"statement\": \"Sam said that he is leaving Goldman next month (he said this last Friday).\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"plans_to_leave_employer\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"said_on\",\n          \"object\": \"last Friday\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"leaves_in\",\n          \"object\": \"next month\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_resolution\",\n    \"entity_id\": null,\n    \"reason\": \"Only 'Sam' and 'Goldman' are mentioned without unique identifiers; time anchors ('last Friday', 'next month') are relative/ambiguous.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Stored as a low-confidence, time-relative note: Sam said last Friday that he plans to leave Goldman next month.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Confirm Sam's full identity (e.g., last name) to disambiguate.\",\n    \"Convert 'next month' and 'last Friday' into exact dates.\",\n    \"Confirm whether the plan is definite or subject to change.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Created a tentative memory card with relative time ('last Friday', 'next month').\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

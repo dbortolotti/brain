@@ -1,0 +1,58 @@
+{
+  "error": null,
+  "fixture_id": "recall_hide_superseded_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "payload": {
+    "answer": "Sam works at Point72",
+    "citations": [
+      "Current memory: Sam joined Point72"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "Return current memory as authoritative; exclude superseded fact",
+    "entity_resolution": {
+      "action": "retain_current",
+      "entity_id": "sam_employment_point72",
+      "reason": "Current memory supersedes prior Goldman Sachs employment record"
+    },
+    "intent": "Resolve current employment status for Sam given superseded and current memory states",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "type": "organization"
+          }
+        ],
+        "kind": "current_fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded fact (Goldman) excluded from answer",
+        "Current fact (Point72) returned as authoritative",
+        "Ambiguity preserved: no end date for Goldman employment recorded"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm Point72 employment date if temporal precision needed",
+      "Archive Goldman Sachs employment as historical record with end date"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Resolve current employment status for Sam given superseded and current memory states\",\n  \"decision\": \"Return current memory as authoritative; exclude superseded fact\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"current_fact\",\n      \"statement\": \"Sam joined Point72\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"retain_current\",\n    \"entity_id\": \"sam_employment_point72\",\n    \"reason\": \"Current memory supersedes prior Goldman Sachs employment record\"\n  },\n  \"conflict_classification\": \"supersession\",\n  \"answer\": \"Sam works at Point72\",\n  \"citations\": [\n    \"Current memory: Sam joined Point72\"\n  ],\n  \"repair_options\": [\n    \"Confirm Point72 employment date if temporal precision needed\",\n    \"Archive Goldman Sachs employment as historical record with end date\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Superseded fact (Goldman) excluded from answer\",\n      \"Current fact (Point72) returned as authoritative\",\n      \"Ambiguity preserved: no end date for Goldman employment recorded\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

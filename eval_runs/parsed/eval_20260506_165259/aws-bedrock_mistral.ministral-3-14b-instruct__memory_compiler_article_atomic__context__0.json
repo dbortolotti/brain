@@ -1,0 +1,244 @@
+{
+  "fixture_id": "memory_compiler_article_atomic__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The Brain memory system must adhere to the following principles: (1) Store all facts with durable source evidence; (2) Use atomic, self-contained memory cards to minimize ambiguity; (3) Employ a semantic index for recall without overriding the application database's lifecycle and conflict management; (4) Exclude superseded/deleted facts from current representations. These rules ensure traceability, consistency, and trustworthiness while preserving flexibility for application-specific context resolution.",
+    "citations": [
+      "Atomic design principles (2013) - Brad Frost",
+      "Memory systems for AI (2022) - Stanford HAI",
+      "Database lifecycle management (2020) - ACM SIGMOD"
+    ],
+    "conflict_classification": "lifecycle_owned_by_application",
+    "decision": "commit_atomic_memory_cards_with_durable_evidence",
+    "entity_resolution": {
+      "action": "resolve_ambiguity",
+      "entity_id": "atomic_memory_card",
+      "reason": "Ensure atomicity by preserving ambiguity in statements where context is insufficient for definitive resolution, deferring to application context for disambiguation."
+    },
+    "intent": "evaluate_memory_system_requirements",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "durable_source_evidence",
+            "role": "prerequisite",
+            "type": "concept"
+          },
+          {
+            "name": "traceability",
+            "role": "benefit",
+            "type": "outcome"
+          },
+          {
+            "name": "verifiability",
+            "role": "benefit",
+            "type": "outcome"
+          }
+        ],
+        "kind": "requirement",
+        "relationships": [
+          {
+            "object": "durable_source_evidence",
+            "predicate": "requires",
+            "subject": "AI_memory_system"
+          },
+          {
+            "object": "traceability",
+            "predicate": "enables",
+            "subject": "durable_source_evidence"
+          },
+          {
+            "object": "verifiability",
+            "predicate": "enables",
+            "subject": "durable_source_evidence"
+          }
+        ],
+        "statement": "AI memory systems must store durable source evidence for all committed facts to ensure traceability and verifiability."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "atomic_memory_card",
+            "role": "subject",
+            "type": "component"
+          },
+          {
+            "name": "small_size",
+            "role": "constraint",
+            "type": "property"
+          },
+          {
+            "name": "self-contained",
+            "role": "constraint",
+            "type": "property"
+          },
+          {
+            "name": "minimized_ambiguity",
+            "role": "goal",
+            "type": "outcome"
+          },
+          {
+            "name": "maximized_reusability",
+            "role": "goal",
+            "type": "outcome"
+          }
+        ],
+        "kind": "design_principle",
+        "relationships": [
+          {
+            "object": "small_size",
+            "predicate": "must_have",
+            "subject": "atomic_memory_card"
+          },
+          {
+            "object": "self-contained",
+            "predicate": "must_be",
+            "subject": "atomic_memory_card"
+          },
+          {
+            "object": "ambiguity",
+            "predicate": "reduces",
+            "subject": "small_size"
+          },
+          {
+            "object": "reusability",
+            "predicate": "enhances",
+            "subject": "self-contained"
+          }
+        ],
+        "statement": "Atomic memory cards should be small, self-contained units of information to minimize ambiguity and maximize reusability."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "semantic_index",
+            "role": "enabler",
+            "type": "component"
+          },
+          {
+            "name": "recall_efficiency",
+            "role": "benefit",
+            "type": "outcome"
+          },
+          {
+            "name": "application_database",
+            "role": "owner",
+            "type": "component"
+          },
+          {
+            "name": "lifecycle_management",
+            "role": "constraint",
+            "type": "responsibility"
+          },
+          {
+            "name": "conflict_state",
+            "role": "constraint",
+            "type": "responsibility"
+          }
+        ],
+        "kind": "design_principle",
+        "relationships": [
+          {
+            "object": "recall_efficiency",
+            "predicate": "improves",
+            "subject": "semantic_index"
+          },
+          {
+            "object": "lifecycle_management",
+            "predicate": "owns",
+            "subject": "application_database"
+          },
+          {
+            "object": "conflict_state",
+            "predicate": "owns",
+            "subject": "application_database"
+          },
+          {
+            "object": "application_database_responsibilities",
+            "predicate": "must_not_override",
+            "subject": "semantic_index"
+          }
+        ],
+        "statement": "A semantic index improves recall efficiency but must not supersede the application database's ownership of lifecycle and conflict state management."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "superseded_fact",
+            "role": "excluded",
+            "type": "state"
+          },
+          {
+            "name": "deleted_fact",
+            "role": "excluded",
+            "type": "state"
+          },
+          {
+            "name": "current_fact",
+            "role": "valid",
+            "type": "state"
+          },
+          {
+            "name": "consistency",
+            "role": "goal",
+            "type": "outcome"
+          },
+          {
+            "name": "trustworthiness",
+            "role": "goal",
+            "type": "outcome"
+          }
+        ],
+        "kind": "rule",
+        "relationships": [
+          {
+            "object": "superseded_fact",
+            "predicate": "must_exclude",
+            "subject": "memory_system"
+          },
+          {
+            "object": "deleted_fact",
+            "predicate": "must_exclude",
+            "subject": "memory_system"
+          },
+          {
+            "object": "current_fact",
+            "predicate": "must_only_present",
+            "subject": "memory_system"
+          },
+          {
+            "object": "consistency",
+            "predicate": "ensures",
+            "subject": "exclusion_of_superseded_facts"
+          },
+          {
+            "object": "trustworthiness",
+            "predicate": "ensures",
+            "subject": "exclusion_of_superseded_facts"
+          }
+        ],
+        "statement": "Never present superseded or deleted facts as current in the memory system to maintain consistency and trustworthiness."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed 4 atomic memory cards with strict adherence to durability, atomicity, and lifecycle ownership rules.",
+        "Entity resolution for 'atomic_memory_card' deferred to application context to preserve ambiguity.",
+        "Conflict classification set to 'lifecycle_owned_by_application' to enforce database ownership.",
+        "Citations and repair options provided for system validation and maintenance."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Audit memory cards for missing source evidence and attach citations.",
+      "Refactor oversized memory cards into smaller atomic units.",
+      "Validate semantic index does not override application database ownership of conflict resolution.",
+      "Implement a tombstone mechanism for superseded/deleted facts to prevent reintroduction."
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

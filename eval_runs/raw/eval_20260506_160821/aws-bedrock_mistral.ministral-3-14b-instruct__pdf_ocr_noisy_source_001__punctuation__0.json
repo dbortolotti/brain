@@ -1,0 +1,122 @@
+{
+  "error": null,
+  "fixture_id": "pdf_ocr_noisy_source_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The input violates durable memory rules due to OCR noise and punctuation errors. Proceed with rebuildable projections while flagging the source as unreliable. No facts should be committed without cross-validation.",
+    "citations": [],
+    "conflict_classification": "source_quality_conflict",
+    "decision": "ambiguous_preservation",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Source noise prevents unambiguous entity resolution. Requires semantic reconstruction."
+    },
+    "intent": "memory_compilation",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "OCR_noisy_source_001",
+            "role": "input_fixture",
+            "type": "source"
+          },
+          {
+            "name": "punctuation_errors",
+            "role": "data_quality_issue",
+            "type": "artifact"
+          }
+        ],
+        "kind": "source_metadata",
+        "relationships": [
+          {
+            "object": "punctuation_errors",
+            "predicate": "has",
+            "subject": "OCR_noisy_source_001"
+          },
+          {
+            "object": "cognitive_reconstruction_trust",
+            "predicate": "impairs",
+            "subject": "punctuation_errors"
+          }
+        ],
+        "statement": "OCR output contains high noise and punctuation errors, rendering raw text unreliable for direct cognitive reconstruction."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "rebuildable_projection",
+            "role": "fallback_strategy",
+            "type": "methodology"
+          },
+          {
+            "name": "source_integrity",
+            "role": "validation_criterion",
+            "type": "constraint"
+          }
+        ],
+        "kind": "cognitive_projection",
+        "relationships": [
+          {
+            "object": "semantic_inference",
+            "predicate": "requires",
+            "subject": "rebuildable_projection"
+          },
+          {
+            "object": "methodology_switch",
+            "predicate": "triggers",
+            "subject": "source_integrity"
+          }
+        ],
+        "statement": "Cognitive system should prioritize *rebuildable* memory projections over direct OCR extraction when source integrity is compromised."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "durable_memory",
+            "role": "constraint",
+            "type": "system_property"
+          },
+          {
+            "name": "ambiguity_preservation",
+            "role": "fallback",
+            "type": "design_principle"
+          }
+        ],
+        "kind": "durable_memory_rule",
+        "relationships": [
+          {
+            "object": "superseded_facts",
+            "predicate": "excludes",
+            "subject": "durable_memory"
+          },
+          {
+            "object": "noisy_source_output",
+            "predicate": "applies_to",
+            "subject": "ambiguity_preservation"
+          }
+        ],
+        "statement": "Never commit superseded/deleted facts as current. Preserve ambiguity in noisy sources unless resolved via cross-referenced projections."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Direct memory commitment aborted due to source integrity violations.",
+        "Ambiguity preserved per design principles.",
+        "Rebuildable projection workflow triggered."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Initiate semantic reconstruction pipeline for OCR_noisy_source_001",
+      "Tag source as 'unreliable' in metadata",
+      "Generate probabilistic memory cards with confidence intervals"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_compilation\",\n  \"decision\": \"ambiguous_preservation\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"source_metadata\",\n      \"statement\": \"OCR output contains high noise and punctuation errors, rendering raw text unreliable for direct cognitive reconstruction.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"OCR_noisy_source_001\",\n          \"type\": \"source\",\n          \"role\": \"input_fixture\"\n        },\n        {\n          \"name\": \"punctuation_errors\",\n          \"type\": \"artifact\",\n          \"role\": \"data_quality_issue\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"OCR_noisy_source_001\",\n          \"predicate\": \"has\",\n          \"object\": \"punctuation_errors\"\n        },\n        {\n          \"subject\": \"punctuation_errors\",\n          \"predicate\": \"impairs\",\n          \"object\": \"cognitive_reconstruction_trust\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"cognitive_projection\",\n      \"statement\": \"Cognitive system should prioritize *rebuildable* memory projections over direct OCR extraction when source integrity is compromised.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"rebuildable_projection\",\n          \"type\": \"methodology\",\n          \"role\": \"fallback_strategy\"\n        },\n        {\n          \"name\": \"source_integrity\",\n          \"type\": \"constraint\",\n          \"role\": \"validation_criterion\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"rebuildable_projection\",\n          \"predicate\": \"requires\",\n          \"object\": \"semantic_inference\"\n        },\n        {\n          \"subject\": \"source_integrity\",\n          \"predicate\": \"triggers\",\n          \"object\": \"methodology_switch\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"durable_memory_rule\",\n      \"statement\": \"Never commit superseded/deleted facts as current. Preserve ambiguity in noisy sources unless resolved via cross-referenced projections.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"durable_memory\",\n          \"type\": \"system_property\",\n          \"role\": \"constraint\"\n        },\n        {\n          \"name\": \"ambiguity_preservation\",\n          \"type\": \"design_principle\",\n          \"role\": \"fallback\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"durable_memory\",\n          \"predicate\": \"excludes\",\n          \"object\": \"superseded_facts\"\n        },\n        {\n          \"subject\": \"ambiguity_preservation\",\n          \"predicate\": \"applies_to\",\n          \"object\": \"noisy_source_output\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Source noise prevents unambiguous entity resolution. Requires semantic reconstruction.\"\n  },\n  \"conflict_classification\": \"source_quality_conflict\",\n  \"answer\": \"The input violates durable memory rules due to OCR noise and punctuation errors. Proceed with rebuildable projections while flagging the source as unreliable. No facts should be committed without cross-validation.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Initiate semantic reconstruction pipeline for OCR_noisy_source_001\",\n    \"Tag source as 'unreliable' in metadata\",\n    \"Generate probabilistic memory cards with confidence intervals\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Direct memory commitment aborted due to source integrity violations.\",\n      \"Ambiguity preserved per design principles.\",\n      \"Rebuildable projection workflow triggered.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

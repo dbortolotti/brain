@@ -1,0 +1,46 @@
+{
+  "fixture_id": "conflict_correction_like__punctuation",
+  "model": "google:gemini-2.5-pro",
+  "payload": {
+    "answer": "Got it. I've updated my memory that Sam from Goldman likes early Coltrane, not Bill Evans.",
+    "conflict_classification": "correction",
+    "decision": "The user is providing a direct correction to a previously stored fact. The system should supersede the old fact and add the new one.",
+    "intent": "correction",
+    "memory_cards": [
+      {
+        "kind": "supersede",
+        "statement": "Sam from Goldman likes Bill Evans"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "music"
+          }
+        ],
+        "kind": "add",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      }
+    ]
+  },
+  "run_id": "eval_20260506_162328"
+}

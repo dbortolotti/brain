@@ -1,0 +1,84 @@
+{
+  "fixture_id": "temporal_status_transition_001__context",
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "payload": {
+    "answer": "Status update accepted. Prior planned state archived as superseded. Current authoritative state: Brain Slack agent MVP implemented.",
+    "citations": [
+      "Existing project state: status=open",
+      "New state: MVP implemented"
+    ],
+    "conflict_classification": "temporal_status_transition",
+    "decision": "Accept state transition with temporal annotation",
+    "entity_resolution": {
+      "action": "merge_with_temporal_tracking",
+      "entity_id": "brain_slack_agent",
+      "reason": "Same entity undergoing status transition; preserve prior state as historical context"
+    },
+    "intent": "Update project status from planned to implemented",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain Slack agent",
+            "role": "subject",
+            "type": "project_component"
+          },
+          {
+            "name": "MVP",
+            "role": "qualifier",
+            "type": "development_phase"
+          }
+        ],
+        "kind": "fact_supersession",
+        "relationships": [
+          {
+            "object": "implemented",
+            "predicate": "has_status",
+            "subject": "Brain Slack agent"
+          },
+          {
+            "object": "MVP",
+            "predicate": "has_phase",
+            "subject": "Brain Slack agent"
+          }
+        ],
+        "statement": "The Brain Slack agent MVP is now implemented"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain Slack agent",
+            "role": "subject",
+            "type": "project_component"
+          }
+        ],
+        "kind": "superseded_fact",
+        "relationships": [
+          {
+            "object": "open",
+            "predicate": "had_status",
+            "subject": "Brain Slack agent"
+          }
+        ],
+        "statement": "The Brain Slack agent is planned, status=open"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded fact marked as historical",
+        "New fact committed with high confidence",
+        "Entity identity preserved across transition",
+        "No ambiguity detected in transition logic"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retain both states with temporal markers (planned\u2192implemented)",
+      "Query implementation date/timestamp for precise transition point",
+      "Link implementation evidence to new state"
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

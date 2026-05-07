@@ -1,0 +1,51 @@
+{
+  "fixture_id": "slack_rewrite_modal_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory rewritten to reflect preference for 'the other option' with medium confidence due to ambiguity. No superseded facts retained.",
+    "citations": [],
+    "conflict_classification": "rewrite_ambiguous_reference",
+    "decision": "rewrite",
+    "entity_resolution": {
+      "action": "disambiguate",
+      "entity_id": null,
+      "reason": "Context of 'the other one' is ambiguous; no prior explicit reference exists. Preserved as 'other option' to avoid false precision."
+    },
+    "intent": "rewrite_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "user",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "other option",
+            "role": "object",
+            "type": "unspecified_entity"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "other option",
+            "predicate": "prefers",
+            "subject": "user"
+          }
+        ],
+        "statement": "The user prefers the other option (unspecified context)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Original memory discarded (no superseded facts preserved).",
+        "New memory marked as 'ambiguous' to prevent overconfidence in resolution."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_160821"
+}

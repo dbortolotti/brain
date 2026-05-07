@@ -1,0 +1,142 @@
+{
+  "fixture_id": "conversation_transcript_sam_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Committed key facts: Sam\u2019s employer change (Goldman -> Point72), current jazz listening emphasis (Bill Evans with increasing early Coltrane), and a pending plan to discuss AI infrastructure with an article to be sent.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "commit_selective_personal_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Use surface-form entities from the transcript without attempting cross-system ID mapping."
+    },
+    "intent": "compile_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "profile",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman last month and joined Point72."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "artist_interest",
+            "type": "musician"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "recent_interest",
+            "type": "music_style"
+          },
+          {
+            "name": "John Coltrane",
+            "role": "referenced_in_style",
+            "type": "musician"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "listens_to",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "recently_preferes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam has been listening to Bill Evans recently, with a stronger focus lately on early Coltrane."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "conversation_partner",
+            "type": "person"
+          },
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "AI infra",
+            "role": "conversation_topic",
+            "type": "topic"
+          },
+          {
+            "name": "article",
+            "role": "shared_material",
+            "type": "information_resource"
+          }
+        ],
+        "kind": "plan",
+        "relationships": [
+          {
+            "object": "article",
+            "predicate": "will_send",
+            "subject": "Sam"
+          },
+          {
+            "object": "AI infra",
+            "predicate": "will_catch_up_about",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Sam and Daniele plan to catch up about AI infrastructure and Sam will send the article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted three candidate memory cards from the transcript.",
+        "No conflicting statements were detected in the provided context."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If the memory system supports time anchoring, store 'last month' as a relative time reference from the conversation date.",
+      "If the system supports genre normalization, resolve 'early Coltrane' to a specific era/style label."
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

@@ -1,0 +1,55 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_sam_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Recorded an ambiguous preference: Sam likes Bill Evans, without resolving which Sam.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "create_ambiguous_preference_memory",
+    "entity_resolution": {
+      "action": "no_resolution",
+      "entity_id": null,
+      "reason": "The message does not clarify whether 'Sam' is the Goldman Sam or the Point72 Sam."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam mentioned that he likes Bill Evans (which Sam is not specified)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Added low-confidence preference memory for 'Sam' without firm/entity resolution."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask the user which Sam (Goldman or Point72) the statement refers to, then update the memory with the correct entity.",
+      "If the Slack message includes context (thread, handle, channel), reprocess with that context to resolve the correct Sam."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"slack_intake\",\n  \"decision\": \"create_ambiguous_preference_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam mentioned that he likes Bill Evans (which Sam is not specified).\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_resolution\",\n    \"entity_id\": null,\n    \"reason\": \"The message does not clarify whether 'Sam' is the Goldman Sam or the Point72 Sam.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Recorded an ambiguous preference: Sam likes Bill Evans, without resolving which Sam.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Ask the user which Sam (Goldman or Point72) the statement refers to, then update the memory with the correct entity.\",\n    \"If the Slack message includes context (thread, handle, channel), reprocess with that context to resolve the correct Sam.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Added low-confidence preference memory for 'Sam' without firm/entity resolution.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

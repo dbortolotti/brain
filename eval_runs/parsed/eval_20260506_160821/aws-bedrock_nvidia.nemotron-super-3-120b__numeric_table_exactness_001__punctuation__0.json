@@ -1,0 +1,119 @@
+{
+  "fixture_id": "numeric_table_exactness_001__punctuation",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Extracted two experiment runs: PPO-001 (reward: 012, Sharpe: 045, baseline) and PPO-002 (reward: 018, Sharpe: 051, entropy tuned).",
+    "citations": [
+      "numeric_table_exactness_001__punctuation"
+    ],
+    "conflict_classification": "none",
+    "decision": "parse_table_and_create_memory_cards_for_each_run",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "All entities are explicitly defined in the table and require no resolution."
+    },
+    "intent": "extract_structured_data_from_table",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "subject",
+            "type": "run_identifier"
+          },
+          {
+            "name": "012",
+            "role": "attribute",
+            "type": "reward_value"
+          },
+          {
+            "name": "045",
+            "role": "attribute",
+            "type": "sharpe_ratio"
+          },
+          {
+            "name": "baseline",
+            "role": "context",
+            "type": "note"
+          }
+        ],
+        "kind": "experiment_run",
+        "relationships": [
+          {
+            "object": "012",
+            "predicate": "has_reward",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "045",
+            "predicate": "has_sharpe_ratio",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "baseline",
+            "predicate": "has_note",
+            "subject": "PPO-001"
+          }
+        ],
+        "statement": "PPO-001 achieved a reward of 012 and Sharpe ratio of 045, noted as baseline."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "subject",
+            "type": "run_identifier"
+          },
+          {
+            "name": "018",
+            "role": "attribute",
+            "type": "reward_value"
+          },
+          {
+            "name": "051",
+            "role": "attribute",
+            "type": "sharpe_ratio"
+          },
+          {
+            "name": "entropy tuned",
+            "role": "context",
+            "type": "note"
+          }
+        ],
+        "kind": "experiment_run",
+        "relationships": [
+          {
+            "object": "018",
+            "predicate": "has_reward",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "051",
+            "predicate": "has_sharpe_ratio",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "entropy tuned",
+            "predicate": "has_note",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "PPO-002 achieved a reward of 018 and Sharpe ratio of 051, noted as entropy tuned."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Table parsed successfully.",
+        "Two memory cards created with high confidence.",
+        "No conflicts or ambiguities detected.",
+        "All values preserved as given (including leading zeros)."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_160821"
+}

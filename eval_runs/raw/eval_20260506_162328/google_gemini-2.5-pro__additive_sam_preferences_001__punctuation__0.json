@@ -1,0 +1,53 @@
+{
+  "error": null,
+  "fixture_id": "additive_sam_preferences_001__punctuation",
+  "model": "google:gemini-2.5-pro",
+  "payload": {
+    "answer": "OK. I've added that Sam from Goldman also likes Sonny Rollins.",
+    "citations": [],
+    "conflict_classification": "ADDITIVE",
+    "decision": "COMMIT",
+    "entity_resolution": {
+      "action": "RESOLVE",
+      "entity_id": "Sam from Goldman",
+      "reason": "The entity 'Sam from Goldman' is mentioned in both the existing memory and the new input, and they refer to the same person."
+    },
+    "intent": "ADD_FACT",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "object",
+            "type": "musician"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Sonny Rollins",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes Sonny Rollins."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "New fact about 'Sam from Goldman' was successfully added to memory."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"ADD_FACT\",\n  \"decision\": \"COMMIT\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam from Goldman likes Sonny Rollins.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam from Goldman\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Sonny Rollins\",\n          \"type\": \"musician\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam from Goldman\",\n          \"predicate\": \"likes\",\n          \"object\": \"Sonny Rollins\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"RESOLVE\",\n    \"entity_id\": \"Sam from Goldman\",\n    \"reason\": \"The entity 'Sam from Goldman' is mentioned in both the existing memory and the new input, and they refer to the same person.\"\n  },\n  \"conflict_classification\": \"ADDITIVE\",\n  \"answer\": \"OK. I've added that Sam from Goldman also likes Sonny Rollins.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"New fact about 'Sam from Goldman' was successfully added to memory.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_162328",
+  "status": "ok"
+}

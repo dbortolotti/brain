@@ -1,0 +1,67 @@
+{
+  "fixture_id": "personal_routine_morning_reading_001",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Recorded preference: user prefers to read technical papers in the morning before checking email.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_user_preference",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": "personal_routine_morning_reading_001",
+      "reason": "New preference record created for user's morning routine involving technical paper reading before email."
+    },
+    "intent": "record_preference",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "technical papers",
+            "role": "object",
+            "type": "content"
+          },
+          {
+            "name": "morning",
+            "role": "temporal_context",
+            "type": "time"
+          },
+          {
+            "name": "email",
+            "role": "competing_activity",
+            "type": "activity"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "technical papers",
+            "predicate": "prefers_to_read",
+            "subject": "user"
+          },
+          {
+            "object": "checking_email",
+            "predicate": "occurs_before",
+            "subject": "reading_technical_papers"
+          },
+          {
+            "object": "morning",
+            "predicate": "occurs_in",
+            "subject": "reading_technical_papers"
+          }
+        ],
+        "statement": "I usually prefer to read technical papers in the morning before checking email."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preference stored successfully.",
+        "No conflicts detected.",
+        "Entity ID assigned: personal_routine_morning_reading_001"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_160821"
+}

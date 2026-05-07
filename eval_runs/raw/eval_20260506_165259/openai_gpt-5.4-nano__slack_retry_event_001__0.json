@@ -1,0 +1,31 @@
+{
+  "error": null,
+  "fixture_id": "slack_retry_event_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Detected duplicate delivery (same Slack event ID). No new durable memory stored.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "deduplicate_and_ignore_duplicate",
+    "entity_resolution": {
+      "action": "no_change",
+      "entity_id": null,
+      "reason": "The same Slack event ID (slack_retry_event_001) was delivered twice; treat as a retry and avoid creating duplicate durable memory."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Fixture slack_retry_event_001 processed; duplicate delivery identified.",
+        "No additional extraction recorded to prevent duplication."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm whether Sam and Bill refer to the same individuals as previously stored memory; if yes, skip storage; if no, store after disambiguation."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"slack_intake\",\n  \"decision\": \"deduplicate_and_ignore_duplicate\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"no_change\",\n    \"entity_id\": null,\n    \"reason\": \"The same Slack event ID (slack_retry_event_001) was delivered twice; treat as a retry and avoid creating duplicate durable memory.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Detected duplicate delivery (same Slack event ID). No new durable memory stored.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Confirm whether Sam and Bill refer to the same individuals as previously stored memory; if yes, skip storage; if no, store after disambiguation.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Fixture slack_retry_event_001 processed; duplicate delivery identified.\",\n      \"No additional extraction recorded to prevent duplication.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

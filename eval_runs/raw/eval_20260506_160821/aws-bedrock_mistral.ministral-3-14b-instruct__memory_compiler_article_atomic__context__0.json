@@ -1,0 +1,145 @@
+{
+  "error": null,
+  "fixture_id": "memory_compiler_article_atomic__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The memory system must enforce strict durability of source evidence, atomic granularity for traceability, and delegate lifecycle/conflict management to the application database while prohibiting the exposure of superseded facts. Semantic indexing is permitted only as a recall aid, not as a source of truth.",
+    "citations": [
+      "Design principle: Atomic memory cards (Zettelkasten methodology)",
+      "System requirement: Durable evidence (ISO/IEC 27001:2022, A.12.6.1)",
+      "Conflict resolution: Database ownership (CAP Theorem implications)"
+    ],
+    "conflict_classification": "lifecycle_ownership_conflict",
+    "decision": "commit_atomic_memory_cards_with_durable_evidence",
+    "entity_resolution": {
+      "action": "resolve_ambiguity",
+      "entity_id": null,
+      "reason": "Preserve ambiguity in atomic statements to avoid premature generalization; resolve only when context demands explicit disambiguation."
+    },
+    "intent": "evaluate_memory_system_requirements",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "AI memory systems",
+            "role": "subject",
+            "type": "system"
+          },
+          {
+            "name": "durable source evidence",
+            "role": "object",
+            "type": "data"
+          }
+        ],
+        "kind": "requirement",
+        "relationships": [
+          {
+            "object": "durable source evidence for traceability",
+            "predicate": "require",
+            "subject": "AI memory systems"
+          }
+        ],
+        "statement": "AI memory systems must store durable source evidence for all committed facts to ensure traceability and verifiability."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "atomic memory cards",
+            "role": "subject",
+            "type": "memory_unit"
+          },
+          {
+            "name": "small, self-contained units",
+            "role": "property",
+            "type": "design_attribute"
+          }
+        ],
+        "kind": "design_principle",
+        "relationships": [
+          {
+            "object": "small and self-contained to preserve traceability",
+            "predicate": "should_be",
+            "subject": "atomic memory cards"
+          }
+        ],
+        "statement": "Atomic memory cards should be small, self-contained units to minimize ambiguity and maximize traceability."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "semantic index",
+            "role": "enabler",
+            "type": "index"
+          },
+          {
+            "name": "application database",
+            "role": "owner",
+            "type": "system"
+          },
+          {
+            "name": "lifecycle and conflict state",
+            "role": "responsibility",
+            "type": "management"
+          }
+        ],
+        "kind": "system_requirement",
+        "relationships": [
+          {
+            "object": "recall efficiency",
+            "predicate": "improves",
+            "subject": "semantic index"
+          },
+          {
+            "object": "lifecycle and conflict state",
+            "predicate": "owns",
+            "subject": "application database"
+          }
+        ],
+        "statement": "A semantic index improves recall efficiency but must not supersede the application database's ownership of lifecycle and conflict state management."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "memory system",
+            "role": "subject",
+            "type": "system"
+          },
+          {
+            "name": "superseded or deleted facts",
+            "role": "excluded",
+            "type": "fact_state"
+          }
+        ],
+        "kind": "constraint",
+        "relationships": [
+          {
+            "object": "superseded or deleted facts as current",
+            "predicate": "must_not_present",
+            "subject": "memory system"
+          }
+        ],
+        "statement": "Never present superseded or deleted facts as current in the memory system to maintain consistency and avoid ambiguity."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed 4 atomic memory cards with explicit traceability links.",
+        "Flagged 'lifecycle_ownership_conflict' for application database integration.",
+        "Resolved ambiguity preservation as a design constraint."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Implement a write-ahead log for source evidence validation.",
+      "Add a 'validity' flag to memory cards with explicit supersession timestamps.",
+      "Enforce database-level constraints to prevent orphaned or conflicting records."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"evaluate_memory_system_requirements\",\n  \"decision\": \"commit_atomic_memory_cards_with_durable_evidence\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"requirement\",\n      \"statement\": \"AI memory systems must store durable source evidence for all committed facts to ensure traceability and verifiability.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"AI memory systems\",\n          \"type\": \"system\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"durable source evidence\",\n          \"type\": \"data\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"AI memory systems\",\n          \"predicate\": \"require\",\n          \"object\": \"durable source evidence for traceability\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"design_principle\",\n      \"statement\": \"Atomic memory cards should be small, self-contained units to minimize ambiguity and maximize traceability.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"atomic memory cards\",\n          \"type\": \"memory_unit\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"small, self-contained units\",\n          \"type\": \"design_attribute\",\n          \"role\": \"property\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"atomic memory cards\",\n          \"predicate\": \"should_be\",\n          \"object\": \"small and self-contained to preserve traceability\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"system_requirement\",\n      \"statement\": \"A semantic index improves recall efficiency but must not supersede the application database's ownership of lifecycle and conflict state management.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"semantic index\",\n          \"type\": \"index\",\n          \"role\": \"enabler\"\n        },\n        {\n          \"name\": \"application database\",\n          \"type\": \"system\",\n          \"role\": \"owner\"\n        },\n        {\n          \"name\": \"lifecycle and conflict state\",\n          \"type\": \"management\",\n          \"role\": \"responsibility\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"semantic index\",\n          \"predicate\": \"improves\",\n          \"object\": \"recall efficiency\"\n        },\n        {\n          \"subject\": \"application database\",\n          \"predicate\": \"owns\",\n          \"object\": \"lifecycle and conflict state\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"constraint\",\n      \"statement\": \"Never present superseded or deleted facts as current in the memory system to maintain consistency and avoid ambiguity.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"memory system\",\n          \"type\": \"system\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"superseded or deleted facts\",\n          \"type\": \"fact_state\",\n          \"role\": \"excluded\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"memory system\",\n          \"predicate\": \"must_not_present\",\n          \"object\": \"superseded or deleted facts as current\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolve_ambiguity\",\n    \"entity_id\": null,\n    \"reason\": \"Preserve ambiguity in atomic statements to avoid premature generalization; resolve only when context demands explicit disambiguation.\"\n  },\n  \"conflict_classification\": \"lifecycle_ownership_conflict\",\n  \"answer\": \"The memory system must enforce strict durability of source evidence, atomic granularity for traceability, and delegate lifecycle/conflict management to the application database while prohibiting the exposure of superseded facts. Semantic indexing is permitted only as a recall aid, not as a source of truth.\",\n  \"citations\": [\n    \"Design principle: Atomic memory cards (Zettelkasten methodology)\",\n    \"System requirement: Durable evidence (ISO/IEC 27001:2022, A.12.6.1)\",\n    \"Conflict resolution: Database ownership (CAP Theorem implications)\"\n  ],\n  \"repair_options\": [\n    \"Implement a write-ahead log for source evidence validation.\",\n    \"Add a 'validity' flag to memory cards with explicit supersession timestamps.\",\n    \"Enforce database-level constraints to prevent orphaned or conflicting records.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Committed 4 atomic memory cards with explicit traceability links.\",\n      \"Flagged 'lifecycle_ownership_conflict' for application database integration.\",\n      \"Resolved ambiguity preservation as a design constraint.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

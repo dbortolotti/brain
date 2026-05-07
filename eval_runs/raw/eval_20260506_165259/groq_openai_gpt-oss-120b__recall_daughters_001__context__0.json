@@ -1,0 +1,67 @@
+{
+  "error": null,
+  "fixture_id": "recall_daughters_001__context",
+  "model": "groq:openai/gpt-oss-120b",
+  "payload": {
+    "answer": "Your daughters are Nur and Sara.",
+    "citations": [
+      "memory_card_0"
+    ],
+    "conflict_classification": "none",
+    "decision": "use_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Query resolved using existing memory"
+    },
+    "intent": "answer_query",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is daughter of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Daniele",
+            "predicate": "is daughter of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Sara",
+            "predicate": "is twin of",
+            "subject": "Nur"
+          }
+        ],
+        "statement": "Nur and Sara are Daniele's twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Retrieved relevant memory and answered query."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"answer_query\",\"decision\":\"use_memory\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Nur and Sara are Daniele's twin daughters.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Nur\",\"type\":\"person\"},{\"name\":\"Sara\",\"type\":\"person\"},{\"name\":\"Daniele\",\"type\":\"person\"}],\"relationships\":[{\"subject\":\"Nur\",\"predicate\":\"is daughter of\",\"object\":\"Daniele\"},{\"subject\":\"Sara\",\"predicate\":\"is daughter of\",\"object\":\"Daniele\"},{\"subject\":\"Nur\",\"predicate\":\"is twin of\",\"object\":\"Sara\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"Query resolved using existing memory\"},\"conflict_classification\":\"none\",\"answer\":\"Your daughters are Nur and Sara.\",\"citations\":[\"memory_card_0\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Retrieved relevant memory and answered query.\"]}}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

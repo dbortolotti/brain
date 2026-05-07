@@ -1,0 +1,58 @@
+{
+  "error": null,
+  "fixture_id": "project_state_brain_slack_agent_001",
+  "model": "groq:openai/gpt-oss-120b",
+  "payload": {
+    "answer": "Slack designated as primary guardrailed ingestion interface; Telegram planned for later.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "New project state specification"
+    },
+    "intent": "record_project_state",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "primary_ingestion_interface",
+            "type": "platform"
+          },
+          {
+            "name": "Telegram",
+            "role": "future_ingestion_interface",
+            "type": "platform"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Brain",
+            "predicate": "primary_guardrailed_ingestion_interface",
+            "subject": "Slack"
+          },
+          {
+            "object": "Brain",
+            "predicate": "future_ingestion_interface",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "Slack should be the primary guardrailed memory ingestion interface; Telegram can come later."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"record_project_state\",\"decision\":\"store\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Slack should be the primary guardrailed memory ingestion interface; Telegram can come later.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Slack\",\"type\":\"platform\",\"role\":\"primary_ingestion_interface\"},{\"name\":\"Telegram\",\"type\":\"platform\",\"role\":\"future_ingestion_interface\"}],\"relationships\":[{\"subject\":\"Slack\",\"predicate\":\"primary_guardrailed_ingestion_interface\",\"object\":\"Brain\"},{\"subject\":\"Telegram\",\"predicate\":\"future_ingestion_interface\",\"object\":\"Brain\"}]}],\"entity_resolution\":{\"action\":\"create\",\"entity_id\":null,\"reason\":\"New project state specification\"},\"conflict_classification\":\"none\",\"answer\":\"Slack designated as primary guardrailed ingestion interface; Telegram planned for later.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Memory card created\"]}}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

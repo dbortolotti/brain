@@ -1,0 +1,66 @@
+{
+  "error": null,
+  "fixture_id": "personal_routine_morning_reading_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Stored as a preference with medium confidence.",
+    "citations": [
+      "input: \"For context, I usually prefer to read technical papers in the morning before checking email.\""
+    ],
+    "conflict_classification": "none",
+    "decision": "accept",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No existing entity reference was provided."
+    },
+    "intent": "store_preference",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "user",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "technical papers",
+            "role": "preferred morning activity",
+            "type": "document"
+          },
+          {
+            "name": "email",
+            "role": "later activity",
+            "type": "activity"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "read technical papers in the morning before checking email",
+            "predicate": "usually_prefers",
+            "subject": "user"
+          },
+          {
+            "object": "checking email",
+            "predicate": "before",
+            "subject": "read technical papers in the morning"
+          }
+        ],
+        "statement": "The user usually prefers to read technical papers in the morning before checking email."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured a routine preference with cautious wording ('usually prefers').",
+        "No conflicting or superseded fact detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"store_preference\",\"decision\":\"accept\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"The user usually prefers to read technical papers in the morning before checking email.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"user\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"technical papers\",\"type\":\"document\",\"role\":\"preferred morning activity\"},{\"name\":\"email\",\"type\":\"activity\",\"role\":\"later activity\"}],\"relationships\":[{\"subject\":\"user\",\"predicate\":\"usually_prefers\",\"object\":\"read technical papers in the morning before checking email\"},{\"subject\":\"read technical papers in the morning\",\"predicate\":\"before\",\"object\":\"checking email\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No existing entity reference was provided.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored as a preference with medium confidence.\",\"citations\":[\"input: \\\"For context, I usually prefer to read technical papers in the morning before checking email.\\\"\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Captured a routine preference with cautious wording ('usually prefers').\",\"No conflicting or superseded fact detected.\"]}}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

@@ -1,0 +1,68 @@
+{
+  "error": null,
+  "fixture_id": "italian_memory_note_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Memorizzato: Sam associato a Goldman preferisce Bill Evans.",
+    "citations": [
+      "input: \"Ricordami che Sam di Goldman preferisce Bill Evans.\""
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_link_ambiguous",
+      "entity_id": null,
+      "reason": "The note names 'Sam di Goldman' without enough context to resolve a unique existing entity, so the memory is stored with ambiguity preserved."
+    },
+    "intent": "store_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "association/context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred entity",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam associated with Goldman prefers Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored one preference memory with medium confidence.",
+        "Kept the subject entity ambiguous to avoid over-committing."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If 'Sam di Goldman' refers to a specific known Sam, provide more context to link it to an existing entity."
+    ]
+  },
+  "raw_text": "{\"intent\":\"store_memory\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam associated with Goldman prefers Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"association/context\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"preferred entity\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"associated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"prefers\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"create_or_link_ambiguous\",\"entity_id\":null,\"reason\":\"The note names 'Sam di Goldman' without enough context to resolve a unique existing entity, so the memory is stored with ambiguity preserved.\"},\"conflict_classification\":\"none\",\"answer\":\"Memorizzato: Sam associato a Goldman preferisce Bill Evans.\",\"citations\":[\"input: \\\"Ricordami che Sam di Goldman preferisce Bill Evans.\\\"\"],\"repair_options\":[\"If 'Sam di Goldman' refers to a specific known Sam, provide more context to link it to an existing entity.\"],\"receipt\":{\"success\":true,\"details\":[\"Stored one preference memory with medium confidence.\",\"Kept the subject entity ambiguous to avoid over-committing.\"]}}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

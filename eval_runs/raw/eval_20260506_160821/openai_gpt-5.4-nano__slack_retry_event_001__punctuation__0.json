@@ -1,0 +1,67 @@
+{
+  "error": null,
+  "fixture_id": "slack_retry_event_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Store the likes fact once and ignore the duplicate delivery of the same Slack event ID.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "dedupe_and_store_once",
+    "entity_resolution": {
+      "action": "partial_resolve",
+      "entity_id": null,
+      "reason": "Only names are provided; no stable IDs available. Keep entity references as text without committing IDs."
+    },
+    "intent": "slack_intake_memory_capture",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference/likes",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (from Goldman) likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected same Slack event ID delivered twice; de-duplicated.",
+        "Extracted preference relation: Sam (Goldman) likes Bill Evans."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm whether 'Sam' refers to a specific user in the workspace to improve entity resolution.",
+      "Confirm whether 'Bill Evans' is the intended person (e.g., full name or context)."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"slack_intake_memory_capture\",\n  \"decision\": \"dedupe_and_store_once\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference/likes\",\n      \"statement\": \"Sam (from Goldman) likes Bill Evans.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"affiliated_with\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"partial_resolve\",\n    \"entity_id\": null,\n    \"reason\": \"Only names are provided; no stable IDs available. Keep entity references as text without committing IDs.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Store the likes fact once and ignore the duplicate delivery of the same Slack event ID.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Confirm whether 'Sam' refers to a specific user in the workspace to improve entity resolution.\",\n    \"Confirm whether 'Bill Evans' is the intended person (e.g., full name or context).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Detected same Slack event ID delivered twice; de-duplicated.\",\n      \"Extracted preference relation: Sam (Goldman) likes Bill Evans.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

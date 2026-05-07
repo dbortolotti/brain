@@ -1,0 +1,61 @@
+{
+  "error": null,
+  "fixture_id": "recall_hide_superseded",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Sam works at Point72.",
+    "citations": [],
+    "conflict_classification": "superseded_fact_present_but_not_used",
+    "decision": "use_current_memory_only",
+    "entity_resolution": {
+      "action": "resolved_from_current_fact",
+      "entity_id": null,
+      "reason": "The only non-superseded employer information states Sam joined Point72."
+    },
+    "intent": "recall_synthesizer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "company"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "company"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Used only current fact: Sam joined Point72.",
+        "Did not present superseded fact (Sam works at Goldman) as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If needed, re-check the memory system logs to confirm no later updates to Sam's employer."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"recall_synthesizer\",\n  \"decision\": \"use_current_memory_only\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam left Goldman and joined Point72.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"company\",\n          \"role\": \"employer\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"company\",\n          \"role\": \"former_employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolved_from_current_fact\",\n    \"entity_id\": null,\n    \"reason\": \"The only non-superseded employer information states Sam joined Point72.\"\n  },\n  \"conflict_classification\": \"superseded_fact_present_but_not_used\",\n  \"answer\": \"Sam works at Point72.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If needed, re-check the memory system logs to confirm no later updates to Sam's employer.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Used only current fact: Sam joined Point72.\",\n      \"Did not present superseded fact (Sam works at Goldman) as current.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

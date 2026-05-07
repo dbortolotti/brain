@@ -1,0 +1,43 @@
+{
+  "fixture_id": "article_url_fetch_failure_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Article fetch failed (HTTP 404). No durable memory created.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "abort_ingestion",
+    "entity_resolution": {
+      "action": "none",
+      "reason": "No entities extracted from failed fetch."
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [],
+    "metadata": {
+      "ambiguity": {
+        "notes": [
+          "Original intent ('useful for memory architecture') remains ambiguous without content.",
+          "No superseded/deleted facts to consider."
+        ],
+        "resolved": false
+      },
+      "failure_type": "network_error",
+      "source": "https://example.com/missing",
+      "timestamp": "2023-11-07T12:00:00Z"
+    },
+    "receipt": {
+      "details": [
+        "HTTP 404 error encountered during fetch of 'https://example.com/missing'",
+        "No content ingested; memory integrity preserved",
+        "Reason: 'useful for memory architecture' noted but unactionable due to failure"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Retry fetch with exponential backoff",
+      "Verify URL validity (e.g., typo, expired link)",
+      "Check network connectivity",
+      "Use cached metadata if available"
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

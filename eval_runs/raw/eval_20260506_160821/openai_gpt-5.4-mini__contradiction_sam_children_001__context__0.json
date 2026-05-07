@@ -1,0 +1,71 @@
+{
+  "error": null,
+  "fixture_id": "contradiction_sam_children_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Contradiction detected: existing memory says Sam from Goldman has two children, while the new input says Sam from Goldman has no children.",
+    "citations": [
+      "existing memory: Sam from Goldman has two children",
+      "new: Sam from Goldman has no children"
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "needs_reconciliation",
+    "entity_resolution": {
+      "action": "keep_ambiguous",
+      "entity_id": null,
+      "reason": "The inputs refer to the same apparent person, Sam from Goldman, but the child-count claims are directly contradictory; do not overwrite either fact without further evidence."
+    },
+    "intent": "conflict_classification",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "conflict",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "two children",
+            "predicate": "has_children",
+            "subject": "Sam"
+          },
+          {
+            "object": "no children",
+            "predicate": "has_children",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "A new statement about Sam from Goldman conflicts with an existing memory: one source says Sam has two children, another says Sam has no children."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Identified direct contradiction.",
+        "Did not commit a definitive durable fact about children count.",
+        "Preserved ambiguity for later resolution."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retain both claims as conflicting until a higher-confidence source resolves the number of children.",
+      "If later evidence confirms one side, supersede the other and mark the outdated claim as deleted/retracted."
+    ]
+  },
+  "raw_text": "{\"intent\":\"conflict_classification\",\"decision\":\"needs_reconciliation\",\"memory_cards\":[{\"kind\":\"conflict\",\"statement\":\"A new statement about Sam from Goldman conflicts with an existing memory: one source says Sam has two children, another says Sam has no children.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"has_children\",\"object\":\"two children\"},{\"subject\":\"Sam\",\"predicate\":\"has_children\",\"object\":\"no children\"}]}],\"entity_resolution\":{\"action\":\"keep_ambiguous\",\"entity_id\":null,\"reason\":\"The inputs refer to the same apparent person, Sam from Goldman, but the child-count claims are directly contradictory; do not overwrite either fact without further evidence.\"},\"conflict_classification\":\"direct_contradiction\",\"answer\":\"Contradiction detected: existing memory says Sam from Goldman has two children, while the new input says Sam from Goldman has no children.\",\"citations\":[\"existing memory: Sam from Goldman has two children\",\"new: Sam from Goldman has no children\"],\"repair_options\":[\"Retain both claims as conflicting until a higher-confidence source resolves the number of children.\",\"If later evidence confirms one side, supersede the other and mark the outdated claim as deleted/retracted.\"],\"receipt\":{\"success\":true,\"details\":[\"Identified direct contradiction.\",\"Did not commit a definitive durable fact about children count.\",\"Preserved ambiguity for later resolution.\"]}}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

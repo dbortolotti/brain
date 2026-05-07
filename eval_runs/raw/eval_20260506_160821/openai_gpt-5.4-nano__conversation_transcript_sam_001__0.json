@@ -1,0 +1,140 @@
+{
+  "error": null,
+  "fixture_id": "conversation_transcript_sam_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Captured Sam\u2019s employment change (Goldman -> Point72), his ongoing music preference (Bill Evans) with a recent shift toward early Coltrane, and a low-confidence action to share an AI infra article for a future catch-up.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "store_partial",
+    "entity_resolution": {
+      "action": "no_op",
+      "entity_id": null,
+      "reason": "Only a single 'Sam' is mentioned without an existing stable entity identifier in the provided transcript."
+    },
+    "intent": "memory_compiler",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "profile.current_affiliation",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "employed_by",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "left_employer",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is no longer at Goldman; he left Goldman last month and joined Point72."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "music_preference",
+            "type": "musician"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "recent_music_preference",
+            "type": "musician_period"
+          }
+        ],
+        "kind": "preference.music",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "listens_to",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "recently_listens_more_to",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam still listens to Bill Evans, but lately has been listening more to early Coltrane."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "AI infra",
+            "role": "discussion_topic",
+            "type": "topic"
+          },
+          {
+            "name": "article",
+            "role": "shared_material",
+            "type": "content"
+          }
+        ],
+        "kind": "conversation.action_request",
+        "relationships": [
+          {
+            "object": "AI infra",
+            "predicate": "requests_catchup_on",
+            "subject": "Daniele"
+          },
+          {
+            "object": "article",
+            "predicate": "agreed_to_send",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Daniele and Sam discussed catching up about AI infrastructure; Sam agreed to send an article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Identified durable personal facts: current affiliation and music preference.",
+        "Recorded the AI infrastructure catch-up as a low-confidence action item (time/document unspecified)."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you have a canonical entity record for 'Sam', provide its entity_id to enable proper linking.",
+      "Clarify whether 'last month' is relative to the conversation date so the employment timeline can be recorded precisely."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"memory_compiler\",\n  \"decision\": \"store_partial\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"profile.current_affiliation\",\n      \"statement\": \"Sam is no longer at Goldman; he left Goldman last month and joined Point72.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"former_employer\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"current_employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"employed_by\",\n          \"object\": \"Point72\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"left_employer\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"preference.music\",\n      \"statement\": \"Sam still listens to Bill Evans, but lately has been listening more to early Coltrane.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"musician\",\n          \"role\": \"music_preference\"\n        },\n        {\n          \"name\": \"early Coltrane\",\n          \"type\": \"musician_period\",\n          \"role\": \"recent_music_preference\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"listens_to\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"recently_listens_more_to\",\n          \"object\": \"early Coltrane\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"conversation.action_request\",\n      \"statement\": \"Daniele and Sam discussed catching up about AI infrastructure; Sam agreed to send an article.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"AI infra\",\n          \"type\": \"topic\",\n          \"role\": \"discussion_topic\"\n        },\n        {\n          \"name\": \"article\",\n          \"type\": \"content\",\n          \"role\": \"shared_material\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Daniele\",\n          \"predicate\": \"requests_catchup_on\",\n          \"object\": \"AI infra\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"agreed_to_send\",\n          \"object\": \"article\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_op\",\n    \"entity_id\": null,\n    \"reason\": \"Only a single 'Sam' is mentioned without an existing stable entity identifier in the provided transcript.\"\n  },\n  \"conflict_classification\": \"none_detected\",\n  \"answer\": \"Captured Sam\u2019s employment change (Goldman -> Point72), his ongoing music preference (Bill Evans) with a recent shift toward early Coltrane, and a low-confidence action to share an AI infra article for a future catch-up.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If you have a canonical entity record for 'Sam', provide its entity_id to enable proper linking.\",\n    \"Clarify whether 'last month' is relative to the conversation date so the employment timeline can be recorded precisely.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Identified durable personal facts: current affiliation and music preference.\",\n      \"Recorded the AI infrastructure catch-up as a low-confidence action item (time/document unspecified).\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

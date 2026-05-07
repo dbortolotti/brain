@@ -1,0 +1,46 @@
+{
+  "fixture_id": "ambiguous_place_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Tentatively associate the note with Brutto, likely the restaurant, but retain ambiguity due to the alias.",
+    "citations": [
+      "Existing - Brutto restaurant in London; Brutto article alias",
+      "New note - Brutto was better than expected"
+    ],
+    "conflict_classification": "ambiguous_reference",
+    "decision": "Link the new note tentatively to the existing Brutto restaurant entity, but keep ambiguity because the reference could also align with the article alias.",
+    "entity_resolution": {
+      "action": "link_tentatively",
+      "entity_id": null,
+      "reason": "The note refers to 'Brutto' without additional context. The existing memory includes 'Brutto restaurant in London' and 'Brutto article alias', so this likely refers to the restaurant, but the alias introduces ambiguity."
+    },
+    "intent": "entity_resolution",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Brutto",
+            "role": "subject",
+            "type": "restaurant"
+          }
+        ],
+        "kind": "opinion",
+        "relationships": [],
+        "statement": "Brutto was better than expected."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created a low-confidence opinion note.",
+        "Preserved ambiguity between restaurant and alias references."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask a clarifying question about whether 'Brutto' means the restaurant in London or a different Brutto reference.",
+      "Store the opinion without hard-linking it until the entity is confirmed."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

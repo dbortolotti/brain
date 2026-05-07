@@ -1,0 +1,52 @@
+{
+  "fixture_id": "slack_rewrite_modal_001",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Memory stored: He prefers the other one.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "User chose to rewrite memory.",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "No specific entity identified for resolution; 'He' and 'the other one' are ambiguous and context-dependent."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "He",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "the other one",
+            "role": "preference_target",
+            "type": "object"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "He"
+          }
+        ],
+        "statement": "He prefers the other one."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created successfully.",
+        "No conflicts detected.",
+        "Ambiguity preserved as per instruction."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_160821"
+}

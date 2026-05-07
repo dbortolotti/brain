@@ -1,0 +1,74 @@
+{
+  "fixture_id": "correction_sam_music_001__punctuation",
+  "model": "anthropic:claude-sonnet-4-6",
+  "payload": {
+    "answer": "Memory updated: Sam from Goldman's music preference is now recorded as early Coltrane. The previous belief (Bill Evans) has been superseded and is no longer presented as current.",
+    "citations": [
+      "Correction input: 'Sam from Goldman actually likes early Coltrane, not Bill Evans'"
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "Supersede the existing memory card stating Sam likes Bill Evans with a new card stating Sam likes early Coltrane. The old fact is explicitly contradicted and should not be presented as current.",
+    "entity_resolution": {
+      "action": "update",
+      "entity_id": "sam_goldman",
+      "reason": "Sam from Goldman is the same entity referenced in both the existing memory and the correction. No ambiguity in identity."
+    },
+    "intent": "Correct an existing memory about Sam from Goldman's music preference, replacing Bill Evans with early Coltrane",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "preferred_object",
+            "type": "music_artist_era"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "superseded_belief",
+            "type": "music_artist"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam (Goldman)"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "does_not_like (corrected from prior belief)",
+            "subject": "Sam (Goldman)"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane (not Bill Evans \u2014 prior belief corrected)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Old memory 'Sam from Goldman likes Bill Evans' marked as superseded.",
+        "New memory card created: 'Sam from Goldman likes early Coltrane'.",
+        "Conflict classification: direct_contradiction.",
+        "No ambiguity in entity resolution \u2014 Sam from Goldman uniquely identified."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retire the old memory card 'Sam from Goldman likes Bill Evans' and replace with 'Sam from Goldman likes early Coltrane'.",
+      "Tag the Bill Evans card as SUPERSEDED with a pointer to the corrected card to preserve audit trail.",
+      "If source of original belief is known, flag it as unreliable for future music preference claims about Sam."
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

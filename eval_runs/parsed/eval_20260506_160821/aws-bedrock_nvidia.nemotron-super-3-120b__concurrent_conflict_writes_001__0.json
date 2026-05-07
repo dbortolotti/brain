@@ -1,0 +1,82 @@
+{
+  "fixture_id": "concurrent_conflict_writes_001",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Sam cannot simultaneously work at Goldman and have joined Point72 without temporal or contextual clarification; these are mutually exclusive current employment states.",
+    "citations": [],
+    "conflict_classification": "concurrent_contradiction",
+    "decision": "conflict_detected",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Entity 'Sam' is consistent across both statements; conflict is in employment facts, not entity identity"
+    },
+    "intent": "classify conflict between concurrent writes about Sam's employment",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict identified: two mutually exclusive employment assertions for Sam",
+        "Entity resolution confirmed: 'Sam' refers to same person in both",
+        "No memory cards written or deleted; ambiguity preserved per protocol",
+        "Repair options provided for future disambiguation"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add temporal context (e.g., 'Sam worked at Goldman until 2023, then joined Point72')",
+      "Specify role duality (e.g., 'Sam works at Goldman and has a side role at Point72')",
+      "Mark one statement as outdated or superseded",
+      "Request clarification on whether 'joined' implies current employment or past action"
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

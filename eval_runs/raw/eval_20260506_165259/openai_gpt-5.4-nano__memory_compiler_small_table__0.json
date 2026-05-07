@@ -1,0 +1,80 @@
+{
+  "error": null,
+  "fixture_id": "memory_compiler_small_table",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Stored two user preferences: Sam \u2192 Bill Evans; Daniele \u2192 knowledge graphs.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No existing entity IDs were provided; use names/tokens as-is."
+    },
+    "intent": "Compile durable preference memories from the provided table.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "owner",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference",
+            "type": "artist"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam prefers Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "owner",
+            "type": "person"
+          },
+          {
+            "name": "knowledge graphs",
+            "role": "preference",
+            "type": "topic"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "knowledge graphs",
+            "predicate": "prefers",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Daniele prefers knowledge graphs."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Added 2 preference memory cards from the table."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If 'Daniele' refers to a different person than previously known, provide the correct identifier/name disambiguation.",
+      "If 'Bill Evans' refers to a specific recording or work, provide the exact title to refine the preference."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Compile durable preference memories from the provided table.\",\n  \"decision\": \"commit\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam prefers Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"owner\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"artist\",\n          \"role\": \"preference\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"prefers\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Daniele prefers knowledge graphs.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"owner\"\n        },\n        {\n          \"name\": \"knowledge graphs\",\n          \"type\": \"topic\",\n          \"role\": \"preference\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Daniele\",\n          \"predicate\": \"prefers\",\n          \"object\": \"knowledge graphs\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entity IDs were provided; use names/tokens as-is.\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"Stored two user preferences: Sam \u2192 Bill Evans; Daniele \u2192 knowledge graphs.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If 'Daniele' refers to a different person than previously known, provide the correct identifier/name disambiguation.\",\n    \"If 'Bill Evans' refers to a specific recording or work, provide the exact title to refine the preference.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Added 2 preference memory cards from the table.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

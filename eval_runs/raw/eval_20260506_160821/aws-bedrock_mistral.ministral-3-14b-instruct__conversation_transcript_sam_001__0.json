@@ -1,0 +1,128 @@
+{
+  "error": null,
+  "fixture_id": "conversation_transcript_sam_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory updated: Sam's employment transition to Point72 Ventures and jazz listening shift are now durably recorded. Pending action for AI infrastructure article remains open.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": null,
+      "reason": "No existing entities match the context of Point72 Ventures or early Coltrane shift."
+    },
+    "intent": "update_durable_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Goldman Sachs",
+            "role": "previous_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72 Ventures",
+            "role": "current_employer",
+            "type": "organization"
+          },
+          {
+            "name": "[current_month]",
+            "role": "transition_timestamp",
+            "type": "time"
+          }
+        ],
+        "kind": "professional",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "employed_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman Sachs",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72 Ventures",
+            "predicate": "employed_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman Sachs in [current_month] and joined Point72 Ventures as of [current_month]."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Bill Evans",
+            "role": "primary_listening_preference",
+            "type": "artist"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "recent_listening_shift",
+            "type": "artist"
+          }
+        ],
+        "kind": "personal_interest",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "has_recently_shifted_to",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam's primary jazz listening preference remains Bill Evans, though recent focus has shifted toward early Coltrane recordings."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "AI infrastructure",
+            "role": "discussion_focus",
+            "type": "topic"
+          },
+          {
+            "name": "Daniele",
+            "role": "source_of_article",
+            "type": "person"
+          }
+        ],
+        "kind": "pending_action",
+        "relationships": [
+          {
+            "object": "article on AI infrastructure from Daniele",
+            "predicate": "requested",
+            "subject": "Sam"
+          },
+          {
+            "object": "AI infrastructure with Daniele",
+            "predicate": "intends_to_discuss",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam requested an article from Daniele regarding AI infrastructure, with intent to discuss further."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed professional transition (Goldman \u2192 Point72)",
+        "Updated personal interest (Bill Evans \u2192 early Coltrane)",
+        "Logged pending action (AI infrastructure article)"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"update_durable_memory\",\n  \"decision\": \"commit\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"professional\",\n      \"statement\": \"Sam left Goldman Sachs in [current_month] and joined Point72 Ventures as of [current_month].\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"previous_employer\"\n        },\n        {\n          \"name\": \"Point72 Ventures\",\n          \"type\": \"organization\",\n          \"role\": \"current_employer\"\n        },\n        {\n          \"name\": \"[current_month]\",\n          \"type\": \"time\",\n          \"role\": \"transition_timestamp\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"employed_at\",\n          \"object\": \"Goldman Sachs\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"left\",\n          \"object\": \"Goldman Sachs\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"employed_at\",\n          \"object\": \"Point72 Ventures\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"personal_interest\",\n      \"statement\": \"Sam's primary jazz listening preference remains Bill Evans, though recent focus has shifted toward early Coltrane recordings.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"artist\",\n          \"role\": \"primary_listening_preference\"\n        },\n        {\n          \"name\": \"early Coltrane\",\n          \"type\": \"artist\",\n          \"role\": \"recent_listening_shift\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"prefers\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has_recently_shifted_to\",\n          \"object\": \"early Coltrane\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"pending_action\",\n      \"statement\": \"Sam requested an article from Daniele regarding AI infrastructure, with intent to discuss further.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"AI infrastructure\",\n          \"type\": \"topic\",\n          \"role\": \"discussion_focus\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"source_of_article\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"requested\",\n          \"object\": \"article on AI infrastructure from Daniele\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"intends_to_discuss\",\n          \"object\": \"AI infrastructure with Daniele\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_new\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entities match the context of Point72 Ventures or early Coltrane shift.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Memory updated: Sam's employment transition to Point72 Ventures and jazz listening shift are now durably recorded. Pending action for AI infrastructure article remains open.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Committed professional transition (Goldman \u2192 Point72)\",\n      \"Updated personal interest (Bill Evans \u2192 early Coltrane)\",\n      \"Logged pending action (AI infrastructure article)\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

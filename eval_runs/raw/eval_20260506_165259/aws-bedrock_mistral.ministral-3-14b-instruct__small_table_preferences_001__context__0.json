@@ -1,0 +1,122 @@
+{
+  "error": null,
+  "fixture_id": "small_table_preferences_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Durable memory compiled successfully for Sam (Goldman Sachs) and Anna (JPMorgan Chase) preferences, with no conflicts or superseded facts. Ambiguity preserved in temporal context (e.g., 'dinner' vs. 'lunch').",
+    "citations": [
+      "Dinner 2026-05-05 (Sam, Bill Evans)",
+      "Lunch 2026-05-01 (Anna, Barolo)"
+    ],
+    "conflict_classification": "none",
+    "decision": "compile_durable_memory",
+    "entity_resolution": {
+      "action": "resolve_entities",
+      "entity_id": null,
+      "reason": "No existing entity conflicts detected; new memory cards created with unambiguous references."
+    },
+    "intent": "memory_compilation",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "affiliation",
+            "type": "firm"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_object",
+            "type": "person"
+          },
+          {
+            "name": "jazz pianist",
+            "role": "descriptor",
+            "type": "occupation"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "has_preference_for",
+            "subject": "Sam"
+          },
+          {
+            "object": "dinner_conversation",
+            "predicate": "observed_in_context",
+            "subject": "Sam"
+          },
+          {
+            "object": "jazz_pianist",
+            "predicate": "is",
+            "subject": "Bill Evans"
+          }
+        ],
+        "statement": "Sam (Goldman Sachs) has a documented preference for jazz pianist Bill Evans, as observed during a dinner conversation on May 5, 2026."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Anna",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "JPMorgan Chase",
+            "role": "affiliation",
+            "type": "firm"
+          },
+          {
+            "name": "Barolo",
+            "role": "preference_object",
+            "type": "wine"
+          },
+          {
+            "name": "wine",
+            "role": "descriptor",
+            "type": "category"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Barolo",
+            "predicate": "has_preference_for",
+            "subject": "Anna"
+          },
+          {
+            "object": "lunch_conversation",
+            "predicate": "observed_in_context",
+            "subject": "Anna"
+          },
+          {
+            "object": "wine_variety",
+            "predicate": "is",
+            "subject": "Barolo"
+          }
+        ],
+        "statement": "Anna (JPMorgan Chase) has a documented preference for Barolo wine, as observed during a lunch conversation on May 1, 2026."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory cards validated against source timestamps.",
+        "No superseded/deleted facts detected.",
+        "Ambiguity in 'preference' scope retained (e.g., 'likes' vs. 'prefers')."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_compilation\",\n  \"decision\": \"compile_durable_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam (Goldman Sachs) has a documented preference for jazz pianist Bill Evans, as observed during a dinner conversation on May 5, 2026.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"firm\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"preference_object\"\n        },\n        {\n          \"name\": \"jazz pianist\",\n          \"type\": \"occupation\",\n          \"role\": \"descriptor\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has_preference_for\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"observed_in_context\",\n          \"object\": \"dinner_conversation\"\n        },\n        {\n          \"subject\": \"Bill Evans\",\n          \"predicate\": \"is\",\n          \"object\": \"jazz_pianist\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Anna (JPMorgan Chase) has a documented preference for Barolo wine, as observed during a lunch conversation on May 1, 2026.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Anna\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"JPMorgan Chase\",\n          \"type\": \"firm\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Barolo\",\n          \"type\": \"wine\",\n          \"role\": \"preference_object\"\n        },\n        {\n          \"name\": \"wine\",\n          \"type\": \"category\",\n          \"role\": \"descriptor\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Anna\",\n          \"predicate\": \"has_preference_for\",\n          \"object\": \"Barolo\"\n        },\n        {\n          \"subject\": \"Anna\",\n          \"predicate\": \"observed_in_context\",\n          \"object\": \"lunch_conversation\"\n        },\n        {\n          \"subject\": \"Barolo\",\n          \"predicate\": \"is\",\n          \"object\": \"wine_variety\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolve_entities\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entity conflicts detected; new memory cards created with unambiguous references.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Durable memory compiled successfully for Sam (Goldman Sachs) and Anna (JPMorgan Chase) preferences, with no conflicts or superseded facts. Ambiguity preserved in temporal context (e.g., 'dinner' vs. 'lunch').\",\n  \"citations\": [\n    \"Dinner 2026-05-05 (Sam, Bill Evans)\",\n    \"Lunch 2026-05-01 (Anna, Barolo)\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory cards validated against source timestamps.\",\n      \"No superseded/deleted facts detected.\",\n      \"Ambiguity in 'preference' scope retained (e.g., 'likes' vs. 'prefers').\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

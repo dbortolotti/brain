@@ -1,0 +1,87 @@
+{
+  "error": null,
+  "fixture_id": "temporal_status_transition_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "payload": {
+    "answer": "Accept new state. The Brain Slack agent transitions from planned (status=open) to implemented (MVP phase). Preserve superseded fact for audit trail.",
+    "citations": [
+      "Existing: The Brain Slack agent is planned, status=open",
+      "New: The Brain Slack agent MVP is now implemented"
+    ],
+    "conflict_classification": "temporal_status_transition",
+    "decision": "Accept new state with temporal transition",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "brain_slack_agent",
+      "reason": "Same entity with temporal status transition; supersede planned state with implemented state"
+    },
+    "intent": "Update project status from planned to implemented",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain Slack agent",
+            "role": "subject",
+            "type": "project_component"
+          },
+          {
+            "name": "MVP",
+            "role": "qualifier",
+            "type": "phase"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "implemented",
+            "predicate": "has_status",
+            "subject": "Brain Slack agent"
+          },
+          {
+            "object": "MVP",
+            "predicate": "has_phase",
+            "subject": "Brain Slack agent"
+          }
+        ],
+        "statement": "The Brain Slack agent MVP is now implemented"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain Slack agent",
+            "role": "subject",
+            "type": "project_component"
+          }
+        ],
+        "kind": "superseded_fact",
+        "relationships": [
+          {
+            "object": "open",
+            "predicate": "had_status",
+            "subject": "Brain Slack agent"
+          }
+        ],
+        "statement": "The Brain Slack agent is planned, status=open"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict resolved: temporal status transition accepted",
+        "Entity unified: Brain Slack agent",
+        "Prior state marked superseded",
+        "Current state: implemented"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Record timestamp of transition for temporal tracking",
+      "Retain both states in audit log with temporal markers",
+      "Update dependent tasks/milestones referencing prior status"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Update project status from planned to implemented\",\n  \"decision\": \"Accept new state with temporal transition\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"The Brain Slack agent MVP is now implemented\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain Slack agent\",\n          \"type\": \"project_component\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"MVP\",\n          \"type\": \"phase\",\n          \"role\": \"qualifier\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain Slack agent\",\n          \"predicate\": \"has_status\",\n          \"object\": \"implemented\"\n        },\n        {\n          \"subject\": \"Brain Slack agent\",\n          \"predicate\": \"has_phase\",\n          \"object\": \"MVP\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"superseded_fact\",\n      \"statement\": \"The Brain Slack agent is planned, status=open\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain Slack agent\",\n          \"type\": \"project_component\",\n          \"role\": \"subject\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain Slack agent\",\n          \"predicate\": \"had_status\",\n          \"object\": \"open\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge\",\n    \"entity_id\": \"brain_slack_agent\",\n    \"reason\": \"Same entity with temporal status transition; supersede planned state with implemented state\"\n  },\n  \"conflict_classification\": \"temporal_status_transition\",\n  \"answer\": \"Accept new state. The Brain Slack agent transitions from planned (status=open) to implemented (MVP phase). Preserve superseded fact for audit trail.\",\n  \"citations\": [\n    \"Existing: The Brain Slack agent is planned, status=open\",\n    \"New: The Brain Slack agent MVP is now implemented\"\n  ],\n  \"repair_options\": [\n    \"Record timestamp of transition for temporal tracking\",\n    \"Retain both states in audit log with temporal markers\",\n    \"Update dependent tasks/milestones referencing prior status\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Conflict resolved: temporal status transition accepted\",\n      \"Entity unified: Brain Slack agent\",\n      \"Prior state marked superseded\",\n      \"Current state: implemented\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

@@ -1,0 +1,80 @@
+{
+  "fixture_id": "large_table_500_rows_001__punctuation",
+  "model": "google:gemini-2.5-flash-lite",
+  "payload": {
+    "answer": "The CSV table with 500 rows and columns 'id', 'name', 'value' should be stored as structured data.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_as_structured_data",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "The input describes a new data storage requirement."
+    },
+    "intent": "store_data",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "data_source",
+            "type": "data_format"
+          },
+          {
+            "name": "500 rows",
+            "role": "data_characteristic",
+            "type": "data_size"
+          },
+          {
+            "name": "id",
+            "role": "data_field",
+            "type": "column_name"
+          },
+          {
+            "name": "name",
+            "role": "data_field",
+            "type": "column_name"
+          },
+          {
+            "name": "value",
+            "role": "data_field",
+            "type": "column_name"
+          }
+        ],
+        "kind": "structured_data",
+        "relationships": [
+          {
+            "object": "id",
+            "predicate": "has_column",
+            "subject": "CSV table"
+          },
+          {
+            "object": "name",
+            "predicate": "has_column",
+            "subject": "CSV table"
+          },
+          {
+            "object": "value",
+            "predicate": "has_column",
+            "subject": "CSV table"
+          },
+          {
+            "object": "500 rows",
+            "predicate": "has_row_count",
+            "subject": "CSV table"
+          }
+        ],
+        "statement": "The CSV table with 500 rows, containing 'id', 'name', and 'value' columns, should be stored as structured data."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card for structured data storage created."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_162328"
+}

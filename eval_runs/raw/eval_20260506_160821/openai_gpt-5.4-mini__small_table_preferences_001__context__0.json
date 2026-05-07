@@ -1,0 +1,88 @@
+{
+  "error": null,
+  "fixture_id": "small_table_preferences_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Two preference facts compiled: Sam likes Bill Evans; Anna likes Barolo.",
+    "citations": [
+      "Dinner 2026-05-05",
+      "Lunch 2026-05-01"
+    ],
+    "conflict_classification": "none",
+    "decision": "Commit the two preference facts as separate durable memory cards with high confidence; no conflicts detected.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No identity ambiguity or duplicate entities were provided in the input."
+    },
+    "intent": "Compile stable preference facts from the provided table context.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "type": "firm"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at_or_is_associated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam, who is associated with Goldman, likes Bill Evans (source: Dinner 2026-05-05)."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Anna",
+            "type": "person"
+          },
+          {
+            "name": "JPM",
+            "type": "firm"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "JPM",
+            "predicate": "works_at_or_is_associated_with",
+            "subject": "Anna"
+          },
+          {
+            "object": "Barolo",
+            "predicate": "likes",
+            "subject": "Anna"
+          }
+        ],
+        "statement": "Anna, who is associated with JPM, likes Barolo (source: Lunch 2026-05-01)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Compiled 2 memory cards.",
+        "No conflicts or deletions present.",
+        "No entity resolution required."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"Compile stable preference facts from the provided table context.\",\"decision\":\"Commit the two preference facts as separate durable memory cards with high confidence; no conflicts detected.\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam, who is associated with Goldman, likes Bill Evans (source: Dinner 2026-05-05).\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\"},{\"name\":\"Goldman\",\"type\":\"firm\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at_or_is_associated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]},{\"kind\":\"preference\",\"statement\":\"Anna, who is associated with JPM, likes Barolo (source: Lunch 2026-05-01).\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Anna\",\"type\":\"person\"},{\"name\":\"JPM\",\"type\":\"firm\"}],\"relationships\":[{\"subject\":\"Anna\",\"predicate\":\"works_at_or_is_associated_with\",\"object\":\"JPM\"},{\"subject\":\"Anna\",\"predicate\":\"likes\",\"object\":\"Barolo\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No identity ambiguity or duplicate entities were provided in the input.\"},\"conflict_classification\":\"none\",\"answer\":\"Two preference facts compiled: Sam likes Bill Evans; Anna likes Barolo.\",\"citations\":[\"Dinner 2026-05-05\",\"Lunch 2026-05-01\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Compiled 2 memory cards.\",\"No conflicts or deletions present.\",\"No entity resolution required.\"]}}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

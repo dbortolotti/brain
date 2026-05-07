@@ -1,0 +1,93 @@
+{
+  "fixture_id": "long_markdown_chat_summary_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Stored architecture principles as durable memory; preserved Telegram and model-cost questions as open questions without committing decisions.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "Persist core architecture principles as memory; preserve open questions as non-final (no decisions committed beyond what is stated).",
+    "entity_resolution": {
+      "action": "no_merge",
+      "entity_id": null,
+      "reason": "Only generic named components were provided (Brain DB, Cognee, Slack, Telegram); no explicit canonical IDs or aliases were supplied for resolution."
+    },
+    "intent": "Compile durable memory cards from provided chat summary about Brain architecture and open questions.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "semantic_projection",
+            "type": "system"
+          }
+        ],
+        "kind": "architecture_principle",
+        "relationships": [
+          {
+            "object": "Brain DB",
+            "predicate": "is_rebuildable_projection_of",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain DB is the source of truth; Cognee is intended as a rebuildable semantic projection derived from Brain DB."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "memory_intake_agent",
+            "type": "integration"
+          }
+        ],
+        "kind": "architecture_principle",
+        "relationships": [],
+        "statement": "Slack should function as a strict memory intake agent."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Telegram",
+            "role": "potential_addition",
+            "type": "integration"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [],
+        "statement": "Open question: Should Telegram be added later to the memory intake process?"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Model selection",
+            "role": "cost_performance_tradeoff",
+            "type": "decision_variable"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [],
+        "statement": "Open question: Which model is cheapest while saturating performance?"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created 4 memory cards: 2 principles and 2 open questions.",
+        "Did not assert any decisions beyond the stated architecture intent."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If canonical entity IDs/aliases exist for Brain DB/Cognee/Slack/Telegram, provide them to improve entity resolution.",
+      "If later decisions are made about Telegram inclusion or model selection, add new memory cards rather than overwriting prior open questions."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

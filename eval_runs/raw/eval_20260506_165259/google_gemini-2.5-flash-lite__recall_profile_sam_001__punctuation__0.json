@@ -1,0 +1,80 @@
+{
+  "error": null,
+  "fixture_id": "recall_profile_sam_001__punctuation",
+  "model": "google:gemini-2.5-flash-lite",
+  "payload": {
+    "answer": "Sam from Goldman likes Bill Evans and is interested in AI infrastructure.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "respond",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": "sam_goldman_1",
+      "reason": "The query mentions 'Sam from Goldman', which is a specific entity that can be resolved."
+    },
+    "intent": "recall",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "PERSON"
+          },
+          {
+            "name": "Goldman",
+            "type": "ORGANIZATION"
+          },
+          {
+            "name": "Bill Evans",
+            "type": "PERSON"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "PERSON"
+          },
+          {
+            "name": "AI infrastructure",
+            "type": "TOPIC"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "AI infrastructure",
+            "predicate": "interested_in",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is interested in AI infrastructure."
+      }
+    ],
+    "receipt": {
+      "details": [],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"recall\",\n  \"decision\": \"respond\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam from Goldman likes Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"PERSON\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"ORGANIZATION\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"PERSON\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"associated_with\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam is interested in AI infrastructure.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"PERSON\"\n        },\n        {\n          \"name\": \"AI infrastructure\",\n          \"type\": \"TOPIC\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"interested_in\",\n          \"object\": \"AI infrastructure\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolve\",\n    \"entity_id\": \"sam_goldman_1\",\n    \"reason\": \"The query mentions 'Sam from Goldman', which is a specific entity that can be resolved.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Sam from Goldman likes Bill Evans and is interested in AI infrastructure.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": []\n  }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

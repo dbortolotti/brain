@@ -1,0 +1,83 @@
+{
+  "fixture_id": "supersession_sam_job_001__context",
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "payload": {
+    "answer": "The existing memory 'Sam works at Goldman' is superseded by the new information 'Sam left Goldman and joined Point72'. The system should mark the old employment fact as deprecated and record the new employment fact as current, while preserving the historical record.",
+    "citations": [
+      "New fact explicitly states Sam left Goldman",
+      "New fact explicitly states Sam joined Point72",
+      "Temporal logic: departure precedes current employment"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "Accept new fact and deprecate old fact",
+    "entity_resolution": {
+      "action": "supersede",
+      "entity_id": "sam_employment_status",
+      "reason": "Temporal ordering: new information indicates a job transition from Goldman to Point72, making the new fact current and the old fact historical"
+    },
+    "intent": "Classify and resolve a supersession conflict between two employment facts",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "current_employment",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "currently_employed_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Point72"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "prior_employment",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "previously_employed_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam previously worked at Goldman"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict identified as employment supersession",
+        "Old fact deprecated: Sam works at Goldman",
+        "New fact committed: Sam works at Point72",
+        "Historical record preserved: Sam previously worked at Goldman"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retain both facts with temporal annotations (prior vs. current)",
+      "Archive old employment record with end_date",
+      "Create employment history timeline"
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

@@ -1,0 +1,88 @@
+{
+  "fixture_id": "email_source_meeting_followup_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Sam reported joining Point72 last month and requested the AI infra article.",
+    "citations": [
+      "From: sam@example.com",
+      "Subject: Follow up. Great seeing you.",
+      "Body: Yes, I joined Point72 last month. Please send the AI infra article."
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "Commit cautious durable memory about Sam's self-reported employment at Point72 and the request to send the AI infra article.",
+    "entity_resolution": {
+      "action": "create_or_update_with_uncertainty",
+      "entity_id": null,
+      "reason": "The sender is identified only as Sam in the email context; no stronger identity resolution is available."
+    },
+    "intent": "Update memory from a follow-up email: identify the sender, the sender's current job status, and the requested article.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "sender",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          },
+          {
+            "object": "last month",
+            "predicate": "joined_time",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said they joined Point72 last month."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "sender",
+            "type": "person"
+          },
+          {
+            "name": "AI infra article",
+            "role": "requested item",
+            "type": "document"
+          }
+        ],
+        "kind": "request",
+        "relationships": [
+          {
+            "object": "AI infra article",
+            "predicate": "requested",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam asked for the AI infra article to be sent."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted sender-reported employment update.",
+        "Recorded request for the AI infra article.",
+        "No superseding or conflicting facts detected."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If Sam is already known under a fuller identity, merge this email with that existing person entity.",
+      "If the AI infra article has a specific title or link in other messages, attach that exact document reference."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

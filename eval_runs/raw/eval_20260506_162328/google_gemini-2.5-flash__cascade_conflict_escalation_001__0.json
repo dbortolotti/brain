@@ -1,0 +1,9 @@
+{
+  "error": "Expecting ',' delimiter: line 54 column 4 (char 1162)",
+  "fixture_id": "cascade_conflict_escalation_001",
+  "model": "google:gemini-2.5-flash",
+  "payload": null,
+  "raw_text": "{\n  \"intent\": \"Classify conflict between existing and input statements.\",\n  \"decision\": \"Conflict detected.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is my daughter.\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\"\n        },\n        {\n          \"name\": \"me\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is daughter of\",\n          \"object\": \"me\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is my niece.\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\"\n        },\n        {\n          \"name\": \"me\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is niece of\",\n          \"object\": \"me\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"Entities 'Sara' and 'me' are consistent across statements; the conflict is relational.\"\n  },\n  \"conflict_classification\": \"Mutually exclusive relationships\",\n  \"answer\": \"There is a direct conflict regarding the relationship between Sara and the speaker. Sara cannot be both the daughter and the niece of the same person simultaneously.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Seek clarification from the user about Sara's actual relationship.\",",
+  "run_id": "eval_20260506_162328",
+  "status": "schema_fail"
+}

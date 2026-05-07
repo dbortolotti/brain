@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "fixture_id": "person_interaction_sam_bill_evans_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Tentatively recorded that Sam from Goldman likes Bill Evans.",
+    "citations": [
+      "For context, Sam from Goldman mentioned that he likes Bill Evans."
+    ],
+    "conflict_classification": "none",
+    "decision": "create_tentative_memory",
+    "entity_resolution": {
+      "action": "unresolved",
+      "entity_id": null,
+      "reason": "'Sam from Goldman' is not specific enough to confidently link to a unique durable entity."
+    },
+    "intent": "ingest_personal_preference",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "is affiliated with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman reportedly likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed a tentative preference statement.",
+        "Preserved ambiguity about which Sam is meant."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If Sam is a specific known contact, provide a fuller identifier so the preference can be linked reliably.",
+      "If this was casual or outdated, confirm whether it should be kept as a memory."
+    ]
+  },
+  "raw_text": "{\"intent\":\"ingest_personal_preference\",\"decision\":\"create_tentative_memory\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman reportedly likes Bill Evans.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked_artist\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"},{\"subject\":\"Sam\",\"predicate\":\"is affiliated with\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"unresolved\",\"entity_id\":null,\"reason\":\"'Sam from Goldman' is not specific enough to confidently link to a unique durable entity.\"},\"conflict_classification\":\"none\",\"answer\":\"Tentatively recorded that Sam from Goldman likes Bill Evans.\",\"citations\":[\"For context, Sam from Goldman mentioned that he likes Bill Evans.\"],\"repair_options\":[\"If Sam is a specific known contact, provide a fuller identifier so the preference can be linked reliably.\",\"If this was casual or outdated, confirm whether it should be kept as a memory.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed a tentative preference statement.\",\"Preserved ambiguity about which Sam is meant.\"]}}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

@@ -42,11 +42,15 @@ class LiveProviderClient:
         settings: Settings,
         *,
         timeout_seconds: float = 60,
+        retry_attempts: int = 2,
+        retry_backoff_seconds: float = 1.0,
         http_client: httpx.Client | None = None,
     ) -> None:
         self.settings = settings
         self._client = http_client
         self._timeout_seconds = timeout_seconds
+        self._retry_attempts = retry_attempts
+        self._retry_backoff_seconds = retry_backoff_seconds
 
     def complete_json(
         self,
@@ -61,7 +65,9 @@ class LiveProviderClient:
         try:
             if missing := self.missing_credential(candidate):
                 raise ProviderCallError(missing)
-            raw_text = self._complete_text(candidate, prompt=prompt, schema=schema)
+            raw_text = self._retry_call(
+                lambda: self._complete_text(candidate, prompt=prompt, schema=schema)
+            )
             try:
                 payload = parse_json_object(raw_text)
             except Exception as exc:
@@ -95,7 +101,9 @@ class LiveProviderClient:
         try:
             if missing := self.missing_credential(candidate):
                 raise ProviderCallError(missing)
-            vector_size = self._embedding_vector_size(candidate, text=text)
+            vector_size = self._retry_call(
+                lambda: self._embedding_vector_size(candidate, text=text)
+            )
             payload = {"embedding_vector_size": vector_size}
             raw_text = json.dumps(payload)
             status = "ok"
@@ -161,10 +169,10 @@ class LiveProviderClient:
             "https://api.openai.com/v1/responses",
             headers={"Authorization": f"Bearer {self.settings.provider_api_key('openai')}"},
             json={
-                "model": candidate.model,
+                "model": candidate.api_model or candidate.model,
                 "input": prompt_with_schema(prompt, schema),
                 "max_output_tokens": MAX_OUTPUT_TOKENS,
-                "reasoning": {"effort": openai_reasoning_effort(candidate.model)},
+                "reasoning": {"effort": candidate.reasoning_effort or openai_reasoning_effort(candidate.api_model or candidate.model)},
             },
         )
         payload = checked_json(response)
@@ -305,7 +313,7 @@ class LiveProviderClient:
             response = self.client.post(
                 "https://api.openai.com/v1/embeddings",
                 headers={"Authorization": f"Bearer {self.settings.provider_api_key('openai')}"},
-                json={"model": candidate.model, "input": text},
+                json={"model": candidate.api_model or candidate.model, "input": text},
             )
             payload = checked_json(response)
             vector = ((payload.get("data") or [{}])[0].get("embedding"))
@@ -340,6 +348,23 @@ class LiveProviderClient:
             return self._client
         self._client = httpx.Client(timeout=self._timeout_seconds)
         return self._client
+
+    def _retry_call(self, fn):
+        attempts = self._retry_attempts + 1
+        last_error: Exception | None = None
+        for attempt_idx in range(attempts):
+            try:
+                return fn()
+            except Exception as exc:
+                last_error = exc
+                if attempt_idx >= attempts - 1 or not is_retryable_provider_error(exc):
+                    raise
+                delay_seconds = self._retry_backoff_seconds * (2**attempt_idx)
+                if delay_seconds > 0:
+                    time.sleep(delay_seconds)
+        if last_error is not None:
+            raise last_error
+        raise ProviderCallError("provider call failed without an error")
 
 
 def prompt_with_schema(prompt: str, schema: dict[str, Any]) -> str:
@@ -382,6 +407,25 @@ def checked_json(response: httpx.Response) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise ProviderCallError("provider returned unexpected JSON response")
     return payload
+
+
+def is_retryable_provider_error(exc: Exception) -> bool:
+    if isinstance(exc, (httpx.TimeoutException, httpx.NetworkError)):
+        return True
+    if not isinstance(exc, ProviderCallError):
+        return False
+    message = str(exc).lower()
+    if "http 429" in message:
+        return True
+    if any(code in message for code in ("http 500", "http 502", "http 503", "http 504")):
+        return True
+    if "rate limit" in message or "high demand" in message or "temporarily unavailable" in message:
+        return True
+    if "timeout" in message or "timed out" in message:
+        return True
+    if "connection" in message or "network" in message or "transport" in message:
+        return True
+    return False
 
 
 def response_error_message(response: httpx.Response) -> str:

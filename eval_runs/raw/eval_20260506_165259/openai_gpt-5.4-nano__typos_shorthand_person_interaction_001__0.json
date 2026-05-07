@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "fixture_id": "typos_shorthand_person_interaction_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Saved a low-confidence, reportedly stated preference: Sam (affiliated with Goldman) apparently likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "store_with_low_confidence",
+    "entity_resolution": {
+      "action": "create_new_entities_unverified",
+      "entity_id": null,
+      "reason": "Names and affiliations are ambiguous (e.g., shorthand 'frm goldmn' and reported verb 'apparently'); no existing entity IDs were provided."
+    },
+    "intent": "memory_intake",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (from Goldman) apparently likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Interpreted shorthand: 'frm goldmn' as affiliation and 'evns' as 'Evans'.",
+        "Stored statement with low confidence due to 'apparently' uncertainty."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm Sam\u2019s full identity (to disambiguate multiple Sams).",
+      "Confirm what 'goldmn' refers to (e.g., Goldman Sachs) and whether 'frm' means employer vs. origin.",
+      "Confirm Bill Evans\u2019s identity (to disambiguate people with the same name).",
+      "Confirm whether the 'apparently' wording should be treated as secondhand/rumor or personal knowledge."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"memory_intake\",\n  \"decision\": \"store_with_low_confidence\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam (from Goldman) apparently likes Bill Evans.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"affiliated_with\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_new_entities_unverified\",\n    \"entity_id\": null,\n    \"reason\": \"Names and affiliations are ambiguous (e.g., shorthand 'frm goldmn' and reported verb 'apparently'); no existing entity IDs were provided.\"\n  },\n  \"conflict_classification\": \"none_detected\",\n  \"answer\": \"Saved a low-confidence, reportedly stated preference: Sam (affiliated with Goldman) apparently likes Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Confirm Sam\u2019s full identity (to disambiguate multiple Sams).\",\n    \"Confirm what 'goldmn' refers to (e.g., Goldman Sachs) and whether 'frm' means employer vs. origin.\",\n    \"Confirm Bill Evans\u2019s identity (to disambiguate people with the same name).\",\n    \"Confirm whether the 'apparently' wording should be treated as secondhand/rumor or personal knowledge.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Interpreted shorthand: 'frm goldmn' as affiliation and 'evns' as 'Evans'.\",\n      \"Stored statement with low confidence due to 'apparently' uncertainty.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

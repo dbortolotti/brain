@@ -1,0 +1,74 @@
+{
+  "fixture_id": "recall_profile_sam_001__context",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Sam from Goldman likes Bill Evans, is associated with Goldman, and is interested in AI infrastructure.",
+    "citations": [
+      "recall_profile_sam_001__context"
+    ],
+    "conflict_classification": "none",
+    "decision": "synthesize_profile",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": "sam_goldman_001",
+      "reason": "Matched by name 'Sam' and affiliation 'Goldman' in fixture context"
+    },
+    "intent": "recall_synthesizer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "interest",
+            "type": "topic"
+          }
+        ],
+        "kind": "profile",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "is_associated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "AI infrastructure",
+            "predicate": "is_interested_in",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans, is associated with Goldman, and is interested in AI infrastructure."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Profile synthesized from fixture context",
+        "No conflicts detected",
+        "Open loop noted: send Sam article about AI infra"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_160821"
+}

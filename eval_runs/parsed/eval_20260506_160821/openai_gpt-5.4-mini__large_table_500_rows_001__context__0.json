@@ -1,0 +1,63 @@
+{
+  "fixture_id": "large_table_500_rows_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Store it as a compact structured reference or summary, not as 500 individual durable memory facts.",
+    "citations": [
+      "fixture:large_table_500_rows_001__context"
+    ],
+    "conflict_classification": "none",
+    "decision": "Do not store all 500 rows as durable memory. Preserve only a minimal structural summary or pointer to the table if needed; treat the table itself as an external structured artifact rather than a personal memory.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No stable real-world entity beyond the provided dataset/context was identified."
+    },
+    "intent": "Evaluate how to store a large repetitive CSV table in the memory system.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "source artifact",
+            "type": "dataset"
+          }
+        ],
+        "kind": "context",
+        "relationships": [
+          {
+            "object": "id, name, value",
+            "predicate": "has_columns",
+            "subject": "CSV table"
+          },
+          {
+            "object": "500",
+            "predicate": "row_count",
+            "subject": "CSV table"
+          }
+        ],
+        "statement": "The input is a CSV table with 500 rows and repeated columns id, name, and value."
+      },
+      {
+        "confidence": "medium",
+        "kind": "policy",
+        "statement": "Large repetitive tabular data should not be committed verbatim to durable memory; a compact summary or reference is preferred."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed the request as a storage-policy evaluation.",
+        "Avoided overcommitting repetitive row-level data to durable memory.",
+        "Preserved ambiguity by not inferring any row-specific facts."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If the table is needed later, keep a pointer to the source file or dataset.",
+      "If only patterns matter, store schema and notable aggregates instead of rows.",
+      "If specific rows matter, store only the exceptional or user-relevant rows."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

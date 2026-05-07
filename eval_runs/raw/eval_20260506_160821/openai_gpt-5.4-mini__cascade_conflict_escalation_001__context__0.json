@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "fixture_id": "cascade_conflict_escalation_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Conflict: existing memory says Sara is my daughter, while the new input says Sara is my niece. Do not commit the new relationship as current without clarification.",
+    "citations": [
+      "Existing: Sara is my daughter.",
+      "Input: Sara is my niece."
+    ],
+    "conflict_classification": "direct_conflict",
+    "decision": "Do not replace the existing memory; record the new statement as a conflicting claim with low durability and preserve ambiguity.",
+    "entity_resolution": {
+      "action": "match_existing_entity",
+      "entity_id": "Sara",
+      "reason": "The input refers to the same named person as the existing memory, but the stated family relationship conflicts with the current memory."
+    },
+    "intent": "classify relationship conflict for Sara",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "conflicting_claim",
+        "relationships": [
+          {
+            "object": "my niece",
+            "predicate": "is described as",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected direct relationship conflict for Sara.",
+        "Preserved existing memory as current.",
+        "Added the new statement only as a low-confidence conflicting claim."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for clarification about Sara's relationship.",
+      "Store both as conflicting claims until resolved.",
+      "Verify whether 'daughter' or 'niece' was stated in error."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify relationship conflict for Sara\",\"decision\":\"Do not replace the existing memory; record the new statement as a conflicting claim with low durability and preserve ambiguity.\",\"memory_cards\":[{\"kind\":\"conflicting_claim\",\"statement\":\"Sara is my niece.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"is described as\",\"object\":\"my niece\"}]}],\"entity_resolution\":{\"action\":\"match_existing_entity\",\"entity_id\":\"Sara\",\"reason\":\"The input refers to the same named person as the existing memory, but the stated family relationship conflicts with the current memory.\"},\"conflict_classification\":\"direct_conflict\",\"answer\":\"Conflict: existing memory says Sara is my daughter, while the new input says Sara is my niece. Do not commit the new relationship as current without clarification.\",\"citations\":[\"Existing: Sara is my daughter.\",\"Input: Sara is my niece.\"],\"repair_options\":[\"Ask for clarification about Sara's relationship.\",\"Store both as conflicting claims until resolved.\",\"Verify whether 'daughter' or 'niece' was stated in error.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected direct relationship conflict for Sara.\",\"Preserved existing memory as current.\",\"Added the new statement only as a low-confidence conflicting claim.\"]}}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

@@ -1,0 +1,85 @@
+{
+  "fixture_id": "temporal_status_transition_001",
+  "model": "anthropic:claude-sonnet-4-6",
+  "payload": {
+    "answer": "The Brain Slack agent's status has been updated from planned/open to implemented (MVP). The prior planned state has been retracted and will not be surfaced as current.",
+    "citations": [
+      "Existing project state: Brain Slack agent, status=open (now superseded)",
+      "New input: Brain Slack agent MVP is now implemented"
+    ],
+    "conflict_classification": "temporal_status_transition",
+    "decision": "This is a temporal status transition conflict: the existing record states the Brain Slack agent is planned with status=open, and the new input supersedes that with a completed MVP implementation. The old status must be retired and replaced with the new status. No ambiguity exists \u2014 this is a clear, durable state change.",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "brain_slack_agent_001",
+      "reason": "'Brain Slack agent' and 'Brain Slack agent MVP' refer to the same entity. The MVP qualifier denotes the scope of the implementation milestone, not a distinct entity."
+    },
+    "intent": "Update the status of the Brain Slack agent from planned/open to implemented (MVP complete)",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain Slack agent",
+            "role": "subject",
+            "type": "software_project"
+          }
+        ],
+        "kind": "retraction",
+        "relationships": [
+          {
+            "object": "planned / open",
+            "predicate": "had_status (superseded)",
+            "subject": "Brain Slack agent"
+          }
+        ],
+        "statement": "The Brain Slack agent was previously planned with status=open. This record is now superseded and must not be presented as current."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain Slack agent",
+            "role": "subject",
+            "type": "software_project"
+          },
+          {
+            "name": "MVP",
+            "role": "scope_qualifier",
+            "type": "milestone"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "implemented",
+            "predicate": "has_status",
+            "subject": "Brain Slack agent"
+          },
+          {
+            "object": "MVP",
+            "predicate": "reached_milestone",
+            "subject": "Brain Slack agent"
+          }
+        ],
+        "statement": "The Brain Slack agent MVP is now implemented. Status has transitioned from planned/open to implemented."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict classified as temporal_status_transition.",
+        "Prior status (planned/open) retracted and flagged as superseded.",
+        "New fact committed: Brain Slack agent MVP status = implemented.",
+        "Entity resolution: 'Brain Slack agent' and 'Brain Slack agent MVP' merged under single entity ID brain_slack_agent_001.",
+        "No ambiguity detected; confidence set to high."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark the original planned/open record with a closed_at timestamp to preserve historical audit trail.",
+      "Add a 'scope' field to the new fact card to clarify that 'implemented' refers specifically to MVP scope, leaving room for future full-release milestones.",
+      "Create a separate milestone card for MVP completion date if a specific date is provided in future input."
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

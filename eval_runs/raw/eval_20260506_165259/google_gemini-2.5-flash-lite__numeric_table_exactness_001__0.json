@@ -1,0 +1,118 @@
+{
+  "error": null,
+  "fixture_id": "numeric_table_exactness_001",
+  "model": "google:gemini-2.5-flash-lite",
+  "payload": {
+    "answer": "The table shows two runs: PPO-001 with a reward of 0.12 and Sharpe ratio of 0.45 (baseline), and PPO-002 with a reward of 0.18 and Sharpe ratio of 0.51 (entropy tuned).",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "The user wants to extract data from a table. I will create memory cards for each row in the table.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No entities required resolution."
+    },
+    "intent": "extract tabular data",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "run",
+            "type": "run_id"
+          },
+          {
+            "name": "0.12",
+            "role": "reward",
+            "type": "reward"
+          },
+          {
+            "name": "0.45",
+            "role": "sharpe",
+            "type": "sharpe_ratio"
+          },
+          {
+            "name": "baseline",
+            "role": "note",
+            "type": "note"
+          }
+        ],
+        "kind": "table_row",
+        "relationships": [
+          {
+            "object": "0.12",
+            "predicate": "achieved_reward",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "0.45",
+            "predicate": "achieved_sharpe_ratio",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "baseline",
+            "predicate": "has_note",
+            "subject": "PPO-001"
+          }
+        ],
+        "statement": "Run PPO-001 achieved a reward of 0.12 and a Sharpe ratio of 0.45, serving as the baseline."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "run",
+            "type": "run_id"
+          },
+          {
+            "name": "0.18",
+            "role": "reward",
+            "type": "reward"
+          },
+          {
+            "name": "0.51",
+            "role": "sharpe",
+            "type": "sharpe_ratio"
+          },
+          {
+            "name": "entropy tuned",
+            "role": "note",
+            "type": "note"
+          }
+        ],
+        "kind": "table_row",
+        "relationships": [
+          {
+            "object": "0.18",
+            "predicate": "achieved_reward",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "0.51",
+            "predicate": "achieved_sharpe_ratio",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "entropy tuned",
+            "predicate": "has_note",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "Run PPO-002 achieved a reward of 0.18 and a Sharpe ratio of 0.51, with entropy tuning."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Successfully extracted data from the provided table.",
+        "Created memory cards for each row with extracted entities and relationships."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"extract tabular data\",\n  \"decision\": \"The user wants to extract data from a table. I will create memory cards for each row in the table.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"table_row\",\n      \"statement\": \"Run PPO-001 achieved a reward of 0.12 and a Sharpe ratio of 0.45, serving as the baseline.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"PPO-001\",\n          \"type\": \"run_id\",\n          \"role\": \"run\"\n        },\n        {\n          \"name\": \"0.12\",\n          \"type\": \"reward\",\n          \"role\": \"reward\"\n        },\n        {\n          \"name\": \"0.45\",\n          \"type\": \"sharpe_ratio\",\n          \"role\": \"sharpe\"\n        },\n        {\n          \"name\": \"baseline\",\n          \"type\": \"note\",\n          \"role\": \"note\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"achieved_reward\",\n          \"object\": \"0.12\"\n        },\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"achieved_sharpe_ratio\",\n          \"object\": \"0.45\"\n        },\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"has_note\",\n          \"object\": \"baseline\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"table_row\",\n      \"statement\": \"Run PPO-002 achieved a reward of 0.18 and a Sharpe ratio of 0.51, with entropy tuning.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"PPO-002\",\n          \"type\": \"run_id\",\n          \"role\": \"run\"\n        },\n        {\n          \"name\": \"0.18\",\n          \"type\": \"reward\",\n          \"role\": \"reward\"\n        },\n        {\n          \"name\": \"0.51\",\n          \"type\": \"sharpe_ratio\",\n          \"role\": \"sharpe\"\n        },\n        {\n          \"name\": \"entropy tuned\",\n          \"type\": \"note\",\n          \"role\": \"note\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"achieved_reward\",\n          \"object\": \"0.18\"\n        },\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"achieved_sharpe_ratio\",\n          \"object\": \"0.51\"\n        },\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"has_note\",\n          \"object\": \"entropy tuned\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No entities required resolution.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"The table shows two runs: PPO-001 with a reward of 0.12 and Sharpe ratio of 0.45 (baseline), and PPO-002 with a reward of 0.18 and Sharpe ratio of 0.51 (entropy tuned).\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Successfully extracted data from the provided table.\",\n      \"Created memory cards for each row with extracted entities and relationships.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

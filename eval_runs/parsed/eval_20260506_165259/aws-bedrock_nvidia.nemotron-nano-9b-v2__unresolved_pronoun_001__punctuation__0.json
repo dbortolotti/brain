@@ -1,0 +1,65 @@
+{
+  "fixture_id": "unresolved_pronoun_001__punctuation",
+  "model": "aws-bedrock:nvidia.nemotron-nano-9b-v2",
+  "payload": {
+    "answer": "Could you clarify who 'he' refers to?",
+    "citations": [],
+    "conflict_classification": "unresolved_pronoun",
+    "decision": "clarify_pronoun",
+    "entity_resolution": {
+      "action": "resolve_pronoun",
+      "entity_id": null,
+      "reason": "unresolved pronoun 'he' in context"
+    },
+    "intent": "pronoun_resolution",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "he",
+            "role": "subject",
+            "type": "pronoun"
+          },
+          {
+            "name": "the other one",
+            "role": "object",
+            "type": "pronoun"
+          }
+        ],
+        "kind": "pronoun_resolution",
+        "statement": "He prefers the other one"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "the other one",
+            "role": "preferred_item",
+            "type": "object"
+          }
+        ],
+        "kind": "preference_statement",
+        "statement": "preference for 'the other one'"
+      },
+      {
+        "confidence": "high",
+        "entities": [],
+        "kind": "ambiguity_note",
+        "statement": "unresolved pronoun 'he'"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "unresolved pronoun 'he'",
+        "ambiguous reference to 'the other one'"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Specify the person for 'he'",
+      "Provide context for 'the other one'"
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

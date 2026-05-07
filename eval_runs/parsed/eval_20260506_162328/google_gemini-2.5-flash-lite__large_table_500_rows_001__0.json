@@ -1,0 +1,70 @@
+{
+  "fixture_id": "large_table_500_rows_001",
+  "model": "google:gemini-2.5-flash-lite",
+  "payload": {
+    "answer": "The CSV table with 500 rows should be stored as structured data.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_as_structured_data",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "The data is structured and can be stored efficiently in a tabular format."
+    },
+    "intent": "store_data",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "data_source",
+            "type": "dataset"
+          },
+          {
+            "name": "id",
+            "role": "attribute",
+            "type": "column_name"
+          },
+          {
+            "name": "name",
+            "role": "attribute",
+            "type": "column_name"
+          },
+          {
+            "name": "value",
+            "role": "attribute",
+            "type": "column_name"
+          }
+        ],
+        "kind": "structured_data",
+        "relationships": [
+          {
+            "object": "id",
+            "predicate": "has_column",
+            "subject": "CSV table"
+          },
+          {
+            "object": "name",
+            "predicate": "has_column",
+            "subject": "CSV table"
+          },
+          {
+            "object": "value",
+            "predicate": "has_column",
+            "subject": "CSV table"
+          }
+        ],
+        "statement": "The CSV table with 500 rows, containing columns 'id', 'name', and 'value', should be stored as structured data."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Data stored as structured data."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_162328"
+}

@@ -1,0 +1,97 @@
+{
+  "fixture_id": "large_table_500_rows_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Store it as a compact summary (schema/shape, approximate size, and any notable exceptions) rather than ingesting all 500 repeated rows into durable memory.",
+    "citations": [
+      "Input: \"CSV table with 500 rows: id,name,value repeated many times\"",
+      "Input: \"Policy question: how should it be stored?\""
+    ],
+    "conflict_classification": "none",
+    "decision": "Do not store the 500-row CSV as a detailed durable memory; keep only a compact structural summary unless a later task needs specific rows or exceptions.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input describes a generic CSV context without a stable named entity requiring resolution."
+    },
+    "intent": "Evaluate a policy question about storing a large repetitive CSV table as memory.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "input",
+            "type": "dataset"
+          },
+          {
+            "name": "500 rows",
+            "role": "size indicator",
+            "type": "quantity"
+          }
+        ],
+        "kind": "policy",
+        "relationships": [
+          {
+            "object": "500 rows",
+            "predicate": "has_size",
+            "subject": "CSV table"
+          },
+          {
+            "object": "summary rather than full row-level memory",
+            "predicate": "should_be_stored_as",
+            "subject": "CSV table"
+          }
+        ],
+        "statement": "A large CSV table with 500 repeated rows should generally be stored as a summarized structural fact rather than as every row in durable memory."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "id",
+            "role": "field",
+            "type": "column"
+          },
+          {
+            "name": "name",
+            "role": "field",
+            "type": "column"
+          },
+          {
+            "name": "value",
+            "role": "field",
+            "type": "column"
+          }
+        ],
+        "kind": "policy",
+        "relationships": [
+          {
+            "object": "many times",
+            "predicate": "repeat",
+            "subject": "id, name, value columns"
+          },
+          {
+            "object": "durable row-by-row retention",
+            "predicate": "does_not_require",
+            "subject": "repeated table"
+          }
+        ],
+        "statement": "If the table contains only repeated id, name, value patterns with no salient unique exceptions, the memory system should preserve ambiguity and avoid overcommitting to row-level detail."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recognized the input as a storage-policy question, not a request to memorize the dataset.",
+        "Chose a conservative, non-overcommitting memory representation."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If later asked about specific records, retrieve or index the original table externally instead of expanding memory.",
+      "If the table has important outliers, store only those exceptions plus the column schema.",
+      "If repeated rows matter analytically, store counts or aggregate patterns instead of row copies."
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

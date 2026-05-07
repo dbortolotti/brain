@@ -1,0 +1,55 @@
+{
+  "fixture_id": "ambiguous_place_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Use the existing 'Brutto restaurant in London' as the likely target of the new note, but store the link with low confidence due to 'Brutto article alias' ambiguity.",
+    "citations": [],
+    "conflict_classification": "no_explicit_conflict_but_reference_ambiguous",
+    "decision": "resolve_with_low_confidence",
+    "entity_resolution": {
+      "action": "link_ambiguous_note_to_existing_entity",
+      "entity_id": null,
+      "reason": "Existing memory states 'Brutto restaurant in London'. The new note 'Brutto was better than expected' most plausibly refers to dining experience at that restaurant, but the input also mentions 'Brutto article alias', so the referent is ambiguous."
+    },
+    "intent": "entity_resolution",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Brutto",
+            "role": "candidate_target",
+            "type": "restaurant"
+          },
+          {
+            "name": "London",
+            "role": "location",
+            "type": "city"
+          }
+        ],
+        "kind": "place_or_poi",
+        "relationships": [
+          {
+            "object": "London",
+            "predicate": "is_in",
+            "subject": "Brutto"
+          }
+        ],
+        "statement": "Brutto is a restaurant in London, and a new note says 'Brutto was better than expected'\u2014likely referring to the same Brutto."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No hard contradiction detected.",
+        "Ambiguity arises from 'Brutto article alias' wording."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask the user to confirm whether the 'Brutto was better than expected' note refers to the London restaurant.",
+      "Record the note as restaurant-experience-at-Brutto with a qualifier (e.g., 'likely Brutto (London)').",
+      "If 'Brutto article alias' refers to a different entity, keep the note unlinked until disambiguated."
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

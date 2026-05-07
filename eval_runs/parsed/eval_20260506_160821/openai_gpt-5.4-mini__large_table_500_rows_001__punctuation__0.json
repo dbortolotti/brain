@@ -1,0 +1,78 @@
+{
+  "fixture_id": "large_table_500_rows_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Store it compactly: keep the table schema, note that it contains 500 repetitive rows, and omit verbatim row-by-row retention unless a subset is explicitly important or queryable. If durability is needed, save it as structured data outside memory and preserve only a summary in memory.",
+    "citations": [
+      "Input: \"CSV table with 500 rows - id,name,value repeated many times\"",
+      "Input: \"Policy question - how should it be stored?\""
+    ],
+    "conflict_classification": "none",
+    "decision": "Do not store the full 500-row CSV verbatim as durable memory; retain only a compact structural summary unless specific rows are explicitly important.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No stable personal or external entity is present; this is a policy/data-handling request only."
+    },
+    "intent": "Classify how to store a large CSV table with repeated columns/rows in memory.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "memory system",
+            "type": "system"
+          },
+          {
+            "name": "CSV table",
+            "role": "input",
+            "type": "data"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "schema_and_salient_patterns_instead_of_full_table",
+            "predicate": "should_store",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "For large repetitive tabular inputs, store the schema and salient patterns rather than every row."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "input",
+            "type": "data"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "high_redundancy",
+            "predicate": "has_property",
+            "subject": "CSV table"
+          }
+        ],
+        "statement": "The provided input is a CSV table with 500 rows and repeated id, name, value fields, suggesting high redundancy."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recognized as a storage-policy request.",
+        "Applied memory minimization for redundant tabular data.",
+        "No durable personal facts were committed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you need retrieval later, store the CSV in external structured storage and index it by schema plus key fields.",
+      "If only a few rows matter, extract those rows into durable memory and discard the rest.",
+      "If the rows contain a pattern or anomaly, store the pattern/anomaly rather than the full table."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

@@ -1,0 +1,97 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001__punctuation",
+  "model": "anthropic:claude-sonnet-4-6",
+  "payload": {
+    "answer": "There is a potential conflict between the existing memory (Sara is Daniele's daughter) and the new claim (Sara is my niece). These could be consistent \u2014 for example, if the user is Daniele's sibling \u2014 but they could also be inconsistent depending on the actual family structure. The speaker's relationship to Daniele and Nur is unknown, so the conflict cannot be resolved without clarification.",
+    "citations": [
+      "Existing memory: Sara is Daniele's daughter and Nur's twin",
+      "New input: Sara is my niece"
+    ],
+    "conflict_classification": "potential_logical_conflict",
+    "decision": "flag_conflict_pending_clarification",
+    "entity_resolution": {
+      "action": "hold",
+      "entity_id": "Sara",
+      "reason": "Sara is already known as Daniele's daughter and Nur's twin. The new claim that Sara is the speaker's niece may be consistent (if the speaker is Daniele's sibling) or may indicate a different Sara. Clarification is required before committing."
+    },
+    "intent": "assert_relationship",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "twin_sibling",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_daughter_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin"
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "speaker",
+            "role": "uncle_or_aunt",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship_candidate",
+        "relationships": [
+          {
+            "object": "speaker",
+            "predicate": "is_niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is the speaker's niece (unconfirmed \u2014 pending conflict resolution)"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "New relationship claim 'Sara is my niece' not committed due to unresolved conflict with existing high-confidence memory.",
+        "Existing memory preserved unchanged.",
+        "Conflict flagged for user clarification before any update is made."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Clarify whether the speaker is a sibling of Daniele, which would make Sara being the speaker's niece consistent with existing memory.",
+      "Clarify whether this Sara is the same person as Daniele's daughter, or a different individual named Sara.",
+      "If the speaker is Nur's sibling rather than Daniele's, that would also need to be reconciled with existing facts.",
+      "Ask: 'Is Sara your niece through Daniele or through another family connection?'"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"assert_relationship\",\n  \"decision\": \"flag_conflict_pending_clarification\",\n  \"conflict_classification\": \"potential_logical_conflict\",\n  \"answer\": \"There is a potential conflict between the existing memory (Sara is Daniele's daughter) and the new claim (Sara is my niece). These could be consistent \u2014 for example, if the user is Daniele's sibling \u2014 but they could also be inconsistent depending on the actual family structure. The speaker's relationship to Daniele and Nur is unknown, so the conflict cannot be resolved without clarification.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"relationship\",\n      \"statement\": \"Sara is Daniele's daughter and Nur's twin\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Sara\", \"type\": \"person\", \"role\": \"subject\"},\n        {\"name\": \"Daniele\", \"type\": \"person\", \"role\": \"parent\"},\n        {\"name\": \"Nur\", \"type\": \"person\", \"role\": \"twin_sibling\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sara\", \"predicate\": \"is_daughter_of\", \"object\": \"Daniele\"},\n        {\"subject\": \"Sara\", \"predicate\": \"is_twin_of\", \"object\": \"Nur\"}\n      ]\n    },\n    {\n      \"kind\": \"relationship_candidate\",\n      \"statement\": \"Sara is the speaker's niece (unconfirmed \u2014 pending conflict resolution)\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\"name\": \"Sara\", \"type\": \"person\", \"role\": \"subject\"},\n        {\"name\": \"speaker\", \"type\": \"person\", \"role\": \"uncle_or_aunt\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sara\", \"predicate\": \"is_niece_of\", \"object\": \"speaker\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"hold\",\n    \"entity_id\": \"Sara\",\n    \"reason\": \"Sara is already known as Daniele's daughter and Nur's twin. The new claim that Sara is the speaker's niece may be consistent (if the speaker is Daniele's sibling) or may indicate a different Sara. Clarification is required before committing.\"\n  },\n  \"repair_options\": [\n    \"Clarify whether the speaker is a sibling of Daniele, which would make Sara being the speaker's niece consistent with existing memory.\",\n    \"Clarify whether this Sara is the same person as Daniele's daughter, or a different individual named Sara.\",\n    \"If the speaker is Nur's sibling rather than Daniele's, that would also need to be reconciled with existing facts.\",\n    \"Ask: 'Is Sara your niece through Daniele or through another family connection?'\"\n  ],\n  \"citations\": [\n    \"Existing memory: Sara is Daniele's daughter and Nur's twin\",\n    \"New input: Sara is my niece\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"New relationship claim 'Sara is my niece' not committed due to unresolved conflict with existing high-confidence memory.\",\n      \"Existing memory preserved unchanged.\",\n      \"Conflict flagged for user clarification before any update is made.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

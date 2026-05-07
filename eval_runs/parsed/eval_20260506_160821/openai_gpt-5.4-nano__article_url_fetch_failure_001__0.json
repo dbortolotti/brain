@@ -1,0 +1,78 @@
+{
+  "fixture_id": "article_url_fetch_failure_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Stored a partial memory: fetch failure for the URL and the user's stated intent to remember it for memory architecture, without claiming article contents.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_partial",
+    "entity_resolution": {
+      "action": "create_or_reference",
+      "entity_id": null,
+      "reason": "The only reliable entity is the URL; no stable entity id is provided."
+    },
+    "intent": "Record user request and fetch failure for a specific article URL without asserting article contents.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "source",
+            "type": "url"
+          }
+        ],
+        "kind": "source_fetch_failure",
+        "relationships": [
+          {
+            "object": "404 network error",
+            "predicate": "fetch_result",
+            "subject": "https://example.com/missing"
+          }
+        ],
+        "statement": "An attempt to fetch https://example.com/missing resulted in a 404 network error."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "source",
+            "type": "url"
+          },
+          {
+            "name": "memory architecture",
+            "role": "intended_use",
+            "type": "topic"
+          }
+        ],
+        "kind": "user_intent_note",
+        "relationships": [
+          {
+            "object": "https://example.com/missing",
+            "predicate": "intended_use_for",
+            "subject": "memory architecture"
+          },
+          {
+            "object": "404 network error",
+            "predicate": "content_unavailable_due_to",
+            "subject": "https://example.com/missing"
+          }
+        ],
+        "statement": "The user indicated the (unretrieved) article at https://example.com/missing is useful for memory architecture; the article contents were not available due to the fetch failure."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Persisted fetch outcome (404 network error) and user intent; avoided asserting article contents."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Re-try fetching the URL later to obtain the article content.",
+      "Ask the user to provide the article text or a working mirror/link.",
+      "Store a placeholder note that content is pending until retrieval succeeds."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

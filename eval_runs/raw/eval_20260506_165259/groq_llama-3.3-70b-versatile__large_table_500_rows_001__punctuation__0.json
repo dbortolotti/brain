@@ -1,0 +1,65 @@
+{
+  "error": null,
+  "fixture_id": "large_table_500_rows_001__punctuation",
+  "model": "groq:llama-3.3-70b-versatile",
+  "payload": {
+    "answer": "store_as_entity_relationships",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_as_entity_relationships",
+    "entity_resolution": {
+      "action": "create_new_entities",
+      "entity_id": null,
+      "reason": "new_table"
+    },
+    "intent": "store_large_table",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "id",
+            "role": "primary_key",
+            "type": "integer"
+          },
+          {
+            "name": "name",
+            "role": "attribute",
+            "type": "string"
+          },
+          {
+            "name": "value",
+            "role": "attribute",
+            "type": "string"
+          }
+        ],
+        "kind": "table",
+        "relationships": [
+          {
+            "object": "name",
+            "predicate": "has_name",
+            "subject": "id"
+          },
+          {
+            "object": "value",
+            "predicate": "has_value",
+            "subject": "id"
+          }
+        ],
+        "statement": "id,name,value"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "table_created",
+        "entities_created",
+        "relationships_created"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"store_large_table\",\n   \"decision\": \"store_as_entity_relationships\",\n   \"memory_cards\": [\n       {\n           \"kind\": \"table\",\n           \"statement\": \"id,name,value\",\n           \"confidence\": \"high\",\n           \"entities\": [\n               {\"name\": \"id\", \"type\": \"integer\", \"role\": \"primary_key\"},\n               {\"name\": \"name\", \"type\": \"string\", \"role\": \"attribute\"},\n               {\"name\": \"value\", \"type\": \"string\", \"role\": \"attribute\"}\n           ],\n           \"relationships\": [\n               {\"subject\": \"id\", \"predicate\": \"has_name\", \"object\": \"name\"},\n               {\"subject\": \"id\", \"predicate\": \"has_value\", \"object\": \"value\"}\n           ]\n       }\n   ],\n   \"entity_resolution\": {\n       \"action\": \"create_new_entities\",\n       \"entity_id\": null,\n       \"reason\": \"new_table\"\n   },\n   \"conflict_classification\": \"none\",\n   \"answer\": \"store_as_entity_relationships\",\n   \"citations\": [],\n   \"repair_options\": [],\n   \"receipt\": {\n       \"success\": true,\n       \"details\": [\"table_created\", \"entities_created\", \"relationships_created\"]\n   }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

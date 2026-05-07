@@ -1,0 +1,48 @@
+{
+  "fixture_id": "unresolved_pronoun_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The input contains an unresolved pronoun ('He') and an ambiguous comparative reference ('the other one'). No durable memory can be committed without further context.",
+    "conflict_classification": "none",
+    "entity_resolution": {
+      "action": "defer",
+      "reason": "Insufficient context to resolve 'He' or 'the other one' definitively. Requires prior or additional context to disambiguate."
+    },
+    "intent": "contextual_clarification",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "He",
+            "role": "unresolved_antecedent",
+            "type": "pronoun"
+          },
+          {
+            "name": "the other one",
+            "role": "ambiguous_object",
+            "type": "comparative_reference"
+          }
+        ],
+        "kind": "contextual_ambiguity",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "He"
+          }
+        ],
+        "statement": "The pronoun 'He' in the input refers to an unspecified antecedent in the broader conversation context. The phrase 'prefers the other one' implies a comparison between two options, but the specific referents (e.g., objects, people, or ideas) are unresolved."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguity detected in pronoun resolution ('He').",
+        "Comparative reference ('the other one') lacks specificity.",
+        "No actionable memory committed due to unresolved dependencies."
+      ],
+      "success": false
+    }
+  },
+  "run_id": "eval_20260506_160821"
+}

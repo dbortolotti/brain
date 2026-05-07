@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "slack_rewrite_modal_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory rewritten to reflect preference for 'the other one' (unspecified) with medium confidence. Original context preserved as superseded.",
+    "citations": [],
+    "conflict_classification": "ambiguity_resolution",
+    "decision": "supersede_ambiguous",
+    "entity_resolution": {
+      "action": "resolve_ambiguity",
+      "entity_id": null,
+      "reason": "Original statement lacked specificity; rewrite clarifies preference without assuming context."
+    },
+    "intent": "rewrite_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "other_option",
+            "role": "preferred_choice",
+            "type": "entity"
+          },
+          {
+            "name": "current_option",
+            "role": "displaced_choice",
+            "type": "entity"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "other_option",
+            "predicate": "prefers",
+            "subject": "user"
+          },
+          {
+            "object": "current_option",
+            "predicate": "disregards",
+            "subject": "user"
+          }
+        ],
+        "statement": "The user prefers the other option (unspecified) over the current one, as of [contextual timestamp]."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Original memory marked as superseded (not deleted).",
+        "New memory tagged with 'ambiguous' confidence for review."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add explicit context (e.g., 'other one' = [specific option]) if known.",
+      "Flag for user confirmation if ambiguity persists."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"rewrite_memory\",\n  \"decision\": \"supersede_ambiguous\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"The user prefers the other option (unspecified) over the current one, as of [contextual timestamp].\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"other_option\",\n          \"type\": \"entity\",\n          \"role\": \"preferred_choice\"\n        },\n        {\n          \"name\": \"current_option\",\n          \"type\": \"entity\",\n          \"role\": \"displaced_choice\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"user\",\n          \"predicate\": \"prefers\",\n          \"object\": \"other_option\"\n        },\n        {\n          \"subject\": \"user\",\n          \"predicate\": \"disregards\",\n          \"object\": \"current_option\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolve_ambiguity\",\n    \"entity_id\": null,\n    \"reason\": \"Original statement lacked specificity; rewrite clarifies preference without assuming context.\"\n  },\n  \"conflict_classification\": \"ambiguity_resolution\",\n  \"answer\": \"Memory rewritten to reflect preference for 'the other one' (unspecified) with medium confidence. Original context preserved as superseded.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Add explicit context (e.g., 'other one' = [specific option]) if known.\",\n    \"Flag for user confirmation if ambiguity persists.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Original memory marked as superseded (not deleted).\",\n      \"New memory tagged with 'ambiguous' confidence for review.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

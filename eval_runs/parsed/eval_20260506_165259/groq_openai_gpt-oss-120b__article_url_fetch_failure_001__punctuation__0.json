@@ -1,0 +1,44 @@
+{
+  "fixture_id": "article_url_fetch_failure_001__punctuation",
+  "model": "groq:openai/gpt-oss-120b",
+  "payload": {
+    "answer": "The article could not be fetched; stored reference with unknown content.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_incomplete_reference_due_to_fetch_failure",
+    "entity_resolution": {
+      "action": "unresolved",
+      "entity_id": null,
+      "reason": "Fetch failed with 404 network error; content unavailable."
+    },
+    "intent": "store_article_reference",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "source",
+            "type": "url"
+          }
+        ],
+        "kind": "reference",
+        "relationships": [],
+        "statement": "Article at URL https://example.com/missing was referenced but could not be retrieved (404 network error)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Fetch error: 404 network error",
+        "Stored reference with low confidence"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retry fetching the article",
+      "Verify and correct the URL format",
+      "Search for alternative sources"
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

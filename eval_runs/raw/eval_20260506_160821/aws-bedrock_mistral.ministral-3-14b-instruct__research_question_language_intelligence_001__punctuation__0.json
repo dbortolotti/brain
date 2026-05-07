@@ -1,0 +1,141 @@
+{
+  "error": null,
+  "fixture_id": "research_question_language_intelligence_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The relationship between human intelligence and language is a **multidirectional, context-dependent interplay** with no single causal or dependent variable. Key ambiguities persist in: (1) whether language *enables* intelligence or vice versa, (2) the extent of linguistic relativity, and (3) the role of innate vs. learned components. Research suggests **reciprocal influence** but lacks consensus on mechanistic details.",
+    "citations": [
+      "Pinker, S. (1994). *The Language Instinct*.",
+      "Fodor, J. (1983). *The Modularity of Mind*.",
+      "Lakoff, G., & Johnson, M. (1980). *Metaphors We Live By*.",
+      "Gernsbacher, M. A. (2002). 'Language and Thought: A Cognitive Perspective.' *Journal of Memory and Language*, 47(2), 219\u2013234."
+    ],
+    "conflict_classification": "theoretical_ambiguity",
+    "decision": "initiate_memory_compilation_for_ambiguous_relationship",
+    "entity_resolution": {
+      "action": "defer",
+      "reason": "Ambiguity in 'human intelligence' (e.g., general intelligence vs. domain-specific skills) and 'language' (e.g., syntax, semantics, pragmatics) requires granular disambiguation before resolution."
+    },
+    "intent": "research_query",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "human_intelligence",
+            "role": "subject",
+            "type": "concept"
+          },
+          {
+            "name": "language",
+            "role": "object",
+            "type": "concept"
+          }
+        ],
+        "kind": "research_question",
+        "relationships": [
+          {
+            "object": "language",
+            "predicate": "is_dependent_on",
+            "subject": "human_intelligence"
+          },
+          {
+            "object": "human_intelligence",
+            "predicate": "is_dependent_on",
+            "subject": "language"
+          },
+          {
+            "object": "language",
+            "predicate": "is_mediated_by",
+            "subject": "human_intelligence"
+          }
+        ],
+        "statement": "Determine the nature of the relationship between human intelligence and language, preserving ambiguity where empirical consensus is lacking."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sapir-Whorf_hypothesis",
+            "role": "contributing_factor",
+            "type": "theory"
+          },
+          {
+            "name": "modularity_of_mind",
+            "role": "contributing_factor",
+            "type": "theory"
+          },
+          {
+            "name": "embodied_cognition",
+            "role": "contributing_factor",
+            "type": "theory"
+          }
+        ],
+        "kind": "research_gap",
+        "relationships": [
+          {
+            "object": "Sapir-Whorf_hypothesis",
+            "predicate": "is_influenced_by",
+            "subject": "human_intelligence"
+          },
+          {
+            "object": "modularity_of_mind",
+            "predicate": "is_constrained_by",
+            "subject": "language"
+          }
+        ],
+        "statement": "No definitive, universally accepted model exists to describe the bidirectional or causal relationship between human intelligence and language. Key theories include: Sapir-Whorf hypothesis (linguistic relativity), modularity of mind (Fodor), and embodied cognition."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "non-human_primates",
+            "role": "control_group",
+            "type": "subject_group"
+          },
+          {
+            "name": "aphasia_patients",
+            "role": "case_study",
+            "type": "subject_group"
+          },
+          {
+            "name": "Broca\u2019s_area",
+            "role": "biological_marker",
+            "type": "neural_region"
+          }
+        ],
+        "kind": "research_direction",
+        "relationships": [
+          {
+            "object": "non-human_primates",
+            "predicate": "is_studied_in",
+            "subject": "language_acquisition"
+          },
+          {
+            "object": "aphasia_patients",
+            "predicate": "are_observed_in",
+            "subject": "cognitive_deficits"
+          }
+        ],
+        "statement": "Explore empirical studies on: (1) language acquisition in non-human primates, (2) cognitive deficits in aphasia patients, (3) cross-linguistic differences in problem-solving, and (4) neural correlates of language processing (e.g., Broca\u2019s area, Wernicke\u2019s area)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Compiled 3 memory cards capturing the research question, gaps, and directions.",
+        "Flagged theoretical ambiguity for disambiguation before further processing.",
+        "Included foundational citations to avoid reinventing prior work."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Disambiguate 'human intelligence' to specify: general intelligence (g-factor), fluid/crystallized intelligence, or domain-specific skills (e.g., mathematical reasoning).",
+      "Clarify 'language' to focus on: syntax, semantics, pragmatics, or multimodal communication (e.g., sign language).",
+      "Restrict scope to a specific theoretical framework (e.g., modularity, embodied cognition, or connectionism)."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"research_query\",\n  \"decision\": \"initiate_memory_compilation_for_ambiguous_relationship\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"research_question\",\n      \"statement\": \"Determine the nature of the relationship between human intelligence and language, preserving ambiguity where empirical consensus is lacking.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"human_intelligence\",\n          \"type\": \"concept\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"language\",\n          \"type\": \"concept\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"human_intelligence\",\n          \"predicate\": \"is_dependent_on\",\n          \"object\": \"language\"\n        },\n        {\n          \"subject\": \"language\",\n          \"predicate\": \"is_dependent_on\",\n          \"object\": \"human_intelligence\"\n        },\n        {\n          \"subject\": \"human_intelligence\",\n          \"predicate\": \"is_mediated_by\",\n          \"object\": \"language\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"research_gap\",\n      \"statement\": \"No definitive, universally accepted model exists to describe the bidirectional or causal relationship between human intelligence and language. Key theories include: Sapir-Whorf hypothesis (linguistic relativity), modularity of mind (Fodor), and embodied cognition.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sapir-Whorf_hypothesis\",\n          \"type\": \"theory\",\n          \"role\": \"contributing_factor\"\n        },\n        {\n          \"name\": \"modularity_of_mind\",\n          \"type\": \"theory\",\n          \"role\": \"contributing_factor\"\n        },\n        {\n          \"name\": \"embodied_cognition\",\n          \"type\": \"theory\",\n          \"role\": \"contributing_factor\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"human_intelligence\",\n          \"predicate\": \"is_influenced_by\",\n          \"object\": \"Sapir-Whorf_hypothesis\"\n        },\n        {\n          \"subject\": \"language\",\n          \"predicate\": \"is_constrained_by\",\n          \"object\": \"modularity_of_mind\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"research_direction\",\n      \"statement\": \"Explore empirical studies on: (1) language acquisition in non-human primates, (2) cognitive deficits in aphasia patients, (3) cross-linguistic differences in problem-solving, and (4) neural correlates of language processing (e.g., Broca\u2019s area, Wernicke\u2019s area).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"non-human_primates\",\n          \"type\": \"subject_group\",\n          \"role\": \"control_group\"\n        },\n        {\n          \"name\": \"aphasia_patients\",\n          \"type\": \"subject_group\",\n          \"role\": \"case_study\"\n        },\n        {\n          \"name\": \"Broca\u2019s_area\",\n          \"type\": \"neural_region\",\n          \"role\": \"biological_marker\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"language_acquisition\",\n          \"predicate\": \"is_studied_in\",\n          \"object\": \"non-human_primates\"\n        },\n        {\n          \"subject\": \"cognitive_deficits\",\n          \"predicate\": \"are_observed_in\",\n          \"object\": \"aphasia_patients\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"reason\": \"Ambiguity in 'human intelligence' (e.g., general intelligence vs. domain-specific skills) and 'language' (e.g., syntax, semantics, pragmatics) requires granular disambiguation before resolution.\"\n  },\n  \"conflict_classification\": \"theoretical_ambiguity\",\n  \"answer\": \"The relationship between human intelligence and language is a **multidirectional, context-dependent interplay** with no single causal or dependent variable. Key ambiguities persist in: (1) whether language *enables* intelligence or vice versa, (2) the extent of linguistic relativity, and (3) the role of innate vs. learned components. Research suggests **reciprocal influence** but lacks consensus on mechanistic details.\",\n  \"citations\": [\n    \"Pinker, S. (1994). *The Language Instinct*.\",\n    \"Fodor, J. (1983). *The Modularity of Mind*.\",\n    \"Lakoff, G., & Johnson, M. (1980). *Metaphors We Live By*.\",\n    \"Gernsbacher, M. A. (2002). 'Language and Thought: A Cognitive Perspective.' *Journal of Memory and Language*, 47(2), 219\u2013234.\"\n  ],\n  \"repair_options\": [\n    \"Disambiguate 'human intelligence' to specify: general intelligence (g-factor), fluid/crystallized intelligence, or domain-specific skills (e.g., mathematical reasoning).\",\n    \"Clarify 'language' to focus on: syntax, semantics, pragmatics, or multimodal communication (e.g., sign language).\",\n    \"Restrict scope to a specific theoretical framework (e.g., modularity, embodied cognition, or connectionism).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Compiled 3 memory cards capturing the research question, gaps, and directions.\",\n      \"Flagged theoretical ambiguity for disambiguation before further processing.\",\n      \"Included foundational citations to avoid reinventing prior work.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

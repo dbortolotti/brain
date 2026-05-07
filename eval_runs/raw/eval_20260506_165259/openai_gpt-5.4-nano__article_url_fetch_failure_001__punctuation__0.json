@@ -1,0 +1,65 @@
+{
+  "error": null,
+  "fixture_id": "article_url_fetch_failure_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Fetch failed (404 network error); do not store article content, only record the failure event.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "do_not_store_article_content_due_to_fetch_failure",
+    "entity_resolution": {
+      "action": "no_enrichment",
+      "entity_id": null,
+      "reason": "Only a failing fetch status and a URL-like string were provided; no authoritative content or additional identifiers were available."
+    },
+    "intent": "Store a memory card about an article intended for memory architecture, using the provided fetch failure result.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://examplecom/missing",
+            "role": "source",
+            "type": "url"
+          }
+        ],
+        "kind": "system_event",
+        "relationships": [
+          {
+            "object": "404 network error",
+            "predicate": "fetch_result",
+            "subject": "https://examplecom/missing"
+          }
+        ],
+        "statement": "An attempt to fetch the article at https://examplecom/missing failed with a 404 network error, so the article content was not retrieved."
+      },
+      {
+        "confidence": "high",
+        "entities": [],
+        "kind": "memory_eligibility",
+        "relationships": [
+          {
+            "object": "not_created_due_to_missing_content",
+            "predicate": "status",
+            "subject": "article_memory_candidate"
+          }
+        ],
+        "statement": "Because the article content was not successfully fetched, no durable memory card about the article's information should be created from its contents."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored failure-event memory cards only; no article-content cards created."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retry fetching the correct URL (check punctuation/formatting and domain).",
+      "Provide the article text or a different working source link.",
+      "If the resource requires authentication or redirects, include cookies/headers or a final resolved URL."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Store a memory card about an article intended for memory architecture, using the provided fetch failure result.\",\n  \"decision\": \"do_not_store_article_content_due_to_fetch_failure\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"system_event\",\n      \"statement\": \"An attempt to fetch the article at https://examplecom/missing failed with a 404 network error, so the article content was not retrieved.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"https://examplecom/missing\",\n          \"type\": \"url\",\n          \"role\": \"source\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"https://examplecom/missing\",\n          \"predicate\": \"fetch_result\",\n          \"object\": \"404 network error\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"memory_eligibility\",\n      \"statement\": \"Because the article content was not successfully fetched, no durable memory card about the article's information should be created from its contents.\",\n      \"confidence\": \"high\",\n      \"entities\": [],\n      \"relationships\": [\n        {\n          \"subject\": \"article_memory_candidate\",\n          \"predicate\": \"status\",\n          \"object\": \"not_created_due_to_missing_content\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_enrichment\",\n    \"entity_id\": null,\n    \"reason\": \"Only a failing fetch status and a URL-like string were provided; no authoritative content or additional identifiers were available.\"\n  },\n  \"conflict_classification\": \"none_detected\",\n  \"answer\": \"Fetch failed (404 network error); do not store article content, only record the failure event.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Retry fetching the correct URL (check punctuation/formatting and domain).\",\n    \"Provide the article text or a different working source link.\",\n    \"If the resource requires authentication or redirects, include cookies/headers or a final resolved URL.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Stored failure-event memory cards only; no article-content cards created.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

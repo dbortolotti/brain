@@ -1,0 +1,75 @@
+{
+  "error": null,
+  "fixture_id": "correction_sam_music_001__punctuation",
+  "model": "google:gemini-2.5-pro",
+  "payload": {
+    "answer": "OK. I've updated my memory. Sam from Goldman likes early Coltrane, not Bill Evans.",
+    "citations": [],
+    "conflict_classification": "CONTRADICTION",
+    "decision": "The existing memory that Sam from Goldman likes Bill Evans is incorrect. The new information states that Sam actually likes early Coltrane. I will update the memory to reflect this correction.",
+    "entity_resolution": {
+      "action": "none"
+    },
+    "intent": "CORRECT_MEMORY",
+    "memory_cards": [
+      {
+        "confidence": "superseded",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "musician"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "music"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory updated successfully"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"CORRECT_MEMORY\",\n  \"decision\": \"The existing memory that Sam from Goldman likes Bill Evans is incorrect. The new information states that Sam actually likes early Coltrane. I will update the memory to reflect this correction.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam from Goldman likes Bill Evans.\",\n      \"confidence\": \"superseded\",\n      \"entities\": [\n        {\n          \"name\": \"Sam from Goldman\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"musician\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam from Goldman\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam from Goldman likes early Coltrane.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam from Goldman\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"early Coltrane\",\n          \"type\": \"music\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam from Goldman\",\n          \"predicate\": \"likes\",\n          \"object\": \"early Coltrane\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\"\n  },\n  \"conflict_classification\": \"CONTRADICTION\",\n  \"answer\": \"OK. I've updated my memory. Sam from Goldman likes early Coltrane, not Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory updated successfully\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

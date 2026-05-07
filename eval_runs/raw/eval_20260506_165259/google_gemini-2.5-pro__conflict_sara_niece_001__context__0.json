@@ -1,0 +1,53 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001__context",
+  "model": "google:gemini-2.5-pro",
+  "payload": {
+    "answer": "OK. I've recorded that Sara is your niece. This is consistent with my existing knowledge that Sara is Daniele's daughter and Nur's twin.",
+    "citations": [],
+    "conflict_classification": "NO_CONFLICT",
+    "decision": "COMMIT_MEMORY",
+    "entity_resolution": {
+      "action": "NONE",
+      "entity_id": null,
+      "reason": "The entities 'Sara' and 'user' are already known or are being treated as distinct."
+    },
+    "intent": "ADD_MEMORY",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "user",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "user",
+            "predicate": "is niece of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "New memory committed successfully."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"ADD_MEMORY\",\n  \"decision\": \"COMMIT_MEMORY\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is my niece.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"user\",\n          \"type\": \"person\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is niece of\",\n          \"object\": \"user\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"NONE\",\n    \"entity_id\": null,\n    \"reason\": \"The entities 'Sara' and 'user' are already known or are being treated as distinct.\"\n  },\n  \"conflict_classification\": \"NO_CONFLICT\",\n  \"answer\": \"OK. I've recorded that Sara is your niece. This is consistent with my existing knowledge that Sara is Daniele's daughter and Nur's twin.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"New memory committed successfully.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

@@ -1,0 +1,84 @@
+{
+  "error": null,
+  "fixture_id": "concurrent_conflict_writes_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Conflict detected: Sam is associated with both Goldman and Point72, but current employment cannot be determined from the provided context.",
+    "citations": [
+      "Input: \"Concurrent writes: Sam works at Goldman. Sam joined Point72.\""
+    ],
+    "conflict_classification": "concurrent_conflicting_facts",
+    "decision": "preserve_ambiguity",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The two concurrent writes describe potentially conflicting employment facts for the same person, but there is not enough evidence to determine which is current or whether one supersedes the other."
+    },
+    "intent": "conflict_classification",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam reportedly works at Goldman."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam reportedly joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recorded two conflicting low-confidence employment claims for Sam.",
+        "No durable current-employment fact committed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Keep both as low-confidence historical/current candidates until a source indicates which is current.",
+      "Request a disambiguating timestamp or source for each employment statement.",
+      "Prefer the most recent verified update only if a reliable chronology is available."
+    ]
+  },
+  "raw_text": "{\"intent\":\"conflict_classification\",\"decision\":\"preserve_ambiguity\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam reportedly works at Goldman.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works at\",\"object\":\"Goldman\"}]},{\"kind\":\"fact\",\"statement\":\"Sam reportedly joined Point72.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The two concurrent writes describe potentially conflicting employment facts for the same person, but there is not enough evidence to determine which is current or whether one supersedes the other.\"},\"conflict_classification\":\"concurrent_conflicting_facts\",\"answer\":\"Conflict detected: Sam is associated with both Goldman and Point72, but current employment cannot be determined from the provided context.\",\"citations\":[\"Input: \\\"Concurrent writes: Sam works at Goldman. Sam joined Point72.\\\"\"],\"repair_options\":[\"Keep both as low-confidence historical/current candidates until a source indicates which is current.\",\"Request a disambiguating timestamp or source for each employment statement.\",\"Prefer the most recent verified update only if a reliable chronology is available.\"],\"receipt\":{\"success\":true,\"details\":[\"Recorded two conflicting low-confidence employment claims for Sam.\",\"No durable current-employment fact committed.\"]}}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

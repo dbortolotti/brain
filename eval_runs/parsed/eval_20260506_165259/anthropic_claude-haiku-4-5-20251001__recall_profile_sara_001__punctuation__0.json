@@ -1,0 +1,69 @@
+{
+  "fixture_id": "recall_profile_sara_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "payload": {
+    "answer": "Sara is one of Daniele's twin daughters. Her twin sibling is Nur. No additional information about Sara is currently stored in memory.",
+    "citations": [
+      "Fact: Nur and Sara are Daniele's twin daughters"
+    ],
+    "conflict_classification": "none",
+    "decision": "Synthesize available facts about Sara while preserving ambiguity about her identity beyond the twin relationship",
+    "entity_resolution": {
+      "action": "identify",
+      "entity_id": "sara_daniele_twin_001",
+      "reason": "Sara identified as one of Daniele's twin daughters; insufficient data for further disambiguation"
+    },
+    "intent": "Recall information about Sara from stored facts",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "twin_sibling",
+            "type": "person"
+          }
+        ],
+        "kind": "relational_fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_twin_daughter_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is_twin_sibling_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is one of Daniele's twin daughters"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Fact successfully recalled",
+        "Relationship chain established: Sara \u2192 twin_of \u2192 Nur; Sara \u2192 daughter_of \u2192 Daniele",
+        "No conflicting information detected",
+        "Ambiguity preserved regarding Sara's other attributes"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request additional biographical details about Sara",
+      "Clarify Sara's age, occupation, or other distinguishing characteristics",
+      "Provide context about Sara's relationship to the querent"
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

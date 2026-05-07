@@ -1,0 +1,61 @@
+{
+  "fixture_id": "ambiguous_time_reference_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Captured as an ambiguous contextual note without resolving the date or identity.",
+    "citations": [
+      "Input: \"For context, Sam said last Friday that he is leaving Goldman next month.\""
+    ],
+    "conflict_classification": "none",
+    "decision": "store_with_ambiguity_preserved",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "'Sam' is not uniquely identified, and the relative time references ('last Friday', 'next month') are not anchored to an absolute date."
+    },
+    "intent": "ingest_contextual_statement",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker/subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "contextual_note",
+        "relationships": [
+          {
+            "object": "he is leaving Goldman next month",
+            "predicate": "said",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "works at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam reportedly said last Friday that he is leaving Goldman next month."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored one low-confidence contextual memory.",
+        "Absolute timing left unresolved to avoid committing a potentially incorrect durable fact."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you can provide an absolute date for 'last Friday', I can convert this into a dated event.",
+      "If you can identify which Sam this refers to, I can link the statement to the correct person."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

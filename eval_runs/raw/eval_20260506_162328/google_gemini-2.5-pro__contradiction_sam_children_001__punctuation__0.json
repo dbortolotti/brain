@@ -1,0 +1,52 @@
+{
+  "error": null,
+  "fixture_id": "contradiction_sam_children_001__punctuation",
+  "model": "google:gemini-2.5-pro",
+  "payload": {
+    "answer": "This is a contradiction. I have an existing memory that 'Sam from Goldman has two children', but the new information states 'Sam from Goldman has no children'. Both cannot be true. Please clarify which statement is correct.",
+    "citations": [],
+    "conflict_classification": "CONTRADICTION",
+    "decision": "DETECTED_CONFLICT",
+    "entity_resolution": {
+      "action": "RESOLVED",
+      "entity_id": "sam_from_goldman_1",
+      "reason": "The entity 'Sam from Goldman' in the new information was resolved to an existing entity with the same name."
+    },
+    "intent": "ADD",
+    "memory_cards": [
+      {
+        "confidence": "1.0",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "0",
+            "predicate": "has number of children",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman has no children"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict successfully identified as a CONTRADICTION."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "The new information is correct, 'Sam from Goldman has no children'. Please update.",
+      "The existing memory is correct, 'Sam from Goldman has two children'. Please ignore the new information.",
+      "These are two different people named 'Sam from Goldman'. Please create a new entity."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"ADD\",\n  \"decision\": \"DETECTED_CONFLICT\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam from Goldman has no children\",\n      \"confidence\": \"1.0\",\n      \"entities\": [\n        {\n          \"name\": \"Sam from Goldman\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam from Goldman\",\n          \"predicate\": \"has number of children\",\n          \"object\": \"0\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"RESOLVED\",\n    \"entity_id\": \"sam_from_goldman_1\",\n    \"reason\": \"The entity 'Sam from Goldman' in the new information was resolved to an existing entity with the same name.\"\n  },\n  \"conflict_classification\": \"CONTRADICTION\",\n  \"answer\": \"This is a contradiction. I have an existing memory that 'Sam from Goldman has two children', but the new information states 'Sam from Goldman has no children'. Both cannot be true. Please clarify which statement is correct.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"The new information is correct, 'Sam from Goldman has no children'. Please update.\",\n    \"The existing memory is correct, 'Sam from Goldman has two children'. Please ignore the new information.\",\n    \"These are two different people named 'Sam from Goldman'. Please create a new entity.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Conflict successfully identified as a CONTRADICTION.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_162328",
+  "status": "ok"
+}

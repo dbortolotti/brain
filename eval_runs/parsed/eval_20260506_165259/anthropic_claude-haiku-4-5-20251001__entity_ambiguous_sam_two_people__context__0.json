@@ -1,0 +1,59 @@
+{
+  "fixture_id": "entity_ambiguous_sam_two_people__context",
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "payload": {
+    "answer": "Cannot commit fact to durable memory without disambiguation. The statement refers to 'Sam' but two distinct people named Sam exist in the system.",
+    "citations": [
+      "Sam from Goldman (person)",
+      "Sam from Point72 (person)"
+    ],
+    "conflict_classification": "unresolvable_ambiguity",
+    "decision": "defer_resolution",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Ambiguous reference: two existing Sams (Goldman, Point72). Insufficient context to determine which Sam likes early Coltrane. Requires clarification."
+    },
+    "intent": "resolve_ambiguous_entity_reference",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "music"
+          }
+        ],
+        "kind": "ambiguous_fact",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes early Coltrane"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Entity reference ambiguous",
+        "Two candidate entities identified",
+        "Fact stored as pending resolution",
+        "User clarification required before committing to durable memory"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Clarify which Sam: 'Sam from Goldman likes early Coltrane' or 'Sam from Point72 likes early Coltrane'",
+      "Provide additional context to disambiguate (e.g., conversation context, timestamp, topic)"
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

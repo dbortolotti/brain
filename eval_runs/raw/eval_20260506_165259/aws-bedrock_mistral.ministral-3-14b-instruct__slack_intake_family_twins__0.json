@@ -1,0 +1,66 @@
+{
+  "error": null,
+  "fixture_id": "slack_intake_family_twins",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Durable memory updated: Nur and Sara are confirmed as twin daughters of the user. No conflicts detected.",
+    "conflict_classification": "none",
+    "entity_resolution": {
+      "action": "create_new_entities",
+      "reason": "No prior references to 'Nur' or 'Sara' exist in durable memory."
+    },
+    "intent": "update_family_relationships",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "is_twin_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "user",
+            "predicate": "is_daughter_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "user",
+            "predicate": "is_daughter_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Nur and Sara are twin daughters of the user."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Added 'Nur' and 'Sara' as entities with 'daughter' role.",
+        "Established twin relationship between Nur and Sara.",
+        "Linked both to the user as their parent."
+      ],
+      "success": true
+    }
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"update_family_relationships\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"durable_memory\",\n      \"statement\": \"Nur and Sara are twin daughters of the user.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Nur\",\n          \"type\": \"person\",\n          \"role\": \"daughter\"\n        },\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"daughter\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Nur\",\n          \"predicate\": \"is_twin_of\",\n          \"object\": \"Sara\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is_twin_of\",\n          \"object\": \"Nur\"\n        },\n        {\n          \"subject\": \"Nur\",\n          \"predicate\": \"is_daughter_of\",\n          \"object\": \"user\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is_daughter_of\",\n          \"object\": \"user\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_new_entities\",\n    \"reason\": \"No prior references to 'Nur' or 'Sara' exist in durable memory.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Durable memory updated: Nur and Sara are confirmed as twin daughters of the user. No conflicts detected.\",\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Added 'Nur' and 'Sara' as entities with 'daughter' role.\",\n      \"Established twin relationship between Nur and Sara.\",\n      \"Linked both to the user as their parent.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

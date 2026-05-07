@@ -1,0 +1,51 @@
+{
+  "error": null,
+  "fixture_id": "cascade_low_confidence_asks_user_001__context",
+  "model": "aws-bedrock:nvidia.nemotron-nano-9b-v2",
+  "payload": {
+    "answer": "The note about Sam is ambiguous with low confidence. Escalation is disabled, so user clarification is required.",
+    "citations": [
+      "Cloud escalation disabled",
+      "model confidence low",
+      "ambiguous Sam note"
+    ],
+    "conflict_classification": "ambiguous_note",
+    "decision": "ask_user_for_clarification",
+    "entity_resolution": {
+      "action": "request_user_input",
+      "entity_id": null,
+      "reason": "Low model confidence and ambiguous context"
+    },
+    "intent": "low_confidence_ambiguous_note",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "system_status",
+        "relationships": [],
+        "statement": "Cloud escalation disabled and model confidence low for ambiguous Sam note"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Low confidence prevents durable memory commitment",
+        "Ambiguity requires user intervention"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Clarify the note's content",
+      "Verify Sam's identity",
+      "Re-evaluate context"
+    ]
+  },
+  "raw_text": "Okay, let's tackle this query. The user is evaluating Brain, a personal memory system, and provided specific input. The task is to return a JSON object matching the given schema. The role is slack_intake with a specific fixture ID. The input mentions that Cloud escalation is disabled and the model confidence is low for an ambiguous Sam note.\n\nFirst, I need to parse the JSON schema carefully. The required fields are intent, decision, memory_cards, and others might be optional but since additionalProperties is true, we can include more if needed. \n\nThe intent should probably be something like \"low_confidence_ambiguous_note\" based on the input. The decision might be to ask the user for clarification since the confidence is low and escalation is disabled. \n\nFor memory_cards, we need to create an array of objects. The kind could be \"note\" or \"system_status\". The statement should reflect the input: \"Cloud escalation disabled and model confidence low for ambiguous Sam note.\" Confidence here is \"low\". Entities might include \"Sam\" as a person, but since the note is ambiguous, maybe the entities aren't fully resolved. \n\nEntity resolution: Since the note is ambiguous and confidence is low, maybe the action is to ask the user, entity_id could be null, and the reason is the low confidence. \n\nConflict classification might be \"ambiguous_note\" or similar. The answer should indicate that the note is ambiguous and needs user input. Citations could reference the input context. Repair options might suggest clarifying the note. Receipt should have success as false since it's low confidence and needs user input.\n\nI need to ensure that the JSON is strict, preserves ambiguity, and doesn't include superseded facts. Since the input is about a low confidence note, the memory card should reflect that without making assumptions. Also, check that all required fields are present. Let me structure each part step by step to make sure nothing is missed.\n</think>\n\n{\"intent\":\"low_confidence_ambiguous_note\",\"decision\":\"ask_user_for_clarification\",\"memory_cards\":[{\"kind\":\"system_status\",\"statement\":\"Cloud escalation disabled and model confidence low for ambiguous Sam note\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"}],\"relationships\":[]}],\"entity_resolution\":{\"action\":\"request_user_input\",\"entity_id\":null,\"reason\":\"Low model confidence and ambiguous context\"},\"conflict_classification\":\"ambiguous_note\",\"answer\":\"The note about Sam is ambiguous with low confidence. Escalation is disabled, so user clarification is required.\",\"citations\":[\"Cloud escalation disabled\",\"model confidence low\",\"ambiguous Sam note\"],\"repair_options\":[\"Clarify the note's content\",\"Verify Sam's identity\",\"Re-evaluate context\"],\"receipt\":{\"success\":false,\"details\":[\"Low confidence prevents durable memory commitment\",\"Ambiguity requires user intervention\"]}}\n",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

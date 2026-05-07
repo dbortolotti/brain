@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "fixture_id": "person_interaction_sam_bill_evans_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Stored as a tentative preference mention: Sam from Goldman likes Bill Evans.",
+    "citations": [
+      "fixture:person_interaction_sam_bill_evans_001"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Sam and the specific Goldman affiliation are not uniquely resolved from the fixture; keep as a tentative mention rather than merging into a known identity."
+    },
+    "intent": "capture_personal_preference_mention",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "mentioned person",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation mentioned",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked person",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman reportedly likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured a low-confidence preference mention.",
+        "Preserved ambiguity about Sam's identity and Goldman affiliation."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If Sam is identified later, merge this mention into the resolved person record.",
+      "If 'Bill Evans' was intended as another entity or context, \u0443\u0442\u043e\u0447ify and revise the preference statement."
+    ]
+  },
+  "raw_text": "{\"intent\":\"capture_personal_preference_mention\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman reportedly likes Bill Evans.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"mentioned person\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation mentioned\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked person\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"Sam and the specific Goldman affiliation are not uniquely resolved from the fixture; keep as a tentative mention rather than merging into a known identity.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored as a tentative preference mention: Sam from Goldman likes Bill Evans.\",\"citations\":[\"fixture:person_interaction_sam_bill_evans_001\"],\"repair_options\":[\"If Sam is identified later, merge this mention into the resolved person record.\",\"If 'Bill Evans' was intended as another entity or context, \u0443\u0442\u043e\u0447ify and revise the preference statement.\"],\"receipt\":{\"success\":true,\"details\":[\"Captured a low-confidence preference mention.\",\"Preserved ambiguity about Sam's identity and Goldman affiliation.\"]}}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

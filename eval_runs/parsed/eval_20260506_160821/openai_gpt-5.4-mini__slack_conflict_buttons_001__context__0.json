@@ -1,0 +1,92 @@
+{
+  "fixture_id": "slack_conflict_buttons_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Recorded as a probable employment change for Sam: left Goldman and joined Point72; prior Goldman employment is superseded as current status.",
+    "citations": [
+      "input: Existing: Sam works at Goldman.",
+      "input: /brain remember Sam left Goldman and joined Point72."
+    ],
+    "conflict_classification": "replacement_update",
+    "decision": "accept_with_conflict",
+    "entity_resolution": {
+      "action": "link_with_ambiguity",
+      "entity_id": null,
+      "reason": "The name Sam is not uniquely identified, so the new statement is linked to the existing Sam only provisionally."
+    },
+    "intent": "update_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "new employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam reportedly left Goldman and joined Point72."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "previously_worked_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Prior context said Sam worked at Goldman, but this is now superseded by the newer claim that Sam left Goldman."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Accepted a new employment update for Sam.",
+        "Marked Goldman employment as superseded in current context.",
+        "Preserved ambiguity about which Sam is referenced."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If there are multiple Sams, specify which Sam this refers to.",
+      "If the move to Point72 is uncertain or pending, state that explicitly."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

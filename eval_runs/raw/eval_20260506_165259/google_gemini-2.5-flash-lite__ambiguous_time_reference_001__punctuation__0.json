@@ -1,0 +1,76 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_time_reference_001__punctuation",
+  "model": "google:gemini-2.5-flash-lite",
+  "payload": {
+    "answer": "I've noted that Sam said last Friday he is leaving Goldman next month. Could you clarify the exact dates for 'last Friday' and 'next month'?",
+    "citations": [],
+    "conflict_classification": "ambiguous_time_reference",
+    "decision": "store_all_information",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": null,
+      "reason": "Ambiguous time reference 'last Friday' and 'next month' require clarification."
+    },
+    "intent": "store_information",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "PERSON"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "ORGANIZATION"
+          }
+        ],
+        "kind": "statement",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "is leaving",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is leaving Goldman next month."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "PERSON"
+          }
+        ],
+        "kind": "statement",
+        "relationships": [
+          {
+            "object": "Sam is leaving Goldman next month",
+            "predicate": "said",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said last Friday that he is leaving Goldman next month."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored information about Sam leaving Goldman.",
+        "Noted the ambiguous time references."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify the date of Sam's statement.",
+      "Clarify the date Sam is leaving Goldman."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"store_information\",\n  \"decision\": \"store_all_information\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"statement\",\n      \"statement\": \"Sam is leaving Goldman next month.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"PERSON\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"ORGANIZATION\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"is leaving\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"statement\",\n      \"statement\": \"Sam said last Friday that he is leaving Goldman next month.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"PERSON\",\n          \"role\": \"speaker\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"said\",\n          \"object\": \"Sam is leaving Goldman next month\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolve\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguous time reference 'last Friday' and 'next month' require clarification.\"\n  },\n  \"conflict_classification\": \"ambiguous_time_reference\",\n  \"answer\": \"I've noted that Sam said last Friday he is leaving Goldman next month. Could you clarify the exact dates for 'last Friday' and 'next month'?\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Clarify the date of Sam's statement.\",\n    \"Clarify the date Sam is leaving Goldman.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Stored information about Sam leaving Goldman.\",\n      \"Noted the ambiguous time references.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

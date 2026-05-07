@@ -1,0 +1,69 @@
+{
+  "fixture_id": "recall_daughters_001__context",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Your daughters are Nur and Sara.",
+    "citations": [
+      "Nur and Sara are Daniele's twin daughters."
+    ],
+    "conflict_classification": "none",
+    "decision": "affirm",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": "Daniele",
+      "reason": "The query 'Who are my daughters?' implies the speaker is Daniele, based on the fact that Nur and Sara are Daniele's daughters."
+    },
+    "intent": "recall",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is daughter of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Daniele",
+            "predicate": "is daughter of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Daniele",
+            "predicate": "are twin daughters of",
+            "subject": "Nur and Sara"
+          }
+        ],
+        "statement": "Nur and Sara are Daniele's twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Fact recalled and synthesized correctly.",
+        "Entity 'Daniele' resolved as the speaker based on contextual ownership.",
+        "No conflicts or ambiguities detected in the current knowledge state."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_160821"
+}

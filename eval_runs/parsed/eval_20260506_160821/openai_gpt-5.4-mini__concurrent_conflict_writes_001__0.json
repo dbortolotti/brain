@@ -1,0 +1,69 @@
+{
+  "fixture_id": "concurrent_conflict_writes_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Ambiguous/conflicting employment update for Sam; do not commit a durable employer fact yet.",
+    "citations": [
+      "input: \"Sam works at Goldman.\"",
+      "input: \"Sam joined Point72.\""
+    ],
+    "conflict_classification": "hard_conflict_concurrent_write",
+    "decision": "preserve ambiguity; do not consolidate into a single durable employment fact",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Concurrent writes present incompatible employment claims for the same person; no safe resolution without additional evidence."
+    },
+    "intent": "classify concurrent write conflict for personal memory safety",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer_candidate",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "employer_candidate",
+            "type": "organization"
+          }
+        ],
+        "kind": "conflict",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "employed_by_candidate",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined_candidate",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is associated with Goldman in one write, but this conflicts with another write saying Sam joined Point72. The correct current employer is unclear."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected conflicting concurrent writes about Sam's employer.",
+        "Avoided overwriting with an unverified current fact.",
+        "Preserved ambiguity pending resolution."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for a timestamp or source to determine which employment statement is current.",
+      "Store both as conflicting pending facts without asserting a current employer.",
+      "If additional evidence confirms a job change, supersede the older employment claim only with provenance."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

@@ -1,0 +1,57 @@
+{
+  "fixture_id": "slack_intake_family_twins__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "intent": "contextual_understanding",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "twin_daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "twin_daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "is_twin_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "user",
+            "predicate": "has_relationship_with",
+            "role": "parent",
+            "subject": "Nur"
+          },
+          {
+            "object": "user",
+            "predicate": "has_relationship_with",
+            "role": "parent",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Nur and Sara are the user's twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory committed for Nur and Sara as twin daughters with parent-child relationships to the user."
+      ],
+      "success": true
+    }
+  },
+  "run_id": "eval_20260506_160821"
+}

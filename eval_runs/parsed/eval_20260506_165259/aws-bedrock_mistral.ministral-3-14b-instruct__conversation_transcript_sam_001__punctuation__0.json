@@ -1,0 +1,189 @@
+{
+  "fixture_id": "conversation_transcript_sam_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory updated: Sam left Goldman Sachs for Point72 Ventures last month, shifted jazz preferences to early Coltrane, and has pending discussions with Daniele on AI infrastructure. Daniele is tasked with sending a relevant article.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": null,
+      "reason": "No existing entity matches the context of 'Point72 Ventures' or the AI infrastructure article request."
+    },
+    "intent": "update_durable_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer_previous",
+            "type": "organization"
+          },
+          {
+            "name": "Point72 Ventures",
+            "role": "employer_current",
+            "type": "organization"
+          },
+          {
+            "name": "[current month - 1]",
+            "role": "timestamp",
+            "type": "time"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "left_employment_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72 Ventures",
+            "predicate": "joined_employment_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "[current month - 1]",
+            "predicate": "employment_change_timestamp",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman Sachs in [current month - 1] and joined Point72 Ventures."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_previous",
+            "type": "artist"
+          },
+          {
+            "name": "Coltrane (early)",
+            "role": "preference_current",
+            "type": "artist"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Coltrane (early)",
+            "predicate": "prefers_music_artist",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "previously_preferred_music_artist",
+            "subject": "Sam"
+          },
+          {
+            "object": "recently",
+            "predicate": "music_preference_shift_timestamp",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam continues to listen to jazz, with a recent shift toward early Coltrane recordings over Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "participant",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "participant",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "discussion_subject",
+            "type": "topic"
+          }
+        ],
+        "kind": "intent",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "proposed_future_discussion_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "AI infrastructure",
+            "predicate": "discussion_topic",
+            "subject": "Sam"
+          },
+          {
+            "object": "Sam",
+            "predicate": "acknowledged_discussion_proposal_from",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Sam and Daniele agreed to discuss AI infrastructure in a future catch-up."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "requester",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "recipient",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure article",
+            "role": "requested_item",
+            "type": "document"
+          }
+        ],
+        "kind": "action_item",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "requested_from",
+            "subject": "Sam"
+          },
+          {
+            "object": "AI infrastructure article",
+            "predicate": "requested_item_type",
+            "subject": "Sam"
+          },
+          {
+            "object": "send requested article",
+            "predicate": "action_item_pending",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Sam requested Daniele to send an article related to AI infrastructure."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed employment change (Goldman \u2192 Point72)",
+        "Updated music preferences (Coltrane over Evans)",
+        "Logged discussion intent and action item"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_165259"
+}

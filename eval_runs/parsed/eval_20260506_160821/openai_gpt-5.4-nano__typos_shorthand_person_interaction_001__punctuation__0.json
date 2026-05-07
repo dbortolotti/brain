@@ -1,0 +1,60 @@
+{
+  "fixture_id": "typos_shorthand_person_interaction_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Captured a tentative, uncertain relationship: Sam (from Goldman) apparently likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_as_ambiguous_memory_candidate",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input is abbreviated/ambiguous ('frm goldmn', 'bill evns', 'apparently'); no unique IDs available."
+    },
+    "intent": "extract_personal_relationship",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (from Goldman) apparently likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed shorthand ('frm' as 'from', 'evns' as 'Evans')",
+        "Marked uncertainty due to 'apparently'"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm Sam\u2019s full name and whether 'Goldman' means Goldman Sachs.",
+      "Confirm Bill\u2019s full name/spelling (Bill Evans).",
+      "Confirm whether the 'likes' claim is factual or hearsay (the input says 'apparently')."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

@@ -1,0 +1,68 @@
+{
+  "error": null,
+  "fixture_id": "project_state_brain_slack_agent_001__punctuation",
+  "model": "groq:openai/gpt-oss-120b",
+  "payload": {
+    "answer": "Project state updated: Slack is set as the primary guardrailed ingestion interface; Telegram is noted for future integration.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "set_primary_ingestion_interface",
+    "entity_resolution": {
+      "action": "upsert",
+      "entity_id": null,
+      "reason": "updating ingestion interface priorities"
+    },
+    "intent": "update_project_state",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "primary_ingestion_interface",
+            "type": "platform"
+          }
+        ],
+        "kind": "project_state",
+        "relationships": [
+          {
+            "object": "Brain",
+            "predicate": "is_primary_ingestion_interface_for",
+            "subject": "Slack"
+          }
+        ],
+        "statement": "Slack should be the primary guardrailed memory ingestion interface"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Telegram",
+            "role": "future_ingestion_interface",
+            "type": "platform"
+          }
+        ],
+        "kind": "project_state",
+        "relationships": [
+          {
+            "object": "Brain",
+            "predicate": "is_future_ingestion_interface_for",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "Telegram can come later"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Slack marked as primary ingestion interface",
+        "Telegram noted for later addition"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"update_project_state\",\"decision\":\"set_primary_ingestion_interface\",\"memory_cards\":[{\"kind\":\"project_state\",\"statement\":\"Slack should be the primary guardrailed memory ingestion interface\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Slack\",\"type\":\"platform\",\"role\":\"primary_ingestion_interface\"}],\"relationships\":[{\"subject\":\"Slack\",\"predicate\":\"is_primary_ingestion_interface_for\",\"object\":\"Brain\"}]},{\"kind\":\"project_state\",\"statement\":\"Telegram can come later\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Telegram\",\"type\":\"platform\",\"role\":\"future_ingestion_interface\"}],\"relationships\":[{\"subject\":\"Telegram\",\"predicate\":\"is_future_ingestion_interface_for\",\"object\":\"Brain\"}]}],\"entity_resolution\":{\"action\":\"upsert\",\"entity_id\":null,\"reason\":\"updating ingestion interface priorities\"},\"conflict_classification\":\"none\",\"answer\":\"Project state updated: Slack is set as the primary guardrailed ingestion interface; Telegram is noted for future integration.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Slack marked as primary ingestion interface\",\"Telegram noted for later addition\"]}}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

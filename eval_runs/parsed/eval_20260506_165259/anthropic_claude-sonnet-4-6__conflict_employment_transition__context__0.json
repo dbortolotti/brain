@@ -1,0 +1,84 @@
+{
+  "fixture_id": "conflict_employment_transition__context",
+  "model": "anthropic:claude-sonnet-4-6",
+  "payload": {
+    "answer": "The existing fact that Sam works at Goldman is superseded. Sam has left Goldman and now works at Point72. The Goldman employment is retained as a historical record.",
+    "citations": [
+      "Existing fact: Sam works at Goldman (now superseded)",
+      "New fact: Sam left Goldman and joined Point72"
+    ],
+    "conflict_classification": "temporal_supersession",
+    "decision": "Supersede the existing fact that Sam works at Goldman with the new fact that Sam now works at Point72, and record the departure from Goldman as a historical fact",
+    "entity_resolution": {
+      "action": "update",
+      "entity_id": "sam",
+      "reason": "Sam is the same individual referenced in both the existing and new facts; employment status has changed and must be updated to reflect Point72 as current employer, with Goldman recorded as former employer"
+    },
+    "intent": "Update Sam's employment record to reflect a job change from Goldman to Point72",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "former_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "historical_fact",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "formerly_employed_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam previously worked at Goldman Sachs before leaving to join Point72."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "current_fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "currently_employed_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam currently works at Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict classified as temporal_supersession: new employment replaces old",
+        "Goldman Sachs employment marked as historical/former",
+        "Point72 recorded as Sam's current employer",
+        "No ambiguity detected; transition is explicit and unambiguous"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retire the fact 'Sam works at Goldman' and replace with 'Sam works at Point72'",
+      "Add a timestamped departure event: 'Sam left Goldman' and a join event: 'Sam joined Point72'",
+      "Preserve Goldman as historical employment in Sam's career timeline while marking Point72 as current"
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

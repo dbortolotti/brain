@@ -1,0 +1,30 @@
+{
+  "fixture_id": "slack_retry_event_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Event with ID [REDACTED] was already processed. No new memory committed.",
+    "citations": [],
+    "conflict_classification": "duplicate_event",
+    "decision": "duplicate_event_discard",
+    "entity_resolution": {
+      "action": "discard",
+      "entity_id": null,
+      "reason": "duplicate_event_id_detected"
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Duplicate event ID detected: [REDACTED]",
+        "No memory updates applied to preserve data integrity",
+        "Ambiguity preserved: Original event remains unmodified"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Verify Slack event ID uniqueness in source system",
+      "Check for potential replay/retention issues in event stream"
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

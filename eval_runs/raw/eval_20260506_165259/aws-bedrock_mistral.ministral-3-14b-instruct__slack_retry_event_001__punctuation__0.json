@@ -1,0 +1,33 @@
+{
+  "error": null,
+  "fixture_id": "slack_retry_event_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Event with ID [REDACTED] was already processed. No new memory committed.",
+    "citations": [],
+    "conflict_classification": "duplicate_event",
+    "decision": "duplicate_event_discard",
+    "entity_resolution": {
+      "action": "discard",
+      "entity_id": null,
+      "reason": "duplicate_event_id_detected"
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Duplicate event ID detected: [REDACTED]",
+        "No memory updates applied to preserve data integrity",
+        "Ambiguity preserved: Original event remains unmodified"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Verify Slack event ID uniqueness in source system",
+      "Check for potential replay/retention issues in event stream"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_ingestion\",\n  \"decision\": \"duplicate_event_discard\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"discard\",\n    \"entity_id\": null,\n    \"reason\": \"duplicate_event_id_detected\"\n  },\n  \"conflict_classification\": \"duplicate_event\",\n  \"answer\": \"Event with ID [REDACTED] was already processed. No new memory committed.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Verify Slack event ID uniqueness in source system\",\n    \"Check for potential replay/retention issues in event stream\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Duplicate event ID detected: [REDACTED]\",\n      \"No memory updates applied to preserve data integrity\",\n      \"Ambiguity preserved: Original event remains unmodified\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

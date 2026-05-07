@@ -1,0 +1,63 @@
+{
+  "fixture_id": "slack_conflict_buttons_001__context",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Sam now works at Point72 after leaving Goldman.",
+    "citations": [
+      "/brain remember Sam left Goldman and joined Point72."
+    ],
+    "conflict_classification": "resolved_by_recency",
+    "decision": "accept_new",
+    "entity_resolution": {
+      "action": "update",
+      "entity_id": "Sam",
+      "reason": "Newer memory supersedes prior employment at Goldman with explicit update to Point72."
+    },
+    "intent": "update_employment",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "previous_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory updated: Sam's employment changed from Goldman to Point72.",
+        "Prior fact 'Sam works at Goldman' is now superseded and not presented as current."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_160821"
+}

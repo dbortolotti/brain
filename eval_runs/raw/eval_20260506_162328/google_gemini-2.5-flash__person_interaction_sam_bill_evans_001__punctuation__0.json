@@ -1,0 +1,106 @@
+{
+  "error": null,
+  "fixture_id": "person_interaction_sam_bill_evans_001__punctuation",
+  "model": "google:gemini-2.5-flash",
+  "payload": {
+    "answer": "I have noted that Sam from Goldman likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "commit_to_memory",
+    "entity_resolution": {
+      "action": "create_new_entities",
+      "entity_id": null,
+      "reason": "New entities identified from input."
+    },
+    "intent": "record_fact",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "Person"
+          }
+        ],
+        "kind": "Fact",
+        "statement": "Sam is a person."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Goldman",
+            "type": "Organization"
+          }
+        ],
+        "kind": "Fact",
+        "statement": "Goldman is an organization."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "Person"
+          },
+          {
+            "name": "Goldman",
+            "type": "Organization"
+          }
+        ],
+        "kind": "Relationship",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "is associated with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is associated with Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Bill Evans",
+            "type": "Person"
+          }
+        ],
+        "kind": "Fact",
+        "statement": "Bill Evans is a person."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "Person"
+          },
+          {
+            "name": "Bill Evans",
+            "type": "Person"
+          }
+        ],
+        "kind": "Preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory cards created successfully."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n\"intent\": \"record_fact\",\n\"decision\": \"commit_to_memory\",\n\"memory_cards\": [\n{\n\"kind\": \"Fact\",\n\"statement\": \"Sam is a person.\",\n\"confidence\": \"high\",\n\"entities\": [\n{\n\"name\": \"Sam\",\n\"type\": \"Person\"\n}\n]\n},\n{\n\"kind\": \"Fact\",\n\"statement\": \"Goldman is an organization.\",\n\"confidence\": \"high\",\n\"entities\": [\n{\n\"name\": \"Goldman\",\n\"type\": \"Organization\"\n}\n]\n},\n{\n\"kind\": \"Relationship\",\n\"statement\": \"Sam is associated with Goldman.\",\n\"confidence\": \"high\",\n\"entities\": [\n{\n\"name\": \"Sam\",\n\"type\": \"Person\"\n},\n{\n\"name\": \"Goldman\",\n\"type\": \"Organization\"\n}\n],\n\"relationships\": [\n{\n\"subject\": \"Sam\",\n\"predicate\": \"is associated with\",\n\"object\": \"Goldman\"\n}\n]\n},\n{\n\"kind\": \"Fact\",\n\"statement\": \"Bill Evans is a person.\",\n\"confidence\": \"high\",\n\"entities\": [\n{\n\"name\": \"Bill Evans\",\n\"type\": \"Person\"\n}\n]\n},\n{\n\"kind\": \"Preference\",\n\"statement\": \"Sam likes Bill Evans.\",\n\"confidence\": \"high\",\n\"entities\": [\n{\n\"name\": \"Sam\",\n\"type\": \"Person\"\n},\n{\n\"name\": \"Bill Evans\",\n\"type\": \"Person\"\n}\n],\n\"relationships\": [\n{\n\"subject\": \"Sam\",\n\"predicate\": \"likes\",\n\"object\": \"Bill Evans\"\n}\n]\n}\n],\n\"entity_resolution\": {\n\"action\": \"create_new_entities\",\n\"entity_id\": null,\n\"reason\": \"New entities identified from input.\"\n},\n\"conflict_classification\": \"no_conflict\",\n\"answer\": \"I have noted that Sam from Goldman likes Bill Evans.\",\n\"citations\": [],\n\"repair_options\": [],\n\"receipt\": {\n\"success\": true,\n\"details\": [\n\"Memory cards created successfully.\"\n]\n}\n}",
+  "run_id": "eval_20260506_162328",
+  "status": "ok"
+}

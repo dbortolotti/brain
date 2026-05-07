@@ -1,0 +1,106 @@
+{
+  "error": null,
+  "fixture_id": "conversation_transcript_sam_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Stored durable facts about Sam's job change and music preference; did not store the catch-up/article exchange as durable memory.",
+    "citations": [
+      "Goldman",
+      "Point72",
+      "Bill Evans",
+      "Coltrane"
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "store stable facts only; avoid making the pending catch-up or article request durable",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No prior entity context provided; do not attempt merging or disambiguation beyond the transcript."
+    },
+    "intent": "compile durable personal memory from conversation transcript",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said he left Goldman last month and joined Point72."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "musician",
+            "type": "person"
+          },
+          {
+            "name": "Coltrane",
+            "role": "musician",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "listens_to",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "listens_more_lately_to",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said he still listens to Bill Evans, but lately more early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured one employment change fact",
+        "Captured one music preference fact",
+        "Ignored transient conversational action item"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want, I can also extract a separate non-durable action item: Daniele should send Sam the AI infra article."
+    ]
+  },
+  "raw_text": "{\"intent\":\"compile durable personal memory from conversation transcript\",\"decision\":\"store stable facts only; avoid making the pending catch-up or article request durable\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam said he left Goldman last month and joined Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"speaker\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"current employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"left\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]},{\"kind\":\"preference\",\"statement\":\"Sam said he still listens to Bill Evans, but lately more early Coltrane.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"speaker\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"musician\"},{\"name\":\"Coltrane\",\"type\":\"person\",\"role\":\"musician\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"listens_to\",\"object\":\"Bill Evans\"},{\"subject\":\"Sam\",\"predicate\":\"listens_more_lately_to\",\"object\":\"early Coltrane\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No prior entity context provided; do not attempt merging or disambiguation beyond the transcript.\"},\"conflict_classification\":\"no_conflict\",\"answer\":\"Stored durable facts about Sam's job change and music preference; did not store the catch-up/article exchange as durable memory.\",\"citations\":[\"Goldman\",\"Point72\",\"Bill Evans\",\"Coltrane\"],\"repair_options\":[\"If you want, I can also extract a separate non-durable action item: Daniele should send Sam the AI infra article.\"],\"receipt\":{\"success\":true,\"details\":[\"Captured one employment change fact\",\"Captured one music preference fact\",\"Ignored transient conversational action item\"]}}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

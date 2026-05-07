@@ -1,0 +1,60 @@
+{
+  "error": null,
+  "fixture_id": "recall_brain_cognee_conclusions_relevance_001__context",
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "payload": {
+    "answer": "No conclusions can be synthesized. The fixture references Brain DB source-of-truth, Cognee projection, Slack intake, family facts, and Sam preferences as context sources, but none were provided in the input. To answer this query, supply actual records from these sources.",
+    "citations": [],
+    "conflict_classification": "missing_source_data",
+    "decision": "Unable to return specific conclusions\u2014no source-of-truth records provided in input",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "No concrete conclusions exist in provided context; fixture references data sources but does not supply them"
+    },
+    "intent": "Retrieve synthesized conclusions about Brain and Cognee systems from durable memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "personal memory system",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "rebuildable projection",
+            "type": "system"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "Cognee",
+            "predicate": "compared_with",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "Query requests conclusions about Brain and Cognee but input contains no actual records, only fixture metadata"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Query intent recognized",
+        "No durable memory records available to synthesize",
+        "Ambiguity preserved: conclusions remain uncommitted pending source data"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide actual conclusion records from Brain DB source-of-truth",
+      "Supply Cognee rebuildable projection data",
+      "Include relevant Slack intake entries",
+      "Provide family facts and Sam preferences relevant to Brain/Cognee evaluation"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Retrieve synthesized conclusions about Brain and Cognee systems from durable memory\",\n  \"decision\": \"Unable to return specific conclusions\u2014no source-of-truth records provided in input\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"observation\",\n      \"statement\": \"Query requests conclusions about Brain and Cognee but input contains no actual records, only fixture metadata\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain\",\n          \"type\": \"system\",\n          \"role\": \"personal memory system\"\n        },\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"system\",\n          \"role\": \"rebuildable projection\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain\",\n          \"predicate\": \"compared_with\",\n          \"object\": \"Cognee\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"No concrete conclusions exist in provided context; fixture references data sources but does not supply them\"\n  },\n  \"conflict_classification\": \"missing_source_data\",\n  \"answer\": \"No conclusions can be synthesized. The fixture references Brain DB source-of-truth, Cognee projection, Slack intake, family facts, and Sam preferences as context sources, but none were provided in the input. To answer this query, supply actual records from these sources.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Provide actual conclusion records from Brain DB source-of-truth\",\n    \"Supply Cognee rebuildable projection data\",\n    \"Include relevant Slack intake entries\",\n    \"Provide family facts and Sam preferences relevant to Brain/Cognee evaluation\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Query intent recognized\",\n      \"No durable memory records available to synthesize\",\n      \"Ambiguity preserved: conclusions remain uncommitted pending source data\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

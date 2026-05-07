@@ -1,0 +1,104 @@
+{
+  "error": null,
+  "fixture_id": "conversation_transcript_sam_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Stored the employment change and music preference update; did not store the article request as durable memory.",
+    "citations": [
+      "Sam: 'No, I left Goldman last month and joined Point72.'",
+      "Sam: 'Yes, but lately more early Coltrane.'"
+    ],
+    "conflict_classification": "update",
+    "decision": "Store the stable biographical and preference updates; do not store ephemeral action requests as durable memory.",
+    "entity_resolution": {
+      "action": "unresolved",
+      "entity_id": null,
+      "reason": "No persistent identity mapping is available from the transcript alone beyond the named participant Sam."
+    },
+    "intent": "Compile durable personal memory from the conversation transcript.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left_employer",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined_employer",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman last month and joined Point72."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "music artist",
+            "type": "person"
+          },
+          {
+            "name": "Coltrane",
+            "role": "music artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "listens_to",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "more_recently_listens_to",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam still listens to Bill Evans, but lately has been listening more to early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed 2 memory cards.",
+        "Skipped ephemeral follow-up request about sending an article."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If needed, add a separate memory for Sam's interest in AI infrastructure once confirmed outside this transient exchange.",
+      "If needed, link Sam to a persistent person entity when more context is available."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Compile durable personal memory from the conversation transcript.\",\"decision\":\"Store the stable biographical and preference updates; do not store ephemeral action requests as durable memory.\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam left Goldman last month and joined Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"speaker\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"current employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"left_employer\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"joined_employer\",\"object\":\"Point72\"}]},{\"kind\":\"preference\",\"statement\":\"Sam still listens to Bill Evans, but lately has been listening more to early Coltrane.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"speaker\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"music artist\"},{\"name\":\"Coltrane\",\"type\":\"person\",\"role\":\"music artist\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"listens_to\",\"object\":\"Bill Evans\"},{\"subject\":\"Sam\",\"predicate\":\"more_recently_listens_to\",\"object\":\"early Coltrane\"}]}],\"entity_resolution\":{\"action\":\"unresolved\",\"entity_id\":null,\"reason\":\"No persistent identity mapping is available from the transcript alone beyond the named participant Sam.\"},\"conflict_classification\":\"update\",\"answer\":\"Stored the employment change and music preference update; did not store the article request as durable memory.\",\"citations\":[\"Sam: 'No, I left Goldman last month and joined Point72.'\",\"Sam: 'Yes, but lately more early Coltrane.'\"],\"repair_options\":[\"If needed, add a separate memory for Sam's interest in AI infrastructure once confirmed outside this transient exchange.\",\"If needed, link Sam to a persistent person entity when more context is available.\"],\"receipt\":{\"success\":true,\"details\":[\"Committed 2 memory cards.\",\"Skipped ephemeral follow-up request about sending an article.\"]}}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

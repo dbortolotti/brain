@@ -1,0 +1,68 @@
+{
+  "error": null,
+  "fixture_id": "cascade_low_confidence_asks_user_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The system cannot commit this memory to durable storage due to low confidence and ambiguity in the 'Sam note'. Escalation to the user is required to resolve.",
+    "citations": [],
+    "conflict_classification": "ambiguity_conflict",
+    "decision": "escalate_to_user_for_resolution",
+    "entity_resolution": {
+      "action": "await_user_input",
+      "entity_id": null,
+      "reason": "Ambiguity in 'Sam note' requires human judgment to disambiguate (e.g., is 'Sam' a person, project, or other entity? Does the note contain critical/confidential info?)."
+    },
+    "intent": "clarify_ambiguous_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject_of_note",
+            "type": "person"
+          },
+          {
+            "name": "Cloud escalation",
+            "role": "disabled_process",
+            "type": "system_action"
+          },
+          {
+            "name": "model confidence",
+            "role": "low_ambiguity_indicator",
+            "type": "metric"
+          }
+        ],
+        "kind": "note",
+        "relationships": [
+          {
+            "object": "ambiguous_Sam_note",
+            "predicate": "is_disabled_for",
+            "subject": "Cloud escalation"
+          },
+          {
+            "object": "ambiguity_in_Sam_note",
+            "predicate": "is_low_due_to",
+            "subject": "model confidence"
+          }
+        ],
+        "statement": "Cloud escalation disabled and model confidence low for ambiguous Sam note"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory not committed due to ambiguity and disabled escalation.",
+        "User action required to resolve."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask user to clarify: 'Which 'Sam' does this note refer to? Is this a personal note, project note, or something else?'",
+      "Request user to rephrase the note for disambiguation.",
+      "Suggest user review the note for criticality before proceeding."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"clarify_ambiguous_memory\",\n  \"decision\": \"escalate_to_user_for_resolution\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"note\",\n      \"statement\": \"Cloud escalation disabled and model confidence low for ambiguous Sam note\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject_of_note\"\n        },\n        {\n          \"name\": \"Cloud escalation\",\n          \"type\": \"system_action\",\n          \"role\": \"disabled_process\"\n        },\n        {\n          \"name\": \"model confidence\",\n          \"type\": \"metric\",\n          \"role\": \"low_ambiguity_indicator\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cloud escalation\",\n          \"predicate\": \"is_disabled_for\",\n          \"object\": \"ambiguous_Sam_note\"\n        },\n        {\n          \"subject\": \"model confidence\",\n          \"predicate\": \"is_low_due_to\",\n          \"object\": \"ambiguity_in_Sam_note\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"await_user_input\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguity in 'Sam note' requires human judgment to disambiguate (e.g., is 'Sam' a person, project, or other entity? Does the note contain critical/confidential info?).\"\n  },\n  \"conflict_classification\": \"ambiguity_conflict\",\n  \"answer\": \"The system cannot commit this memory to durable storage due to low confidence and ambiguity in the 'Sam note'. Escalation to the user is required to resolve.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Ask user to clarify: 'Which 'Sam' does this note refer to? Is this a personal note, project note, or something else?'\",\n    \"Request user to rephrase the note for disambiguation.\",\n    \"Suggest user review the note for criticality before proceeding.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Memory not committed due to ambiguity and disabled escalation.\",\n      \"User action required to resolve.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

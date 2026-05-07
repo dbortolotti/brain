@@ -1,0 +1,78 @@
+{
+  "error": null,
+  "fixture_id": "conflict_correction_like__context",
+  "model": "google:gemini-2.5-pro",
+  "payload": {
+    "answer": "OK. I've updated my memory to reflect that Sam from Goldman likes early Coltrane, not Bill Evans.",
+    "citations": [],
+    "conflict_classification": "Correction",
+    "decision": "Commit the correction, superseding the original fact.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The entities are clear and do not require resolution."
+    },
+    "intent": "Correction",
+    "memory_cards": [
+      {
+        "confidence": "High",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "music"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      },
+      {
+        "confidence": "High",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "musician"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "does not like",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman does not like Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded fact: 'Sam from Goldman likes Bill Evans.'",
+        "Added new fact: 'Sam from Goldman likes early Coltrane.'"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"Correction\",\n  \"decision\": \"Commit the correction, superseding the original fact.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam from Goldman likes early Coltrane.\",\n      \"confidence\": \"High\",\n      \"entities\": [\n        {\n          \"name\": \"Sam from Goldman\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"early Coltrane\",\n          \"type\": \"music\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam from Goldman\",\n          \"predicate\": \"likes\",\n          \"object\": \"early Coltrane\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam from Goldman does not like Bill Evans.\",\n      \"confidence\": \"High\",\n      \"entities\": [\n        {\n          \"name\": \"Sam from Goldman\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"musician\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam from Goldman\",\n          \"predicate\": \"does not like\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"The entities are clear and do not require resolution.\"\n  },\n  \"conflict_classification\": \"Correction\",\n  \"answer\": \"OK. I've updated my memory to reflect that Sam from Goldman likes early Coltrane, not Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Superseded fact: 'Sam from Goldman likes Bill Evans.'\",\n      \"Added new fact: 'Sam from Goldman likes early Coltrane.'\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

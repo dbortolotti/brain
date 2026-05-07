@@ -1,0 +1,62 @@
+{
+  "fixture_id": "ambiguous_time_reference_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Sam reportedly said last Friday that he is leaving Goldman next month.",
+    "citations": [
+      "Input: \"For context, Sam said last Friday that he is leaving Goldman next month.\""
+    ],
+    "conflict_classification": "ambiguous_time_reference",
+    "decision": "store_tentative_memory",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "'Sam' is not uniquely identified, and the timing is relative ('last Friday', 'next month'), so this should remain tentative and context-bound."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "is leaving",
+            "subject": "Sam"
+          },
+          {
+            "object": "leaving Goldman next month",
+            "predicate": "said",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam reportedly said last Friday that he is leaving Goldman next month."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured as a tentative memory due to relative time reference.",
+        "Did not over-commit beyond the provided context."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If Sam can be uniquely identified, attach a stable entity ID.",
+      "If the date of 'last Friday' is known, convert the timing into an absolute date.",
+      "If this was superseded or retracted later, replace this tentative memory with the updated status."
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

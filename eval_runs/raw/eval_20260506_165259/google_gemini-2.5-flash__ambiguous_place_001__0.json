@@ -1,0 +1,47 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_place_001",
+  "model": "google:gemini-2.5-flash",
+  "payload": {
+    "answer": "A new entity for 'Brutto' has been created to represent the subject of the statement 'Brutto was better than expected'. This decision preserves ambiguity because the reference could apply to either the existing 'Brutto restaurant in London' or the 'Brutto article alias'.",
+    "citations": [
+      "Input"
+    ],
+    "conflict_classification": "ambiguous_reference",
+    "decision": "create_new_entity",
+    "entity_resolution": {
+      "action": "create_new_entity",
+      "entity_id": null,
+      "reason": "The new note 'Brutto was better than expected' refers to 'Brutto', which could plausibly be either the 'Brutto restaurant in London' or the 'Brutto article alias'. To preserve ambiguity as instructed, a new entity is created for this specific reference to 'Brutto' until further clarification is available."
+    },
+    "intent": "entity_resolution",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brutto",
+            "role": "subject",
+            "type": "ambiguous"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [],
+        "statement": "Brutto was better than expected."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "New entity created for 'Brutto' to preserve ambiguity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for clarification: 'Which Brutto are you referring to?'",
+      "Provide more context about the experience with Brutto."
+    ]
+  },
+  "raw_text": "{\n \"intent\": \"entity_resolution\",\n \"decision\": \"create_new_entity\",\n \"memory_cards\": [\n  {\n   \"kind\": \"fact\",\n   \"statement\": \"Brutto was better than expected.\",\n   \"confidence\": \"high\",\n   \"entities\": [\n    {\n     \"name\": \"Brutto\",\n     \"type\": \"ambiguous\",\n     \"role\": \"subject\"\n    }\n   ],\n   \"relationships\": []\n  }\n ],\n \"entity_resolution\": {\n  \"action\": \"create_new_entity\",\n  \"entity_id\": null,\n  \"reason\": \"The new note 'Brutto was better than expected' refers to 'Brutto', which could plausibly be either the 'Brutto restaurant in London' or the 'Brutto article alias'. To preserve ambiguity as instructed, a new entity is created for this specific reference to 'Brutto' until further clarification is available.\"\n },\n \"conflict_classification\": \"ambiguous_reference\",\n \"answer\": \"A new entity for 'Brutto' has been created to represent the subject of the statement 'Brutto was better than expected'. This decision preserves ambiguity because the reference could apply to either the existing 'Brutto restaurant in London' or the 'Brutto article alias'.\",\n \"citations\": [\n  \"Input\"\n ],\n \"repair_options\": [\n  \"Ask for clarification: 'Which Brutto are you referring to?'\",\n  \"Provide more context about the experience with Brutto.\"\n ],\n \"receipt\": {\n  \"success\": true,\n  \"details\": [\n   \"New entity created for 'Brutto' to preserve ambiguity.\"\n  ]\n }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

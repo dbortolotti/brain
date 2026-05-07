@@ -1,0 +1,70 @@
+{
+  "error": null,
+  "fixture_id": "slack_intake_family_twins__context",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Stored: Nur and Sara are my twin daughters.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "New entities for Nur and Sara created as twin daughters; no prior records found."
+    },
+    "intent": "store_family_context",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "family_relationship",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "is_twin_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "user",
+            "predicate": "is_daughter_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "user",
+            "predicate": "is_daughter_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Nur and Sara are my twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card for twin daughters stored successfully.",
+        "Entities Nur and Sara resolved as new person entities.",
+        "Relationships established: twin and daughter links."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"store_family_context\",\n  \"decision\": \"store\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"family_relationship\",\n      \"statement\": \"Nur and Sara are my twin daughters.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Nur\",\n          \"type\": \"person\",\n          \"role\": \"daughter\"\n        },\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"daughter\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Nur\",\n          \"predicate\": \"is_twin_of\",\n          \"object\": \"Sara\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is_twin_of\",\n          \"object\": \"Nur\"\n        },\n        {\n          \"subject\": \"Nur\",\n          \"predicate\": \"is_daughter_of\",\n          \"object\": \"user\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is_daughter_of\",\n          \"object\": \"user\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create\",\n    \"entity_id\": null,\n    \"reason\": \"New entities for Nur and Sara created as twin daughters; no prior records found.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Stored: Nur and Sara are my twin daughters.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card for twin daughters stored successfully.\",\n      \"Entities Nur and Sara resolved as new person entities.\",\n      \"Relationships established: twin and daughter links.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

@@ -1,0 +1,98 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001__context",
+  "model": "anthropic:claude-sonnet-4-6",
+  "payload": {
+    "answer": "I already know Sara as Daniele's daughter and Nur's twin. For Sara to be your niece, you would need to be a sibling (or sibling-in-law) of Daniele \u2014 which is possible but not yet established in memory. Could you confirm your relationship to Daniele so I can record this accurately without ambiguity?",
+    "citations": [
+      "Existing memory: Sara is Daniele's daughter and Nur's twin (high confidence)",
+      "New input: Sara is my niece (unverified)"
+    ],
+    "conflict_classification": "potential_conflict_ambiguous",
+    "decision": "Flag as potential conflict requiring clarification before committing. The existing memory states Sara is Daniele's daughter. 'Sara is my niece' is consistent only if the user is a sibling of Daniele (or Daniele's partner). This is not necessarily contradictory, but the relationship between the user and Daniele/Sara's family is unestablished, creating ambiguity. Cannot confirm or deny without knowing the user's relationship to Daniele.",
+    "entity_resolution": {
+      "action": "hold_pending_clarification",
+      "entity_id": "Sara",
+      "reason": "Sara is already known as Daniele's daughter. If Sara is also the user's niece, the user must be a sibling (or sibling-in-law) of Daniele. This is plausible but unconfirmed. Committing without verification risks creating an inconsistent or misleading family graph."
+    },
+    "intent": "Add relational fact that Sara is the user's niece",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "twin_sibling",
+            "type": "person"
+          }
+        ],
+        "kind": "relational_fact_existing",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_daughter_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin."
+      },
+      {
+        "confidence": "unverified_pending_clarification",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "niece",
+            "type": "person"
+          },
+          {
+            "name": "user",
+            "role": "aunt_or_uncle",
+            "type": "person"
+          }
+        ],
+        "kind": "relational_fact_candidate",
+        "relationships": [
+          {
+            "object": "user",
+            "predicate": "is_niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is the user's niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "New fact 'Sara is the user's niece' NOT committed \u2014 potential conflict with existing lineage data.",
+        "Existing memory for Sara preserved unchanged.",
+        "Clarification required before updating memory graph.",
+        "Conflict classification: potential_conflict_ambiguous"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask the user: 'Are you a sibling of Daniele, which would make Sara your niece through Daniele?' \u2014 if yes, add user-is-sibling-of-Daniele and commit Sara-is-niece-of-user.",
+      "Ask the user: 'Is Sara your niece through a different family branch (not Daniele)?' \u2014 if yes, investigate whether this Sara is a different person or if there is a data error.",
+      "If the user confirms the Daniele sibling relationship, add a new memory card: 'User is a sibling of Daniele' and commit 'Sara is the user's niece' at high confidence.",
+      "If the user cannot clarify, store 'Sara is the user's niece' at low confidence with a conflict flag referencing the Daniele lineage."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Add relational fact that Sara is the user's niece\",\n  \"decision\": \"Flag as potential conflict requiring clarification before committing. The existing memory states Sara is Daniele's daughter. 'Sara is my niece' is consistent only if the user is a sibling of Daniele (or Daniele's partner). This is not necessarily contradictory, but the relationship between the user and Daniele/Sara's family is unestablished, creating ambiguity. Cannot confirm or deny without knowing the user's relationship to Daniele.\",\n  \"conflict_classification\": \"potential_conflict_ambiguous\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"relational_fact_existing\",\n      \"statement\": \"Sara is Daniele's daughter and Nur's twin.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Sara\", \"type\": \"person\", \"role\": \"subject\"},\n        {\"name\": \"Daniele\", \"type\": \"person\", \"role\": \"parent\"},\n        {\"name\": \"Nur\", \"type\": \"person\", \"role\": \"twin_sibling\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sara\", \"predicate\": \"is_daughter_of\", \"object\": \"Daniele\"},\n        {\"subject\": \"Sara\", \"predicate\": \"is_twin_of\", \"object\": \"Nur\"}\n      ]\n    },\n    {\n      \"kind\": \"relational_fact_candidate\",\n      \"statement\": \"Sara is the user's niece.\",\n      \"confidence\": \"unverified_pending_clarification\",\n      \"entities\": [\n        {\"name\": \"Sara\", \"type\": \"person\", \"role\": \"niece\"},\n        {\"name\": \"user\", \"type\": \"person\", \"role\": \"aunt_or_uncle\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sara\", \"predicate\": \"is_niece_of\", \"object\": \"user\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"hold_pending_clarification\",\n    \"entity_id\": \"Sara\",\n    \"reason\": \"Sara is already known as Daniele's daughter. If Sara is also the user's niece, the user must be a sibling (or sibling-in-law) of Daniele. This is plausible but unconfirmed. Committing without verification risks creating an inconsistent or misleading family graph.\"\n  },\n  \"repair_options\": [\n    \"Ask the user: 'Are you a sibling of Daniele, which would make Sara your niece through Daniele?' \u2014 if yes, add user-is-sibling-of-Daniele and commit Sara-is-niece-of-user.\",\n    \"Ask the user: 'Is Sara your niece through a different family branch (not Daniele)?' \u2014 if yes, investigate whether this Sara is a different person or if there is a data error.\",\n    \"If the user confirms the Daniele sibling relationship, add a new memory card: 'User is a sibling of Daniele' and commit 'Sara is the user's niece' at high confidence.\",\n    \"If the user cannot clarify, store 'Sara is the user's niece' at low confidence with a conflict flag referencing the Daniele lineage.\"\n  ],\n  \"answer\": \"I already know Sara as Daniele's daughter and Nur's twin. For Sara to be your niece, you would need to be a sibling (or sibling-in-law) of Daniele \u2014 which is possible but not yet established in memory. Could you confirm your relationship to Daniele so I can record this accurately without ambiguity?\",\n  \"citations\": [\n    \"Existing memory: Sara is Daniele's daughter and Nur's twin (high confidence)\",\n    \"New input: Sara is my niece (unverified)\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"New fact 'Sara is the user's niece' NOT committed \u2014 potential conflict with existing lineage data.\",\n      \"Existing memory for Sara preserved unchanged.\",\n      \"Clarification required before updating memory graph.\",\n      \"Conflict classification: potential_conflict_ambiguous\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

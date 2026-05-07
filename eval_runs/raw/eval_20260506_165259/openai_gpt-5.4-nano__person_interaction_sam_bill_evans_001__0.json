@@ -1,0 +1,59 @@
+{
+  "error": null,
+  "fixture_id": "person_interaction_sam_bill_evans_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Stored: Sam (Goldman) likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_memory",
+    "entity_resolution": {
+      "action": "create_or_match",
+      "entity_id": null,
+      "reason": "Only 'Sam from Goldman' was provided; no stable identifier was given for entity matching."
+    },
+    "intent": "collect_person_preference",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam (Goldman)"
+          }
+        ],
+        "statement": "Sam from Goldman mentioned that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured the stated preference (Sam likes Bill Evans) from the provided input."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for Sam\u2019s last name or a unique identifier to improve entity resolution."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"collect_person_preference\",\n  \"decision\": \"store_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam from Goldman mentioned that he likes Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"artist\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam (Goldman)\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_or_match\",\n    \"entity_id\": null,\n    \"reason\": \"Only 'Sam from Goldman' was provided; no stable identifier was given for entity matching.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Stored: Sam (Goldman) likes Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Ask for Sam\u2019s last name or a unique identifier to improve entity resolution.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Captured the stated preference (Sam likes Bill Evans) from the provided input.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

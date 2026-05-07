@@ -1,0 +1,81 @@
+{
+  "error": null,
+  "fixture_id": "recall_source_backed_article_001",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Graph memory preserves relationships and needs provenance.",
+    "citations": [
+      "Source article says graph memory preserves relationships and needs provenance."
+    ],
+    "conflict_classification": "none",
+    "decision": "extract_and_synthesize",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Entities are unambiguous and directly sourced from the input article."
+    },
+    "intent": "recall_source_backed_facts",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "graph memory",
+            "role": "subject",
+            "type": "concept"
+          },
+          {
+            "name": "relationships",
+            "role": "object",
+            "type": "concept"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "relationships",
+            "predicate": "preserves",
+            "subject": "graph memory"
+          }
+        ],
+        "statement": "Graph memory preserves relationships."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "graph memory",
+            "role": "subject",
+            "type": "concept"
+          },
+          {
+            "name": "provenance",
+            "role": "object",
+            "type": "concept"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "provenance",
+            "predicate": "needs",
+            "subject": "graph memory"
+          }
+        ],
+        "statement": "Graph memory needs provenance."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Successfully extracted two source-backed facts about graph memory.",
+        "No conflicts or ambiguities detected.",
+        "All facts are current and not superseded."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"recall_source_backed_facts\",\n  \"decision\": \"extract_and_synthesize\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Graph memory preserves relationships.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"graph memory\",\n          \"type\": \"concept\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"relationships\",\n          \"type\": \"concept\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"graph memory\",\n          \"predicate\": \"preserves\",\n          \"object\": \"relationships\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Graph memory needs provenance.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"graph memory\",\n          \"type\": \"concept\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"provenance\",\n          \"type\": \"concept\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"graph memory\",\n          \"predicate\": \"needs\",\n          \"object\": \"provenance\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"Entities are unambiguous and directly sourced from the input article.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Graph memory preserves relationships and needs provenance.\",\n  \"citations\": [\n    \"Source article says graph memory preserves relationships and needs provenance.\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Successfully extracted two source-backed facts about graph memory.\",\n      \"No conflicts or ambiguities detected.\",\n      \"All facts are current and not superseded.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

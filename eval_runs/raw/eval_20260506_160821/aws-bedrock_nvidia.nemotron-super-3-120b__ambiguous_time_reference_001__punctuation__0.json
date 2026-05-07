@@ -1,0 +1,64 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_time_reference_001__punctuation",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Sam stated last Friday that he plans to leave Goldman next month.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No existing entity conflicts detected; 'Sam' and 'Goldman' are treated as new or ambiguous references without prior context."
+    },
+    "intent": "extract_fact",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "statement",
+        "relationships": [
+          {
+            "object": "he is leaving Goldman next month",
+            "predicate": "said",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "is leaving",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said last Friday that he is leaving Goldman next month"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Fact extracted and stored with medium confidence due to ambiguous temporal references.",
+        "No entity conflicts found; no updates or deletions performed.",
+        "Ambiguity preserved as per directive: temporal anchors not resolved."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify which 'last Friday' is referenced (relative to current date)",
+      "Specify exact month for 'next month' to resolve temporal ambiguity",
+      "Confirm whether 'Goldman' refers to Goldman Sachs or another entity"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"extract_fact\",\n  \"decision\": \"store\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"statement\",\n      \"statement\": \"Sam said last Friday that he is leaving Goldman next month\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"said\",\n          \"object\": \"he is leaving Goldman next month\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"is leaving\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entity conflicts detected; 'Sam' and 'Goldman' are treated as new or ambiguous references without prior context.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Sam stated last Friday that he plans to leave Goldman next month.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Clarify which 'last Friday' is referenced (relative to current date)\",\n    \"Specify exact month for 'next month' to resolve temporal ambiguity\",\n    \"Confirm whether 'Goldman' refers to Goldman Sachs or another entity\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Fact extracted and stored with medium confidence due to ambiguous temporal references.\",\n      \"No entity conflicts found; no updates or deletions performed.\",\n      \"Ambiguity preserved as per directive: temporal anchors not resolved.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

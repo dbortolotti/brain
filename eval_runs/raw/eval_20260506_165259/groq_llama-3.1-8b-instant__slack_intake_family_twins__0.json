@@ -1,0 +1,66 @@
+{
+  "error": null,
+  "fixture_id": "slack_intake_family_twins",
+  "model": "groq:llama-3.1-8b-instant",
+  "payload": {
+    "answer": "Nur and Sara are my twin daughters.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": null,
+      "reason": "no ambiguity"
+    },
+    "intent": "family",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "I",
+            "role": "parent",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "twin",
+            "subject": "Nur"
+          },
+          {
+            "object": "I",
+            "predicate": "daughter",
+            "subject": "Nur"
+          },
+          {
+            "object": "I",
+            "predicate": "daughter",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Nur and Sara are my twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"family\",\n   \"decision\": \"commit\",\n   \"memory_cards\": [\n      {\n         \"kind\": \"fact\",\n         \"statement\": \"Nur and Sara are my twin daughters.\",\n         \"confidence\": \"high\",\n         \"entities\": [\n            {\n               \"name\": \"Nur\",\n               \"type\": \"person\",\n               \"role\": \"daughter\"\n            },\n            {\n               \"name\": \"Sara\",\n               \"type\": \"person\",\n               \"role\": \"daughter\"\n            },\n            {\n               \"name\": \"I\",\n               \"type\": \"person\",\n               \"role\": \"parent\"\n            }\n         ],\n         \"relationships\": [\n            {\n               \"subject\": \"Nur\",\n               \"predicate\": \"twin\",\n               \"object\": \"Sara\"\n            },\n            {\n               \"subject\": \"Nur\",\n               \"predicate\": \"daughter\",\n               \"object\": \"I\"\n            },\n            {\n               \"subject\": \"Sara\",\n               \"predicate\": \"daughter\",\n               \"object\": \"I\"\n            }\n         ]\n      }\n   ],\n   \"entity_resolution\": {\n      \"action\": \"resolve\",\n      \"entity_id\": null,\n      \"reason\": \"no ambiguity\"\n   },\n   \"conflict_classification\": \"none\",\n   \"answer\": \"Nur and Sara are my twin daughters.\",\n   \"citations\": [],\n   \"repair_options\": [],\n   \"receipt\": {\n      \"success\": true,\n      \"details\": []\n   }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

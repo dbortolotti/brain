@@ -1,0 +1,56 @@
+{
+  "error": null,
+  "fixture_id": "slack_rewrite_modal_001__punctuation",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Memory rewritten: He prefers the other one",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "proceed",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No specific entities require resolution; 'He' and 'the other one' are contextually ambiguous but intentionally preserved as-is per instruction to preserve ambiguity."
+    },
+    "intent": "rewrite_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "He",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "the other one",
+            "role": "preference_target",
+            "type": "object"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "He"
+          }
+        ],
+        "statement": "He prefers the other one"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory successfully rewritten under slack_intake role.",
+        "Fixture ID: slack_rewrite_modal_001__punctuation",
+        "Input processed: /brain remember He prefers the other one User chooses Rewrite memory",
+        "No conflicts detected; ambiguity preserved as instructed."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"rewrite_memory\",\n  \"decision\": \"proceed\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"He prefers the other one\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"He\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"the other one\",\n          \"type\": \"object\",\n          \"role\": \"preference_target\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"He\",\n          \"predicate\": \"prefers\",\n          \"object\": \"the other one\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No specific entities require resolution; 'He' and 'the other one' are contextually ambiguous but intentionally preserved as-is per instruction to preserve ambiguity.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Memory rewritten: He prefers the other one\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory successfully rewritten under slack_intake role.\",\n      \"Fixture ID: slack_rewrite_modal_001__punctuation\",\n      \"Input processed: /brain remember He prefers the other one User chooses Rewrite memory\",\n      \"No conflicts detected; ambiguity preserved as instructed.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

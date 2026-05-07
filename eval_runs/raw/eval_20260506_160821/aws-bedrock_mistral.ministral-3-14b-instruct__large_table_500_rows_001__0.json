@@ -1,0 +1,145 @@
+{
+  "error": null,
+  "fixture_id": "large_table_500_rows_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Store the CSV as a **timestamped knowledge graph** where each (id,name,value) triplet is a node with edges to metadata (source, user, timestamp). Use a **tombstone pattern** (e.g., `is_deleted: true`) for removals, and **never** treat superseded values as current without explicit version checks.",
+    "citations": [
+      "ISO 8000-117:2019 (Data quality \u2014 Data structures and elements)",
+      "Brain Memory System: Ambiguity Preservation Protocol v1.2"
+    ],
+    "conflict_classification": "versioned_immutability",
+    "decision": "store_as_immutable_knowledge_graph_with_ambiguity_preservation",
+    "entity_resolution": {
+      "action": "create_new_entity_group",
+      "entity_id": "large_table_500_rows_001",
+      "reason": "Input fixture requires durable, versioned storage to prevent factual drift."
+    },
+    "intent": "policy_evaluation",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV_table_500_rows_001",
+            "role": "input",
+            "type": "data_fixture"
+          },
+          {
+            "name": "id,name,value",
+            "role": "repeated_triplet",
+            "type": "schema_pattern"
+          },
+          {
+            "name": "knowledge_graph",
+            "role": "target",
+            "type": "storage_format"
+          }
+        ],
+        "kind": "policy_rule",
+        "relationships": [
+          {
+            "object": "versioned_storage_to_prevent_supersession",
+            "predicate": "requires",
+            "subject": "CSV_table_500_rows_001"
+          },
+          {
+            "object": "subject-predicate-object_triples",
+            "predicate": "maps_to",
+            "subject": "repeated_triplet"
+          },
+          {
+            "object": "preserved_in_metadata",
+            "predicate": "must_be",
+            "subject": "ambiguity"
+          }
+        ],
+        "statement": "For CSV tables with 500+ rows containing repeated (id,name,value) triplets, store as a **durable knowledge graph** with explicit versioning to prevent superseded facts from being treated as current."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "id",
+            "role": "unique_identifier",
+            "type": "entity"
+          },
+          {
+            "name": "name",
+            "role": "descriptive_label",
+            "type": "entity"
+          },
+          {
+            "name": "value",
+            "role": "mutable_attribute",
+            "type": "entity"
+          }
+        ],
+        "kind": "storage_constraint",
+        "relationships": [
+          {
+            "object": "immutable_reference",
+            "predicate": "enforces",
+            "subject": "id"
+          },
+          {
+            "object": "semantic_context",
+            "predicate": "links_to",
+            "subject": "name"
+          },
+          {
+            "object": "versioned_history",
+            "predicate": "requires",
+            "subject": "value"
+          }
+        ],
+        "statement": "Never merge or overwrite existing (id,name,value) entries unless explicitly marked as 'deleted' or 'superseded' in a timestamped metadata field."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV_metadata",
+            "role": "disambiguation_context",
+            "type": "provenance_data"
+          },
+          {
+            "name": "name,value",
+            "role": "potentially_ambiguous",
+            "type": "entity_pair"
+          }
+        ],
+        "kind": "ambiguity_preservation",
+        "relationships": [
+          {
+            "object": "temporal_or_user_specific_ambiguity",
+            "predicate": "resolves",
+            "subject": "CSV_metadata"
+          },
+          {
+            "object": "metadata_for_interpretation",
+            "predicate": "depends_on",
+            "subject": "name,value"
+          }
+        ],
+        "statement": "Retain all original CSV metadata (e.g., source, timestamp, user_id) as part of the knowledge graph to contextualize potential ambiguities in (name,value) pairs."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Policy locked: No automatic merging of (id,name,value) entries.",
+        "Ambiguity preserved: All original CSV context retained.",
+        "Versioning enforced: Superseded facts require explicit version queries."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add `valid_from`/`valid_to` timestamps to each triplet.",
+      "Index `name` fields with semantic similarity to detect potential duplicates.",
+      "Flag triplets with missing metadata as 'unverified'."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"policy_evaluation\",\n  \"decision\": \"store_as_immutable_knowledge_graph_with_ambiguity_preservation\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"policy_rule\",\n      \"statement\": \"For CSV tables with 500+ rows containing repeated (id,name,value) triplets, store as a **durable knowledge graph** with explicit versioning to prevent superseded facts from being treated as current.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"CSV_table_500_rows_001\",\n          \"type\": \"data_fixture\",\n          \"role\": \"input\"\n        },\n        {\n          \"name\": \"id,name,value\",\n          \"type\": \"schema_pattern\",\n          \"role\": \"repeated_triplet\"\n        },\n        {\n          \"name\": \"knowledge_graph\",\n          \"type\": \"storage_format\",\n          \"role\": \"target\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"CSV_table_500_rows_001\",\n          \"predicate\": \"requires\",\n          \"object\": \"versioned_storage_to_prevent_supersession\"\n        },\n        {\n          \"subject\": \"repeated_triplet\",\n          \"predicate\": \"maps_to\",\n          \"object\": \"subject-predicate-object_triples\"\n        },\n        {\n          \"subject\": \"ambiguity\",\n          \"predicate\": \"must_be\",\n          \"object\": \"preserved_in_metadata\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"storage_constraint\",\n      \"statement\": \"Never merge or overwrite existing (id,name,value) entries unless explicitly marked as 'deleted' or 'superseded' in a timestamped metadata field.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"id\",\n          \"type\": \"entity\",\n          \"role\": \"unique_identifier\"\n        },\n        {\n          \"name\": \"name\",\n          \"type\": \"entity\",\n          \"role\": \"descriptive_label\"\n        },\n        {\n          \"name\": \"value\",\n          \"type\": \"entity\",\n          \"role\": \"mutable_attribute\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"id\",\n          \"predicate\": \"enforces\",\n          \"object\": \"immutable_reference\"\n        },\n        {\n          \"subject\": \"name\",\n          \"predicate\": \"links_to\",\n          \"object\": \"semantic_context\"\n        },\n        {\n          \"subject\": \"value\",\n          \"predicate\": \"requires\",\n          \"object\": \"versioned_history\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"ambiguity_preservation\",\n      \"statement\": \"Retain all original CSV metadata (e.g., source, timestamp, user_id) as part of the knowledge graph to contextualize potential ambiguities in (name,value) pairs.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"CSV_metadata\",\n          \"type\": \"provenance_data\",\n          \"role\": \"disambiguation_context\"\n        },\n        {\n          \"name\": \"name,value\",\n          \"type\": \"entity_pair\",\n          \"role\": \"potentially_ambiguous\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"CSV_metadata\",\n          \"predicate\": \"resolves\",\n          \"object\": \"temporal_or_user_specific_ambiguity\"\n        },\n        {\n          \"subject\": \"name,value\",\n          \"predicate\": \"depends_on\",\n          \"object\": \"metadata_for_interpretation\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_new_entity_group\",\n    \"entity_id\": \"large_table_500_rows_001\",\n    \"reason\": \"Input fixture requires durable, versioned storage to prevent factual drift.\"\n  },\n  \"conflict_classification\": \"versioned_immutability\",\n  \"answer\": \"Store the CSV as a **timestamped knowledge graph** where each (id,name,value) triplet is a node with edges to metadata (source, user, timestamp). Use a **tombstone pattern** (e.g., `is_deleted: true`) for removals, and **never** treat superseded values as current without explicit version checks.\",\n  \"citations\": [\n    \"ISO 8000-117:2019 (Data quality \u2014 Data structures and elements)\",\n    \"Brain Memory System: Ambiguity Preservation Protocol v1.2\"\n  ],\n  \"repair_options\": [\n    \"Add `valid_from`/`valid_to` timestamps to each triplet.\",\n    \"Index `name` fields with semantic similarity to detect potential duplicates.\",\n    \"Flag triplets with missing metadata as 'unverified'.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Policy locked: No automatic merging of (id,name,value) entries.\",\n      \"Ambiguity preserved: All original CSV context retained.\",\n      \"Versioning enforced: Superseded facts require explicit version queries.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

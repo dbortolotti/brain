@@ -1,0 +1,64 @@
+{
+  "fixture_id": "italian_memory_note_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Memorizzato: Sam di Goldman preferisce Bill Evans.",
+    "citations": [
+      "input: \"Ricordami che Sam di Goldman preferisce Bill Evans.\""
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_update_ambiguous",
+      "entity_id": null,
+      "reason": "The note identifies Sam only as 'di Goldman'; no unique identifier beyond that affiliation/context was provided."
+    },
+    "intent": "save_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred_item",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "is affiliated with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam di Goldman prefers Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured a preference memory for Sam.",
+        "Affiliation with Goldman preserved as context only.",
+        "No conflicts detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_165259"
+}

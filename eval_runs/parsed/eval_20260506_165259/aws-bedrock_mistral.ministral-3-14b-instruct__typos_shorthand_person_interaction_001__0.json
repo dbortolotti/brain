@@ -1,0 +1,64 @@
+{
+  "fixture_id": "typos_shorthand_person_interaction_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The statement is ambiguous but suggests Sam (likely affiliated with Goldman Sachs) may have a positive interaction with Bill Evans. Clarification is needed for precise interpretation.",
+    "citations": [],
+    "conflict_classification": "none",
+    "entity_resolution": {
+      "action": "disambiguate",
+      "entity_id": null,
+      "reason": "Ambiguous shorthand ('frm goldmn' could imply 'from Goldman Sachs' or 'Goldman' as a surname; 'bill evns' could be 'Bill Evans' or a typo for another entity). Context suggests Goldman Sachs affiliation and Bill Evans as a person."
+    },
+    "intent": "interpret_ambiguous_statement",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "hypothesis",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "has_affiliation_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes_or_approves_of",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Person named 'Sam' (from Goldman Sachs) may have an interaction with 'Bill Evans' (likely a person, possibly a musician or public figure) that involves liking or approval."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguity in shorthand prevents durable memory commitment.",
+        "No superseded/deleted facts were referenced."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Clarify 'frm goldmn': Is it 'from Goldman Sachs' or a surname?",
+      "Clarify 'bill evns': Is it 'Bill Evans' or another entity?",
+      "Specify the nature of the 'likes' (e.g., admiration, approval, social media follow)?"
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

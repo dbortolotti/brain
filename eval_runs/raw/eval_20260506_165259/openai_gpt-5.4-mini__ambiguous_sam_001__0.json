@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_sam_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Ambiguous referent: 'Sam' could be Sam from Goldman or Sam from Point72, so I did not commit this as a durable fact for either entity.",
+    "citations": [
+      "Existing entities: Sam from Goldman; Sam from Point72.",
+      "New message: Sam mentioned that he likes Bill Evans."
+    ],
+    "conflict_classification": "ambiguous_entity",
+    "decision": "defer",
+    "entity_resolution": {
+      "action": "unresolved",
+      "entity_id": null,
+      "reason": "The message refers to 'Sam', but there are two existing candidates: Sam from Goldman and Sam from Point72. The context does not disambiguate which one is meant."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "ambiguous referent",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "music preference object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "A Sam mentioned liking Bill Evans, but the specific Sam cannot be resolved from the current context."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed an ambiguous preference statement.",
+        "No entity was resolved with sufficient confidence.",
+        "No durable entity-specific memory committed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask a follow-up to identify which Sam is meant.",
+      "Store the preference only after disambiguation.",
+      "If later context identifies the Sam, attach this note then."
+    ]
+  },
+  "raw_text": "{\"intent\":\"slack_intake\",\"decision\":\"defer\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"A Sam mentioned liking Bill Evans, but the specific Sam cannot be resolved from the current context.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"ambiguous referent\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"music preference object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"unresolved\",\"entity_id\":null,\"reason\":\"The message refers to 'Sam', but there are two existing candidates: Sam from Goldman and Sam from Point72. The context does not disambiguate which one is meant.\"},\"conflict_classification\":\"ambiguous_entity\",\"answer\":\"Ambiguous referent: 'Sam' could be Sam from Goldman or Sam from Point72, so I did not commit this as a durable fact for either entity.\",\"citations\":[\"Existing entities: Sam from Goldman; Sam from Point72.\",\"New message: Sam mentioned that he likes Bill Evans.\"],\"repair_options\":[\"Ask a follow-up to identify which Sam is meant.\",\"Store the preference only after disambiguation.\",\"If later context identifies the Sam, attach this note then.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed an ambiguous preference statement.\",\"No entity was resolved with sufficient confidence.\",\"No durable entity-specific memory committed.\"]}}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

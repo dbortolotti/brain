@@ -1,0 +1,48 @@
+{
+  "fixture_id": "slack_no_durable_value_repair_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Got it. I noted that today's weather appears to be cloudy (kept non-durable due to missing location/date context).",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "store_non_durable_with_ambiguity",
+    "entity_resolution": {
+      "action": "no_persistent_id",
+      "entity_id": null,
+      "reason": "The statement lacks a location and explicit date; keep it ambiguous and avoid assigning a durable entity ID."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "today's weather",
+            "role": "subject",
+            "type": "weather"
+          }
+        ],
+        "kind": "personal_note",
+        "relationships": [
+          {
+            "object": "cloudy",
+            "predicate": "is",
+            "subject": "today's weather"
+          }
+        ],
+        "statement": "Today's weather is cloudy."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored as a non-durable personal note with low confidence due to missing context."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for the location (e.g., city/ZIP) to make the weather note more specific.",
+      "Confirm the exact date/time for 'today' if needed."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

@@ -1,0 +1,75 @@
+{
+  "error": null,
+  "fixture_id": "recall_source_backed_article_001",
+  "model": "groq:openai/gpt-oss-120b",
+  "payload": {
+    "answer": "The source article provides two facts: (1) graph memory preserves relationships, and (2) graph memory needs provenance.",
+    "citations": [
+      "recall_source_backed_article_001"
+    ],
+    "conflict_classification": "none",
+    "decision": "provide_facts",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "no ambiguity detected"
+    },
+    "intent": "retrieve_facts",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "graph memory",
+            "role": "subject",
+            "type": "concept"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "relationships",
+            "predicate": "preserves",
+            "subject": "graph memory"
+          }
+        ],
+        "statement": "Graph memory preserves relationships."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "graph memory",
+            "role": "subject",
+            "type": "concept"
+          },
+          {
+            "name": "provenance",
+            "role": "object",
+            "type": "concept"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "provenance",
+            "predicate": "needs",
+            "subject": "graph memory"
+          }
+        ],
+        "statement": "Graph memory needs provenance."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "facts extracted",
+        "response assembled"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"retrieve_facts\",\"decision\":\"provide_facts\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Graph memory preserves relationships.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"graph memory\",\"type\":\"concept\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"graph memory\",\"predicate\":\"preserves\",\"object\":\"relationships\"}]},{\"kind\":\"fact\",\"statement\":\"Graph memory needs provenance.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"graph memory\",\"type\":\"concept\",\"role\":\"subject\"},{\"name\":\"provenance\",\"type\":\"concept\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"graph memory\",\"predicate\":\"needs\",\"object\":\"provenance\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"no ambiguity detected\"},\"conflict_classification\":\"none\",\"answer\":\"The source article provides two facts: (1) graph memory preserves relationships, and (2) graph memory needs provenance.\",\"citations\":[\"recall_source_backed_article_001\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"facts extracted\",\"response assembled\"]}}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

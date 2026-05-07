@@ -1,0 +1,99 @@
+{
+  "error": null,
+  "fixture_id": "large_table_500_rows_001",
+  "model": "groq:llama-3.3-70b-versatile",
+  "payload": {
+    "answer": "store as entity relationships",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_as_entity_relationships",
+    "entity_resolution": {
+      "action": "create_new_entities",
+      "entity_id": null,
+      "reason": "new data"
+    },
+    "intent": "store_large_table",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "id",
+            "role": "identifier",
+            "type": "integer"
+          }
+        ],
+        "kind": "entity",
+        "relationships": [
+          {
+            "object": "value",
+            "predicate": "has_value",
+            "subject": "id"
+          }
+        ],
+        "statement": "id is a unique identifier"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "name",
+            "role": "descriptor",
+            "type": "string"
+          }
+        ],
+        "kind": "entity",
+        "relationships": [
+          {
+            "object": "id",
+            "predicate": "describes",
+            "subject": "name"
+          }
+        ],
+        "statement": "name is a string"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "id",
+            "role": "identifier",
+            "type": "integer"
+          },
+          {
+            "name": "name",
+            "role": "descriptor",
+            "type": "string"
+          },
+          {
+            "name": "value",
+            "role": "value",
+            "type": "string"
+          }
+        ],
+        "kind": "relationship",
+        "relationships": [
+          {
+            "object": "value",
+            "predicate": "has_value",
+            "subject": "id"
+          },
+          {
+            "object": "id",
+            "predicate": "describes",
+            "subject": "name"
+          }
+        ],
+        "statement": "id and name are related to value"
+      }
+    ],
+    "receipt": {
+      "details": [],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"store_large_table\",\n   \"decision\": \"store_as_entity_relationships\",\n   \"memory_cards\": [\n       {\n           \"kind\": \"entity\",\n           \"statement\": \"id is a unique identifier\",\n           \"confidence\": \"high\",\n           \"entities\": [\n               {\n                   \"name\": \"id\",\n                   \"type\": \"integer\",\n                   \"role\": \"identifier\"\n               }\n           ],\n           \"relationships\": [\n               {\n                   \"subject\": \"id\",\n                   \"predicate\": \"has_value\",\n                   \"object\": \"value\"\n               }\n           ]\n       },\n       {\n           \"kind\": \"entity\",\n           \"statement\": \"name is a string\",\n           \"confidence\": \"high\",\n           \"entities\": [\n               {\n                   \"name\": \"name\",\n                   \"type\": \"string\",\n                   \"role\": \"descriptor\"\n               }\n           ],\n           \"relationships\": [\n               {\n                   \"subject\": \"name\",\n                   \"predicate\": \"describes\",\n                   \"object\": \"id\"\n               }\n           ]\n       },\n       {\n           \"kind\": \"relationship\",\n           \"statement\": \"id and name are related to value\",\n           \"confidence\": \"high\",\n           \"entities\": [\n               {\n                   \"name\": \"id\",\n                   \"type\": \"integer\",\n                   \"role\": \"identifier\"\n               },\n               {\n                   \"name\": \"name\",\n                   \"type\": \"string\",\n                   \"role\": \"descriptor\"\n               },\n               {\n                   \"name\": \"value\",\n                   \"type\": \"string\",\n                   \"role\": \"value\"\n               }\n           ],\n           \"relationships\": [\n               {\n                   \"subject\": \"id\",\n                   \"predicate\": \"has_value\",\n                   \"object\": \"value\"\n               },\n               {\n                   \"subject\": \"name\",\n                   \"predicate\": \"describes\",\n                   \"object\": \"id\"\n               }\n           ]\n       }\n   ],\n   \"entity_resolution\": {\n       \"action\": \"create_new_entities\",\n       \"entity_id\": null,\n       \"reason\": \"new data\"\n   },\n   \"conflict_classification\": \"none\",\n   \"answer\": \"store as entity relationships\",\n   \"citations\": [],\n   \"repair_options\": [],\n   \"receipt\": {\n       \"success\": true,\n       \"details\": []\n   }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

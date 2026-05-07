@@ -1,0 +1,67 @@
+{
+  "fixture_id": "recall_hide_superseded__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Sam works at Point72.",
+    "citations": [
+      "Current facts - Sam left Goldman and joined Point72",
+      "Superseded facts - Sam works at Goldman"
+    ],
+    "conflict_classification": "superseded_fact",
+    "decision": "use_current_fact_and_ignore_superseded_fact",
+    "entity_resolution": {
+      "action": "resolve_to_current_employer",
+      "entity_id": null,
+      "reason": "The newer fact says Sam left Goldman and joined Point72, which supersedes the older employment fact."
+    },
+    "intent": "recall_synthesizer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_update",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded fact not treated as current.",
+        "Current employer resolved to Point72."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Update the memory to mark Goldman as former employer and Point72 as current employer.",
+      "Retain the older Goldman fact only as superseded history, not current state."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

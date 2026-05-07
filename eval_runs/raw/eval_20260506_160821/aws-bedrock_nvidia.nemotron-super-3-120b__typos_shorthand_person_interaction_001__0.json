@@ -1,0 +1,70 @@
+{
+  "error": null,
+  "fixture_id": "typos_shorthand_person_interaction_001",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Sam from Goldman likes Bill Evans apparently",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_as_ambiguous_fact",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": null,
+      "reason": "Ambiguous input due to typos ('frm' \u2192 'from', 'goldmn' \u2192 'Goldman', 'evns' \u2192 'Evans'); no definitive match in knowledge base; preserving ambiguity as instructed."
+    },
+    "intent": "parse_typoed_statement",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object_of_affection",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "works_at_or_associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans apparently"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Input parsed with typo tolerance",
+        "Fact stored with low confidence due to ambiguity",
+        "No existing entity resolved; new entity placeholder created",
+        "Relationships inferred conservatively"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm if 'Sam' refers to a known individual in Goldman Sachs",
+      "Verify if 'Bill Evans' is the jazz pianist or another entity",
+      "Clarify whether 'likes' indicates personal preference, professional admiration, or another context"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"parse_typoed_statement\",\n  \"decision\": \"store_as_ambiguous_fact\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam from Goldman likes Bill Evans apparently\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"object_of_affection\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at_or_associated_with\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_new\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguous input due to typos ('frm' \u2192 'from', 'goldmn' \u2192 'Goldman', 'evns' \u2192 'Evans'); no definitive match in knowledge base; preserving ambiguity as instructed.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Sam from Goldman likes Bill Evans apparently\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Confirm if 'Sam' refers to a known individual in Goldman Sachs\",\n    \"Verify if 'Bill Evans' is the jazz pianist or another entity\",\n    \"Clarify whether 'likes' indicates personal preference, professional admiration, or another context\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Input parsed with typo tolerance\",\n      \"Fact stored with low confidence due to ambiguity\",\n      \"No existing entity resolved; new entity placeholder created\",\n      \"Relationships inferred conservatively\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

@@ -1,0 +1,33 @@
+{
+  "error": null,
+  "fixture_id": "slack_retry_event_001",
+  "model": "aws-bedrock:nvidia.nemotron-nano-9b-v2",
+  "payload": {
+    "answer": "This is a duplicate Slack event for 'Sam from Goldman likes Bill Evans.'",
+    "citations": [
+      "Previous event: slack_retry_event_001"
+    ],
+    "conflict_classification": "duplicate_event",
+    "decision": "ignore_duplicate",
+    "entity_resolution": {
+      "action": "ignore",
+      "entity_id": null,
+      "reason": "Duplicate event detected"
+    },
+    "intent": "process_duplicate",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Duplicate event ignored to preserve memory integrity"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Verify event deduplication logic",
+      "Check for message persistence issues"
+    ]
+  },
+  "raw_text": "Okay, let's tackle this. The user is evaluating Brain, a personal memory system, and they want a JSON response based on a specific schema. The input is a Slack event that was delivered twice: \"Sam from Goldman likes Bill Evans.\" The fixture ID is slack_retry_event_001, and the role is slack_intake.\n\nFirst, I need to parse the JSON schema provided. The main object has several properties: intent, decision, memory_cards, entity_resolution, conflict_classification, answer, citations, repair_options, receipt. The memory_cards array contains objects with kind, statement, confidence, entities, and relationships. Entities have name, type, role. Relationships are subject, predicate, object.\n\nThe input is a duplicate Slack event. The key here is that the same event was received twice. The system needs to handle this without creating duplicate memory entries. The decision should probably be to ignore the duplicate or mark it as a retry. The intent might be to process the message, but since it's a retry, maybe the intent is to handle duplicates.\n\nFor memory_cards, since it's a duplicate, we shouldn't add a new card. Instead, maybe update the existing one or note the retry. But the schema requires an array, so perhaps we need to indicate that this is a retry. The statement could be the same as before, but confidence might be lower if it's a duplicate. Entities would be Sam (person, from Goldman, role?), Bill Evans (person). Relationships would be Sam likes Bill Evans.\n\nEntity resolution: since it's a retry, maybe the action is to ignore or update. Entity_id could be null if no new entity is resolved. Conflict classification might be 'duplicate_event'.\n\nAnswer should state that the event is a duplicate. Citations could reference the previous event. Repair options might suggest checking for duplicates. Receipt should indicate success but note the retry.\n\nNeed to ensure that durable memory is preserved, so if this is a retry, we shouldn't overwrite previous facts. Ambiguity should be preserved, so maybe confidence is 'medium' or 'low' for the duplicate. Never present superseded facts as current, so if there was a previous entry, this duplicate shouldn't replace it.\n\nPutting it all together: intent is 'process_duplicate', decision is 'ignore_duplicate', memory_cards might be empty or have a note. Entity resolution action could be 'ignore'. Conflict classification is 'duplicate_event'. Answer explains it's a duplicate. Citations link to the previous event. Repair options suggest checking for duplicates. Receipt success is true but with details about the retry.\n</think>\n\n{\"intent\":\"process_duplicate\",\"decision\":\"ignore_duplicate\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"ignore\",\"entity_id\":null,\"reason\":\"Duplicate event detected\"},\"conflict_classification\":\"duplicate_event\",\"answer\":\"This is a duplicate Slack event for 'Sam from Goldman likes Bill Evans.'\",\"citations\":[\"Previous event: slack_retry_event_001\"],\"repair_options\":[\"Verify event deduplication logic\",\"Check for message persistence issues\"],\"receipt\":{\"success\":true,\"details\":[\"Duplicate event ignored to preserve memory integrity\"]}}\n",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

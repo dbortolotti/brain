@@ -1,0 +1,76 @@
+{
+  "error": null,
+  "fixture_id": "entity_alias_sam_goldman__context",
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "payload": {
+    "answer": "Entity resolved to existing Sam from Goldman. New preference recorded: likes Bill Evans.",
+    "citations": [
+      "Existing entity: Sam from Goldman, aliases Sam G, Goldman Sam",
+      "New message: Sam G likes Bill Evans"
+    ],
+    "conflict_classification": "none",
+    "decision": "merge_and_record",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "sam_goldman",
+      "reason": "Sam G matches existing alias for Sam from Goldman; preference recorded under canonical entity"
+    },
+    "intent": "resolve_entity_alias_and_record_preference",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Sam G",
+            "role": "alternate_name",
+            "type": "alias"
+          }
+        ],
+        "kind": "entity_alias",
+        "relationships": [],
+        "statement": "Sam G is an alias for Sam from Goldman"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam G",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam G"
+          }
+        ],
+        "statement": "Sam G likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Alias 'Sam G' confirmed and linked to canonical entity 'Sam from Goldman'",
+        "Preference relationship created: Sam from Goldman likes Bill Evans",
+        "No conflicts detected"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"resolve_entity_alias_and_record_preference\",\n  \"decision\": \"merge_and_record\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"entity_alias\",\n      \"statement\": \"Sam G is an alias for Sam from Goldman\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam from Goldman\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Sam G\",\n          \"type\": \"alias\",\n          \"role\": \"alternate_name\"\n        }\n      ],\n      \"relationships\": []\n    },\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam G likes Bill Evans\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam G\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam G\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge\",\n    \"entity_id\": \"sam_goldman\",\n    \"reason\": \"Sam G matches existing alias for Sam from Goldman; preference recorded under canonical entity\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Entity resolved to existing Sam from Goldman. New preference recorded: likes Bill Evans.\",\n  \"citations\": [\n    \"Existing entity: Sam from Goldman, aliases Sam G, Goldman Sam\",\n    \"New message: Sam G likes Bill Evans\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Alias 'Sam G' confirmed and linked to canonical entity 'Sam from Goldman'\",\n      \"Preference relationship created: Sam from Goldman likes Bill Evans\",\n      \"No conflicts detected\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

@@ -1,0 +1,89 @@
+{
+  "fixture_id": "additive_sam_preferences_001__context",
+  "model": "anthropic:claude-sonnet-4-6",
+  "payload": {
+    "answer": "No conflict exists. Sam from Goldman's preference for Sonny Rollins has been added alongside the existing preference for Bill Evans. Both facts are now stored as current.",
+    "citations": [
+      "Existing memory: Sam from Goldman likes Bill Evans.",
+      "New input: Sam from Goldman also likes Sonny Rollins."
+    ],
+    "conflict_classification": "no_conflict_additive",
+    "decision": "Additive update: store new preference alongside existing one. No conflict detected.",
+    "entity_resolution": {
+      "action": "match_existing",
+      "entity_id": "sam_goldman",
+      "reason": "Sam from Goldman is already known in memory as a person who likes Bill Evans. The new fact adds another preference for the same entity."
+    },
+    "intent": "Add a new music preference for Sam from Goldman without conflicting with existing memory.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object_of_preference",
+            "type": "musician"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam (Goldman)"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "object_of_preference",
+            "type": "musician"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Sonny Rollins",
+            "predicate": "likes",
+            "subject": "Sam (Goldman)"
+          }
+        ],
+        "statement": "Sam from Goldman also likes Sonny Rollins."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Existing preference for Bill Evans retained unchanged.",
+        "New preference for Sonny Rollins added as an additive fact.",
+        "No superseded or deleted facts."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_165259"
+}

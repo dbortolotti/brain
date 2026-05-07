@@ -40,15 +40,17 @@ class ModelCandidate:
     provider: str
     model: str
     kind: str
+    api_model: str | None = None
     roles: tuple[str, ...] = ()
     judge_only: bool = False
     price_per_1m: dict[str, float] = field(default_factory=dict)
+    reasoning_effort: str | None = None
     skip_reason: str | None = None
     requested_ref: str | None = None
 
     @property
     def ref(self) -> str:
-        return f"{self.provider}:{self.model}"
+        return self.requested_ref or f"{self.provider}:{self.model}"
 
 
 def load_model_registry(path: str | Path = REGISTRY_PATH) -> dict[str, Any]:
@@ -73,9 +75,11 @@ def registry_model_index(registry: dict[str, Any]) -> dict[str, ModelCandidate]:
                 provider=model_provider,
                 model=str(model["id"]),
                 kind=kind,
+                api_model=str(model.get("api_model") or model["id"]),
                 roles=tuple(str(role) for role in model.get("roles", ())),
                 judge_only=bool(model.get("judge_only", False)),
                 price_per_1m=price,
+                reasoning_effort=model.get("reasoning_effort"),
                 skip_reason=model_skip_reason(model),
             )
             index[candidate.ref] = candidate
@@ -84,9 +88,11 @@ def registry_model_index(registry: dict[str, Any]) -> dict[str, ModelCandidate]:
                     provider=candidate.provider,
                     model=candidate.model,
                     kind=candidate.kind,
+                    api_model=candidate.api_model,
                     roles=candidate.roles,
                     judge_only=candidate.judge_only,
                     price_per_1m=candidate.price_per_1m,
+                    reasoning_effort=candidate.reasoning_effort,
                     skip_reason=candidate.skip_reason,
                     requested_ref=f"{model_provider}:{alias}",
                 )
@@ -176,9 +182,11 @@ def provider_candidates(
                     provider=model_provider,
                     model=str(model["id"]),
                     kind=kind,
+                    api_model=str(model.get("api_model") or model["id"]),
                     roles=model_roles,
                     judge_only=bool(model.get("judge_only", False)),
                     price_per_1m=price_config(model),
+                    reasoning_effort=model.get("reasoning_effort"),
                 )
             )
     return candidates
@@ -199,9 +207,11 @@ def candidate_from_ref(
             provider=candidate.provider,
             model=candidate.model,
             kind=candidate.kind,
+            api_model=candidate.api_model,
             roles=tuple(dict.fromkeys((*candidate.roles, *roles))),
             judge_only=candidate.judge_only,
             price_per_1m=candidate.price_per_1m,
+            reasoning_effort=candidate.reasoning_effort,
             skip_reason=candidate.skip_reason,
             requested_ref=ref,
         )
@@ -212,6 +222,7 @@ def candidate_from_ref(
         provider=normalize_provider(provider),
         model=model,
         kind=kind,
+        api_model=model,
         roles=tuple(sorted(roles)),
         requested_ref=ref,
     )
@@ -220,7 +231,14 @@ def candidate_from_ref(
 def dedupe_candidates(candidates: list[ModelCandidate]) -> list[ModelCandidate]:
     deduped: dict[tuple[str, str, str], ModelCandidate] = {}
     for candidate in candidates:
-        key = (candidate.kind, candidate.provider, candidate.model)
+        key = (
+            candidate.kind,
+            candidate.provider,
+            candidate.model,
+            candidate.api_model,
+            candidate.reasoning_effort,
+            candidate.requested_ref,
+        )
         if key not in deduped:
             deduped[key] = candidate
             continue
@@ -229,9 +247,11 @@ def dedupe_candidates(candidates: list[ModelCandidate]) -> list[ModelCandidate]:
             provider=existing.provider,
             model=existing.model,
             kind=existing.kind,
+            api_model=existing.api_model,
             roles=tuple(dict.fromkeys((*existing.roles, *candidate.roles))),
             judge_only=existing.judge_only or candidate.judge_only,
             price_per_1m=existing.price_per_1m or candidate.price_per_1m,
+            reasoning_effort=existing.reasoning_effort or candidate.reasoning_effort,
             skip_reason=existing.skip_reason or candidate.skip_reason,
             requested_ref=existing.requested_ref or candidate.requested_ref,
         )

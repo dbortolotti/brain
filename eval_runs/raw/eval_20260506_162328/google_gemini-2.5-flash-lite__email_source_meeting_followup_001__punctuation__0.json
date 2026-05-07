@@ -1,0 +1,79 @@
+{
+  "error": null,
+  "fixture_id": "email_source_meeting_followup_001__punctuation",
+  "model": "google:gemini-2.5-flash-lite",
+  "payload": {
+    "answer": "I have recorded that Sam joined Point72 last month and requested the AI infra article.",
+    "citations": [
+      "email_source_meeting_followup_001__punctuation"
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "record",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": null,
+      "reason": "Entities identified are new or not previously resolved."
+    },
+    "intent": "record_meeting_followup",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "PERSON"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "ORGANIZATION"
+          }
+        ],
+        "kind": "person",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72 last month."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "requester",
+            "type": "PERSON"
+          },
+          {
+            "name": "AI infra article",
+            "role": "requested_item",
+            "type": "DOCUMENT"
+          }
+        ],
+        "kind": "information_request",
+        "relationships": [
+          {
+            "object": "AI infra article",
+            "predicate": "requested",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam wants the AI infra article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory cards created successfully."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"record_meeting_followup\",\n  \"decision\": \"record\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"person\",\n      \"statement\": \"Sam joined Point72 last month.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"PERSON\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"ORGANIZATION\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"information_request\",\n      \"statement\": \"Sam wants the AI infra article.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"PERSON\",\n          \"role\": \"requester\"\n        },\n        {\n          \"name\": \"AI infra article\",\n          \"type\": \"DOCUMENT\",\n          \"role\": \"requested_item\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"requested\",\n          \"object\": \"AI infra article\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolve\",\n    \"entity_id\": null,\n    \"reason\": \"Entities identified are new or not previously resolved.\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"I have recorded that Sam joined Point72 last month and requested the AI infra article.\",\n  \"citations\": [\n    \"email_source_meeting_followup_001__punctuation\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory cards created successfully.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_162328",
+  "status": "ok"
+}

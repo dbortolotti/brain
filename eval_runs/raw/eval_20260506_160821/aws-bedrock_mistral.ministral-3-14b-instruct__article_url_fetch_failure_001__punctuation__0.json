@@ -1,0 +1,74 @@
+{
+  "error": null,
+  "fixture_id": "article_url_fetch_failure_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Aborted ingestion due to unresolved URL syntax error (missing ':' after 'https' and invalid domain). No durable memory created.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "abort_due_to_failure",
+    "entity_resolution": {
+      "action": "nullify",
+      "entity_id": "https -//examplecom/missing",
+      "reason": "malformed_url_due_to_punctuation_error; no valid resource exists to reference"
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https -//examplecom/missing",
+            "role": "target_resource",
+            "type": "url"
+          },
+          {
+            "name": "404",
+            "role": "error_code",
+            "type": "http_status"
+          },
+          {
+            "name": "punctuation/format_error",
+            "role": "root_cause",
+            "type": "syntax_issue"
+          }
+        ],
+        "kind": "system_event",
+        "relationships": [
+          {
+            "object": "https -//examplecom/missing",
+            "predicate": "attempted_to_fetch",
+            "subject": "memory_compiler"
+          },
+          {
+            "object": "404_network_error",
+            "predicate": "triggered",
+            "subject": "https -//examplecom/missing"
+          },
+          {
+            "object": "valid_url_resolution",
+            "predicate": "prevented",
+            "subject": "punctuation/format_error"
+          }
+        ],
+        "statement": "Failed to fetch article at malformed URL (punctuation/format error: missing ':' after 'https' and invalid domain structure). Network error: 404 (Mock)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "URL syntax invalid: 'https -//examplecom/missing' (punctuation/format error).",
+        "Network error: 404 (Mock) on malformed request.",
+        "No memory cards or citations generated."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Correct URL format (e.g., 'https://example.com/missing') and retry fetch.",
+      "Verify source reliability before reattempting.",
+      "Flag as potential data corruption if intentional."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_ingestion\",\n  \"decision\": \"abort_due_to_failure\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"system_event\",\n      \"statement\": \"Failed to fetch article at malformed URL (punctuation/format error: missing ':' after 'https' and invalid domain structure). Network error: 404 (Mock).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"https -//examplecom/missing\",\n          \"type\": \"url\",\n          \"role\": \"target_resource\"\n        },\n        {\n          \"name\": \"404\",\n          \"type\": \"http_status\",\n          \"role\": \"error_code\"\n        },\n        {\n          \"name\": \"punctuation/format_error\",\n          \"type\": \"syntax_issue\",\n          \"role\": \"root_cause\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"memory_compiler\",\n          \"predicate\": \"attempted_to_fetch\",\n          \"object\": \"https -//examplecom/missing\"\n        },\n        {\n          \"subject\": \"https -//examplecom/missing\",\n          \"predicate\": \"triggered\",\n          \"object\": \"404_network_error\"\n        },\n        {\n          \"subject\": \"punctuation/format_error\",\n          \"predicate\": \"prevented\",\n          \"object\": \"valid_url_resolution\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"nullify\",\n    \"entity_id\": \"https -//examplecom/missing\",\n    \"reason\": \"malformed_url_due_to_punctuation_error; no valid resource exists to reference\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Aborted ingestion due to unresolved URL syntax error (missing ':' after 'https' and invalid domain). No durable memory created.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Correct URL format (e.g., 'https://example.com/missing') and retry fetch.\",\n    \"Verify source reliability before reattempting.\",\n    \"Flag as potential data corruption if intentional.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"URL syntax invalid: 'https -//examplecom/missing' (punctuation/format error).\",\n      \"Network error: 404 (Mock) on malformed request.\",\n      \"No memory cards or citations generated.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

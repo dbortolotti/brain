@@ -1,0 +1,160 @@
+{
+  "error": null,
+  "fixture_id": "numeric_table_exactness_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The numeric table confirms PPO-002's superior performance over PPO-001 due to entropy tuning, with exact values preserved for reward (0.18 vs. 0.12) and Sharpe ratio (0.51 vs. 0.45). No conflicts detected.",
+    "citations": [
+      "numeric_table_exactness_001"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_durable_memory",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "PPO-001",
+      "reason": "Consolidating baseline run metadata for consistency."
+    },
+    "intent": "evaluate_numeric_table_exactness",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "subject",
+            "type": "run_id"
+          },
+          {
+            "name": "0.12",
+            "role": "reward",
+            "type": "numeric_value"
+          },
+          {
+            "name": "0.45",
+            "role": "sharpe_ratio",
+            "type": "numeric_value"
+          },
+          {
+            "name": "baseline",
+            "role": "notes",
+            "type": "label"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "0.12",
+            "predicate": "has_reward",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "0.45",
+            "predicate": "has_sharpe_ratio",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "baseline",
+            "predicate": "classified_as",
+            "subject": "PPO-001"
+          }
+        ],
+        "statement": "Run PPO-001 achieved a reward of 0.12 and a Sharpe ratio of 0.45, serving as the baseline for comparison."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "subject",
+            "type": "run_id"
+          },
+          {
+            "name": "0.18",
+            "role": "reward",
+            "type": "numeric_value"
+          },
+          {
+            "name": "0.51",
+            "role": "sharpe_ratio",
+            "type": "numeric_value"
+          },
+          {
+            "name": "entropy_tuned",
+            "role": "notes",
+            "type": "label"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "0.18",
+            "predicate": "has_reward",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "0.51",
+            "predicate": "has_sharpe_ratio",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "entropy_tuning",
+            "predicate": "modified_by",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "Run PPO-002 achieved a reward of 0.18 and a Sharpe ratio of 0.51, with entropy tuning applied."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "superior_run",
+            "type": "run_id"
+          },
+          {
+            "name": "PPO-001",
+            "role": "baseline_run",
+            "type": "run_id"
+          },
+          {
+            "name": "entropy_tuning",
+            "role": "improvement_factor",
+            "type": "method"
+          }
+        ],
+        "kind": "comparison",
+        "relationships": [
+          {
+            "object": "PPO-001",
+            "predicate": "exceeds_in_reward",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "PPO-001",
+            "predicate": "exceeds_in_sharpe_ratio",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "PPO-002",
+            "predicate": "causes_improvement_in",
+            "subject": "entropy_tuning"
+          }
+        ],
+        "statement": "PPO-002 outperformed PPO-001 in both reward (0.18 vs. 0.12) and Sharpe ratio (0.51 vs. 0.45), attributed to entropy tuning."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed durable memory for PPO-001 and PPO-002 with exact numeric values.",
+        "Preserved ambiguity in 'entropy tuning' as a method without further specification.",
+        "No superseded/deleted facts included."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"evaluate_numeric_table_exactness\",\n  \"decision\": \"commit_durable_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Run PPO-001 achieved a reward of 0.12 and a Sharpe ratio of 0.45, serving as the baseline for comparison.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"PPO-001\",\n          \"type\": \"run_id\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"0.12\",\n          \"type\": \"numeric_value\",\n          \"role\": \"reward\"\n        },\n        {\n          \"name\": \"0.45\",\n          \"type\": \"numeric_value\",\n          \"role\": \"sharpe_ratio\"\n        },\n        {\n          \"name\": \"baseline\",\n          \"type\": \"label\",\n          \"role\": \"notes\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"has_reward\",\n          \"object\": \"0.12\"\n        },\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"has_sharpe_ratio\",\n          \"object\": \"0.45\"\n        },\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"classified_as\",\n          \"object\": \"baseline\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Run PPO-002 achieved a reward of 0.18 and a Sharpe ratio of 0.51, with entropy tuning applied.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"PPO-002\",\n          \"type\": \"run_id\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"0.18\",\n          \"type\": \"numeric_value\",\n          \"role\": \"reward\"\n        },\n        {\n          \"name\": \"0.51\",\n          \"type\": \"numeric_value\",\n          \"role\": \"sharpe_ratio\"\n        },\n        {\n          \"name\": \"entropy_tuned\",\n          \"type\": \"label\",\n          \"role\": \"notes\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"has_reward\",\n          \"object\": \"0.18\"\n        },\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"has_sharpe_ratio\",\n          \"object\": \"0.51\"\n        },\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"modified_by\",\n          \"object\": \"entropy_tuning\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"comparison\",\n      \"statement\": \"PPO-002 outperformed PPO-001 in both reward (0.18 vs. 0.12) and Sharpe ratio (0.51 vs. 0.45), attributed to entropy tuning.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"PPO-002\",\n          \"type\": \"run_id\",\n          \"role\": \"superior_run\"\n        },\n        {\n          \"name\": \"PPO-001\",\n          \"type\": \"run_id\",\n          \"role\": \"baseline_run\"\n        },\n        {\n          \"name\": \"entropy_tuning\",\n          \"type\": \"method\",\n          \"role\": \"improvement_factor\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"exceeds_in_reward\",\n          \"object\": \"PPO-001\"\n        },\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"exceeds_in_sharpe_ratio\",\n          \"object\": \"PPO-001\"\n        },\n        {\n          \"subject\": \"entropy_tuning\",\n          \"predicate\": \"causes_improvement_in\",\n          \"object\": \"PPO-002\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge\",\n    \"entity_id\": \"PPO-001\",\n    \"reason\": \"Consolidating baseline run metadata for consistency.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"The numeric table confirms PPO-002's superior performance over PPO-001 due to entropy tuning, with exact values preserved for reward (0.18 vs. 0.12) and Sharpe ratio (0.51 vs. 0.45). No conflicts detected.\",\n  \"citations\": [\n    \"numeric_table_exactness_001\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Committed durable memory for PPO-001 and PPO-002 with exact numeric values.\",\n      \"Preserved ambiguity in 'entropy tuning' as a method without further specification.\",\n      \"No superseded/deleted facts included.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

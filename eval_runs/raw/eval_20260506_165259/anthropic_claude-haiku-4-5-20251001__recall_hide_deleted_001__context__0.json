@@ -1,0 +1,60 @@
+{
+  "error": null,
+  "fixture_id": "recall_hide_deleted_001__context",
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "payload": {
+    "answer": "Sam likes Bill Evans. (Note: A previous preference for Taylor Swift has been deleted and is not presented as current.)",
+    "citations": [
+      "Current memory: Sam likes Bill Evans"
+    ],
+    "conflict_classification": "deleted_fact_suppression",
+    "decision": "Return only current durable memory; exclude deleted fact",
+    "entity_resolution": {
+      "action": "retain",
+      "entity_id": "Sam",
+      "reason": "Current memory is durable and valid"
+    },
+    "intent": "Recall what music Sam likes, excluding deleted memories",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "musician"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Deleted memory excluded from response",
+        "Current memory preserved and returned",
+        "Ambiguity acknowledged regarding complete music preferences"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If Taylor Swift preference should be restored, explicitly re-add to current memory",
+      "If additional music preferences exist, add as separate memory cards"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Recall what music Sam likes, excluding deleted memories\",\n  \"decision\": \"Return only current durable memory; exclude deleted fact\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam likes Bill Evans\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"musician\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"retain\",\n    \"entity_id\": \"Sam\",\n    \"reason\": \"Current memory is durable and valid\"\n  },\n  \"conflict_classification\": \"deleted_fact_suppression\",\n  \"answer\": \"Sam likes Bill Evans. (Note: A previous preference for Taylor Swift has been deleted and is not presented as current.)\",\n  \"citations\": [\n    \"Current memory: Sam likes Bill Evans\"\n  ],\n  \"repair_options\": [\n    \"If Taylor Swift preference should be restored, explicitly re-add to current memory\",\n    \"If additional music preferences exist, add as separate memory cards\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Deleted memory excluded from response\",\n      \"Current memory preserved and returned\",\n      \"Ambiguity acknowledged regarding complete music preferences\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

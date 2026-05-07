@@ -1,0 +1,42 @@
+{
+  "error": null,
+  "fixture_id": "cascade_conflict_escalation_001__context",
+  "model": "google:gemini-2.5-pro",
+  "payload": {
+    "answer": "I have a conflict. I know that 'Sara is my daughter', but you just said 'Sara is my niece'. A person can't be both. How should I proceed?",
+    "citations": [],
+    "conflict_classification": "CONTRADICTION",
+    "decision": "CLARIFY",
+    "entity_resolution": {
+      "action": "NONE",
+      "entity_id": null,
+      "reason": "The entity 'Sara' is consistent across both statements."
+    },
+    "intent": "UPDATE",
+    "memory_cards": [
+      {
+        "kind": "EXISTING",
+        "statement": "Sara is my daughter."
+      },
+      {
+        "kind": "INPUT",
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict identified between existing memory and new input."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Keep 'Sara is my daughter'.",
+      "Accept 'Sara is my niece'.",
+      "These are two different people named Sara.",
+      "Neither is correct."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"UPDATE\",\n  \"decision\": \"CLARIFY\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"EXISTING\",\n      \"statement\": \"Sara is my daughter.\"\n    },\n    {\n      \"kind\": \"INPUT\",\n      \"statement\": \"Sara is my niece.\"\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"NONE\",\n    \"entity_id\": null,\n    \"reason\": \"The entity 'Sara' is consistent across both statements.\"\n  },\n  \"conflict_classification\": \"CONTRADICTION\",\n  \"answer\": \"I have a conflict. I know that 'Sara is my daughter', but you just said 'Sara is my niece'. A person can't be both. How should I proceed?\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Keep 'Sara is my daughter'.\",\n    \"Accept 'Sara is my niece'.\",\n    \"These are two different people named Sara.\",\n    \"Neither is correct.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Conflict identified between existing memory and new input.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_162328",
+  "status": "ok"
+}

@@ -1,0 +1,86 @@
+{
+  "error": null,
+  "fixture_id": "supersession_sam_job_001",
+  "model": "google:gemini-2.5-flash",
+  "payload": {
+    "answer": "Sam left Goldman and joined Point72.",
+    "citations": [],
+    "conflict_classification": "supersession",
+    "decision": "supersede_old_fact",
+    "entity_resolution": {
+      "action": "no_new_entity",
+      "entity_id": null,
+      "reason": "Existing entities (Sam, Goldman, Point72) are identified; no new unique entities requiring creation."
+    },
+    "intent": "update_employment_status",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "The new information about Sam's employment supersedes the previous information.",
+        "The fact 'Sam works at Goldman' is now superseded by 'Sam left Goldman and joined Point72'."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark 'Sam works at Goldman' as superseded.",
+      "Add 'Sam joined Point72' as a current fact."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"update_employment_status\",\n  \"decision\": \"supersede_old_fact\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam works at Goldman.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works at\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam left Goldman and joined Point72.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"left\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_new_entity\",\n    \"entity_id\": null,\n    \"reason\": \"Existing entities (Sam, Goldman, Point72) are identified; no new unique entities requiring creation.\"\n  },\n  \"conflict_classification\": \"supersession\",\n  \"answer\": \"Sam left Goldman and joined Point72.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Mark 'Sam works at Goldman' as superseded.\",\n    \"Add 'Sam joined Point72' as a current fact.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"The new information about Sam's employment supersedes the previous information.\",\n      \"The fact 'Sam works at Goldman' is now superseded by 'Sam left Goldman and joined Point72'.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

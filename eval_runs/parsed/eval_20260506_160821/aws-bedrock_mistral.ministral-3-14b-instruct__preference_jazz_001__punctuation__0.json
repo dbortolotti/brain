@@ -1,0 +1,60 @@
+{
+  "fixture_id": "preference_jazz_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Preference for Sonny Rollins over John Coltrane for relaxed Sunday listening has been recorded.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "update_memory",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": null,
+      "reason": "No existing preference for jazz musicians in this context."
+    },
+    "intent": "preference_expression",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sonny Rollins",
+            "role": "preferred_artist",
+            "type": "musician"
+          },
+          {
+            "name": "John Coltrane",
+            "role": "alternative_artist",
+            "type": "musician"
+          },
+          {
+            "name": "relaxed Sunday listening",
+            "role": "use_case",
+            "type": "context"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "John Coltrane",
+            "predicate": "is_preferred_over",
+            "subject": "Sonny Rollins"
+          },
+          {
+            "object": "relaxed Sunday listening",
+            "predicate": "is_associated_with",
+            "subject": "Sonny Rollins"
+          }
+        ],
+        "statement": "User prefers Sonny Rollins over John Coltrane for relaxed Sunday listening."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory updated with user's preference for Sonny Rollins in the specified context."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_160821"
+}

@@ -1,0 +1,69 @@
+{
+  "fixture_id": "duplicate_sam_bill_evans_001",
+  "model": "anthropic:claude-sonnet-4-6",
+  "payload": {
+    "answer": "The new input is an exact duplicate of the existing memory. Sam from Goldman's preference for Bill Evans is already recorded. No update or new memory card is needed.",
+    "citations": [
+      "Existing memory: Sam from Goldman mentioned that he likes Bill Evans.",
+      "New input: Sam from Goldman said he likes Bill Evans."
+    ],
+    "conflict_classification": "exact_duplicate",
+    "decision": "deduplicate",
+    "entity_resolution": {
+      "action": "match_existing",
+      "entity_id": "sam_goldman",
+      "reason": "Both the existing memory and the new input refer to the same individual \u2014 Sam from Goldman \u2014 expressing the same preference for Bill Evans. No new entity needs to be created."
+    },
+    "intent": "store_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object_of_preference",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "works_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman Sachs likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict classification: exact_duplicate",
+        "Decision: deduplicate \u2014 no new memory card written",
+        "Existing memory card retained without modification",
+        "Entity 'Sam from Goldman' resolved to existing entity ID: sam_goldman"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "No repair needed \u2014 retain the existing memory card as-is.",
+      "Optionally increment a mention-count or timestamp to log that this fact was reinforced."
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

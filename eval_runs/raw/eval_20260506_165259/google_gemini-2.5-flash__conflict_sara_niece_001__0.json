@@ -1,0 +1,85 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001",
+  "model": "google:gemini-2.5-flash",
+  "payload": {
+    "answer": "The new memory 'Sara is my niece' does not conflict with the existing memory 'Sara is Daniele's daughter and Nur's twin'. These facts can coexist, as Sara can be Daniele's daughter and Nur's twin while also being the user's niece.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "no_conflict",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Entities 'Sara', 'Daniele', 'Nur' are consistent. 'me' is a new distinct entity representing the user."
+    },
+    "intent": "conflict_classification",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "type": "person"
+          }
+        ],
+        "kind": "existing",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is daughter of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is twin of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sara",
+            "type": "person"
+          },
+          {
+            "name": "me",
+            "role": "user",
+            "type": "person"
+          }
+        ],
+        "kind": "new",
+        "relationships": [
+          {
+            "object": "me",
+            "predicate": "is niece of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No conflict detected. New memory can be integrated."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Integrate new memory"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"conflict_classification\",\n  \"decision\": \"no_conflict\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"existing\",\n      \"statement\": \"Sara is Daniele's daughter and Nur's twin.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\"\n        },\n        {\n          \"name\": \"Nur\",\n          \"type\": \"person\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is daughter of\",\n          \"object\": \"Daniele\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is twin of\",\n          \"object\": \"Nur\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"new\",\n      \"statement\": \"Sara is my niece.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\"\n        },\n        {\n          \"name\": \"me\",\n          \"type\": \"person\",\n          \"role\": \"user\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is niece of\",\n          \"object\": \"me\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"Entities 'Sara', 'Daniele', 'Nur' are consistent. 'me' is a new distinct entity representing the user.\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"The new memory 'Sara is my niece' does not conflict with the existing memory 'Sara is Daniele's daughter and Nur's twin'. These facts can coexist, as Sara can be Daniele's daughter and Nur's twin while also being the user's niece.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Integrate new memory\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"No conflict detected. New memory can be integrated.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

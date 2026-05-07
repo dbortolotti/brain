@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "email_source_meeting_followup_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Committed a low-to-medium confidence fact that Sam joined Point72 last month. Did not commit the article request because it is likely transient.",
+    "citations": [
+      "From: sam@example.com",
+      "Subject: Follow up. Great seeing you.",
+      "Yes, I joined Point72 last month.",
+      "Please send the AI infra article."
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_only_durable_factual_memory_about_sam_employment_change; do_not_commit_request_for_article",
+    "entity_resolution": {
+      "action": "no_change",
+      "entity_id": null,
+      "reason": "Insufficient context to map Sam to an existing durable entity with confidence."
+    },
+    "intent": "extract_and_assess_memory_candidates_from_email",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "sender/contact",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "new employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said he joined Point72 last month."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted one durable memory candidate.",
+        "Excluded a transient request from durable memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If Sam is already known in the store, link this update to the existing Sam entity.",
+      "If the user later confirms the identity of Sam, increase confidence on the employment update."
+    ]
+  },
+  "raw_text": "{\"intent\":\"extract_and_assess_memory_candidates_from_email\",\"decision\":\"commit_only_durable_factual_memory_about_sam_employment_change; do_not_commit_request_for_article\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam said he joined Point72 last month.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"sender/contact\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"new employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"no_change\",\"entity_id\":null,\"reason\":\"Insufficient context to map Sam to an existing durable entity with confidence.\"},\"conflict_classification\":\"none\",\"answer\":\"Committed a low-to-medium confidence fact that Sam joined Point72 last month. Did not commit the article request because it is likely transient.\",\"citations\":[\"From: sam@example.com\",\"Subject: Follow up. Great seeing you.\",\"Yes, I joined Point72 last month.\",\"Please send the AI infra article.\"],\"repair_options\":[\"If Sam is already known in the store, link this update to the existing Sam entity.\",\"If the user later confirms the identity of Sam, increase confidence on the employment update.\"],\"receipt\":{\"success\":true,\"details\":[\"Extracted one durable memory candidate.\",\"Excluded a transient request from durable memory.\"]}}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

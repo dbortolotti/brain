@@ -1,0 +1,108 @@
+{
+  "fixture_id": "large_table_500_rows_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Store durable memory for the table as schema/metadata (columns id/name/value), plus aggregates or a small sample; keep the full 500-row dataset out of durable memory unless the user requires long-term row-level retrieval, in which case reference an external attachment/cache by ID and selectively promote needed rows later.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Do not store the full repeated 500-row CSV verbatim as durable memory. Store durable metadata (schema/column meanings), a small representative sample or aggregated statistics, and keep the full dataset as ephemeral/cache or external attachment referenced by an ID, unless the user explicitly needs row-level retrieval long-term.",
+    "entity_resolution": {
+      "action": "no_change",
+      "entity_id": null,
+      "reason": "No pre-existing entities were referenced; only generic policy and storage guidance is being captured."
+    },
+    "intent": "Decide how a large CSV table (500 rows) should be stored in Brain\u2019s personal memory system.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "large CSV table",
+            "role": "input",
+            "type": "data"
+          },
+          {
+            "name": "row-level retrieval",
+            "role": "requirement",
+            "type": "capability"
+          }
+        ],
+        "kind": "policy",
+        "relationships": [
+          {
+            "object": "schema+metadata+aggregates",
+            "predicate": "should_be_stored_as",
+            "subject": "large CSV table"
+          }
+        ],
+        "statement": "For large tabular inputs with many repeated rows, store durable memory as schema/metadata plus aggregates or a small representative sample, not the entire dataset verbatim."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "full dataset",
+            "role": "source",
+            "type": "data"
+          },
+          {
+            "name": "external attachment or cache",
+            "role": "non-durable location",
+            "type": "storage"
+          }
+        ],
+        "kind": "storage_strategy",
+        "relationships": [
+          {
+            "object": "external attachment or cache",
+            "predicate": "is_persisted_in",
+            "subject": "full dataset"
+          }
+        ],
+        "statement": "When exact row-level values may be needed later, store the full dataset outside durable memory (ephemeral/cache or external attachment) and reference it by an ID; then optionally materialize only the specific rows later as separate durable memory items."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "id",
+            "role": "key",
+            "type": "column"
+          },
+          {
+            "name": "name",
+            "role": "attribute",
+            "type": "column"
+          },
+          {
+            "name": "value",
+            "role": "attribute",
+            "type": "column"
+          }
+        ],
+        "kind": "data_model",
+        "relationships": [
+          {
+            "object": "queryable entities/attributes",
+            "predicate": "map_to",
+            "subject": "columns"
+          }
+        ],
+        "statement": "Use normalized entity/value memory: persist column meanings (e.g., id, name, value) and treat each distinct (name, value) pattern or (id \u2192 name/value) mapping as separate entities only if it supports future queries."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Classified as large repeated tabular input where verbatim durable storage is unnecessary.",
+        "Provided a storage strategy balancing durability with query needs."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If the user later confirms row-level lookup is needed, promote only the relevant subset of rows (or distinct key mappings) into durable memory.",
+      "If repeated patterns are meaningful, store aggregated counts by (name,value) or by other stable keys instead of storing all rows.",
+      "If provenance matters, attach the original CSV as an external artifact and store only a reference plus derived metadata."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

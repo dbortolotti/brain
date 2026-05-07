@@ -1,0 +1,74 @@
+{
+  "error": null,
+  "fixture_id": "pdf_ocr_noisy_source_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Committed as durable memory with medium confidence: Brain DB remains the source of truth, and Cognee should be a rebuildable projection.",
+    "citations": [
+      "OCR noisy source: 'Brain DB remalns source of trvth Cognee shou1d be rebuildable projection'"
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "The source mentions Brain DB and Cognee, but no existing entity identity is provided in the fixture. The text is OCR-noisy, so keep the resolution local and tentative."
+    },
+    "intent": "Extract durable memory from noisy OCR text about system architecture.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source of truth",
+            "type": "system"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "is",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB remains the source of truth."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "projection",
+            "type": "system"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "rebuildable projection",
+            "predicate": "should be",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee should be a rebuildable projection."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted two architecture statements from OCR-noisy text.",
+        "Preserved ambiguity via medium confidence.",
+        "No superseded facts introduced."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If later evidence shows a different architecture term than Cognee, update or retract the projection statement.",
+      "If a stricter transcription becomes available, refine wording and confidence."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Extract durable memory from noisy OCR text about system architecture.\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Brain DB remains the source of truth.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Brain DB\",\"type\":\"system\",\"role\":\"source of truth\"}],\"relationships\":[{\"subject\":\"Brain DB\",\"predicate\":\"is\",\"object\":\"source of truth\"}]},{\"kind\":\"fact\",\"statement\":\"Cognee should be a rebuildable projection.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Cognee\",\"type\":\"system\",\"role\":\"projection\"}],\"relationships\":[{\"subject\":\"Cognee\",\"predicate\":\"should be\",\"object\":\"rebuildable projection\"}]}],\"entity_resolution\":{\"action\":\"create\",\"entity_id\":null,\"reason\":\"The source mentions Brain DB and Cognee, but no existing entity identity is provided in the fixture. The text is OCR-noisy, so keep the resolution local and tentative.\"},\"conflict_classification\":\"no_conflict\",\"answer\":\"Committed as durable memory with medium confidence: Brain DB remains the source of truth, and Cognee should be a rebuildable projection.\",\"citations\":[\"OCR noisy source: 'Brain DB remalns source of trvth Cognee shou1d be rebuildable projection'\"],\"repair_options\":[\"If later evidence shows a different architecture term than Cognee, update or retract the projection statement.\",\"If a stricter transcription becomes available, refine wording and confidence.\"],\"receipt\":{\"success\":true,\"details\":[\"Extracted two architecture statements from OCR-noisy text.\",\"Preserved ambiguity via medium confidence.\",\"No superseded facts introduced.\"]}}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

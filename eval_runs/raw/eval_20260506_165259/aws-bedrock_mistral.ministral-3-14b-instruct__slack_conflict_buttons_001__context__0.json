@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "slack_conflict_buttons_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam\u2019s current employer is **Point72** (original 'Goldman' memory is superseded; no explicit join date \u2192 ambiguity retained).",
+    "citations": [
+      "User input: 'Sam left Goldman and joined Point72'",
+      "Original: 'Sam works at Goldman' (now superseded)"
+    ],
+    "conflict_classification": "direct_supersession_with_ambiguity_preservation",
+    "decision": "supersede_existing_with_ambiguity",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "Sam",
+      "reason": "Disambiguation of employment status: Goldman \u2192 Point72 (no conflicting timestamps; original 'works at Goldman' is superseded)"
+    },
+    "intent": "memory_update_conflict_resolution",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Point72 (as of [unspecified date; ambiguity preserved: original context implied 'left Goldman' without explicit join date])"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded memory: 'Sam works at Goldman' \u2192 archived (not deleted; traceable)",
+        "New memory committed with ambiguity markers",
+        "Entity resolution: Sam \u2192 merged with Point72 employment"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add explicit join date to Point72 (if known)",
+      "Flag for follow-up: 'Verify Sam\u2019s Point72 start date'",
+      "No action: Ambiguity preserved as per instructions"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_update_conflict_resolution\",\n  \"decision\": \"supersede_existing_with_ambiguity\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam works at Point72 (as of [unspecified date; ambiguity preserved: original context implied 'left Goldman' without explicit join date])\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge\",\n    \"entity_id\": \"Sam\",\n    \"reason\": \"Disambiguation of employment status: Goldman \u2192 Point72 (no conflicting timestamps; original 'works at Goldman' is superseded)\"\n  },\n  \"conflict_classification\": \"direct_supersession_with_ambiguity_preservation\",\n  \"answer\": \"Sam\u2019s current employer is **Point72** (original 'Goldman' memory is superseded; no explicit join date \u2192 ambiguity retained).\",\n  \"citations\": [\n    \"User input: 'Sam left Goldman and joined Point72'\",\n    \"Original: 'Sam works at Goldman' (now superseded)\"\n  ],\n  \"repair_options\": [\n    \"Add explicit join date to Point72 (if known)\",\n    \"Flag for follow-up: 'Verify Sam\u2019s Point72 start date'\",\n    \"No action: Ambiguity preserved as per instructions\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Superseded memory: 'Sam works at Goldman' \u2192 archived (not deleted; traceable)\",\n      \"New memory committed with ambiguity markers\",\n      \"Entity resolution: Sam \u2192 merged with Point72 employment\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

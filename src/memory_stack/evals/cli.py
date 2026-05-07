@@ -47,6 +47,8 @@ def models(
     repeat_runs: int = typer.Option(1, "--repeat-runs", min=1),
     bootstrap_samples: int = typer.Option(1000, "--bootstrap-samples", min=0),
     max_workers: int = typer.Option(1, "--max-workers", min=1),
+    retry_attempts: int = typer.Option(2, "--retry-attempts", min=0),
+    retry_backoff_seconds: float = typer.Option(1.0, "--retry-backoff-seconds", min=0.0),
     output: Path = typer.Option(..., "--output"),
     report_md: Path | None = typer.Option(None, "--report-md"),
     raw_output_dir: Path | None = typer.Option(None, "--raw-output-dir"),
@@ -65,6 +67,8 @@ def models(
         report_md_path=report_md,
         raw_output_dir=raw_output_dir,
         max_workers=max_workers,
+        retry_attempts=retry_attempts,
+        retry_backoff_seconds=retry_backoff_seconds,
     )
     result = run_model_evals(load_settings(), config, progress_callback=progress_printer())
     console.print(f"[green]wrote[/green] {output}")

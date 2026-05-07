@@ -1,0 +1,67 @@
+{
+  "error": null,
+  "fixture_id": "recall_profile_sara_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Sara is one of Daniele's twin daughters (twin sister of Nur).",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit_and_answer",
+    "entity_resolution": {
+      "action": "link_or_reuse",
+      "entity_id": "Sara",
+      "reason": "Query asks about Sara; available fact directly references Sara."
+    },
+    "intent": "recall_profile",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "twin daughter",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "twin daughter",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Daniele",
+            "predicate": "is_daughter_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Nur and Sara are Daniele's twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Used provided fact to answer 'Tell me about Sara.'",
+        "No conflicts detected."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If the user meant a different Sara, ask for distinguishing details (e.g., surname, location, or age).",
+      "If additional biographical details are needed, request more facts or context."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"recall_profile\",\n  \"decision\": \"commit_and_answer\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Nur and Sara are Daniele's twin daughters.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"twin daughter\"\n        },\n        {\n          \"name\": \"Nur\",\n          \"type\": \"person\",\n          \"role\": \"twin daughter\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"parent\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is_twin_of\",\n          \"object\": \"Nur\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is_daughter_of\",\n          \"object\": \"Daniele\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"link_or_reuse\",\n    \"entity_id\": \"Sara\",\n    \"reason\": \"Query asks about Sara; available fact directly references Sara.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Sara is one of Daniele's twin daughters (twin sister of Nur).\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If the user meant a different Sara, ask for distinguishing details (e.g., surname, location, or age).\",\n    \"If additional biographical details are needed, request more facts or context.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Used provided fact to answer 'Tell me about Sara.'\",\n      \"No conflicts detected.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

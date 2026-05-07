@@ -1,0 +1,84 @@
+{
+  "fixture_id": "conflict_employment_transition__punctuation",
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "payload": {
+    "answer": "The new fact (Sam joined Point72) supersedes the existing fact (Sam works at Goldman). Sam's current employment is Point72; Goldman employment is archived as history.",
+    "citations": [
+      "Existing current fact: Sam works at Goldman",
+      "New fact: Sam left Goldman and joined Point72"
+    ],
+    "conflict_classification": "employment_transition",
+    "decision": "Supersede existing fact with new fact; preserve temporal context",
+    "entity_resolution": {
+      "action": "update",
+      "entity_id": "Sam",
+      "reason": "Employment status changed; new fact supersedes outdated employment record"
+    },
+    "intent": "Resolve employment status conflict for Sam",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "current_employment",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "currently_employed_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam currently works at Point72"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "former_employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_history",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "previously_employed_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam previously worked at Goldman"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict resolved: employment transition detected",
+        "Current employment updated to Point72",
+        "Previous employment archived to Goldman",
+        "No ambiguity preserved; transition is definitive"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark Goldman employment as ended with transition date",
+      "Record Point72 employment as current with start date",
+      "Preserve employment timeline for historical accuracy"
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

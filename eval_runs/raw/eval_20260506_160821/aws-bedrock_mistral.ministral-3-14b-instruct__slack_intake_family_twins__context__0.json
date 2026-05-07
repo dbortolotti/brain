@@ -1,0 +1,60 @@
+{
+  "error": null,
+  "fixture_id": "slack_intake_family_twins__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "intent": "contextual_understanding",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "twin_daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "twin_daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "is_twin_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "user",
+            "predicate": "has_relationship_with",
+            "role": "parent",
+            "subject": "Nur"
+          },
+          {
+            "object": "user",
+            "predicate": "has_relationship_with",
+            "role": "parent",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Nur and Sara are the user's twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory committed for Nur and Sara as twin daughters with parent-child relationships to the user."
+      ],
+      "success": true
+    }
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"contextual_understanding\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"durable_memory\",\n      \"statement\": \"Nur and Sara are the user's twin daughters.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Nur\",\n          \"type\": \"person\",\n          \"role\": \"twin_daughter\"\n        },\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"twin_daughter\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Nur\",\n          \"predicate\": \"is_twin_of\",\n          \"object\": \"Sara\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is_twin_of\",\n          \"object\": \"Nur\"\n        },\n        {\n          \"subject\": \"Nur\",\n          \"predicate\": \"has_relationship_with\",\n          \"object\": \"user\",\n          \"role\": \"parent\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"has_relationship_with\",\n          \"object\": \"user\",\n          \"role\": \"parent\"\n        }\n      ]\n    }\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Durable memory committed for Nur and Sara as twin daughters with parent-child relationships to the user.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

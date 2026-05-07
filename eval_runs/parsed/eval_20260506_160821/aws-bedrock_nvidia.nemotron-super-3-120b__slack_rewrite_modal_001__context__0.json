@@ -1,0 +1,52 @@
+{
+  "fixture_id": "slack_rewrite_modal_001__context",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Memory rewritten: He prefers the other one.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "proceed_with_rewrite",
+    "entity_resolution": {
+      "action": "no_resolution_needed",
+      "entity_id": null,
+      "reason": "Entities are contextually clear and do not require disambiguation or external resolution."
+    },
+    "intent": "rewrite_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "He",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "the other one",
+            "role": "preference_target",
+            "type": "object"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "He"
+          }
+        ],
+        "statement": "He prefers the other one."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card successfully created and stored.",
+        "No prior conflicting memory found for this preference.",
+        "Rewrite operation completed as requested."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_160821"
+}

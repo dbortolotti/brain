@@ -1,0 +1,116 @@
+{
+  "fixture_id": "numeric_table_exactness_001__punctuation",
+  "model": "google:gemini-2.5-flash-lite",
+  "payload": {
+    "answer": "Extracted data for PPO-001 and PPO-002 runs, including their rewards, Sharpe ratios, and notes.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "extract all data",
+    "entity_resolution": {
+      "action": "none",
+      "reason": "All entities were directly extracted and typed."
+    },
+    "intent": "extract tabular data",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "run",
+            "type": "run_id"
+          },
+          {
+            "name": "012",
+            "role": "reward",
+            "type": "reward_value"
+          },
+          {
+            "name": "045",
+            "role": "sharpe",
+            "type": "sharpe_ratio"
+          },
+          {
+            "name": "baseline",
+            "role": "notes",
+            "type": "configuration"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "012",
+            "predicate": "has reward",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "045",
+            "predicate": "has sharpe ratio",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "baseline",
+            "predicate": "is configuration",
+            "subject": "PPO-001"
+          }
+        ],
+        "statement": "The PPO-001 run achieved a reward of 012 and a Sharpe ratio of 045, serving as the baseline."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "run",
+            "type": "run_id"
+          },
+          {
+            "name": "018",
+            "role": "reward",
+            "type": "reward_value"
+          },
+          {
+            "name": "051",
+            "role": "sharpe",
+            "type": "sharpe_ratio"
+          },
+          {
+            "name": "entropy tuned",
+            "role": "notes",
+            "type": "configuration"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "018",
+            "predicate": "has reward",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "051",
+            "predicate": "has sharpe ratio",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "entropy tuned",
+            "predicate": "is configuration",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "The PPO-002 run achieved a reward of 018 and a Sharpe ratio of 051, with entropy tuning."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Successfully extracted tabular data.",
+        "Created memory cards for each row.",
+        "Identified and typed entities within the data.",
+        "Established relationships between entities."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_162328"
+}

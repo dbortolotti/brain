@@ -1,0 +1,60 @@
+{
+  "fixture_id": "preference_jazz_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Got it\u2014I\u2019ll remember that you prefer Sonny Rollins over John Coltrane for relaxed Sunday listening.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_preference",
+    "entity_resolution": {
+      "action": "create_memory_entities",
+      "entity_id": null,
+      "reason": "The input expresses a direct listening preference between two artists within a specific context."
+    },
+    "intent": "capture_music_preference",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sonny Rollins",
+            "role": "preferred_artist",
+            "type": "person"
+          },
+          {
+            "name": "John Coltrane",
+            "role": "comparison_artist",
+            "type": "person"
+          },
+          {
+            "name": "relaxed Sunday listening",
+            "role": "listening_context",
+            "type": "context"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Sonny Rollins",
+            "predicate": "preference",
+            "subject": "relaxed Sunday listening"
+          },
+          {
+            "object": "John Coltrane",
+            "predicate": "preferred_over",
+            "subject": "Sonny Rollins"
+          }
+        ],
+        "statement": "I prefer Sonny Rollins over John Coltrane for relaxed Sunday listening."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored a durable preference about artist choice for a specific listening context."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_160821"
+}

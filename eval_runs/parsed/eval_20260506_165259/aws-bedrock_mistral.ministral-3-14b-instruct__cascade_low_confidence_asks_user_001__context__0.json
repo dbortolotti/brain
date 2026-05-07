@@ -1,0 +1,60 @@
+{
+  "fixture_id": "cascade_low_confidence_asks_user_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The note about Sam's mention of 'cascade' cannot be durably committed due to ambiguity and low confidence. Please clarify: 1) What did Sam refer to by 'cascade'? 2) Was this a feature, workflow, or other context? Resolution required before memory update.",
+    "citations": [],
+    "conflict_classification": "ambiguous_reference",
+    "decision": "escalate_to_user_for_resolution",
+    "entity_resolution": {
+      "action": "user_escalation_required",
+      "entity_id": null,
+      "reason": "Ambiguity in 'cascade' reference (could be feature, workflow, or other) and low model confidence (disabled cloud escalation). User clarification needed to commit durable memory."
+    },
+    "intent": "clarify_ambiguous_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "user",
+            "type": "person"
+          },
+          {
+            "name": "cascade",
+            "role": "ambiguous_reference",
+            "type": "feature"
+          }
+        ],
+        "kind": "note",
+        "relationships": [
+          {
+            "object": "potential issue with 'cascade'",
+            "predicate": "mentioned",
+            "subject": "Sam"
+          },
+          {
+            "object": "low confidence",
+            "predicate": "has",
+            "subject": "potential issue with 'cascade'"
+          }
+        ],
+        "statement": "Sam mentioned a potential issue with the 'cascade' feature during the last sync, but the context was unclear."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory update blocked due to low confidence and ambiguity in 'cascade' reference.",
+        "User escalation triggered for resolution."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Clarify 'cascade' reference with Sam (e.g., 'Did you mean the cascade feature in X?')",
+      "Request additional context (e.g., 'What was the issue with cascade?')",
+      "Delete the ambiguous note if irrelevant"
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

@@ -1,0 +1,98 @@
+{
+  "fixture_id": "project_state_brain_slack_agent_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "conflict_classification": "guardrail_compliance",
+    "decision": "slack_primary_telegram_secondary",
+    "entity_resolution": {
+      "action": "enforce_guardrail",
+      "entity_id": "project_state_brain_slack_agent_001__context",
+      "reason": "Alignment with primary ingestion interface mandate and ambiguity preservation policy."
+    },
+    "intent": "guardrail_memory_ingestion_priority",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "primary_ingestion_interface",
+            "type": "platform"
+          },
+          {
+            "name": "Telegram",
+            "role": "secondary_ingestion_interface",
+            "type": "platform"
+          },
+          {
+            "name": "durable_memory",
+            "role": "commitment_requirement",
+            "type": "concept"
+          }
+        ],
+        "kind": "system_guardrail",
+        "relationships": [
+          {
+            "object": "primary_ingestion_interface",
+            "predicate": "HAS_ROLE",
+            "subject": "Slack"
+          },
+          {
+            "object": "secondary_ingestion_interface",
+            "predicate": "HAS_ROLE",
+            "subject": "Telegram"
+          },
+          {
+            "object": "alternative_channels",
+            "predicate": "REQUIRES_APPROVAL_FOR",
+            "subject": "durable_memory"
+          }
+        ],
+        "statement": "Slack is the primary, guardrailed memory ingestion interface for Brain. All durable memory commits must originate from Slack interactions unless explicitly approved for alternative channels."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "ambiguity",
+            "role": "preservation_requirement",
+            "type": "concept"
+          },
+          {
+            "name": "Slack",
+            "role": "consensus_interface",
+            "type": "platform"
+          },
+          {
+            "name": "superseded_facts",
+            "role": "exclusion_criterion",
+            "type": "concept"
+          }
+        ],
+        "kind": "system_constraint",
+        "relationships": [
+          {
+            "object": "unless_resolved_via_Slack",
+            "predicate": "MUST_BE_PRESERVED",
+            "subject": "ambiguity"
+          },
+          {
+            "object": "current",
+            "predicate": "MUST_NOT_BE_PRESENTED_AS",
+            "subject": "superseded_facts"
+          }
+        ],
+        "statement": "Ambiguity in memory ingestion must be preserved unless resolved via explicit Slack-based consensus. Superseded or deleted facts must never be presented as current."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Slack confirmed as primary ingestion interface for durable memory.",
+        "Telegram ingestion deferred pending guardrail expansion.",
+        "Ambiguity preservation and superseded fact exclusion enforced."
+      ],
+      "success": true
+    }
+  },
+  "run_id": "eval_20260506_165259"
+}

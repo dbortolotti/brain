@@ -1,0 +1,111 @@
+{
+  "error": null,
+  "fixture_id": "project_state_brain_slack_agent_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Slack is the sole guardrailed memory ingestion interface for Brain. Telegram ingestion is deferred unless escalation conditions are met. No superseded/deleted facts are presented as current.",
+    "citations": [
+      "Project state fixture: project_state_brain_slack_agent_001__context",
+      "Memory compiler role: guardrail_memory_ingestion_protocol"
+    ],
+    "conflict_classification": "protocol_enforcement",
+    "decision": "enforce_slack_primary_ingestion",
+    "entity_resolution": {
+      "action": "preserve_ambiguity",
+      "entity_id": null,
+      "reason": "Deferred channels (e.g., Telegram) lack current operational constraints; ambiguity is retained to avoid premature commitment."
+    },
+    "intent": "guardrail_memory_ingestion_protocol",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "primary_ingestion_channel",
+            "type": "platform"
+          },
+          {
+            "name": "Telegram",
+            "role": "deferred_channel",
+            "type": "platform"
+          },
+          {
+            "name": "Brain",
+            "role": "memory_compiler",
+            "type": "system"
+          }
+        ],
+        "kind": "protocol_rule",
+        "relationships": [
+          {
+            "object": "Slack_primary_ingestion",
+            "predicate": "enforces",
+            "subject": "Brain"
+          },
+          {
+            "object": "guardrail_validation",
+            "predicate": "requires",
+            "subject": "Slack_primary_ingestion"
+          },
+          {
+            "object": "future_phase",
+            "predicate": "deferred_until",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "Slack must remain the primary guardrailed memory ingestion interface for Brain. All other channels (e.g., Telegram) are deferred to future phases unless explicitly approved via escalation."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Telegram",
+            "role": "conditional_channel",
+            "type": "platform"
+          },
+          {
+            "name": "Slack",
+            "role": "capacity_constraint",
+            "type": "platform"
+          },
+          {
+            "name": "project_lead",
+            "role": "approval_authority",
+            "type": "role"
+          }
+        ],
+        "kind": "escalation_condition",
+        "relationships": [
+          {
+            "object": "Slack_saturation_evidence",
+            "predicate": "requires",
+            "subject": "Telegram_ingestion"
+          },
+          {
+            "object": "project_lead_approval",
+            "predicate": "requires",
+            "subject": "Telegram_ingestion"
+          }
+        ],
+        "statement": "Telegram ingestion may proceed only if: (1) Slack capacity is saturated, (2) explicit approval from project lead is obtained, or (3) a formal phase-gate review is completed."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory committed: Slack as primary ingestion channel.",
+        "Ambiguity preserved: Telegram status remains deferred with escalation paths.",
+        "No superseded facts introduced."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Escalate to project lead for Telegram ingestion approval",
+      "Document Slack capacity metrics to justify potential Telegram activation",
+      "Schedule phase-gate review for deferred channels"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"guardrail_memory_ingestion_protocol\",\n  \"decision\": \"enforce_slack_primary_ingestion\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"protocol_rule\",\n      \"statement\": \"Slack must remain the primary guardrailed memory ingestion interface for Brain. All other channels (e.g., Telegram) are deferred to future phases unless explicitly approved via escalation.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Slack\",\n          \"type\": \"platform\",\n          \"role\": \"primary_ingestion_channel\"\n        },\n        {\n          \"name\": \"Telegram\",\n          \"type\": \"platform\",\n          \"role\": \"deferred_channel\"\n        },\n        {\n          \"name\": \"Brain\",\n          \"type\": \"system\",\n          \"role\": \"memory_compiler\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain\",\n          \"predicate\": \"enforces\",\n          \"object\": \"Slack_primary_ingestion\"\n        },\n        {\n          \"subject\": \"Slack_primary_ingestion\",\n          \"predicate\": \"requires\",\n          \"object\": \"guardrail_validation\"\n        },\n        {\n          \"subject\": \"Telegram\",\n          \"predicate\": \"deferred_until\",\n          \"object\": \"future_phase\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"escalation_condition\",\n      \"statement\": \"Telegram ingestion may proceed only if: (1) Slack capacity is saturated, (2) explicit approval from project lead is obtained, or (3) a formal phase-gate review is completed.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Telegram\",\n          \"type\": \"platform\",\n          \"role\": \"conditional_channel\"\n        },\n        {\n          \"name\": \"Slack\",\n          \"type\": \"platform\",\n          \"role\": \"capacity_constraint\"\n        },\n        {\n          \"name\": \"project_lead\",\n          \"type\": \"role\",\n          \"role\": \"approval_authority\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Telegram_ingestion\",\n          \"predicate\": \"requires\",\n          \"object\": \"Slack_saturation_evidence\"\n        },\n        {\n          \"subject\": \"Telegram_ingestion\",\n          \"predicate\": \"requires\",\n          \"object\": \"project_lead_approval\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"preserve_ambiguity\",\n    \"entity_id\": null,\n    \"reason\": \"Deferred channels (e.g., Telegram) lack current operational constraints; ambiguity is retained to avoid premature commitment.\"\n  },\n  \"conflict_classification\": \"protocol_enforcement\",\n  \"answer\": \"Slack is the sole guardrailed memory ingestion interface for Brain. Telegram ingestion is deferred unless escalation conditions are met. No superseded/deleted facts are presented as current.\",\n  \"citations\": [\n    \"Project state fixture: project_state_brain_slack_agent_001__context\",\n    \"Memory compiler role: guardrail_memory_ingestion_protocol\"\n  ],\n  \"repair_options\": [\n    \"Escalate to project lead for Telegram ingestion approval\",\n    \"Document Slack capacity metrics to justify potential Telegram activation\",\n    \"Schedule phase-gate review for deferred channels\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Durable memory committed: Slack as primary ingestion channel.\",\n      \"Ambiguity preserved: Telegram status remains deferred with escalation paths.\",\n      \"No superseded facts introduced.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

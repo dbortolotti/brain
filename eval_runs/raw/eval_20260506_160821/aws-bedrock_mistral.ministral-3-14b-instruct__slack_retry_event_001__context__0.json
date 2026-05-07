@@ -1,0 +1,65 @@
+{
+  "error": null,
+  "fixture_id": "slack_retry_event_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Event already processed. No action taken to avoid redundancy.",
+    "citations": [
+      "Slack event ID: [REDACTED] (duplicate of prior ingestion)"
+    ],
+    "conflict_classification": "duplicate_event",
+    "decision": "duplicate_event_detection",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "slack_retry_event_001__context",
+      "reason": "Duplicate event ID detected; existing memory card preserved. No new durable memory committed."
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object_of_affection",
+            "type": "person"
+          }
+        ],
+        "kind": "event",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman Sachs",
+            "predicate": "is_affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman Sachs expressed a liking for Bill Evans (jazz pianist/composer)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Duplicate event ID detected. Memory ingestion aborted to preserve consistency.",
+        "Refer to existing memory card for context."
+      ],
+      "success": false
+    }
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_ingestion\",\n  \"decision\": \"duplicate_event_detection\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"event\",\n      \"statement\": \"Sam from Goldman Sachs expressed a liking for Bill Evans (jazz pianist/composer).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"object_of_affection\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"is_affiliated_with\",\n          \"object\": \"Goldman Sachs\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge\",\n    \"entity_id\": \"slack_retry_event_001__context\",\n    \"reason\": \"Duplicate event ID detected; existing memory card preserved. No new durable memory committed.\"\n  },\n  \"conflict_classification\": \"duplicate_event\",\n  \"answer\": \"Event already processed. No action taken to avoid redundancy.\",\n  \"citations\": [\n    \"Slack event ID: [REDACTED] (duplicate of prior ingestion)\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Duplicate event ID detected. Memory ingestion aborted to preserve consistency.\",\n      \"Refer to existing memory card for context.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

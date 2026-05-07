@@ -1,0 +1,52 @@
+{
+  "error": null,
+  "fixture_id": "article_url_fetch_failure_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Saved a low-confidence event memory indicating the article fetch failed (404 and/or network error) for a best-effort canonicalized URL.",
+    "citations": [],
+    "conflict_classification": "No explicit conflict; fetch failure details are ambiguous (404 vs network error).",
+    "decision": "store_partial",
+    "entity_resolution": {
+      "action": "link_to_canonical_url",
+      "entity_id": null,
+      "reason": "Input URL appeared malformed; canonicalized best-effort to https://example.com/missing before recording the failure."
+    },
+    "intent": "Record an attempted article fetch failure for memory architecture context.",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "source",
+            "type": "url"
+          }
+        ],
+        "kind": "event",
+        "relationships": [
+          {
+            "object": "https://example.com/missing",
+            "predicate": "targeted",
+            "subject": "fetch attempt"
+          }
+        ],
+        "statement": "An attempt to fetch the article at https://example.com/missing (retrieved from input as malformed \"-//examplecom/missing\") failed with a 404 and/or network error."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory stored as a low-confidence event due to ambiguous URL formatting and mixed failure signals (404/network error)."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retry fetching the corrected URL (confirm exact path and punctuation).",
+      "If the URL is unknown, store only the failure pattern without the specific URL.",
+      "Request additional metadata (HTTP status, timestamp, and whether the failure was transient)."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Record an attempted article fetch failure for memory architecture context.\",\n  \"decision\": \"store_partial\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"event\",\n      \"statement\": \"An attempt to fetch the article at https://example.com/missing (retrieved from input as malformed \\\"-//examplecom/missing\\\") failed with a 404 and/or network error.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"https://example.com/missing\",\n          \"type\": \"url\",\n          \"role\": \"source\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"fetch attempt\",\n          \"predicate\": \"targeted\",\n          \"object\": \"https://example.com/missing\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"link_to_canonical_url\",\n    \"entity_id\": null,\n    \"reason\": \"Input URL appeared malformed; canonicalized best-effort to https://example.com/missing before recording the failure.\"\n  },\n  \"conflict_classification\": \"No explicit conflict; fetch failure details are ambiguous (404 vs network error).\",\n  \"answer\": \"Saved a low-confidence event memory indicating the article fetch failed (404 and/or network error) for a best-effort canonicalized URL.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Retry fetching the corrected URL (confirm exact path and punctuation).\",\n    \"If the URL is unknown, store only the failure pattern without the specific URL.\",\n    \"Request additional metadata (HTTP status, timestamp, and whether the failure was transient).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Durable memory stored as a low-confidence event due to ambiguous URL formatting and mixed failure signals (404/network error).\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

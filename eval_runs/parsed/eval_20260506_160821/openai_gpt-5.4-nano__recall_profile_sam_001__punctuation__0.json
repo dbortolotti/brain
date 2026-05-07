@@ -1,0 +1,107 @@
+{
+  "fixture_id": "recall_profile_sam_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Sam is associated with Goldman. Sam likes Bill Evans and is interested in AI infrastructure.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "retrieve_relevant_facts",
+    "entity_resolution": {
+      "action": "use_existing_implicit_entity",
+      "entity_id": null,
+      "reason": "No explicit durable entity_id provided; using the name 'Sam' with association 'Goldman' as stated in the input."
+    },
+    "intent": "recall_profile",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_target",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "association",
+            "type": "organization"
+          }
+        ],
+        "kind": "profile_preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (associated with Goldman) likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "association",
+            "type": "organization"
+          }
+        ],
+        "kind": "profile_association",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is associated with Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "interest",
+            "type": "topic"
+          }
+        ],
+        "kind": "interest_area",
+        "relationships": [
+          {
+            "object": "AI infrastructure",
+            "predicate": "interested_in",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is interested in AI infrastructure."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Converted provided facts into structured memory cards for recall.",
+        "Avoided adding or assuming any details beyond the given facts."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you have a unique identifier for Sam (e.g., full name or internal ID), provide it to improve entity matching.",
+      "Confirm whether 'Goldman' refers to Goldman Sachs or another Goldman-branded entity."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

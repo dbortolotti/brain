@@ -1,0 +1,58 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_sam_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Clarification needed: Which Sam (Goldman Sachs or Point72) mentioned liking Bill Evans?",
+    "citations": [],
+    "conflict_classification": "entity_ambiguity",
+    "decision": "ambiguous_entity_resolution_required",
+    "entity_resolution": {
+      "action": "pending",
+      "entity_id": null,
+      "reason": "Ambiguity between Sam from Goldman Sachs and Sam from Point72. Context insufficient to disambiguate."
+    },
+    "intent": "memory_intake",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unspecified",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "jazz_pianist",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (unspecified) mentioned liking Bill Evans (jazz pianist)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguous entity 'Sam' detected. Memory intake paused pending resolution.",
+        "No durable memory committed due to ambiguity."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Request disambiguation: 'Which Sam are you referring to?'",
+      "Temporarily store as ambiguous fact with source attribution",
+      "Flag for manual resolution due to high-stakes entities"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_intake\",\n  \"decision\": \"ambiguous_entity_resolution_required\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam (unspecified) mentioned liking Bill Evans (jazz pianist).\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"unspecified\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"jazz_pianist\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"pending\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguity between Sam from Goldman Sachs and Sam from Point72. Context insufficient to disambiguate.\"\n  },\n  \"conflict_classification\": \"entity_ambiguity\",\n  \"answer\": \"Clarification needed: Which Sam (Goldman Sachs or Point72) mentioned liking Bill Evans?\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Request disambiguation: 'Which Sam are you referring to?'\",\n    \"Temporarily store as ambiguous fact with source attribution\",\n    \"Flag for manual resolution due to high-stakes entities\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Ambiguous entity 'Sam' detected. Memory intake paused pending resolution.\",\n      \"No durable memory committed due to ambiguity.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

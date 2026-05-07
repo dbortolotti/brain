@@ -1,0 +1,74 @@
+{
+  "error": null,
+  "fixture_id": "memory_compiler_small_table__punctuation",
+  "model": "google:gemini-2.5-flash",
+  "payload": {
+    "conflict_classification": "none",
+    "decision": "Created memory cards based on table data.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No entity resolution required for initial fact compilation."
+    },
+    "intent": "Compile memory from structured input",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "Person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "Musician"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam prefers Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "subject",
+            "type": "Person"
+          },
+          {
+            "name": "Knowledge graphs",
+            "role": "object",
+            "type": "Concept"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Knowledge graphs",
+            "predicate": "prefers",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Daniele prefers knowledge graphs."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory cards successfully generated from the input table."
+      ],
+      "success": true
+    }
+  },
+  "raw_text": "{\n  \"intent\": \"Compile memory from structured input\",\n  \"decision\": \"Created memory cards based on table data.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam prefers Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"Person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"Musician\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"prefers\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Daniele prefers knowledge graphs.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"Person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Knowledge graphs\",\n          \"type\": \"Concept\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Daniele\",\n          \"predicate\": \"prefers\",\n          \"object\": \"Knowledge graphs\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No entity resolution required for initial fact compilation.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory cards successfully generated from the input table.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_162328",
+  "status": "ok"
+}

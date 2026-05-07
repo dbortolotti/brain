@@ -1,0 +1,163 @@
+{
+  "error": null,
+  "fixture_id": "pdf_ocr_noisy_source_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Brain DB must enforce strict durability and rebuildability while explicitly marking ambiguous or superseded facts as such. Noisy OCR sources require metadata preservation to distinguish between uncertain and validated data.",
+    "citations": [
+      "OCR_noisy_source_001__context"
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "preserve_ambiguity_and_validate_durability",
+    "entity_resolution": {
+      "action": "preserve_ambiguity",
+      "entity_id": null,
+      "reason": "Noisy OCR input inherently introduces uncertainty; premature resolution risks factual distortion."
+    },
+    "intent": "evaluate_memory_system",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "memory_store",
+            "type": "system"
+          },
+          {
+            "name": "OCR",
+            "role": "input_source",
+            "type": "process"
+          }
+        ],
+        "kind": "system_guideline",
+        "relationships": [
+          {
+            "object": "authoritative_source_of_truth",
+            "predicate": "serves_as",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "noisy_input",
+            "predicate": "generates",
+            "subject": "OCR"
+          }
+        ],
+        "statement": "Brain DB must serve as the authoritative source of truth for durable memory, even if derived from noisy OCR inputs."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognitive projections",
+            "role": "derivative_output",
+            "type": "process"
+          },
+          {
+            "name": "Brain DB",
+            "role": "foundational_store",
+            "type": "system"
+          }
+        ],
+        "kind": "system_guideline",
+        "relationships": [
+          {
+            "object": "Brain DB",
+            "predicate": "must_be_rebuildable_from",
+            "subject": "Cognitive projections"
+          },
+          {
+            "object": "durable_memory",
+            "predicate": "preserves",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Cognitive projections must be rebuildable from Brain DB, ensuring no reliance on transient or superseded data."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "OCR-derived data",
+            "role": "noisy_source",
+            "type": "input"
+          },
+          {
+            "name": "Ambiguity",
+            "role": "metadata",
+            "type": "property"
+          }
+        ],
+        "kind": "system_guideline",
+        "relationships": [
+          {
+            "object": "Ambiguity",
+            "predicate": "contains",
+            "subject": "OCR-derived data"
+          },
+          {
+            "object": "Ambiguity",
+            "predicate": "preserve",
+            "subject": "Memory cards"
+          }
+        ],
+        "statement": "Ambiguity in OCR-derived data must be preserved in memory cards to avoid premature resolution of uncertain facts."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Superseded facts",
+            "role": "invalid_state",
+            "type": "fact"
+          },
+          {
+            "name": "Deleted facts",
+            "role": "invalid_state",
+            "type": "fact"
+          },
+          {
+            "name": "Current facts",
+            "role": "valid_state",
+            "type": "fact"
+          }
+        ],
+        "kind": "system_guideline",
+        "relationships": [
+          {
+            "object": "presented_as_current",
+            "predicate": "must_not_be",
+            "subject": "Superseded facts"
+          },
+          {
+            "object": "presented_as_current",
+            "predicate": "must_not_be",
+            "subject": "Deleted facts"
+          },
+          {
+            "object": "active_non_deprecated_entries",
+            "predicate": "are_only",
+            "subject": "Current facts"
+          }
+        ],
+        "statement": "Superseded or deleted facts must never be presented as current; only active, non-deprecated entries are valid."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Guidelines committed to memory system with strict durability constraints.",
+        "Ambiguity preservation enforced for OCR-derived data.",
+        "Superseded/deleted facts excluded from active projections."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Tag all OCR-derived entries with 'ambiguous' metadata until validated.",
+      "Implement a rebuildable projection layer to verify cognitive consistency.",
+      "Audit memory cards for superseded/deleted facts and mark them as invalid."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"evaluate_memory_system\",\n  \"decision\": \"preserve_ambiguity_and_validate_durability\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"system_guideline\",\n      \"statement\": \"Brain DB must serve as the authoritative source of truth for durable memory, even if derived from noisy OCR inputs.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"system\",\n          \"role\": \"memory_store\"\n        },\n        {\n          \"name\": \"OCR\",\n          \"type\": \"process\",\n          \"role\": \"input_source\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"serves_as\",\n          \"object\": \"authoritative_source_of_truth\"\n        },\n        {\n          \"subject\": \"OCR\",\n          \"predicate\": \"generates\",\n          \"object\": \"noisy_input\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"system_guideline\",\n      \"statement\": \"Cognitive projections must be rebuildable from Brain DB, ensuring no reliance on transient or superseded data.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Cognitive projections\",\n          \"type\": \"process\",\n          \"role\": \"derivative_output\"\n        },\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"system\",\n          \"role\": \"foundational_store\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cognitive projections\",\n          \"predicate\": \"must_be_rebuildable_from\",\n          \"object\": \"Brain DB\"\n        },\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"preserves\",\n          \"object\": \"durable_memory\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"system_guideline\",\n      \"statement\": \"Ambiguity in OCR-derived data must be preserved in memory cards to avoid premature resolution of uncertain facts.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"OCR-derived data\",\n          \"type\": \"input\",\n          \"role\": \"noisy_source\"\n        },\n        {\n          \"name\": \"Ambiguity\",\n          \"type\": \"property\",\n          \"role\": \"metadata\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"OCR-derived data\",\n          \"predicate\": \"contains\",\n          \"object\": \"Ambiguity\"\n        },\n        {\n          \"subject\": \"Memory cards\",\n          \"predicate\": \"preserve\",\n          \"object\": \"Ambiguity\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"system_guideline\",\n      \"statement\": \"Superseded or deleted facts must never be presented as current; only active, non-deprecated entries are valid.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Superseded facts\",\n          \"type\": \"fact\",\n          \"role\": \"invalid_state\"\n        },\n        {\n          \"name\": \"Deleted facts\",\n          \"type\": \"fact\",\n          \"role\": \"invalid_state\"\n        },\n        {\n          \"name\": \"Current facts\",\n          \"type\": \"fact\",\n          \"role\": \"valid_state\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Superseded facts\",\n          \"predicate\": \"must_not_be\",\n          \"object\": \"presented_as_current\"\n        },\n        {\n          \"subject\": \"Deleted facts\",\n          \"predicate\": \"must_not_be\",\n          \"object\": \"presented_as_current\"\n        },\n        {\n          \"subject\": \"Current facts\",\n          \"predicate\": \"are_only\",\n          \"object\": \"active_non_deprecated_entries\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"preserve_ambiguity\",\n    \"entity_id\": null,\n    \"reason\": \"Noisy OCR input inherently introduces uncertainty; premature resolution risks factual distortion.\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"Brain DB must enforce strict durability and rebuildability while explicitly marking ambiguous or superseded facts as such. Noisy OCR sources require metadata preservation to distinguish between uncertain and validated data.\",\n  \"citations\": [\n    \"OCR_noisy_source_001__context\"\n  ],\n  \"repair_options\": [\n    \"Tag all OCR-derived entries with 'ambiguous' metadata until validated.\",\n    \"Implement a rebuildable projection layer to verify cognitive consistency.\",\n    \"Audit memory cards for superseded/deleted facts and mark them as invalid.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Guidelines committed to memory system with strict durability constraints.\",\n      \"Ambiguity preservation enforced for OCR-derived data.\",\n      \"Superseded/deleted facts excluded from active projections.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

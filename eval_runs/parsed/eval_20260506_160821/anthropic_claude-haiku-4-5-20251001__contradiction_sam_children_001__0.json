@@ -1,0 +1,106 @@
+{
+  "fixture_id": "contradiction_sam_children_001",
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "payload": {
+    "answer": "Cannot commit either claim as current fact. Both statements contradict on a binary property (children count). Requires source verification or temporal context (e.g., did circumstances change between claims?).",
+    "citations": [
+      "Existing memory: Sam from Goldman has two children",
+      "New input: Sam from Goldman has no children"
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "Preserve both claims with conflict markers; require disambiguation",
+    "entity_resolution": {
+      "action": "merge_with_conflict_flag",
+      "entity_id": "sam_goldman_001",
+      "reason": "Same person identifier (Sam from Goldman) but contradictory attributes require human review"
+    },
+    "intent": "Classify and resolve direct contradiction about Sam's children count",
+    "memory_cards": [
+      {
+        "confidence": "superseded_by_conflict",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "two",
+            "predicate": "has_children_count",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman has two children"
+      },
+      {
+        "confidence": "superseded_by_conflict",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "zero",
+            "predicate": "has_children_count",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman has no children"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "conflict_marker",
+        "relationships": [
+          {
+            "object": "children_count",
+            "predicate": "has_conflicting_claims",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Unresolved contradiction: Sam from Goldman's children count is disputed (two vs. zero)"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict detected: direct contradiction on cardinality",
+        "Both claims preserved with conflict markers",
+        "No supersession applied; ambiguity maintained",
+        "Entity merged under conflict flag pending resolution",
+        "Repair options provided for disambiguation"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request timestamp/date for each claim to establish temporal ordering",
+      "Request source credibility assessment for each claim",
+      "Clarify if 'Sam from Goldman' refers to same individual or different people with same name",
+      "Ask for context: did life circumstances change (e.g., custody change, adoption reversal)?",
+      "Mark as ambiguous pending clarification rather than overwriting"
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

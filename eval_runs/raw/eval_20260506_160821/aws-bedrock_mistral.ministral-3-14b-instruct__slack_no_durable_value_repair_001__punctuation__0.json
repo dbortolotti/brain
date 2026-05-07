@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "slack_no_durable_value_repair_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory rejected due to unresolved temporal ambiguity ('Today'). Clarify the date (e.g., 'Today, June 5, 2024') for durable storage.",
+    "conflict_classification": "temporal_ambiguity",
+    "decision": "durable_memory_rejected",
+    "entity_resolution": {
+      "action": "ambiguity_preserved",
+      "entity_id": null,
+      "reason": "Temporal reference 'Today' lacks explicit date context; cannot commit as durable memory without risk of supersession."
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Today",
+            "role": "reference_time",
+            "type": "temporal"
+          },
+          {
+            "name": "cloudy",
+            "role": "value",
+            "type": "weather_condition"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "cloudy",
+            "predicate": "is",
+            "subject": "weather"
+          },
+          {
+            "object": "weather",
+            "predicate": "has",
+            "subject": "Today"
+          }
+        ],
+        "statement": "Today's weather is cloudy"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguous temporal reference ('Today') prevents durable memory commitment.",
+        "Supersession risk: Future 'Today' references would overwrite this fact."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Rephrase with explicit date: 'The weather on June 5, 2024, was cloudy.'",
+      "Use relative time: 'Yesterday\u2019s weather was cloudy.'",
+      "Confirm intent: 'Should this be stored as a general fact (e.g., 'Weather is often cloudy here')?'"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_ingestion\",\n  \"decision\": \"durable_memory_rejected\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Today's weather is cloudy\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Today\",\n          \"type\": \"temporal\",\n          \"role\": \"reference_time\"\n        },\n        {\n          \"name\": \"cloudy\",\n          \"type\": \"weather_condition\",\n          \"role\": \"value\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"weather\",\n          \"predicate\": \"is\",\n          \"object\": \"cloudy\"\n        },\n        {\n          \"subject\": \"Today\",\n          \"predicate\": \"has\",\n          \"object\": \"weather\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"ambiguity_preserved\",\n    \"entity_id\": null,\n    \"reason\": \"Temporal reference 'Today' lacks explicit date context; cannot commit as durable memory without risk of supersession.\"\n  },\n  \"conflict_classification\": \"temporal_ambiguity\",\n  \"answer\": \"Memory rejected due to unresolved temporal ambiguity ('Today'). Clarify the date (e.g., 'Today, June 5, 2024') for durable storage.\",\n  \"repair_options\": [\n    \"Rephrase with explicit date: 'The weather on June 5, 2024, was cloudy.'\",\n    \"Use relative time: 'Yesterday\u2019s weather was cloudy.'\",\n    \"Confirm intent: 'Should this be stored as a general fact (e.g., 'Weather is often cloudy here')?'\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Ambiguous temporal reference ('Today') prevents durable memory commitment.\",\n      \"Supersession risk: Future 'Today' references would overwrite this fact.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

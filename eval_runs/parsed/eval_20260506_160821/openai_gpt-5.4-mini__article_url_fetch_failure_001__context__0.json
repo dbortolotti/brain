@@ -1,0 +1,54 @@
+{
+  "fixture_id": "article_url_fetch_failure_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Unable to preserve article content because the fetch failed with 404; only the failure context is recorded.",
+    "citations": [
+      "fixture: article_url_fetch_failure_001__context",
+      "input: mock fetch result 404 network error"
+    ],
+    "conflict_classification": "retrieval_failure_no_content",
+    "decision": "Do not commit the article content as durable memory because the fetch returned a 404 network error; only the retrieval failure and user note are retained as contextual evidence.",
+    "entity_resolution": {
+      "action": "create_ephemeral_reference",
+      "entity_id": null,
+      "reason": "The URL is mentioned, but the article content could not be retrieved; avoid creating a durable article entity without verified content."
+    },
+    "intent": "Evaluate whether to store the referenced article as durable memory despite a fetch failure.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "referenced article",
+            "type": "url"
+          }
+        ],
+        "kind": "note",
+        "relationships": [
+          {
+            "object": "404 network error",
+            "predicate": "returned",
+            "subject": "https://example.com/missing"
+          }
+        ],
+        "statement": "A request referenced https://example.com/missing as useful for memory architecture, but the mock fetch result was a 404 network error."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recorded the user's mention of the URL as context.",
+        "Avoided committing unverifiable article content.",
+        "Marked the fetch outcome as a 404 network error."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retry the URL later if it may have moved.",
+      "Provide the article text or a working link for durable memory extraction.",
+      "Store only the failure as a reminder that this source was inaccessible at capture time."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

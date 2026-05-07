@@ -1,0 +1,51 @@
+{
+  "error": null,
+  "fixture_id": "article_url_fetch_failure_001__punctuation",
+  "model": "groq:llama-3.3-70b-versatile",
+  "payload": {
+    "answer": "unable to fetch article",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "do not commit to durable memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "no entity to resolve"
+    },
+    "intent": "remember article",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "subject",
+            "type": "article"
+          }
+        ],
+        "kind": "event",
+        "relationships": [
+          {
+            "object": "404 network error",
+            "predicate": "has fetch result",
+            "subject": "https://example.com/missing"
+          }
+        ],
+        "statement": "fetch result for https://example.com/missing is 404 network error"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "404 network error"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "retry fetch",
+      "check article url"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"remember article\",\n   \"decision\": \"do not commit to durable memory\",\n   \"memory_cards\": [\n       {\n           \"kind\": \"event\",\n           \"statement\": \"fetch result for https://example.com/missing is 404 network error\",\n           \"confidence\": \"low\",\n           \"entities\": [\n               {\n                   \"name\": \"https://example.com/missing\",\n                   \"type\": \"article\",\n                   \"role\": \"subject\"\n               }\n           ],\n           \"relationships\": [\n               {\n                   \"subject\": \"https://example.com/missing\",\n                   \"predicate\": \"has fetch result\",\n                   \"object\": \"404 network error\"\n               }\n           ]\n       }\n   ],\n   \"entity_resolution\": {\n       \"action\": \"none\",\n       \"entity_id\": null,\n       \"reason\": \"no entity to resolve\"\n   },\n   \"conflict_classification\": \"none\",\n   \"answer\": \"unable to fetch article\",\n   \"citations\": [],\n   \"repair_options\": [\n       \"retry fetch\",\n       \"check article url\"\n   ],\n   \"receipt\": {\n       \"success\": false,\n       \"details\": [\n           \"404 network error\"\n       ]\n   }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

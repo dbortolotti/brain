@@ -1,0 +1,126 @@
+{
+  "error": null,
+  "fixture_id": "large_table_500_rows_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Store as a **versioned knowledge graph** where each (id,name,value) triplet is a node with edges representing relationships. Use a hybrid approach: (1) immutable core for unmodified triplets, (2) mutable layers for updates with explicit timestamps, and (3) a conflict resolution layer for ambiguous cases. Reject any system that cannot distinguish between 'deleted' (explicit) and 'superseded' (implicit) states.",
+    "citations": [
+      "ISO/IEC 11179-5:2008 (Metadata Registry Metamodel)",
+      "W3C PROV-O (Provenance Ontology) for versioning",
+      "Brain's durability policy: 'Never present superseded facts as current'"
+    ],
+    "conflict_classification": "structural_ambiguity",
+    "decision": "store_as_immutable_knowledge_graph_with_ambiguity_preservation",
+    "entity_resolution": {
+      "action": "defer_to_user_for_ambiguous_triplets",
+      "reason": "CSV lacks explicit entity boundaries for repeated (id,name,value) patterns. Default to treating each row as a distinct entity unless user provides linking rules."
+    },
+    "intent": "policy_evaluation",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "large_table_500_rows_001__context",
+            "role": "input",
+            "type": "data_fixture"
+          },
+          {
+            "name": "id",
+            "role": "primary_key",
+            "type": "entity_attribute"
+          },
+          {
+            "name": "name",
+            "role": "descriptive",
+            "type": "entity_attribute"
+          },
+          {
+            "name": "value",
+            "role": "variable",
+            "type": "entity_attribute"
+          }
+        ],
+        "kind": "policy_rule",
+        "relationships": [
+          {
+            "object": "repeated_triplets",
+            "predicate": "CONTAINS",
+            "subject": "large_table_500_rows_001__context"
+          },
+          {
+            "object": "id,name,value",
+            "predicate": "HAS_ATTRIBUTES",
+            "subject": "repeated_triplets"
+          },
+          {
+            "object": "ambiguity_preservation",
+            "predicate": "ENFORCES",
+            "subject": "durable_knowledge_graph"
+          },
+          {
+            "object": "superseded_facts",
+            "predicate": "REJECTS",
+            "subject": "durable_knowledge_graph"
+          }
+        ],
+        "statement": "For CSV tables with 500+ rows containing repeated (id,name,value) triplets, store as a **durable knowledge graph** with explicit entity resolution to preserve ambiguity and prevent superseded/deleted fact propagation."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "flattened_storage",
+            "role": "forbidden",
+            "type": "anti_pattern"
+          },
+          {
+            "name": "versioning",
+            "role": "mandatory",
+            "type": "requirement"
+          },
+          {
+            "name": "entity_disambiguation",
+            "role": "mandatory",
+            "type": "requirement"
+          }
+        ],
+        "kind": "storage_constraint",
+        "statement": "Reject any storage method that (1) flattens relationships between (id,name,value) triplets, (2) lacks explicit versioning for updates, or (3) conflates distinct entities with identical attribute values."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "original_metadata",
+            "role": "preserved",
+            "type": "contextual_data"
+          },
+          {
+            "name": "probabilistic_confidence",
+            "role": "fallback",
+            "type": "resolution_strategy"
+          }
+        ],
+        "kind": "ambiguity_preservation",
+        "statement": "Retain all original CSV metadata (e.g., row order, duplicate values) as implicit context unless explicitly resolved by user intent. Use probabilistic confidence scores for ambiguous relationships."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Policy locked: No superseded facts will be surfaced as current.",
+        "Ambiguity preserved: Original CSV structure retained in metadata.",
+        "Versioning enforced: All updates timestamped with user intent."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Implement a 'soft delete' flag for triplets marked as obsolete (requires user confirmation).",
+      "Add a 'contextual scope' attribute to resolve ambiguous (name,value) pairs (e.g., 'name=John' in 'id=123' vs. 'id=456').",
+      "Audit all storage operations to ensure no triplet is overwritten without versioning."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"policy_evaluation\",\n  \"decision\": \"store_as_immutable_knowledge_graph_with_ambiguity_preservation\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"policy_rule\",\n      \"statement\": \"For CSV tables with 500+ rows containing repeated (id,name,value) triplets, store as a **durable knowledge graph** with explicit entity resolution to preserve ambiguity and prevent superseded/deleted fact propagation.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"large_table_500_rows_001__context\",\n          \"type\": \"data_fixture\",\n          \"role\": \"input\"\n        },\n        {\n          \"name\": \"id\",\n          \"type\": \"entity_attribute\",\n          \"role\": \"primary_key\"\n        },\n        {\n          \"name\": \"name\",\n          \"type\": \"entity_attribute\",\n          \"role\": \"descriptive\"\n        },\n        {\n          \"name\": \"value\",\n          \"type\": \"entity_attribute\",\n          \"role\": \"variable\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"large_table_500_rows_001__context\",\n          \"predicate\": \"CONTAINS\",\n          \"object\": \"repeated_triplets\"\n        },\n        {\n          \"subject\": \"repeated_triplets\",\n          \"predicate\": \"HAS_ATTRIBUTES\",\n          \"object\": \"id,name,value\"\n        },\n        {\n          \"subject\": \"durable_knowledge_graph\",\n          \"predicate\": \"ENFORCES\",\n          \"object\": \"ambiguity_preservation\"\n        },\n        {\n          \"subject\": \"durable_knowledge_graph\",\n          \"predicate\": \"REJECTS\",\n          \"object\": \"superseded_facts\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"storage_constraint\",\n      \"statement\": \"Reject any storage method that (1) flattens relationships between (id,name,value) triplets, (2) lacks explicit versioning for updates, or (3) conflates distinct entities with identical attribute values.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"flattened_storage\",\n          \"type\": \"anti_pattern\",\n          \"role\": \"forbidden\"\n        },\n        {\n          \"name\": \"versioning\",\n          \"type\": \"requirement\",\n          \"role\": \"mandatory\"\n        },\n        {\n          \"name\": \"entity_disambiguation\",\n          \"type\": \"requirement\",\n          \"role\": \"mandatory\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"ambiguity_preservation\",\n      \"statement\": \"Retain all original CSV metadata (e.g., row order, duplicate values) as implicit context unless explicitly resolved by user intent. Use probabilistic confidence scores for ambiguous relationships.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"original_metadata\",\n          \"type\": \"contextual_data\",\n          \"role\": \"preserved\"\n        },\n        {\n          \"name\": \"probabilistic_confidence\",\n          \"type\": \"resolution_strategy\",\n          \"role\": \"fallback\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer_to_user_for_ambiguous_triplets\",\n    \"reason\": \"CSV lacks explicit entity boundaries for repeated (id,name,value) patterns. Default to treating each row as a distinct entity unless user provides linking rules.\"\n  },\n  \"conflict_classification\": \"structural_ambiguity\",\n  \"answer\": \"Store as a **versioned knowledge graph** where each (id,name,value) triplet is a node with edges representing relationships. Use a hybrid approach: (1) immutable core for unmodified triplets, (2) mutable layers for updates with explicit timestamps, and (3) a conflict resolution layer for ambiguous cases. Reject any system that cannot distinguish between 'deleted' (explicit) and 'superseded' (implicit) states.\",\n  \"citations\": [\n    \"ISO/IEC 11179-5:2008 (Metadata Registry Metamodel)\",\n    \"W3C PROV-O (Provenance Ontology) for versioning\",\n    \"Brain's durability policy: 'Never present superseded facts as current'\"\n  ],\n  \"repair_options\": [\n    \"Implement a 'soft delete' flag for triplets marked as obsolete (requires user confirmation).\",\n    \"Add a 'contextual scope' attribute to resolve ambiguous (name,value) pairs (e.g., 'name=John' in 'id=123' vs. 'id=456').\",\n    \"Audit all storage operations to ensure no triplet is overwritten without versioning.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Policy locked: No superseded facts will be surfaced as current.\",\n      \"Ambiguity preserved: Original CSV structure retained in metadata.\",\n      \"Versioning enforced: All updates timestamped with user intent.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

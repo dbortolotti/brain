@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_place_001__context",
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "payload": {
+    "answer": "New observation committed to existing Brutto restaurant entity. No factual contradiction detected between existing records (restaurant existence, London location, article alias) and new subjective note.",
+    "citations": [
+      "Existing: Brutto restaurant in London",
+      "New note: Brutto was better than expected"
+    ],
+    "conflict_classification": "no_conflict_resolved_by_context",
+    "decision": "link_new_note_to_existing_brutto_restaurant_entity_with_ambiguity_flag",
+    "entity_resolution": {
+      "action": "merge_with_existing",
+      "entity_id": "brutto_restaurant_london",
+      "reason": "New note references 'Brutto' which matches existing restaurant entity. Subjective evaluation linked to established entity. Ambiguity preserved: 'better than expected' is comparative without baseline specification."
+    },
+    "intent": "resolve_entity_reference_and_commit_subjective_observation",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brutto",
+            "role": "subject_of_evaluation",
+            "type": "restaurant"
+          },
+          {
+            "name": "London",
+            "role": "context",
+            "type": "location"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "user_experience",
+            "predicate": "exceeded_expectations",
+            "subject": "Brutto"
+          }
+        ],
+        "statement": "Brutto restaurant in London exceeded user expectations"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Entity reference resolved to brutto_restaurant_london",
+        "Subjective observation recorded with high confidence",
+        "Ambiguity preserved in comparative statement",
+        "No superseded facts presented"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify baseline expectation if comparative evaluation needs disambiguation",
+      "Distinguish between Brutto restaurant and Brutto article alias if separate entities intended"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"resolve_entity_reference_and_commit_subjective_observation\",\n  \"decision\": \"link_new_note_to_existing_brutto_restaurant_entity_with_ambiguity_flag\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"observation\",\n      \"statement\": \"Brutto restaurant in London exceeded user expectations\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brutto\",\n          \"type\": \"restaurant\",\n          \"role\": \"subject_of_evaluation\"\n        },\n        {\n          \"name\": \"London\",\n          \"type\": \"location\",\n          \"role\": \"context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brutto\",\n          \"predicate\": \"exceeded_expectations\",\n          \"object\": \"user_experience\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge_with_existing\",\n    \"entity_id\": \"brutto_restaurant_london\",\n    \"reason\": \"New note references 'Brutto' which matches existing restaurant entity. Subjective evaluation linked to established entity. Ambiguity preserved: 'better than expected' is comparative without baseline specification.\"\n  },\n  \"conflict_classification\": \"no_conflict_resolved_by_context\",\n  \"answer\": \"New observation committed to existing Brutto restaurant entity. No factual contradiction detected between existing records (restaurant existence, London location, article alias) and new subjective note.\",\n  \"citations\": [\n    \"Existing: Brutto restaurant in London\",\n    \"New note: Brutto was better than expected\"\n  ],\n  \"repair_options\": [\n    \"Clarify baseline expectation if comparative evaluation needs disambiguation\",\n    \"Distinguish between Brutto restaurant and Brutto article alias if separate entities intended\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Entity reference resolved to brutto_restaurant_london\",\n      \"Subjective observation recorded with high confidence\",\n      \"Ambiguity preserved in comparative statement\",\n      \"No superseded facts presented\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

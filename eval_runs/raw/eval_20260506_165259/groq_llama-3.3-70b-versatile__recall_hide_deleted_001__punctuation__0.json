@@ -1,0 +1,55 @@
+{
+  "error": null,
+  "fixture_id": "recall_hide_deleted_001__punctuation",
+  "model": "groq:llama-3.3-70b-versatile",
+  "payload": {
+    "answer": "Bill Evans",
+    "citations": [
+      "current memory"
+    ],
+    "conflict_classification": "no conflict",
+    "decision": "recall",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": "Sam",
+      "reason": "entity exists in current memory"
+    },
+    "intent": "query",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "musician"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "memory recall successful"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"query\",\n   \"decision\": \"recall\",\n   \"memory_cards\": [\n       {\n           \"kind\": \"preference\",\n           \"statement\": \"Sam likes Bill Evans\",\n           \"confidence\": \"high\",\n           \"entities\": [\n               {\n                   \"name\": \"Sam\",\n                   \"type\": \"person\",\n                   \"role\": \"subject\"\n               },\n               {\n                   \"name\": \"Bill Evans\",\n                   \"type\": \"musician\",\n                   \"role\": \"object\"\n               }\n           ],\n           \"relationships\": [\n               {\n                   \"subject\": \"Sam\",\n                   \"predicate\": \"likes\",\n                   \"object\": \"Bill Evans\"\n               }\n           ]\n       }\n   ],\n   \"entity_resolution\": {\n       \"action\": \"resolved\",\n       \"entity_id\": \"Sam\",\n       \"reason\": \"entity exists in current memory\"\n   },\n   \"conflict_classification\": \"no conflict\",\n   \"answer\": \"Bill Evans\",\n   \"citations\": [\n       \"current memory\"\n   ],\n   \"repair_options\": [],\n   \"receipt\": {\n       \"success\": true,\n       \"details\": [\n           \"memory recall successful\"\n       ]\n   }\n}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

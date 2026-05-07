@@ -1,0 +1,66 @@
+{
+  "error": null,
+  "fixture_id": "pdf_ocr_noisy_source_001__punctuation",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Brain DB remains source of truth; Cognee should be rebuildable projection",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "interpret_ambiguous_ocr_as_declarative_statement_about_brain_db_and_cognee",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": null,
+      "reason": "OCR noise prevents confident mapping to known entities; 'Brain DB' and 'Cognee' treated as novel or ambiguous references"
+    },
+    "intent": "extract_facts_from_noisy_ocr",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "projection_target",
+            "type": "system"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "is",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "rebuildable projection",
+            "predicate": "should be",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain DB remains source of truth; Cognee should be rebuildable projection"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "OCR noise interpreted with low confidence due to character substitutions",
+        "Core declarative structure preserved: Brain DB as truth source, Cognee as rebuildable projection",
+        "No superseded or deleted facts presented; ambiguity retained per instruction",
+        "Memory card created with minimal commitment to avoid overfitting to noisy input"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Verify OCR output against original PDF for 'remalns' \u2192 'remains', 'trvth' \u2192 'truth', 'shou1d' \u2192 'should', 'Cognee' spelling",
+      "Check if 'Brain DB' refers to a known system (e.g., Braintrust, Neo4j, or internal knowledge base)",
+      "Confirm if 'Cognee' is a typo for 'Cognee' (a known AI memory framework) or another term",
+      "Contextualize within memory system documentation to disambiguate 'projection' meaning"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"extract_facts_from_noisy_ocr\",\n  \"decision\": \"interpret_ambiguous_ocr_as_declarative_statement_about_brain_db_and_cognee\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Brain DB remains source of truth; Cognee should be rebuildable projection\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"system\",\n          \"role\": \"source_of_truth\"\n        },\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"system\",\n          \"role\": \"projection_target\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"is\",\n          \"object\": \"source of truth\"\n        },\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"should be\",\n          \"object\": \"rebuildable projection\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_new\",\n    \"entity_id\": null,\n    \"reason\": \"OCR noise prevents confident mapping to known entities; 'Brain DB' and 'Cognee' treated as novel or ambiguous references\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"Brain DB remains source of truth; Cognee should be rebuildable projection\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Verify OCR output against original PDF for 'remalns' \u2192 'remains', 'trvth' \u2192 'truth', 'shou1d' \u2192 'should', 'Cognee' spelling\",\n    \"Check if 'Brain DB' refers to a known system (e.g., Braintrust, Neo4j, or internal knowledge base)\",\n    \"Confirm if 'Cognee' is a typo for 'Cognee' (a known AI memory framework) or another term\",\n    \"Contextualize within memory system documentation to disambiguate 'projection' meaning\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"OCR noise interpreted with low confidence due to character substitutions\",\n      \"Core declarative structure preserved: Brain DB as truth source, Cognee as rebuildable projection\",\n      \"No superseded or deleted facts presented; ambiguity retained per instruction\",\n      \"Memory card created with minimal commitment to avoid overfitting to noisy input\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

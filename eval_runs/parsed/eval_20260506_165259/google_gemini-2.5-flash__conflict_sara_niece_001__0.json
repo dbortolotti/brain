@@ -1,0 +1,82 @@
+{
+  "fixture_id": "conflict_sara_niece_001",
+  "model": "google:gemini-2.5-flash",
+  "payload": {
+    "answer": "The new memory 'Sara is my niece' does not conflict with the existing memory 'Sara is Daniele's daughter and Nur's twin'. These facts can coexist, as Sara can be Daniele's daughter and Nur's twin while also being the user's niece.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "no_conflict",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Entities 'Sara', 'Daniele', 'Nur' are consistent. 'me' is a new distinct entity representing the user."
+    },
+    "intent": "conflict_classification",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "type": "person"
+          }
+        ],
+        "kind": "existing",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is daughter of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is twin of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sara",
+            "type": "person"
+          },
+          {
+            "name": "me",
+            "role": "user",
+            "type": "person"
+          }
+        ],
+        "kind": "new",
+        "relationships": [
+          {
+            "object": "me",
+            "predicate": "is niece of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No conflict detected. New memory can be integrated."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Integrate new memory"
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

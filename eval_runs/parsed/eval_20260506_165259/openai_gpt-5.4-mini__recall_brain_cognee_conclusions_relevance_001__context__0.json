@@ -1,0 +1,99 @@
+{
+  "fixture_id": "recall_brain_cognee_conclusions_relevance_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "You concluded that Brain is the source of truth and Cognee is a rebuildable projection.",
+    "citations": [
+      "input context: Brain DB source-of-truth conclusion, Cognee rebuildable projection"
+    ],
+    "conflict_classification": "none",
+    "decision": "I concluded that Brain is the source of truth, while Cognee is a rebuildable projection.",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": null,
+      "reason": "The query refers to the Brain and Cognee systems in the provided context, but no stable entity IDs were supplied."
+    },
+    "intent": "recall and synthesize the prior conclusion about Brain and Cognee",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "source of truth",
+            "type": "system"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "records",
+            "predicate": "is_source_of_truth_for",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "Brain was treated as the source-of-truth system."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "projection",
+            "type": "system"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "rebuildable projection",
+            "predicate": "is",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee was treated as a rebuildable projection rather than the authoritative record."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "canonical store",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "derived view",
+            "type": "system"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "canonical store",
+            "predicate": "serves_as",
+            "subject": "Brain"
+          },
+          {
+            "object": "Brain",
+            "predicate": "derives_from",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "The distinction between Brain and Cognee appears to be that Brain holds canonical conclusions, while Cognee can be regenerated from them."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Interpreted the query as asking for the prior conclusion about Brain versus Cognee.",
+        "Avoided adding unsupported details beyond the source-of-truth vs rebuildable-projection distinction."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want, I can also phrase this as a durable memory note with lower-ambiguity wording.",
+      "If there is a specific record label for the Brain/Cognee conclusion, I can map it more precisely."
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

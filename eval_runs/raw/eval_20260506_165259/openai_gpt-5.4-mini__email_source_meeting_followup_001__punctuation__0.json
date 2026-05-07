@@ -1,0 +1,83 @@
+{
+  "error": null,
+  "fixture_id": "email_source_meeting_followup_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Commit the update that Sam joined Point72 last month and note the request to send the AI infra article.",
+    "citations": [
+      "From: sam@examplecom",
+      "Subject: Follow up",
+      "Great seeing you",
+      "Yes, I joined Point72 last month",
+      "Please send the AI infra article"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "The sender is identified only as Sam with an email-like address; no prior entity mapping is available, so this should be stored cautiously without over-resolving identity."
+    },
+    "intent": "Extract durable memory from a follow-up email: the sender says they joined Point72 last month and requests an AI infrastructure article.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "sender",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "person_update",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said they joined Point72 last month."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "sender",
+            "type": "person"
+          }
+        ],
+        "kind": "request",
+        "relationships": [
+          {
+            "object": "AI infrastructure article",
+            "predicate": "requested",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam requested the AI infrastructure article be sent to them."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed as a follow-up message.",
+        "Extracted one durable person update and one actionable request.",
+        "Preserved uncertainty around sender identity normalization."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If Sam is already known in the memory system, merge this as a workplace update and an outstanding article request.",
+      "If the email address should be normalized, confirm whether sam@examplecom is intended to be sam@example.com."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Extract durable memory from a follow-up email: the sender says they joined Point72 last month and requests an AI infrastructure article.\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"person_update\",\"statement\":\"Sam said they joined Point72 last month.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"sender\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]},{\"kind\":\"request\",\"statement\":\"Sam requested the AI infrastructure article be sent to them.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"sender\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"requested\",\"object\":\"AI infrastructure article\"}]}],\"entity_resolution\":{\"action\":\"create_or_update\",\"entity_id\":null,\"reason\":\"The sender is identified only as Sam with an email-like address; no prior entity mapping is available, so this should be stored cautiously without over-resolving identity.\"},\"conflict_classification\":\"none\",\"answer\":\"Commit the update that Sam joined Point72 last month and note the request to send the AI infra article.\",\"citations\":[\"From: sam@examplecom\",\"Subject: Follow up\",\"Great seeing you\",\"Yes, I joined Point72 last month\",\"Please send the AI infra article\"],\"repair_options\":[\"If Sam is already known in the memory system, merge this as a workplace update and an outstanding article request.\",\"If the email address should be normalized, confirm whether sam@examplecom is intended to be sam@example.com.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed as a follow-up message.\",\"Extracted one durable person update and one actionable request.\",\"Preserved uncertainty around sender identity normalization.\"]}}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

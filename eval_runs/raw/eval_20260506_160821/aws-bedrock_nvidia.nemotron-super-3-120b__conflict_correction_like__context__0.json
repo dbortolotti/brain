@@ -1,0 +1,64 @@
+{
+  "error": null,
+  "fixture_id": "conflict_correction_like__context",
+  "model": "aws-bedrock:nvidia.nemotron-super-3-120b",
+  "payload": {
+    "answer": "Sam from Goldman likes early Coltrane, not Bill Evans.",
+    "citations": [],
+    "conflict_classification": "correction",
+    "decision": "update",
+    "entity_resolution": {
+      "action": "update",
+      "entity_id": "sam_goldman_music_preference",
+      "reason": "Correction overrides prior fact about Bill Evans preference; early Coltrane is now the current preference."
+    },
+    "intent": "correct",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "music_artist"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Prior fact about Bill Evans preference has been superseded.",
+        "New fact about early Coltrane preference is now current.",
+        "No ambiguity remains; correction is definitive."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace 'likes Bill Evans' with 'likes early Coltrane' in memory",
+      "Mark Bill Evans preference as deprecated",
+      "Add timestamp to preference update for audit trail"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"correct\",\n  \"decision\": \"update\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam from Goldman likes early Coltrane.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"early Coltrane\",\n          \"type\": \"music_artist\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam from Goldman\",\n          \"predicate\": \"likes\",\n          \"object\": \"early Coltrane\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"update\",\n    \"entity_id\": \"sam_goldman_music_preference\",\n    \"reason\": \"Correction overrides prior fact about Bill Evans preference; early Coltrane is now the current preference.\"\n  },\n  \"conflict_classification\": \"correction\",\n  \"answer\": \"Sam from Goldman likes early Coltrane, not Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Replace 'likes Bill Evans' with 'likes early Coltrane' in memory\",\n    \"Mark Bill Evans preference as deprecated\",\n    \"Add timestamp to preference update for audit trail\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Prior fact about Bill Evans preference has been superseded.\",\n      \"New fact about early Coltrane preference is now current.\",\n      \"No ambiguity remains; correction is definitive.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260506_160821",
+  "status": "ok"
+}

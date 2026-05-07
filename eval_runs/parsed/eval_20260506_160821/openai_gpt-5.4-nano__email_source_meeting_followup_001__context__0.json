@@ -1,0 +1,77 @@
+{
+  "fixture_id": "email_source_meeting_followup_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Captured that the sender (sam@example.com) said they joined Point72 last month and requested that the AI infra article be sent.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Store durable context that sam@example.com indicated they joined Point72 last month; capture the actionable request to send the AI infra article; no conflicts detected",
+    "entity_resolution": {
+      "action": "create_or_link",
+      "entity_id": null,
+      "reason": "No existing Brain entity identifiers were provided for sam@example.com; entity resolution cannot be performed beyond email/from address and extracted organizations."
+    },
+    "intent": "Process meeting follow-up email and capture actionable requests and relevant identity context",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "sam@example.com",
+            "role": "sender",
+            "type": "email"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "personal_context",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "sam@example.com"
+          }
+        ],
+        "statement": "sam@example.com said they joined Point72 last month."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "AI infra article",
+            "role": "requested_item",
+            "type": "document_request"
+          },
+          {
+            "name": "sam@example.com",
+            "role": "requestor",
+            "type": "email"
+          }
+        ],
+        "kind": "action_request",
+        "relationships": [
+          {
+            "object": "AI infra article",
+            "predicate": "requested",
+            "subject": "sam@example.com"
+          }
+        ],
+        "statement": "sam@example.com requested that the AI infra article be sent."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created memory cards for sender context (joined Point72) and an actionable request (send AI infra article)."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you can provide the actual AI infra article URL/title, store that specific identifier and not just a generic 'AI infra article' request.",
+      "If 'Point72' could be ambiguous (e.g., different entity/location), confirm the exact organization name and role."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

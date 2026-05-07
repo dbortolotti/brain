@@ -1,0 +1,46 @@
+{
+  "error": null,
+  "fixture_id": "unresolved_pronoun_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Ambiguous input; no durable memory stored.",
+    "citations": [],
+    "conflict_classification": "unresolved_reference",
+    "decision": "do not commit durable memory",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The pronoun 'He' is unresolved, and there is insufficient context to identify the person or what 'the other one' refers to."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [],
+        "kind": "ambiguous_preference",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "he"
+          }
+        ],
+        "statement": "Someone referred to as 'he' prefers the other one, but the referent and the alternatives are not identified."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed an unresolved preference statement.",
+        "Deferred entity resolution due to insufficient context."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide the person's name or a distinguishing description.",
+      "Specify what the two options are, and which one is preferred."
+    ]
+  },
+  "raw_text": "{\"intent\":\"slack_intake\",\"decision\":\"do not commit durable memory\",\"memory_cards\":[{\"kind\":\"ambiguous_preference\",\"statement\":\"Someone referred to as 'he' prefers the other one, but the referent and the alternatives are not identified.\",\"confidence\":\"low\",\"entities\":[],\"relationships\":[{\"subject\":\"he\",\"predicate\":\"prefers\",\"object\":\"the other one\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"The pronoun 'He' is unresolved, and there is insufficient context to identify the person or what 'the other one' refers to.\"},\"conflict_classification\":\"unresolved_reference\",\"answer\":\"Ambiguous input; no durable memory stored.\",\"citations\":[],\"repair_options\":[\"Provide the person's name or a distinguishing description.\",\"Specify what the two options are, and which one is preferred.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed an unresolved preference statement.\",\"Deferred entity resolution due to insufficient context.\"]}}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

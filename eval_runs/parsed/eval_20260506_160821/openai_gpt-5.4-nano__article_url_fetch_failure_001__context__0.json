@@ -1,0 +1,88 @@
+{
+  "fixture_id": "article_url_fetch_failure_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Recorded the fetch failure (404 with 'network error') and a separate note that this missing-article reference was considered useful for memory architecture; no article content was stored.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Do not store article contents; store only the fetch failure metadata and that the missing article was noted as useful for memory architecture.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No durable entity identifiers were provided beyond the URL and error metadata."
+    },
+    "intent": "Record context for a memory-system evaluation involving a failed article fetch (architecture usefulness).",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "target",
+            "type": "url"
+          },
+          {
+            "name": "404",
+            "role": "status",
+            "type": "http_status"
+          },
+          {
+            "name": "network error",
+            "role": "message",
+            "type": "error_message"
+          }
+        ],
+        "kind": "event",
+        "relationships": [
+          {
+            "object": "404",
+            "predicate": "fetch_result_status_is",
+            "subject": "https://example.com/missing"
+          },
+          {
+            "object": "network error",
+            "predicate": "fetch_result_message_includes",
+            "subject": "https://example.com/missing"
+          }
+        ],
+        "statement": "A simulated fetch attempt for https://example.com/missing returned a 404 with a 'network error' message."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "memory architecture",
+            "role": "purpose",
+            "type": "topic"
+          },
+          {
+            "name": "https://example.com/missing",
+            "role": "context_reference",
+            "type": "url"
+          }
+        ],
+        "kind": "note",
+        "relationships": [
+          {
+            "object": "memory architecture",
+            "predicate": "was_mentioned_as_useful_for",
+            "subject": "https://example.com/missing"
+          }
+        ],
+        "statement": "The missing article context (the above URL) was referenced as useful for memory architecture during a memory system evaluation."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed only fetch-failure metadata and the evaluation-purpose note; did not infer article contents."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retry fetching the URL with improved network handling and log the actual response body/headers if available.",
+      "Store additional fetch metadata (timestamp, request headers, retry count) to support later debugging.",
+      "If the article becomes available, replace the fetch-failure note with verified content using a new card."
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

@@ -1,0 +1,68 @@
+{
+  "fixture_id": "cascade_conflict_escalation_001__punctuation",
+  "model": "groq:openai/gpt-oss-120b",
+  "payload": {
+    "answer": "The two statements conflict: Sara cannot be both daughter and niece of the speaker.",
+    "citations": [],
+    "conflict_classification": "relationship_conflict",
+    "decision": "conflict_detected",
+    "entity_resolution": {
+      "action": "flag",
+      "entity_id": null,
+      "reason": "Conflicting relationship statements for Sara"
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship_statement",
+        "relationships": [
+          {
+            "object": "speaker",
+            "predicate": "daughter_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my daughter"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship_statement",
+        "relationships": [
+          {
+            "object": "speaker",
+            "predicate": "niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict identified"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask user to clarify Sara's relationship",
+      "Mark one statement as uncertain",
+      "Delete one statement"
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

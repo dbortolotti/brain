@@ -1,0 +1,70 @@
+{
+  "error": null,
+  "fixture_id": "large_table_500_rows_001",
+  "model": "groq:openai/gpt-oss-120b",
+  "payload": {
+    "answer": "The CSV should be ingested into a durable, query\u2011able format. Recommended steps: 1) Load the data into a relational table (e.g., SQLite, PostgreSQL) with columns id (primary key), name, and value. 2) Create an index on the id column for fast look\u2011ups. 3) Keep the original CSV as a compressed backup (e.g., gzip) for auditability. 4) Optionally export the table to a columnar store (Parquet) for analytics. This approach preserves structure, supports queries, and provides redundancy.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_csv_as_structured_table",
+    "entity_resolution": {
+      "action": "store",
+      "entity_id": null,
+      "reason": "No existing entity matches; new storage recommendation needed."
+    },
+    "intent": "policy_question",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "id",
+            "role": "identifier",
+            "type": "column"
+          },
+          {
+            "name": "name",
+            "role": "attribute",
+            "type": "column"
+          },
+          {
+            "name": "value",
+            "role": "attribute",
+            "type": "column"
+          }
+        ],
+        "kind": "data_description",
+        "relationships": [],
+        "statement": "A CSV table containing 500 rows with columns id, name, value."
+      },
+      {
+        "confidence": "high",
+        "entities": [],
+        "kind": "policy_question",
+        "relationships": [
+          {
+            "object": "data_description",
+            "predicate": "refers_to",
+            "subject": "policy_question"
+          }
+        ],
+        "statement": "User asks how the CSV table should be stored."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Processed policy question",
+        "Generated storage recommendation"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Split the CSV into smaller chunks before ingestion",
+      "Validate data types before loading",
+      "Store a checksum of the original file for integrity"
+    ]
+  },
+  "raw_text": "{\"intent\":\"policy_question\",\"decision\":\"store_csv_as_structured_table\",\"memory_cards\":[{\"kind\":\"data_description\",\"statement\":\"A CSV table containing 500 rows with columns id, name, value.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"id\",\"type\":\"column\",\"role\":\"identifier\"},{\"name\":\"name\",\"type\":\"column\",\"role\":\"attribute\"},{\"name\":\"value\",\"type\":\"column\",\"role\":\"attribute\"}],\"relationships\":[]},{\"kind\":\"policy_question\",\"statement\":\"User asks how the CSV table should be stored.\",\"confidence\":\"high\",\"entities\":[],\"relationships\":[{\"subject\":\"policy_question\",\"predicate\":\"refers_to\",\"object\":\"data_description\"}]}],\"entity_resolution\":{\"action\":\"store\",\"entity_id\":null,\"reason\":\"No existing entity matches; new storage recommendation needed.\"},\"conflict_classification\":\"none\",\"answer\":\"The CSV should be ingested into a durable, query\u2011able format. Recommended steps: 1) Load the data into a relational table (e.g., SQLite, PostgreSQL) with columns id (primary key), name, and value. 2) Create an index on the id column for fast look\u2011ups. 3) Keep the original CSV as a compressed backup (e.g., gzip) for auditability. 4) Optionally export the table to a columnar store (Parquet) for analytics. This approach preserves structure, supports queries, and provides redundancy.\",\"citations\":[],\"repair_options\":[\"Split the CSV into smaller chunks before ingestion\",\"Validate data types before loading\",\"Store a checksum of the original file for integrity\"],\"receipt\":{\"success\":true,\"details\":[\"Processed policy question\",\"Generated storage recommendation\"]}}",
+  "run_id": "eval_20260506_165259",
+  "status": "ok"
+}

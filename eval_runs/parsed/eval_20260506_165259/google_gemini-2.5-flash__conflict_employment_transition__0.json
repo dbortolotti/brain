@@ -1,0 +1,84 @@
+{
+  "fixture_id": "conflict_employment_transition",
+  "model": "google:gemini-2.5-flash",
+  "payload": {
+    "answer": "Sam no longer works at Goldman and now works at Point72.",
+    "citations": [],
+    "conflict_classification": "superseding",
+    "decision": "The new fact supersedes the existing fact regarding Sam's employment at Goldman and adds new employment information.",
+    "entity_resolution": {
+      "action": "no_action",
+      "entity_id": null,
+      "reason": "Entities 'Sam', 'Goldman', and 'Point72' are distinct and consistently identified."
+    },
+    "intent": "update_employment_status",
+    "memory_cards": [
+      {
+        "confidence": "current",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "current",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict classified as superseding.",
+        "Existing employment fact about Goldman will be superseded.",
+        "New employment fact about Point72 will be added."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark 'Sam works at Goldman' as historical/superseded.",
+      "Add 'Sam works at Point72' as a new current fact."
+    ]
+  },
+  "run_id": "eval_20260506_165259"
+}

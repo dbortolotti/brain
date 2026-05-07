@@ -1,0 +1,93 @@
+{
+  "fixture_id": "correction_sam_music_001",
+  "model": "anthropic:claude-haiku-4-5-20251001",
+  "payload": {
+    "answer": "The correction supersedes the existing memory. Sam's musical preference is early Coltrane, not Bill Evans.",
+    "citations": [
+      "Correction input explicitly states 'actually likes early Coltrane, not Bill Evans'"
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "supersede_with_correction",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "sam_goldman",
+      "reason": "Same person identified across both statements; preference attribute updated"
+    },
+    "intent": "correct_preference",
+    "memory_cards": [
+      {
+        "confidence": "superseded",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "musician"
+          }
+        ],
+        "kind": "retracted_fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          },
+          {
+            "name": "John Coltrane",
+            "role": "object",
+            "type": "musician"
+          }
+        ],
+        "kind": "current_fact",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Existing preference (Bill Evans) marked as superseded",
+        "New preference (early Coltrane) recorded as current fact",
+        "Entity Sam from Goldman unified across both statements",
+        "Conflict resolved via explicit correction"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark Bill Evans preference as retracted",
+      "Record early Coltrane as current preference with correction timestamp",
+      "Preserve both statements with temporal markers if correction source is uncertain"
+    ]
+  },
+  "run_id": "eval_20260506_160821"
+}

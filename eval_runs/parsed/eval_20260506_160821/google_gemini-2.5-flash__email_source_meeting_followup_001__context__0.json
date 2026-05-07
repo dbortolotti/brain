@@ -1,0 +1,102 @@
+{
+  "fixture_id": "email_source_meeting_followup_001__context",
+  "model": "google:gemini-2.5-flash",
+  "payload": {
+    "answer": "The email indicates Sam joined Point72 last month and requested the AI infra article.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Compiled memory cards based on email content, identifying entities, relationships, and requests.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No specific entity resolution action was requested or required beyond initial identification."
+    },
+    "intent": "Extract and compile memory cards from email context",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "sender",
+            "type": "person"
+          },
+          {
+            "name": "sam@example.com",
+            "role": "sender_address",
+            "type": "email"
+          }
+        ],
+        "kind": "person",
+        "relationships": [
+          {
+            "object": "sam@example.com",
+            "predicate": "has_email",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is the sender of the email."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "started_employment_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72 last month."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "requester",
+            "type": "person"
+          },
+          {
+            "name": "AI infra article",
+            "role": "requested_item",
+            "type": "article"
+          }
+        ],
+        "kind": "request",
+        "relationships": [
+          {
+            "object": "AI infra article",
+            "predicate": "requested",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam requested the AI infra article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Successfully extracted and compiled memory cards from the provided email context.",
+        "Identified sender, employment update, and a specific request."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260506_160821"
+}

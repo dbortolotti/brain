@@ -1,0 +1,154 @@
+{
+  "fixture_id": "conversation_transcript_sam_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam\u2019s durable memory is updated to reflect: (1) employment transition to Point72 (June 2024), (2) jazz preference shift toward early Coltrane, and (3) pending AI infrastructure discussion contingent on receiving an article from Daniele. No conflicts detected.",
+    "citations": [
+      "Daniele: 'Still at Goldman?' \u2192 Sam: 'No, I left Goldman last month and joined Point72.'",
+      "Daniele: 'Still listening to Bill Evans?' \u2192 Sam: 'Yes, but lately more early Coltrane.'",
+      "Daniele: 'We should catch up about AI infra' \u2192 Sam: 'Definitely, send me that article.'"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "sam_employment_history",
+      "reason": "Consolidates superseded employment record (Goldman Sachs) with new role (Point72) to maintain temporal accuracy."
+    },
+    "intent": "update_durable_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer_previous",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "employer_current",
+            "type": "organization"
+          },
+          {
+            "name": "June 2024",
+            "role": "timestamp",
+            "type": "time"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "context": "until June 2024",
+            "object": "Goldman Sachs",
+            "predicate": "employed_at",
+            "subject": "Sam"
+          },
+          {
+            "context": "as of June 2024",
+            "object": "Point72",
+            "predicate": "employed_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman Sachs last month (June 2024) and joined Point72 as of June 2024."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_previous",
+            "type": "artist"
+          },
+          {
+            "name": "John Coltrane (early work)",
+            "role": "preference_current",
+            "type": "artist"
+          },
+          {
+            "name": "Jazz",
+            "role": "category",
+            "type": "genre"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "context": "recently (lately)",
+            "object": "early Coltrane",
+            "predicate": "prefers",
+            "subject": "Sam"
+          },
+          {
+            "context": "ongoing but less dominant",
+            "object": "Bill Evans",
+            "predicate": "previously_preferred",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam continues to listen to jazz, with a recent shift toward early Coltrane (e.g., *Blue Train*, *Miles Davis Sextet* sessions) over Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "actor",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "actor",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "subject",
+            "type": "topic"
+          },
+          {
+            "name": "article (unspecified)",
+            "role": "pending_action",
+            "type": "document"
+          }
+        ],
+        "kind": "intent",
+        "relationships": [
+          {
+            "context": "to facilitate discussion",
+            "object": "article from Daniele",
+            "predicate": "requested",
+            "subject": "Sam"
+          },
+          {
+            "context": "conditional on article receipt",
+            "object": "catch-up on AI infrastructure",
+            "predicate": "planned",
+            "subject": "Sam and Daniele"
+          }
+        ],
+        "statement": "Sam and Daniele agreed to coordinate a follow-up discussion on AI infrastructure, pending Sam receiving an unspecified article from Daniele."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed employment update with timestamp.",
+        "Preserved ambiguity in jazz preference ('lately more early Coltrane' implies partial shift, not exclusive).",
+        "Flagged pending action (article receipt) without assuming completion."
+      ],
+      "success": true
+    }
+  },
+  "run_id": "eval_20260506_160821"
+}
