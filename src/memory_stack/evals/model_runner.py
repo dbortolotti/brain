@@ -3,7 +3,7 @@ from __future__ import annotations
 import csv
 import hashlib
 import json
-from collections import Counter, defaultdict
+from collections import Counter, defaultdict, deque
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
@@ -199,13 +199,29 @@ def build_work_items(
 ) -> list[EvalWorkItem]:
     items: list[EvalWorkItem] = []
     for repeat_idx in range(repeat_runs):
+        endpoint_buckets: dict[str, deque[EvalWorkItem]] = {}
+        endpoint_order: list[str] = []
         for candidate in candidates:
             for role in roles_for_candidate(candidate, requested_roles, fixtures):
                 role_fixtures = [fixture for fixture in fixtures if fixture.role == role]
                 if candidate.kind == "embedding":
                     role_fixtures = embedding_fixtures(fixtures)
                 for fixture in role_fixtures:
-                    items.append(EvalWorkItem(candidate=candidate, fixture=fixture, repeat_idx=repeat_idx))
+                    key = candidate.endpoint_key
+                    if key not in endpoint_buckets:
+                        endpoint_buckets[key] = deque()
+                        endpoint_order.append(key)
+                    endpoint_buckets[key].append(
+                        EvalWorkItem(candidate=candidate, fixture=fixture, repeat_idx=repeat_idx)
+                    )
+        while endpoint_buckets:
+            for key in endpoint_order:
+                bucket = endpoint_buckets.get(key)
+                if not bucket:
+                    continue
+                items.append(bucket.popleft())
+                if not bucket:
+                    endpoint_buckets.pop(key, None)
     return items
 
 

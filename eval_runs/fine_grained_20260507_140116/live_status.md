@@ -1,7 +1,7 @@
 # Fine-Grained Eval Live Status
 
-Updated: `2026-05-07 17:27:03 BST`
-Expected end: `2026-05-07 17:27:04 BST (0 min remaining at 1060892.2 tests/min)`
+Updated: `2026-05-07 17:57:05 BST`
+Expected end: `2026-05-07 17:57:06 BST (0 min remaining at 1060892.2 tests/min)`
 
 Raw dir: `/Volumes/xpg_usb4/sandbox/git/brain/eval_runs/fine_grained_20260507_140116/raw/eval_20260507_130116`
 

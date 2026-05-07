@@ -613,6 +613,33 @@ def test_build_work_items_makes_repeat_the_outer_loop() -> None:
     assert all(item.repeat_idx == 1 for item in items[first_repeat_count:])
 
 
+def test_build_work_items_interleaves_endpoints_within_repeat() -> None:
+    registry = load_model_registry(REGISTRY_PATH)
+    candidates = select_model_candidates(
+        registry,
+        model_refs=None,
+        roles={"intent_router"},
+        scope="core",
+        include_judge=False,
+        mode="fine-grained",
+    )
+    fixtures = select_fixtures(
+        fixture_set="brain-model-test-v2",
+        roles={"intent_router"},
+        mode="fine-grained",
+    )
+
+    items = build_work_items(candidates, {"intent_router"}, fixtures, 1)
+
+    assert len(items) >= 3
+    first_wave = items[:3]
+    assert {item.candidate.endpoint_key for item in first_wave} == {
+        "openai:gpt-5-nano:llm",
+        "google:gemini-2.5-flash-lite:llm",
+        "groq:llama-3.1-8b-instant:llm",
+    }
+
+
 def test_model_eval_runner_generates_failed_manifest_and_stable_record_ids(tmp_path) -> None:
     output = tmp_path / "results.json"
     config = ModelEvalRunConfig(
