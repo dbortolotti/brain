@@ -35,7 +35,6 @@ roles:
     description: "Intent classification for Slack/free-form messages."
     preferred_models:
       - openai:gpt-5-nano
-      - groq:llama-3.1-8b-instant
       - google:gemini-2.5-flash-lite
 
   slack_intake:
@@ -53,14 +52,12 @@ roles:
       - google:gemini-2.5-flash-lite
       - google:gemini-2.5-flash
       - aws-bedrock:nvidia.nemotron-super-3-120b
-      - groq:openai/gpt-oss-120b
 
   validator_critic:
     description: "Optional cheap LLM critic; deterministic validator remains authoritative."
     preferred_models:
       - openai:gpt-5-nano
       - google:gemini-2.5-flash-lite
-      - groq:llama-3.1-8b-instant
 
   entity_resolution:
     description: "Resolve ambiguous entity mentions; prefer asking over unsafe merge."
@@ -85,14 +82,12 @@ roles:
       - openai:gpt-5.4-nano
       - google:gemini-2.5-flash-lite
       - google:gemini-2.5-flash
-      - groq:openai/gpt-oss-120b
 
   debug_explainer:
     description: "Explain recall plans, filtered candidates, sync/debug state."
     preferred_models:
       - openai:gpt-5.4-mini
       - google:gemini-2.5-flash
-      - groq:llama-3.3-70b-versatile
 
   eval_judge:
     description: "Offline judge for model output quality. Not normal runtime."
@@ -709,6 +704,7 @@ providers:
       - id: "llama-3.1-8b-instant"
         enabled_by_default: true
         provider_brand: "meta"
+        skip_reason: "Groq family deactivated."
         roles:
           - router
           - validator_critic
@@ -721,6 +717,7 @@ providers:
       - id: "llama-3.3-70b-versatile"
         enabled_by_default: true
         provider_brand: "meta"
+        skip_reason: "Groq family deactivated."
         roles:
           - debug_explainer
           - recall_synthesizer
@@ -733,6 +730,7 @@ providers:
       - id: "openai/gpt-oss-120b"
         enabled_by_default: true
         provider_brand: "openai_open_weight"
+        skip_reason: "Groq family deactivated."
         roles:
           - slack_intake
           - memory_compiler
@@ -747,6 +745,7 @@ providers:
       - id: "openai/gpt-oss-20b"
         enabled_by_default: false
         provider_brand: "openai_open_weight"
+        skip_reason: "Groq family deactivated."
         roles:
           - router
           - validator_critic
@@ -802,7 +801,6 @@ core_eval_matrix:
   # Run all golden fixtures against these first.
   router:
     - openai:gpt-5-nano
-    - groq:llama-3.1-8b-instant
     - google:gemini-2.5-flash-lite
 
   slack_intake:
@@ -810,14 +808,12 @@ core_eval_matrix:
     - google:gemini-2.5-flash-lite
     - google:gemini-2.5-flash
     - aws-bedrock:nvidia.nemotron-super-3-120b
-    - groq:openai/gpt-oss-120b
 
   memory_compiler:
     - openai:gpt-5.4-nano
     - google:gemini-2.5-flash-lite
     - google:gemini-2.5-flash
     - aws-bedrock:nvidia.nemotron-super-3-120b
-    - groq:openai/gpt-oss-120b
 
   conflict_classifier:
     - openai:gpt-5.4-mini
@@ -830,7 +826,6 @@ core_eval_matrix:
     - openai:gpt-5.4-nano
     - google:gemini-2.5-flash-lite
     - google:gemini-2.5-flash
-    - groq:openai/gpt-oss-120b
 
   eval_judge:
     - openai:gpt-5.4
@@ -846,7 +841,6 @@ fine_grained_eval_matrix:
   intent_router:
     - openai:gpt-5-nano
     - google:gemini-2.5-flash-lite
-    - groq:llama-3.1-8b-instant
 
   source_classifier:
     - openai:gpt-5-nano
@@ -872,7 +866,6 @@ fine_grained_eval_matrix:
     - openai:gpt-5.5-high
     - google:gemini-2.5-flash-lite
     - aws-bedrock:mistral.ministral-3-14b-instruct
-    - groq:llama-3.3-70b-versatile
 
   entity_mention_extractor:
     - openai:gpt-5.4-nano
@@ -892,7 +885,6 @@ fine_grained_eval_matrix:
     - openai:gpt-5.4-mini
     - google:gemini-2.5-flash-lite
     - aws-bedrock:mistral.ministral-3-14b-instruct
-    - groq:llama-3.3-70b-versatile
 
   open_loop_detector:
     - openai:gpt-5.4-nano
@@ -920,7 +912,6 @@ fine_grained_eval_matrix:
     - openai:gpt-5.5-high
     - google:gemini-2.5-flash-lite
     - aws-bedrock:mistral.ministral-3-14b-instruct
-    - groq:llama-3.3-70b-versatile
 
   conflict_explainer:
     - openai:gpt-5.4-nano
@@ -947,7 +938,6 @@ fine_grained_eval_matrix:
 
   recall_synthesizer:
     - google:gemini-2.5-flash-lite
-    - groq:llama-3.3-70b-versatile
     - openai:gpt-5.4-mini
     - openai:gpt-5.4-nano
     - anthropic:claude-haiku-4-5
