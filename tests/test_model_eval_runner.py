@@ -165,6 +165,30 @@ def test_model_matrix_selects_gpt_5_4_and_gemini_3_1_pro_thinking_variants() -> 
     assert candidates[1].reasoning_effort == "medium"
 
 
+def test_model_matrix_selects_openrouter_quantized_variants() -> None:
+    registry = load_model_registry(REGISTRY_PATH)
+
+    candidates = select_model_candidates(
+        registry,
+        model_refs=[
+            "openrouter:qwen/qwen3.5-9b-int4",
+            "openrouter:google/gemma-3n-e4b-it-fp8",
+            "openrouter:google/gemma-4-31b-it-fp6",
+            "openrouter:qwen/qwen3.5-27b-fp8",
+        ],
+        roles={"eval_judge"},
+        scope="core",
+        include_judge=True,
+    )
+
+    assert [(candidate.api_model, candidate.quantizations) for candidate in candidates] == [
+        ("qwen/qwen3.5-9b", ("int4",)),
+        ("google/gemma-3n-e4b-it", ("fp8",)),
+        ("google/gemma-4-31b-it", ("fp6",)),
+        ("qwen/qwen3.5-27b", ("fp8",)),
+    ]
+
+
 def test_fine_grained_model_matrix_selects_targeted_role_models() -> None:
     registry = load_model_registry(REGISTRY_PATH)
 
@@ -180,7 +204,10 @@ def test_fine_grained_model_matrix_selects_targeted_role_models() -> None:
     assert [candidate.ref for candidate in candidates] == [
         "openai:gpt-5-nano",
         "google:gemini-2.5-flash-lite",
-        "groq:llama-3.1-8b-instant",
+        "openrouter:qwen/qwen3.5-9b-int4",
+        "openrouter:google/gemma-3n-e4b-it-fp8",
+        "openrouter:google/gemma-4-31b-it-fp6",
+        "openrouter:qwen/qwen3.5-27b-fp8",
     ]
 
 
@@ -542,6 +569,43 @@ def test_live_provider_client_maps_google_reasoning_effort_to_thinking_level() -
     assert http_client.last_json["generationConfig"]["thinkingConfig"] == {"thinkingLevel": "medium"}
 
 
+def test_live_provider_client_uses_openrouter_quantization_override() -> None:
+    class RecordingClient:
+        def __init__(self) -> None:
+            self.last_json: dict[str, Any] | None = None
+            self.last_url: str | None = None
+
+        def post(self, url: str, *, headers: dict[str, str], json: dict[str, Any]) -> Any:
+            self.last_url = url
+            self.last_json = json
+
+            class Response:
+                status_code = 200
+
+                @staticmethod
+                def json() -> dict[str, Any]:
+                    return {"choices": [{"message": {"content": "{}"}}]}
+
+            return Response()
+
+    http_client = RecordingClient()
+    client = LiveProviderClient(Settings(openrouter_api_key="test-key"), http_client=http_client)
+    candidate = select_model_candidates(
+        load_model_registry(REGISTRY_PATH),
+        model_refs=["openrouter:google/gemma-4-31b-it-fp6"],
+        roles={"eval_judge"},
+        scope="core",
+        include_judge=True,
+    )[0]
+
+    client.complete_json(candidate, prompt="test", schema={})
+
+    assert http_client.last_url == "https://openrouter.ai/api/v1/chat/completions"
+    assert http_client.last_json is not None
+    assert http_client.last_json["model"] == "google/gemma-4-31b-it"
+    assert http_client.last_json["provider"] == {"quantizations": ["fp6"]}
+
+
 def test_model_eval_runner_writes_jsonl_and_markdown(tmp_path) -> None:
     output = tmp_path / "eval.jsonl"
     report = tmp_path / "report.md"
@@ -631,12 +695,15 @@ def test_build_work_items_interleaves_endpoints_within_repeat() -> None:
 
     items = build_work_items(candidates, {"intent_router"}, fixtures, 1)
 
-    assert len(items) >= 3
-    first_wave = items[:3]
+    assert len(items) >= 6
+    first_wave = items[:6]
     assert {item.candidate.endpoint_key for item in first_wave} == {
         "openai:gpt-5-nano:llm",
         "google:gemini-2.5-flash-lite:llm",
-        "groq:llama-3.1-8b-instant:llm",
+        "openrouter:qwen/qwen3.5-9b:llm:int4",
+        "openrouter:google/gemma-3n-e4b-it:llm:fp8",
+        "openrouter:google/gemma-4-31b-it:llm:fp6",
+        "openrouter:qwen/qwen3.5-27b:llm:fp8",
     }
 
 

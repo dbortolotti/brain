@@ -18,6 +18,7 @@ def test_github_deploy_action_validates_before_deploying() -> None:
     assert "model_smoke_scope" in workflow
     assert "BRAIN_MODEL_SMOKE_SCOPE" in workflow
     assert "secrets.OPENAI_API_KEY" in workflow
+    assert "secrets.OPENROUTER_API_KEY" in workflow
     assert "secrets.BRAIN_AUTH_PASSWORD" in workflow
     renderer = Path("scripts/render_prod_env.py").read_text(encoding="utf-8")
     assert "brain.env.last-deployed" in renderer

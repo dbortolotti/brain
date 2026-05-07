@@ -24,13 +24,14 @@ from memory_stack.config import Settings, load_settings, normalize_provider_name
 
 
 REGISTRY_PATH = Path(__file__).resolve().parents[1] / "brain_model_registry.yaml"
-LLM_PROVIDERS = {"openai", "google", "gemini", "anthropic", "aws-bedrock", "bedrock", "groq"}
+LLM_PROVIDERS = {"openai", "openrouter", "google", "gemini", "anthropic", "aws-bedrock", "bedrock", "groq"}
 EMBEDDING_PROVIDERS = {"openai", "google", "gemini", "voyage"}
 LOCAL_PROVIDERS = {"ollama", "fastembed"}
 SECRET_FIELDS = (
     "llm_api_key",
     "embedding_api_key",
     "openai_api_key",
+    "openrouter_api_key",
     "gemini_api_key",
     "google_api_key",
     "anthropic_api_key",
@@ -52,6 +53,7 @@ class Probe:
     model: str
     kind: str
     label: str
+    quantizations: tuple[str, ...] = ()
     roles: tuple[str, ...] = ()
     judge_only: bool = False
     skip_reason: str | None = None
@@ -270,6 +272,7 @@ def provider_registry_probes(
                     model=str(model["id"]),
                     kind=probe_kind,
                     label=f"{probe_provider}:{model['id']}",
+                    quantizations=tuple(str(value) for value in model.get("quantizations", ())),
                     roles=model_roles,
                     judge_only=bool(model.get("judge_only", False)),
                 )
@@ -293,6 +296,7 @@ def registry_model_index(registry: dict[str, Any]) -> dict[str, Probe]:
                 model=str(model["id"]),
                 kind=kind,
                 label=f"{probe_provider}:{model['id']}",
+                quantizations=tuple(str(value) for value in model.get("quantizations", ())),
                 roles=tuple(str(role) for role in model.get("roles", ())),
                 judge_only=bool(model.get("judge_only", False)),
                 skip_reason=model_skip_reason(model),
@@ -345,7 +349,7 @@ def strip_provider_prefix(provider: str, model: str) -> str:
 def dedupe_probes(probes: list[Probe]) -> list[Probe]:
     deduped: dict[tuple[str, str, str], Probe] = {}
     for probe in probes:
-        key = (probe.kind, probe.provider, probe.model)
+        key = (probe.kind, probe.provider, probe.model, probe.quantizations)
         if key not in deduped:
             deduped[key] = probe
             continue
@@ -406,6 +410,7 @@ def missing_credential(settings: Settings, probe: Probe) -> str | None:
     if not settings.provider_api_key(probe.provider):
         env_names = {
             "openai": "OPENAI_API_KEY",
+            "openrouter": "OPENROUTER_API_KEY",
             "google": "GEMINI_API_KEY or GOOGLE_API_KEY",
             "anthropic": "ANTHROPIC_API_KEY",
             "groq": "GROQ_API_KEY",
@@ -425,6 +430,8 @@ def run_probe(settings: Settings, probe: Probe, *, client: httpx.Client) -> None
 def run_llm_probe(settings: Settings, probe: Probe, *, client: httpx.Client) -> None:
     if probe.provider == "openai":
         post_openai_response(settings, probe.model, client=client)
+    elif probe.provider == "openrouter":
+        post_openrouter_chat_completion(settings, probe.model, probe.quantizations, client=client)
     elif probe.provider == "google":
         post_google_generate_content(settings, probe.model, client=client)
     elif probe.provider == "anthropic":
@@ -487,6 +494,30 @@ def post_groq_chat_completion(settings: Settings, model: str, *, client: httpx.C
     payload = checked_json(response, settings)
     if not payload.get("choices"):
         raise SmokeFailure("Groq response did not include choices")
+
+
+def post_openrouter_chat_completion(
+    settings: Settings,
+    model: str,
+    quantizations: tuple[str, ...],
+    *,
+    client: httpx.Client,
+) -> None:
+    request_json: dict[str, Any] = {
+        "model": model,
+        "messages": [{"role": "user", "content": "Reply with exactly: ok"}],
+        "max_tokens": SMOKE_MAX_TOKENS,
+    }
+    if quantizations:
+        request_json["provider"] = {"quantizations": list(quantizations)}
+    response = client.post(
+        "https://openrouter.ai/api/v1/chat/completions",
+        headers={"Authorization": f"Bearer {settings.provider_api_key('openrouter')}"},
+        json=request_json,
+    )
+    payload = checked_json(response, settings)
+    if not payload.get("choices"):
+        raise SmokeFailure("OpenRouter response did not include choices")
 
 
 def post_google_generate_content(settings: Settings, model: str, *, client: httpx.Client) -> None:

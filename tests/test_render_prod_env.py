@@ -12,6 +12,7 @@ def run_renderer(tmp_path, env_overrides, *, check=True):
         **os.environ,
         "BRAIN_PROD_ROOT": str(tmp_path / "prod" / "brain"),
         "OPENAI_API_KEY": "sk-prod-openai",
+        "OPENROUTER_API_KEY": "sk-prod-openrouter",
         "GRAPH_DATABASE_PASSWORD": "prod-graph-password",
         "BRAIN_AUTH_PASSWORD": "prod-auth-password",
         "GITHUB_SHA": "abc123",
@@ -41,6 +42,7 @@ def run_renderer_with_args(tmp_path, env_overrides, extra_args, *, check=True):
         **os.environ,
         "BRAIN_PROD_ROOT": str(tmp_path / "prod" / "brain"),
         "OPENAI_API_KEY": "sk-prod-openai",
+        "OPENROUTER_API_KEY": "sk-prod-openrouter",
         "GRAPH_DATABASE_PASSWORD": "prod-graph-password",
         "BRAIN_AUTH_PASSWORD": "prod-auth-password",
         "GITHUB_SHA": "abc123",
@@ -74,6 +76,7 @@ def test_render_prod_env_writes_github_secret_values_without_printing_them(tmp_p
     base_rendered = output.with_name("brain.env.last-deployed").read_text(encoding="utf-8")
     assert "BRAIN_CONFIG_RENDER_SHA=abc123" in rendered
     assert "OPENAI_API_KEY=sk-prod-openai" in rendered
+    assert "OPENROUTER_API_KEY=sk-prod-openrouter" in rendered
     assert "GRAPH_DATABASE_PASSWORD=prod-graph-password" in rendered
     assert "BRAIN_SLACK_SIGNING_SECRET=prod-slack-signing-secret" in rendered
     assert base_rendered == rendered

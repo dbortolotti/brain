@@ -148,6 +148,8 @@ class LiveProviderClient:
     ) -> str:
         if candidate.provider == "openai":
             return self._openai_response(candidate, prompt=prompt, schema=schema)
+        if candidate.provider == "openrouter":
+            return self._openrouter_chat_completion(candidate, prompt=prompt, schema=schema)
         if candidate.provider == "google":
             return self._google_generate_content(candidate, prompt=prompt, schema=schema)
         if candidate.provider == "anthropic":
@@ -219,6 +221,33 @@ class LiveProviderClient:
         if chunks:
             return "\n".join(chunks)
         raise ProviderCallError("Google response did not include text")
+
+    def _openrouter_chat_completion(
+        self,
+        candidate: ModelCandidate,
+        *,
+        prompt: str,
+        schema: dict[str, Any],
+    ) -> str:
+        request_json: dict[str, Any] = {
+            "model": candidate.api_model or candidate.model,
+            "messages": [{"role": "user", "content": prompt_with_schema(prompt, schema)}],
+            "max_tokens": MAX_OUTPUT_TOKENS,
+            "temperature": 0,
+            "response_format": {"type": "json_object"},
+        }
+        if candidate.quantizations:
+            request_json["provider"] = {"quantizations": list(candidate.quantizations)}
+        response = self.client.post(
+            "https://openrouter.ai/api/v1/chat/completions",
+            headers={"Authorization": f"Bearer {self.settings.provider_api_key('openrouter')}"},
+            json=request_json,
+        )
+        payload = checked_json(response)
+        message = (((payload.get("choices") or [{}])[0].get("message") or {}).get("content"))
+        if isinstance(message, str) and message.strip():
+            return message
+        raise ProviderCallError("OpenRouter response did not include message content")
 
     def _anthropic_message(
         self,

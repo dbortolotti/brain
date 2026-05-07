@@ -16,6 +16,7 @@ FALLBACK_ENV_FILE = PROJECT_ROOT / ".env.example"
 
 PROVIDER_API_KEY_FIELDS: dict[str, tuple[str, ...]] = {
     "openai": ("openai_api_key",),
+    "openrouter": ("openrouter_api_key",),
     "gemini": ("gemini_api_key", "google_api_key"),
     "google": ("google_api_key", "gemini_api_key"),
     "anthropic": ("anthropic_api_key",),
@@ -26,6 +27,7 @@ PROVIDER_API_KEY_FIELDS: dict[str, tuple[str, ...]] = {
 }
 PROVIDER_API_KEY_ENV_NAMES: dict[str, tuple[str, ...]] = {
     "openai": ("OPENAI_API_KEY",),
+    "openrouter": ("OPENROUTER_API_KEY",),
     "gemini": ("GEMINI_API_KEY", "GOOGLE_API_KEY"),
     "google": ("GOOGLE_API_KEY", "GEMINI_API_KEY"),
     "anthropic": ("ANTHROPIC_API_KEY",),
@@ -54,6 +56,7 @@ PROVIDER_RUNTIME_ENV_FIELDS: dict[str, tuple[tuple[str, str], ...]] = {
 }
 CANONICAL_PROVIDER_API_KEY_PROVIDERS = (
     "openai",
+    "openrouter",
     "gemini",
     "anthropic",
     "aws-bedrock",
@@ -85,6 +88,7 @@ class Settings(BaseSettings):
     embedding_dimensions: int = 768
 
     openai_api_key: str | None = None
+    openrouter_api_key: str | None = None
     gemini_api_key: str | None = None
     google_api_key: str | None = None
     anthropic_api_key: str | None = None

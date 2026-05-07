@@ -42,6 +42,7 @@ class ModelCandidate:
     model: str
     kind: str
     api_model: str | None = None
+    quantizations: tuple[str, ...] = ()
     roles: tuple[str, ...] = ()
     judge_only: bool = False
     price_per_1m: dict[str, float] = field(default_factory=dict)
@@ -56,6 +57,9 @@ class ModelCandidate:
     @property
     def endpoint_key(self) -> str:
         target = self.api_model or self.model
+        quantization_key = ",".join(self.quantizations)
+        if quantization_key:
+            return f"{self.provider}:{target}:{self.kind}:{quantization_key}"
         return f"{self.provider}:{target}:{self.kind}"
 
 
@@ -82,6 +86,7 @@ def registry_model_index(registry: dict[str, Any]) -> dict[str, ModelCandidate]:
                 model=str(model["id"]),
                 kind=kind,
                 api_model=str(model.get("api_model") or model["id"]),
+                quantizations=tuple(str(value) for value in model.get("quantizations", ())),
                 roles=tuple(str(role) for role in model.get("roles", ())),
                 judge_only=bool(model.get("judge_only", False)),
                 price_per_1m=price,
@@ -95,6 +100,7 @@ def registry_model_index(registry: dict[str, Any]) -> dict[str, ModelCandidate]:
                     model=candidate.model,
                     kind=candidate.kind,
                     api_model=candidate.api_model,
+                    quantizations=candidate.quantizations,
                     roles=candidate.roles,
                     judge_only=candidate.judge_only,
                     price_per_1m=candidate.price_per_1m,
@@ -214,6 +220,7 @@ def provider_candidates(
                     model=str(model["id"]),
                     kind=kind,
                     api_model=str(model.get("api_model") or model["id"]),
+                    quantizations=tuple(str(value) for value in model.get("quantizations", ())),
                     roles=model_roles,
                     judge_only=bool(model.get("judge_only", False)),
                     price_per_1m=price_config(model),
@@ -239,6 +246,7 @@ def candidate_from_ref(
             model=candidate.model,
             kind=candidate.kind,
             api_model=candidate.api_model,
+            quantizations=candidate.quantizations,
             roles=tuple(dict.fromkeys((*candidate.roles, *roles))),
             judge_only=candidate.judge_only,
             price_per_1m=candidate.price_per_1m,
@@ -254,6 +262,7 @@ def candidate_from_ref(
         model=model,
         kind=kind,
         api_model=model,
+        quantizations=(),
         roles=tuple(sorted(roles)),
         requested_ref=ref,
     )
@@ -267,6 +276,7 @@ def dedupe_candidates(candidates: list[ModelCandidate]) -> list[ModelCandidate]:
             candidate.provider,
             candidate.model,
             candidate.api_model,
+            candidate.quantizations,
             candidate.reasoning_effort,
             candidate.requested_ref,
         )
@@ -279,6 +289,7 @@ def dedupe_candidates(candidates: list[ModelCandidate]) -> list[ModelCandidate]:
             model=existing.model,
             kind=existing.kind,
             api_model=existing.api_model,
+            quantizations=existing.quantizations or candidate.quantizations,
             roles=tuple(dict.fromkeys((*existing.roles, *candidate.roles))),
             judge_only=existing.judge_only or candidate.judge_only,
             price_per_1m=existing.price_per_1m or candidate.price_per_1m,

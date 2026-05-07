@@ -755,6 +755,108 @@ providers:
           output: 0.30
         expected_use: "Optional cheaper GPT-OSS candidate."
 
+  openrouter:
+    type: "llm"
+    default_endpoint_env: "OPENROUTER_API_KEY"
+    notes:
+      - "Unified provider for open-weight and cross-provider catalog access."
+      - "Quantized variants are represented explicitly so evals can compare cost/quality tradeoffs."
+    models:
+      - id: "qwen/qwen3.5-9b-int4"
+        api_model: "qwen/qwen3.5-9b"
+        enabled_by_default: false
+        provider_brand: "qwen"
+        quantizations:
+          - "int4"
+        roles:
+          - router
+          - slack_intake
+          - memory_compiler
+          - validator_critic
+          - entity_resolution
+          - conflict_classifier
+          - recall_synthesizer
+          - debug_explainer
+          - eval_judge
+          - hard_adjudicator
+        price_per_1m:
+          input: 0.04
+          output: 0.15
+        context_window_tokens: 262144
+        expected_use: "Cheap Qwen 9B OpenRouter variant pinned to int4 quantization."
+
+      - id: "google/gemma-3n-e4b-it-fp8"
+        api_model: "google/gemma-3n-e4b-it"
+        enabled_by_default: false
+        provider_brand: "google"
+        quantizations:
+          - "fp8"
+        roles:
+          - router
+          - slack_intake
+          - memory_compiler
+          - validator_critic
+          - entity_resolution
+          - conflict_classifier
+          - recall_synthesizer
+          - debug_explainer
+          - eval_judge
+          - hard_adjudicator
+        price_per_1m:
+          input: 0.02
+          output: 0.04
+        context_window_tokens: 32768
+        knowledge_cutoff: "2024-08-31"
+        expected_use: "Small Gemma OpenRouter variant pinned to fp8 quantization."
+        notes:
+          - "Added as google/gemma-3n-e4b-it because that is the canonical OpenRouter slug currently listed."
+
+      - id: "google/gemma-4-31b-it-fp6"
+        api_model: "google/gemma-4-31b-it"
+        enabled_by_default: false
+        provider_brand: "google"
+        quantizations:
+          - "fp6"
+        roles:
+          - router
+          - slack_intake
+          - memory_compiler
+          - validator_critic
+          - entity_resolution
+          - conflict_classifier
+          - recall_synthesizer
+          - debug_explainer
+          - eval_judge
+          - hard_adjudicator
+        price_per_1m:
+          input: 0.13
+          output: 0.38
+        context_window_tokens: 262144
+        expected_use: "Gemma 4 31B OpenRouter variant pinned to fp6 quantization."
+
+      - id: "qwen/qwen3.5-27b-fp8"
+        api_model: "qwen/qwen3.5-27b"
+        enabled_by_default: false
+        provider_brand: "qwen"
+        quantizations:
+          - "fp8"
+        roles:
+          - router
+          - slack_intake
+          - memory_compiler
+          - validator_critic
+          - entity_resolution
+          - conflict_classifier
+          - recall_synthesizer
+          - debug_explainer
+          - eval_judge
+          - hard_adjudicator
+        price_per_1m:
+          input: 0.195
+          output: 1.56
+        context_window_tokens: 262144
+        expected_use: "Stronger Qwen 27B OpenRouter variant pinned to fp8 quantization."
+
   embeddings:
     type: "embedding"
     notes:
@@ -841,24 +943,40 @@ fine_grained_eval_matrix:
   intent_router:
     - openai:gpt-5-nano
     - google:gemini-2.5-flash-lite
+    - openrouter:qwen/qwen3.5-9b-int4
+    - openrouter:google/gemma-3n-e4b-it-fp8
+    - openrouter:google/gemma-4-31b-it-fp6
+    - openrouter:qwen/qwen3.5-27b-fp8
 
   source_classifier:
     - openai:gpt-5-nano
     - openai:gpt-5.4-nano
     - google:gemini-2.5-flash-lite
     - aws-bedrock:mistral.ministral-3-14b-instruct
+    - openrouter:qwen/qwen3.5-9b-int4
+    - openrouter:google/gemma-3n-e4b-it-fp8
+    - openrouter:google/gemma-4-31b-it-fp6
+    - openrouter:qwen/qwen3.5-27b-fp8
 
   durability_filter:
     - openai:gpt-5.4-nano
     - openai:gpt-5.4-mini
     - google:gemini-2.5-flash-lite
     - aws-bedrock:mistral.ministral-3-14b-instruct
+    - openrouter:qwen/qwen3.5-9b-int4
+    - openrouter:google/gemma-3n-e4b-it-fp8
+    - openrouter:google/gemma-4-31b-it-fp6
+    - openrouter:qwen/qwen3.5-27b-fp8
 
   memory_kind_classifier:
     - openai:gpt-5-nano
     - openai:gpt-5.4-nano
     - google:gemini-2.5-flash-lite
     - aws-bedrock:mistral.ministral-3-14b-instruct
+    - openrouter:qwen/qwen3.5-9b-int4
+    - openrouter:google/gemma-3n-e4b-it-fp8
+    - openrouter:google/gemma-4-31b-it-fp6
+    - openrouter:qwen/qwen3.5-27b-fp8
 
   atomic_card_extractor:
     - openai:gpt-5.4-nano
@@ -866,12 +984,20 @@ fine_grained_eval_matrix:
     - openai:gpt-5.5-high
     - google:gemini-2.5-flash-lite
     - aws-bedrock:mistral.ministral-3-14b-instruct
+    - openrouter:qwen/qwen3.5-9b-int4
+    - openrouter:google/gemma-3n-e4b-it-fp8
+    - openrouter:google/gemma-4-31b-it-fp6
+    - openrouter:qwen/qwen3.5-27b-fp8
 
   entity_mention_extractor:
     - openai:gpt-5.4-nano
     - openai:gpt-5.4-mini
     - google:gemini-2.5-flash-lite
     - aws-bedrock:mistral.ministral-3-14b-instruct
+    - openrouter:qwen/qwen3.5-9b-int4
+    - openrouter:google/gemma-3n-e4b-it-fp8
+    - openrouter:google/gemma-4-31b-it-fp6
+    - openrouter:qwen/qwen3.5-27b-fp8
 
   entity_candidate_ranker:
     - openai:gpt-5.4-nano
@@ -879,24 +1005,40 @@ fine_grained_eval_matrix:
     - openai:gpt-5.5-high
     - google:gemini-2.5-flash-lite
     - anthropic:claude-haiku-4-5
+    - openrouter:qwen/qwen3.5-9b-int4
+    - openrouter:google/gemma-3n-e4b-it-fp8
+    - openrouter:google/gemma-4-31b-it-fp6
+    - openrouter:qwen/qwen3.5-27b-fp8
 
   relationship_extractor:
     - openai:gpt-5.4-nano
     - openai:gpt-5.4-mini
     - google:gemini-2.5-flash-lite
     - aws-bedrock:mistral.ministral-3-14b-instruct
+    - openrouter:qwen/qwen3.5-9b-int4
+    - openrouter:google/gemma-3n-e4b-it-fp8
+    - openrouter:google/gemma-4-31b-it-fp6
+    - openrouter:qwen/qwen3.5-27b-fp8
 
   open_loop_detector:
     - openai:gpt-5.4-nano
     - openai:gpt-5.4-mini
     - google:gemini-2.5-flash-lite
     - aws-bedrock:mistral.ministral-3-14b-instruct
+    - openrouter:qwen/qwen3.5-9b-int4
+    - openrouter:google/gemma-3n-e4b-it-fp8
+    - openrouter:google/gemma-4-31b-it-fp6
+    - openrouter:qwen/qwen3.5-27b-fp8
 
   table_policy_handler:
     - openai:gpt-5.4-nano
     - openai:gpt-5.4-mini
     - google:gemini-2.5-flash-lite
     - aws-bedrock:mistral.ministral-3-14b-instruct
+    - openrouter:qwen/qwen3.5-9b-int4
+    - openrouter:google/gemma-3n-e4b-it-fp8
+    - openrouter:google/gemma-4-31b-it-fp6
+    - openrouter:qwen/qwen3.5-27b-fp8
 
   source_takeaway_extractor:
     - openai:gpt-5.4-nano
@@ -905,6 +1047,10 @@ fine_grained_eval_matrix:
     - google:gemini-2.5-flash-lite
     - google:gemini-2.5-flash
     - aws-bedrock:mistral.ministral-3-14b-instruct
+    - openrouter:qwen/qwen3.5-9b-int4
+    - openrouter:google/gemma-3n-e4b-it-fp8
+    - openrouter:google/gemma-4-31b-it-fp6
+    - openrouter:qwen/qwen3.5-27b-fp8
 
   conflict_candidate_detector:
     - openai:gpt-5.4-nano
@@ -912,47 +1058,79 @@ fine_grained_eval_matrix:
     - openai:gpt-5.5-high
     - google:gemini-2.5-flash-lite
     - aws-bedrock:mistral.ministral-3-14b-instruct
+    - openrouter:qwen/qwen3.5-9b-int4
+    - openrouter:google/gemma-3n-e4b-it-fp8
+    - openrouter:google/gemma-4-31b-it-fp6
+    - openrouter:qwen/qwen3.5-27b-fp8
 
   conflict_explainer:
     - openai:gpt-5.4-nano
     - openai:gpt-5.4-mini
     - google:gemini-2.5-flash-lite
     - anthropic:claude-haiku-4-5
+    - openrouter:qwen/qwen3.5-9b-int4
+    - openrouter:google/gemma-3n-e4b-it-fp8
+    - openrouter:google/gemma-4-31b-it-fp6
+    - openrouter:qwen/qwen3.5-27b-fp8
 
   repair_option_generator:
     - openai:gpt-5.4-nano
     - openai:gpt-5.4-mini
     - google:gemini-2.5-flash-lite
     - aws-bedrock:mistral.ministral-3-14b-instruct
+    - openrouter:qwen/qwen3.5-9b-int4
+    - openrouter:google/gemma-3n-e4b-it-fp8
+    - openrouter:google/gemma-4-31b-it-fp6
+    - openrouter:qwen/qwen3.5-27b-fp8
 
   success_receipt_generator:
     - openai:gpt-5-nano
     - openai:gpt-5.4-nano
     - google:gemini-2.5-flash-lite
+    - openrouter:qwen/qwen3.5-9b-int4
+    - openrouter:google/gemma-3n-e4b-it-fp8
+    - openrouter:google/gemma-4-31b-it-fp6
+    - openrouter:qwen/qwen3.5-27b-fp8
 
   recall_planner:
     - openai:gpt-5.4-nano
     - openai:gpt-5.4-mini
     - google:gemini-2.5-flash-lite
     - aws-bedrock:mistral.ministral-3-14b-instruct
+    - openrouter:qwen/qwen3.5-9b-int4
+    - openrouter:google/gemma-3n-e4b-it-fp8
+    - openrouter:google/gemma-4-31b-it-fp6
+    - openrouter:qwen/qwen3.5-27b-fp8
 
   recall_synthesizer:
     - google:gemini-2.5-flash-lite
     - openai:gpt-5.4-mini
     - openai:gpt-5.4-nano
     - anthropic:claude-haiku-4-5
+    - openrouter:qwen/qwen3.5-9b-int4
+    - openrouter:google/gemma-3n-e4b-it-fp8
+    - openrouter:google/gemma-4-31b-it-fp6
+    - openrouter:qwen/qwen3.5-27b-fp8
 
   groundedness_checker:
     - openai:gpt-5.4-low
     - openai:gpt-5.4
     - openai:gpt-5.5-high
     - anthropic:claude-sonnet-4-6
+    - openrouter:qwen/qwen3.5-9b-int4
+    - openrouter:google/gemma-3n-e4b-it-fp8
+    - openrouter:google/gemma-4-31b-it-fp6
+    - openrouter:qwen/qwen3.5-27b-fp8
 
   debug_explainer:
     - openai:gpt-5.4-low
     - openai:gpt-5.4-mini
     - google:gemini-2.5-flash-lite
     - anthropic:claude-haiku-4-5
+    - openrouter:qwen/qwen3.5-9b-int4
+    - openrouter:google/gemma-3n-e4b-it-fp8
+    - openrouter:google/gemma-4-31b-it-fp6
+    - openrouter:qwen/qwen3.5-27b-fp8
 
   eval_judge:
     - openai:gpt-5.4-low
@@ -960,6 +1138,10 @@ fine_grained_eval_matrix:
     - openai:gpt-5.5
     - openai:gpt-5.5-high
     - anthropic:claude-sonnet-4-6
+    - openrouter:qwen/qwen3.5-9b-int4
+    - openrouter:google/gemma-3n-e4b-it-fp8
+    - openrouter:google/gemma-4-31b-it-fp6
+    - openrouter:qwen/qwen3.5-27b-fp8
 
 
 excluded_for_now:
@@ -967,7 +1149,6 @@ excluded_for_now:
     reason: "User preference: respectable brands with servers/model brands not in China."
     skip:
       - deepseek
-      - qwen
       - moonshot
       - kimi
       - zhipu
