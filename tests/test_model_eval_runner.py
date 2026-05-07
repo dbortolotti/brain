@@ -171,9 +171,9 @@ def test_model_matrix_selects_openrouter_quantized_variants() -> None:
     candidates = select_model_candidates(
         registry,
         model_refs=[
-            "openrouter:qwen/qwen3.5-9b-int4",
+            "openrouter:qwen/qwen3.5-9b-fp8",
             "openrouter:google/gemma-3n-e4b-it-fp8",
-            "openrouter:google/gemma-4-31b-it-fp6",
+            "openrouter:google/gemma-4-31b-it-fp8",
             "openrouter:qwen/qwen3.5-27b-fp8",
         ],
         roles={"eval_judge"},
@@ -182,9 +182,9 @@ def test_model_matrix_selects_openrouter_quantized_variants() -> None:
     )
 
     assert [(candidate.api_model, candidate.quantizations) for candidate in candidates] == [
-        ("qwen/qwen3.5-9b", ("int4",)),
+        ("qwen/qwen3.5-9b", ("fp8",)),
         ("google/gemma-3n-e4b-it", ("fp8",)),
-        ("google/gemma-4-31b-it", ("fp6",)),
+        ("google/gemma-4-31b-it", ("fp8",)),
         ("qwen/qwen3.5-27b", ("fp8",)),
     ]
 
@@ -204,9 +204,9 @@ def test_fine_grained_model_matrix_selects_targeted_role_models() -> None:
     assert [candidate.ref for candidate in candidates] == [
         "openai:gpt-5-nano",
         "google:gemini-2.5-flash-lite",
-        "openrouter:qwen/qwen3.5-9b-int4",
+        "openrouter:qwen/qwen3.5-9b-fp8",
         "openrouter:google/gemma-3n-e4b-it-fp8",
-        "openrouter:google/gemma-4-31b-it-fp6",
+        "openrouter:google/gemma-4-31b-it-fp8",
         "openrouter:qwen/qwen3.5-27b-fp8",
     ]
 
@@ -592,7 +592,7 @@ def test_live_provider_client_uses_openrouter_quantization_override() -> None:
     client = LiveProviderClient(Settings(openrouter_api_key="test-key"), http_client=http_client)
     candidate = select_model_candidates(
         load_model_registry(REGISTRY_PATH),
-        model_refs=["openrouter:google/gemma-4-31b-it-fp6"],
+        model_refs=["openrouter:google/gemma-4-31b-it-fp8"],
         roles={"eval_judge"},
         scope="core",
         include_judge=True,
@@ -603,7 +603,7 @@ def test_live_provider_client_uses_openrouter_quantization_override() -> None:
     assert http_client.last_url == "https://openrouter.ai/api/v1/chat/completions"
     assert http_client.last_json is not None
     assert http_client.last_json["model"] == "google/gemma-4-31b-it"
-    assert http_client.last_json["provider"] == {"quantizations": ["fp6"]}
+    assert http_client.last_json["provider"] == {"quantizations": ["fp8"]}
 
 
 def test_model_eval_runner_writes_jsonl_and_markdown(tmp_path) -> None:
@@ -700,9 +700,9 @@ def test_build_work_items_interleaves_endpoints_within_repeat() -> None:
     assert {item.candidate.endpoint_key for item in first_wave} == {
         "openai:gpt-5-nano:llm",
         "google:gemini-2.5-flash-lite:llm",
-        "openrouter:qwen/qwen3.5-9b:llm:int4",
+        "openrouter:qwen/qwen3.5-9b:llm:fp8",
         "openrouter:google/gemma-3n-e4b-it:llm:fp8",
-        "openrouter:google/gemma-4-31b-it:llm:fp6",
+        "openrouter:google/gemma-4-31b-it:llm:fp8",
         "openrouter:qwen/qwen3.5-27b:llm:fp8",
     }
 

@@ -53,6 +53,8 @@ class Probe:
     model: str
     kind: str
     label: str
+    api_model: str | None = None
+    reasoning_effort: str | None = None
     quantizations: tuple[str, ...] = ()
     roles: tuple[str, ...] = ()
     judge_only: bool = False
@@ -272,6 +274,8 @@ def provider_registry_probes(
                     model=str(model["id"]),
                     kind=probe_kind,
                     label=f"{probe_provider}:{model['id']}",
+                    api_model=str(model.get("api_model") or model["id"]),
+                    reasoning_effort=str(model.get("reasoning_effort")) if model.get("reasoning_effort") is not None else None,
                     quantizations=tuple(str(value) for value in model.get("quantizations", ())),
                     roles=model_roles,
                     judge_only=bool(model.get("judge_only", False)),
@@ -296,6 +300,8 @@ def registry_model_index(registry: dict[str, Any]) -> dict[str, Probe]:
                 model=str(model["id"]),
                 kind=kind,
                 label=f"{probe_provider}:{model['id']}",
+                api_model=str(model.get("api_model") or model["id"]),
+                reasoning_effort=str(model.get("reasoning_effort")) if model.get("reasoning_effort") is not None else None,
                 quantizations=tuple(str(value) for value in model.get("quantizations", ())),
                 roles=tuple(str(role) for role in model.get("roles", ())),
                 judge_only=bool(model.get("judge_only", False)),
@@ -321,6 +327,7 @@ def probe_from_ref(ref: str, index: dict[str, Probe], *, role: str) -> Probe:
         model=model,
         kind=kind,
         label=ref,
+        api_model=model,
         roles=(role,),
     )
 
@@ -429,17 +436,22 @@ def run_probe(settings: Settings, probe: Probe, *, client: httpx.Client) -> None
 
 def run_llm_probe(settings: Settings, probe: Probe, *, client: httpx.Client) -> None:
     if probe.provider == "openai":
-        post_openai_response(settings, probe.model, client=client)
+        post_openai_response(settings, probe.api_model or probe.model, client=client)
     elif probe.provider == "openrouter":
-        post_openrouter_chat_completion(settings, probe.model, probe.quantizations, client=client)
+        post_openrouter_chat_completion(settings, probe.api_model or probe.model, probe.quantizations, client=client)
     elif probe.provider == "google":
-        post_google_generate_content(settings, probe.model, client=client)
+        post_google_generate_content(
+            settings,
+            probe.api_model or probe.model,
+            reasoning_effort=probe.reasoning_effort,
+            client=client,
+        )
     elif probe.provider == "anthropic":
-        post_anthropic_message(settings, probe.model, client=client)
+        post_anthropic_message(settings, probe.api_model or probe.model, client=client)
     elif probe.provider == "groq":
-        post_groq_chat_completion(settings, probe.model, client=client)
+        post_groq_chat_completion(settings, probe.api_model or probe.model, client=client)
     elif probe.provider == "aws-bedrock":
-        post_bedrock_converse(settings, probe.model, client=client)
+        post_bedrock_converse(settings, probe.api_model or probe.model, client=client)
     else:
         raise SmokeFailure(f"unsupported LLM provider for live smoke: {probe.provider}")
 
@@ -520,13 +532,22 @@ def post_openrouter_chat_completion(
         raise SmokeFailure("OpenRouter response did not include choices")
 
 
-def post_google_generate_content(settings: Settings, model: str, *, client: httpx.Client) -> None:
+def post_google_generate_content(
+    settings: Settings,
+    model: str,
+    *,
+    reasoning_effort: str | None = None,
+    client: httpx.Client,
+) -> None:
+    generation_config: dict[str, Any] = {"maxOutputTokens": SMOKE_MAX_TOKENS, "temperature": 0}
+    if thinking_level := google_thinking_level(reasoning_effort):
+        generation_config["thinkingConfig"] = {"thinkingLevel": thinking_level}
     response = client.post(
         f"https://generativelanguage.googleapis.com/v1beta/models/{quote(model, safe='')}:generateContent",
         headers={"x-goog-api-key": settings.provider_api_key("google") or ""},
         json={
             "contents": [{"parts": [{"text": "Reply with exactly: ok"}]}],
-            "generationConfig": {"maxOutputTokens": SMOKE_MAX_TOKENS, "temperature": 0},
+            "generationConfig": generation_config,
         },
     )
     payload = checked_json(response, settings)
@@ -707,6 +728,12 @@ def vector_present(payload: dict[str, Any]) -> bool:
         return False
     embedding = data[0].get("embedding") if isinstance(data[0], dict) else None
     return isinstance(embedding, list) and bool(embedding)
+
+
+def google_thinking_level(reasoning_effort: str | None) -> str | None:
+    if reasoning_effort in {"low", "medium", "high"}:
+        return reasoning_effort
+    return None
 
 
 def redact(value: str, settings: Settings) -> str:

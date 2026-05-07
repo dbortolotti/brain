@@ -215,3 +215,91 @@ def test_missing_key_fails_by_default_and_can_skip(
     assert fail_result.detail == "missing GROQ_API_KEY"
     assert skip_result.status == "skip"
     assert skip_result.detail == "missing GROQ_API_KEY"
+
+
+def test_openrouter_probe_uses_api_model_and_quantization(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    clear_provider_env(monkeypatch)
+    settings = Settings(
+        profile="openai",
+        llm_provider="openai",
+        llm_model="gpt-5.4-mini",
+        openai_api_key="sk-provider",
+        openrouter_api_key="sk-or-provider",
+        embedding_provider="openai",
+        embedding_model="text-embedding-3-small",
+        embedding_dimensions=1536,
+    )
+    seen_json: list[dict[str, object]] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.url.path == "/api/v1/chat/completions":
+            seen_json.append(__import__("json").loads(request.content.decode("utf-8")))
+            return httpx.Response(200, json={"choices": [{"message": {"content": "ok"}}]})
+        return httpx.Response(404, json={"error": {"message": "not found"}})
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    probe = live_model_smoke.Probe(
+        provider="openrouter",
+        model="google/gemma-4-31b-it-fp8",
+        api_model="google/gemma-4-31b-it",
+        kind="llm",
+        label="openrouter:google/gemma-4-31b-it-fp8",
+        quantizations=("fp8",),
+    )
+
+    results = live_model_smoke.run_probes(settings, [probe], client=client, skip_missing_keys=False)
+
+    assert [result.status for result in results] == ["ok"]
+    assert seen_json == [
+        {
+            "model": "google/gemma-4-31b-it",
+            "messages": [{"role": "user", "content": "Reply with exactly: ok"}],
+            "max_tokens": live_model_smoke.SMOKE_MAX_TOKENS,
+            "provider": {"quantizations": ["fp8"]},
+        }
+    ]
+
+
+def test_google_probe_uses_api_model_and_thinking_level(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    clear_provider_env(monkeypatch)
+    settings = Settings(
+        profile="openai",
+        llm_provider="openai",
+        llm_model="gpt-5.4-mini",
+        openai_api_key="sk-provider",
+        gemini_api_key="AIza-provider",
+        embedding_provider="openai",
+        embedding_model="text-embedding-3-small",
+        embedding_dimensions=1536,
+    )
+    seen_json: list[dict[str, object]] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.url.path.endswith(":generateContent"):
+            seen_json.append(__import__("json").loads(request.content.decode("utf-8")))
+            return httpx.Response(200, json={"candidates": [{"content": {"parts": [{"text": "ok"}]}}]})
+        return httpx.Response(404, json={"error": {"message": "not found"}})
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    probe = live_model_smoke.Probe(
+        provider="google",
+        model="gemini-3.1-pro-preview-high",
+        api_model="gemini-3.1-pro-preview",
+        reasoning_effort="high",
+        kind="llm",
+        label="google:gemini-3.1-pro-preview-high",
+    )
+
+    results = live_model_smoke.run_probes(settings, [probe], client=client, skip_missing_keys=False)
+
+    assert [result.status for result in results] == ["ok"]
+    assert seen_json == [
+        {
+            "contents": [{"parts": [{"text": "Reply with exactly: ok"}]}],
+            "generationConfig": {"maxOutputTokens": live_model_smoke.SMOKE_MAX_TOKENS, "temperature": 0, "thinkingConfig": {"thinkingLevel": "high"}},
+        }
+    ]
