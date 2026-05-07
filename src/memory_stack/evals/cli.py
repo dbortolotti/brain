@@ -47,8 +47,7 @@ def models(
     include_judge: bool = typer.Option(False, "--include-judge"),
     repeat_runs: int = typer.Option(1, "--repeat-runs", min=1),
     bootstrap_samples: int = typer.Option(1000, "--bootstrap-samples", min=0),
-    max_workers: int = typer.Option(1, "--max-workers", min=1),
-    concurrency: int | None = typer.Option(None, "--concurrency", min=1),
+    endpoint_max_concurrency: int = typer.Option(1, "--endpoint-max-concurrency", min=1),
     retry_attempts: int = typer.Option(2, "--retry-attempts", min=0),
     repeat: int | None = typer.Option(None, "--repeat", min=1),
     retry_backoff_seconds: float = typer.Option(1.0, "--retry-backoff-seconds", min=0.0),
@@ -58,7 +57,6 @@ def models(
     raw_output_dir: Path | None = typer.Option(None, "--raw-output-dir"),
 ) -> None:
     resolved_repeat_runs = repeat or repeat_runs
-    resolved_max_workers = concurrency or max_workers
     resolved_output = output_json or output
     if resolved_output is None:
         raise typer.BadParameter("pass --output or --output-json")
@@ -76,7 +74,7 @@ def models(
         output_path=resolved_output,
         report_md_path=report_md,
         raw_output_dir=raw_output_dir,
-        max_workers=resolved_max_workers,
+        endpoint_max_concurrency=endpoint_max_concurrency,
         retry_attempts=retry_attempts,
         retry_backoff_seconds=retry_backoff_seconds,
     )
@@ -94,7 +92,7 @@ def rerun_failed(
     source_json: Path = typer.Option(..., "--source-json"),
     failed_manifest: Path = typer.Option(..., "--failed-manifest"),
     output_json: Path = typer.Option(..., "--output-json"),
-    concurrency: int = typer.Option(10, "--concurrency", min=1),
+    endpoint_max_concurrency: int = typer.Option(1, "--endpoint-max-concurrency", min=1),
     bootstrap_samples: int = typer.Option(1000, "--bootstrap-samples", min=0),
     retry_attempts: int = typer.Option(2, "--retry-attempts", min=0),
     retry_backoff_seconds: float = typer.Option(1.0, "--retry-backoff-seconds", min=0.0),
@@ -111,7 +109,7 @@ def rerun_failed(
         output_path=output_json,
         overwrite=overwrite,
         bootstrap_samples=bootstrap_samples,
-        max_workers=concurrency,
+        endpoint_max_concurrency=endpoint_max_concurrency,
         retry_attempts=retry_attempts,
         retry_backoff_seconds=retry_backoff_seconds,
         failure_class=failure_class,

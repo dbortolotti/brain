@@ -9,7 +9,16 @@ from typing import Any
 from memory_stack.config import Settings
 from memory_stack.evals.model_fixtures import ModelEvalFixture, select_fixtures
 from memory_stack.evals.model_matrix import load_model_registry, select_model_candidates
-from memory_stack.evals.model_runner import ModelEvalRunConfig, read_eval_records, render_report, run_model_evals, run_rerun_failed
+from memory_stack.evals.model_runner import (
+    ModelEvalRunConfig,
+    build_work_items,
+    read_eval_records,
+    render_report,
+    run_model_evals,
+    run_rerun_failed,
+    write_parsed_output,
+    write_raw_output,
+)
 from memory_stack.evals.provider_client import LiveProviderClient, ModelCallResult, ProviderCallError, openai_reasoning_effort
 from memory_stack.evals.scoring import (
     EvalRecord,
@@ -74,21 +83,21 @@ class FakeEvalClient:
 class ConcurrencyTrackingClient(FakeEvalClient):
     def __init__(self) -> None:
         self._lock = threading.Lock()
-        self._active_by_model: dict[str, int] = {}
-        self.max_active_by_model: dict[str, int] = {}
+        self._active_by_endpoint: dict[str, int] = {}
+        self.max_active_by_endpoint: dict[str, int] = {}
 
     def complete_json(self, candidate: Any, *args: Any, **kwargs: Any) -> ModelCallResult:
-        model = candidate.ref
+        endpoint = candidate.endpoint_key
         with self._lock:
-            active = self._active_by_model.get(model, 0) + 1
-            self._active_by_model[model] = active
-            self.max_active_by_model[model] = max(self.max_active_by_model.get(model, 0), active)
+            active = self._active_by_endpoint.get(endpoint, 0) + 1
+            self._active_by_endpoint[endpoint] = active
+            self.max_active_by_endpoint[endpoint] = max(self.max_active_by_endpoint.get(endpoint, 0), active)
         try:
             time.sleep(0.01)
             return super().complete_json(candidate, *args, **kwargs)
         finally:
             with self._lock:
-                self._active_by_model[model] -= 1
+                self._active_by_endpoint[endpoint] -= 1
 
 
 class AlwaysFailClient(FakeEvalClient):
@@ -547,7 +556,6 @@ def test_model_eval_runner_writes_jsonl_and_markdown(tmp_path) -> None:
         bootstrap_samples=10,
         output_path=output,
         report_md_path=report,
-        max_workers=2,
     )
 
     result = run_model_evals(Settings(), config, client=FakeEvalClient())
@@ -559,26 +567,50 @@ def test_model_eval_runner_writes_jsonl_and_markdown(tmp_path) -> None:
     assert report.read_text().startswith("# Executive verdict")
 
 
-def test_model_eval_runner_parallelizes_across_models_not_within_model(tmp_path) -> None:
+def test_model_eval_runner_caps_concurrency_per_shared_endpoint(tmp_path) -> None:
     output = tmp_path / "eval.jsonl"
     config = ModelEvalRunConfig(
         registry_path=REGISTRY_PATH,
-        fixture_set="smoke",
-        roles={"slack_intake", "memory_compiler"},
-        model_refs=["openai:gpt-5.4-nano", "openai:gpt-5.4-mini"],
+        fixture_set="brain-model-test-v2",
+        roles={"eval_judge"},
+        model_refs=["openai:gpt-5.5", "openai:gpt-5.5-high"],
         scope="core",
-        include_judge=False,
+        include_judge=True,
         repeat_runs=2,
         bootstrap_samples=0,
         output_path=output,
-        max_workers=10,
+        endpoint_max_concurrency=3,
     )
 
     client = ConcurrencyTrackingClient()
     run_model_evals(Settings(), config, client=client)
 
-    assert client.max_active_by_model["openai:gpt-5.4-nano"] == 1
-    assert client.max_active_by_model["openai:gpt-5.4-mini"] == 1
+    assert client.max_active_by_endpoint["openai:gpt-5.5:llm"] <= 3
+    assert client.max_active_by_endpoint["openai:gpt-5.5:llm"] > 1
+
+
+def test_build_work_items_makes_repeat_the_outer_loop() -> None:
+    registry = load_model_registry(REGISTRY_PATH)
+    candidates = select_model_candidates(
+        registry,
+        model_refs=["openai:gpt-5.4-nano"],
+        roles={"slack_intake"},
+        scope="core",
+        include_judge=False,
+    )
+    fixtures = select_fixtures(
+        fixture_set="smoke",
+        roles={"slack_intake"},
+        mode="broad",
+    )
+
+    items = build_work_items(candidates, {"slack_intake"}, fixtures, 2)
+
+    assert items
+    first_repeat_count = sum(1 for item in items if item.repeat_idx == 0)
+    assert first_repeat_count * 2 == len(items)
+    assert all(item.repeat_idx == 0 for item in items[:first_repeat_count])
+    assert all(item.repeat_idx == 1 for item in items[first_repeat_count:])
 
 
 def test_model_eval_runner_generates_failed_manifest_and_stable_record_ids(tmp_path) -> None:
@@ -606,6 +638,72 @@ def test_model_eval_runner_generates_failed_manifest_and_stable_record_ids(tmp_p
     assert all(record["record_id"] for record in records)
     assert all(record["failure_number"] is not None for record in records)
     assert Path(result["failed_manifest_md_path"]).exists()
+
+
+def test_raw_and_parsed_artifacts_are_role_scoped_for_same_fixture_id(tmp_path) -> None:
+    registry = load_model_registry(REGISTRY_PATH)
+    candidate = select_model_candidates(
+        registry,
+        model_refs=["openai:gpt-5.4-nano"],
+        roles={"intent_router", "source_classifier"},
+        scope="core",
+        include_judge=False,
+        mode="fine-grained",
+    )[0]
+    intent_fixture = ModelEvalFixture(
+        id="shared_fixture_id",
+        scenario_group="shared",
+        role="intent_router",
+        input_text="remember this",
+        expected={"intent": "remember"},
+    )
+    source_fixture = ModelEvalFixture(
+        id="shared_fixture_id",
+        scenario_group="shared",
+        role="source_classifier",
+        input_text="remember this",
+        expected={"intent": "remember"},
+    )
+    call = ModelCallResult(
+        status="ok",
+        payload={"intent": "remember"},
+        raw_text='{"intent":"remember"}',
+        error=None,
+        latency_ms=1,
+        input_tokens=1,
+        output_tokens=1,
+        estimated_cost_usd=0.0,
+    )
+
+    raw_one = write_raw_output(tmp_path / "raw", run_id="run", candidate=candidate, fixture=intent_fixture, repeat_idx=0, call=call)
+    raw_two = write_raw_output(tmp_path / "raw", run_id="run", candidate=candidate, fixture=source_fixture, repeat_idx=0, call=call)
+    parsed_one = write_parsed_output(
+        tmp_path / "parsed",
+        run_id="run",
+        candidate=candidate,
+        fixture=intent_fixture,
+        repeat_idx=0,
+        payload=call.payload,
+    )
+    parsed_two = write_parsed_output(
+        tmp_path / "parsed",
+        run_id="run",
+        candidate=candidate,
+        fixture=source_fixture,
+        repeat_idx=0,
+        payload=call.payload,
+    )
+
+    assert raw_one != raw_two
+    assert parsed_one != parsed_two
+    assert "intent_router" in raw_one.name
+    assert "source_classifier" in raw_two.name
+    assert "intent_router" in parsed_one.name
+    assert "source_classifier" in parsed_two.name
+    assert json.loads(raw_one.read_text())["role"] == "intent_router"
+    assert json.loads(raw_two.read_text())["role"] == "source_classifier"
+    assert json.loads(parsed_one.read_text())["role"] == "intent_router"
+    assert json.loads(parsed_two.read_text())["role"] == "source_classifier"
 
 
 def test_rerun_failed_replaces_records_by_record_id(tmp_path) -> None:
@@ -638,7 +736,7 @@ def test_rerun_failed_replaces_records_by_record_id(tmp_path) -> None:
         output_path=output,
         overwrite=True,
         bootstrap_samples=0,
-        max_workers=2,
+        endpoint_max_concurrency=2,
         retry_attempts=0,
         retry_backoff_seconds=0,
         client=FakeEvalClient(),

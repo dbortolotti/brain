@@ -11,7 +11,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from statistics import mean
 from tempfile import NamedTemporaryFile
-from threading import Lock
+from threading import BoundedSemaphore, Lock
 from typing import Any, Protocol
 
 from memory_stack.config import Settings
@@ -71,9 +71,16 @@ class ModelEvalRunConfig:
     model_set: str | None = None
     report_md_path: Path | None = None
     raw_output_dir: Path | None = None
-    max_workers: int = 1
+    endpoint_max_concurrency: int = 1
     retry_attempts: int = 2
     retry_backoff_seconds: float = 1.0
+
+
+@dataclass(frozen=True)
+class EvalWorkItem:
+    candidate: ModelCandidate
+    fixture: ModelEvalFixture
+    repeat_idx: int
 
 
 def run_model_evals(
@@ -117,11 +124,8 @@ def run_model_evals(
     parsed_output_dir = config.output_path.parent / "parsed" / run_id
 
     records: list[dict[str, Any]] = []
-    candidate_task_groups = [
-        (candidate, candidate_tasks(candidate, config.roles, fixtures, config.repeat_runs))
-        for candidate in candidates
-    ]
-    total_records = sum(len(tasks) for _candidate, tasks in candidate_task_groups)
+    work_items = build_work_items(candidates, config.roles, fixtures, config.repeat_runs)
+    total_records = len(work_items)
     completed = 0
     progress_lock = Lock()
 
@@ -134,35 +138,39 @@ def run_model_evals(
         if progress_callback:
             progress_callback(done, total_records, record)
 
-    work_items = [(candidate, tasks) for candidate, tasks in candidate_task_groups if tasks]
-    if config.max_workers <= 1 or len(work_items) <= 1:
-        for candidate, tasks in work_items:
-            for record in evaluate_candidate_tasks(
-                active_client,
-                candidate=candidate,
-                tasks=tasks,
-                run_id=run_id,
-                raw_output_dir=raw_output_dir,
-                parsed_output_dir=parsed_output_dir,
-            ):
-                report_progress(record)
-    else:
-        with ThreadPoolExecutor(max_workers=min(config.max_workers, len(work_items))) as executor:
-            futures = [
-                executor.submit(
-                    evaluate_candidate_tasks,
+    endpoint_limit = max(1, config.endpoint_max_concurrency)
+    endpoint_keys = {item.candidate.endpoint_key for item in work_items}
+    max_parallel_workers = min(len(work_items), max(1, len(endpoint_keys) * endpoint_limit))
+    if max_parallel_workers <= 1:
+        for item in work_items:
+            report_progress(
+                evaluate_work_item(
                     active_client,
-                    candidate=candidate,
-                    tasks=tasks,
+                    item=item,
                     run_id=run_id,
                     raw_output_dir=raw_output_dir,
                     parsed_output_dir=parsed_output_dir,
                 )
-                for candidate, tasks in work_items
+            )
+    else:
+        endpoint_semaphores: dict[str, BoundedSemaphore] = {
+            key: BoundedSemaphore(endpoint_limit) for key in {item.candidate.endpoint_key for item in work_items}
+        }
+        with ThreadPoolExecutor(max_workers=max_parallel_workers) as executor:
+            futures = [
+                executor.submit(
+                    evaluate_work_item,
+                    active_client,
+                    item=item,
+                    run_id=run_id,
+                    raw_output_dir=raw_output_dir,
+                    parsed_output_dir=parsed_output_dir,
+                    endpoint_semaphore=endpoint_semaphores[item.candidate.endpoint_key],
+                )
+                for item in work_items
             ]
             for future in as_completed(futures):
-                for record in future.result():
-                    report_progress(record)
+                report_progress(future.result())
 
     config.output_path.parent.mkdir(parents=True, exist_ok=True)
     assign_failure_numbers(records)
@@ -183,82 +191,59 @@ def run_model_evals(
     return result
 
 
-def candidate_tasks(
-    candidate: ModelCandidate,
+def build_work_items(
+    candidates: list[ModelCandidate],
     requested_roles: set[str],
     fixtures: list[ModelEvalFixture],
     repeat_runs: int,
-) -> list[tuple[ModelEvalFixture, int]]:
-    tasks: list[tuple[ModelEvalFixture, int]] = []
-    for role in roles_for_candidate(candidate, requested_roles, fixtures):
-        role_fixtures = [fixture for fixture in fixtures if fixture.role == role]
-        if candidate.kind == "embedding":
-            role_fixtures = embedding_fixtures(fixtures)
-        for fixture in role_fixtures:
-            for repeat_idx in range(repeat_runs):
-                tasks.append((fixture, repeat_idx))
-    return tasks
+) -> list[EvalWorkItem]:
+    items: list[EvalWorkItem] = []
+    for repeat_idx in range(repeat_runs):
+        for candidate in candidates:
+            for role in roles_for_candidate(candidate, requested_roles, fixtures):
+                role_fixtures = [fixture for fixture in fixtures if fixture.role == role]
+                if candidate.kind == "embedding":
+                    role_fixtures = embedding_fixtures(fixtures)
+                for fixture in role_fixtures:
+                    items.append(EvalWorkItem(candidate=candidate, fixture=fixture, repeat_idx=repeat_idx))
+    return items
 
 
-def evaluate_candidate_tasks(
+def evaluate_work_item(
     client: EvalModelClient,
     *,
-    candidate: ModelCandidate,
-    tasks: list[tuple[ModelEvalFixture, int]],
+    item: EvalWorkItem,
     run_id: str,
     raw_output_dir: Path,
     parsed_output_dir: Path,
     rerun_of_run_id: str | None = None,
     rerun_timestamp: str | None = None,
-) -> list[dict[str, Any]]:
-    records: list[dict[str, Any]] = []
-    first_fixture, first_repeat_idx = tasks[0]
-    first_record = run_one_fixture(
-        client,
-        candidate=candidate,
-        fixture=first_fixture,
-        run_id=run_id,
-        repeat_idx=first_repeat_idx,
-        raw_output_dir=raw_output_dir,
-        parsed_output_dir=parsed_output_dir,
-        rerun_of_run_id=rerun_of_run_id,
-        rerun_timestamp=rerun_timestamp,
-    )
-    records.append(first_record)
-
-    remaining = tasks[1:]
-    if first_record["status"] == "fail":
-        for fixture, repeat_idx in remaining:
-            records.append(
-                synthetic_failure_record(
-                    candidate=candidate,
-                    fixture=fixture,
-                    run_id=run_id,
-                    repeat_idx=repeat_idx,
-                    raw_output_dir=raw_output_dir,
-                    parsed_output_dir=parsed_output_dir,
-                    error=f"candidate preflight failed: {first_record['failure_message']}",
-                    rerun_of_run_id=rerun_of_run_id,
-                    rerun_timestamp=rerun_timestamp,
-                )
-            )
-        return records
-
-    for fixture, repeat_idx in remaining:
-        records.append(
-            run_one_fixture(
-                client,
-                candidate=candidate,
-                fixture=fixture,
-                run_id=run_id,
-                repeat_idx=repeat_idx,
-                raw_output_dir=raw_output_dir,
-                parsed_output_dir=parsed_output_dir,
-                rerun_of_run_id=rerun_of_run_id,
-                rerun_timestamp=rerun_timestamp,
-            )
+    endpoint_semaphore: BoundedSemaphore | None = None,
+) -> dict[str, Any]:
+    if endpoint_semaphore is None:
+        return run_one_fixture(
+            client,
+            candidate=item.candidate,
+            fixture=item.fixture,
+            run_id=run_id,
+            repeat_idx=item.repeat_idx,
+            raw_output_dir=raw_output_dir,
+            parsed_output_dir=parsed_output_dir,
+            rerun_of_run_id=rerun_of_run_id,
+            rerun_timestamp=rerun_timestamp,
         )
-    return records
+    with endpoint_semaphore:
+        return run_one_fixture(
+            client,
+            candidate=item.candidate,
+            fixture=item.fixture,
+            run_id=run_id,
+            repeat_idx=item.repeat_idx,
+            raw_output_dir=raw_output_dir,
+            parsed_output_dir=parsed_output_dir,
+            rerun_of_run_id=rerun_of_run_id,
+            rerun_timestamp=rerun_timestamp,
+        )
 
 
 def run_one_fixture(
@@ -674,7 +659,7 @@ def run_rerun_failed(
     output_path: Path,
     overwrite: bool,
     bootstrap_samples: int,
-    max_workers: int,
+    endpoint_max_concurrency: int,
     retry_attempts: int,
     retry_backoff_seconds: float,
     failure_class: str | None = None,
@@ -709,15 +694,13 @@ def run_rerun_failed(
     raw_output_dir = output_path.parent / "raw" / rerun_run_id
     parsed_output_dir = output_path.parent / "parsed" / rerun_run_id
 
-    grouped_tasks: dict[str, list[tuple[ModelEvalFixture, int]]] = defaultdict(list)
-    candidate_by_model: dict[str, ModelCandidate] = {}
+    work_items: list[EvalWorkItem] = []
     rerun_of_run_id = str(filtered_manifest[0].get("run_id") or "")
     selected_roles = {str(item["role"]) for item in filtered_manifest}
     mode = mode_for_roles(selected_roles)
 
     for item in filtered_manifest:
         candidate = candidate_from_ref(str(item["model"]), index, roles={str(item["role"])}, include_judge=True)
-        candidate_by_model[candidate.ref] = candidate
         fixture = find_fixture_for_record(
             fixture_set="brain-model-test-v2",
             role=str(item["role"]),
@@ -725,17 +708,24 @@ def run_rerun_failed(
             variant_id=str(item.get("variant_id") or "base"),
             mode=mode,
         )
-        grouped_tasks[candidate.ref].append((fixture, int(item.get("repeat_idx") or 0)))
+        work_items.append(
+            EvalWorkItem(
+                candidate=candidate,
+                fixture=fixture,
+                repeat_idx=int(item.get("repeat_idx") or 0),
+            )
+        )
 
-    work_items = [(candidate_by_model[ref], tasks) for ref, tasks in grouped_tasks.items()]
     rerun_records: list[dict[str, Any]] = []
-    if max_workers <= 1 or len(work_items) <= 1:
-        for candidate, tasks in work_items:
-            rerun_records.extend(
-                evaluate_candidate_tasks(
+    endpoint_limit = max(1, endpoint_max_concurrency)
+    endpoint_keys = {item.candidate.endpoint_key for item in work_items}
+    max_parallel_workers = min(len(work_items), max(1, len(endpoint_keys) * endpoint_limit))
+    if max_parallel_workers <= 1:
+        for item in work_items:
+            rerun_records.append(
+                evaluate_work_item(
                     active_client,
-                    candidate=candidate,
-                    tasks=tasks,
+                    item=item,
                     run_id=rerun_run_id,
                     raw_output_dir=raw_output_dir,
                     parsed_output_dir=parsed_output_dir,
@@ -744,23 +734,26 @@ def run_rerun_failed(
                 )
             )
     else:
-        with ThreadPoolExecutor(max_workers=min(max_workers, len(work_items))) as executor:
+        endpoint_semaphores: dict[str, BoundedSemaphore] = {
+            key: BoundedSemaphore(endpoint_limit) for key in {item.candidate.endpoint_key for item in work_items}
+        }
+        with ThreadPoolExecutor(max_workers=max_parallel_workers) as executor:
             futures = [
                 executor.submit(
-                    evaluate_candidate_tasks,
+                    evaluate_work_item,
                     active_client,
-                    candidate=candidate,
-                    tasks=tasks,
+                    item=item,
                     run_id=rerun_run_id,
                     raw_output_dir=raw_output_dir,
                     parsed_output_dir=parsed_output_dir,
                     rerun_of_run_id=rerun_of_run_id,
                     rerun_timestamp=rerun_timestamp,
+                    endpoint_semaphore=endpoint_semaphores[item.candidate.endpoint_key],
                 )
-                for candidate, tasks in work_items
+                for item in work_items
             ]
             for future in as_completed(futures):
-                rerun_records.extend(future.result())
+                rerun_records.append(future.result())
 
     assign_failure_numbers(rerun_records)
     canonical_by_id = {str(record["record_id"]): record for record in canonical_records}
@@ -952,12 +945,14 @@ def write_raw_output(
 ) -> Path:
     raw_output_dir.mkdir(parents=True, exist_ok=True)
     safe_model = candidate.ref.replace(":", "_").replace("/", "_")
-    path = raw_output_dir / f"{safe_model}__{fixture.id}__{repeat_idx}.json"
+    safe_role = fixture.role.replace(":", "_").replace("/", "_")
+    path = raw_output_dir / f"{safe_model}__{safe_role}__{fixture.id}__{repeat_idx}.json"
     path.write_text(
         json.dumps(
             {
                 "run_id": run_id,
                 "model": candidate.ref,
+                "role": fixture.role,
                 "fixture_id": fixture.id,
                 "status": call.status,
                 "error": call.error,
@@ -985,12 +980,14 @@ def write_parsed_output(
         return None
     parsed_output_dir.mkdir(parents=True, exist_ok=True)
     safe_model = candidate.ref.replace(":", "_").replace("/", "_")
-    path = parsed_output_dir / f"{safe_model}__{fixture.id}__{repeat_idx}.json"
+    safe_role = fixture.role.replace(":", "_").replace("/", "_")
+    path = parsed_output_dir / f"{safe_model}__{safe_role}__{fixture.id}__{repeat_idx}.json"
     path.write_text(
         json.dumps(
             {
                 "run_id": run_id,
                 "model": candidate.ref,
+                "role": fixture.role,
                 "fixture_id": fixture.id,
                 "payload": payload,
             },
@@ -1447,7 +1444,7 @@ def rerun_command(result: dict[str, Any]) -> str:
         "brain eval rerun-failed "
         f"--source-json {result['output_path']} "
         f"--failed-manifest {result.get('failed_manifest_jsonl_path', '')} "
-        "--concurrency 10 "
+        "--endpoint-max-concurrency 3 "
         f"--output-json {result['output_path']} "
         "--overwrite"
     )

@@ -53,6 +53,11 @@ class ModelCandidate:
     def ref(self) -> str:
         return self.requested_ref or f"{self.provider}:{self.model}"
 
+    @property
+    def endpoint_key(self) -> str:
+        target = self.api_model or self.model
+        return f"{self.provider}:{target}:{self.kind}"
+
 
 def load_model_registry(path: str | Path = REGISTRY_PATH) -> dict[str, Any]:
     with Path(path).open(encoding="utf-8") as file:
