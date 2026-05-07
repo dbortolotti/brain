@@ -191,7 +191,11 @@ def render_html(markdown: str) -> str:
 
 
 def write_once(repo: Path, run_dir: Path, publish_dir: Path | None = None) -> None:
-    raw_dir = run_dir / "raw" / "eval_20260507_130116"
+    raw_root = run_dir / "raw"
+    raw_subdirs = [path for path in raw_root.iterdir() if path.is_dir()] if raw_root.exists() else []
+    if not raw_subdirs:
+        raise FileNotFoundError(f"no raw run directories found under {raw_root}")
+    raw_dir = max(raw_subdirs, key=lambda path: path.stat().st_mtime)
     totals = planned_totals(repo)
     seen, all_fail, quota_fail = current_counts(raw_dir)
     markdown = render_markdown(
