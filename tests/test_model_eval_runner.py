@@ -205,9 +205,6 @@ def test_fine_grained_model_matrix_selects_targeted_role_models() -> None:
         "openai:gpt-5-nano",
         "google:gemini-2.5-flash-lite",
         "openrouter:qwen/qwen3.5-9b-fp8",
-        "openrouter:google/gemma-3n-e4b-it",
-        "openrouter:google/gemma-4-31b-it-fp8",
-        "openrouter:qwen/qwen3.5-27b-fp8",
     ]
 
 
@@ -695,15 +692,12 @@ def test_build_work_items_interleaves_endpoints_within_repeat() -> None:
 
     items = build_work_items(candidates, {"intent_router"}, fixtures, 1)
 
-    assert len(items) >= 6
-    first_wave = items[:6]
+    assert len(items) >= 3
+    first_wave = items[:3]
     assert {item.candidate.endpoint_key for item in first_wave} == {
         "openai:gpt-5-nano:llm",
         "google:gemini-2.5-flash-lite:llm",
         "openrouter:qwen/qwen3.5-9b:llm:fp8",
-        "openrouter:google/gemma-3n-e4b-it:llm",
-        "openrouter:google/gemma-4-31b-it:llm:fp8",
-        "openrouter:qwen/qwen3.5-27b:llm:fp8",
     }
 
 
