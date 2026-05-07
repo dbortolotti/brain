@@ -122,6 +122,23 @@ def select_model_candidates(
 ) -> list[ModelCandidate]:
     if model_refs:
         index = registry_model_index(registry)
+        if mode == "fine-grained":
+            fine_grained_roles = fine_grained_roles_by_ref(registry)
+            return dedupe_candidates(
+                [
+                    fine_grained_candidate_from_ref(
+                        ref,
+                        index,
+                        roles=fine_grained_roles_for_ref(
+                            ref,
+                            fine_grained_roles=fine_grained_roles,
+                            requested_roles=roles,
+                        ),
+                        include_judge=include_judge,
+                    )
+                    for ref in model_refs
+                ]
+            )
         return dedupe_candidates(
             [
                 candidate_from_ref(ref, index, roles=set(), include_judge=include_judge)
@@ -165,6 +182,49 @@ def fine_grained_candidates(
                 continue
             candidates.append(candidate)
     return candidates
+
+
+def fine_grained_roles_by_ref(registry: dict[str, Any]) -> dict[str, set[str]]:
+    roles_by_ref: dict[str, set[str]] = {}
+    for role, refs in (registry.get(FINE_GRAINED_MATRIX_KEY) or {}).items():
+        for ref in refs or []:
+            roles_by_ref.setdefault(str(ref), set()).add(str(role))
+    return roles_by_ref
+
+
+def fine_grained_roles_for_ref(
+    ref: str,
+    *,
+    fine_grained_roles: dict[str, set[str]],
+    requested_roles: set[str],
+) -> set[str]:
+    roles = set(fine_grained_roles.get(ref, set()))
+    if requested_roles:
+        return roles & requested_roles if roles else set(requested_roles)
+    return roles
+
+
+def fine_grained_candidate_from_ref(
+    ref: str,
+    index: dict[str, ModelCandidate],
+    *,
+    roles: set[str],
+    include_judge: bool,
+) -> ModelCandidate:
+    candidate = candidate_from_ref(ref, index, roles=set(), include_judge=include_judge)
+    return ModelCandidate(
+        provider=candidate.provider,
+        model=candidate.model,
+        kind=candidate.kind,
+        api_model=candidate.api_model,
+        quantizations=candidate.quantizations,
+        roles=tuple(sorted(roles)),
+        judge_only=candidate.judge_only,
+        price_per_1m=candidate.price_per_1m,
+        reasoning_effort=candidate.reasoning_effort,
+        skip_reason=candidate.skip_reason,
+        requested_ref=ref,
+    )
 
 
 def core_candidates(

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import shlex
+import subprocess
 import time
 from collections import Counter
 from datetime import UTC, datetime
@@ -12,18 +14,125 @@ from memory_stack.evals.model_matrix import load_model_registry, select_model_ca
 from memory_stack.evals.model_runner import build_work_items
 
 
-def planned_totals(repo: Path) -> Counter[str]:
+def _parse_list_arg(value: str | None) -> set[str]:
+    if not value:
+        return set()
+    return {part.strip() for part in value.split(",") if part.strip()}
+
+
+def _find_live_run_args(run_dir: Path) -> dict[str, object] | None:
+    try:
+        ps = subprocess.run(
+            ["ps", "-ax", "-o", "command="],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except Exception:
+        return None
+
+    target = str((run_dir / "results.json").resolve())
+    for line in ps.stdout.splitlines():
+        if " eval models " not in line or target not in line:
+            continue
+        try:
+            argv = shlex.split(line)
+        except ValueError:
+            continue
+
+        parsed: dict[str, object] = {
+            "model_refs": None,
+            "roles": set(),
+            "scope": "active",
+            "include_judge": False,
+            "mode": "fine-grained",
+            "fixture_set": "brain-model-test-v2",
+            "repeat_runs": 1,
+        }
+        i = 0
+        while i < len(argv):
+            arg = argv[i]
+            next_value = argv[i + 1] if i + 1 < len(argv) else None
+            if arg == "--models" and next_value is not None:
+                parsed["model_refs"] = sorted(_parse_list_arg(next_value))
+                i += 2
+                continue
+            if arg == "--roles" and next_value is not None:
+                parsed["roles"] = _parse_list_arg(next_value)
+                i += 2
+                continue
+            if arg == "--scope" and next_value is not None:
+                parsed["scope"] = next_value
+                i += 2
+                continue
+            if arg == "--fixture-set" and next_value is not None:
+                parsed["fixture_set"] = next_value
+                i += 2
+                continue
+            if arg == "--mode" and next_value is not None:
+                parsed["mode"] = next_value
+                i += 2
+                continue
+            if arg in {"--repeat", "--repeat-runs"} and next_value is not None:
+                parsed["repeat_runs"] = int(next_value)
+                i += 2
+                continue
+            if arg == "--include-judge":
+                parsed["include_judge"] = True
+            i += 1
+        return parsed
+    return None
+
+
+def _infer_run_args_from_raw(raw_dir: Path) -> dict[str, object]:
+    models: set[str] = set()
+    roles: set[str] = set()
+    repeat_runs = 1
+    for path in raw_dir.rglob("*.json"):
+        try:
+            data = json.loads(path.read_text())
+        except Exception:
+            continue
+        model = data.get("model")
+        role = data.get("role")
+        if isinstance(model, str) and model:
+            models.add(model)
+        if isinstance(role, str) and role:
+            roles.add(role)
+        parts = path.stem.rsplit("__", 1)
+        if len(parts) == 2 and parts[1].isdigit():
+            repeat_runs = max(repeat_runs, int(parts[1]) + 1)
+    return {
+        "model_refs": sorted(models) or None,
+        "roles": roles,
+        "scope": "active",
+        "include_judge": True,
+        "mode": "fine-grained",
+        "fixture_set": "brain-model-test-v2",
+        "repeat_runs": repeat_runs,
+    }
+
+
+def _resolve_run_args(repo: Path, run_dir: Path, raw_dir: Path) -> dict[str, object]:
+    return _find_live_run_args(run_dir) or _infer_run_args_from_raw(raw_dir)
+
+
+def planned_totals(repo: Path, run_args: dict[str, object]) -> Counter[str]:
     registry = load_model_registry(repo / "brain_model_registry.yaml")
     models = select_model_candidates(
         registry,
-        model_refs=None,
-        roles=set(),
-        scope="active",
-        include_judge=True,
-        mode="fine-grained",
+        model_refs=run_args["model_refs"],
+        roles=set(run_args["roles"]),
+        scope=str(run_args["scope"]),
+        include_judge=bool(run_args["include_judge"]),
+        mode=str(run_args["mode"]),
     )
-    fixtures = select_fixtures(fixture_set="brain-model-test-v2", roles=set(), mode="fine-grained")
-    work_items = build_work_items(models, set(), fixtures, 3)
+    fixtures = select_fixtures(
+        fixture_set=str(run_args["fixture_set"]),
+        roles=set(run_args["roles"]),
+        mode=str(run_args["mode"]),
+    )
+    work_items = build_work_items(models, set(run_args["roles"]), fixtures, int(run_args["repeat_runs"]))
     totals: Counter[str] = Counter()
     for item in work_items:
         totals[item.candidate.provider] += 1
@@ -58,18 +167,22 @@ def current_counts(raw_dir: Path) -> tuple[Counter[str], Counter[str], Counter[s
     return seen, all_fail, quota_fail
 
 
-def planned_model_role_counts(repo: Path) -> dict[tuple[str, str], int]:
+def planned_model_role_counts(repo: Path, run_args: dict[str, object]) -> dict[tuple[str, str], int]:
     registry = load_model_registry(repo / "brain_model_registry.yaml")
     models = select_model_candidates(
         registry,
-        model_refs=None,
-        roles=set(),
-        scope="active",
-        include_judge=True,
-        mode="fine-grained",
+        model_refs=run_args["model_refs"],
+        roles=set(run_args["roles"]),
+        scope=str(run_args["scope"]),
+        include_judge=bool(run_args["include_judge"]),
+        mode=str(run_args["mode"]),
     )
-    fixtures = select_fixtures(fixture_set="brain-model-test-v2", roles=set(), mode="fine-grained")
-    work_items = build_work_items(models, set(), fixtures, 3)
+    fixtures = select_fixtures(
+        fixture_set=str(run_args["fixture_set"]),
+        roles=set(run_args["roles"]),
+        mode=str(run_args["mode"]),
+    )
+    work_items = build_work_items(models, set(run_args["roles"]), fixtures, int(run_args["repeat_runs"]))
     counts: Counter[tuple[str, str]] = Counter()
     for item in work_items:
         counts[(item.candidate.ref, item.fixture.role)] += 1
@@ -505,9 +618,10 @@ def write_once(repo: Path, run_dir: Path, publish_dir: Path | None = None) -> No
     if not raw_subdirs:
         raise FileNotFoundError(f"no raw run directories found under {raw_root}")
     raw_dir = max(raw_subdirs, key=lambda path: path.stat().st_mtime)
-    totals = planned_totals(repo)
+    run_args = _resolve_run_args(repo, run_dir, raw_dir)
+    totals = planned_totals(repo, run_args)
     seen, all_fail, quota_fail = current_counts(raw_dir)
-    model_role_totals = planned_model_role_counts(repo)
+    model_role_totals = planned_model_role_counts(repo, run_args)
     model_role_seen, model_role_ok, model_role_schema, model_role_fail = current_model_role_counts(raw_dir)
     model_role_rows: list[dict[str, str | int]] = []
     for model, role in sorted(model_role_totals, key=lambda item: (item[1], item[0])):

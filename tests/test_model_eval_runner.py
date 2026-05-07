@@ -208,6 +208,42 @@ def test_fine_grained_model_matrix_selects_targeted_role_models() -> None:
     ]
 
 
+def test_fine_grained_explicit_model_inherits_matrix_roles() -> None:
+    registry = load_model_registry(REGISTRY_PATH)
+
+    candidate = select_model_candidates(
+        registry,
+        model_refs=["openrouter:qwen/qwen3.5-9b-fp8"],
+        roles=set(),
+        scope="core",
+        include_judge=True,
+        mode="fine-grained",
+    )[0]
+
+    assert set(candidate.roles) == {
+        "intent_router",
+        "source_classifier",
+        "durability_filter",
+        "memory_kind_classifier",
+        "atomic_card_extractor",
+        "entity_mention_extractor",
+        "entity_candidate_ranker",
+        "relationship_extractor",
+        "open_loop_detector",
+        "table_policy_handler",
+        "source_takeaway_extractor",
+        "conflict_candidate_detector",
+        "conflict_explainer",
+        "repair_option_generator",
+        "success_receipt_generator",
+        "recall_planner",
+        "recall_synthesizer",
+        "groundedness_checker",
+        "debug_explainer",
+        "eval_judge",
+    }
+
+
 def test_select_fixtures_derives_fine_grained_roles() -> None:
     fixtures = select_fixtures(
         fixture_set="brain-model-test-v2",
