@@ -1,0 +1,35 @@
+{
+  "fixture_id": "validator_blocks_large_table_atomization_001__punctuation",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Reject the proposal. Creating 500 memory cards, one per CSV row, is over-atomized and not appropriate for durable personal memory without clear evidence that each row is a stable, important, user-relevant fact. This would introduce noise, poor retrieval quality, and likely store transient or tabular data as if it were durable memory.",
+    "citations": [
+      "Input states: 'LLM proposes 500 memory cards, one per CSV row'."
+    ],
+    "conflict_classification": "not_applicable",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No single stable entity or durable user-specific fact was identified; the proposal is a bulk row-by-row import pattern rather than a justified memory extraction."
+    },
+    "intent": "Evaluate a proposed memory write from a bulk CSV-row atomization attempt.",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Blocked bulk atomization of tabular data into 500 memory cards.",
+        "Preserved ambiguity about the CSV contents because no row content or durability criteria were provided.",
+        "Avoided storing potentially transient or low-value table rows as current durable memory."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Do not create per-row durable memories from a large table by default.",
+      "Ask for a summarized extraction of only high-value, durable facts.",
+      "If the table is reference data, store it outside durable memory and link to the source instead.",
+      "Cluster rows into a small number of semantic summaries rather than atomizing every row.",
+      "Require explicit criteria for memorability, stability, and user relevance before committing any rows as memory cards."
+    ]
+  },
+  "run_id": "eval_20260507_072639"
+}

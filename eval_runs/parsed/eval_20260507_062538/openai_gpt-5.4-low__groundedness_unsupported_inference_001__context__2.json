@@ -1,0 +1,35 @@
+{
+  "fixture_id": "groundedness_unsupported_inference_001__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "The answer is not grounded in the evidence. Evidence only supports that Sam likes Bill Evans; it does not support that Sam is a serious jazz pianist.",
+    "citations": [
+      "Evidence: Sam likes Bill Evans.",
+      "Answer: Sam is a serious jazz pianist."
+    ],
+    "conflict_classification": "unsupported_inference",
+    "decision": "reject_unsupported_inference",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No durable memory should be committed from this evaluation; the answer introduces an unsupported characterization not present in the evidence."
+    },
+    "intent": "evaluate_groundedness_of_answer_against_evidence",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected 1 unsupported claim in the answer.",
+        "Unsupported claim: 'Sam is a serious jazz pianist.'",
+        "Grounded fact available: Sam likes Bill Evans.",
+        "No memory cards created because unsupported inferences should not be stored as durable memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Revise the answer to: 'Sam likes Bill Evans.'",
+      "If additional evidence exists about Sam's musical practice or skill, cite it explicitly before claiming Sam is a serious jazz pianist.",
+      "Preserve uncertainty if inferring preference only: 'Sam may be interested in jazz, but the evidence only shows that Sam likes Bill Evans.'"
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

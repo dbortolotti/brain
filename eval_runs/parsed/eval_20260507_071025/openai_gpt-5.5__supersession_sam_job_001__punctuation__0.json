@@ -1,0 +1,65 @@
+{
+  "fixture_id": "supersession_sam_job_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "The existing memory that Sam works at Goldman is superseded by the newer statement that Sam left Goldman and joined Point72.",
+    "citations": [],
+    "conflict_classification": "supersession",
+    "decision": "supersede_existing_memory",
+    "entity_resolution": {
+      "action": "use_existing_entity",
+      "entity_id": null,
+      "reason": "The new statement refers to the same person, Sam, and directly updates the prior employment memory."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_update",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "formerly_worked_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Classified as supersession because the newer memory explicitly says Sam left Goldman and joined Point72.",
+        "Did not present the superseded Goldman employment as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark the prior Goldman employment memory as no longer current.",
+      "Store Point72 as Sam's current employer.",
+      "Preserve Goldman only as a former employer."
+    ]
+  },
+  "run_id": "eval_20260507_071025"
+}

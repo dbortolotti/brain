@@ -1,0 +1,37 @@
+{
+  "error": null,
+  "fixture_id": "debug_sql_select_only_001",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "The system is in read-only admin SQL mode for this scope: `SELECT id FROM memory_cards LIMIT 10` is allowed, but `DELETE FROM memory_cards` is denied. In short, inspection queries are permitted and destructive writes are blocked.",
+    "citations": [
+      "Admin SQL select-only mode: SELECT id FROM memory_cards LIMIT 10 allowed",
+      "DELETE FROM memory_cards denied"
+    ],
+    "conflict_classification": "none",
+    "decision": "do_not_store",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input describes a temporary administrative access constraint, not durable personal memory about a user or stable preference."
+    },
+    "intent": "Explain admin SQL permission constraints in select-only mode",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No durable memory was committed.",
+        "Interpreted the input as an access-policy explanation, not a user memory fact.",
+        "Explained that read operations are allowed and delete operations are blocked."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Use SELECT statements only for debugging or inspection in this mode.",
+      "If records must be removed, switch to a write-enabled mode with appropriate authorization and safeguards.",
+      "Prefer supported maintenance or deletion APIs instead of direct SQL when operating under restricted access."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Explain admin SQL permission constraints in select-only mode\",\"decision\":\"do_not_store\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input describes a temporary administrative access constraint, not durable personal memory about a user or stable preference.\"},\"conflict_classification\":\"none\",\"answer\":\"The system is in read-only admin SQL mode for this scope: `SELECT id FROM memory_cards LIMIT 10` is allowed, but `DELETE FROM memory_cards` is denied. In short, inspection queries are permitted and destructive writes are blocked.\",\"citations\":[\"Admin SQL select-only mode: SELECT id FROM memory_cards LIMIT 10 allowed\",\"DELETE FROM memory_cards denied\"],\"repair_options\":[\"Use SELECT statements only for debugging or inspection in this mode.\",\"If records must be removed, switch to a write-enabled mode with appropriate authorization and safeguards.\",\"Prefer supported maintenance or deletion APIs instead of direct SQL when operating under restricted access.\"],\"receipt\":{\"success\":true,\"details\":[\"No durable memory was committed.\",\"Interpreted the input as an access-policy explanation, not a user memory fact.\",\"Explained that read operations are allowed and delete operations are blocked.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

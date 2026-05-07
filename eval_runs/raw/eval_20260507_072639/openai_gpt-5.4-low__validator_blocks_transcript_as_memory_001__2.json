@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_transcript_as_memory_001",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Rejected. Do not store an entire 8000-word transcript as a single conversation_summary memory card. Durable memory must be distilled into small, specific, non-superseded facts or clearly bounded summaries with retention value. A verbatim or near-verbatim transcript is too large, too ambiguous, likely to contain ephemeral or conflicting statements, and is not appropriate as one durable memory item.",
+    "citations": [
+      "Proposal contains one conversation_summary card",
+      "Card contains an entire 8000 word transcript"
+    ],
+    "conflict_classification": "invalid_granularity",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No discrete entity-backed durable facts were proposed; the proposal is a raw transcript-sized conversation summary rather than resolvable memory."
+    },
+    "intent": "validate_memory_proposal",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Validation failed: transcript-scale content is not acceptable as a single durable memory card.",
+        "Validation failed: proposed memory is not atomic or scoped for retrieval.",
+        "Validation failed: likely mixes ephemeral, ambiguous, and potentially superseded content without normalization."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Extract only durable user facts with clear retention value into separate atomic memory cards.",
+      "If needed, create a brief bounded conversation_summary capturing only stable outcomes, decisions, or commitments from the conversation.",
+      "Exclude ephemeral dialogue, brainstorming, hedged statements, and unresolved contradictions.",
+      "Preserve ambiguity by using low confidence or by omitting facts that were not clearly established.",
+      "Do not store superseded or deleted statements as current; only keep the latest supported state if explicitly resolved."
+    ]
+  },
+  "raw_text": "{\"intent\":\"validate_memory_proposal\",\"decision\":\"reject\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No discrete entity-backed durable facts were proposed; the proposal is a raw transcript-sized conversation summary rather than resolvable memory.\"},\"conflict_classification\":\"invalid_granularity\",\"answer\":\"Rejected. Do not store an entire 8000-word transcript as a single conversation_summary memory card. Durable memory must be distilled into small, specific, non-superseded facts or clearly bounded summaries with retention value. A verbatim or near-verbatim transcript is too large, too ambiguous, likely to contain ephemeral or conflicting statements, and is not appropriate as one durable memory item.\",\"citations\":[\"Proposal contains one conversation_summary card\",\"Card contains an entire 8000 word transcript\"],\"repair_options\":[\"Extract only durable user facts with clear retention value into separate atomic memory cards.\",\"If needed, create a brief bounded conversation_summary capturing only stable outcomes, decisions, or commitments from the conversation.\",\"Exclude ephemeral dialogue, brainstorming, hedged statements, and unresolved contradictions.\",\"Preserve ambiguity by using low confidence or by omitting facts that were not clearly established.\",\"Do not store superseded or deleted statements as current; only keep the latest supported state if explicitly resolved.\"],\"receipt\":{\"success\":false,\"details\":[\"Validation failed: transcript-scale content is not acceptable as a single durable memory card.\",\"Validation failed: proposed memory is not atomic or scoped for retrieval.\",\"Validation failed: likely mixes ephemeral, ambiguous, and potentially superseded content without normalization.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

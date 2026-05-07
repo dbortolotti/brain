@@ -1,0 +1,33 @@
+{
+  "fixture_id": "debug_inspect_memory_001",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "This is a read-only inspection request for memory id mem_123. I cannot show the memory contents because the underlying record is not included in the provided input.",
+    "citations": [
+      "mem_123"
+    ],
+    "conflict_classification": "none",
+    "decision": "cannot_complete_without_memory_record",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": "mem_123",
+      "reason": "The request targets an existing memory by id, but no stored record or inspection payload for mem_123 was provided in the fixture."
+    },
+    "intent": "inspect_memory",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Parsed command: /brain inspect memory mem_123",
+        "No durable memory was created or modified.",
+        "Inspection could not be completed because no record data for mem_123 was available."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide the stored contents or metadata for mem_123 so it can be inspected.",
+      "Run the inspect command against a live Brain store and return the record payload.",
+      "If mem_123 may be missing or deleted, verify whether the id exists before inspecting it."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

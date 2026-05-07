@@ -1,0 +1,65 @@
+{
+  "fixture_id": "supersession_sam_job_001",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "Sam's prior employment at Goldman is superseded: Sam left Goldman and joined Point72.",
+    "citations": [],
+    "conflict_classification": "supersession",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "merge_with_existing",
+      "entity_id": null,
+      "reason": "The new information refers to the same Sam as the existing memory and updates Sam's employment status."
+    },
+    "intent": "update_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_status",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "formerly_worked_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Classified as supersession because the new statement explicitly says Sam left Goldman and joined Point72.",
+        "Committed updated employment memory without presenting the superseded Goldman role as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark 'Sam works at Goldman' as no longer current.",
+      "Store Goldman as Sam's former employer.",
+      "Store Point72 as Sam's current employer."
+    ]
+  },
+  "run_id": "eval_20260507_065822"
+}

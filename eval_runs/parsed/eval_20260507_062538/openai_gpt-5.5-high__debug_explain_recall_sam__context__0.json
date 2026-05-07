@@ -1,0 +1,36 @@
+{
+  "fixture_id": "debug_explain_recall_sam__context",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "Recall returned mem_new because it is the current, non-superseded memory matching the query for Sam from Goldman. mem_old may also have matched the query, but it was filtered because it is marked as superseded, apparently by mem_new. Therefore mem_old should not be presented as a current fact; it is only relevant as historical or audit context explaining why mem_new replaced it.",
+    "citations": [
+      "mem_new",
+      "mem_old"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "No durable memory should be committed. This is a debug explanation of why one memory was returned and another was filtered.",
+    "entity_resolution": {
+      "action": "no_new_resolution",
+      "entity_id": null,
+      "reason": "The request refers to the recall target as 'Sam from Goldman' but does not provide enough information to establish or modify an entity record. The explanation preserves that ambiguity."
+    },
+    "intent": "Explain recall behavior for a debug fixture involving Sam from Goldman.",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Explained why mem_new was returned as current.",
+        "Explained why mem_old was filtered as superseded.",
+        "Did not present mem_old as a current fact.",
+        "Did not commit any new durable memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If mem_old was incorrectly marked superseded, remove or correct its supersession metadata.",
+      "If mem_new is not actually the replacement, update the superseded-by relationship to point to the correct memory.",
+      "If both memories are valid but describe different facts, split or clarify them rather than treating one as superseding the other.",
+      "If 'Sam from Goldman' refers to multiple possible people, add disambiguating entity metadata before relying on recall results."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

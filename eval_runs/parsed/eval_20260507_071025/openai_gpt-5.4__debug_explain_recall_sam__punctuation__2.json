@@ -1,0 +1,79 @@
+{
+  "fixture_id": "debug_explain_recall_sam__punctuation",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "Recall returned mem_new because it is the current active memory for Sam from Goldman. mem_old was excluded because it is explicitly superseded, so it should not be presented as current when a newer replacement exists for the same fact pattern.",
+    "citations": [
+      "mem_new",
+      "mem_old"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "explain_recall_selection",
+    "entity_resolution": {
+      "action": "reuse_existing",
+      "entity_id": null,
+      "reason": "The explanation refers to the same resolved person entity, Sam; no new entity creation is needed."
+    },
+    "intent": "debug_explain_recall",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer/source",
+            "type": "organization"
+          }
+        ],
+        "kind": "candidate_current",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "from",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "mem_new states that Sam is from Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "candidate_superseded",
+        "relationships": [
+          {
+            "object": "mem_new",
+            "predicate": "superseded_by",
+            "subject": "mem_old"
+          }
+        ],
+        "statement": "mem_old was filtered because it is marked superseded by a newer memory about the same subject/relation."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Selected the newer active memory card mem_new for the Sam/Goldman recall.",
+        "Filtered mem_old because superseded memories are not returned as current facts.",
+        "Preserved ambiguity by explaining the selection rule without inventing extra unstated details."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Verify that mem_old has a superseded/deleted status rather than active status.",
+      "Verify that mem_new is linked to mem_old via a supersedes relationship.",
+      "If both memories are intended to remain valid, remove the supersession link and distinguish them by time or context.",
+      "If punctuation/tokenization affected matching, normalize both query and memory text before ranking."
+    ]
+  },
+  "run_id": "eval_20260507_071025"
+}

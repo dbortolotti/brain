@@ -1,0 +1,33 @@
+{
+  "fixture_id": "validator_blocks_high_confidence_overwrite_001",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "Rejected the proposed update. Existing memory says Sara is Daniele's daughter, while the proposal says Sara is Daniele's niece. Do not overwrite the existing relationship without explicit clarification or stronger evidence.",
+    "citations": [
+      "Existing: Sara is Daniele's daughter.",
+      "Proposed: Sara is Daniele's niece."
+    ],
+    "conflict_classification": "high_confidence_overwrite_conflict",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "no_change",
+      "entity_id": null,
+      "reason": "The proposed relationship for Sara and Daniele conflicts with the existing durable memory and lacks sufficient evidence to overwrite it."
+    },
+    "intent": "validate_memory_update",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Blocked conflicting proposed memory.",
+        "No durable memory was added or modified."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask for clarification: Is Sara Daniele's daughter or niece?",
+      "If the relationship changed or the prior memory was wrong, provide an explicit correction before updating.",
+      "Record both only if the user clarifies a non-conflicting explanation, such as adoptive/familial terminology."
+    ]
+  },
+  "run_id": "eval_20260507_072639"
+}

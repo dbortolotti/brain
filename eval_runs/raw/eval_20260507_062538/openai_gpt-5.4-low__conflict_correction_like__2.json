@@ -1,0 +1,101 @@
+{
+  "error": null,
+  "fixture_id": "conflict_correction_like",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Accepted explicit correction: update current memory to 'Sam from Goldman likes early Coltrane' and retire 'Sam from Goldman likes Bill Evans' from current facts.",
+    "citations": [
+      "Existing current fact: Sam from Goldman likes Bill Evans.",
+      "Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans."
+    ],
+    "conflict_classification": "direct_explicit_correction",
+    "decision": "apply_correction_and_supersede_prior_fact",
+    "entity_resolution": {
+      "action": "reuse_existing_entity",
+      "entity_id": null,
+      "reason": "The correction refers to the same person already identified as Sam from Goldman; no new entity is introduced."
+    },
+    "intent": "correct_fact",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "music_preference"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "retracted_object",
+            "type": "person"
+          }
+        ],
+        "kind": "retraction",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "not_currently_likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "The prior current fact 'Sam from Goldman likes Bill Evans' is superseded by the correction and should no longer be treated as current."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected a direct contradiction between the existing current fact and the correction.",
+        "The phrase 'actually' plus 'not Bill Evans' indicates an explicit user-driven correction.",
+        "Committed the corrected preference as current and prevented the superseded fact from remaining current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace the current preference fact with 'Sam from Goldman likes early Coltrane.'",
+      "Mark 'Sam from Goldman likes Bill Evans' as superseded/retracted so it is not surfaced as current.",
+      "If the system supports history, retain the old fact only as a past mistaken belief or corrected record, not as an active preference."
+    ]
+  },
+  "raw_text": "{\"intent\":\"correct_fact\",\"decision\":\"apply_correction_and_supersede_prior_fact\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman likes early Coltrane.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"early Coltrane\",\"type\":\"music_preference\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"early Coltrane\"}]},{\"kind\":\"retraction\",\"statement\":\"The prior current fact 'Sam from Goldman likes Bill Evans' is superseded by the correction and should no longer be treated as current.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"retracted_object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"not_currently_likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"reuse_existing_entity\",\"entity_id\":null,\"reason\":\"The correction refers to the same person already identified as Sam from Goldman; no new entity is introduced.\"},\"conflict_classification\":\"direct_explicit_correction\",\"answer\":\"Accepted explicit correction: update current memory to 'Sam from Goldman likes early Coltrane' and retire 'Sam from Goldman likes Bill Evans' from current facts.\",\"citations\":[\"Existing current fact: Sam from Goldman likes Bill Evans.\",\"Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans.\"],\"repair_options\":[\"Replace the current preference fact with 'Sam from Goldman likes early Coltrane.'\",\"Mark 'Sam from Goldman likes Bill Evans' as superseded/retracted so it is not surfaced as current.\",\"If the system supports history, retain the old fact only as a past mistaken belief or corrected record, not as an active preference.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected a direct contradiction between the existing current fact and the correction.\",\"The phrase 'actually' plus 'not Bill Evans' indicates an explicit user-driven correction.\",\"Committed the corrected preference as current and prevented the superseded fact from remaining current.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

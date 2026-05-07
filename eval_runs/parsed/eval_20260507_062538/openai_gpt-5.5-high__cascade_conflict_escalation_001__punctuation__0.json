@@ -1,0 +1,54 @@
+{
+  "fixture_id": "cascade_conflict_escalation_001__punctuation",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "Conflict detected: existing memory says Sara is your daughter, while the new input says Sara is your niece. I would not commit the new relationship without clarification.",
+    "citations": [
+      "Existing: Sara is my daughter",
+      "Input: Sara is my niece"
+    ],
+    "conflict_classification": "direct_relationship_conflict",
+    "decision": "conflict_detected_requires_clarification",
+    "entity_resolution": {
+      "action": "possible_same_entity_needs_clarification",
+      "entity_id": null,
+      "reason": "The same name, Sara, appears in both the existing memory and the new input, but the relationship differs: daughter versus niece."
+    },
+    "intent": "store_personal_relationship",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "possible_relative",
+            "type": "person"
+          }
+        ],
+        "kind": "conflict_candidate",
+        "relationships": [
+          {
+            "object": "user",
+            "predicate": "may_be_niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara may be the user's niece, but this conflicts with the existing memory that Sara is the user's daughter. Do not commit this as durable memory until clarified."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected conflicting kinship relationship for Sara.",
+        "No durable memory should be updated until the conflict is resolved."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Confirm that Sara is your daughter and reject the niece statement.",
+      "Confirm that Sara is your niece and replace or mark the daughter statement as incorrect.",
+      "Clarify that there are two different people named Sara, one your daughter and one your niece.",
+      "Clarify whether Sara has both roles due to a special family circumstance."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

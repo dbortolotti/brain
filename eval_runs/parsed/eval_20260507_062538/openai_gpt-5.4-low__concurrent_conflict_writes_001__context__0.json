@@ -1,0 +1,70 @@
+{
+  "fixture_id": "concurrent_conflict_writes_001__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Potential conflict detected. Treat as ambiguous until temporal ordering or multi-employment context is provided; do not store a single current employer as durable fact.",
+    "citations": [
+      "Sam works at Goldman.",
+      "Sam joined Point72."
+    ],
+    "conflict_classification": "concurrent_potentially_conflicting_writes",
+    "decision": "do_not_commit_current_employment_without_resolution",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Insufficient information to determine whether both writes refer to the same time period, whether one supersedes the other, or whether Sam holds multiple roles."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer_1",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "employer_2",
+            "type": "organization"
+          }
+        ],
+        "kind": "conflict_observation",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Concurrent context contains two potentially conflicting employment writes for Sam: 'Sam works at Goldman' and 'Sam joined Point72'."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected two employment-related writes for the same person.",
+        "Observed potential conflict between current employment at Goldman and joining Point72.",
+        "Chose not to commit an unqualified current-employer memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add timestamps for both writes.",
+      "Clarify whether Sam left Goldman when joining Point72.",
+      "Clarify whether Sam is simultaneously affiliated with both organizations.",
+      "Store only qualified, time-scoped facts if dates become available."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

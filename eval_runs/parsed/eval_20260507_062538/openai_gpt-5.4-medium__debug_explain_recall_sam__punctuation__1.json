@@ -1,0 +1,99 @@
+{
+  "fixture_id": "debug_explain_recall_sam__punctuation",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "mem_new was returned because it is the active memory that matches Sam and Goldman. mem_old was filtered because it is superseded, so the recall system suppresses it rather than showing an outdated version as current.",
+    "citations": [
+      "mem_new",
+      "mem_old"
+    ],
+    "conflict_classification": "superseded",
+    "decision": "Recall returned mem_new as the current matching memory for Sam and Goldman, and filtered out mem_old because mem_old is marked as superseded and therefore should not be presented as current.",
+    "entity_resolution": {
+      "action": "resolved_by_query_match",
+      "entity_id": null,
+      "reason": "The explanation depends on the matched entities Sam and Goldman, but no separate canonical entity ID is provided in the fixture."
+    },
+    "intent": "explain_recall_filtering",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "associated_entity",
+            "type": "organization"
+          }
+        ],
+        "kind": "returned_candidate",
+        "relationships": [
+          {
+            "object": "Sam",
+            "predicate": "matches_query_for",
+            "subject": "mem_new"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "matches_query_for",
+            "subject": "mem_new"
+          }
+        ],
+        "statement": "mem_new is the active memory matching the Sam + Goldman query and is treated as the current version."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "associated_entity",
+            "type": "organization"
+          }
+        ],
+        "kind": "filtered_candidate",
+        "relationships": [
+          {
+            "object": "Sam",
+            "predicate": "matches_query_for",
+            "subject": "mem_old"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "matches_query_for",
+            "subject": "mem_old"
+          },
+          {
+            "object": "mem_new",
+            "predicate": "is_superseded_by",
+            "subject": "mem_old"
+          }
+        ],
+        "statement": "mem_old also matched Sam and Goldman, but it was excluded because it has been superseded by a newer memory and should not be surfaced as current."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Explained why mem_new was returned.",
+        "Explained why mem_old was filtered.",
+        "Preserved ambiguity about the exact underlying fact and did not restate the superseded content as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Verify that mem_old has an explicit superseded-by link to mem_new.",
+      "Check whether mem_new and mem_old are attached to the same Sam and Goldman entities.",
+      "If mem_old should still be recallable, change its status from superseded to historical instead of suppressing it.",
+      "Inspect ranking/debug traces to confirm supersession filtering happened after both memories matched the query."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

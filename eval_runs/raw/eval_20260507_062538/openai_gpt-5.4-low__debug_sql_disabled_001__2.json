@@ -1,0 +1,37 @@
+{
+  "error": null,
+  "fixture_id": "debug_sql_disabled_001",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "SQL debug output is unavailable because BRAIN_DEBUG_SQL_ENABLED=false. The request to run or expose admin SQL against memory_cards is denied while debug SQL is disabled.",
+    "citations": [
+      "Input command: /brain admin sql SELECT * FROM memory_cards",
+      "Runtime condition: BRAIN_DEBUG_SQL_ENABLED=false"
+    ],
+    "conflict_classification": "none",
+    "decision": "deny",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No entity resolution needed for an administrative SQL debug request."
+    },
+    "intent": "admin_sql_debug_request",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Recognized an administrative SQL debug request.",
+        "Checked the provided runtime flag state.",
+        "Did not execute or expose SQL results because debug SQL is disabled."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Enable BRAIN_DEBUG_SQL_ENABLED=true in the appropriate debug environment, then retry the command.",
+      "Use non-SQL Brain inspection or admin tools that are permitted when debug SQL is disabled.",
+      "If you only need a specific memory lookup, issue a standard memory query instead of an admin SQL command."
+    ]
+  },
+  "raw_text": "{\"intent\":\"admin_sql_debug_request\",\"decision\":\"deny\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No entity resolution needed for an administrative SQL debug request.\"},\"conflict_classification\":\"none\",\"answer\":\"SQL debug output is unavailable because BRAIN_DEBUG_SQL_ENABLED=false. The request to run or expose admin SQL against memory_cards is denied while debug SQL is disabled.\",\"citations\":[\"Input command: /brain admin sql SELECT * FROM memory_cards\",\"Runtime condition: BRAIN_DEBUG_SQL_ENABLED=false\"],\"repair_options\":[\"Enable BRAIN_DEBUG_SQL_ENABLED=true in the appropriate debug environment, then retry the command.\",\"Use non-SQL Brain inspection or admin tools that are permitted when debug SQL is disabled.\",\"If you only need a specific memory lookup, issue a standard memory query instead of an admin SQL command.\"],\"receipt\":{\"success\":false,\"details\":[\"Recognized an administrative SQL debug request.\",\"Checked the provided runtime flag state.\",\"Did not execute or expose SQL results because debug SQL is disabled.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

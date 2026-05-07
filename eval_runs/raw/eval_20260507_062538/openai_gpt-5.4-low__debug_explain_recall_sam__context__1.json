@@ -1,0 +1,97 @@
+{
+  "error": null,
+  "fixture_id": "debug_explain_recall_sam__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Recall prefers current, non-superseded memories. In this case, mem_new matched Sam from Goldman and is the active replacement record, so it was returned. mem_old was excluded because it has been superseded by mem_new, and showing it as current would risk presenting outdated information.",
+    "citations": [
+      "mem_new",
+      "mem_old"
+    ],
+    "conflict_classification": "superseded_fact",
+    "decision": "Recall returned the active, newer memory for Sam from Goldman and excluded the older one because it was marked superseded by the newer record.",
+    "entity_resolution": {
+      "action": "reuse_existing",
+      "entity_id": null,
+      "reason": "The explanation concerns existing memory records for Sam and Goldman rather than creating or changing entity identity."
+    },
+    "intent": "debug_explain_recall",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "associated_entity",
+            "type": "organization"
+          },
+          {
+            "name": "mem_new",
+            "role": "returned_record",
+            "type": "memory"
+          }
+        ],
+        "kind": "active_memory",
+        "relationships": [
+          {
+            "object": "Sam",
+            "predicate": "about",
+            "subject": "mem_new"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "mem_new"
+          }
+        ],
+        "statement": "mem_new is the current memory about Sam associated with Goldman, so it remained eligible for recall."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "mem_old",
+            "role": "superseded_record",
+            "type": "memory"
+          },
+          {
+            "name": "mem_new",
+            "role": "superseding_record",
+            "type": "memory"
+          }
+        ],
+        "kind": "supersession_note",
+        "relationships": [
+          {
+            "object": "mem_new",
+            "predicate": "superseded_by",
+            "subject": "mem_old"
+          }
+        ],
+        "statement": "mem_old was filtered because it is superseded by mem_new and should not be presented as the current fact."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Explained why mem_new was returned.",
+        "Explained why mem_old was filtered.",
+        "Preserved the distinction between current and superseded memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Verify that mem_old has an explicit superseded_by link to mem_new.",
+      "Verify that recall filters records marked superseded or inactive.",
+      "If both memories appear, adjust ranking/filtering to suppress superseded facts from default recall.",
+      "If lineage is unclear, store explicit validity or status metadata to distinguish current from obsolete records."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"debug_explain_recall\",\n  \"decision\": \"Recall returned the active, newer memory for Sam from Goldman and excluded the older one because it was marked superseded by the newer record.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"active_memory\",\n      \"statement\": \"mem_new is the current memory about Sam associated with Goldman, so it remained eligible for recall.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"associated_entity\"\n        },\n        {\n          \"name\": \"mem_new\",\n          \"type\": \"memory\",\n          \"role\": \"returned_record\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"mem_new\",\n          \"predicate\": \"about\",\n          \"object\": \"Sam\"\n        },\n        {\n          \"subject\": \"mem_new\",\n          \"predicate\": \"associated_with\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"supersession_note\",\n      \"statement\": \"mem_old was filtered because it is superseded by mem_new and should not be presented as the current fact.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"mem_old\",\n          \"type\": \"memory\",\n          \"role\": \"superseded_record\"\n        },\n        {\n          \"name\": \"mem_new\",\n          \"type\": \"memory\",\n          \"role\": \"superseding_record\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"mem_old\",\n          \"predicate\": \"superseded_by\",\n          \"object\": \"mem_new\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"reuse_existing\",\n    \"entity_id\": null,\n    \"reason\": \"The explanation concerns existing memory records for Sam and Goldman rather than creating or changing entity identity.\"\n  },\n  \"conflict_classification\": \"superseded_fact\",\n  \"answer\": \"Recall prefers current, non-superseded memories. In this case, mem_new matched Sam from Goldman and is the active replacement record, so it was returned. mem_old was excluded because it has been superseded by mem_new, and showing it as current would risk presenting outdated information.\",\n  \"citations\": [\n    \"mem_new\",\n    \"mem_old\"\n  ],\n  \"repair_options\": [\n    \"Verify that mem_old has an explicit superseded_by link to mem_new.\",\n    \"Verify that recall filters records marked superseded or inactive.\",\n    \"If both memories appear, adjust ranking/filtering to suppress superseded facts from default recall.\",\n    \"If lineage is unclear, store explicit validity or status metadata to distinguish current from obsolete records.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Explained why mem_new was returned.\",\n      \"Explained why mem_old was filtered.\",\n      \"Preserved the distinction between current and superseded memory.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

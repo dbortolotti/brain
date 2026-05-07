@@ -1,0 +1,66 @@
+{
+  "fixture_id": "slack_conflict_buttons_001",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "Saved as an employment change for Sam: left Goldman and joined Point72. The prior memory that Sam works at Goldman should be treated as outdated, not current.",
+    "citations": [],
+    "conflict_classification": "superseding_update",
+    "decision": "commit_with_conflict_resolution",
+    "entity_resolution": {
+      "action": "merge_with_existing_entity",
+      "entity_id": null,
+      "reason": "The new statement refers to the same Sam already in memory and directly updates that person's employment history."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "new employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "event",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed 1 new memory card.",
+        "Classified the new information as a superseding employment update.",
+        "Flagged the prior Goldman employment fact as no longer current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Supersede the existing current-employment fact 'Sam works at Goldman.'",
+      "Retain Goldman only as past employment if historical state is preserved separately.",
+      "Prefer the transition event over any present-tense Goldman employment assertion."
+    ]
+  },
+  "run_id": "eval_20260507_072639"
+}

@@ -1,0 +1,63 @@
+{
+  "fixture_id": "recall_brain_cognee_conclusions_relevance_001__punctuation",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "You concluded that Brain DB is the source of truth, while Cognee is a rebuildable projection.",
+    "citations": [
+      "Brain DB source-of-truth conclusion",
+      "Cognee rebuildable projection"
+    ],
+    "conflict_classification": "none",
+    "decision": "answer_from_relevant_conclusion_records_only",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Brain DB and Cognee are already sufficiently distinct for this recall query."
+    },
+    "intent": "recall_conclusion_about_brain_and_cognee",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "rebuildable_projection",
+            "type": "system"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "personal memory",
+            "predicate": "is_source_of_truth_for",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "Brain DB",
+            "predicate": "is_rebuildable_projection_of",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "You concluded that Brain DB is the source of truth, and Cognee is a rebuildable projection rather than the durable source."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Used only records relevant to the query about Brain and Cognee.",
+        "Excluded unrelated family facts and Sam preferences from the synthesized answer.",
+        "Preserved the distinction between durable source-of-truth and rebuildable projection."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want the exact original wording, inspect the Brain DB conclusion record directly.",
+      "If there are multiple dated conclusions, disambiguate by timestamp before committing a durable memory card."
+    ]
+  },
+  "run_id": "eval_20260507_072639"
+}

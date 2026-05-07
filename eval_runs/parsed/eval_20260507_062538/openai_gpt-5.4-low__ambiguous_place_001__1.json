@@ -1,0 +1,35 @@
+{
+  "fixture_id": "ambiguous_place_001",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "I did not store this as durable memory because 'Brutto' could refer to multiple existing entities. Please clarify which Brutto you meant.",
+    "citations": [
+      "Existing: Brutto restaurant in London",
+      "Existing: Brutto article alias",
+      "New note: Brutto was better than expected."
+    ],
+    "conflict_classification": "ambiguous_reference",
+    "decision": "defer",
+    "entity_resolution": {
+      "action": "no_match",
+      "entity_id": null,
+      "reason": "The mention 'Brutto' is ambiguous across existing entities ('Brutto' restaurant in London and 'Brutto' article alias). The sentiment note does not contain enough disambiguating context to safely attach durable memory to either entity."
+    },
+    "intent": "entity_resolution",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No memory card created.",
+        "No entity link performed due to ambiguity.",
+        "Preserved ambiguity rather than risking attachment to the wrong entity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask whether 'Brutto' refers to the London restaurant or the article alias.",
+      "If the restaurant is intended, restate as: 'I thought Brutto restaurant in London was better than expected.'",
+      "If the article alias is intended, restate with the full article title or linked entity name."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

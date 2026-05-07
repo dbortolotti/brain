@@ -1,0 +1,67 @@
+{
+  "error": null,
+  "fixture_id": "idempotent_retry_same_message_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Record one memory only despite the same input being delivered three times.",
+    "citations": [
+      "Input: Same input delivered three times: Sam from Goldman mentioned that he likes Bill Evans."
+    ],
+    "conflict_classification": "none",
+    "decision": "accept_once",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Sam is under-specified; 'Goldman' may refer to an organization such as Goldman Sachs, but the input does not uniquely identify the entity. Do not create duplicates from repeated identical delivery."
+    },
+    "intent": "store_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "source/preference_holder",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_entity",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman mentioned that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Accepted a single durable memory card for the repeated identical message.",
+        "Preserved ambiguity around Sam and Goldman.",
+        "No conflict or supersession detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"store_memory\",\"decision\":\"accept_once\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman mentioned that he likes Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"source/preference_holder\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked_entity\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"Sam is under-specified; 'Goldman' may refer to an organization such as Goldman Sachs, but the input does not uniquely identify the entity. Do not create duplicates from repeated identical delivery.\"},\"conflict_classification\":\"none\",\"answer\":\"Record one memory only despite the same input being delivered three times.\",\"citations\":[\"Input: Same input delivered three times: Sam from Goldman mentioned that he likes Bill Evans.\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Accepted a single durable memory card for the repeated identical message.\",\"Preserved ambiguity around Sam and Goldman.\",\"No conflict or supersession detected.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

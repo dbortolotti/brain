@@ -1,0 +1,43 @@
+{
+  "fixture_id": "ambiguous_place_001",
+  "model": "openai:gpt-5.5-low",
+  "payload": {
+    "answer": "Ambiguous reference: did not attach the note to either existing Brutto entity.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "defer_due_to_ambiguous_entity",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The note mentions only \u201cBrutto,\u201d and existing candidates include both a restaurant in London and an article alias. The phrase \u201cbetter than expected\u201d could plausibly describe either a place/meal or an article, so it should not be committed to either entity without clarification."
+    },
+    "intent": "record_experience_or_opinion",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Brutto",
+            "role": "referent",
+            "type": "ambiguous"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [],
+        "statement": "The user noted that \u201cBrutto\u201d was better than expected, but it is ambiguous whether this refers to the Brutto restaurant in London or the Brutto article alias."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected ambiguous entity reference.",
+        "No durable fact was committed to a specific existing entity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask the user whether \u201cBrutto\u201d refers to the London restaurant or the article alias.",
+      "Store the note as an unresolved Brutto-related observation until more context is available."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

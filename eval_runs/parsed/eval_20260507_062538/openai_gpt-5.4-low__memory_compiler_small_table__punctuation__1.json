@@ -1,0 +1,83 @@
+{
+  "fixture_id": "memory_compiler_small_table__punctuation",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Extracted two preference memories from the table.",
+    "citations": [
+      "Sam | Bill Evans",
+      "Daniele | Knowledge graphs"
+    ],
+    "conflict_classification": "none",
+    "decision": "store_with_caution",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "No existing entity identifiers were provided; names should be treated as new or unresolved entities."
+    },
+    "intent": "extract_preferences_from_table",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "has_preference_for",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam's preference is Bill Evans."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Knowledge graphs",
+            "role": "object",
+            "type": "topic"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Knowledge graphs",
+            "predicate": "has_preference_for",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Daniele's preference is knowledge graphs."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed 2 table rows.",
+        "Created 2 preference memory cards.",
+        "No conflicts or superseded facts detected."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Lower confidence if 'Preference' is underspecified and may not be durable.",
+      "Resolve whether 'Bill Evans' refers to the jazz pianist or another entity before strengthening the memory.",
+      "Normalize 'Knowledge graphs' casing if the system uses canonical topic names."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

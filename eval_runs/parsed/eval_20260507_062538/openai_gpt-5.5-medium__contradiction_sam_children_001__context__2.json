@@ -1,0 +1,35 @@
+{
+  "fixture_id": "contradiction_sam_children_001__context",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "The new statement directly contradicts the existing memory: existing memory says Sam from Goldman has two children, while the new statement says Sam from Goldman has no children. Do not commit the new fact as current without clarification.",
+    "citations": [
+      "Existing memory: Sam from Goldman has two children.",
+      "New: Sam from Goldman has no children."
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "needs_clarification_before_commit",
+    "entity_resolution": {
+      "action": "matched_existing_entity",
+      "entity_id": null,
+      "reason": "Both statements refer to 'Sam from Goldman', so they appear to describe the same person unless there are multiple Sams from Goldman."
+    },
+    "intent": "classify_memory_conflict",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected a direct contradiction.",
+        "No durable memory was committed.",
+        "Ambiguity preserved pending clarification."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask the user to confirm whether Sam from Goldman has two children or no children.",
+      "If the new statement is a correction, supersede the old memory and record that Sam from Goldman has no children.",
+      "If both could be true at different times, add temporal qualifiers to each statement.",
+      "If these refer to different people, split them into separate entities with disambiguating details."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

@@ -1,0 +1,83 @@
+{
+  "error": null,
+  "fixture_id": "email_source_meeting_followup_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "",
+    "citations": [
+      "From - sam@examplecom Subject - Follow up Great seeing you Yes, I joined Point72 last month Please send the AI infra article"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "needs_resolution",
+      "entity_id": null,
+      "reason": "Sender email appears malformed as 'sam@examplecom' and only first name Sam is available, so the person cannot be uniquely resolved."
+    },
+    "intent": "compile_memory_from_email",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "sender",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_update",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said they joined Point72 last month."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "requester",
+            "type": "person"
+          },
+          {
+            "name": "AI infra article",
+            "role": "requested_item",
+            "type": "content"
+          }
+        ],
+        "kind": "request",
+        "relationships": [
+          {
+            "object": "AI infra article",
+            "predicate": "requested",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam asked to be sent the AI infra article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted employment update and article request.",
+        "Preserved ambiguity around sender identity and relative date."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm Sam's full identity and correct email address.",
+      "Clarify the date of the email to anchor 'last month' precisely."
+    ]
+  },
+  "raw_text": "{\"intent\":\"compile_memory_from_email\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"employment_update\",\"statement\":\"Sam said they joined Point72 last month.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"sender\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]},{\"kind\":\"request\",\"statement\":\"Sam asked to be sent the AI infra article.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"requester\"},{\"name\":\"AI infra article\",\"type\":\"content\",\"role\":\"requested_item\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"requested\",\"object\":\"AI infra article\"}]}],\"entity_resolution\":{\"action\":\"needs_resolution\",\"entity_id\":null,\"reason\":\"Sender email appears malformed as 'sam@examplecom' and only first name Sam is available, so the person cannot be uniquely resolved.\"},\"conflict_classification\":\"none\",\"answer\":\"\",\"citations\":[\"From - sam@examplecom Subject - Follow up Great seeing you Yes, I joined Point72 last month Please send the AI infra article\"],\"repair_options\":[\"Confirm Sam's full identity and correct email address.\",\"Clarify the date of the email to anchor 'last month' precisely.\"],\"receipt\":{\"success\":true,\"details\":[\"Extracted employment update and article request.\",\"Preserved ambiguity around sender identity and relative date.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

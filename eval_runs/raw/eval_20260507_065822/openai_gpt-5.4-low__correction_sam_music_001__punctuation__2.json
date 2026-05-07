@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "fixture_id": "correction_sam_music_001__punctuation",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Replace the existing preference memory. The new input explicitly corrects the old fact: Sam from Goldman likes early Coltrane, not Bill Evans. The Bill Evans preference should be marked superseded and not retained as current.",
+    "citations": [
+      "Existing memory: Sam from Goldman likes Bill Evans",
+      "Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans"
+    ],
+    "conflict_classification": "direct_correction_contradiction",
+    "decision": "replace_conflicting_fact",
+    "entity_resolution": {
+      "action": "merge_with_existing_subject",
+      "entity_id": null,
+      "reason": "The correction refers to the same subject descriptor, 'Sam from Goldman,' as the existing memory, so this should be treated as a correction to the same person's preference."
+    },
+    "intent": "correct_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "preference",
+            "type": "music_preference"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected explicit correction signaled by 'actually' and 'not'.",
+        "Classified as a contradiction with clear replacement semantics.",
+        "Committed only the corrected preference as current durable memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace 'Sam from Goldman likes Bill Evans' with 'Sam from Goldman likes early Coltrane.'",
+      "Mark the Bill Evans preference as retracted/superseded rather than current.",
+      "If the system supports history, retain the old fact only as a corrected prior belief, not as an active memory."
+    ]
+  },
+  "raw_text": "{\"intent\":\"correct_memory\",\"decision\":\"replace_conflicting_fact\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman likes early Coltrane.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"early Coltrane\",\"type\":\"music_preference\",\"role\":\"preference\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"early Coltrane\"}]}],\"entity_resolution\":{\"action\":\"merge_with_existing_subject\",\"entity_id\":null,\"reason\":\"The correction refers to the same subject descriptor, 'Sam from Goldman,' as the existing memory, so this should be treated as a correction to the same person's preference.\"},\"conflict_classification\":\"direct_correction_contradiction\",\"answer\":\"Replace the existing preference memory. The new input explicitly corrects the old fact: Sam from Goldman likes early Coltrane, not Bill Evans. The Bill Evans preference should be marked superseded and not retained as current.\",\"citations\":[\"Existing memory: Sam from Goldman likes Bill Evans\",\"Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans\"],\"repair_options\":[\"Replace 'Sam from Goldman likes Bill Evans' with 'Sam from Goldman likes early Coltrane.'\",\"Mark the Bill Evans preference as retracted/superseded rather than current.\",\"If the system supports history, retain the old fact only as a corrected prior belief, not as an active memory.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected explicit correction signaled by 'actually' and 'not'.\",\"Classified as a contradiction with clear replacement semantics.\",\"Committed only the corrected preference as current durable memory.\"]}}",
+  "run_id": "eval_20260507_065822",
+  "status": "ok"
+}

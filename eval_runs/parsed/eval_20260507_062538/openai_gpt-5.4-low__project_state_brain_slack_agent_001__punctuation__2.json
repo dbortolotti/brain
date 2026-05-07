@@ -1,0 +1,68 @@
+{
+  "fixture_id": "project_state_brain_slack_agent_001__punctuation",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Committed a scoped project-state memory: Slack is the primary guardrailed memory ingestion interface for Brain, and Telegram is deferred as a possible later addition.",
+    "citations": [
+      "Input: \"Brain project state - Slack should be the primary guardrailed memory ingestion interface; Telegram can come later\""
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_with_scope",
+    "entity_resolution": {
+      "action": "no_match_create_if_needed",
+      "entity_id": null,
+      "reason": "Project and platforms are identified by name, but no canonical entity IDs were provided."
+    },
+    "intent": "compile_project_state_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "Slack",
+            "role": "primary_ingestion_interface",
+            "type": "platform"
+          },
+          {
+            "name": "Telegram",
+            "role": "deferred_ingestion_interface",
+            "type": "platform"
+          }
+        ],
+        "kind": "project_state",
+        "relationships": [
+          {
+            "object": "Slack",
+            "predicate": "uses_as_primary_guardrailed_memory_ingestion_interface",
+            "subject": "Brain"
+          },
+          {
+            "object": "Brain",
+            "predicate": "is_deferred_for_possible_later_use_in",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "For Brain's memory ingestion interface, Slack should be the primary guardrailed entry point; Telegram is a possible later addition."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored as project state with explicit scope to memory ingestion interface.",
+        "Preserved ambiguity by representing Telegram as a possible later addition rather than a current interface.",
+        "Did not infer any stronger commitment beyond Slack being primary and guardrailed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If Telegram is also intended to be guardrailed now, update the memory to reflect current parity with Slack.",
+      "If this is only a tentative plan rather than current project state, downgrade it to a roadmap or preference memory card.",
+      "If 'can come later' implies explicit lower priority, record Telegram as backlog or future-phase work."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

@@ -1,0 +1,35 @@
+{
+  "fixture_id": "conflict_sara_niece_001",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "No direct conflict. 'Sara is my niece' can be consistent with Sara being Daniele's daughter and Nur's twin, depending on the speaker's relationship to Daniele or Sara's other parent. Do not overwrite existing durable memory; keep the new claim unresolved unless the speaker's identity/kinship context is established.",
+    "citations": [
+      "Existing memory: Sara is Daniele's daughter.",
+      "Existing memory: Sara is Nur's twin.",
+      "New claim: Sara is my niece."
+    ],
+    "conflict_classification": "no_direct_conflict_ambiguous_perspective",
+    "decision": "defer_due_to_ambiguity",
+    "entity_resolution": {
+      "action": "link_existing_entity",
+      "entity_id": "Sara",
+      "reason": "The new statement likely refers to the same Sara, but it is a perspective-relative kinship claim that cannot be normalized without knowing the speaker's family relationship to Sara or to Daniele/Nur."
+    },
+    "intent": "classify_memory_update",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected no logical contradiction between the existing family facts and the new claim.",
+        "Classified the issue as ambiguity from unresolved first-person reference rather than a factual conflict.",
+        "Chose not to create a durable memory card because the relation cannot be normalized safely."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask who 'my' refers to so the niece relationship can be grounded to a specific person.",
+      "If the speaker is identified, store a normalized relation such as 'Sara is the niece of <speaker>'.",
+      "Retain existing high-confidence facts as current and avoid committing the perspective-relative claim as durable memory until resolved."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

@@ -1,0 +1,87 @@
+{
+  "error": null,
+  "fixture_id": "concurrent_conflict_writes_001__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Do not commit a durable current-employment fact. The writes are concurrent and potentially inconsistent: 'works at Goldman' implies current employment, while 'joined Point72' may indicate a new employer or a separate event. Preserve both as uncommitted candidates pending clarification of identity and timeline.",
+    "citations": [
+      "Sam works at Goldman.",
+      "Sam joined Point72."
+    ],
+    "conflict_classification": "concurrent_potentially_conflicting_employment_writes",
+    "decision": "defer_commit_due_to_concurrent_conflict",
+    "entity_resolution": {
+      "action": "unresolved",
+      "entity_id": null,
+      "reason": "The person 'Sam' is not uniquely identified beyond first name, and the two writes may refer to the same or different individuals."
+    },
+    "intent": "classify_conflict_for_memory_write",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "candidate_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "candidate_fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected two concurrent writes about Sam's employment.",
+        "Classified as a potential conflict because current employer cannot be resolved safely.",
+        "No durable memory committed as current fact."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask whether both statements refer to the same Sam.",
+      "Ask for timestamps or ordering of the employment events.",
+      "Ask whether Sam left Goldman after joining Point72.",
+      "Store as a timeline/event only if a date is provided for joining Point72."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict_for_memory_write\",\"decision\":\"defer_commit_due_to_concurrent_conflict\",\"memory_cards\":[{\"kind\":\"candidate_fact\",\"statement\":\"Sam works at Goldman.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Goldman\"}]},{\"kind\":\"candidate_fact\",\"statement\":\"Sam joined Point72.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"unresolved\",\"entity_id\":null,\"reason\":\"The person 'Sam' is not uniquely identified beyond first name, and the two writes may refer to the same or different individuals.\"},\"conflict_classification\":\"concurrent_potentially_conflicting_employment_writes\",\"answer\":\"Do not commit a durable current-employment fact. The writes are concurrent and potentially inconsistent: 'works at Goldman' implies current employment, while 'joined Point72' may indicate a new employer or a separate event. Preserve both as uncommitted candidates pending clarification of identity and timeline.\",\"citations\":[\"Sam works at Goldman.\",\"Sam joined Point72.\"],\"repair_options\":[\"Ask whether both statements refer to the same Sam.\",\"Ask for timestamps or ordering of the employment events.\",\"Ask whether Sam left Goldman after joining Point72.\",\"Store as a timeline/event only if a date is provided for joining Point72.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected two concurrent writes about Sam's employment.\",\"Classified as a potential conflict because current employer cannot be resolved safely.\",\"No durable memory committed as current fact.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

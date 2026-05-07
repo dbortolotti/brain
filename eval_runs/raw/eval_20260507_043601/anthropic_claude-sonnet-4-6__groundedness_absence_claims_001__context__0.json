@@ -1,0 +1,88 @@
+{
+  "error": null,
+  "fixture_id": "groundedness_absence_claims_001__context",
+  "model": "anthropic:claude-sonnet-4-6",
+  "payload": {
+    "answer": "The answer 'No conflicts recorded' is NOT grounded. An absence claim of this type is only valid if conflict links were explicitly traversed and returned a null result. The fixture itself acknowledges this condition was not confirmed ('Evidence only supports this if conflict links were checked'). Therefore the claim should be withheld or qualified until conflict-link verification is performed.",
+    "citations": [
+      "Fixture statement: 'Evidence only supports this if conflict links were checked.'",
+      "Groundedness principle: absence of evidence \u2260 evidence of absence without exhaustive search."
+    ],
+    "conflict_classification": "ungrounded_absence_claim",
+    "decision": "REJECT \u2014 claim is ungrounded; absence of conflict cannot be asserted without verified conflict-link traversal.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No persistent entity requires resolution; evaluation is scoped to this fixture."
+    },
+    "intent": "Evaluate groundedness of the claim 'No conflicts recorded' given that evidence only supports this if conflict links were checked.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "subject under evaluation",
+            "type": "system"
+          },
+          {
+            "name": "conflict links",
+            "role": "required evidence source",
+            "type": "data_structure"
+          }
+        ],
+        "kind": "evaluation_finding",
+        "relationships": [
+          {
+            "object": "conflict link traversal",
+            "predicate": "requires_verification_via",
+            "subject": "No conflicts recorded"
+          },
+          {
+            "object": "explicit conflict-link check evidence",
+            "predicate": "is_ungrounded_without",
+            "subject": "absence claim"
+          }
+        ],
+        "statement": "The answer 'No conflicts recorded' is an absence claim that requires explicit evidence of conflict-link checking to be grounded."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "absence claim",
+            "role": "claim category",
+            "type": "claim_type"
+          }
+        ],
+        "kind": "groundedness_rule",
+        "relationships": [
+          {
+            "object": "affirmative null-result from checked data paths",
+            "predicate": "must_be_supported_by",
+            "subject": "absence claim"
+          }
+        ],
+        "statement": "Absence claims (e.g., 'no X exists') are only grounded when the system has affirmatively checked the relevant data paths and found nothing; a lack of positive evidence is not equivalent to confirmed absence."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Groundedness evaluation completed for fixture groundedness_absence_claims_001__context.",
+        "Decision: REJECT \u2014 ungrounded absence claim.",
+        "Two memory cards created: evaluation_finding and groundedness_rule.",
+        "Three repair options provided.",
+        "No entity merge or deletion performed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Re-run the query with explicit conflict-link traversal and report the verified result.",
+      "Replace the answer with a qualified statement: 'No conflicts found in checked nodes; conflict links not yet verified.'",
+      "Flag the memory card as PENDING until conflict-link check is completed and attach the check result as supporting evidence."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Evaluate groundedness of the claim 'No conflicts recorded' given that evidence only supports this if conflict links were checked.\",\n  \"decision\": \"REJECT \u2014 claim is ungrounded; absence of conflict cannot be asserted without verified conflict-link traversal.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"evaluation_finding\",\n      \"statement\": \"The answer 'No conflicts recorded' is an absence claim that requires explicit evidence of conflict-link checking to be grounded.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain\",\n          \"type\": \"system\",\n          \"role\": \"subject under evaluation\"\n        },\n        {\n          \"name\": \"conflict links\",\n          \"type\": \"data_structure\",\n          \"role\": \"required evidence source\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"No conflicts recorded\",\n          \"predicate\": \"requires_verification_via\",\n          \"object\": \"conflict link traversal\"\n        },\n        {\n          \"subject\": \"absence claim\",\n          \"predicate\": \"is_ungrounded_without\",\n          \"object\": \"explicit conflict-link check evidence\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"groundedness_rule\",\n      \"statement\": \"Absence claims (e.g., 'no X exists') are only grounded when the system has affirmatively checked the relevant data paths and found nothing; a lack of positive evidence is not equivalent to confirmed absence.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"absence claim\",\n          \"type\": \"claim_type\",\n          \"role\": \"claim category\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"absence claim\",\n          \"predicate\": \"must_be_supported_by\",\n          \"object\": \"affirmative null-result from checked data paths\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No persistent entity requires resolution; evaluation is scoped to this fixture.\"\n  },\n  \"conflict_classification\": \"ungrounded_absence_claim\",\n  \"answer\": \"The answer 'No conflicts recorded' is NOT grounded. An absence claim of this type is only valid if conflict links were explicitly traversed and returned a null result. The fixture itself acknowledges this condition was not confirmed ('Evidence only supports this if conflict links were checked'). Therefore the claim should be withheld or qualified until conflict-link verification is performed.\",\n  \"citations\": [\n    \"Fixture statement: 'Evidence only supports this if conflict links were checked.'\",\n    \"Groundedness principle: absence of evidence \u2260 evidence of absence without exhaustive search.\"\n  ],\n  \"repair_options\": [\n    \"Re-run the query with explicit conflict-link traversal and report the verified result.\",\n    \"Replace the answer with a qualified statement: 'No conflicts found in checked nodes; conflict links not yet verified.'\",\n    \"Flag the memory card as PENDING until conflict-link check is completed and attach the check result as supporting evidence.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Groundedness evaluation completed for fixture groundedness_absence_claims_001__context.\",\n      \"Decision: REJECT \u2014 ungrounded absence claim.\",\n      \"Two memory cards created: evaluation_finding and groundedness_rule.\",\n      \"Three repair options provided.\",\n      \"No entity merge or deletion performed.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_043601",
+  "status": "ok"
+}

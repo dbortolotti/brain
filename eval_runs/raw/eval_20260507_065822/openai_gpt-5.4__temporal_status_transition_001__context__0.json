@@ -1,0 +1,96 @@
+{
+  "error": null,
+  "fixture_id": "temporal_status_transition_001__context",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "Record the new fact as: The Brain Slack agent MVP is implemented. Do not replace the existing project-level status 'open' for The Brain Slack agent, because the update may apply only to the MVP or reflect a temporal transition needing explicit project-level confirmation.",
+    "citations": [
+      "Existing context: The Brain Slack agent is planned, status=open.",
+      "New information: The Brain Slack agent MVP is now implemented."
+    ],
+    "conflict_classification": "temporal_status_transition_with_scope_ambiguity",
+    "decision": "create_memory_with_status_transition_and_flag_potential_entity_scope_ambiguity",
+    "entity_resolution": {
+      "action": "link_with_caution",
+      "entity_id": null,
+      "reason": "The new fact likely refers to an MVP sub-scope of the existing Brain Slack agent project, not necessarily the entire project. Treat as related but not identical status targets."
+    },
+    "intent": "classify_and_update_project_status",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "The Brain Slack agent MVP",
+            "role": "subject",
+            "type": "project_artifact"
+          },
+          {
+            "name": "The Brain Slack agent",
+            "role": "related_parent",
+            "type": "project"
+          }
+        ],
+        "kind": "project_status_update",
+        "relationships": [
+          {
+            "object": "implemented",
+            "predicate": "status",
+            "subject": "The Brain Slack agent MVP"
+          },
+          {
+            "object": "The Brain Slack agent",
+            "predicate": "part_of",
+            "subject": "The Brain Slack agent MVP"
+          }
+        ],
+        "statement": "The Brain Slack agent MVP is now implemented."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "The Brain Slack agent",
+            "role": "existing_subject",
+            "type": "project"
+          },
+          {
+            "name": "The Brain Slack agent MVP",
+            "role": "new_subject",
+            "type": "project_artifact"
+          }
+        ],
+        "kind": "contextual_conflict_note",
+        "relationships": [
+          {
+            "object": "open",
+            "predicate": "status",
+            "subject": "The Brain Slack agent"
+          },
+          {
+            "object": "implemented",
+            "predicate": "status",
+            "subject": "The Brain Slack agent MVP"
+          }
+        ],
+        "statement": "Existing context says The Brain Slack agent is planned with status open, while new information says the MVP is implemented; this is a temporal/status transition or possible parent-vs-MVP scope difference, so the prior project-level status should not be overwritten without clarification."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Identified a status change signal.",
+        "Preserved ambiguity between parent project and MVP scope.",
+        "Avoided overwriting existing durable memory with a potentially narrower-scope update."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Keep both facts, distinguishing project-level status from MVP status.",
+      "Ask whether 'The Brain Slack agent MVP' and 'The Brain Slack agent' should now be treated as the same status target.",
+      "If confirmed that MVP completion implies overall project implementation, supersede the older project status with an explicit timestamped update."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_and_update_project_status\",\"decision\":\"create_memory_with_status_transition_and_flag_potential_entity_scope_ambiguity\",\"memory_cards\":[{\"kind\":\"project_status_update\",\"statement\":\"The Brain Slack agent MVP is now implemented.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"The Brain Slack agent MVP\",\"type\":\"project_artifact\",\"role\":\"subject\"},{\"name\":\"The Brain Slack agent\",\"type\":\"project\",\"role\":\"related_parent\"}],\"relationships\":[{\"subject\":\"The Brain Slack agent MVP\",\"predicate\":\"status\",\"object\":\"implemented\"},{\"subject\":\"The Brain Slack agent MVP\",\"predicate\":\"part_of\",\"object\":\"The Brain Slack agent\"}]},{\"kind\":\"contextual_conflict_note\",\"statement\":\"Existing context says The Brain Slack agent is planned with status open, while new information says the MVP is implemented; this is a temporal/status transition or possible parent-vs-MVP scope difference, so the prior project-level status should not be overwritten without clarification.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"The Brain Slack agent\",\"type\":\"project\",\"role\":\"existing_subject\"},{\"name\":\"The Brain Slack agent MVP\",\"type\":\"project_artifact\",\"role\":\"new_subject\"}],\"relationships\":[{\"subject\":\"The Brain Slack agent\",\"predicate\":\"status\",\"object\":\"open\"},{\"subject\":\"The Brain Slack agent MVP\",\"predicate\":\"status\",\"object\":\"implemented\"}]}],\"entity_resolution\":{\"action\":\"link_with_caution\",\"entity_id\":null,\"reason\":\"The new fact likely refers to an MVP sub-scope of the existing Brain Slack agent project, not necessarily the entire project. Treat as related but not identical status targets.\"},\"conflict_classification\":\"temporal_status_transition_with_scope_ambiguity\",\"answer\":\"Record the new fact as: The Brain Slack agent MVP is implemented. Do not replace the existing project-level status 'open' for The Brain Slack agent, because the update may apply only to the MVP or reflect a temporal transition needing explicit project-level confirmation.\",\"citations\":[\"Existing context: The Brain Slack agent is planned, status=open.\",\"New information: The Brain Slack agent MVP is now implemented.\"],\"repair_options\":[\"Keep both facts, distinguishing project-level status from MVP status.\",\"Ask whether 'The Brain Slack agent MVP' and 'The Brain Slack agent' should now be treated as the same status target.\",\"If confirmed that MVP completion implies overall project implementation, supersede the older project status with an explicit timestamped update.\"],\"receipt\":{\"success\":true,\"details\":[\"Identified a status change signal.\",\"Preserved ambiguity between parent project and MVP scope.\",\"Avoided overwriting existing durable memory with a potentially narrower-scope update.\"]}}",
+  "run_id": "eval_20260507_065822",
+  "status": "ok"
+}

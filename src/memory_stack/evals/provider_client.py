@@ -195,16 +195,19 @@ class LiveProviderClient:
         prompt: str,
         schema: dict[str, Any],
     ) -> str:
+        generation_config: dict[str, Any] = {
+            "maxOutputTokens": MAX_OUTPUT_TOKENS,
+            "temperature": 0,
+            "responseMimeType": "application/json",
+        }
+        if thinking_level := google_thinking_level(candidate.reasoning_effort):
+            generation_config["thinkingConfig"] = {"thinkingLevel": thinking_level}
         response = self.client.post(
-            f"https://generativelanguage.googleapis.com/v1beta/models/{quote(candidate.model, safe='')}:generateContent",
+            f"https://generativelanguage.googleapis.com/v1beta/models/{quote(candidate.api_model or candidate.model, safe='')}:generateContent",
             headers={"x-goog-api-key": self.settings.provider_api_key("google") or ""},
             json={
                 "contents": [{"parts": [{"text": prompt_with_schema(prompt, schema)}]}],
-                "generationConfig": {
-                    "maxOutputTokens": MAX_OUTPUT_TOKENS,
-                    "temperature": 0,
-                    "responseMimeType": "application/json",
-                },
+                "generationConfig": generation_config,
             },
         )
         payload = checked_json(response)
@@ -327,10 +330,10 @@ class LiveProviderClient:
             vector = ((payload.get("data") or [{}])[0].get("embedding"))
         elif candidate.provider == "google":
             response = self.client.post(
-                f"https://generativelanguage.googleapis.com/v1beta/models/{quote(candidate.model, safe='')}:embedContent",
+                f"https://generativelanguage.googleapis.com/v1beta/models/{quote(candidate.api_model or candidate.model, safe='')}:embedContent",
                 headers={"x-goog-api-key": self.settings.provider_api_key("google") or ""},
                 json={
-                    "model": f"models/{candidate.model}",
+                    "model": f"models/{candidate.api_model or candidate.model}",
                     "content": {"parts": [{"text": text}]},
                 },
             )
@@ -395,6 +398,12 @@ def openai_reasoning_effort(model: str) -> str:
     if model.startswith(("gpt-5.4", "gpt-5.5")):
         return "low"
     return "minimal"
+
+
+def google_thinking_level(reasoning_effort: str | None) -> str | None:
+    if reasoning_effort in {"low", "medium", "high"}:
+        return reasoning_effort
+    return None
 
 
 def checked_json(response: httpx.Response) -> dict[str, Any]:

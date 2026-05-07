@@ -1,0 +1,58 @@
+{
+  "fixture_id": "ambiguous_time_reference_001__context",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "I would not commit this as a durable current fact yet because both 'last Friday' and 'next month' are relative and the identity of Sam may be ambiguous. A safe note would preserve that Sam reportedly said he planned to leave Goldman, without inferring exact dates.",
+    "citations": [
+      "For context, Sam said last Friday that he is leaving Goldman next month."
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "defer_commit",
+    "entity_resolution": {
+      "action": "needs_clarification",
+      "entity_id": null,
+      "reason": "The identity of 'Sam' and the exact organization meant by 'Goldman' are not uniquely resolved, and the relative time references lack an anchor date."
+    },
+    "intent": "memory_intake",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker/subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer or affiliated organization",
+            "type": "organization"
+          }
+        ],
+        "kind": "reported_future_change",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "reportedly_planned_to_leave",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam reportedly said on an unspecified 'last Friday' that he planned to leave Goldman in the following month; the absolute dates are not known from the provided context."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Deferred durable memory commit due to ambiguous relative dates and unresolved entity identity.",
+        "No current employment/departure status was asserted as fact."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide the message date or absolute date for 'last Friday'.",
+      "Clarify which Sam this refers to.",
+      "Clarify whether 'Goldman' means Goldman Sachs or another entity.",
+      "Confirm whether Sam has actually left Goldman or only stated an intention to leave."
+    ]
+  },
+  "run_id": "eval_20260507_072639"
+}

@@ -1,0 +1,35 @@
+{
+  "error": null,
+  "fixture_id": "cascade_validator_failure_escalates_001",
+  "model": "openai:gpt-5.5-low",
+  "payload": {
+    "answer": "The cheap model output should not be accepted. Because it is described as invalid schema or unsafe, the safe action is to reject it and escalate to a stronger model or a schema-constrained repair path before any memory write is attempted.",
+    "citations": [],
+    "conflict_classification": "invalid_or_unsafe_output",
+    "decision": "safe_reject_and_escalate",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No durable user memory should be committed because the provided output is described as invalid schema or unsafe, and there is no reliable factual content to store."
+    },
+    "intent": "validate_model_output",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No memory cards were created.",
+        "Invalid or unsafe proposed output was not treated as durable truth.",
+        "Safe rejection with escalation was selected."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Escalate to a stronger model for re-evaluation.",
+      "Reject the proposal and request a valid schema-compliant output.",
+      "Run a schema-constrained repair step, then revalidate safety before committing anything.",
+      "Do not write any memory until validation succeeds."
+    ]
+  },
+  "raw_text": "{\"intent\":\"validate_model_output\",\"decision\":\"safe_reject_and_escalate\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No durable user memory should be committed because the provided output is described as invalid schema or unsafe, and there is no reliable factual content to store.\"},\"conflict_classification\":\"invalid_or_unsafe_output\",\"answer\":\"The cheap model output should not be accepted. Because it is described as invalid schema or unsafe, the safe action is to reject it and escalate to a stronger model or a schema-constrained repair path before any memory write is attempted.\",\"citations\":[],\"repair_options\":[\"Escalate to a stronger model for re-evaluation.\",\"Reject the proposal and request a valid schema-compliant output.\",\"Run a schema-constrained repair step, then revalidate safety before committing anything.\",\"Do not write any memory until validation succeeds.\"],\"receipt\":{\"success\":true,\"details\":[\"No memory cards were created.\",\"Invalid or unsafe proposed output was not treated as durable truth.\",\"Safe rejection with escalation was selected.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

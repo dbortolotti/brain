@@ -1,0 +1,37 @@
+{
+  "error": null,
+  "fixture_id": "groundedness_unsupported_inference_001__context",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "The claim \"Sam is a serious jazz pianist\" is not supported by the evidence \"Sam likes Bill Evans.\"",
+    "citations": [
+      "Evidence: Sam likes Bill Evans.",
+      "Answer: Sam is a serious jazz pianist."
+    ],
+    "conflict_classification": "unsupported_inference",
+    "decision": "reject_unsupported_inference",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No durable memory should be committed from this evaluation; the answer adds an unsupported attribute not present in evidence."
+    },
+    "intent": "evaluate_groundedness_of_answer_against_evidence",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected 1 unsupported claim.",
+        "Evidence supports only Sam's preference for Bill Evans.",
+        "The inference that Sam is a serious jazz pianist is not grounded in the provided context."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "State only the supported fact: Sam likes Bill Evans.",
+      "If additional evidence exists, cite it before concluding Sam is a serious jazz pianist.",
+      "Preserve uncertainty: Sam may like jazz, but being a serious jazz pianist is not established."
+    ]
+  },
+  "raw_text": "{\"intent\":\"evaluate_groundedness_of_answer_against_evidence\",\"decision\":\"reject_unsupported_inference\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No durable memory should be committed from this evaluation; the answer adds an unsupported attribute not present in evidence.\"},\"conflict_classification\":\"unsupported_inference\",\"answer\":\"The claim \\\"Sam is a serious jazz pianist\\\" is not supported by the evidence \\\"Sam likes Bill Evans.\\\"\",\"citations\":[\"Evidence: Sam likes Bill Evans.\",\"Answer: Sam is a serious jazz pianist.\"],\"repair_options\":[\"State only the supported fact: Sam likes Bill Evans.\",\"If additional evidence exists, cite it before concluding Sam is a serious jazz pianist.\",\"Preserve uncertainty: Sam may like jazz, but being a serious jazz pianist is not established.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected 1 unsupported claim.\",\"Evidence supports only Sam's preference for Bill Evans.\",\"The inference that Sam is a serious jazz pianist is not grounded in the provided context.\"]}}",
+  "run_id": "eval_20260507_043601",
+  "status": "ok"
+}

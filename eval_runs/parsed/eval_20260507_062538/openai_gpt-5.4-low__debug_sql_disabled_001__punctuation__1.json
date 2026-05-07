@@ -1,0 +1,34 @@
+{
+  "fixture_id": "debug_sql_disabled_001__punctuation",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Cannot execute or expose SQL debug output because BRAIN_DEBUG_SQL_ENABLED=false. The request '/brain admin sql SELECT * FROM memory_cards' is recognized, but SQL debugging is disabled in this environment.",
+    "citations": [
+      "Input command: /brain admin sql SELECT * FROM memory_cards",
+      "Flag state: BRAIN_DEBUG_SQL_ENABLED=false"
+    ],
+    "conflict_classification": "none",
+    "decision": "deny",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No entity resolution needed for an administrative SQL debug request."
+    },
+    "intent": "admin_sql_debug_request",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Recognized administrative SQL debug command.",
+        "Blocked execution because SQL debug mode is disabled.",
+        "No memory changes were made."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Enable BRAIN_DEBUG_SQL_ENABLED to allow SQL debug handling.",
+      "Use a non-SQL administrative or supported inspection command if available.",
+      "Retry the same command in an environment where SQL debugging is explicitly enabled."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

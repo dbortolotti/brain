@@ -1,0 +1,37 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001__punctuation",
+  "model": "openai:gpt-5.4-high",
+  "payload": {
+    "answer": "No direct conflict. 'Sara is my niece' could be compatible with 'Sara is Daniele's daughter and Nur's twin,' but the new claim is too ambiguous to store because 'my' is unresolved.",
+    "citations": [
+      "Existing: Sara is Daniele's daughter and Nur's twin.",
+      "New: Sara is my niece."
+    ],
+    "conflict_classification": "no_direct_conflict_ambiguous_new_claim",
+    "decision": "defer_new_claim_do_not_commit",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The new claim uses the unresolved first-person reference 'my', so the relationship cannot be grounded to a specific person in durable memory."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Parsed the existing memory as two relations about Sara: daughter-of Daniele, twin-of Nur.",
+        "Detected that the new claim is not inherently inconsistent with the existing memory.",
+        "Rejected durable storage of the new claim due to unresolved pronoun context."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Resolve who 'my' refers to.",
+      "Rewrite the new claim with explicit names, e.g. 'Sara is <Person>'s niece.'",
+      "If the intent is to connect Sara to Daniele or Nur through the speaker, provide the speaker's relation explicitly."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict\",\"decision\":\"defer_new_claim_do_not_commit\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"The new claim uses the unresolved first-person reference 'my', so the relationship cannot be grounded to a specific person in durable memory.\"},\"conflict_classification\":\"no_direct_conflict_ambiguous_new_claim\",\"answer\":\"No direct conflict. 'Sara is my niece' could be compatible with 'Sara is Daniele's daughter and Nur's twin,' but the new claim is too ambiguous to store because 'my' is unresolved.\",\"citations\":[\"Existing: Sara is Daniele's daughter and Nur's twin.\",\"New: Sara is my niece.\"],\"repair_options\":[\"Resolve who 'my' refers to.\",\"Rewrite the new claim with explicit names, e.g. 'Sara is <Person>'s niece.'\",\"If the intent is to connect Sara to Daniele or Nur through the speaker, provide the speaker's relation explicitly.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed the existing memory as two relations about Sara: daughter-of Daniele, twin-of Nur.\",\"Detected that the new claim is not inherently inconsistent with the existing memory.\",\"Rejected durable storage of the new claim due to unresolved pronoun context.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

@@ -1,0 +1,117 @@
+{
+  "fixture_id": "conflict_employment_transition__context",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "The new fact supersedes the existing current fact. Store the employment transition, update Sam's current employer to Point72, and retain Goldman only as a former employer. Do not keep 'Sam works at Goldman' as current.",
+    "citations": [
+      "Existing context: 'Sam works at Goldman.'",
+      "New fact: 'Sam left Goldman and joined Point72.'"
+    ],
+    "conflict_classification": "temporal_successor_conflict",
+    "decision": "update_with_transition_and_mark_prior_current_as_superseded",
+    "entity_resolution": {
+      "action": "reuse_existing",
+      "entity_id": null,
+      "reason": "The new fact refers to the same person, Sam, and the same organizations already in context; no entity split is indicated."
+    },
+    "intent": "classify_and_update_contextual_employment_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "event",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left_employer",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined_employer",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "current employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "status",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Point72."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "historical",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "previously_worked_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam previously worked at Goldman."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected direct contradiction with an existing current employment fact.",
+        "Resolved conflict using explicit transition language ('left' and 'joined').",
+        "Preserved historical employment at Goldman without presenting it as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace current employment fact 'Sam works at Goldman' with 'Sam works at Point72.'",
+      "Downgrade Goldman employment from current to historical/former employer.",
+      "Store the transition event explicitly if the system supports temporal history."
+    ]
+  },
+  "run_id": "eval_20260507_065822"
+}

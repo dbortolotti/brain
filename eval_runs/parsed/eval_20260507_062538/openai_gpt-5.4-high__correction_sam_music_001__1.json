@@ -1,0 +1,65 @@
+{
+  "fixture_id": "correction_sam_music_001",
+  "model": "openai:gpt-5.4-high",
+  "payload": {
+    "answer": "Supersede the old memory. The prior fact that Sam from Goldman likes Bill Evans is corrected by the new information; retain only that Sam from Goldman likes early Coltrane. Do not infer a durable dislike of Bill Evans from this correction alone.",
+    "citations": [
+      "Existing memory: Sam from Goldman likes Bill Evans.",
+      "Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans."
+    ],
+    "conflict_classification": "explicit_correction_of_prior_fact",
+    "decision": "replace_conflicting_fact",
+    "entity_resolution": {
+      "action": "match_existing_entity",
+      "entity_id": null,
+      "reason": "The correction refers to the same person, Sam from Goldman, and updates the preference associated with that existing entity."
+    },
+    "intent": "correct_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "music preference"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected a direct contradiction between existing memory and correction.",
+        "Resolved the subject as the same entity: Sam from Goldman.",
+        "Selected the corrected preference as the only current durable fact.",
+        "Avoided overcommitting an unsupported negative preference about Bill Evans."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace the existing preference memory with: Sam from Goldman likes early Coltrane.",
+      "Mark the prior memory 'Sam from Goldman likes Bill Evans' as superseded/incorrect.",
+      "Avoid storing 'Sam dislikes Bill Evans' unless separately confirmed."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

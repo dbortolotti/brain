@@ -1,0 +1,85 @@
+{
+  "error": null,
+  "fixture_id": "contradiction_sam_children_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Cannot commit either fact without additional evidence. Both statements make mutually exclusive claims about the same entity attribute.",
+    "citations": [],
+    "conflict_classification": "direct_contradiction",
+    "decision": "Flag as direct contradiction requiring human review",
+    "entity_resolution": {
+      "action": "merge_candidates",
+      "entity_id": "sam_goldman_001",
+      "reason": "Both statements reference same person (Sam from Goldman) but assert contradictory facts about number of children"
+    },
+    "intent": "Classify contradiction between existing and new memory about Sam's children",
+    "memory_cards": [
+      {
+        "confidence": "unknown",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          }
+        ],
+        "kind": "existing_fact",
+        "relationships": [
+          {
+            "object": "two",
+            "predicate": "has_children",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman has two children"
+      },
+      {
+        "confidence": "unknown",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          }
+        ],
+        "kind": "new_fact",
+        "relationships": [
+          {
+            "object": "zero",
+            "predicate": "has_children",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman has no children"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Contradiction detected: two children vs no children",
+        "Entity identity confirmed: same Sam from Goldman",
+        "Predicate match: both address children count",
+        "Conflict requires human adjudication before memory commitment"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request source/timestamp for each claim to determine which is more recent",
+      "Request confidence level or evidence quality for each claim",
+      "Mark both as disputed and preserve both with conflict flag",
+      "Request clarification on whether Sam's family status changed between claims"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Classify contradiction between existing and new memory about Sam's children\",\n  \"decision\": \"Flag as direct contradiction requiring human review\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"existing_fact\",\n      \"statement\": \"Sam from Goldman has two children\",\n      \"confidence\": \"unknown\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has_children\",\n          \"object\": \"two\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"new_fact\",\n      \"statement\": \"Sam from Goldman has no children\",\n      \"confidence\": \"unknown\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has_children\",\n          \"object\": \"zero\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge_candidates\",\n    \"entity_id\": \"sam_goldman_001\",\n    \"reason\": \"Both statements reference same person (Sam from Goldman) but assert contradictory facts about number of children\"\n  },\n  \"conflict_classification\": \"direct_contradiction\",\n  \"answer\": \"Cannot commit either fact without additional evidence. Both statements make mutually exclusive claims about the same entity attribute.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Request source/timestamp for each claim to determine which is more recent\",\n    \"Request confidence level or evidence quality for each claim\",\n    \"Mark both as disputed and preserve both with conflict flag\",\n    \"Request clarification on whether Sam's family status changed between claims\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Contradiction detected: two children vs no children\",\n      \"Entity identity confirmed: same Sam from Goldman\",\n      \"Predicate match: both address children count\",\n      \"Conflict requires human adjudication before memory commitment\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_043016",
+  "status": "ok"
+}

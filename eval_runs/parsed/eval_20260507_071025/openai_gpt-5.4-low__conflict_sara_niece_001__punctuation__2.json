@@ -1,0 +1,34 @@
+{
+  "fixture_id": "conflict_sara_niece_001__punctuation",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "The new statement does not conflict with the existing memory. 'Sara is Daniele's daughter and Nur's twin' can be true at the same time as 'Sara is my niece.' However, the new claim is underspecified because it depends on the speaker's relationship to Sara's parent, so it should not be committed as a durable high-confidence fact without more context.",
+    "citations": [
+      "Existing: Sara is Daniele's daughter and Nur's twin",
+      "New: Sara is my niece"
+    ],
+    "conflict_classification": "non_conflicting_addition",
+    "decision": "allow_with_caution",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No entity resolution issue is required to classify this input. 'Sara' can be treated as the same person mention, but the new claim is relational to the speaker and does not contradict the existing family facts."
+    },
+    "intent": "classify_memory_conflict",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No contradiction detected between the existing and new statements.",
+        "New information is speaker-relative and should be preserved with ambiguity rather than expanded into stronger family-tree facts.",
+        "No superseded or deleted facts are implicated."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Store the new claim only as a low-confidence speaker-relative relation: 'Sara is the user's niece.'",
+      "Ask a clarifying question before durable storage: 'Is Sara your niece because Daniele is your sibling, or through marriage?'",
+      "If available, connect the family graph explicitly by identifying the user's relationship to Daniele or Sara's other parent."
+    ]
+  },
+  "run_id": "eval_20260507_071025"
+}

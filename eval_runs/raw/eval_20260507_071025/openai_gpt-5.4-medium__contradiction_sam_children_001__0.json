@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "fixture_id": "contradiction_sam_children_001",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "Conflict detected. Do not replace the existing memory with the new claim as current truth. Preserve both as disputed until a source, timestamp, or clarification resolves whether Sam has two children or no children.",
+    "citations": [
+      "Existing memory: 'Sam from Goldman has two children.'",
+      "New input: 'Sam from Goldman has no children.'"
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "flag_conflict_do_not_commit_as_current_fact",
+    "entity_resolution": {
+      "action": "match_existing_entity",
+      "entity_id": null,
+      "reason": "The same person reference appears intended: 'Sam from Goldman' in both the existing memory and the new input."
+    },
+    "intent": "evaluate_new_memory_against_existing_fact",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "conflict",
+        "relationships": [],
+        "statement": "There is a direct conflict about Sam from Goldman\u2019s number of children: an existing memory says Sam has two children, while the new input says Sam has no children."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Compared existing and new statements about the same entity.",
+        "Detected mutually exclusive child-count claims.",
+        "Chose not to commit the new claim as current durable memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request a timestamp for each claim to determine if one supersedes the other.",
+      "Request a source or evidence for the new claim.",
+      "Store the new input as a conflicting claim rather than a durable fact.",
+      "Mark the child-count attribute for Sam from Goldman as disputed/unknown until resolved."
+    ]
+  },
+  "raw_text": "{\"intent\":\"evaluate_new_memory_against_existing_fact\",\"decision\":\"flag_conflict_do_not_commit_as_current_fact\",\"memory_cards\":[{\"kind\":\"conflict\",\"statement\":\"There is a direct conflict about Sam from Goldman\u2019s number of children: an existing memory says Sam has two children, while the new input says Sam has no children.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"}],\"relationships\":[]}],\"entity_resolution\":{\"action\":\"match_existing_entity\",\"entity_id\":null,\"reason\":\"The same person reference appears intended: 'Sam from Goldman' in both the existing memory and the new input.\"},\"conflict_classification\":\"direct_contradiction\",\"answer\":\"Conflict detected. Do not replace the existing memory with the new claim as current truth. Preserve both as disputed until a source, timestamp, or clarification resolves whether Sam has two children or no children.\",\"citations\":[\"Existing memory: 'Sam from Goldman has two children.'\",\"New input: 'Sam from Goldman has no children.'\"],\"repair_options\":[\"Request a timestamp for each claim to determine if one supersedes the other.\",\"Request a source or evidence for the new claim.\",\"Store the new input as a conflicting claim rather than a durable fact.\",\"Mark the child-count attribute for Sam from Goldman as disputed/unknown until resolved.\"],\"receipt\":{\"success\":true,\"details\":[\"Compared existing and new statements about the same entity.\",\"Detected mutually exclusive child-count claims.\",\"Chose not to commit the new claim as current durable memory.\"]}}",
+  "run_id": "eval_20260507_071025",
+  "status": "ok"
+}

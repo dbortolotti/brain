@@ -1,0 +1,82 @@
+{
+  "fixture_id": "concurrent_conflict_writes_001__punctuation",
+  "model": "openai:gpt-5.5-low",
+  "payload": {
+    "answer": "I detected a potential conflict: Sam is described as working at Goldman and also as having joined Point72. I would not store either as Sam's definitive current employer without clarification.",
+    "citations": [
+      "Concurrent writes - Sam works at Goldman Sam joined Point72"
+    ],
+    "conflict_classification": "potential_current_employment_conflict",
+    "decision": "do_not_commit_conflicting_current_employment_without_clarification",
+    "entity_resolution": {
+      "action": "needs_clarification",
+      "entity_id": null,
+      "reason": "The input appears to describe the same person, Sam, with two potentially conflicting employment-related facts. It is unclear whether Goldman is a past employer, whether Point72 is a new current employer, or whether both statements are intended to coexist in different contexts."
+    },
+    "intent": "classify_concurrent_memory_conflict",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "candidate_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "candidate_fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected two concurrent employment-related writes for Sam.",
+        "No durable current-employer memory was committed because the statements may conflict."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Clarify that Sam currently works at Goldman and joined Point72 in another role or context.",
+      "Clarify that Sam previously worked at Goldman and has now joined Point72.",
+      "Clarify that Goldman and Point72 refer to different Sams.",
+      "Clarify exact dates or whether either role is current."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

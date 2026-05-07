@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "fixture_id": "debug_sql_select_only_001__punctuation",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "The statement indicates a read-only SQL constraint for admin mode: \"SELECT id FROM memory_cards LIMIT 10\" is allowed, while \"DELETE FROM memory_cards\" is denied. No durable memory should be written from this input.",
+    "citations": [
+      "Admin SQL select-only mode",
+      "SELECT id FROM memory_cards LIMIT 10 allowed",
+      "DELETE FROM memory_cards denied"
+    ],
+    "conflict_classification": "none",
+    "decision": "do_not_store",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input describes a transient admin/debug access rule, not a durable personal fact to commit to memory."
+    },
+    "intent": "debug_explain_sql_permissions",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Parsed the input as a permissions/debug statement.",
+        "Identified allowed operation: SELECT on memory_cards.",
+        "Identified denied operation: DELETE on memory_cards.",
+        "Chose not to create memory cards because the content is operational policy, not durable personal memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Use only SELECT queries while in select-only mode.",
+      "Do not attempt DELETE statements against memory_cards.",
+      "If write access is needed, switch to an authorized non-read-only mode."
+    ]
+  },
+  "raw_text": "{\"intent\":\"debug_explain_sql_permissions\",\"decision\":\"do_not_store\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input describes a transient admin/debug access rule, not a durable personal fact to commit to memory.\"},\"conflict_classification\":\"none\",\"answer\":\"The statement indicates a read-only SQL constraint for admin mode: \\\"SELECT id FROM memory_cards LIMIT 10\\\" is allowed, while \\\"DELETE FROM memory_cards\\\" is denied. No durable memory should be written from this input.\",\"citations\":[\"Admin SQL select-only mode\",\"SELECT id FROM memory_cards LIMIT 10 allowed\",\"DELETE FROM memory_cards denied\"],\"repair_options\":[\"Use only SELECT queries while in select-only mode.\",\"Do not attempt DELETE statements against memory_cards.\",\"If write access is needed, switch to an authorized non-read-only mode.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed the input as a permissions/debug statement.\",\"Identified allowed operation: SELECT on memory_cards.\",\"Identified denied operation: DELETE on memory_cards.\",\"Chose not to create memory cards because the content is operational policy, not durable personal memory.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

@@ -1,0 +1,65 @@
+{
+  "error": null,
+  "fixture_id": "personal_routine_morning_reading_001",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "Stored as a usual preference/routine, preserving the qualifier that this is usually preferred rather than absolute.",
+    "citations": [
+      "I usually prefer to read technical papers in the morning before checking email."
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "attach_to_current_user",
+      "entity_id": null,
+      "reason": "The statement is a first-person personal routine/preference from the user and does not introduce a separate named entity."
+    },
+    "intent": "record_personal_preference",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "user",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "technical papers",
+            "role": "preferred reading material",
+            "type": "content"
+          },
+          {
+            "name": "morning",
+            "role": "preferred time",
+            "type": "time"
+          },
+          {
+            "name": "email",
+            "role": "deprioritized until after reading",
+            "type": "activity"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "read technical papers in the morning before checking email",
+            "predicate": "usually_prefers",
+            "subject": "user"
+          }
+        ],
+        "statement": "The user usually prefers to read technical papers in the morning before checking email."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed one memory card about the user's usual morning reading preference."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"record_personal_preference\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"The user usually prefers to read technical papers in the morning before checking email.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"user\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"technical papers\",\"type\":\"content\",\"role\":\"preferred reading material\"},{\"name\":\"morning\",\"type\":\"time\",\"role\":\"preferred time\"},{\"name\":\"email\",\"type\":\"activity\",\"role\":\"deprioritized until after reading\"}],\"relationships\":[{\"subject\":\"user\",\"predicate\":\"usually_prefers\",\"object\":\"read technical papers in the morning before checking email\"}]}],\"entity_resolution\":{\"action\":\"attach_to_current_user\",\"entity_id\":null,\"reason\":\"The statement is a first-person personal routine/preference from the user and does not introduce a separate named entity.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored as a usual preference/routine, preserving the qualifier that this is usually preferred rather than absolute.\",\"citations\":[\"I usually prefer to read technical papers in the morning before checking email.\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Committed one memory card about the user's usual morning reading preference.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

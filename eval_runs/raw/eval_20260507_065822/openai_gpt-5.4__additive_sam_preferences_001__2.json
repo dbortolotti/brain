@@ -1,0 +1,68 @@
+{
+  "error": null,
+  "fixture_id": "additive_sam_preferences_001",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "Add the new preference as an additional durable memory; it does not conflict with Sam from Goldman liking Bill Evans.",
+    "citations": [
+      "Existing memory: Sam from Goldman likes Bill Evans.",
+      "New: Sam from Goldman also likes Sonny Rollins."
+    ],
+    "conflict_classification": "non_conflicting_additive",
+    "decision": "add",
+    "entity_resolution": {
+      "action": "reuse_existing_entity",
+      "entity_id": "Sam from Goldman",
+      "reason": "The new statement refers to the same person context as the existing memory and adds an additional preference."
+    },
+    "intent": "update_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "preference_object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Sonny Rollins",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Sonny Rollins."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected additive preference update for the same entity.",
+        "No contradiction or supersession present.",
+        "Stored new preference without altering existing preference memory."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"update_memory\",\"decision\":\"add\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman likes Sonny Rollins.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Sonny Rollins\",\"type\":\"person\",\"role\":\"preference_object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Sonny Rollins\"}]}],\"entity_resolution\":{\"action\":\"reuse_existing_entity\",\"entity_id\":\"Sam from Goldman\",\"reason\":\"The new statement refers to the same person context as the existing memory and adds an additional preference.\"},\"conflict_classification\":\"non_conflicting_additive\",\"answer\":\"Add the new preference as an additional durable memory; it does not conflict with Sam from Goldman liking Bill Evans.\",\"citations\":[\"Existing memory: Sam from Goldman likes Bill Evans.\",\"New: Sam from Goldman also likes Sonny Rollins.\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Detected additive preference update for the same entity.\",\"No contradiction or supersession present.\",\"Stored new preference without altering existing preference memory.\"]}}",
+  "run_id": "eval_20260507_065822",
+  "status": "ok"
+}

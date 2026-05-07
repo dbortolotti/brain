@@ -1,0 +1,71 @@
+{
+  "error": null,
+  "fixture_id": "project_state_brain_slack_agent_001__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Recorded as current project state with ambiguity preserved: Slack is the primary planned guardrailed ingestion interface, and Telegram may come later.",
+    "citations": [
+      "Input: \"Brain project state: Slack should be the primary guardrailed memory ingestion interface; Telegram can come later.\""
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_with_caution",
+    "entity_resolution": {
+      "action": "create_or_merge_by_name",
+      "entity_id": null,
+      "reason": "Named entities are provided, but no canonical IDs are available in the fixture context."
+    },
+    "intent": "Capture project state preference for Brain ingestion interfaces",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "Slack",
+            "role": "primary_ingestion_interface",
+            "type": "platform"
+          },
+          {
+            "name": "Telegram",
+            "role": "possible_future_interface",
+            "type": "platform"
+          }
+        ],
+        "kind": "project_state",
+        "relationships": [
+          {
+            "object": "Slack",
+            "predicate": "has_primary_planned_guardrailed_memory_ingestion_interface",
+            "subject": "Brain"
+          },
+          {
+            "object": "Telegram",
+            "predicate": "may_add_later_interface",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "For the Brain project, Slack is the primary planned guardrailed memory ingestion interface; Telegram is a possible later interface."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured one project_state memory card.",
+        "Preserved modality by encoding Slack as primary planned interface and Telegram as possible later interface.",
+        "No conflicts detected in provided context."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If this is only a tentative preference, downgrade to a transient note instead of durable project state.",
+      "If Slack has already been replaced by another primary interface, mark this statement as superseded rather than current.",
+      "If Telegram is no longer under consideration, remove the future-interface relationship."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Capture project state preference for Brain ingestion interfaces\",\"decision\":\"commit_with_caution\",\"memory_cards\":[{\"kind\":\"project_state\",\"statement\":\"For the Brain project, Slack is the primary planned guardrailed memory ingestion interface; Telegram is a possible later interface.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Brain\",\"type\":\"project\",\"role\":\"subject\"},{\"name\":\"Slack\",\"type\":\"platform\",\"role\":\"primary_ingestion_interface\"},{\"name\":\"Telegram\",\"type\":\"platform\",\"role\":\"possible_future_interface\"}],\"relationships\":[{\"subject\":\"Brain\",\"predicate\":\"has_primary_planned_guardrailed_memory_ingestion_interface\",\"object\":\"Slack\"},{\"subject\":\"Brain\",\"predicate\":\"may_add_later_interface\",\"object\":\"Telegram\"}]}],\"entity_resolution\":{\"action\":\"create_or_merge_by_name\",\"entity_id\":null,\"reason\":\"Named entities are provided, but no canonical IDs are available in the fixture context.\"},\"conflict_classification\":\"none\",\"answer\":\"Recorded as current project state with ambiguity preserved: Slack is the primary planned guardrailed ingestion interface, and Telegram may come later.\",\"citations\":[\"Input: \\\"Brain project state: Slack should be the primary guardrailed memory ingestion interface; Telegram can come later.\\\"\"],\"repair_options\":[\"If this is only a tentative preference, downgrade to a transient note instead of durable project state.\",\"If Slack has already been replaced by another primary interface, mark this statement as superseded rather than current.\",\"If Telegram is no longer under consideration, remove the future-interface relationship.\"],\"receipt\":{\"success\":true,\"details\":[\"Captured one project_state memory card.\",\"Preserved modality by encoding Slack as primary planned interface and Telegram as possible later interface.\",\"No conflicts detected in provided context.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

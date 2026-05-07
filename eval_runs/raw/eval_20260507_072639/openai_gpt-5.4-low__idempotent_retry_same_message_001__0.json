@@ -1,0 +1,71 @@
+{
+  "error": null,
+  "fixture_id": "idempotent_retry_same_message_001",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Store at most one tentative memory from the repeated input. Preserve ambiguity by keeping the affiliation as context and the preference as a low-confidence claim rather than a strongly durable fact. Do not create duplicates for idempotent retries.",
+    "citations": [
+      "Input message repeated three times: 'Sam from Goldman mentioned that he likes Bill Evans.'"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_once",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Entities are not uniquely identifiable from the message alone; retain names as provided without merging. Repeated delivery of the same message does not justify additional cards."
+    },
+    "intent": "evaluate_memory_write",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker/claim-subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation-context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked-entity",
+            "type": "person"
+          }
+        ],
+        "kind": "claim",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam, associated with Goldman, said that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected duplicate/idempotent retries of the exact same message.",
+        "Created one memory card only.",
+        "Stored as low-confidence claim due to limited grounding and unresolved entity identity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If available, capture a stable identifier or fuller name for Sam.",
+      "Clarify whether 'Bill Evans' refers to a specific person/entity.",
+      "If stronger evidence appears, upgrade confidence; if contradictory evidence appears, mark this claim superseded rather than current."
+    ]
+  },
+  "raw_text": "{\"intent\":\"evaluate_memory_write\",\"decision\":\"commit_once\",\"memory_cards\":[{\"kind\":\"claim\",\"statement\":\"Sam, associated with Goldman, said that he likes Bill Evans.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"speaker/claim-subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation-context\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked-entity\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"associated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"Entities are not uniquely identifiable from the message alone; retain names as provided without merging. Repeated delivery of the same message does not justify additional cards.\"},\"conflict_classification\":\"none\",\"answer\":\"Store at most one tentative memory from the repeated input. Preserve ambiguity by keeping the affiliation as context and the preference as a low-confidence claim rather than a strongly durable fact. Do not create duplicates for idempotent retries.\",\"citations\":[\"Input message repeated three times: 'Sam from Goldman mentioned that he likes Bill Evans.'\"],\"repair_options\":[\"If available, capture a stable identifier or fuller name for Sam.\",\"Clarify whether 'Bill Evans' refers to a specific person/entity.\",\"If stronger evidence appears, upgrade confidence; if contradictory evidence appears, mark this claim superseded rather than current.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected duplicate/idempotent retries of the exact same message.\",\"Created one memory card only.\",\"Stored as low-confidence claim due to limited grounding and unresolved entity identity.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

@@ -1,0 +1,68 @@
+{
+  "error": null,
+  "fixture_id": "personal_routine_morning_reading_001",
+  "model": "groq:openai/gpt-oss-120b",
+  "payload": {
+    "answer": "Recorded your morning reading preference.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "new routine captured"
+    },
+    "intent": "capture_routine",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "technical papers",
+            "role": "object",
+            "type": "content"
+          },
+          {
+            "name": "morning",
+            "role": "temporal",
+            "type": "time"
+          },
+          {
+            "name": "email",
+            "role": "object",
+            "type": "communication"
+          }
+        ],
+        "kind": "habit",
+        "relationships": [
+          {
+            "object": "technical papers",
+            "predicate": "prefers to read",
+            "subject": "User"
+          },
+          {
+            "object": "checking email",
+            "predicate": "occurs before",
+            "subject": "reading activity"
+          },
+          {
+            "object": "morning",
+            "predicate": "occurs in",
+            "subject": "reading activity"
+          }
+        ],
+        "statement": "User prefers to read technical papers in the morning before checking email."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"capture_routine\",\"decision\":\"store\",\"memory_cards\":[{\"kind\":\"habit\",\"statement\":\"User prefers to read technical papers in the morning before checking email.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"technical papers\",\"type\":\"content\",\"role\":\"object\"},{\"name\":\"morning\",\"type\":\"time\",\"role\":\"temporal\"},{\"name\":\"email\",\"type\":\"communication\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"User\",\"predicate\":\"prefers to read\",\"object\":\"technical papers\"},{\"subject\":\"reading activity\",\"predicate\":\"occurs before\",\"object\":\"checking email\"},{\"subject\":\"reading activity\",\"predicate\":\"occurs in\",\"object\":\"morning\"}]}],\"entity_resolution\":{\"action\":\"create\",\"entity_id\":null,\"reason\":\"new routine captured\"},\"conflict_classification\":\"none\",\"answer\":\"Recorded your morning reading preference.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Memory card created\"]}}",
+  "run_id": "eval_20260507_044056",
+  "status": "ok"
+}

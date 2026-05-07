@@ -1,0 +1,34 @@
+{
+  "fixture_id": "duplicate_sam_bill_evans_001__punctuation",
+  "model": "openai:gpt-5.4-high",
+  "payload": {
+    "answer": "No update needed; the new memory is a duplicate of the existing one.",
+    "citations": [
+      "Existing memory: \"Sam from Goldman mentioned that he likes Bill Evans\"",
+      "New memory: \"Sam from Goldman said he likes Bill Evans\""
+    ],
+    "conflict_classification": "duplicate",
+    "decision": "no_op_duplicate",
+    "entity_resolution": {
+      "action": "match_existing",
+      "entity_id": null,
+      "reason": "The new statement is semantically identical to the existing memory. The differences are only phrasing/punctuation ('mentioned that' vs 'said') and do not change the underlying fact."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Compared existing and new statements.",
+        "Detected semantic equivalence with no material change in meaning.",
+        "Classified as duplicate and chose no-op."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Normalize wording and punctuation before comparison.",
+      "Canonicalize reporting verbs like 'said' and 'mentioned' as equivalent for duplicate detection.",
+      "Retain the existing memory and suppress creation of a new card."
+    ]
+  },
+  "run_id": "eval_20260507_065822"
+}

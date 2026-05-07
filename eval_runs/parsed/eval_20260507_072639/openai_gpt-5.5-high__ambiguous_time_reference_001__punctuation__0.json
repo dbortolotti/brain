@@ -1,0 +1,58 @@
+{
+  "fixture_id": "ambiguous_time_reference_001__punctuation",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "Not committed as durable memory. The statement contains unresolved relative dates: \u201clast Friday\u201d and \u201cnext month.\u201d Please provide the Slack message date or the actual dates, and clarify which Sam and Goldman are meant.",
+    "citations": [
+      "Sam said last Friday that he is leaving Goldman next month"
+    ],
+    "conflict_classification": "none",
+    "decision": "defer_commit_pending_clarification",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "\u201cSam\u201d is not uniquely identified, and \u201cGoldman\u201d may refer to Goldman Sachs or another Goldman entity."
+    },
+    "intent": "memory_intake",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "reported speaker / person leaving",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "organization being left",
+            "type": "organization"
+          }
+        ],
+        "kind": "candidate_event",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "reportedly_plans_to_leave",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam reportedly said on an unspecified \u201clast Friday\u201d that he is leaving Goldman in an unspecified \u201cnext month\u201d; the exact dates depend on the original message date/context."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Deferred durable memory creation due to ambiguous relative time references and unresolved entity identity."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide the date the Slack message was sent so \u201clast Friday\u201d and \u201cnext month\u201d can be resolved.",
+      "Provide the exact Friday when Sam said this.",
+      "Provide the exact month Sam is leaving Goldman.",
+      "Clarify which Sam is being referenced.",
+      "Clarify whether Goldman means Goldman Sachs or another organization."
+    ]
+  },
+  "run_id": "eval_20260507_072639"
+}

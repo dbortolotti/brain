@@ -1,0 +1,84 @@
+{
+  "error": null,
+  "fixture_id": "concurrent_conflict_writes_001",
+  "model": "openai:gpt-5.5-low",
+  "payload": {
+    "answer": "The two concurrent employment claims should not both be committed as current facts without clarification. Preserve both as competing claims: Sam works at Goldman; Sam joined Point72.",
+    "citations": [
+      "Concurrent writes: Sam works at Goldman. Sam joined Point72."
+    ],
+    "conflict_classification": "concurrent_conflict",
+    "decision": "needs_resolution",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Both claims refer to Sam, but the inputs are concurrent and provide no timestamps or clarification about whether the Goldman role is still current after joining Point72."
+    },
+    "intent": "write_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_claim",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_claim",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected concurrent potentially conflicting employment writes for Sam.",
+        "No durable current employer fact was committed because recency and supersession are ambiguous."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask whether Sam currently works at Goldman, Point72, or both.",
+      "Ask for dates: when Sam worked at Goldman and when Sam joined Point72.",
+      "Record Point72 as a new employer only if confirmed to supersede Goldman."
+    ]
+  },
+  "raw_text": "{\"intent\":\"write_memory\",\"decision\":\"needs_resolution\",\"memory_cards\":[{\"kind\":\"employment_claim\",\"statement\":\"Sam works at Goldman.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"employee\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Goldman\"}]},{\"kind\":\"employment_claim\",\"statement\":\"Sam joined Point72.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"employee\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"Both claims refer to Sam, but the inputs are concurrent and provide no timestamps or clarification about whether the Goldman role is still current after joining Point72.\"},\"conflict_classification\":\"concurrent_conflict\",\"answer\":\"The two concurrent employment claims should not both be committed as current facts without clarification. Preserve both as competing claims: Sam works at Goldman; Sam joined Point72.\",\"citations\":[\"Concurrent writes: Sam works at Goldman. Sam joined Point72.\"],\"repair_options\":[\"Ask whether Sam currently works at Goldman, Point72, or both.\",\"Ask for dates: when Sam worked at Goldman and when Sam joined Point72.\",\"Record Point72 as a new employer only if confirmed to supersede Goldman.\"],\"receipt\":{\"success\":false,\"details\":[\"Detected concurrent potentially conflicting employment writes for Sam.\",\"No durable current employer fact was committed because recency and supersession are ambiguous.\"]}}",
+  "run_id": "eval_20260507_065822",
+  "status": "ok"
+}

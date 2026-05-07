@@ -1,0 +1,86 @@
+{
+  "error": null,
+  "fixture_id": "concurrent_conflict_writes_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Both facts are recorded. Sam has employment history at both Goldman and Point72. Current employer is ambiguous without temporal metadata. If Point72 join is more recent, Goldman employment may be superseded; if concurrent, Sam may have held multiple positions.",
+    "citations": [
+      "Input statement 1: Sam works at Goldman",
+      "Input statement 2: Sam joined Point72"
+    ],
+    "conflict_classification": "temporal_sequence_ambiguous",
+    "decision": "Accept both statements as temporal facts; preserve ambiguity about current employment status",
+    "entity_resolution": {
+      "action": "merge_with_temporal_ambiguity",
+      "entity_id": "Sam",
+      "reason": "Both statements reference the same person but describe potentially sequential employment events. Without timestamps, current employment status cannot be determined. Preserve both facts as historical record."
+    },
+    "intent": "Classify and resolve concurrent writes about Sam's employment history",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_history",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_history",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Concurrent writes classified as temporal sequence conflict",
+        "Both memory cards created without deletion",
+        "Ambiguity preserved pending temporal clarification",
+        "Entity Sam merged across both statements",
+        "No current employment status asserted"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request timestamp for each employment event to establish sequence",
+      "Clarify whether Point72 join represents a transition from Goldman or concurrent role",
+      "Mark Goldman employment as historical if Point72 is confirmed as current"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Classify and resolve concurrent writes about Sam's employment history\",\n  \"decision\": \"Accept both statements as temporal facts; preserve ambiguity about current employment status\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"employment_history\",\n      \"statement\": \"Sam works at Goldman\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"employment_history\",\n      \"statement\": \"Sam joined Point72\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge_with_temporal_ambiguity\",\n    \"entity_id\": \"Sam\",\n    \"reason\": \"Both statements reference the same person but describe potentially sequential employment events. Without timestamps, current employment status cannot be determined. Preserve both facts as historical record.\"\n  },\n  \"conflict_classification\": \"temporal_sequence_ambiguous\",\n  \"answer\": \"Both facts are recorded. Sam has employment history at both Goldman and Point72. Current employer is ambiguous without temporal metadata. If Point72 join is more recent, Goldman employment may be superseded; if concurrent, Sam may have held multiple positions.\",\n  \"citations\": [\n    \"Input statement 1: Sam works at Goldman\",\n    \"Input statement 2: Sam joined Point72\"\n  ],\n  \"repair_options\": [\n    \"Request timestamp for each employment event to establish sequence\",\n    \"Clarify whether Point72 join represents a transition from Goldman or concurrent role\",\n    \"Mark Goldman employment as historical if Point72 is confirmed as current\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Concurrent writes classified as temporal sequence conflict\",\n      \"Both memory cards created without deletion\",\n      \"Ambiguity preserved pending temporal clarification\",\n      \"Entity Sam merged across both statements\",\n      \"No current employment status asserted\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_043016",
+  "status": "ok"
+}

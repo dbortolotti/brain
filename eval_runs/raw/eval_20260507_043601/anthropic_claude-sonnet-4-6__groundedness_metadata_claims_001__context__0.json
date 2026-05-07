@@ -1,0 +1,73 @@
+{
+  "error": null,
+  "fixture_id": "groundedness_metadata_claims_001__context",
+  "model": "anthropic:claude-sonnet-4-6",
+  "payload": {
+    "answer": "The answer is grounded. The claim that the entity is a Person with medium confidence is supported by the entity row in the evidence. The aliases 'Sam' and 'Sam from Goldman' are supported by the alias row in the evidence. No unsupported or superseded facts are presented.",
+    "citations": [
+      "entity_row: Identity - Person",
+      "alias_row: Sam, Sam from Goldman"
+    ],
+    "conflict_classification": "none",
+    "decision": "grounded",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": "sam_person_001",
+      "reason": "Evidence contains both an entity row confirming Identity as Person and an alias row confirming aliases 'Sam' and 'Sam from Goldman'. Both claims in the answer are directly supported by the evidence."
+    },
+    "intent": "evaluate_groundedness",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "primary_subject",
+            "type": "Person"
+          }
+        ],
+        "kind": "entity",
+        "relationships": [],
+        "statement": "There exists a Person entity identified in the evidence."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "primary_subject",
+            "type": "Person"
+          },
+          {
+            "name": "Sam from Goldman",
+            "role": "alias",
+            "type": "Person"
+          }
+        ],
+        "kind": "alias",
+        "relationships": [
+          {
+            "object": "Sam",
+            "predicate": "alias_of",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "The Person entity has aliases 'Sam' and 'Sam from Goldman', both supported by alias rows in the evidence."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Entity type 'Person' confirmed via entity row.",
+        "Alias 'Sam' confirmed via alias row.",
+        "Alias 'Sam from Goldman' confirmed via alias row.",
+        "Confidence level 'medium' preserved as stated in the answer.",
+        "No conflicts or superseded facts detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"evaluate_groundedness\",\n  \"decision\": \"grounded\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"entity\",\n      \"statement\": \"There exists a Person entity identified in the evidence.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"Person\",\n          \"role\": \"primary_subject\"\n        }\n      ],\n      \"relationships\": []\n    },\n    {\n      \"kind\": \"alias\",\n      \"statement\": \"The Person entity has aliases 'Sam' and 'Sam from Goldman', both supported by alias rows in the evidence.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"Person\",\n          \"role\": \"primary_subject\"\n        },\n        {\n          \"name\": \"Sam from Goldman\",\n          \"type\": \"Person\",\n          \"role\": \"alias\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam from Goldman\",\n          \"predicate\": \"alias_of\",\n          \"object\": \"Sam\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolve\",\n    \"entity_id\": \"sam_person_001\",\n    \"reason\": \"Evidence contains both an entity row confirming Identity as Person and an alias row confirming aliases 'Sam' and 'Sam from Goldman'. Both claims in the answer are directly supported by the evidence.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"The answer is grounded. The claim that the entity is a Person with medium confidence is supported by the entity row in the evidence. The aliases 'Sam' and 'Sam from Goldman' are supported by the alias row in the evidence. No unsupported or superseded facts are presented.\",\n  \"citations\": [\n    \"entity_row: Identity - Person\",\n    \"alias_row: Sam, Sam from Goldman\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Entity type 'Person' confirmed via entity row.\",\n      \"Alias 'Sam' confirmed via alias row.\",\n      \"Alias 'Sam from Goldman' confirmed via alias row.\",\n      \"Confidence level 'medium' preserved as stated in the answer.\",\n      \"No conflicts or superseded facts detected.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_043601",
+  "status": "ok"
+}

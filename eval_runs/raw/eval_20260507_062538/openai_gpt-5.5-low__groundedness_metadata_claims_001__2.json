@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "fixture_id": "groundedness_metadata_claims_001",
+  "model": "openai:gpt-5.5-low",
+  "payload": {
+    "answer": "Identity - Person; confidence medium. Aliases: Sam, Sam from Goldman.",
+    "citations": [
+      "entity row",
+      "alias row"
+    ],
+    "conflict_classification": "none",
+    "decision": "supported",
+    "entity_resolution": {
+      "action": "accept",
+      "entity_id": null,
+      "reason": "The claimed person identity and aliases are grounded by the provided entity row and alias row."
+    },
+    "intent": "evaluate_groundedness",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "Person"
+          },
+          {
+            "name": "Sam from Goldman",
+            "role": "alias",
+            "type": "Alias"
+          }
+        ],
+        "kind": "identity",
+        "relationships": [
+          {
+            "object": "Sam from Goldman",
+            "predicate": "has_alias",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is a person with aliases Sam and Sam from Goldman."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "The answer is grounded in the stated evidence.",
+        "No superseded or deleted facts were presented as current."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"evaluate_groundedness\",\"decision\":\"supported\",\"memory_cards\":[{\"kind\":\"identity\",\"statement\":\"Sam is a person with aliases Sam and Sam from Goldman.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"Person\",\"role\":\"subject\"},{\"name\":\"Sam from Goldman\",\"type\":\"Alias\",\"role\":\"alias\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"has_alias\",\"object\":\"Sam from Goldman\"}]}],\"entity_resolution\":{\"action\":\"accept\",\"entity_id\":null,\"reason\":\"The claimed person identity and aliases are grounded by the provided entity row and alias row.\"},\"conflict_classification\":\"none\",\"answer\":\"Identity - Person; confidence medium. Aliases: Sam, Sam from Goldman.\",\"citations\":[\"entity row\",\"alias row\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"The answer is grounded in the stated evidence.\",\"No superseded or deleted facts were presented as current.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

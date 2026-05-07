@@ -1,0 +1,87 @@
+{
+  "error": null,
+  "fixture_id": "conflict_correction_like",
+  "model": "groq:openai/gpt-oss-120b",
+  "payload": {
+    "answer": "The correction supersedes the prior fact; Sam from Goldman now likes early Coltrane, not Bill Evans.",
+    "citations": [
+      "User correction input"
+    ],
+    "conflict_classification": "contradiction",
+    "decision": "apply_correction",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No ambiguous entities detected."
+    },
+    "intent": "conflict_classification",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "type": "artist"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "type": "artist"
+          }
+        ],
+        "kind": "retraction",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Added corrected fact",
+        "Retracted previous fact"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Update Sam's music preference to early Coltrane",
+      "Remove Bill Evans preference from Sam's profile"
+    ]
+  },
+  "raw_text": "{\"intent\":\"conflict_classification\",\"decision\":\"apply_correction\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam from Goldman likes early Coltrane.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\"},{\"name\":\"Goldman\",\"type\":\"organization\"},{\"name\":\"early Coltrane\",\"type\":\"artist\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"early Coltrane\"}]},{\"kind\":\"retraction\",\"statement\":\"Sam from Goldman likes Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\"},{\"name\":\"Goldman\",\"type\":\"organization\"},{\"name\":\"Bill Evans\",\"type\":\"artist\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No ambiguous entities detected.\"},\"conflict_classification\":\"contradiction\",\"answer\":\"The correction supersedes the prior fact; Sam from Goldman now likes early Coltrane, not Bill Evans.\",\"citations\":[\"User correction input\"],\"repair_options\":[\"Update Sam's music preference to early Coltrane\",\"Remove Bill Evans preference from Sam's profile\"],\"receipt\":{\"success\":true,\"details\":[\"Added corrected fact\",\"Retracted previous fact\"]}}",
+  "run_id": "eval_20260507_043016",
+  "status": "ok"
+}

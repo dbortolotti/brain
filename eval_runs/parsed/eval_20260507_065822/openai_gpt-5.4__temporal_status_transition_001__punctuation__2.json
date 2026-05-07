@@ -1,0 +1,59 @@
+{
+  "fixture_id": "temporal_status_transition_001__punctuation",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "Treat this as a temporal status update for the same project. The prior state (planned/open) is superseded by the newer state that the MVP is implemented; do not retain the old status as current.",
+    "citations": [
+      "Existing: \"The Brain Slack agent is planned, status=open\"",
+      "New: \"The Brain Slack agent MVP is now implemented\""
+    ],
+    "conflict_classification": "temporal_status_transition",
+    "decision": "update_existing_entity_with_temporal_status_transition",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": null,
+      "reason": "\"The Brain Slack agent\" and \"The Brain Slack agent MVP\" refer to the same underlying project, with the new text indicating a more specific implementation stage rather than a distinct entity."
+    },
+    "intent": "classify_conflict_and_propose_memory_update",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "The Brain Slack agent",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "MVP",
+            "role": "implementation_scope",
+            "type": "milestone"
+          }
+        ],
+        "kind": "update",
+        "relationships": [
+          {
+            "object": "implemented (MVP)",
+            "predicate": "status_transitioned_to",
+            "subject": "The Brain Slack agent"
+          }
+        ],
+        "statement": "The Brain Slack agent has transitioned from planned/open to implemented at MVP level."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected same project despite punctuation/phrasing variation.",
+        "Classified change as a temporal progression in status.",
+        "Recommended preserving older status only as historical, not current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Update the existing project record status from open/planned to implemented_at=MVP.",
+      "Store the prior planned/open state only as historical context, not as the current status.",
+      "Normalize punctuation and naming so \"The Brain Slack agent\" and \"The Brain Slack agent MVP\" resolve to one project entity."
+    ]
+  },
+  "run_id": "eval_20260507_065822"
+}

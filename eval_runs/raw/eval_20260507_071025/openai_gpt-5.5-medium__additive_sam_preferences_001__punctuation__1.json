@@ -1,0 +1,53 @@
+{
+  "error": null,
+  "fixture_id": "additive_sam_preferences_001__punctuation",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "Added: Sam from Goldman also likes Sonny Rollins.",
+    "citations": [],
+    "conflict_classification": "additive",
+    "decision": "add",
+    "entity_resolution": {
+      "action": "merge_with_existing",
+      "entity_id": null,
+      "reason": "The new statement refers to the same identifiable person, Sam from Goldman, and adds another liked artist rather than changing the existing Bill Evans preference."
+    },
+    "intent": "store_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "liked artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Sonny Rollins",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman also likes Sonny Rollins."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No conflict with existing memory: liking Sonny Rollins is compatible with also liking Bill Evans."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"store_memory\",\"decision\":\"add\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman also likes Sonny Rollins.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam from Goldman\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Sonny Rollins\",\"type\":\"person\",\"role\":\"liked artist\"}],\"relationships\":[{\"subject\":\"Sam from Goldman\",\"predicate\":\"likes\",\"object\":\"Sonny Rollins\"}]}],\"entity_resolution\":{\"action\":\"merge_with_existing\",\"entity_id\":null,\"reason\":\"The new statement refers to the same identifiable person, Sam from Goldman, and adds another liked artist rather than changing the existing Bill Evans preference.\"},\"conflict_classification\":\"additive\",\"answer\":\"Added: Sam from Goldman also likes Sonny Rollins.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"No conflict with existing memory: liking Sonny Rollins is compatible with also liking Bill Evans.\"]}}",
+  "run_id": "eval_20260507_071025",
+  "status": "ok"
+}

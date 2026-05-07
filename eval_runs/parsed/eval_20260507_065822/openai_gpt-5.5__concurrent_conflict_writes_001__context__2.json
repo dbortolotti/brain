@@ -1,0 +1,84 @@
+{
+  "fixture_id": "concurrent_conflict_writes_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "The statements may conflict if they refer to the same Sam and the same time period, but they could also be compatible if Sam changed jobs, has concurrent roles, or the statements refer to different people named Sam. Do not commit either as a durable current fact without clarification.",
+    "citations": [
+      "Concurrent writes: Sam works at Goldman.",
+      "Sam joined Point72."
+    ],
+    "conflict_classification": "potential_temporal_or_concurrent_employment_conflict",
+    "decision": "defer_commit_pending_clarification",
+    "entity_resolution": {
+      "action": "unresolved",
+      "entity_id": null,
+      "reason": "The input refers to Sam without enough identifying information to resolve to a specific existing person entity, and the two employment statements may refer to a job change, concurrent roles, or different Sams."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_affiliation",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_affiliation",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Classified the input as a potential conflict rather than a confirmed contradiction.",
+        "Preserved both claims with ambiguity.",
+        "No durable current employment fact was committed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask whether the same Sam is meant in both statements.",
+      "Ask whether Sam still works at Goldman after joining Point72.",
+      "Ask for dates or temporal qualifiers for the Goldman and Point72 affiliations.",
+      "Record both only as ambiguous/unverified claims, not as current durable employment facts."
+    ]
+  },
+  "run_id": "eval_20260507_065822"
+}

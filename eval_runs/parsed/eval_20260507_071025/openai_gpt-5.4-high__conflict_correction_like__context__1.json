@@ -1,0 +1,64 @@
+{
+  "fixture_id": "conflict_correction_like__context",
+  "model": "openai:gpt-5.4-high",
+  "payload": {
+    "answer": "This is an explicit correction to a current preference. The current fact should be updated to 'Sam from Goldman likes early Coltrane,' and the prior fact that Sam from Goldman likes Bill Evans should be marked superseded and not treated as current.",
+    "citations": [
+      "Existing current fact: Sam from Goldman likes Bill Evans.",
+      "Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans."
+    ],
+    "conflict_classification": "explicit_correction_of_current_fact",
+    "decision": "apply_correction_and_supersede_old_fact",
+    "entity_resolution": {
+      "action": "match_existing_contextual_entity",
+      "entity_id": null,
+      "reason": "The correction refers to the same previously known person described as 'Sam from Goldman', but no stable entity ID is provided."
+    },
+    "intent": "correct_existing_fact",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_context",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "music_preference"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected an explicit replacement of one current preference with another.",
+        "Committed only the corrected preference as current memory.",
+        "Did not store any negative inference such as 'Sam dislikes Bill Evans,' because that is not directly established."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Supersede the existing fact 'Sam from Goldman likes Bill Evans'.",
+      "Store the corrected fact 'Sam from Goldman likes early Coltrane' as current.",
+      "Maintain an audit trail that the Bill Evans preference was corrected rather than preserving it as current."
+    ]
+  },
+  "run_id": "eval_20260507_071025"
+}

@@ -1,0 +1,86 @@
+{
+  "error": null,
+  "fixture_id": "supersession_sam_job_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Sam's current employer is Point72. His prior employment at Goldman is preserved as historical context but is no longer current.",
+    "citations": [
+      "New input: Sam left Goldman and joined Point72",
+      "Existing memory: Sam works at Goldman"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "Accept new fact and deprecate old fact",
+    "entity_resolution": {
+      "action": "supersede",
+      "entity_id": "sam_employment_status",
+      "reason": "Temporal ordering: new information indicates a job transition from Goldman to Point72. The new fact is more recent and supersedes the prior employment state."
+    },
+    "intent": "Classify and resolve a supersession conflict between two employment facts",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "current_employment",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "currently_employed_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Point72"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "prior_employment",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "previously_employed_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam previously worked at Goldman"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict detected: supersession type",
+        "Old fact deprecated: Sam works at Goldman",
+        "New fact committed: Sam works at Point72",
+        "Historical record preserved: prior employment at Goldman",
+        "No ambiguity remaining in current employment state"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark Goldman employment as ended with transition date",
+      "Record Point72 employment as started with transition date",
+      "Preserve employment history chain for audit trail"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Classify and resolve a supersession conflict between two employment facts\",\n  \"decision\": \"Accept new fact and deprecate old fact\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"current_employment\",\n      \"statement\": \"Sam works at Point72\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"current_employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"currently_employed_at\",\n          \"object\": \"Point72\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"prior_employment\",\n      \"statement\": \"Sam previously worked at Goldman\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"former_employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"previously_employed_at\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"supersede\",\n    \"entity_id\": \"sam_employment_status\",\n    \"reason\": \"Temporal ordering: new information indicates a job transition from Goldman to Point72. The new fact is more recent and supersedes the prior employment state.\"\n  },\n  \"conflict_classification\": \"supersession\",\n  \"answer\": \"Sam's current employer is Point72. His prior employment at Goldman is preserved as historical context but is no longer current.\",\n  \"citations\": [\n    \"New input: Sam left Goldman and joined Point72\",\n    \"Existing memory: Sam works at Goldman\"\n  ],\n  \"repair_options\": [\n    \"Mark Goldman employment as ended with transition date\",\n    \"Record Point72 employment as started with transition date\",\n    \"Preserve employment history chain for audit trail\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Conflict detected: supersession type\",\n      \"Old fact deprecated: Sam works at Goldman\",\n      \"New fact committed: Sam works at Point72\",\n      \"Historical record preserved: prior employment at Goldman\",\n      \"No ambiguity remaining in current employment state\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_043016",
+  "status": "ok"
+}

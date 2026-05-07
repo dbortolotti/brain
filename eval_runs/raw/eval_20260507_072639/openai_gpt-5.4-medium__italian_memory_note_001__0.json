@@ -1,0 +1,70 @@
+{
+  "error": null,
+  "fixture_id": "italian_memory_note_001",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "Ho salvato una nota ambigua: Sam di Goldman preferisce Bill Evans.",
+    "citations": [
+      "Sam di Goldman",
+      "preferisce Bill Evans"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_with_ambiguity",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "\"Sam\" e \"Bill Evans\" non sono identificati in modo univoco dal messaggio; la memoria viene salvata usando solo i descrittori forniti."
+    },
+    "intent": "store_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred_entity",
+            "type": "person_or_work"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam di Goldman preferisce Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memoria di preferenza salvata.",
+        "Identit\u00e0 lasciate non risolte per evitare assunzioni indebite."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Specificare il cognome di Sam o quale Goldman si intende.",
+      "Specificare quale Bill Evans si intende, se necessario."
+    ]
+  },
+  "raw_text": "{\"intent\":\"store_memory\",\"decision\":\"commit_with_ambiguity\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam di Goldman preferisce Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person_or_work\",\"role\":\"preferred_entity\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"prefers\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"\\\"Sam\\\" e \\\"Bill Evans\\\" non sono identificati in modo univoco dal messaggio; la memoria viene salvata usando solo i descrittori forniti.\"},\"conflict_classification\":\"none\",\"answer\":\"Ho salvato una nota ambigua: Sam di Goldman preferisce Bill Evans.\",\"citations\":[\"Sam di Goldman\",\"preferisce Bill Evans\"],\"repair_options\":[\"Specificare il cognome di Sam o quale Goldman si intende.\",\"Specificare quale Bill Evans si intende, se necessario.\"],\"receipt\":{\"success\":true,\"details\":[\"Memoria di preferenza salvata.\",\"Identit\u00e0 lasciate non risolte per evitare assunzioni indebite.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

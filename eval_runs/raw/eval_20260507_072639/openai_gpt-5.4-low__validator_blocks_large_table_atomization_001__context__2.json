@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_large_table_atomization_001__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Reject the proposal. Creating 500 memory cards, one per CSV row, is over-atomized and not appropriate for durable personal memory. Row-wise tabular data should not be committed as long-term memory unless selectively distilled into a small number of stable, salient, user-relevant facts. Preserve the data in its source system or summarize only the enduring high-value conclusions.",
+    "citations": [
+      "For context, LLM proposes 500 memory cards, one per CSV row."
+    ],
+    "conflict_classification": "none",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No durable entity-level memory should be committed from a proposal to atomize a CSV into 500 row-level cards without evidence that each row is a stable, user-relevant fact worth long-term retention."
+    },
+    "intent": "validate_proposed_memory_cards_from_tabular_context",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Blocked bulk atomization of tabular data into 500 row-level memory cards.",
+        "No memory cards were accepted for durable storage.",
+        "Recommended summarization or external storage instead of row-wise memory ingestion."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Do not create one memory card per CSV row.",
+      "Store the CSV externally and keep only a reference or provenance note if needed.",
+      "Extract only durable, high-salience facts that matter for future personalization or task continuity.",
+      "Create a small summary set of cards capturing schema-level meaning, major aggregates, or explicit user preferences/goals derived from the table.",
+      "If retention is required, chunk by meaningful entities or episodes rather than raw rows.",
+      "Ask for user confirmation before committing large-scale structured imports into durable memory."
+    ]
+  },
+  "raw_text": "{\"intent\":\"validate_proposed_memory_cards_from_tabular_context\",\"decision\":\"reject\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No durable entity-level memory should be committed from a proposal to atomize a CSV into 500 row-level cards without evidence that each row is a stable, user-relevant fact worth long-term retention.\"},\"conflict_classification\":\"none\",\"answer\":\"Reject the proposal. Creating 500 memory cards, one per CSV row, is over-atomized and not appropriate for durable personal memory. Row-wise tabular data should not be committed as long-term memory unless selectively distilled into a small number of stable, salient, user-relevant facts. Preserve the data in its source system or summarize only the enduring high-value conclusions.\",\"citations\":[\"For context, LLM proposes 500 memory cards, one per CSV row.\"],\"repair_options\":[\"Do not create one memory card per CSV row.\",\"Store the CSV externally and keep only a reference or provenance note if needed.\",\"Extract only durable, high-salience facts that matter for future personalization or task continuity.\",\"Create a small summary set of cards capturing schema-level meaning, major aggregates, or explicit user preferences/goals derived from the table.\",\"If retention is required, chunk by meaningful entities or episodes rather than raw rows.\",\"Ask for user confirmation before committing large-scale structured imports into durable memory.\"],\"receipt\":{\"success\":false,\"details\":[\"Blocked bulk atomization of tabular data into 500 row-level memory cards.\",\"No memory cards were accepted for durable storage.\",\"Recommended summarization or external storage instead of row-wise memory ingestion.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

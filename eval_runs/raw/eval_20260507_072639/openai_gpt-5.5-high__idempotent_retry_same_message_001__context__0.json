@@ -1,0 +1,66 @@
+{
+  "error": null,
+  "fixture_id": "idempotent_retry_same_message_001__context",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "Stored one deduplicated memory that Sam from Goldman mentioned liking Bill Evans.",
+    "citations": [
+      "Sam from Goldman mentioned that he likes Bill Evans."
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_once_deduplicated",
+    "entity_resolution": {
+      "action": "defer_disambiguation",
+      "entity_id": null,
+      "reason": "Only a first name plus affiliation context is provided for Sam, and Bill Evans is not further disambiguated. Treat the three identical deliveries as an idempotent retry and do not create duplicate memories."
+    },
+    "intent": "record_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "preference_holder",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_entity",
+            "type": "person_or_artist"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman mentioned that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Identical input was delivered three times; committed at most one memory.",
+        "Preserved ambiguity for Sam from Goldman and Bill Evans."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"record_memory\",\"decision\":\"commit_once_deduplicated\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman mentioned that he likes Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"preference_holder\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation_context\"},{\"name\":\"Bill Evans\",\"type\":\"person_or_artist\",\"role\":\"liked_entity\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"defer_disambiguation\",\"entity_id\":null,\"reason\":\"Only a first name plus affiliation context is provided for Sam, and Bill Evans is not further disambiguated. Treat the three identical deliveries as an idempotent retry and do not create duplicate memories.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored one deduplicated memory that Sam from Goldman mentioned liking Bill Evans.\",\"citations\":[\"Sam from Goldman mentioned that he likes Bill Evans.\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Identical input was delivered three times; committed at most one memory.\",\"Preserved ambiguity for Sam from Goldman and Bill Evans.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

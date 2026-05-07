@@ -1,0 +1,73 @@
+{
+  "error": null,
+  "fixture_id": "correction_sam_music_001__punctuation",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "Replace the prior preference memory. The new statement indicates the existing memory ('likes Bill Evans') is incorrect and should be superseded by 'likes early Coltrane.' Do not retain the Bill Evans preference as current.",
+    "citations": [
+      "Existing memory: Sam from Goldman likes Bill Evans",
+      "Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans"
+    ],
+    "conflict_classification": "direct_correction",
+    "decision": "replace_existing_memory",
+    "entity_resolution": {
+      "action": "reuse_existing",
+      "entity_id": null,
+      "reason": "The correction refers to the same person descriptor, 'Sam from Goldman', so it should update the existing memory rather than create a new entity."
+    },
+    "intent": "correct_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "preference_target",
+            "type": "music_preference"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected a contradiction between existing memory and correction.",
+        "Classified the input as a direct correction to the same subject.",
+        "Prepared a replacement memory card with the corrected preference.",
+        "Recommended suppressing the superseded Bill Evans fact from current memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Delete or mark the existing 'likes Bill Evans' memory as superseded.",
+      "Store the corrected preference: 'Sam from Goldman likes early Coltrane.'",
+      "Avoid storing 'not Bill Evans' as a durable standalone dislike unless future evidence shows it is an enduring negative preference rather than just a correction."
+    ]
+  },
+  "raw_text": "{\"intent\":\"correct_memory\",\"decision\":\"replace_existing_memory\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam from Goldman likes early Coltrane.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"early Coltrane\",\"type\":\"music_preference\",\"role\":\"preference_target\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"early Coltrane\"}]}],\"entity_resolution\":{\"action\":\"reuse_existing\",\"entity_id\":null,\"reason\":\"The correction refers to the same person descriptor, 'Sam from Goldman', so it should update the existing memory rather than create a new entity.\"},\"conflict_classification\":\"direct_correction\",\"answer\":\"Replace the prior preference memory. The new statement indicates the existing memory ('likes Bill Evans') is incorrect and should be superseded by 'likes early Coltrane.' Do not retain the Bill Evans preference as current.\",\"citations\":[\"Existing memory: Sam from Goldman likes Bill Evans\",\"Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans\"],\"repair_options\":[\"Delete or mark the existing 'likes Bill Evans' memory as superseded.\",\"Store the corrected preference: 'Sam from Goldman likes early Coltrane.'\",\"Avoid storing 'not Bill Evans' as a durable standalone dislike unless future evidence shows it is an enduring negative preference rather than just a correction.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected a contradiction between existing memory and correction.\",\"Classified the input as a direct correction to the same subject.\",\"Prepared a replacement memory card with the corrected preference.\",\"Recommended suppressing the superseded Bill Evans fact from current memory.\"]}}",
+  "run_id": "eval_20260507_071025",
+  "status": "ok"
+}

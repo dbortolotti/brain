@@ -1,0 +1,71 @@
+{
+  "error": null,
+  "fixture_id": "idempotent_retry_same_message_001__punctuation",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Recorded a single deduplicated attributed-preference memory. The repeated deliveries do not create additional memories.",
+    "citations": [
+      "Same input delivered three times - Sam from Goldman mentioned that he likes Bill Evans"
+    ],
+    "conflict_classification": "idempotent_duplicate_no_conflict",
+    "decision": "commit_one_deduplicated_memory",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Names are not uniquely identifiable from the message alone; do not resolve Sam, Goldman, or Bill Evans to specific canonical entities without more context."
+    },
+    "intent": "extract_memory_from_repeated_input",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "association",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_person",
+            "type": "person"
+          }
+        ],
+        "kind": "attributed_preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "said_likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam, associated with Goldman, mentioned that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected repeated identical content and avoided duplicate memory creation.",
+        "Preserved attribution ('mentioned') rather than converting hearsay into a stronger fact.",
+        "Kept entity resolution unresolved due to ambiguity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide Sam's full name or role at Goldman.",
+      "Clarify whether Goldman refers to Goldman Sachs or another entity.",
+      "Clarify which Bill Evans is intended."
+    ]
+  },
+  "raw_text": "{\"intent\":\"extract_memory_from_repeated_input\",\"decision\":\"commit_one_deduplicated_memory\",\"memory_cards\":[{\"kind\":\"attributed_preference\",\"statement\":\"Sam, associated with Goldman, mentioned that he likes Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"speaker\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"association\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked_person\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"associated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"said_likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"Names are not uniquely identifiable from the message alone; do not resolve Sam, Goldman, or Bill Evans to specific canonical entities without more context.\"},\"conflict_classification\":\"idempotent_duplicate_no_conflict\",\"answer\":\"Recorded a single deduplicated attributed-preference memory. The repeated deliveries do not create additional memories.\",\"citations\":[\"Same input delivered three times - Sam from Goldman mentioned that he likes Bill Evans\"],\"repair_options\":[\"Provide Sam's full name or role at Goldman.\",\"Clarify whether Goldman refers to Goldman Sachs or another entity.\",\"Clarify which Bill Evans is intended.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected repeated identical content and avoided duplicate memory creation.\",\"Preserved attribution ('mentioned') rather than converting hearsay into a stronger fact.\",\"Kept entity resolution unresolved due to ambiguity.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

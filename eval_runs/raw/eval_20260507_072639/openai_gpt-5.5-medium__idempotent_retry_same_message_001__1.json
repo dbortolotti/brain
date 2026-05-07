@@ -1,0 +1,66 @@
+{
+  "error": null,
+  "fixture_id": "idempotent_retry_same_message_001",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "Stored one memory: Sam from Goldman mentioned that he likes Bill Evans.",
+    "citations": [
+      "Same input delivered three times: Sam from Goldman mentioned that he likes Bill Evans."
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_once_idempotent",
+    "entity_resolution": {
+      "action": "create_or_merge_if_exact_retry_duplicate",
+      "entity_id": null,
+      "reason": "The same message was delivered three times; it should produce only one durable memory. No existing entity ID is provided, and 'Sam from Goldman' should be preserved as ambiguous context rather than over-resolved."
+    },
+    "intent": "store_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "preference_holder",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "disambiguating_context",
+            "type": "organization_or_affiliation"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_entity",
+            "type": "person_or_named_entity"
+          }
+        ],
+        "kind": "reported_preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman mentioned that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed a single memory card despite repeated identical input.",
+        "Preserved ambiguity around Goldman and Bill Evans; no over-specific identification was inferred."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"store_memory\",\"decision\":\"commit_once_idempotent\",\"memory_cards\":[{\"kind\":\"reported_preference\",\"statement\":\"Sam from Goldman mentioned that he likes Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"preference_holder\"},{\"name\":\"Goldman\",\"type\":\"organization_or_affiliation\",\"role\":\"disambiguating_context\"},{\"name\":\"Bill Evans\",\"type\":\"person_or_named_entity\",\"role\":\"liked_entity\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"associated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"create_or_merge_if_exact_retry_duplicate\",\"entity_id\":null,\"reason\":\"The same message was delivered three times; it should produce only one durable memory. No existing entity ID is provided, and 'Sam from Goldman' should be preserved as ambiguous context rather than over-resolved.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored one memory: Sam from Goldman mentioned that he likes Bill Evans.\",\"citations\":[\"Same input delivered three times: Sam from Goldman mentioned that he likes Bill Evans.\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Committed a single memory card despite repeated identical input.\",\"Preserved ambiguity around Goldman and Bill Evans; no over-specific identification was inferred.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

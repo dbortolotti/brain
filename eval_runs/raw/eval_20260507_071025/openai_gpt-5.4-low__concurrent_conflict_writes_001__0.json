@@ -1,0 +1,73 @@
+{
+  "error": null,
+  "fixture_id": "concurrent_conflict_writes_001",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Do not commit a durable current-employer fact. The two concurrent writes imply conflicting employment states and lack temporal ordering. Preserve both as unresolved evidence only.",
+    "citations": [
+      "Sam works at Goldman.",
+      "Sam joined Point72."
+    ],
+    "conflict_classification": "concurrent_potentially_mutually_exclusive_current_state",
+    "decision": "defer_commit_due_to_ambiguous_concurrent_conflict",
+    "entity_resolution": {
+      "action": "no_change",
+      "entity_id": null,
+      "reason": "The subject appears to be the same person ('Sam'), but the concurrent writes create an unresolved conflict about current employment. No durable canonical update should be made without timestamps or corroboration."
+    },
+    "intent": "classify_conflict_for_memory_write",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer_candidate",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "employer_candidate",
+            "type": "organization"
+          }
+        ],
+        "kind": "ambiguous_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Concurrent writes indicate two potentially conflicting current employment states for Sam: works at Goldman; joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected same subject across concurrent writes.",
+        "Identified likely conflict in current employment state.",
+        "Deferred durable memory commit to avoid storing a potentially superseded fact."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request timestamps for both writes.",
+      "Ask whether Sam left Goldman before joining Point72.",
+      "Store both statements as time-scoped events if dates are available.",
+      "Wait for corroborating evidence before updating current employment."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict_for_memory_write\",\"decision\":\"defer_commit_due_to_ambiguous_concurrent_conflict\",\"memory_cards\":[{\"kind\":\"ambiguous_fact\",\"statement\":\"Concurrent writes indicate two potentially conflicting current employment states for Sam: works at Goldman; joined Point72.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"employer_candidate\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer_candidate\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"no_change\",\"entity_id\":null,\"reason\":\"The subject appears to be the same person ('Sam'), but the concurrent writes create an unresolved conflict about current employment. No durable canonical update should be made without timestamps or corroboration.\"},\"conflict_classification\":\"concurrent_potentially_mutually_exclusive_current_state\",\"answer\":\"Do not commit a durable current-employer fact. The two concurrent writes imply conflicting employment states and lack temporal ordering. Preserve both as unresolved evidence only.\",\"citations\":[\"Sam works at Goldman.\",\"Sam joined Point72.\"],\"repair_options\":[\"Request timestamps for both writes.\",\"Ask whether Sam left Goldman before joining Point72.\",\"Store both statements as time-scoped events if dates are available.\",\"Wait for corroborating evidence before updating current employment.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected same subject across concurrent writes.\",\"Identified likely conflict in current employment state.\",\"Deferred durable memory commit to avoid storing a potentially superseded fact.\"]}}",
+  "run_id": "eval_20260507_071025",
+  "status": "ok"
+}

@@ -1,0 +1,59 @@
+{
+  "fixture_id": "entity_alias_sam_goldman__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Resolved 'Sam G' to the existing entity 'Sam from Goldman'. Stored the preference cautiously because 'Bill Evans' is not uniquely identified from the message alone.",
+    "citations": [
+      "Existing entity: Sam from Goldman",
+      "aliases: Sam G, Goldman Sam",
+      "New message: Sam G likes Bill Evans."
+    ],
+    "conflict_classification": "none",
+    "decision": "resolve_alias_to_existing_entity_and_store_ambiguous_preference_cautiously",
+    "entity_resolution": {
+      "action": "link_to_existing_entity",
+      "entity_id": "Sam from Goldman",
+      "reason": "The new mention 'Sam G' matches an existing alias of the entity 'Sam from Goldman'."
+    },
+    "intent": "resolve_entity_and_assess_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "ambiguous_named_entity"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Alias 'Sam G' matched existing entity 'Sam from Goldman'.",
+        "No conflict with existing aliases.",
+        "Preference stored with ambiguity preserved on the object entity 'Bill Evans'."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify which Bill Evans is meant before enriching the target entity.",
+      "If preferences about artists are considered too weak for durable memory, mark this as non-durable or defer storage."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

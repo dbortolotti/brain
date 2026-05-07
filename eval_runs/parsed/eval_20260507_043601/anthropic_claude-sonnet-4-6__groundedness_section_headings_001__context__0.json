@@ -1,0 +1,76 @@
+{
+  "fixture_id": "groundedness_section_headings_001__context",
+  "model": "anthropic:claude-sonnet-4-6",
+  "payload": {
+    "answer": "Section headings such as 'Known facts', 'Interactions', and 'Relationships' are purely structural labels used to organize the response. They carry no factual content and must not be treated as factual claims during groundedness evaluation. Only the substantive statements appearing beneath each heading are subject to verification against stored memory.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Section headings such as 'Known facts', 'Interactions', and 'Relationships' are organizational/structural labels used to format the response. They are not factual assertions and must not be evaluated as memory-worthy claims. Groundedness assessment should focus exclusively on the substantive content beneath each heading.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No specific named entity requires resolution in this fixture; the subject is a formatting/evaluation rule."
+    },
+    "intent": "Evaluate groundedness of an answer that uses section headings (Known facts, Interactions, Relationships) and determine whether those headings should be treated as factual claims.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "personal memory system under evaluation",
+            "type": "system"
+          }
+        ],
+        "kind": "meta_rule",
+        "relationships": [
+          {
+            "object": "factual claims",
+            "predicate": "are_not",
+            "subject": "section headings"
+          },
+          {
+            "object": "section headings",
+            "predicate": "must_ignore",
+            "subject": "groundedness evaluation"
+          }
+        ],
+        "statement": "Section headings (e.g., 'Known facts', 'Interactions', 'Relationships') in a Brain answer are structural formatting elements, not factual claims, and must be ignored during groundedness evaluation."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "eval_judge",
+            "role": "evaluator applying this guideline",
+            "type": "role"
+          }
+        ],
+        "kind": "evaluation_guideline",
+        "relationships": [
+          {
+            "object": "content under headings, not headings themselves",
+            "predicate": "applies_to",
+            "subject": "groundedness check"
+          }
+        ],
+        "statement": "When an answer contains section headings like 'Known facts', 'Interactions', or 'Relationships', only the substantive content under those headings is subject to groundedness verification."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Fixture groundedness_section_headings_001__context processed successfully.",
+        "Decision recorded: section headings are not factual claims.",
+        "Two memory cards created: one meta_rule and one evaluation_guideline.",
+        "No entity resolution required.",
+        "No conflicts detected."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If an evaluator mistakenly flags a heading as an ungrounded claim, reclassify it as a structural element and remove it from the groundedness failure list.",
+      "Ensure evaluation pipelines strip or skip heading tokens before running claim-level groundedness checks."
+    ]
+  },
+  "run_id": "eval_20260507_043601"
+}

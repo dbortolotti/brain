@@ -1,0 +1,32 @@
+{
+  "fixture_id": "ambiguous_time_reference_001__punctuation",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "I did not store this as durable memory. The report is hearsay and the timing is ambiguous because 'last Friday' and 'next month' depend on when the message was written.",
+    "citations": [
+      "Sam said last Friday that he is leaving Goldman next month"
+    ],
+    "conflict_classification": "temporal_ambiguity",
+    "decision": "defer",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No durable memory should be committed because the statement is second-hand ('Sam said') and contains unresolved relative time references ('last Friday', 'next month') without an anchor date."
+    },
+    "intent": "memory_intake",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Rejected durable memory write due to ambiguous relative dates.",
+        "Rejected durable memory write because the claim is attributed speech rather than a confirmed fact."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide an absolute date for 'last Friday'.",
+      "Provide an absolute month or exact departure date for 'next month'.",
+      "Confirm whether this is a direct, verified update from Sam or just a reported statement."
+    ]
+  },
+  "run_id": "eval_20260507_072639"
+}

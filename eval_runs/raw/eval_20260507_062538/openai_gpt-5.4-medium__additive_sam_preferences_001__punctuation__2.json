@@ -1,0 +1,68 @@
+{
+  "error": null,
+  "fixture_id": "additive_sam_preferences_001__punctuation",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "Add the new preference as an additional fact; it does not conflict with the existing memory that Sam from Goldman likes Bill Evans.",
+    "citations": [
+      "Existing memory: Sam from Goldman likes Bill Evans",
+      "New: Sam from Goldman also likes Sonny Rollins"
+    ],
+    "conflict_classification": "additive_non_conflicting",
+    "decision": "append",
+    "entity_resolution": {
+      "action": "link_to_existing",
+      "entity_id": null,
+      "reason": "The new statement refers to the same person descriptor, 'Sam from Goldman,' as the existing memory and adds another compatible preference."
+    },
+    "intent": "store_preference",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "preference_object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Sonny Rollins",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Sonny Rollins."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Existing and new facts are compatible.",
+        "The word 'also' indicates an additive preference, not a correction or replacement.",
+        "No prior fact should be deleted or marked superseded."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"store_preference\",\"decision\":\"append\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman likes Sonny Rollins.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Sonny Rollins\",\"type\":\"person\",\"role\":\"preference_object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Sonny Rollins\"}]}],\"entity_resolution\":{\"action\":\"link_to_existing\",\"entity_id\":null,\"reason\":\"The new statement refers to the same person descriptor, 'Sam from Goldman,' as the existing memory and adds another compatible preference.\"},\"conflict_classification\":\"additive_non_conflicting\",\"answer\":\"Add the new preference as an additional fact; it does not conflict with the existing memory that Sam from Goldman likes Bill Evans.\",\"citations\":[\"Existing memory: Sam from Goldman likes Bill Evans\",\"New: Sam from Goldman also likes Sonny Rollins\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Existing and new facts are compatible.\",\"The word 'also' indicates an additive preference, not a correction or replacement.\",\"No prior fact should be deleted or marked superseded.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

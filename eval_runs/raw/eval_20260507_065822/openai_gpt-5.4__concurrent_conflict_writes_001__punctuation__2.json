@@ -1,0 +1,86 @@
+{
+  "error": null,
+  "fixture_id": "concurrent_conflict_writes_001__punctuation",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "Two concurrent candidate memories were detected: 'Sam works at Goldman' and 'Sam joined Point72'. Because the input is punctuation-poor and lacks timestamps, these should not be committed as a single durable current-state fact. Preserve both as low-confidence candidates and request clarification or temporal ordering.",
+    "citations": [
+      "Input: 'Concurrent writes - Sam works at Goldman Sam joined Point72'"
+    ],
+    "conflict_classification": "potential_conflict_from_concurrent_writes_with_missing_temporal_context",
+    "decision": "split_into_separate_candidates_with_conflict_flag",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Insufficient context to determine whether both writes refer to the same Sam timeline, a job change, dual affiliation, or conflicting concurrent employment facts."
+    },
+    "intent": "classify_concurrent_writes",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "candidate_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "organization",
+            "type": "organization"
+          }
+        ],
+        "kind": "candidate_fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed two plausible statements from punctuation-poor concurrent input.",
+        "Detected possible employment conflict or timeline ambiguity.",
+        "Avoided committing any superseded or current-state durable memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add timestamps or effective dates for each write.",
+      "Clarify whether 'joined Point72' supersedes employment at Goldman or is an additional affiliation.",
+      "Confirm whether both statements refer to the same person named Sam.",
+      "Store as separate event/employment candidates pending reconciliation."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_concurrent_writes\",\"decision\":\"split_into_separate_candidates_with_conflict_flag\",\"memory_cards\":[{\"kind\":\"candidate_fact\",\"statement\":\"Sam works at Goldman.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Goldman\"}]},{\"kind\":\"candidate_fact\",\"statement\":\"Sam joined Point72.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"organization\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"Insufficient context to determine whether both writes refer to the same Sam timeline, a job change, dual affiliation, or conflicting concurrent employment facts.\"},\"conflict_classification\":\"potential_conflict_from_concurrent_writes_with_missing_temporal_context\",\"answer\":\"Two concurrent candidate memories were detected: 'Sam works at Goldman' and 'Sam joined Point72'. Because the input is punctuation-poor and lacks timestamps, these should not be committed as a single durable current-state fact. Preserve both as low-confidence candidates and request clarification or temporal ordering.\",\"citations\":[\"Input: 'Concurrent writes - Sam works at Goldman Sam joined Point72'\"],\"repair_options\":[\"Add timestamps or effective dates for each write.\",\"Clarify whether 'joined Point72' supersedes employment at Goldman or is an additional affiliation.\",\"Confirm whether both statements refer to the same person named Sam.\",\"Store as separate event/employment candidates pending reconciliation.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed two plausible statements from punctuation-poor concurrent input.\",\"Detected possible employment conflict or timeline ambiguity.\",\"Avoided committing any superseded or current-state durable memory.\"]}}",
+  "run_id": "eval_20260507_065822",
+  "status": "ok"
+}

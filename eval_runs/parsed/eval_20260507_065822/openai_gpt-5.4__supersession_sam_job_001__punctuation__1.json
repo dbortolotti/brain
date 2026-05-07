@@ -1,0 +1,69 @@
+{
+  "fixture_id": "supersession_sam_job_001__punctuation",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "The newer memory supersedes the older one: Sam no longer works at Goldman and now works at Point72.",
+    "citations": [
+      "Existing memory: 'Sam works at Goldman New'",
+      "Existing memory: 'Sam left Goldman and joined Point72'"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "treat_as_supersession",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": null,
+      "reason": "Both statements refer to the same person, Sam. 'Goldman New' appears to be malformed/truncated punctuation noise relative to 'Goldman' and should not be preserved as a distinct current fact."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "episodic_update",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "formerly_worked_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72, superseding the earlier memory that Sam works at Goldman."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected contradiction between older current-employment fact and newer departure/join event.",
+        "Classified as supersession because the newer statement provides an explicit employment transition.",
+        "Avoided presenting the superseded Goldman employment as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace the older current-employment fact with a former-employment relation to Goldman and current employment at Point72.",
+      "Normalize 'Goldman New' to 'Goldman' only if supported by source fidelity rules; otherwise mark the older string as malformed and superseded.",
+      "Store the transition as a timeline update rather than two simultaneous current jobs."
+    ]
+  },
+  "run_id": "eval_20260507_065822"
+}

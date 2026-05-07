@@ -1,0 +1,29 @@
+{
+  "error": null,
+  "fixture_id": "cost_latency_token_accounting_001__context",
+  "model": "openai:gpt-5.5-low",
+  "payload": {
+    "answer": "Required eval accounting fields should capture cost, token usage, model identity, and latency distribution for each evaluated run.\n\n- token counts: Record prompt/input tokens, completion/output tokens, and total tokens. If applicable, also record cached input tokens, reasoning tokens, tool-call tokens, or embedding tokens separately so pricing can be audited.\n- provider/model IDs: Record the provider identifier and exact model ID used for the run, such as provider='openai' and model='gpt-4.1-mini'. Include version/date suffixes when available because pricing, latency, and behavior can vary by model version.\n- estimated price: Compute the estimated monetary cost from the provider's published pricing and the measured token counts. Keep this explicitly marked as estimated unless it comes from provider billing records. Include currency, usually USD, and ideally separate input, output, cache, and total cost components.\n- latency p50 p90 p95: Report latency percentiles across a sample of runs. p50 is the median latency, p90 means 90% of requests completed at or below that latency, and p95 means 95% completed at or below that latency. These should be based on wall-clock request duration unless otherwise specified, and units should be stated, usually milliseconds.\n\nA complete accounting record should make it possible to answer: which provider/model ran, how many tokens were used, what it likely cost, and how fast it was at common percentile thresholds.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "no_memory_commit",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The request asks for an explanation of evaluation accounting fields and does not provide user-specific durable facts to remember."
+    },
+    "intent": "explain_eval_accounting_fields",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Returned explanatory debug response only.",
+        "No durable memory was committed."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"explain_eval_accounting_fields\",\"decision\":\"no_memory_commit\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The request asks for an explanation of evaluation accounting fields and does not provide user-specific durable facts to remember.\"},\"conflict_classification\":\"none\",\"answer\":\"Required eval accounting fields should capture cost, token usage, model identity, and latency distribution for each evaluated run.\\n\\n- token counts: Record prompt/input tokens, completion/output tokens, and total tokens. If applicable, also record cached input tokens, reasoning tokens, tool-call tokens, or embedding tokens separately so pricing can be audited.\\n- provider/model IDs: Record the provider identifier and exact model ID used for the run, such as provider='openai' and model='gpt-4.1-mini'. Include version/date suffixes when available because pricing, latency, and behavior can vary by model version.\\n- estimated price: Compute the estimated monetary cost from the provider's published pricing and the measured token counts. Keep this explicitly marked as estimated unless it comes from provider billing records. Include currency, usually USD, and ideally separate input, output, cache, and total cost components.\\n- latency p50 p90 p95: Report latency percentiles across a sample of runs. p50 is the median latency, p90 means 90% of requests completed at or below that latency, and p95 means 95% completed at or below that latency. These should be based on wall-clock request duration unless otherwise specified, and units should be stated, usually milliseconds.\\n\\nA complete accounting record should make it possible to answer: which provider/model ran, how many tokens were used, what it likely cost, and how fast it was at common percentile thresholds.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Returned explanatory debug response only.\",\"No durable memory was committed.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

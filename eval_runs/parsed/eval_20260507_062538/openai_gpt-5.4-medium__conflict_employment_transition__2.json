@@ -1,0 +1,81 @@
+{
+  "fixture_id": "conflict_employment_transition",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "Treat this as a superseding employment update: Sam's current employer should be Point72, and the Goldman employment should be retained only as past employment, not as a current fact.",
+    "citations": [],
+    "conflict_classification": "employment_transition_superseding_current_fact",
+    "decision": "supersede_existing_current_employment_and_store_transition",
+    "entity_resolution": {
+      "action": "resolve_to_existing",
+      "entity_id": null,
+      "reason": "The new fact refers to the same person, Sam, and provides a clear employment transition that supersedes the prior current employer."
+    },
+    "intent": "update_person_employment",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "current_fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Point72."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "former_employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "historical_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "formerly_worked_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam previously worked at Goldman and has left that job."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected direct contradiction with an existing current employment fact.",
+        "Resolved by replacing the current employer with Point72.",
+        "Preserved the prior Goldman employment only as historical, avoiding presentation of superseded information as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark the existing current fact 'Sam works at Goldman' as no longer current.",
+      "Store 'Sam works at Point72' as the new current employment fact.",
+      "Retain Goldman only as historical employment.",
+      "If dates become available later, attach end/start dates to the transition."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

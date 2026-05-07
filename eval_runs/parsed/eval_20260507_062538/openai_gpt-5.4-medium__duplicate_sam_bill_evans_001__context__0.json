@@ -1,0 +1,33 @@
+{
+  "fixture_id": "duplicate_sam_bill_evans_001__context",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "No conflict detected. The new information duplicates the existing memory, so no durable update is needed.",
+    "citations": [
+      "Existing memory: Sam from Goldman mentioned that he likes Bill Evans.",
+      "New memory: Sam from Goldman said he likes Bill Evans."
+    ],
+    "conflict_classification": "duplicate",
+    "decision": "no_op",
+    "entity_resolution": {
+      "action": "match_existing",
+      "entity_id": null,
+      "reason": "The new statement appears semantically identical to the existing memory about Sam from Goldman liking Bill Evans."
+    },
+    "intent": "classify_conflict_for_memory_update",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Compared existing and new statements.",
+        "Detected no semantic change between the two statements.",
+        "Classified the update as a duplicate and took no action."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Keep the existing memory unchanged.",
+      "Deduplicate this event and avoid creating a second card."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

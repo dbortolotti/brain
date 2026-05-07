@@ -1,0 +1,80 @@
+{
+  "error": null,
+  "fixture_id": "concurrent_conflict_writes_001__context",
+  "model": "google:gemini-3.1-pro-preview-medium",
+  "payload": {
+    "answer": "Detected concurrent writes regarding Sam's employment at Goldman and Point72.",
+    "citations": [],
+    "conflict_classification": "concurrent_writes",
+    "decision": "identify_conflict_type",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": null,
+      "reason": "Sam is the primary entity involved in both statements."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "company"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "company"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Classified conflict as concurrent_writes."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "ask_user_for_clarification",
+      "store_both_with_timestamps"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"classify_conflict\",\n  \"decision\": \"identify_conflict_type\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"employment\",\n      \"statement\": \"Sam works at Goldman.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"employee\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"company\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"employment\",\n      \"statement\": \"Sam joined Point72.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"employee\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"company\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolve\",\n    \"entity_id\": null,\n    \"reason\": \"Sam is the primary entity involved in both statements.\"\n  },\n  \"conflict_classification\": \"concurrent_writes\",\n  \"answer\": \"Detected concurrent writes regarding Sam's employment at Goldman and Point72.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"ask_user_for_clarification\",\n    \"store_both_with_timestamps\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Classified conflict as concurrent_writes.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

@@ -1,0 +1,89 @@
+{
+  "fixture_id": "groundedness_section_headings_001",
+  "model": "anthropic:claude-sonnet-4-6",
+  "payload": {
+    "answer": "Section headings ('Known facts', 'Interactions', 'Relationships') are organizational scaffolding and carry no factual weight. A groundedness check must skip them entirely and evaluate only the claims made in the body text beneath each heading. Treating a heading as a factual assertion would be a category error and would inflate or distort groundedness scores.",
+    "citations": [
+      "Fixture ID: groundedness_section_headings_001 \u2014 Expected: headings ignored as factual claims."
+    ],
+    "conflict_classification": "none",
+    "decision": "Section headings are structural/organizational elements and must not be interpreted as factual assertions. Groundedness evaluation should focus solely on the substantive content beneath each heading, not on the headings themselves.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No specific named entity requires resolution; the fixture concerns evaluation methodology for section headings."
+    },
+    "intent": "Evaluate whether section headings (Known facts, Interactions, Relationships) in an answer are incorrectly treated as factual claims when assessing groundedness.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Known facts",
+            "role": "structural_label",
+            "type": "section_heading"
+          },
+          {
+            "name": "Interactions",
+            "role": "structural_label",
+            "type": "section_heading"
+          },
+          {
+            "name": "Relationships",
+            "role": "structural_label",
+            "type": "section_heading"
+          }
+        ],
+        "kind": "rule",
+        "relationships": [
+          {
+            "object": "factual_claim",
+            "predicate": "is_not",
+            "subject": "section_heading"
+          },
+          {
+            "object": "section_headings",
+            "predicate": "must_ignore",
+            "subject": "groundedness_evaluation"
+          }
+        ],
+        "statement": "Section headings such as 'Known facts', 'Interactions', and 'Relationships' are presentational labels, not factual claims, and must be excluded from groundedness assessment."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "groundedness_evaluation",
+            "role": "subject",
+            "type": "process"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "substantive_content",
+            "predicate": "scoped_to",
+            "subject": "groundedness_evaluation"
+          }
+        ],
+        "statement": "Groundedness evaluation must target only the substantive statements within each section, not the organizational structure imposed by headings."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Fixture groundedness_section_headings_001 processed successfully.",
+        "Section headings identified as non-factual structural elements.",
+        "Groundedness evaluation correctly scoped to substantive content only.",
+        "No memory cards committed for heading text as factual claims.",
+        "No conflicts detected."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ensure the groundedness scorer explicitly filters out lines that match heading patterns (e.g., lines ending with no period, formatted as bold/title-case labels) before claim extraction.",
+      "Add a pre-processing step that strips structural metadata (headings, bullet markers, numbering) prior to factual claim enumeration.",
+      "Document in evaluation rubric that section headings are non-assertoric and must receive no groundedness score contribution."
+    ]
+  },
+  "run_id": "eval_20260507_043601"
+}

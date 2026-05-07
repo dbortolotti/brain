@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "fixture_id": "cascade_clean_fact_no_escalation_001__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Stored: Nur and Sara are your twin daughters.",
+    "citations": [
+      "\"Nur and Sara are my twin daughters.\""
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "No prior entity identifiers provided; the statement expresses a clear, durable family relationship."
+    },
+    "intent": "capture_personal_fact",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "user",
+            "role": "self",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Nur",
+            "predicate": "parent_of",
+            "subject": "user"
+          },
+          {
+            "object": "Sara",
+            "predicate": "parent_of",
+            "subject": "user"
+          },
+          {
+            "object": "Sara",
+            "predicate": "twin_of",
+            "subject": "Nur"
+          }
+        ],
+        "statement": "The user has twin daughters named Nur and Sara."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Identified a durable personal fact about the user's family.",
+        "No conflict or superseding information present.",
+        "Committed one memory card."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"capture_personal_fact\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"The user has twin daughters named Nur and Sara.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"user\",\"type\":\"person\",\"role\":\"self\"},{\"name\":\"Nur\",\"type\":\"person\",\"role\":\"daughter\"},{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"daughter\"}],\"relationships\":[{\"subject\":\"user\",\"predicate\":\"parent_of\",\"object\":\"Nur\"},{\"subject\":\"user\",\"predicate\":\"parent_of\",\"object\":\"Sara\"},{\"subject\":\"Nur\",\"predicate\":\"twin_of\",\"object\":\"Sara\"}]}],\"entity_resolution\":{\"action\":\"create_or_update\",\"entity_id\":null,\"reason\":\"No prior entity identifiers provided; the statement expresses a clear, durable family relationship.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored: Nur and Sara are your twin daughters.\",\"citations\":[\"\\\"Nur and Sara are my twin daughters.\\\"\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Identified a durable personal fact about the user's family.\",\"No conflict or superseding information present.\",\"Committed one memory card.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

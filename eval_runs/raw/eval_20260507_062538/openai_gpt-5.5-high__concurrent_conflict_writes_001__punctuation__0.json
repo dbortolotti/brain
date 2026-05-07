@@ -1,0 +1,36 @@
+{
+  "error": null,
+  "fixture_id": "concurrent_conflict_writes_001__punctuation",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "I can\u2019t safely commit this as durable memory because it contains potentially conflicting concurrent employment claims for Sam: that Sam works at Goldman and that Sam joined Point72. Please clarify whether Sam left Goldman for Point72, works with both, or whether these refer to different people named Sam.",
+    "citations": [
+      "Concurrent writes - Sam works at Goldman Sam joined Point72"
+    ],
+    "conflict_classification": "current_employer_conflict",
+    "decision": "do_not_commit",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The person named Sam is underspecified, and the concurrent statements imply potentially conflicting current employment facts."
+    },
+    "intent": "memory_write",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No durable memory was committed due to unresolved conflict.",
+        "Clarification is required before storing a current employment fact."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Sam left Goldman and joined Point72.",
+      "Sam currently works at Goldman and also joined Point72 in another capacity.",
+      "The Goldman statement and the Point72 statement refer to different people named Sam.",
+      "Only one of the two statements is correct."
+    ]
+  },
+  "raw_text": "{\"intent\":\"memory_write\",\"decision\":\"do_not_commit\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"The person named Sam is underspecified, and the concurrent statements imply potentially conflicting current employment facts.\"},\"conflict_classification\":\"current_employer_conflict\",\"answer\":\"I can\u2019t safely commit this as durable memory because it contains potentially conflicting concurrent employment claims for Sam: that Sam works at Goldman and that Sam joined Point72. Please clarify whether Sam left Goldman for Point72, works with both, or whether these refer to different people named Sam.\",\"citations\":[\"Concurrent writes - Sam works at Goldman Sam joined Point72\"],\"repair_options\":[\"Sam left Goldman and joined Point72.\",\"Sam currently works at Goldman and also joined Point72 in another capacity.\",\"The Goldman statement and the Point72 statement refer to different people named Sam.\",\"Only one of the two statements is correct.\"],\"receipt\":{\"success\":false,\"details\":[\"No durable memory was committed due to unresolved conflict.\",\"Clarification is required before storing a current employment fact.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

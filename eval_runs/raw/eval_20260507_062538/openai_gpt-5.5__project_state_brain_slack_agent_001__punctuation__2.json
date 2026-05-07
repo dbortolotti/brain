@@ -1,0 +1,66 @@
+{
+  "error": null,
+  "fixture_id": "project_state_brain_slack_agent_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Recorded: Slack should be the primary guardrailed memory ingestion interface for Brain; Telegram can come later.",
+    "citations": [
+      "Brain project state - Slack should be the primary guardrailed memory ingestion interface; Telegram can come later"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "link_or_create",
+      "entity_id": null,
+      "reason": "Input refers to the Brain project and interface choices, but no existing entity identifiers were provided."
+    },
+    "intent": "record_project_state",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "Slack",
+            "role": "primary guardrailed memory ingestion interface",
+            "type": "product"
+          },
+          {
+            "name": "Telegram",
+            "role": "later potential interface",
+            "type": "product"
+          }
+        ],
+        "kind": "project_state",
+        "relationships": [
+          {
+            "object": "Slack",
+            "predicate": "should_use_primary_ingestion_interface",
+            "subject": "Brain"
+          },
+          {
+            "object": "Brain",
+            "predicate": "can_be_considered_later_for",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "For the Brain project, Slack should be the primary guardrailed memory ingestion interface, while Telegram can be considered later."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed project-state memory for Brain.",
+        "Preserved Telegram as a deferred option, not a current primary interface."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"record_project_state\",\n  \"decision\": \"commit\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"project_state\",\n      \"statement\": \"For the Brain project, Slack should be the primary guardrailed memory ingestion interface, while Telegram can be considered later.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain\",\n          \"type\": \"project\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Slack\",\n          \"type\": \"product\",\n          \"role\": \"primary guardrailed memory ingestion interface\"\n        },\n        {\n          \"name\": \"Telegram\",\n          \"type\": \"product\",\n          \"role\": \"later potential interface\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain\",\n          \"predicate\": \"should_use_primary_ingestion_interface\",\n          \"object\": \"Slack\"\n        },\n        {\n          \"subject\": \"Telegram\",\n          \"predicate\": \"can_be_considered_later_for\",\n          \"object\": \"Brain\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"link_or_create\",\n    \"entity_id\": null,\n    \"reason\": \"Input refers to the Brain project and interface choices, but no existing entity identifiers were provided.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Recorded: Slack should be the primary guardrailed memory ingestion interface for Brain; Telegram can come later.\",\n  \"citations\": [\n    \"Brain project state - Slack should be the primary guardrailed memory ingestion interface; Telegram can come later\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Committed project-state memory for Brain.\",\n      \"Preserved Telegram as a deferred option, not a current primary interface.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

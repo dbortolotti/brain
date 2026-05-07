@@ -1,0 +1,77 @@
+{
+  "fixture_id": "cascade_conflict_escalation_001__context",
+  "model": "groq:openai/gpt-oss-120b",
+  "payload": {
+    "answer": "The system has detected a conflict: Sara cannot simultaneously be both your daughter and your niece.",
+    "citations": [
+      "Existing statement: Sara is my daughter.",
+      "New input: Sara is my niece."
+    ],
+    "conflict_classification": "family_relationship_conflict",
+    "decision": "conflict_detected",
+    "entity_resolution": {
+      "action": "flag",
+      "entity_id": null,
+      "reason": "Conflicting familial relationship for Sara"
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "type": "person"
+          },
+          {
+            "name": "me",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship",
+        "relationships": [
+          {
+            "object": "me",
+            "predicate": "daughter_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my daughter."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "type": "person"
+          },
+          {
+            "name": "me",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship",
+        "relationships": [
+          {
+            "object": "me",
+            "predicate": "niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict identified and classified"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask user to clarify the correct relationship",
+      "Mark one of the statements as uncertain",
+      "Retain both with a note of conflict"
+    ]
+  },
+  "run_id": "eval_20260507_043016"
+}

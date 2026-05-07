@@ -1,0 +1,32 @@
+{
+  "fixture_id": "cascade_validator_failure_escalates_001",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "The prior result is not safe to accept. It failed schema and/or safety requirements, so no durable memory should be written. Escalate to a stronger model for regeneration under strict schema constraints, or safely reject if escalation is unavailable.",
+    "citations": [],
+    "conflict_classification": "validator_failure",
+    "decision": "escalate",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No reliable entity resolution can be performed because the prior output failed schema/safety validation."
+    },
+    "intent": "validate_invalid_or_unsafe_memory_write",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Validation failed on the cheap-model output.",
+        "No memory cards were committed.",
+        "Escalation is required or the request must be safely rejected."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Regenerate with a stronger model using strict JSON-schema-constrained decoding.",
+      "If a stronger model is unavailable, reject the write and return a safe failure response.",
+      "Remove any unsafe proposal content, then re-run validation before considering any memory commit.",
+      "Do not infer or persist facts from the invalid output."
+    ]
+  },
+  "run_id": "eval_20260507_072639"
+}

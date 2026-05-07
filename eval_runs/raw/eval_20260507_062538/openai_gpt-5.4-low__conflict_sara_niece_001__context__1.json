@@ -1,0 +1,38 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "No direct conflict detected. 'Sara is my niece' can be compatible with 'Sara is Daniele's daughter and Nur's twin,' but it is ambiguous because 'my' is unresolved. Do not store as a durable standalone fact unless the speaker identity/relationship is linked.",
+    "citations": [
+      "Existing memory: Sara is Daniele's daughter.",
+      "Existing memory: Sara is Nur's twin.",
+      "New statement: Sara is my niece."
+    ],
+    "conflict_classification": "no_direct_conflict_ambiguous_speaker_relative",
+    "decision": "do_not_commit_as_durable_fact_without_linking_context",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "'my niece' is speaker-relative and cannot be durably grounded without resolving who 'my' refers to; it does not directly contradict the existing family facts."
+    },
+    "intent": "classify_new_memory_against_existing_context",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Checked compatibility against existing high-confidence memory.",
+        "Found no contradiction with Sara being Daniele's daughter and Nur's twin.",
+        "Rejected durable commit because the new claim is deictic/speaker-relative and under-specified."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Resolve the speaker identity and restate as an absolute relation, e.g. 'Sara is <speaker_name>'s niece.'",
+      "If the intended meaning is through Daniele, confirm the link, e.g. '<speaker_name> is Daniele's sibling.'",
+      "Store only as ephemeral conversational context until 'my' is grounded."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_new_memory_against_existing_context\",\"decision\":\"do_not_commit_as_durable_fact_without_linking_context\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"'my niece' is speaker-relative and cannot be durably grounded without resolving who 'my' refers to; it does not directly contradict the existing family facts.\"},\"conflict_classification\":\"no_direct_conflict_ambiguous_speaker_relative\",\"answer\":\"No direct conflict detected. 'Sara is my niece' can be compatible with 'Sara is Daniele's daughter and Nur's twin,' but it is ambiguous because 'my' is unresolved. Do not store as a durable standalone fact unless the speaker identity/relationship is linked.\",\"citations\":[\"Existing memory: Sara is Daniele's daughter.\",\"Existing memory: Sara is Nur's twin.\",\"New statement: Sara is my niece.\"],\"repair_options\":[\"Resolve the speaker identity and restate as an absolute relation, e.g. 'Sara is <speaker_name>'s niece.'\",\"If the intended meaning is through Daniele, confirm the link, e.g. '<speaker_name> is Daniele's sibling.'\",\"Store only as ephemeral conversational context until 'my' is grounded.\"],\"receipt\":{\"success\":true,\"details\":[\"Checked compatibility against existing high-confidence memory.\",\"Found no contradiction with Sara being Daniele's daughter and Nur's twin.\",\"Rejected durable commit because the new claim is deictic/speaker-relative and under-specified.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

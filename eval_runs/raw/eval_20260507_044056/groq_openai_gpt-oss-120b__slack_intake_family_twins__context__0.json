@@ -1,0 +1,68 @@
+{
+  "error": null,
+  "fixture_id": "slack_intake_family_twins__context",
+  "model": "groq:openai/gpt-oss-120b",
+  "payload": {
+    "answer": "Context stored.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "no conflict"
+    },
+    "intent": "store_context",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "user",
+            "role": "parent",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "is twin sister of",
+            "subject": "Nur"
+          },
+          {
+            "object": "user",
+            "predicate": "is daughter of",
+            "subject": "Nur"
+          },
+          {
+            "object": "user",
+            "predicate": "is daughter of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Nur and Sara are twin daughters of the user."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"store_context\",\"decision\":\"store\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Nur and Sara are twin daughters of the user.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Nur\",\"type\":\"person\",\"role\":\"daughter\"},{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"daughter\"},{\"name\":\"user\",\"type\":\"person\",\"role\":\"parent\"}],\"relationships\":[{\"subject\":\"Nur\",\"predicate\":\"is twin sister of\",\"object\":\"Sara\"},{\"subject\":\"Nur\",\"predicate\":\"is daughter of\",\"object\":\"user\"},{\"subject\":\"Sara\",\"predicate\":\"is daughter of\",\"object\":\"user\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"no conflict\"},\"conflict_classification\":\"none\",\"answer\":\"Context stored.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Memory card created\"]}}",
+  "run_id": "eval_20260507_044056",
+  "status": "ok"
+}

@@ -1,0 +1,63 @@
+{
+  "error": null,
+  "fixture_id": "temporal_status_transition_001",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "Committed the new status that the Brain Slack agent MVP is implemented. The prior planned/open state should be treated as superseded for the MVP scope, not as a current fact.",
+    "citations": [],
+    "conflict_classification": "temporal_status_transition",
+    "decision": "commit_as_temporal_status_update",
+    "entity_resolution": {
+      "action": "link_related_and_update_scope",
+      "entity_id": null,
+      "reason": "The new fact refers specifically to the MVP of the Brain Slack agent. It supersedes the prior planned/open status for the MVP scope, but does not necessarily prove the entire broader Slack agent project is fully complete."
+    },
+    "intent": "update_project_status",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain Slack agent MVP",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "Brain Slack agent",
+            "role": "parent_or_related_project",
+            "type": "project"
+          }
+        ],
+        "kind": "project_status",
+        "relationships": [
+          {
+            "object": "implemented",
+            "predicate": "status",
+            "subject": "Brain Slack agent MVP"
+          },
+          {
+            "object": "Brain Slack agent",
+            "predicate": "mvp_of",
+            "subject": "Brain Slack agent MVP"
+          }
+        ],
+        "statement": "The Brain Slack agent MVP is now implemented."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recorded current status: Brain Slack agent MVP is implemented.",
+        "Preserved ambiguity between the MVP and the broader Brain Slack agent project.",
+        "Did not retain the superseded planned/open status as current for the MVP."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark the previous 'planned, status=open' project state as superseded for the MVP scope.",
+      "If the broader Brain Slack agent project has a separate non-MVP status, keep it distinct from the MVP implementation status."
+    ]
+  },
+  "raw_text": "{\"intent\":\"update_project_status\",\"decision\":\"commit_as_temporal_status_update\",\"memory_cards\":[{\"kind\":\"project_status\",\"statement\":\"The Brain Slack agent MVP is now implemented.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Brain Slack agent MVP\",\"type\":\"project\",\"role\":\"subject\"},{\"name\":\"Brain Slack agent\",\"type\":\"project\",\"role\":\"parent_or_related_project\"}],\"relationships\":[{\"subject\":\"Brain Slack agent MVP\",\"predicate\":\"status\",\"object\":\"implemented\"},{\"subject\":\"Brain Slack agent MVP\",\"predicate\":\"mvp_of\",\"object\":\"Brain Slack agent\"}]}],\"entity_resolution\":{\"action\":\"link_related_and_update_scope\",\"entity_id\":null,\"reason\":\"The new fact refers specifically to the MVP of the Brain Slack agent. It supersedes the prior planned/open status for the MVP scope, but does not necessarily prove the entire broader Slack agent project is fully complete.\"},\"conflict_classification\":\"temporal_status_transition\",\"answer\":\"Committed the new status that the Brain Slack agent MVP is implemented. The prior planned/open state should be treated as superseded for the MVP scope, not as a current fact.\",\"citations\":[],\"repair_options\":[\"Mark the previous 'planned, status=open' project state as superseded for the MVP scope.\",\"If the broader Brain Slack agent project has a separate non-MVP status, keep it distinct from the MVP implementation status.\"],\"receipt\":{\"success\":true,\"details\":[\"Recorded current status: Brain Slack agent MVP is implemented.\",\"Preserved ambiguity between the MVP and the broader Brain Slack agent project.\",\"Did not retain the superseded planned/open status as current for the MVP.\"]}}",
+  "run_id": "eval_20260507_065822",
+  "status": "ok"
+}

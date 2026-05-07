@@ -1,0 +1,36 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_high_confidence_overwrite_001__punctuation",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "Blocked: the proposed memory conflicts with the existing memory that Sara is Daniele's daughter. Do not overwrite it with 'niece' without explicit clarification or evidence.",
+    "citations": [
+      "Existing memory: Sara is Daniele's daughter.",
+      "Proposed memory: Sara is Daniele's niece."
+    ],
+    "conflict_classification": "high_confidence_overwrite_conflict",
+    "decision": "block",
+    "entity_resolution": {
+      "action": "no_change",
+      "entity_id": null,
+      "reason": "The proposed update refers to the same named entities, Sara and Daniele, but changes the familial relationship from daughter to niece without evidence or an explicit correction."
+    },
+    "intent": "validate_memory_update",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected conflicting familial relationship for the same entities.",
+        "No durable memory was committed."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask for clarification: Is Sara Daniele's daughter, niece, or both?",
+      "If 'niece' is a correction, explicitly mark the existing daughter relationship as superseded.",
+      "If both relationships are true in a special family context, store both with that context."
+    ]
+  },
+  "raw_text": "{\"intent\":\"validate_memory_update\",\"decision\":\"block\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"no_change\",\"entity_id\":null,\"reason\":\"The proposed update refers to the same named entities, Sara and Daniele, but changes the familial relationship from daughter to niece without evidence or an explicit correction.\"},\"conflict_classification\":\"high_confidence_overwrite_conflict\",\"answer\":\"Blocked: the proposed memory conflicts with the existing memory that Sara is Daniele's daughter. Do not overwrite it with 'niece' without explicit clarification or evidence.\",\"citations\":[\"Existing memory: Sara is Daniele's daughter.\",\"Proposed memory: Sara is Daniele's niece.\"],\"repair_options\":[\"Ask for clarification: Is Sara Daniele's daughter, niece, or both?\",\"If 'niece' is a correction, explicitly mark the existing daughter relationship as superseded.\",\"If both relationships are true in a special family context, store both with that context.\"],\"receipt\":{\"success\":false,\"details\":[\"Detected conflicting familial relationship for the same entities.\",\"No durable memory was committed.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

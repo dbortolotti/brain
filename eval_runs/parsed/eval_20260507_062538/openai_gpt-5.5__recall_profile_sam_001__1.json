@@ -1,0 +1,103 @@
+{
+  "fixture_id": "recall_profile_sam_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Sam from Goldman is associated with Goldman. He likes Bill Evans and is interested in AI infrastructure. There is also an open loop to send Sam an article about AI infrastructure.",
+    "citations": [
+      "Facts: Sam from Goldman likes Bill Evans, is associated with Goldman, is interested in AI infrastructure.",
+      "Open loop: send Sam article about AI infra."
+    ],
+    "conflict_classification": "none",
+    "decision": "answer_with_current_memory",
+    "entity_resolution": {
+      "action": "use_query_descriptor",
+      "entity_id": null,
+      "reason": "The query identifies Sam by the descriptor 'from Goldman'; no stable entity ID was provided."
+    },
+    "intent": "recall_profile",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_or_association",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "interest",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "interest",
+            "type": "topic"
+          }
+        ],
+        "kind": "profile_summary",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "AI infrastructure",
+            "predicate": "interested_in",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman is associated with Goldman, likes Bill Evans, and is interested in AI infrastructure."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "recipient",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "article_topic",
+            "type": "topic"
+          }
+        ],
+        "kind": "open_loop",
+        "relationships": [
+          {
+            "object": "Sam",
+            "predicate": "should_send_article_to",
+            "subject": "user"
+          },
+          {
+            "object": "AI infrastructure",
+            "predicate": "about",
+            "subject": "article"
+          }
+        ],
+        "statement": "Send Sam an article about AI infrastructure."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Returned current known facts and open loop for Sam from Goldman.",
+        "No conflicts, superseded facts, or deletions were present in the input."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_062538"
+}

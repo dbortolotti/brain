@@ -1,0 +1,59 @@
+{
+  "fixture_id": "contradiction_sam_children_001__punctuation",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "The new statement directly contradicts the existing memory on a durable fact. Do not overwrite or store either claim as the resolved current state without clarification.",
+    "citations": [
+      "Existing memory: 'Sam from Goldman has two children'",
+      "New: 'Sam from Goldman has no children'"
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "do_not_commit_as_current",
+    "entity_resolution": {
+      "action": "match_existing_entity",
+      "entity_id": null,
+      "reason": "Both statements refer to the same named person description, 'Sam from Goldman', with no indication they are different individuals."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "conflict_note",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Direct contradiction detected for Sam from Goldman: existing memory states Sam has two children, while new input states Sam has no children. This should remain unresolved until clarified and should not be stored as a current durable fact."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected same entity reference across existing and new statements.",
+        "Classified the mismatch as a direct contradiction.",
+        "Chose not to commit the new statement as current durable memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request a timestamp or source for each claim.",
+      "Ask whether Sam's child count changed due to adoption, custody, or wording ambiguity.",
+      "Store only as an unresolved conflict until verified."
+    ]
+  },
+  "run_id": "eval_20260507_071025"
+}

@@ -1,0 +1,81 @@
+{
+  "error": null,
+  "fixture_id": "groundedness_unsupported_inference_001",
+  "model": "anthropic:claude-sonnet-4-6",
+  "payload": {
+    "answer": "The answer 'Sam is a serious jazz pianist' is not grounded in the evidence. The only supported fact is that Sam likes Bill Evans, who is a jazz musician. Liking a jazz artist does not imply that Sam plays piano, is a pianist at any level, or is 'serious' about jazz in a professional or performance sense. This constitutes one unsupported claim.",
+    "citations": [
+      "Evidence: Sam likes Bill Evans."
+    ],
+    "conflict_classification": "unsupported_inference",
+    "decision": "UNSUPPORTED_INFERENCE",
+    "entity_resolution": {
+      "action": "identify",
+      "entity_id": "sam_unknown",
+      "reason": "Sam is referenced only by first name with no additional identifying information in the evidence."
+    },
+    "intent": "Evaluate whether the answer 'Sam is a serious jazz pianist' is grounded in the provided evidence",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "unsupported_claim",
+        "relationships": [
+          {
+            "object": "serious jazz pianist",
+            "predicate": "is",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is a serious jazz pianist."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Fixture ID: groundedness_unsupported_inference_001 processed.",
+        "Expected unsupported_claim_count=1 matched: 1 unsupported claim identified ('Sam is a serious jazz pianist').",
+        "Grounded fact retained: 'Sam likes Bill Evans.'",
+        "Unsupported inference flagged and not committed to durable memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace the unsupported claim with a grounded statement: 'Sam appreciates jazz, as evidenced by liking Bill Evans.'",
+      "Flag the claim as speculative and require additional evidence before committing it to memory.",
+      "Ask a clarifying question: 'Does Sam play piano or have a background in jazz performance?'"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Evaluate whether the answer 'Sam is a serious jazz pianist' is grounded in the provided evidence\",\n  \"decision\": \"UNSUPPORTED_INFERENCE\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam likes Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"unsupported_claim\",\n      \"statement\": \"Sam is a serious jazz pianist.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"is\",\n          \"object\": \"serious jazz pianist\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"identify\",\n    \"entity_id\": \"sam_unknown\",\n    \"reason\": \"Sam is referenced only by first name with no additional identifying information in the evidence.\"\n  },\n  \"conflict_classification\": \"unsupported_inference\",\n  \"answer\": \"The answer 'Sam is a serious jazz pianist' is not grounded in the evidence. The only supported fact is that Sam likes Bill Evans, who is a jazz musician. Liking a jazz artist does not imply that Sam plays piano, is a pianist at any level, or is 'serious' about jazz in a professional or performance sense. This constitutes one unsupported claim.\",\n  \"citations\": [\n    \"Evidence: Sam likes Bill Evans.\"\n  ],\n  \"repair_options\": [\n    \"Replace the unsupported claim with a grounded statement: 'Sam appreciates jazz, as evidenced by liking Bill Evans.'\",\n    \"Flag the claim as speculative and require additional evidence before committing it to memory.\",\n    \"Ask a clarifying question: 'Does Sam play piano or have a background in jazz performance?'\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Fixture ID: groundedness_unsupported_inference_001 processed.\",\n      \"Expected unsupported_claim_count=1 matched: 1 unsupported claim identified ('Sam is a serious jazz pianist').\",\n      \"Grounded fact retained: 'Sam likes Bill Evans.'\",\n      \"Unsupported inference flagged and not committed to durable memory.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_043601",
+  "status": "ok"
+}

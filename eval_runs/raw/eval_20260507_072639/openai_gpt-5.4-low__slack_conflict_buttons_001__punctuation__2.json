@@ -1,0 +1,71 @@
+{
+  "error": null,
+  "fixture_id": "slack_conflict_buttons_001__punctuation",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Noted: Sam left Goldman and joined Point72. This supersedes the older memory that Sam works at Goldman.",
+    "citations": [
+      "Existing memory: Sam works at Goldman",
+      "New input: /brain remember Sam left Goldman and joined Point72"
+    ],
+    "conflict_classification": "superseding_update",
+    "decision": "accept_with_update",
+    "entity_resolution": {
+      "action": "link_to_existing",
+      "entity_id": null,
+      "reason": "The new statement appears to refer to the same Sam as the existing memory and provides a more recent employment update."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Accepted a durable employment update.",
+        "Classified the prior Goldman employment fact as superseded by the newer Point72 update.",
+        "Avoided preserving the older employment status as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace the old current-employer memory with the newer update.",
+      "If there are multiple people named Sam, specify which Sam this refers to."
+    ]
+  },
+  "raw_text": "{\"intent\":\"remember\",\"decision\":\"accept_with_update\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam left Goldman and joined Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former_employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"current_employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"left\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"link_to_existing\",\"entity_id\":null,\"reason\":\"The new statement appears to refer to the same Sam as the existing memory and provides a more recent employment update.\"},\"conflict_classification\":\"superseding_update\",\"answer\":\"Noted: Sam left Goldman and joined Point72. This supersedes the older memory that Sam works at Goldman.\",\"citations\":[\"Existing memory: Sam works at Goldman\",\"New input: /brain remember Sam left Goldman and joined Point72\"],\"repair_options\":[\"Replace the old current-employer memory with the newer update.\",\"If there are multiple people named Sam, specify which Sam this refers to.\"],\"receipt\":{\"success\":true,\"details\":[\"Accepted a durable employment update.\",\"Classified the prior Goldman employment fact as superseded by the newer Point72 update.\",\"Avoided preserving the older employment status as current.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

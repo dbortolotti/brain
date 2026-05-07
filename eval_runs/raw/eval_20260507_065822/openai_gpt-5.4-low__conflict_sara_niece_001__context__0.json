@@ -1,0 +1,38 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "No direct conflict detected. 'Sara is my niece' could be consistent with 'Sara is Daniele's daughter and Nur's twin' depending on who the speaker is. Because the speaker relationship is unresolved, do not store this as durable memory yet.",
+    "citations": [
+      "Existing memory: Sara is Daniele's daughter.",
+      "Existing memory: Sara is Nur's twin.",
+      "New statement: Sara is my niece."
+    ],
+    "conflict_classification": "potentially_compatible_ambiguous",
+    "decision": "needs_clarification",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The new statement is relational to an unspecified speaker ('my niece') and does not identify how the speaker relates to Daniele. It may be compatible with existing memory, so no entity change or durable write should be made without clarification."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Reviewed existing and new statements for contradiction.",
+        "Found no logical inconsistency, only unresolved speaker reference.",
+        "Chose not to commit new durable memory due to ambiguity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask who 'my' refers to and how the speaker is related to Sara or Daniele.",
+      "If the speaker is Daniele's sibling, store a qualified relation such as 'Sara is the speaker's niece.'",
+      "If the speaker identity can be resolved to a known person, attach the niece relationship to that specific person rather than storing an unqualified fact."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict\",\"decision\":\"needs_clarification\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The new statement is relational to an unspecified speaker ('my niece') and does not identify how the speaker relates to Daniele. It may be compatible with existing memory, so no entity change or durable write should be made without clarification.\"},\"conflict_classification\":\"potentially_compatible_ambiguous\",\"answer\":\"No direct conflict detected. 'Sara is my niece' could be consistent with 'Sara is Daniele's daughter and Nur's twin' depending on who the speaker is. Because the speaker relationship is unresolved, do not store this as durable memory yet.\",\"citations\":[\"Existing memory: Sara is Daniele's daughter.\",\"Existing memory: Sara is Nur's twin.\",\"New statement: Sara is my niece.\"],\"repair_options\":[\"Ask who 'my' refers to and how the speaker is related to Sara or Daniele.\",\"If the speaker is Daniele's sibling, store a qualified relation such as 'Sara is the speaker's niece.'\",\"If the speaker identity can be resolved to a known person, attach the niece relationship to that specific person rather than storing an unqualified fact.\"],\"receipt\":{\"success\":true,\"details\":[\"Reviewed existing and new statements for contradiction.\",\"Found no logical inconsistency, only unresolved speaker reference.\",\"Chose not to commit new durable memory due to ambiguity.\"]}}",
+  "run_id": "eval_20260507_065822",
+  "status": "ok"
+}

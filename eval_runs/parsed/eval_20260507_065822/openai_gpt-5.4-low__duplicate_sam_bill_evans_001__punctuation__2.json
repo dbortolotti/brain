@@ -1,0 +1,33 @@
+{
+  "fixture_id": "duplicate_sam_bill_evans_001__punctuation",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "No durable change: the new input is a duplicate of the existing memory and does not add materially new information.",
+    "citations": [
+      "Existing: 'Sam from Goldman mentioned that he likes Bill Evans'",
+      "New: 'Sam from Goldman said he likes Bill Evans'"
+    ],
+    "conflict_classification": "duplicate",
+    "decision": "noop",
+    "entity_resolution": {
+      "action": "reuse_existing",
+      "entity_id": null,
+      "reason": "The new statement appears to restate the same fact as the existing memory with only minor wording/punctuation variation ('mentioned that he likes' vs 'said he likes')."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected semantic equivalence between existing and new memory.",
+        "Classified as duplicate, not a contradiction or update.",
+        "Did not create a new memory card to avoid redundant durable storage."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Keep the existing memory as-is.",
+      "Optionally normalize phrasing/canonicalize punctuation if the system supports deduplication hygiene."
+    ]
+  },
+  "run_id": "eval_20260507_065822"
+}

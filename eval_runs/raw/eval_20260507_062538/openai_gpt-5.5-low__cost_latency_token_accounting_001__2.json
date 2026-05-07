@@ -1,0 +1,29 @@
+{
+  "error": null,
+  "fixture_id": "cost_latency_token_accounting_001",
+  "model": "openai:gpt-5.5-low",
+  "payload": {
+    "answer": "Required eval accounting fields typically mean:\n\n- token counts: Record how many tokens were consumed by the evaluation run. Usually split into input/prompt tokens, output/completion tokens, and total tokens. If available, also include cached tokens, reasoning tokens, or tool-call tokens separately.\n- provider ID: The inference provider that served the request, such as openai, anthropic, google, aws-bedrock, azure-openai, or a local provider identifier.\n- model ID: The exact model identifier used for the run, such as gpt-4.1-mini, claude-3-5-sonnet, or another provider-specific model name. This should be the concrete served model, not just a family name when possible.\n- estimated price: The estimated monetary cost of the run, usually computed from token counts multiplied by the provider/model pricing rates. This should include currency and ideally distinguish input-cost, output-cost, and total-cost. It is an estimate unless reconciled with an actual billing export.\n- latency p50, p90, p95: Percentile latency metrics over a set of requests. p50 is the median latency, meaning 50% of requests completed at or below that time. p90 means 90% completed at or below that time. p95 means 95% completed at or below that time. These are usually reported in milliseconds or seconds and should specify whether they measure end-to-end latency, model latency, time-to-first-token, or another interval.\n\nA robust eval record should include units, measurement scope, aggregation window, and sample size so the accounting numbers are interpretable and comparable across runs.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "no_memory_commit",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input asks for an explanation of evaluation accounting fields, not for storing a durable personal memory."
+    },
+    "intent": "explain_eval_accounting_fields",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Explained token counts, provider/model IDs, estimated price, and latency percentiles.",
+        "No durable memory was created because the request contains no user-specific fact to remember."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"explain_eval_accounting_fields\",\"decision\":\"no_memory_commit\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input asks for an explanation of evaluation accounting fields, not for storing a durable personal memory.\"},\"conflict_classification\":\"none\",\"answer\":\"Required eval accounting fields typically mean:\\n\\n- token counts: Record how many tokens were consumed by the evaluation run. Usually split into input/prompt tokens, output/completion tokens, and total tokens. If available, also include cached tokens, reasoning tokens, or tool-call tokens separately.\\n- provider ID: The inference provider that served the request, such as openai, anthropic, google, aws-bedrock, azure-openai, or a local provider identifier.\\n- model ID: The exact model identifier used for the run, such as gpt-4.1-mini, claude-3-5-sonnet, or another provider-specific model name. This should be the concrete served model, not just a family name when possible.\\n- estimated price: The estimated monetary cost of the run, usually computed from token counts multiplied by the provider/model pricing rates. This should include currency and ideally distinguish input-cost, output-cost, and total-cost. It is an estimate unless reconciled with an actual billing export.\\n- latency p50, p90, p95: Percentile latency metrics over a set of requests. p50 is the median latency, meaning 50% of requests completed at or below that time. p90 means 90% completed at or below that time. p95 means 95% completed at or below that time. These are usually reported in milliseconds or seconds and should specify whether they measure end-to-end latency, model latency, time-to-first-token, or another interval.\\n\\nA robust eval record should include units, measurement scope, aggregation window, and sample size so the accounting numbers are interpretable and comparable across runs.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Explained token counts, provider/model IDs, estimated price, and latency percentiles.\",\"No durable memory was created because the request contains no user-specific fact to remember.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

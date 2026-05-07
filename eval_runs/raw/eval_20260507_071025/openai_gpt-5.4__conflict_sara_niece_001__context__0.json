@@ -1,0 +1,38 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001__context",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "No durable memory should be committed yet. The new statement 'Sara is my niece' is not directly contradictory to the existing memory that Sara is Daniele's daughter and Nur's twin, but it is too ambiguous to ground because 'my' is unresolved. It could be consistent if the user is Sara's aunt/uncle, including possibly being Daniele's sibling or Nur's sibling depending on the family structure. Clarification is required before storing anything durable.",
+    "citations": [
+      "Existing memory: Sara is Daniele's daughter.",
+      "Existing memory: Sara is Nur's twin.",
+      "New statement: Sara is my niece."
+    ],
+    "conflict_classification": "ambiguous_relative_reference",
+    "decision": "needs_clarification",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The new statement uses a user-relative relation ('my niece') without identifying the user's relation to Sara, Daniele, or Nur."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected no direct contradiction with the existing family facts.",
+        "Rejected durable write due to unresolved first-person reference.",
+        "Preserved existing high-confidence memory as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask who 'my' refers to in relation to Sara, Daniele, or Nur.",
+      "Ask whether the user wants to store a user-relative fact ('Sara is my niece') or an absolute relationship (for example, 'Sara is the daughter of X').",
+      "If the user identifies themselves as Daniele's sibling, store that relationship rather than the ambiguous relative phrasing."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict\",\"decision\":\"needs_clarification\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The new statement uses a user-relative relation ('my niece') without identifying the user's relation to Sara, Daniele, or Nur.\"},\"conflict_classification\":\"ambiguous_relative_reference\",\"answer\":\"No durable memory should be committed yet. The new statement 'Sara is my niece' is not directly contradictory to the existing memory that Sara is Daniele's daughter and Nur's twin, but it is too ambiguous to ground because 'my' is unresolved. It could be consistent if the user is Sara's aunt/uncle, including possibly being Daniele's sibling or Nur's sibling depending on the family structure. Clarification is required before storing anything durable.\",\"citations\":[\"Existing memory: Sara is Daniele's daughter.\",\"Existing memory: Sara is Nur's twin.\",\"New statement: Sara is my niece.\"],\"repair_options\":[\"Ask who 'my' refers to in relation to Sara, Daniele, or Nur.\",\"Ask whether the user wants to store a user-relative fact ('Sara is my niece') or an absolute relationship (for example, 'Sara is the daughter of X').\",\"If the user identifies themselves as Daniele's sibling, store that relationship rather than the ambiguous relative phrasing.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected no direct contradiction with the existing family facts.\",\"Rejected durable write due to unresolved first-person reference.\",\"Preserved existing high-confidence memory as current.\"]}}",
+  "run_id": "eval_20260507_071025",
+  "status": "ok"
+}

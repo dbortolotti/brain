@@ -1,0 +1,36 @@
+{
+  "error": null,
+  "fixture_id": "debug_inspect_memory_001__punctuation",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "Inspection request recognized for memory ID \"mem_123\". This is a read-only debug/inspection command and does not create, modify, or delete durable memory. No memory contents were provided in the fixture to display.",
+    "citations": [
+      "mem_123"
+    ],
+    "conflict_classification": "not_applicable",
+    "decision": "parse_as_read_only_memory_inspection",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": "mem_123",
+      "reason": "The input directly references a specific memory ID for inspection; no entity merge or new entity resolution is required."
+    },
+    "intent": "inspect_memory",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Parsed command: /brain inspect memory mem_123",
+        "Target memory ID identified: mem_123",
+        "No durable-memory write was performed"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Verify that the memory ID is exactly \"mem_123\".",
+      "If inspection returned no result, confirm the memory exists and has not been deleted or superseded.",
+      "Retry with the exact command syntax: /brain inspect memory <memory_id>."
+    ]
+  },
+  "raw_text": "{\"intent\":\"inspect_memory\",\"decision\":\"parse_as_read_only_memory_inspection\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":\"mem_123\",\"reason\":\"The input directly references a specific memory ID for inspection; no entity merge or new entity resolution is required.\"},\"conflict_classification\":\"not_applicable\",\"answer\":\"Inspection request recognized for memory ID \\\"mem_123\\\". This is a read-only debug/inspection command and does not create, modify, or delete durable memory. No memory contents were provided in the fixture to display.\",\"citations\":[\"mem_123\"],\"repair_options\":[\"Verify that the memory ID is exactly \\\"mem_123\\\".\",\"If inspection returned no result, confirm the memory exists and has not been deleted or superseded.\",\"Retry with the exact command syntax: /brain inspect memory <memory_id>.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed command: /brain inspect memory mem_123\",\"Target memory ID identified: mem_123\",\"No durable-memory write was performed\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

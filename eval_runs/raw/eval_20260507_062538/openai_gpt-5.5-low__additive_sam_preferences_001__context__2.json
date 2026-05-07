@@ -1,0 +1,54 @@
+{
+  "error": null,
+  "fixture_id": "additive_sam_preferences_001__context",
+  "model": "openai:gpt-5.5-low",
+  "payload": {
+    "answer": "Added that Sam from Goldman also likes Sonny Rollins.",
+    "citations": [],
+    "conflict_classification": "additive_non_conflict",
+    "decision": "additive_update",
+    "entity_resolution": {
+      "action": "use_existing_entity",
+      "entity_id": null,
+      "reason": "The new statement refers to the same entity, 'Sam from Goldman,' and adds another liked artist without changing the existing preference for Bill Evans."
+    },
+    "intent": "store_preference",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "liked_artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Sonny Rollins",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes Sonny Rollins."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored new preference as additive information.",
+        "Preserved existing memory that Sam from Goldman likes Bill Evans."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"store_preference\",\"decision\":\"additive_update\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman likes Sonny Rollins.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam from Goldman\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Sonny Rollins\",\"type\":\"person\",\"role\":\"liked_artist\"}],\"relationships\":[{\"subject\":\"Sam from Goldman\",\"predicate\":\"likes\",\"object\":\"Sonny Rollins\"}]}],\"entity_resolution\":{\"action\":\"use_existing_entity\",\"entity_id\":null,\"reason\":\"The new statement refers to the same entity, 'Sam from Goldman,' and adds another liked artist without changing the existing preference for Bill Evans.\"},\"conflict_classification\":\"additive_non_conflict\",\"answer\":\"Added that Sam from Goldman also likes Sonny Rollins.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Stored new preference as additive information.\",\"Preserved existing memory that Sam from Goldman likes Bill Evans.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

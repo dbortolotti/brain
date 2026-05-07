@@ -1,0 +1,74 @@
+{
+  "error": null,
+  "fixture_id": "personal_routine_morning_reading_001__punctuation",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "Noted.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No distinct named entity requires resolution."
+    },
+    "intent": "store_preference",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "user",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "technical papers",
+            "role": "preferred_reading",
+            "type": "content"
+          },
+          {
+            "name": "morning",
+            "role": "preferred_time",
+            "type": "time_of_day"
+          },
+          {
+            "name": "email",
+            "role": "subsequent_activity",
+            "type": "activity"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "reading technical papers",
+            "predicate": "usually_prefers",
+            "subject": "user"
+          },
+          {
+            "object": "morning",
+            "predicate": "typically_occurs_in",
+            "subject": "reading technical papers"
+          },
+          {
+            "object": "checking email",
+            "predicate": "typically_occurs_before",
+            "subject": "reading technical papers"
+          }
+        ],
+        "statement": "The user usually prefers reading technical papers in the morning before checking email."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured a soft preference/routine rather than an absolute rule.",
+        "Preserved ambiguity with 'usually prefers' and did not overstate frequency."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"store_preference\",\"decision\":\"commit_memory\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"The user usually prefers reading technical papers in the morning before checking email.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"user\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"technical papers\",\"type\":\"content\",\"role\":\"preferred_reading\"},{\"name\":\"morning\",\"type\":\"time_of_day\",\"role\":\"preferred_time\"},{\"name\":\"email\",\"type\":\"activity\",\"role\":\"subsequent_activity\"}],\"relationships\":[{\"subject\":\"user\",\"predicate\":\"usually_prefers\",\"object\":\"reading technical papers\"},{\"subject\":\"reading technical papers\",\"predicate\":\"typically_occurs_in\",\"object\":\"morning\"},{\"subject\":\"reading technical papers\",\"predicate\":\"typically_occurs_before\",\"object\":\"checking email\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No distinct named entity requires resolution.\"},\"conflict_classification\":\"none\",\"answer\":\"Noted.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Captured a soft preference/routine rather than an absolute rule.\",\"Preserved ambiguity with 'usually prefers' and did not overstate frequency.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

@@ -1,0 +1,65 @@
+{
+  "fixture_id": "additive_sam_preferences_001__punctuation",
+  "model": "openai:gpt-5.4-high",
+  "payload": {
+    "answer": "No conflict. The new information adds another preference for the same Sam from Goldman and should be stored alongside the existing liking of Bill Evans.",
+    "citations": [
+      "Existing memory: Sam from Goldman likes Bill Evans",
+      "New: Sam from Goldman also likes Sonny Rollins"
+    ],
+    "conflict_classification": "additive_non_conflicting",
+    "decision": "append",
+    "entity_resolution": {
+      "action": "resolve_to_existing",
+      "entity_id": null,
+      "reason": "The subject string 'Sam from Goldman' matches the existing memory's subject, and 'also likes' indicates an additional preference for the same person rather than a new entity."
+    },
+    "intent": "classify_memory_update",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "preferred_artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Sonny Rollins",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Sonny Rollins."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected additive preference update.",
+        "No contradiction with existing memory.",
+        "Prepared one new memory card for the additional preference."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_062538"
+}

@@ -1,0 +1,37 @@
+{
+  "error": null,
+  "fixture_id": "concurrent_conflict_writes_001__punctuation",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "Do not commit durable memory. The input suggests two concurrent assertions: 'Sam works at Goldman' and 'Sam joined Point72'. These may conflict or may describe a job change, but timing is ambiguous. Preserve both only as unresolved candidates pending clarification.",
+    "citations": [
+      "Input: 'Concurrent writes - Sam works at Goldman Sam joined Point72'"
+    ],
+    "conflict_classification": "potential_employment_conflict_concurrent_writes",
+    "decision": "needs_review",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Single unpunctuated input appears to contain two concurrent writes about the same person and different employers; cannot determine chronology or whether both are true at different times."
+    },
+    "intent": "classify_conflict_from_concurrent_writes",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Parsed likely concurrent assertions from a punctuation-poor string.",
+        "Detected possible conflict on employer for Sam.",
+        "Chose not to store any durable current-state memory due to ambiguity and concurrency."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Split into two candidate facts: 'Sam works at Goldman' and 'Sam joined Point72'.",
+      "Request timestamps or effective dates for each write.",
+      "Confirm whether 'joined Point72' supersedes current employment at Goldman.",
+      "Verify whether both mentions refer to the same Sam entity."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict_from_concurrent_writes\",\"decision\":\"needs_review\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"Single unpunctuated input appears to contain two concurrent writes about the same person and different employers; cannot determine chronology or whether both are true at different times.\"},\"conflict_classification\":\"potential_employment_conflict_concurrent_writes\",\"answer\":\"Do not commit durable memory. The input suggests two concurrent assertions: 'Sam works at Goldman' and 'Sam joined Point72'. These may conflict or may describe a job change, but timing is ambiguous. Preserve both only as unresolved candidates pending clarification.\",\"citations\":[\"Input: 'Concurrent writes - Sam works at Goldman Sam joined Point72'\"],\"repair_options\":[\"Split into two candidate facts: 'Sam works at Goldman' and 'Sam joined Point72'.\",\"Request timestamps or effective dates for each write.\",\"Confirm whether 'joined Point72' supersedes current employment at Goldman.\",\"Verify whether both mentions refer to the same Sam entity.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed likely concurrent assertions from a punctuation-poor string.\",\"Detected possible conflict on employer for Sam.\",\"Chose not to store any durable current-state memory due to ambiguity and concurrency.\"]}}",
+  "run_id": "eval_20260507_065822",
+  "status": "ok"
+}

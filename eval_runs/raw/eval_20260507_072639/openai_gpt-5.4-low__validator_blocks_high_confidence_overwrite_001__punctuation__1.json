@@ -1,0 +1,38 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_high_confidence_overwrite_001__punctuation",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Reject the proposed update. 'Sara is Daniele's niece' directly contradicts the existing memory 'Sara is Daniele's daughter' and should not overwrite it without strong supporting evidence or a reconciliation step.",
+    "citations": [
+      "Existing memory: Sara is Daniele's daughter",
+      "Proposed memory: Sara is Daniele's niece"
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The proposed fact conflicts directly with an existing durable relationship for the same entities."
+    },
+    "intent": "validate_memory_update",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected a high-confidence overwrite attempt on an existing family relationship.",
+        "Blocked durable memory write due to direct contradiction.",
+        "No new memory card committed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Keep the existing memory unchanged.",
+      "Request source evidence for the proposed relationship.",
+      "If evidence is strong, create a conflict note or queue for human review rather than overwriting durable memory.",
+      "Check whether one statement refers to different people with the same names before any merge or overwrite."
+    ]
+  },
+  "raw_text": "{\"intent\":\"validate_memory_update\",\"decision\":\"reject\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The proposed fact conflicts directly with an existing durable relationship for the same entities.\"},\"conflict_classification\":\"direct_contradiction\",\"answer\":\"Reject the proposed update. 'Sara is Daniele's niece' directly contradicts the existing memory 'Sara is Daniele's daughter' and should not overwrite it without strong supporting evidence or a reconciliation step.\",\"citations\":[\"Existing memory: Sara is Daniele's daughter\",\"Proposed memory: Sara is Daniele's niece\"],\"repair_options\":[\"Keep the existing memory unchanged.\",\"Request source evidence for the proposed relationship.\",\"If evidence is strong, create a conflict note or queue for human review rather than overwriting durable memory.\",\"Check whether one statement refers to different people with the same names before any merge or overwrite.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected a high-confidence overwrite attempt on an existing family relationship.\",\"Blocked durable memory write due to direct contradiction.\",\"No new memory card committed.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

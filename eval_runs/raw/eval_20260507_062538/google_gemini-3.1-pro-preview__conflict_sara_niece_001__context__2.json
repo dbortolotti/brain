@@ -1,0 +1,53 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001__context",
+  "model": "google:gemini-3.1-pro-preview",
+  "payload": {
+    "answer": "Got it. I've remembered that Sara is your niece.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "accept",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": "Sara",
+      "reason": "Sara is identified as the same person in both contexts, adding new relationship information without contradicting existing facts."
+    },
+    "intent": "update_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "niece",
+            "type": "person"
+          },
+          {
+            "name": "User",
+            "role": "user",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship",
+        "relationships": [
+          {
+            "object": "User",
+            "predicate": "is niece of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is the user's niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Added new relationship: Sara is the user's niece."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"update_memory\",\n  \"decision\": \"accept\",\n  \"conflict_classification\": \"no_conflict\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"relationship\",\n      \"statement\": \"Sara is the user's niece.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"niece\"\n        },\n        {\n          \"name\": \"User\",\n          \"type\": \"person\",\n          \"role\": \"user\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is niece of\",\n          \"object\": \"User\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolve\",\n    \"entity_id\": \"Sara\",\n    \"reason\": \"Sara is identified as the same person in both contexts, adding new relationship information without contradicting existing facts.\"\n  },\n  \"answer\": \"Got it. I've remembered that Sara is your niece.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Added new relationship: Sara is the user's niece.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

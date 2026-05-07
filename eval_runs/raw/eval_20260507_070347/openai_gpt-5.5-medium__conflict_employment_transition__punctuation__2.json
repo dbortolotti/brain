@@ -1,0 +1,82 @@
+{
+  "error": null,
+  "fixture_id": "conflict_employment_transition__punctuation",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "Sam left Goldman and now works at Point72. The prior current fact that Sam works at Goldman should be marked as no longer current.",
+    "citations": [],
+    "conflict_classification": "supersedes_existing_current_fact",
+    "decision": "commit_new_fact_and_supersede_existing_current_fact",
+    "entity_resolution": {
+      "action": "reuse_existing_person_entity",
+      "entity_id": null,
+      "reason": "The new fact refers to the same named person, Sam, as the existing fact. No unique entity ID was provided."
+    },
+    "intent": "update_employment",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_current",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Point72."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "former_employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_past",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "formerly_worked_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam previously worked at Goldman."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed new current employment fact: Sam works at Point72.",
+        "Converted prior Goldman employment from current to past based on the new transition statement."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark the existing current Goldman employment fact as superseded or historical.",
+      "Add Point72 as Sam's current employer.",
+      "Optionally retain Goldman as Sam's former employer."
+    ]
+  },
+  "raw_text": "{\"intent\":\"update_employment\",\"decision\":\"commit_new_fact_and_supersede_existing_current_fact\",\"memory_cards\":[{\"kind\":\"employment_current\",\"statement\":\"Sam works at Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"employee\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Point72\"}]},{\"kind\":\"employment_past\",\"statement\":\"Sam previously worked at Goldman.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"former_employee\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former_employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"formerly_worked_at\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"reuse_existing_person_entity\",\"entity_id\":null,\"reason\":\"The new fact refers to the same named person, Sam, as the existing fact. No unique entity ID was provided.\"},\"conflict_classification\":\"supersedes_existing_current_fact\",\"answer\":\"Sam left Goldman and now works at Point72. The prior current fact that Sam works at Goldman should be marked as no longer current.\",\"citations\":[],\"repair_options\":[\"Mark the existing current Goldman employment fact as superseded or historical.\",\"Add Point72 as Sam's current employer.\",\"Optionally retain Goldman as Sam's former employer.\"],\"receipt\":{\"success\":true,\"details\":[\"Committed new current employment fact: Sam works at Point72.\",\"Converted prior Goldman employment from current to past based on the new transition statement.\"]}}",
+  "run_id": "eval_20260507_070347",
+  "status": "ok"
+}

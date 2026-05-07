@@ -1,0 +1,53 @@
+{
+  "fixture_id": "ambiguous_place_001__punctuation",
+  "model": "openai:gpt-5.5-low",
+  "payload": {
+    "answer": "Stored as a medium-confidence memory linked to the existing Brutto restaurant in London.",
+    "citations": [
+      "New note: Brutto was better than expected",
+      "Existing: Brutto restaurant in London"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_with_entity_link",
+    "entity_resolution": {
+      "action": "link_existing",
+      "entity_id": "Brutto restaurant in London",
+      "reason": "The note refers to 'Brutto' by exact name, and the evaluative phrasing 'was better than expected' is more consistent with a restaurant/place experience than an article alias. However, confidence is only medium because the existing context also mentions an article alias."
+    },
+    "intent": "store_personal_evaluation",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brutto",
+            "role": "subject",
+            "type": "restaurant"
+          }
+        ],
+        "kind": "preference_experience",
+        "relationships": [
+          {
+            "object": "Brutto",
+            "predicate": "found_better_than_expected",
+            "subject": "user"
+          }
+        ],
+        "statement": "The user thought Brutto was better than expected."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed one memory card.",
+        "Linked the note to the existing Brutto restaurant entity with medium confidence.",
+        "No conflict with existing memory detected."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If the note referred to an article or another entity named Brutto, relink the memory to that entity.",
+      "If the user meant a different Brutto location or business, create a distinct entity."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

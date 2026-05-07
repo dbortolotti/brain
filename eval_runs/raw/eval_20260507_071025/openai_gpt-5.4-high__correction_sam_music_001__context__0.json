@@ -1,0 +1,67 @@
+{
+  "error": null,
+  "fixture_id": "correction_sam_music_001__context",
+  "model": "openai:gpt-5.4-high",
+  "payload": {
+    "answer": "Update the memory to: Sam from Goldman likes early Coltrane. The prior Bill Evans preference should be treated as superseded/incorrect and not surfaced as current.",
+    "citations": [
+      "Existing memory: Sam from Goldman likes Bill Evans.",
+      "Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans."
+    ],
+    "conflict_classification": "explicit_correction_direct_contradiction",
+    "decision": "replace_conflicting_preference",
+    "entity_resolution": {
+      "action": "resolve_to_existing_entity",
+      "entity_id": null,
+      "reason": "The correction clearly targets the same 'Sam from Goldman' as the existing memory, but the fixture does not provide a concrete entity ID."
+    },
+    "intent": "correct_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_disambiguator",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "music_preference"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes_music",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected an explicit correction to an existing memory.",
+        "Classified the new statement as a direct contradiction of the prior preference.",
+        "Prepared a corrected preference memory card and recommended retiring the superseded fact."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace the existing preference 'likes Bill Evans' with 'likes early Coltrane' for Sam from Goldman.",
+      "Mark the Bill Evans preference as superseded/incorrect so it is not returned as a current fact.",
+      "If provenance is retained, keep the old Bill Evans statement only as historical correction context, not as an active preference."
+    ]
+  },
+  "raw_text": "{\"intent\":\"correct_memory\",\"decision\":\"replace_conflicting_preference\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman likes early Coltrane.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation_disambiguator\"},{\"name\":\"early Coltrane\",\"type\":\"music_preference\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes_music\",\"object\":\"early Coltrane\"}]}],\"entity_resolution\":{\"action\":\"resolve_to_existing_entity\",\"entity_id\":null,\"reason\":\"The correction clearly targets the same 'Sam from Goldman' as the existing memory, but the fixture does not provide a concrete entity ID.\"},\"conflict_classification\":\"explicit_correction_direct_contradiction\",\"answer\":\"Update the memory to: Sam from Goldman likes early Coltrane. The prior Bill Evans preference should be treated as superseded/incorrect and not surfaced as current.\",\"citations\":[\"Existing memory: Sam from Goldman likes Bill Evans.\",\"Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans.\"],\"repair_options\":[\"Replace the existing preference 'likes Bill Evans' with 'likes early Coltrane' for Sam from Goldman.\",\"Mark the Bill Evans preference as superseded/incorrect so it is not returned as a current fact.\",\"If provenance is retained, keep the old Bill Evans statement only as historical correction context, not as an active preference.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected an explicit correction to an existing memory.\",\"Classified the new statement as a direct contradiction of the prior preference.\",\"Prepared a corrected preference memory card and recommended retiring the superseded fact.\"]}}",
+  "run_id": "eval_20260507_071025",
+  "status": "ok"
+}

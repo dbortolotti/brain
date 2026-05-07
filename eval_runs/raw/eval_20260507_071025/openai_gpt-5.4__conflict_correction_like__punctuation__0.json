@@ -1,0 +1,81 @@
+{
+  "error": null,
+  "fixture_id": "conflict_correction_like__punctuation",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "Update the current memory to: Sam from Goldman likes early Coltrane, and the prior Bill Evans preference should no longer be treated as current.",
+    "citations": [
+      "Existing current fact: Sam from Goldman likes Bill Evans",
+      "Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans"
+    ],
+    "conflict_classification": "direct_correction",
+    "decision": "update_current_fact",
+    "entity_resolution": {
+      "action": "reuse_existing",
+      "entity_id": null,
+      "reason": "The correction refers to the same person and affiliation as the existing fact: Sam from Goldman."
+    },
+    "intent": "correct_existing_fact",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "liked_artist",
+            "type": "preference"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "rejected_prior_artist",
+            "type": "preference"
+          }
+        ],
+        "kind": "replacement_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "does_not_like",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane, not Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected explicit correction signaled by 'actually' and 'not'.",
+        "Classified as a direct contradiction of the existing current fact.",
+        "Prepared a replacement fact and indicated the old fact should be superseded."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace the existing preference fact with the corrected one.",
+      "Mark the prior Bill Evans preference as superseded/incorrect so it is not surfaced as current."
+    ]
+  },
+  "raw_text": "{\"intent\":\"correct_existing_fact\",\"decision\":\"update_current_fact\",\"memory_cards\":[{\"kind\":\"replacement_fact\",\"statement\":\"Sam from Goldman likes early Coltrane, not Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"early Coltrane\",\"type\":\"preference\",\"role\":\"liked_artist\"},{\"name\":\"Bill Evans\",\"type\":\"preference\",\"role\":\"rejected_prior_artist\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"early Coltrane\"},{\"subject\":\"Sam\",\"predicate\":\"does_not_like\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"reuse_existing\",\"entity_id\":null,\"reason\":\"The correction refers to the same person and affiliation as the existing fact: Sam from Goldman.\"},\"conflict_classification\":\"direct_correction\",\"answer\":\"Update the current memory to: Sam from Goldman likes early Coltrane, and the prior Bill Evans preference should no longer be treated as current.\",\"citations\":[\"Existing current fact: Sam from Goldman likes Bill Evans\",\"Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans\"],\"repair_options\":[\"Replace the existing preference fact with the corrected one.\",\"Mark the prior Bill Evans preference as superseded/incorrect so it is not surfaced as current.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected explicit correction signaled by 'actually' and 'not'.\",\"Classified as a direct contradiction of the existing current fact.\",\"Prepared a replacement fact and indicated the old fact should be superseded.\"]}}",
+  "run_id": "eval_20260507_071025",
+  "status": "ok"
+}

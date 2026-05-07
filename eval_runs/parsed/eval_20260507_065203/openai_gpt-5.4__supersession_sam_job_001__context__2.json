@@ -1,0 +1,69 @@
+{
+  "fixture_id": "supersession_sam_job_001__context",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "Commit the new employment update and treat the prior memory 'Sam works at Goldman' as superseded, not current.",
+    "citations": [
+      "Existing memory: Sam works at Goldman.",
+      "New: Sam left Goldman and joined Point72."
+    ],
+    "conflict_classification": "supersession",
+    "decision": "update_with_supersession",
+    "entity_resolution": {
+      "action": "reuse_existing_entity",
+      "entity_id": null,
+      "reason": "The new information refers to the same person, Sam, and introduces a newer employment state that supersedes the prior one."
+    },
+    "intent": "classify_conflict_and_update_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected direct temporal supersession of prior employment fact.",
+        "Avoided presenting the old Goldman employment as current.",
+        "Committed only the updated employment state as durable current memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark 'Sam works at Goldman' as no longer current/superseded.",
+      "Store 'Sam left Goldman and joined Point72' as the current employment update.",
+      "If the system supports temporal modeling, preserve Goldman as former employer and Point72 as current employer."
+    ]
+  },
+  "run_id": "eval_20260507_065203"
+}

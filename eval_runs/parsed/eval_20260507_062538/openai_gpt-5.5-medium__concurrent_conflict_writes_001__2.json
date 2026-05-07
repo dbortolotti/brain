@@ -1,0 +1,68 @@
+{
+  "fixture_id": "concurrent_conflict_writes_001",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "Sam's current employer is ambiguous because the concurrent writes assert both Goldman and Point72-related employment. Do not commit either as the current employer until clarified.",
+    "citations": [
+      "Concurrent writes: Sam works at Goldman. Sam joined Point72."
+    ],
+    "conflict_classification": "concurrent_current_employment_conflict",
+    "decision": "do_not_commit_current_employer; flag_for_clarification",
+    "entity_resolution": {
+      "action": "needs_disambiguation",
+      "entity_id": null,
+      "reason": "The name 'Sam' is underspecified, and the concurrent employment-related assertions cannot be safely ordered or reconciled as a current fact."
+    },
+    "intent": "classify_concurrent_memory_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer_candidate",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "employer_candidate",
+            "type": "organization"
+          }
+        ],
+        "kind": "conflict_record",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "asserted_works_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "asserted_joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Concurrent writes make Sam's current employment ambiguous: one assertion says Sam works at Goldman, while another says Sam joined Point72. No current employer should be treated as confirmed without clarification."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected concurrent conflicting employment assertions.",
+        "Avoided committing a durable current-employer fact.",
+        "Created only a conflict record and clarification options."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask whether Sam currently works at Goldman or Point72.",
+      "Ask whether joining Point72 superseded the Goldman role.",
+      "Ask whether Sam has multiple roles or whether one assertion is historical."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

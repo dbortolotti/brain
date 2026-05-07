@@ -1,0 +1,38 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "No direct conflict is established. 'Sara is my niece' could be consistent with Sara being Daniele's daughter, but it is speaker-relative and lacks a durable anchor for 'my', so it should not be committed as current memory without clarification.",
+    "citations": [
+      "Existing memory: Sara is Daniele's daughter.",
+      "Existing memory: Sara is Nur's twin.",
+      "New statement: Sara is my niece."
+    ],
+    "conflict_classification": "no_direct_conflict_but_not_durable_without_speaker_anchor",
+    "decision": "defer_due_to_underspecified_perspective",
+    "entity_resolution": {
+      "action": "link_existing_entity",
+      "entity_id": "Sara",
+      "reason": "The new statement appears to refer to the same Sara, but 'my niece' is speaker-relative and cannot be durably grounded without knowing who 'my' refers to."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Reviewed existing high-confidence family facts about Sara.",
+        "Detected no logical contradiction between 'Daniele's daughter' and 'my niece'.",
+        "Rejected durable write because the new claim is perspective-dependent and underspecified."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify who 'my' refers to, then store a grounded relation such as 'Sara is the niece of <person>'.",
+      "If the speaker is a known sibling of Daniele or Sara's other parent, store that explicit family relationship instead of the speaker-relative phrasing.",
+      "Keep the existing Sara facts unchanged and do not add the niece claim until the reference is anchored."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict\",\"decision\":\"defer_due_to_underspecified_perspective\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"link_existing_entity\",\"entity_id\":\"Sara\",\"reason\":\"The new statement appears to refer to the same Sara, but 'my niece' is speaker-relative and cannot be durably grounded without knowing who 'my' refers to.\"},\"conflict_classification\":\"no_direct_conflict_but_not_durable_without_speaker_anchor\",\"answer\":\"No direct conflict is established. 'Sara is my niece' could be consistent with Sara being Daniele's daughter, but it is speaker-relative and lacks a durable anchor for 'my', so it should not be committed as current memory without clarification.\",\"citations\":[\"Existing memory: Sara is Daniele's daughter.\",\"Existing memory: Sara is Nur's twin.\",\"New statement: Sara is my niece.\"],\"repair_options\":[\"Clarify who 'my' refers to, then store a grounded relation such as 'Sara is the niece of <person>'.\",\"If the speaker is a known sibling of Daniele or Sara's other parent, store that explicit family relationship instead of the speaker-relative phrasing.\",\"Keep the existing Sara facts unchanged and do not add the niece claim until the reference is anchored.\"],\"receipt\":{\"success\":true,\"details\":[\"Reviewed existing high-confidence family facts about Sara.\",\"Detected no logical contradiction between 'Daniele's daughter' and 'my niece'.\",\"Rejected durable write because the new claim is perspective-dependent and underspecified.\"]}}",
+  "run_id": "eval_20260507_071025",
+  "status": "ok"
+}

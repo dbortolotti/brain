@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "fixture_id": "recall_hide_deleted_001__context",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "Sam likes Bill Evans.",
+    "citations": [
+      "Current memory: Sam likes Bill Evans."
+    ],
+    "conflict_classification": "deleted_memory_hidden",
+    "decision": "answer_from_current_memory_excluding_deleted",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Sam is already the referenced person in the query and context."
+    },
+    "intent": "recall_user_preference",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "musician"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Used the current memory as the basis for recall.",
+        "Excluded the deleted memory about Taylor Swift from the answer.",
+        "Did not present deleted or superseded information as current."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"recall_user_preference\",\"decision\":\"answer_from_current_memory_excluding_deleted\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam likes Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"musician\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"Sam is already the referenced person in the query and context.\"},\"conflict_classification\":\"deleted_memory_hidden\",\"answer\":\"Sam likes Bill Evans.\",\"citations\":[\"Current memory: Sam likes Bill Evans.\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Used the current memory as the basis for recall.\",\"Excluded the deleted memory about Taylor Swift from the answer.\",\"Did not present deleted or superseded information as current.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

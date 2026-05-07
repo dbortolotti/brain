@@ -1,0 +1,88 @@
+{
+  "error": null,
+  "fixture_id": "supersession_sam_job_001",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "This is a supersession conflict. The prior current-state memory 'Sam works at Goldman' should no longer be treated as current. Update Sam's current employer to Point72 and, if desired, retain Goldman only as historical employment.",
+    "citations": [],
+    "conflict_classification": "supersession",
+    "decision": "supersede_with_historical_retention",
+    "entity_resolution": {
+      "action": "match_existing_person_and_update_employment",
+      "entity_id": null,
+      "reason": "The new statement refers to the same Sam as the existing memory and provides a newer employment update. Goldman should remain only as past employment; Point72 becomes the current employer."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Point72."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "formerly_worked_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam previously worked at Goldman and left that job."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected direct contradiction on current employer.",
+        "Classified the older Goldman employment fact as superseded by newer information.",
+        "Prepared updated memory so superseded employment is not presented as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace the existing current-employment memory with 'Sam works at Point72'.",
+      "Convert 'Sam works at Goldman' into a historical memory such as 'Sam previously worked at Goldman'.",
+      "Store the transition explicitly: 'Sam left Goldman and joined Point72'."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict\",\"decision\":\"supersede_with_historical_retention\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam works at Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"employee\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Point72\"}]},{\"kind\":\"fact\",\"statement\":\"Sam previously worked at Goldman and left that job.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"employee\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former_employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"formerly_worked_at\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"left\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"match_existing_person_and_update_employment\",\"entity_id\":null,\"reason\":\"The new statement refers to the same Sam as the existing memory and provides a newer employment update. Goldman should remain only as past employment; Point72 becomes the current employer.\"},\"conflict_classification\":\"supersession\",\"answer\":\"This is a supersession conflict. The prior current-state memory 'Sam works at Goldman' should no longer be treated as current. Update Sam's current employer to Point72 and, if desired, retain Goldman only as historical employment.\",\"citations\":[],\"repair_options\":[\"Replace the existing current-employment memory with 'Sam works at Point72'.\",\"Convert 'Sam works at Goldman' into a historical memory such as 'Sam previously worked at Goldman'.\",\"Store the transition explicitly: 'Sam left Goldman and joined Point72'.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected direct contradiction on current employer.\",\"Classified the older Goldman employment fact as superseded by newer information.\",\"Prepared updated memory so superseded employment is not presented as current.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

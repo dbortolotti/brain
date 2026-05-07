@@ -1,0 +1,63 @@
+{
+  "fixture_id": "idempotent_retry_same_message_001",
+  "model": "openai:gpt-5.5-low",
+  "payload": {
+    "answer": "Committed one idempotent memory that Sam from Goldman mentioned liking Bill Evans.",
+    "citations": [
+      "Same input delivered three times: Sam from Goldman mentioned that he likes Bill Evans."
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_once_idempotent",
+    "entity_resolution": {
+      "action": "no_merge_create_if_absent",
+      "entity_id": null,
+      "reason": "The input identifies only 'Sam from Goldman' without enough information to confidently resolve to an existing person; repeated identical delivery should not create duplicate memories."
+    },
+    "intent": "store_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "source_and_subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_entity",
+            "type": "person_or_artist"
+          }
+        ],
+        "kind": "person_preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "mentioned_liking",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman mentioned that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Processed repeated identical input as a single memory event.",
+        "Preserved ambiguity around Sam, Goldman, and which Bill Evans is meant."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_072639"
+}

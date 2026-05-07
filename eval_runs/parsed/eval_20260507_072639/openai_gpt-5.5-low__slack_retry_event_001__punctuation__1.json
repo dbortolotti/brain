@@ -1,0 +1,58 @@
+{
+  "fixture_id": "slack_retry_event_001__punctuation",
+  "model": "openai:gpt-5.5-low",
+  "payload": {
+    "answer": "Recorded once: Sam from Goldman likes Bill Evans.",
+    "citations": [
+      "slack_retry_event_001__punctuation"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_once_deduplicated",
+    "entity_resolution": {
+      "action": "create_or_match_ambiguous",
+      "entity_id": null,
+      "reason": "The input identifies the person only as 'Sam from Goldman'; there is insufficient information to resolve to a unique existing person, so the affiliation context should be preserved."
+    },
+    "intent": "slack_intake_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Duplicate delivery of the same Slack event was detected/handled; only one memory card was produced.",
+        "Punctuation around the content was ignored without changing the meaning."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_072639"
+}

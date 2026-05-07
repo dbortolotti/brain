@@ -1,0 +1,164 @@
+{
+  "error": null,
+  "fixture_id": "long_markdown_chat_summary_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Compiled durable Brain architecture decisions and preserved the two unresolved questions as open questions.",
+    "citations": [
+      "Brain DB should be the source of truth.",
+      "Cognee should be a rebuildable semantic projection.",
+      "Slack should be a strict memory intake agent.",
+      "Open questions: Should Telegram be added later?",
+      "Which model is cheapest while saturating performance?"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "The input provides architectural facts and open questions about the Brain personal memory system without enough prior entity context to bind to an existing entity ID."
+    },
+    "intent": "compile_context_into_durable_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system_component"
+          },
+          {
+            "name": "Brain",
+            "role": "system",
+            "type": "personal_memory_system"
+          }
+        ],
+        "kind": "architecture_decision",
+        "relationships": [
+          {
+            "object": "source of truth for Brain",
+            "predicate": "should_be",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB should be the source of truth for the Brain personal memory system."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "semantic_projection",
+            "type": "system_component"
+          },
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system_component"
+          }
+        ],
+        "kind": "architecture_decision",
+        "relationships": [
+          {
+            "object": "rebuildable semantic projection",
+            "predicate": "should_be",
+            "subject": "Cognee"
+          },
+          {
+            "object": "Brain DB",
+            "predicate": "projects_from",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee should be a rebuildable semantic projection of Brain DB, not the source of truth."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "memory_intake_agent",
+            "type": "external_service"
+          },
+          {
+            "name": "Brain",
+            "role": "system",
+            "type": "personal_memory_system"
+          }
+        ],
+        "kind": "architecture_decision",
+        "relationships": [
+          {
+            "object": "strict memory intake agent for Brain",
+            "predicate": "should_act_as",
+            "subject": "Slack"
+          }
+        ],
+        "statement": "Slack should act as a strict memory intake agent for Brain."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Telegram",
+            "role": "possible_future_component",
+            "type": "external_service"
+          },
+          {
+            "name": "Brain",
+            "role": "system",
+            "type": "personal_memory_system"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [
+          {
+            "object": "later addition to Brain",
+            "predicate": "is_under_consideration_for",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "It is unresolved whether Telegram should be added later as part of the Brain architecture."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "model selection",
+            "role": "open_question",
+            "type": "architecture_question"
+          },
+          {
+            "name": "Brain",
+            "role": "system",
+            "type": "personal_memory_system"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [
+          {
+            "object": "cheapest model while saturating performance",
+            "predicate": "seeks",
+            "subject": "model selection"
+          }
+        ],
+        "statement": "It is unresolved which model is cheapest while saturating performance for the Brain system."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed Brain DB as source of truth.",
+        "Committed Cognee as rebuildable semantic projection.",
+        "Committed Slack as strict memory intake agent.",
+        "Recorded Telegram addition as unresolved.",
+        "Recorded model-cost/performance choice as unresolved."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"compile_context_into_durable_memory\",\n  \"decision\": \"commit\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"architecture_decision\",\n      \"statement\": \"Brain DB should be the source of truth for the Brain personal memory system.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"system_component\",\n          \"role\": \"source_of_truth\"\n        },\n        {\n          \"name\": \"Brain\",\n          \"type\": \"personal_memory_system\",\n          \"role\": \"system\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"should_be\",\n          \"object\": \"source of truth for Brain\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"architecture_decision\",\n      \"statement\": \"Cognee should be a rebuildable semantic projection of Brain DB, not the source of truth.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"system_component\",\n          \"role\": \"semantic_projection\"\n        },\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"system_component\",\n          \"role\": \"source_of_truth\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"should_be\",\n          \"object\": \"rebuildable semantic projection\"\n        },\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"projects_from\",\n          \"object\": \"Brain DB\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"architecture_decision\",\n      \"statement\": \"Slack should act as a strict memory intake agent for Brain.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Slack\",\n          \"type\": \"external_service\",\n          \"role\": \"memory_intake_agent\"\n        },\n        {\n          \"name\": \"Brain\",\n          \"type\": \"personal_memory_system\",\n          \"role\": \"system\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Slack\",\n          \"predicate\": \"should_act_as\",\n          \"object\": \"strict memory intake agent for Brain\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"open_question\",\n      \"statement\": \"It is unresolved whether Telegram should be added later as part of the Brain architecture.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Telegram\",\n          \"type\": \"external_service\",\n          \"role\": \"possible_future_component\"\n        },\n        {\n          \"name\": \"Brain\",\n          \"type\": \"personal_memory_system\",\n          \"role\": \"system\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Telegram\",\n          \"predicate\": \"is_under_consideration_for\",\n          \"object\": \"later addition to Brain\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"open_question\",\n      \"statement\": \"It is unresolved which model is cheapest while saturating performance for the Brain system.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"model selection\",\n          \"type\": \"architecture_question\",\n          \"role\": \"open_question\"\n        },\n        {\n          \"name\": \"Brain\",\n          \"type\": \"personal_memory_system\",\n          \"role\": \"system\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"model selection\",\n          \"predicate\": \"seeks\",\n          \"object\": \"cheapest model while saturating performance\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_or_update\",\n    \"entity_id\": null,\n    \"reason\": \"The input provides architectural facts and open questions about the Brain personal memory system without enough prior entity context to bind to an existing entity ID.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Compiled durable Brain architecture decisions and preserved the two unresolved questions as open questions.\",\n  \"citations\": [\n    \"Brain DB should be the source of truth.\",\n    \"Cognee should be a rebuildable semantic projection.\",\n    \"Slack should be a strict memory intake agent.\",\n    \"Open questions: Should Telegram be added later?\",\n    \"Which model is cheapest while saturating performance?\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Committed Brain DB as source of truth.\",\n      \"Committed Cognee as rebuildable semantic projection.\",\n      \"Committed Slack as strict memory intake agent.\",\n      \"Recorded Telegram addition as unresolved.\",\n      \"Recorded model-cost/performance choice as unresolved.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

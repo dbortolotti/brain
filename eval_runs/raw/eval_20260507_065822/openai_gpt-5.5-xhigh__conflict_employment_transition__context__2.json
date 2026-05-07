@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "fixture_id": "conflict_employment_transition__context",
+  "model": "openai:gpt-5.5-xhigh",
+  "payload": {
+    "answer": "The new fact represents an employment transition. Treat the prior current fact that Sam works at Goldman as superseded/not current, and store that Sam left Goldman and joined Point72.",
+    "citations": [
+      "Existing current fact: Sam works at Goldman.",
+      "New fact: Sam left Goldman and joined Point72."
+    ],
+    "conflict_classification": "temporal_supersession",
+    "decision": "commit_new_fact_and_supersede_existing_current_fact",
+    "entity_resolution": {
+      "action": "resolve_to_existing_context_entity",
+      "entity_id": null,
+      "reason": "The new fact explicitly refers to Sam in the provided context; no durable entity ID was supplied."
+    },
+    "intent": "memory_update",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "new_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_transition",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Classified as a temporal employment update rather than an irreconcilable contradiction.",
+        "New fact should be committed as durable memory.",
+        "Existing Goldman employment should be preserved only as historical/superseded, not current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark the Goldman employment fact as no longer current.",
+      "Add the employment transition: Sam left Goldman and joined Point72.",
+      "Do not retain 'Sam works at Goldman' as a current fact."
+    ]
+  },
+  "raw_text": "{\"intent\":\"memory_update\",\"decision\":\"commit_new_fact_and_supersede_existing_current_fact\",\"memory_cards\":[{\"kind\":\"employment_transition\",\"statement\":\"Sam left Goldman and joined Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former_employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"new_employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"left\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"resolve_to_existing_context_entity\",\"entity_id\":null,\"reason\":\"The new fact explicitly refers to Sam in the provided context; no durable entity ID was supplied.\"},\"conflict_classification\":\"temporal_supersession\",\"answer\":\"The new fact represents an employment transition. Treat the prior current fact that Sam works at Goldman as superseded/not current, and store that Sam left Goldman and joined Point72.\",\"citations\":[\"Existing current fact: Sam works at Goldman.\",\"New fact: Sam left Goldman and joined Point72.\"],\"repair_options\":[\"Mark the Goldman employment fact as no longer current.\",\"Add the employment transition: Sam left Goldman and joined Point72.\",\"Do not retain 'Sam works at Goldman' as a current fact.\"],\"receipt\":{\"success\":true,\"details\":[\"Classified as a temporal employment update rather than an irreconcilable contradiction.\",\"New fact should be committed as durable memory.\",\"Existing Goldman employment should be preserved only as historical/superseded, not current.\"]}}",
+  "run_id": "eval_20260507_065822",
+  "status": "ok"
+}

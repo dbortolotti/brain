@@ -1,0 +1,67 @@
+{
+  "error": null,
+  "fixture_id": "typos_shorthand_person_interaction_001__punctuation",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "Noted as tentative: Sam from Goldman apparently likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_tentative_unresolved",
+    "entity_resolution": {
+      "action": "create_unresolved_mentions",
+      "entity_id": null,
+      "reason": "Input contains shorthand/typos and ambiguous references; 'Goldman' may be an organization such as Goldman Sachs, and the identities of Sam and Bill Evans are not uniquely resolvable."
+    },
+    "intent": "capture_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_context",
+            "type": "organization_or_affiliation"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "person_interaction",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "apparently_likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "A person referred to as Sam from Goldman apparently likes a person referred to as Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored only as a low-confidence, tentative interaction due to 'apparently' and ambiguous shorthand."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm whether 'Goldman' means Goldman Sachs or another Goldman entity.",
+      "Confirm the full identity of Sam.",
+      "Confirm the intended Bill Evans."
+    ]
+  },
+  "raw_text": "{\"intent\":\"capture_memory\",\"decision\":\"store_tentative_unresolved\",\"memory_cards\":[{\"kind\":\"person_interaction\",\"statement\":\"A person referred to as Sam from Goldman apparently likes a person referred to as Bill Evans.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization_or_affiliation\",\"role\":\"affiliation_context\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"apparently_likes\",\"object\":\"Bill Evans\"},{\"subject\":\"Sam\",\"predicate\":\"associated_with\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"create_unresolved_mentions\",\"entity_id\":null,\"reason\":\"Input contains shorthand/typos and ambiguous references; 'Goldman' may be an organization such as Goldman Sachs, and the identities of Sam and Bill Evans are not uniquely resolvable.\"},\"conflict_classification\":\"none\",\"answer\":\"Noted as tentative: Sam from Goldman apparently likes Bill Evans.\",\"citations\":[],\"repair_options\":[\"Confirm whether 'Goldman' means Goldman Sachs or another Goldman entity.\",\"Confirm the full identity of Sam.\",\"Confirm the intended Bill Evans.\"],\"receipt\":{\"success\":true,\"details\":[\"Stored only as a low-confidence, tentative interaction due to 'apparently' and ambiguous shorthand.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

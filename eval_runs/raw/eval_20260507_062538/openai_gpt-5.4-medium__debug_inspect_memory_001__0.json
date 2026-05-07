@@ -1,0 +1,37 @@
+{
+  "error": null,
+  "fixture_id": "debug_inspect_memory_001",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "The command is a read-only request to inspect the existing memory with id mem_123. No durable memory should be created, updated, merged, or deleted. Because the fixture provides only the command and not the underlying record contents, there are no current memory facts to present for mem_123.",
+    "citations": [
+      "/brain inspect memory mem_123"
+    ],
+    "conflict_classification": "none",
+    "decision": "read_only_lookup_by_id_no_mutation",
+    "entity_resolution": {
+      "action": "direct_id",
+      "entity_id": "mem_123",
+      "reason": "The request explicitly names a memory identifier, so it should be resolved directly to that record without inferring new facts or creating memory."
+    },
+    "intent": "inspect_memory",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Parsed intent as inspect_memory.",
+        "Resolved target via explicit memory id mem_123.",
+        "Applied strict no-mutation behavior.",
+        "No memory contents were available in the fixture to display."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Fetch the stored record for memory id mem_123 from the backing store.",
+      "If mem_123 does not exist, return a not-found inspection result rather than inferring content.",
+      "If a full inspection is expected here, include the memory payload or backend lookup result in the fixture."
+    ]
+  },
+  "raw_text": "{\"intent\":\"inspect_memory\",\"decision\":\"read_only_lookup_by_id_no_mutation\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"direct_id\",\"entity_id\":\"mem_123\",\"reason\":\"The request explicitly names a memory identifier, so it should be resolved directly to that record without inferring new facts or creating memory.\"},\"conflict_classification\":\"none\",\"answer\":\"The command is a read-only request to inspect the existing memory with id mem_123. No durable memory should be created, updated, merged, or deleted. Because the fixture provides only the command and not the underlying record contents, there are no current memory facts to present for mem_123.\",\"citations\":[\"/brain inspect memory mem_123\"],\"repair_options\":[\"Fetch the stored record for memory id mem_123 from the backing store.\",\"If mem_123 does not exist, return a not-found inspection result rather than inferring content.\",\"If a full inspection is expected here, include the memory payload or backend lookup result in the fixture.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed intent as inspect_memory.\",\"Resolved target via explicit memory id mem_123.\",\"Applied strict no-mutation behavior.\",\"No memory contents were available in the fixture to display.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

@@ -1,0 +1,69 @@
+{
+  "fixture_id": "conflict_correction_like__punctuation",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Treat this as a correction: supersede the existing current fact that Sam from Goldman likes Bill Evans, and replace it with the new current fact that Sam from Goldman likes early Coltrane.",
+    "citations": [
+      "Existing current fact: Sam from Goldman likes Bill Evans",
+      "Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans"
+    ],
+    "conflict_classification": "direct_conflict_correction",
+    "decision": "apply_correction_with_supersession",
+    "entity_resolution": {
+      "action": "reuse_existing_entity",
+      "entity_id": null,
+      "reason": "The correction refers to the same person, 'Sam from Goldman', and replaces the preference target."
+    },
+    "intent": "correction",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "preference_target"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected explicit corrective language: 'actually' and 'not Bill Evans'.",
+        "Identified a direct contradiction on the same subject and preference relation.",
+        "Prepared only the corrected fact as current memory and excluded the superseded fact from current state."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark 'Sam from Goldman likes Bill Evans' as superseded/deprecated.",
+      "Store 'Sam from Goldman likes early Coltrane' as the new current fact.",
+      "Link the new fact to the old one as a correction/replacement event."
+    ]
+  },
+  "run_id": "eval_20260507_065822"
+}

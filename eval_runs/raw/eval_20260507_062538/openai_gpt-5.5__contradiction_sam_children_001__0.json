@@ -1,0 +1,54 @@
+{
+  "error": null,
+  "fixture_id": "contradiction_sam_children_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "The new statement directly contradicts the existing memory. Do not replace the existing fact without clarification; mark Sam from Goldman's child-count information as disputed.",
+    "citations": [],
+    "conflict_classification": "direct_contradiction",
+    "decision": "do_not_commit_as_current_fact",
+    "entity_resolution": {
+      "action": "same_entity_assumed",
+      "entity_id": null,
+      "reason": "Both statements refer to 'Sam from Goldman'; no evidence indicates they are different people."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "conflict_note",
+        "relationships": [
+          {
+            "object": "two children vs no children",
+            "predicate": "has_children_count_conflict",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Existing memory says Sam from Goldman has two children; new information says Sam from Goldman has no children. These cannot both be true for the same Sam at the same time, so the child-count fact is disputed."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Classified as a direct contradiction.",
+        "No durable current child-count fact committed.",
+        "Ambiguity preserved."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask whether the new statement is a correction to the old memory.",
+      "Ask whether there are two different people named Sam associated with Goldman.",
+      "Ask whether the intended current fact is that Sam from Goldman has no children, superseding the previous memory."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict\",\"decision\":\"do_not_commit_as_current_fact\",\"memory_cards\":[{\"kind\":\"conflict_note\",\"statement\":\"Existing memory says Sam from Goldman has two children; new information says Sam from Goldman has no children. These cannot both be true for the same Sam at the same time, so the child-count fact is disputed.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam from Goldman\",\"type\":\"person\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"Sam from Goldman\",\"predicate\":\"has_children_count_conflict\",\"object\":\"two children vs no children\"}]}],\"entity_resolution\":{\"action\":\"same_entity_assumed\",\"entity_id\":null,\"reason\":\"Both statements refer to 'Sam from Goldman'; no evidence indicates they are different people.\"},\"conflict_classification\":\"direct_contradiction\",\"answer\":\"The new statement directly contradicts the existing memory. Do not replace the existing fact without clarification; mark Sam from Goldman's child-count information as disputed.\",\"citations\":[],\"repair_options\":[\"Ask whether the new statement is a correction to the old memory.\",\"Ask whether there are two different people named Sam associated with Goldman.\",\"Ask whether the intended current fact is that Sam from Goldman has no children, superseding the previous memory.\"] ,\"receipt\":{\"success\":true,\"details\":[\"Classified as a direct contradiction.\",\"No durable current child-count fact committed.\",\"Ambiguity preserved.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

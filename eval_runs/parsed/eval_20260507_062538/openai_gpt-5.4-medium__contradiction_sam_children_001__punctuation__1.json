@@ -1,0 +1,35 @@
+{
+  "fixture_id": "contradiction_sam_children_001__punctuation",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "The new statement directly conflicts with the existing memory about Sam from Goldman\u2019s children: one says Sam has two children, the other says Sam has no children. This should not be durably committed as current fact without clarification or temporal context.",
+    "citations": [
+      "Existing memory: Sam from Goldman has two children",
+      "New: Sam from Goldman has no children"
+    ],
+    "conflict_classification": "direct_contradiction.cardinality",
+    "decision": "needs_review_do_not_commit",
+    "entity_resolution": {
+      "action": "link_to_existing_entity",
+      "entity_id": null,
+      "reason": "Both statements refer to the same described person, 'Sam from Goldman'."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected same subject across both statements.",
+        "Detected mutually exclusive child-count claims: two vs none.",
+        "Chose conflict classification and withheld durable memory commit."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for a timestamp or timeframe for each statement.",
+      "Request clarification about whether one statement is outdated or erroneous.",
+      "Store the new input only as an unverified conflicting claim until resolved.",
+      "If later evidence resolves the conflict, mark the losing claim as superseded rather than current."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

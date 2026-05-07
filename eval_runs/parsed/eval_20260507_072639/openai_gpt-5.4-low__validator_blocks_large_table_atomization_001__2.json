@@ -1,0 +1,37 @@
+{
+  "fixture_id": "validator_blocks_large_table_atomization_001",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Rejected. Proposing 500 durable memory cards from a CSV by creating one card per row is excessive atomization and not appropriate for durable personal memory. Bulk tabular rows should not be committed as individual long-term facts without strong evidence of enduring relevance, deduplication, summarization, and selection. Preserve the source externally or derive a small number of higher-level summaries or explicitly important exceptions instead.",
+    "citations": [
+      "Input states: 'LLM proposes 500 memory cards, one per CSV row.'"
+    ],
+    "conflict_classification": "invalid_granularity",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No entity resolution should be performed because the proposal is rejected before ingestion."
+    },
+    "intent": "Validate whether the proposed memory write should be committed to durable memory.",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Rejected proposal due to over-atomization of a large table into 500 memory cards.",
+        "No durable facts were committed.",
+        "Recommended repair: summarize, filter for enduring relevance, or store as an external artifact instead of row-wise memory cards."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Do not ingest row-level entries as durable memory by default.",
+      "Store the CSV outside durable memory and keep only a reference if needed.",
+      "Summarize the table into a small number of stable, high-value facts.",
+      "Extract only user-specific, enduring preferences, commitments, or recurring patterns.",
+      "Deduplicate rows and collapse repeated facts into aggregated statements.",
+      "Require explicit selection criteria for which rows are durable enough to remember.",
+      "If retention is needed, create one memory card about the dataset/resource itself rather than 500 row cards."
+    ]
+  },
+  "run_id": "eval_20260507_072639"
+}

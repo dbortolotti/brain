@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "fixture_id": "slack_conflict_buttons_001__punctuation",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "Saved the update that Sam left Goldman and joined Point72, and treated the older 'Sam works at Goldman' memory as superseded rather than current.",
+    "citations": [
+      "Existing memory: Sam works at Goldman",
+      "New input: /brain remember Sam left Goldman and joined Point72"
+    ],
+    "conflict_classification": "supersedes_prior_fact",
+    "decision": "commit_update_with_conflict",
+    "entity_resolution": {
+      "action": "link_to_existing",
+      "entity_id": null,
+      "reason": "The new statement appears to refer to the same Sam as the existing memory and provides a newer employment update."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "update",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected an explicit remember command.",
+        "Identified a direct conflict with an existing current-employment fact.",
+        "Stored the newer employment update without preserving the old fact as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark the old Goldman employment fact as no longer current.",
+      "Keep both facts only if the older one is retained as historical/former employment.",
+      "Ask for clarification if there are multiple people named Sam."
+    ]
+  },
+  "raw_text": "{\"intent\":\"remember\",\"decision\":\"commit_update_with_conflict\",\"memory_cards\":[{\"kind\":\"update\",\"statement\":\"Sam left Goldman and joined Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former_employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"current_employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"left\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"link_to_existing\",\"entity_id\":null,\"reason\":\"The new statement appears to refer to the same Sam as the existing memory and provides a newer employment update.\"},\"conflict_classification\":\"supersedes_prior_fact\",\"answer\":\"Saved the update that Sam left Goldman and joined Point72, and treated the older 'Sam works at Goldman' memory as superseded rather than current.\",\"citations\":[\"Existing memory: Sam works at Goldman\",\"New input: /brain remember Sam left Goldman and joined Point72\"],\"repair_options\":[\"Mark the old Goldman employment fact as no longer current.\",\"Keep both facts only if the older one is retained as historical/former employment.\",\"Ask for clarification if there are multiple people named Sam.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected an explicit remember command.\",\"Identified a direct conflict with an existing current-employment fact.\",\"Stored the newer employment update without preserving the old fact as current.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

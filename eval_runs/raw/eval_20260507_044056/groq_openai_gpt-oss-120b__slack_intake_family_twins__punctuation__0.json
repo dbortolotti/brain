@@ -1,0 +1,58 @@
+{
+  "error": null,
+  "fixture_id": "slack_intake_family_twins__punctuation",
+  "model": "groq:openai/gpt-oss-120b",
+  "payload": {
+    "answer": "Acknowledged. Added memory of twin daughters Nur and Sara.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "New fact about twin daughters"
+    },
+    "intent": "store_fact",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "twin_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Nur",
+            "predicate": "twin_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Nur and Sara are my twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"store_fact\",\"decision\":\"store\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Nur and Sara are my twin daughters.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Nur\",\"type\":\"person\",\"role\":\"daughter\"},{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"daughter\"}],\"relationships\":[{\"subject\":\"Nur\",\"predicate\":\"twin_of\",\"object\":\"Sara\"},{\"subject\":\"Sara\",\"predicate\":\"twin_of\",\"object\":\"Nur\"}]}],\"entity_resolution\":{\"action\":\"create\",\"entity_id\":null,\"reason\":\"New fact about twin daughters\"},\"conflict_classification\":\"none\",\"answer\":\"Acknowledged. Added memory of twin daughters Nur and Sara.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Memory card created\"]}}",
+  "run_id": "eval_20260507_044056",
+  "status": "ok"
+}

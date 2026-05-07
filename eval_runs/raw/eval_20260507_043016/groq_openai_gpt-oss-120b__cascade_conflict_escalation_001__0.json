@@ -1,0 +1,76 @@
+{
+  "error": null,
+  "fixture_id": "cascade_conflict_escalation_001",
+  "model": "groq:openai/gpt-oss-120b",
+  "payload": {
+    "answer": "The statements \"Sara is my daughter\" and \"Sara is my niece\" are mutually exclusive; they cannot both be true simultaneously.",
+    "citations": [
+      "existing",
+      "input"
+    ],
+    "conflict_classification": "family_relationship_conflict",
+    "decision": "conflict_detected",
+    "entity_resolution": {
+      "action": "flag",
+      "entity_id": null,
+      "reason": "Conflicting familial relationship statements for Sara."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship",
+        "relationships": [
+          {
+            "object": "me",
+            "predicate": "daughter",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my daughter."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship",
+        "relationships": [
+          {
+            "object": "me",
+            "predicate": "niece",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict identified",
+        "Memory cards recorded",
+        "Resolution flagged"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask user to clarify the correct relationship",
+      "Mark one statement as uncertain",
+      "Retain both with low confidence"
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict\",\"decision\":\"conflict_detected\",\"memory_cards\":[{\"kind\":\"relationship\",\"statement\":\"Sara is my daughter.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"daughter\",\"object\":\"me\"}]},{\"kind\":\"relationship\",\"statement\":\"Sara is my niece.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"niece\",\"object\":\"me\"}]}],\"entity_resolution\":{\"action\":\"flag\",\"entity_id\":null,\"reason\":\"Conflicting familial relationship statements for Sara.\"},\"conflict_classification\":\"family_relationship_conflict\",\"answer\":\"The statements \\\"Sara is my daughter\\\" and \\\"Sara is my niece\\\" are mutually exclusive; they cannot both be true simultaneously.\",\"citations\":[\"existing\",\"input\"],\"repair_options\":[\"Ask user to clarify the correct relationship\",\"Mark one statement as uncertain\",\"Retain both with low confidence\"],\"receipt\":{\"success\":true,\"details\":[\"Conflict identified\",\"Memory cards recorded\",\"Resolution flagged\"]}}",
+  "run_id": "eval_20260507_043016",
+  "status": "ok"
+}

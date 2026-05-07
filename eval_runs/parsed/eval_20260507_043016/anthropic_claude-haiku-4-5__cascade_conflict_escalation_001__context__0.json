@@ -1,0 +1,75 @@
+{
+  "fixture_id": "cascade_conflict_escalation_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "The input cannot be committed. Sara cannot simultaneously be both a daughter and a niece in the same genealogical context. The existing fact 'Sara is my daughter' is preserved as durable memory.",
+    "citations": [
+      "Existing: Sara is my daughter",
+      "Input: Sara is my niece",
+      "Genealogical constraint: parent-child and aunt/uncle-niece relationships are mutually exclusive for the same individual"
+    ],
+    "conflict_classification": "DIRECT_CONTRADICTION",
+    "decision": "REJECT_INPUT_PRESERVE_AMBIGUITY",
+    "entity_resolution": {
+      "action": "hold_for_clarification",
+      "entity_id": "Sara",
+      "reason": "Mutually exclusive relationship claims cannot both be true. Existing fact 'daughter' is durable and takes precedence. New input 'niece' is rejected without clarification."
+    },
+    "intent": "Classify relationship conflict between existing and new input facts",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "has_daughter",
+            "subject": "I"
+          }
+        ],
+        "statement": "Sara is my daughter"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "disputed",
+            "type": "person"
+          }
+        ],
+        "kind": "conflict_record",
+        "relationships": [
+          {
+            "object": "daughter_vs_niece",
+            "predicate": "relationship_disputed",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Input 'Sara is my niece' contradicts existing fact 'Sara is my daughter'"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Input rejected due to direct contradiction with durable memory",
+        "Existing fact preserved: Sara is my daughter",
+        "Conflict flagged for user clarification",
+        "No memory state modified"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Clarify: Is Sara your daughter, or is Sara your niece? (mutually exclusive)",
+      "Clarify: Do you have multiple people named Sara in different relationships?",
+      "Clarify: Has Sara's relationship status changed (e.g., adoption, custody change)?"
+    ]
+  },
+  "run_id": "eval_20260507_043016"
+}

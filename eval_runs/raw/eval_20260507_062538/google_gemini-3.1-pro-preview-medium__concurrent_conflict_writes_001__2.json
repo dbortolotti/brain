@@ -1,0 +1,84 @@
+{
+  "error": null,
+  "fixture_id": "concurrent_conflict_writes_001",
+  "model": "google:gemini-3.1-pro-preview-medium",
+  "payload": {
+    "answer": "Recorded both statements. It is currently ambiguous whether Sam works at Goldman, Point72, or both.",
+    "citations": [
+      "Sam works at Goldman.",
+      "Sam joined Point72."
+    ],
+    "conflict_classification": "concurrent_writes",
+    "decision": "preserve_ambiguity",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "sam",
+      "reason": "Both statements refer to the same person, Sam."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Successfully parsed concurrent writes.",
+        "Preserved ambiguity regarding Sam's current employer."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Prompt user to clarify if Sam left Goldman for Point72.",
+      "Prompt user to clarify if Sam works at both concurrently."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"classify_conflict\",\n  \"decision\": \"preserve_ambiguity\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"employment\",\n      \"statement\": \"Sam works at Goldman.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"employee\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"employment\",\n      \"statement\": \"Sam joined Point72.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"employee\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge\",\n    \"entity_id\": \"sam\",\n    \"reason\": \"Both statements refer to the same person, Sam.\"\n  },\n  \"conflict_classification\": \"concurrent_writes\",\n  \"answer\": \"Recorded both statements. It is currently ambiguous whether Sam works at Goldman, Point72, or both.\",\n  \"citations\": [\n    \"Sam works at Goldman.\",\n    \"Sam joined Point72.\"\n  ],\n  \"repair_options\": [\n    \"Prompt user to clarify if Sam left Goldman for Point72.\",\n    \"Prompt user to clarify if Sam works at both concurrently.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Successfully parsed concurrent writes.\",\n      \"Preserved ambiguity regarding Sam's current employer.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

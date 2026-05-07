@@ -1,0 +1,33 @@
+{
+  "fixture_id": "duplicate_sam_bill_evans_001",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "No durable update needed. The new input duplicates an existing memory.",
+    "citations": [
+      "Existing memory: Sam from Goldman mentioned that he likes Bill Evans.",
+      "New: Sam from Goldman said he likes Bill Evans."
+    ],
+    "conflict_classification": "duplicate",
+    "decision": "noop_duplicate",
+    "entity_resolution": {
+      "action": "same_as_existing",
+      "entity_id": null,
+      "reason": "The new statement is semantically identical to the existing memory and appears to refer to the same Sam associated with Goldman and the same preference for Bill Evans."
+    },
+    "intent": "assess_new_memory_against_existing",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected semantic equivalence between existing and new memory.",
+        "Classified as duplicate, not a conflict.",
+        "Suppressed creation of a new memory card to avoid redundancy."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Keep the existing memory unchanged.",
+      "If provenance tracking is supported, attach the new mention as an additional confirming source rather than creating a new fact."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

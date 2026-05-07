@@ -1,0 +1,83 @@
+{
+  "fixture_id": "supersession_sam_job_001__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Treat the new information as superseding the older employment fact. Sam should no longer be stored as currently working at Goldman; current employer is Point72, with Goldman retained only as past employment.",
+    "citations": [
+      "Existing memory: Sam works at Goldman.",
+      "New: Sam left Goldman and joined Point72."
+    ],
+    "conflict_classification": "supersession",
+    "decision": "apply_superseding_update",
+    "entity_resolution": {
+      "action": "reuse_existing",
+      "entity_id": null,
+      "reason": "The new statement refers to the same person, Sam, and updates an existing employment fact with a newer employer."
+    },
+    "intent": "update_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Point72."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "former employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "previously_worked_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam previously worked at Goldman."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected direct contradiction on current employer.",
+        "Classified change as a temporal supersession rather than coexistence.",
+        "Prepared updated current fact and historical prior-employment fact."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace current relationship Sam works_at Goldman with Sam works_at Point72.",
+      "If historical employment is retained, downgrade Goldman to a past-employment relationship rather than a current one.",
+      "Do not present Goldman as Sam's current employer in future retrievals."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

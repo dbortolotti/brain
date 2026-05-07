@@ -1,0 +1,35 @@
+{
+  "fixture_id": "ambiguous_time_reference_001",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "I would not store this as durable current memory. The report is attributed speech and the timing is ambiguous without a reference date. A safer follow-up would be: 'On YYYY-MM-DD, Sam said he planned to leave Goldman in YYYY-MM' once the dates and identity are clarified.",
+    "citations": [
+      "Input: 'Sam said last Friday that he is leaving Goldman next month.'"
+    ],
+    "conflict_classification": "ambiguous_time_reference",
+    "decision": "defer",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No durable memory committed because the statement is second-hand and contains unresolved relative dates ('last Friday', 'next month'). 'Sam' is also not uniquely identifiable."
+    },
+    "intent": "extract_memory",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Parsed a possible employment-change claim.",
+        "Detected unresolved relative time expressions.",
+        "Detected reported speech/hearsay rather than a confirmed durable fact.",
+        "Chose not to commit a memory card to avoid storing an ambiguous or potentially superseded fact."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Resolve 'last Friday' to a calendar date.",
+      "Resolve 'next month' to a specific month/year.",
+      "Confirm whether this is a direct fact or only Sam's stated plan.",
+      "Disambiguate which Sam is being referenced."
+    ]
+  },
+  "run_id": "eval_20260507_072639"
+}

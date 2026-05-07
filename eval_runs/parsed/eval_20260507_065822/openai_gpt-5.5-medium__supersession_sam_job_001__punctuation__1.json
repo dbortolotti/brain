@@ -1,0 +1,83 @@
+{
+  "fixture_id": "supersession_sam_job_001__punctuation",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "The statement that Sam left Goldman and joined Point72 supersedes the earlier current-employment memory that Sam works at Goldman. Current memory should be Sam works at Point72, with Goldman retained only as past employment.",
+    "citations": [
+      "Sam works at Goldman",
+      "Sam left Goldman and joined Point72"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "supersede_existing_memory",
+    "entity_resolution": {
+      "action": "resolve_to_existing",
+      "entity_id": null,
+      "reason": "The new statement refers to the same person, Sam, and updates the prior employment fact."
+    },
+    "intent": "classify_memory_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_current",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Point72."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "former_employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_past",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "formerly_worked_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam previously worked at Goldman."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected current-employment conflict.",
+        "Classified the newer statement as a supersession of the older Goldman employment fact.",
+        "Did not present the superseded Goldman employment as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark 'Sam works at Goldman' as superseded, not current.",
+      "Store 'Sam works at Point72' as current employment.",
+      "Optionally store 'Sam previously worked at Goldman' as past employment."
+    ]
+  },
+  "run_id": "eval_20260507_065822"
+}

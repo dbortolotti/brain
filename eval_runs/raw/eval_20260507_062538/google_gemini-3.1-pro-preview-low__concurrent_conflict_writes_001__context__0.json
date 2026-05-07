@@ -1,0 +1,80 @@
+{
+  "error": null,
+  "fixture_id": "concurrent_conflict_writes_001__context",
+  "model": "google:gemini-3.1-pro-preview-low",
+  "payload": {
+    "answer": "There is a conflict regarding Sam's employment. One statement says Sam works at Goldman, while another says Sam joined Point72.",
+    "citations": [],
+    "conflict_classification": "concurrent_conflict",
+    "decision": "classify_conflict",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": "Sam",
+      "reason": "Same person mentioned in both statements."
+    },
+    "intent": "conflict_classification",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict identified between Goldman and Point72 for Sam's employment."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Update Sam's employer to Point72 if it is the most recent.",
+      "Keep both if Sam works at both simultaneously."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"conflict_classification\",\n  \"decision\": \"classify_conflict\",\n  \"conflict_classification\": \"concurrent_conflict\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam works at Goldman.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"employee\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works at\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam joined Point72.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"employee\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolve\",\n    \"entity_id\": \"Sam\",\n    \"reason\": \"Same person mentioned in both statements.\"\n  },\n  \"answer\": \"There is a conflict regarding Sam's employment. One statement says Sam works at Goldman, while another says Sam joined Point72.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Update Sam's employer to Point72 if it is the most recent.\",\n    \"Keep both if Sam works at both simultaneously.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Conflict identified between Goldman and Point72 for Sam's employment.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

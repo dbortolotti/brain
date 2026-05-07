@@ -1,0 +1,35 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_large_table_atomization_001__context",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "Rejected. A CSV-like table should not be converted into hundreds of long-term memory cards by default. This is likely bulk data ingestion, not durable personal memory. Preserve it as a document, summarize it, or extract only explicitly durable user-relevant facts if requested.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The proposal atomizes a large CSV into 500 separate memory cards without evidence that each row is a durable, user-specific fact worth remembering."
+    },
+    "intent": "validate_memory_write_proposal",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Blocked large-table atomization.",
+        "No durable memory cards committed.",
+        "No current facts inferred from the proposed 500 CSV rows."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Store the CSV externally or as a single referenced document rather than 500 memory cards.",
+      "Create a concise summary of the table if the user asked for recall of its contents.",
+      "Extract only stable, user-specific preferences, commitments, identities, or long-term facts from the CSV.",
+      "Ask the user which rows or fields should be remembered if long-term memory is intended."
+    ]
+  },
+  "raw_text": "{\"intent\":\"validate_memory_write_proposal\",\"decision\":\"reject\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The proposal atomizes a large CSV into 500 separate memory cards without evidence that each row is a durable, user-specific fact worth remembering.\"},\"conflict_classification\":\"none\",\"answer\":\"Rejected. A CSV-like table should not be converted into hundreds of long-term memory cards by default. This is likely bulk data ingestion, not durable personal memory. Preserve it as a document, summarize it, or extract only explicitly durable user-relevant facts if requested.\",\"citations\":[],\"repair_options\":[\"Store the CSV externally or as a single referenced document rather than 500 memory cards.\",\"Create a concise summary of the table if the user asked for recall of its contents.\",\"Extract only stable, user-specific preferences, commitments, identities, or long-term facts from the CSV.\",\"Ask the user which rows or fields should be remembered if long-term memory is intended.\"],\"receipt\":{\"success\":false,\"details\":[\"Blocked large-table atomization.\",\"No durable memory cards committed.\",\"No current facts inferred from the proposed 500 CSV rows.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

@@ -1,0 +1,36 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_high_confidence_overwrite_001__context",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "Rejected the proposed update. Existing memory says Sara is Daniele's daughter; the proposal says Sara is Daniele's niece. Do not overwrite the existing relationship without explicit clarification or stronger evidence.",
+    "citations": [
+      "Existing: Sara is Daniele's daughter.",
+      "LLM proposes: Sara is Daniele's niece."
+    ],
+    "conflict_classification": "direct_conflict_with_existing_memory",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "match_existing",
+      "entity_id": null,
+      "reason": "The proposed fact refers to the same named entities, Sara and Daniele, but asserts a different family relationship than the existing memory."
+    },
+    "intent": "validate_memory_update",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No durable memory was committed.",
+        "Blocked proposed overwrite because it conflicts with existing memory."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask the user to clarify whether Sara is Daniele's daughter or niece.",
+      "If both relationships are intentionally true, record the special context explaining how Sara is both Daniele's daughter and niece.",
+      "Require stronger evidence before replacing the existing daughter relationship with niece."
+    ]
+  },
+  "raw_text": "{\"intent\":\"validate_memory_update\",\"decision\":\"reject\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"match_existing\",\"entity_id\":null,\"reason\":\"The proposed fact refers to the same named entities, Sara and Daniele, but asserts a different family relationship than the existing memory.\"},\"conflict_classification\":\"direct_conflict_with_existing_memory\",\"answer\":\"Rejected the proposed update. Existing memory says Sara is Daniele's daughter; the proposal says Sara is Daniele's niece. Do not overwrite the existing relationship without explicit clarification or stronger evidence.\",\"citations\":[\"Existing: Sara is Daniele's daughter.\",\"LLM proposes: Sara is Daniele's niece.\"],\"repair_options\":[\"Ask the user to clarify whether Sara is Daniele's daughter or niece.\",\"If both relationships are intentionally true, record the special context explaining how Sara is both Daniele's daughter and niece.\",\"Require stronger evidence before replacing the existing daughter relationship with niece.\"],\"receipt\":{\"success\":false,\"details\":[\"No durable memory was committed.\",\"Blocked proposed overwrite because it conflicts with existing memory.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

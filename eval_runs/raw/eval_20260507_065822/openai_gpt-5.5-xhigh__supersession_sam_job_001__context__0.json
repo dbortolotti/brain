@@ -1,0 +1,73 @@
+{
+  "error": null,
+  "fixture_id": "supersession_sam_job_001__context",
+  "model": "openai:gpt-5.5-xhigh",
+  "payload": {
+    "answer": "The new information supersedes the prior current-employment memory. Do not treat 'Sam works at Goldman' as current; Sam now works at Point72, with Goldman retained only as a former employer if employment history is stored.",
+    "citations": [],
+    "conflict_classification": "supersession",
+    "decision": "commit_supersession",
+    "entity_resolution": {
+      "action": "link_to_existing_entity",
+      "entity_id": null,
+      "reason": "The new statement refers to the same named person, Sam, as the existing memory; no competing entity candidates are provided."
+    },
+    "intent": "memory_update",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "currently_works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Classified as supersession because the new employment update replaces the prior current-employment fact.",
+        "Committed the current employer as Point72 and treated Goldman as former employer only."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark the existing memory 'Sam works at Goldman' as superseded or ended.",
+      "Add or update current employment to 'Sam works at Point72.'",
+      "Optionally retain 'Sam previously worked at Goldman' as historical information."
+    ]
+  },
+  "raw_text": "{\"intent\":\"memory_update\",\"decision\":\"commit_supersession\",\"memory_cards\":[{\"kind\":\"employment\",\"statement\":\"Sam left Goldman and joined Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"employee\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former_employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"current_employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"left\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"},{\"subject\":\"Sam\",\"predicate\":\"currently_works_at\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"link_to_existing_entity\",\"entity_id\":null,\"reason\":\"The new statement refers to the same named person, Sam, as the existing memory; no competing entity candidates are provided.\"},\"conflict_classification\":\"supersession\",\"answer\":\"The new information supersedes the prior current-employment memory. Do not treat 'Sam works at Goldman' as current; Sam now works at Point72, with Goldman retained only as a former employer if employment history is stored.\",\"citations\":[],\"repair_options\":[\"Mark the existing memory 'Sam works at Goldman' as superseded or ended.\",\"Add or update current employment to 'Sam works at Point72.'\",\"Optionally retain 'Sam previously worked at Goldman' as historical information.\"],\"receipt\":{\"success\":true,\"details\":[\"Classified as supersession because the new employment update replaces the prior current-employment fact.\",\"Committed the current employer as Point72 and treated Goldman as former employer only.\"]}}",
+  "run_id": "eval_20260507_065822",
+  "status": "ok"
+}

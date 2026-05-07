@@ -1,0 +1,33 @@
+{
+  "fixture_id": "typos_shorthand_person_interaction_001",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Not saved as durable memory. The message is too ambiguous and hedged ('apparently'). Please clarify who Sam is, whether 'goldmn' means Goldman Sachs, and which Bill Evans you mean.",
+    "citations": [
+      "sam frm goldmn likes bill evns apparently"
+    ],
+    "conflict_classification": "ambiguous_hearsay",
+    "decision": "defer",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The message contains shorthand/typos and unresolved references: 'sam' is not uniquely identified, 'goldmn' is likely 'Goldman' but unclear, and 'bill evns' may refer to multiple people. The qualifier 'apparently' makes this hearsay rather than a durable fact."
+    },
+    "intent": "capture_memory_from_message",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No durable memory committed.",
+        "Ambiguous entities and shorthand prevented reliable entity resolution.",
+        "Statement is hedged as hearsay ('apparently'), so it should not be stored as a current fact."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Clarify the names: 'Sam [last name] from Goldman Sachs likes Bill Evans.'",
+      "If uncertain, record it as a tentative observation with source: 'I heard that Sam from Goldman may like Bill Evans.'",
+      "Specify which Bill Evans is intended (e.g., the jazz pianist or another person)."
+    ]
+  },
+  "run_id": "eval_20260507_072639"
+}

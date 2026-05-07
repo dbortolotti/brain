@@ -1,0 +1,33 @@
+{
+  "fixture_id": "cascade_validator_failure_escalates_001__context",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "Rejected safely. No memory was committed because the prior proposal was invalid or unsafe and the input contains no durable personal-memory fact.",
+    "citations": [
+      "cascade_validator_failure_escalates_001__context"
+    ],
+    "conflict_classification": "invalid_or_unsafe_proposal",
+    "decision": "safe_reject",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The provided context describes an invalid schema or unsafe proposal from a cheaper model and contains no durable user memory to commit."
+    },
+    "intent": "validate_memory_proposal",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Validated the failure context.",
+        "No memory cards were created.",
+        "No entity resolution was performed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Escalate to a stronger model for re-evaluation.",
+      "Return a safe rejection without committing memory.",
+      "Request a valid memory proposal that conforms to the schema and is supported by user-provided facts."
+    ]
+  },
+  "run_id": "eval_20260507_072639"
+}

@@ -1,0 +1,33 @@
+{
+  "fixture_id": "validator_blocks_large_table_atomization_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Rejected. Do not commit 500 row-level memory cards. A large CSV/table should be summarized, indexed, or stored as source data outside durable memory unless specific rows contain durable, user-relevant facts. Preserve ambiguity and avoid treating bulk dataset rows as personal memory without explicit relevance and validation.",
+    "citations": [],
+    "conflict_classification": "not_applicable",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The proposal to create 500 memory cards, one per CSV row, is insufficiently selective and likely violates durable-memory standards. Large tabular data should not be atomized into hundreds of long-term memory cards unless each row represents a distinct durable user preference, identity fact, relationship, or stable commitment with clear future utility."
+    },
+    "intent": "evaluate_memory_card_proposal",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Rejected bulk atomization of a large table into memory cards.",
+        "No durable memories committed.",
+        "Recommended summarization, explicit user selection, or external storage instead."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Create a single summary memory card describing the dataset only if the user intends it to be remembered and the dataset has durable future relevance.",
+      "Ask the user which specific rows or fields should be remembered.",
+      "Extract only stable personal preferences, commitments, identities, or relationship facts with clear future utility.",
+      "Store the CSV externally or as an attachment/reference rather than converting each row into durable memory.",
+      "If the table represents an ongoing project, create a compact project/context memory card plus a pointer to the source file."
+    ]
+  },
+  "run_id": "eval_20260507_072639"
+}

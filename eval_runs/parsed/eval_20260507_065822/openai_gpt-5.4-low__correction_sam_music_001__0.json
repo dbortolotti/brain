@@ -1,0 +1,69 @@
+{
+  "fixture_id": "correction_sam_music_001",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Apply the correction: replace the existing preference memory. Keep 'Sam from Goldman likes early Coltrane' as current, and treat 'Sam from Goldman likes Bill Evans' as superseded by explicit correction.",
+    "citations": [
+      "Existing memory: 'Sam from Goldman likes Bill Evans.'",
+      "Correction: 'Sam from Goldman actually likes early Coltrane, not Bill Evans.'"
+    ],
+    "conflict_classification": "direct_correction",
+    "decision": "update_existing_memory",
+    "entity_resolution": {
+      "action": "link_to_existing_entity",
+      "entity_id": "Sam_from_Goldman",
+      "reason": "The correction refers to the same person as the existing memory: Sam from Goldman."
+    },
+    "intent": "process_correction",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "music_preference"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected explicit contradiction introduced by correction phrase 'actually' and negation 'not Bill Evans'.",
+        "Resolved subject as the same entity: Sam from Goldman.",
+        "Committed only the corrected preference as current durable memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace the old preference fact with the corrected one.",
+      "Mark the previous 'likes Bill Evans' memory as superseded/incorrect.",
+      "If provenance is tracked, preserve the old fact only as historical error metadata, not as current memory."
+    ]
+  },
+  "run_id": "eval_20260507_065822"
+}

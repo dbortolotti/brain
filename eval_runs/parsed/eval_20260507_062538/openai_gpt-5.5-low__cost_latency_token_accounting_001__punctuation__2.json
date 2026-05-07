@@ -1,0 +1,26 @@
+{
+  "fixture_id": "cost_latency_token_accounting_001__punctuation",
+  "model": "openai:gpt-5.5-low",
+  "payload": {
+    "answer": "Required eval accounting fields typically include: token counts, provider/model identifiers, estimated price, and latency percentiles.\n\nToken counts: Record input/prompt tokens, output/completion tokens, and total tokens. If available, also include cached tokens, reasoning tokens, tool-call tokens, or multimodal tokens separately. These fields are needed to audit usage and cost.\n\nProvider/model IDs: Record the provider name and exact model identifier used for the run, such as the vendor, model family, version, or deployment ID. This makes results reproducible and lets cost and latency be attributed to the correct backend.\n\nEstimated price: Compute estimated cost from recorded token counts and the provider/model pricing schedule. This is usually split into input cost, output cost, and total cost. Mark it as estimated because pricing tables, discounts, caching, batching, or provider-side metering can differ from local calculations.\n\nLatency p50, p90, p95: Report percentile latency across repeated eval calls or samples. p50 is the median latency, p90 means 90% of requests completed at or below that latency, and p95 means 95% completed at or below that latency. These fields summarize typical and tail performance better than a single average.\n\nA robust eval record should preserve the units for each field, for example tokens as counts, price as currency such as USD, and latency as milliseconds or seconds.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "No durable memory should be committed; this is a request for an explanation of evaluation accounting fields, not a user preference or lasting fact.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No user-specific or durable entity is introduced."
+    },
+    "intent": "Explain required evaluation accounting fields for cost, latency, and token accounting.",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Returned explanation only; no durable memory created.",
+        "Preserved estimated nature of pricing and percentile interpretation for latency."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_062538"
+}

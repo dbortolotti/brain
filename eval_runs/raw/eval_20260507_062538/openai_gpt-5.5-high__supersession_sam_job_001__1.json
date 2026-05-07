@@ -1,0 +1,81 @@
+{
+  "error": null,
+  "fixture_id": "supersession_sam_job_001",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "The new information supersedes the existing memory: Sam should no longer be represented as currently working at Goldman. Store that Sam left Goldman and joined Point72.",
+    "citations": [
+      "Existing memory: Sam works at Goldman.",
+      "New: Sam left Goldman and joined Point72."
+    ],
+    "conflict_classification": "supersession",
+    "decision": "supersede_prior_employment_fact_and_store_new_employment_update",
+    "entity_resolution": {
+      "action": "merge_with_existing_entity",
+      "entity_id": null,
+      "reason": "The new statement appears to refer to the same Sam as the existing memory and updates Sam's employment status."
+    },
+    "intent": "update_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_update",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "formerly_worked_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Classified as supersession rather than an unresolved contradiction.",
+        "Prepared memory update that avoids presenting Goldman as Sam's current employer."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark the prior 'Sam works at Goldman' memory as superseded or ended.",
+      "Add the new current employment memory: Sam joined Point72.",
+      "Retain Goldman only as Sam's former employer, not current employer."
+    ]
+  },
+  "raw_text": "{\"intent\":\"update_memory\",\"decision\":\"supersede_prior_employment_fact_and_store_new_employment_update\",\"memory_cards\":[{\"kind\":\"employment_update\",\"statement\":\"Sam left Goldman and joined Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former_employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"current_employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"left\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"},{\"subject\":\"Sam\",\"predicate\":\"formerly_worked_at\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"merge_with_existing_entity\",\"entity_id\":null,\"reason\":\"The new statement appears to refer to the same Sam as the existing memory and updates Sam's employment status.\"},\"conflict_classification\":\"supersession\",\"answer\":\"The new information supersedes the existing memory: Sam should no longer be represented as currently working at Goldman. Store that Sam left Goldman and joined Point72.\",\"citations\":[\"Existing memory: Sam works at Goldman.\",\"New: Sam left Goldman and joined Point72.\"],\"repair_options\":[\"Mark the prior 'Sam works at Goldman' memory as superseded or ended.\",\"Add the new current employment memory: Sam joined Point72.\",\"Retain Goldman only as Sam's former employer, not current employer.\"],\"receipt\":{\"success\":true,\"details\":[\"Classified as supersession rather than an unresolved contradiction.\",\"Prepared memory update that avoids presenting Goldman as Sam's current employer.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

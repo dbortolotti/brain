@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "fixture_id": "temporal_status_transition_001__punctuation",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "The new information supersedes the prior open/planned status. Preserve the historical transition if desired, but do not present 'planned, status=open' as current. Current status should be recorded as implemented at the MVP stage.",
+    "citations": [
+      "Existing: 'The Brain Slack agent is planned, status=open'",
+      "New: 'The Brain Slack agent MVP is now implemented'"
+    ],
+    "conflict_classification": "temporal_status_transition",
+    "decision": "update_existing_fact_with_temporal_status_transition",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "The Brain Slack agent",
+      "reason": "The existing and new statements refer to the same project; 'MVP' is a more specific later-stage status, not a different entity."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "The Brain Slack agent",
+            "role": "subject",
+            "type": "project"
+          }
+        ],
+        "kind": "project_status_update",
+        "relationships": [
+          {
+            "object": "implemented (MVP)",
+            "predicate": "status_transitioned_to",
+            "subject": "The Brain Slack agent"
+          }
+        ],
+        "statement": "The Brain Slack agent has transitioned from planned/open to implemented at the MVP stage."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected same project entity across both statements despite punctuation/phrasing differences.",
+        "Classified as a temporal progression rather than an irreconcilable contradiction.",
+        "Recommended updating durable memory to the newer current status only."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace the current status with 'implemented (MVP)'.",
+      "Optionally retain the prior 'planned/open' state as historical timeline context.",
+      "Normalize punctuation and phrasing so both statements resolve to the same project entity."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict\",\"decision\":\"update_existing_fact_with_temporal_status_transition\",\"memory_cards\":[{\"kind\":\"project_status_update\",\"statement\":\"The Brain Slack agent has transitioned from planned/open to implemented at the MVP stage.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"The Brain Slack agent\",\"type\":\"project\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"The Brain Slack agent\",\"predicate\":\"status_transitioned_to\",\"object\":\"implemented (MVP)\"}]}],\"entity_resolution\":{\"action\":\"merge\",\"entity_id\":\"The Brain Slack agent\",\"reason\":\"The existing and new statements refer to the same project; 'MVP' is a more specific later-stage status, not a different entity.\"},\"conflict_classification\":\"temporal_status_transition\",\"answer\":\"The new information supersedes the prior open/planned status. Preserve the historical transition if desired, but do not present 'planned, status=open' as current. Current status should be recorded as implemented at the MVP stage.\",\"citations\":[\"Existing: 'The Brain Slack agent is planned, status=open'\",\"New: 'The Brain Slack agent MVP is now implemented'\"],\"repair_options\":[\"Replace the current status with 'implemented (MVP)'.\",\"Optionally retain the prior 'planned/open' state as historical timeline context.\",\"Normalize punctuation and phrasing so both statements resolve to the same project entity.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected same project entity across both statements despite punctuation/phrasing differences.\",\"Classified as a temporal progression rather than an irreconcilable contradiction.\",\"Recommended updating durable memory to the newer current status only.\"]}}",
+  "run_id": "eval_20260507_071025",
+  "status": "ok"
+}

@@ -1,0 +1,76 @@
+{
+  "error": null,
+  "fixture_id": "chat_conclusion_brain_architecture_001__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Stored as contextual architectural guidance: Brain DB remains the source of truth, and Cognee is a rebuildable semantic projection.",
+    "citations": [
+      "Input conclusion: \"Brain should treat Cognee as a rebuildable semantic projection, while Brain DB remains the source of truth.\""
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "store_contextual_fact",
+    "entity_resolution": {
+      "action": "no_change",
+      "entity_id": null,
+      "reason": "Entities are referenced descriptively, but no canonical entity IDs are provided in the input."
+    },
+    "intent": "evaluate_memory_candidate_from_chat_conclusion",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system_component"
+          },
+          {
+            "name": "Cognee",
+            "role": "semantic_projection",
+            "type": "system_component"
+          },
+          {
+            "name": "Brain",
+            "role": "overall_memory_system",
+            "type": "system"
+          }
+        ],
+        "kind": "architectural_context",
+        "relationships": [
+          {
+            "object": "Brain",
+            "predicate": "is_source_of_truth_for",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "Brain",
+            "predicate": "is_rebuildable_semantic_projection_for",
+            "subject": "Cognee"
+          },
+          {
+            "object": "Brain DB",
+            "predicate": "is_subordinate_to",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "In the discussed architecture, Brain DB is treated as the source of truth, while Cognee is treated as a rebuildable semantic projection."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted one architectural context memory card.",
+        "Preserved the distinction between source of truth and rebuildable projection.",
+        "Did not infer any stronger permanence beyond the stated conclusion."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Store this as design context rather than immutable fact if architecture is still under discussion.",
+      "Lower confidence to low if this was only a tentative conclusion from one chat.",
+      "Attach a timestamp or decision record ID if this conclusion is part of a broader architecture log."
+    ]
+  },
+  "raw_text": "{\"intent\":\"evaluate_memory_candidate_from_chat_conclusion\",\"decision\":\"store_contextual_fact\",\"memory_cards\":[{\"kind\":\"architectural_context\",\"statement\":\"In the discussed architecture, Brain DB is treated as the source of truth, while Cognee is treated as a rebuildable semantic projection.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Brain DB\",\"type\":\"system_component\",\"role\":\"source_of_truth\"},{\"name\":\"Cognee\",\"type\":\"system_component\",\"role\":\"semantic_projection\"},{\"name\":\"Brain\",\"type\":\"system\",\"role\":\"overall_memory_system\"}],\"relationships\":[{\"subject\":\"Brain DB\",\"predicate\":\"is_source_of_truth_for\",\"object\":\"Brain\"},{\"subject\":\"Cognee\",\"predicate\":\"is_rebuildable_semantic_projection_for\",\"object\":\"Brain\"},{\"subject\":\"Cognee\",\"predicate\":\"is_subordinate_to\",\"object\":\"Brain DB\"}]}],\"entity_resolution\":{\"action\":\"no_change\",\"entity_id\":null,\"reason\":\"Entities are referenced descriptively, but no canonical entity IDs are provided in the input.\"},\"conflict_classification\":\"none_detected\",\"answer\":\"Stored as contextual architectural guidance: Brain DB remains the source of truth, and Cognee is a rebuildable semantic projection.\",\"citations\":[\"Input conclusion: \\\"Brain should treat Cognee as a rebuildable semantic projection, while Brain DB remains the source of truth.\\\"\"],\"repair_options\":[\"Store this as design context rather than immutable fact if architecture is still under discussion.\",\"Lower confidence to low if this was only a tentative conclusion from one chat.\",\"Attach a timestamp or decision record ID if this conclusion is part of a broader architecture log.\"],\"receipt\":{\"success\":true,\"details\":[\"Extracted one architectural context memory card.\",\"Preserved the distinction between source of truth and rebuildable projection.\",\"Did not infer any stronger permanence beyond the stated conclusion.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

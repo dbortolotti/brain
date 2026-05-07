@@ -1,0 +1,35 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_high_confidence_overwrite_001__punctuation",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "Rejected: do not overwrite the existing memory that Sara is Daniele's daughter with the conflicting claim that Sara is Daniele's niece unless the user explicitly clarifies this relationship.",
+    "citations": [
+      "Existing: Sara is Daniele's daughter",
+      "Proposed: Sara is Daniele's niece"
+    ],
+    "conflict_classification": "direct_relationship_conflict_high_confidence_overwrite",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "no_change",
+      "entity_id": null,
+      "reason": "The proposal refers to the same named entities, Sara and Daniele, but changes the existing kinship relationship from daughter to niece without evidence or clarification."
+    },
+    "intent": "validate_proposed_memory_update",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Blocked conflicting kinship overwrite.",
+        "No durable memory was added or changed."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask the user to clarify whether Sara is Daniele's daughter, niece, or both in some special family context.",
+      "Store the niece claim only as an unverified/conflicting assertion if explicit provenance is available, without replacing the daughter relationship."
+    ]
+  },
+  "raw_text": "{\"intent\":\"validate_proposed_memory_update\",\"decision\":\"reject\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"no_change\",\"entity_id\":null,\"reason\":\"The proposal refers to the same named entities, Sara and Daniele, but changes the existing kinship relationship from daughter to niece without evidence or clarification.\"},\"conflict_classification\":\"direct_relationship_conflict_high_confidence_overwrite\",\"answer\":\"Rejected: do not overwrite the existing memory that Sara is Daniele's daughter with the conflicting claim that Sara is Daniele's niece unless the user explicitly clarifies this relationship.\",\"citations\":[\"Existing: Sara is Daniele's daughter\",\"Proposed: Sara is Daniele's niece\"],\"repair_options\":[\"Ask the user to clarify whether Sara is Daniele's daughter, niece, or both in some special family context.\",\"Store the niece claim only as an unverified/conflicting assertion if explicit provenance is available, without replacing the daughter relationship.\"],\"receipt\":{\"success\":false,\"details\":[\"Blocked conflicting kinship overwrite.\",\"No durable memory was added or changed.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

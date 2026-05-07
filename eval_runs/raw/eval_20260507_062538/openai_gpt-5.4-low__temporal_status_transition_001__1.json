@@ -1,0 +1,67 @@
+{
+  "error": null,
+  "fixture_id": "temporal_status_transition_001",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Record the new fact as a scoped temporal update: the Brain Slack agent MVP is implemented. Do not replace the existing broader project state ('planned', status=open) for the full Brain Slack agent, because the new statement is narrower in scope and may represent only the MVP milestone being completed.",
+    "citations": [
+      "Existing: 'The Brain Slack agent is planned, status=open.'",
+      "New: 'The Brain Slack agent MVP is now implemented.'"
+    ],
+    "conflict_classification": "temporal_status_transition_with_scope_narrowing",
+    "decision": "record_scoped_status_update_without_overwriting_parent_project_status",
+    "entity_resolution": {
+      "action": "link_with_caution",
+      "entity_id": null,
+      "reason": "The new fact appears to refer to a scoped milestone (MVP) within the existing project 'The Brain Slack agent'. It is likely related to the same project, but 'MVP implemented' does not strictly prove the entire project is no longer open or that planning status for the broader project should be overwritten."
+    },
+    "intent": "classify_and_update_project_status",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "The Brain Slack agent",
+            "role": "parent_project",
+            "type": "project"
+          },
+          {
+            "name": "The Brain Slack agent MVP",
+            "role": "implemented_scope",
+            "type": "milestone"
+          }
+        ],
+        "kind": "project_update",
+        "relationships": [
+          {
+            "object": "implemented",
+            "predicate": "status",
+            "subject": "The Brain Slack agent MVP"
+          },
+          {
+            "object": "The Brain Slack agent",
+            "predicate": "part_of",
+            "subject": "The Brain Slack agent MVP"
+          }
+        ],
+        "statement": "The Brain Slack agent MVP is now implemented."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected a temporal status change.",
+        "Detected scope mismatch between parent project and MVP milestone.",
+        "Avoided presenting the older 'planned/open' state as superseded for the full project without explicit confirmation."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add a milestone-level memory: 'The Brain Slack agent MVP is implemented.'",
+      "Retain the broader project status as-is until there is explicit evidence that the full Brain Slack agent is implemented or closed.",
+      "If desired, revise the parent project to something less specific than 'planned' only with explicit confirmation, e.g. 'project has progressed beyond planning.'"
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_and_update_project_status\",\"decision\":\"record_scoped_status_update_without_overwriting_parent_project_status\",\"memory_cards\":[{\"kind\":\"project_update\",\"statement\":\"The Brain Slack agent MVP is now implemented.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"The Brain Slack agent\",\"type\":\"project\",\"role\":\"parent_project\"},{\"name\":\"The Brain Slack agent MVP\",\"type\":\"milestone\",\"role\":\"implemented_scope\"}],\"relationships\":[{\"subject\":\"The Brain Slack agent MVP\",\"predicate\":\"status\",\"object\":\"implemented\"},{\"subject\":\"The Brain Slack agent MVP\",\"predicate\":\"part_of\",\"object\":\"The Brain Slack agent\"}]}],\"entity_resolution\":{\"action\":\"link_with_caution\",\"entity_id\":null,\"reason\":\"The new fact appears to refer to a scoped milestone (MVP) within the existing project 'The Brain Slack agent'. It is likely related to the same project, but 'MVP implemented' does not strictly prove the entire project is no longer open or that planning status for the broader project should be overwritten.\"},\"conflict_classification\":\"temporal_status_transition_with_scope_narrowing\",\"answer\":\"Record the new fact as a scoped temporal update: the Brain Slack agent MVP is implemented. Do not replace the existing broader project state ('planned', status=open) for the full Brain Slack agent, because the new statement is narrower in scope and may represent only the MVP milestone being completed.\",\"citations\":[\"Existing: 'The Brain Slack agent is planned, status=open.'\",\"New: 'The Brain Slack agent MVP is now implemented.'\"],\"repair_options\":[\"Add a milestone-level memory: 'The Brain Slack agent MVP is implemented.'\",\"Retain the broader project status as-is until there is explicit evidence that the full Brain Slack agent is implemented or closed.\",\"If desired, revise the parent project to something less specific than 'planned' only with explicit confirmation, e.g. 'project has progressed beyond planning.'\"],\"receipt\":{\"success\":true,\"details\":[\"Detected a temporal status change.\",\"Detected scope mismatch between parent project and MVP milestone.\",\"Avoided presenting the older 'planned/open' state as superseded for the full project without explicit confirmation.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

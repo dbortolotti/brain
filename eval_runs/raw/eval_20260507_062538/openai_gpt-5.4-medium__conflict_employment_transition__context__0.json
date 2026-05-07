@@ -1,0 +1,83 @@
+{
+  "error": null,
+  "fixture_id": "conflict_employment_transition__context",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "The new fact supersedes the existing current-employment fact. Sam should no longer be stored as currently working at Goldman; instead, store Point72 as current employer and Goldman as former employer.",
+    "citations": [],
+    "conflict_classification": "temporal_successor_update",
+    "decision": "supersede_existing_current_employment_and_store_transition",
+    "entity_resolution": {
+      "action": "reuse_existing",
+      "entity_id": null,
+      "reason": "The new fact refers to the same person and organizations as the existing context and provides a newer temporal update."
+    },
+    "intent": "classify_and_apply_temporal_employment_update",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "semantic",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam currently works at Point72."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "former_employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "semantic",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "formerly_worked_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam previously worked at Goldman and has left that job."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected direct conflict with an existing current-employment fact.",
+        "Classified as a temporal transition rather than two simultaneous employers.",
+        "Prepared memory updates that avoid presenting the superseded Goldman fact as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace the current fact 'Sam works at Goldman' with 'Sam works at Point72'.",
+      "Retain Goldman only as past employment, not as current employment.",
+      "If the system supports temporal fields, close the Goldman employment interval and open a Point72 employment interval."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_and_apply_temporal_employment_update\",\"decision\":\"supersede_existing_current_employment_and_store_transition\",\"memory_cards\":[{\"kind\":\"semantic\",\"statement\":\"Sam currently works at Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"employee\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"current_employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Point72\"}]},{\"kind\":\"semantic\",\"statement\":\"Sam previously worked at Goldman and has left that job.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"former_employee\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former_employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"formerly_worked_at\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"reuse_existing\",\"entity_id\":null,\"reason\":\"The new fact refers to the same person and organizations as the existing context and provides a newer temporal update.\"},\"conflict_classification\":\"temporal_successor_update\",\"answer\":\"The new fact supersedes the existing current-employment fact. Sam should no longer be stored as currently working at Goldman; instead, store Point72 as current employer and Goldman as former employer.\",\"citations\":[],\"repair_options\":[\"Replace the current fact 'Sam works at Goldman' with 'Sam works at Point72'.\",\"Retain Goldman only as past employment, not as current employment.\",\"If the system supports temporal fields, close the Goldman employment interval and open a Point72 employment interval.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected direct conflict with an existing current-employment fact.\",\"Classified as a temporal transition rather than two simultaneous employers.\",\"Prepared memory updates that avoid presenting the superseded Goldman fact as current.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

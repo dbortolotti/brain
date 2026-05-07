@@ -1,0 +1,82 @@
+{
+  "error": null,
+  "fixture_id": "debug_explain_recall_sam__context",
+  "model": "openai:gpt-5.5-low",
+  "payload": {
+    "answer": "Recall returned mem_new because it is the current memory matching Sam from Goldman. mem_old was filtered out because it is superseded, so it should not be presented as current.",
+    "citations": [
+      "mem_new",
+      "mem_old"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "recall returned mem_new and excluded mem_old because mem_old is marked as superseded by a newer durable memory record",
+    "entity_resolution": {
+      "action": "resolved_to_current_memory",
+      "entity_id": "mem_new",
+      "reason": "The recall context identified Sam from Goldman, and among matching records mem_new is the non-superseded current record; mem_old was excluded due to supersession metadata."
+    },
+    "intent": "debug_explain_recall",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "queried entity",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation or disambiguating context",
+            "type": "organization"
+          },
+          {
+            "name": "mem_new",
+            "role": "current recalled memory",
+            "type": "memory_record"
+          },
+          {
+            "name": "mem_old",
+            "role": "superseded memory",
+            "type": "memory_record"
+          }
+        ],
+        "kind": "debug_explanation",
+        "relationships": [
+          {
+            "object": "mem_new",
+            "predicate": "is_superseded_by",
+            "subject": "mem_old"
+          },
+          {
+            "object": "Sam from Goldman",
+            "predicate": "matches_context",
+            "subject": "mem_new"
+          },
+          {
+            "object": "superseded",
+            "predicate": "filtered_because",
+            "subject": "mem_old"
+          }
+        ],
+        "statement": "For the query about Sam from Goldman, recall selected mem_new as the current applicable memory and filtered mem_old because mem_old has been superseded."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Explained why mem_new was returned.",
+        "Explained why mem_old was filtered.",
+        "Did not present superseded mem_old as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If mem_old was incorrectly marked superseded, remove or correct the supersession link.",
+      "If mem_new is inaccurate, update or supersede mem_new with a corrected memory.",
+      "If Sam from Goldman is ambiguous, add disambiguating entity details before recall."
+    ]
+  },
+  "raw_text": "{\"intent\":\"debug_explain_recall\",\"decision\":\"recall returned mem_new and excluded mem_old because mem_old is marked as superseded by a newer durable memory record\",\"memory_cards\":[{\"kind\":\"debug_explanation\",\"statement\":\"For the query about Sam from Goldman, recall selected mem_new as the current applicable memory and filtered mem_old because mem_old has been superseded.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"queried entity\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation or disambiguating context\"},{\"name\":\"mem_new\",\"type\":\"memory_record\",\"role\":\"current recalled memory\"},{\"name\":\"mem_old\",\"type\":\"memory_record\",\"role\":\"superseded memory\"}],\"relationships\":[{\"subject\":\"mem_old\",\"predicate\":\"is_superseded_by\",\"object\":\"mem_new\"},{\"subject\":\"mem_new\",\"predicate\":\"matches_context\",\"object\":\"Sam from Goldman\"},{\"subject\":\"mem_old\",\"predicate\":\"filtered_because\",\"object\":\"superseded\"}]}],\"entity_resolution\":{\"action\":\"resolved_to_current_memory\",\"entity_id\":\"mem_new\",\"reason\":\"The recall context identified Sam from Goldman, and among matching records mem_new is the non-superseded current record; mem_old was excluded due to supersession metadata.\"},\"conflict_classification\":\"supersession\",\"answer\":\"Recall returned mem_new because it is the current memory matching Sam from Goldman. mem_old was filtered out because it is superseded, so it should not be presented as current.\",\"citations\":[\"mem_new\",\"mem_old\"],\"repair_options\":[\"If mem_old was incorrectly marked superseded, remove or correct the supersession link.\",\"If mem_new is inaccurate, update or supersede mem_new with a corrected memory.\",\"If Sam from Goldman is ambiguous, add disambiguating entity details before recall.\"],\"receipt\":{\"success\":true,\"details\":[\"Explained why mem_new was returned.\",\"Explained why mem_old was filtered.\",\"Did not present superseded mem_old as current.\"]}}",
+  "run_id": "eval_20260507_065822",
+  "status": "ok"
+}

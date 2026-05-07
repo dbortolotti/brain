@@ -1,0 +1,61 @@
+{
+  "fixture_id": "contradiction_sam_children_001__context",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "Direct contradiction detected: the new claim conflicts with existing memory about Sam from Goldman\u2019s number of children. Do not overwrite durable memory with the new claim as current fact without clarifying evidence, timing, or source reliability.",
+    "citations": [
+      "Existing memory: 'Sam from Goldman has two children.'",
+      "New input: 'Sam from Goldman has no children.'"
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "do_not_commit_as_current_fact",
+    "entity_resolution": {
+      "action": "same_entity_assumed_with_caution",
+      "entity_id": null,
+      "reason": "Both statements refer to 'Sam from Goldman', so they likely target the same person, but the child-count claims directly conflict."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "conflict_note",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Existing memory says Sam from Goldman has two children, while new input says Sam from Goldman has no children. These claims are mutually inconsistent and should not both be held as current without clarification."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed existing and new statements.",
+        "Identified same named subject context: Sam from Goldman.",
+        "Detected mutually exclusive child-count claims.",
+        "Declined to commit the new statement as current durable memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request a source or timestamp for each claim.",
+      "Ask whether one statement is outdated, erroneous, or refers to a different Sam at Goldman.",
+      "Store the new claim only as a disputed assertion until resolved.",
+      "Prefer the more reliable or more recent claim if provenance becomes available."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

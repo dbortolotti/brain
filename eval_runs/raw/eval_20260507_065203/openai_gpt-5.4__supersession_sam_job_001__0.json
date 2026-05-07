@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "fixture_id": "supersession_sam_job_001",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "Store the new employment update and treat the prior memory 'Sam works at Goldman' as superseded by the more recent fact that Sam left Goldman and joined Point72.",
+    "citations": [],
+    "conflict_classification": "supersession",
+    "decision": "accept_with_supersession",
+    "entity_resolution": {
+      "action": "reuse_existing",
+      "entity_id": null,
+      "reason": "The new statement refers to the same person, Sam, and updates employer information rather than introducing a new entity."
+    },
+    "intent": "update_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "durable_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "formerly_worked_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected direct conflict between existing current-employer fact and new update.",
+        "Classified as supersession because the new statement explicitly indicates a job change.",
+        "Committed only the updated current state and preserved the old employer as former, not current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark the existing memory 'Sam works at Goldman' as no longer current.",
+      "Link the old employer fact as historical employment for Sam.",
+      "If timestamps are supported, record the transition so Point72 is current and Goldman is former."
+    ]
+  },
+  "raw_text": "{\"intent\":\"update_memory\",\"decision\":\"accept_with_supersession\",\"memory_cards\":[{\"kind\":\"durable_fact\",\"statement\":\"Sam left Goldman and joined Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"employee\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former_employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"current_employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"formerly_worked_at\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"reuse_existing\",\"entity_id\":null,\"reason\":\"The new statement refers to the same person, Sam, and updates employer information rather than introducing a new entity.\"},\"conflict_classification\":\"supersession\",\"answer\":\"Store the new employment update and treat the prior memory 'Sam works at Goldman' as superseded by the more recent fact that Sam left Goldman and joined Point72.\",\"citations\":[],\"repair_options\":[\"Mark the existing memory 'Sam works at Goldman' as no longer current.\",\"Link the old employer fact as historical employment for Sam.\",\"If timestamps are supported, record the transition so Point72 is current and Goldman is former.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected direct conflict between existing current-employer fact and new update.\",\"Classified as supersession because the new statement explicitly indicates a job change.\",\"Committed only the updated current state and preserved the old employer as former, not current.\"]}}",
+  "run_id": "eval_20260507_065203",
+  "status": "ok"
+}

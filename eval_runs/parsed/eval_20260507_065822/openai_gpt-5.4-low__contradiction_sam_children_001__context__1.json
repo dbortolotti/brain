@@ -1,0 +1,34 @@
+{
+  "fixture_id": "contradiction_sam_children_001__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Conflict detected: existing memory says Sam from Goldman has two children, while the new input says Sam from Goldman has no children. Do not store either claim as an updated current fact without additional evidence or temporal context.",
+    "citations": [
+      "Existing memory: Sam from Goldman has two children.",
+      "New input: Sam from Goldman has no children."
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "flag_conflict_do_not_commit",
+    "entity_resolution": {
+      "action": "resolve_to_existing_entity",
+      "entity_id": "Sam from Goldman",
+      "reason": "The new statement refers to the same person as the existing memory and directly contradicts it."
+    },
+    "intent": "evaluate_memory_conflict",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Identified same entity reference: Sam from Goldman.",
+        "Detected mutually exclusive claims about number of children.",
+        "No new durable memory committed due to unresolved contradiction."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request clarification or source evidence for the new claim.",
+      "Add temporal qualifiers if one claim refers to a different time period.",
+      "Mark the profile for human review before changing durable memory."
+    ]
+  },
+  "run_id": "eval_20260507_065822"
+}

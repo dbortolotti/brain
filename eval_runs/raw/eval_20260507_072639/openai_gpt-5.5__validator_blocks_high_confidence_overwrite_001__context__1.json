@@ -1,0 +1,37 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_high_confidence_overwrite_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Rejected the proposed memory because it would overwrite the existing relationship without sufficient evidence. Current durable memory remains: Sara is Daniele's daughter.",
+    "citations": [
+      "Existing: Sara is Daniele's daughter.",
+      "LLM proposes: Sara is Daniele's niece."
+    ],
+    "conflict_classification": "direct_conflict_high_confidence_overwrite",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "no_change",
+      "entity_id": null,
+      "reason": "The proposed relationship conflicts with the existing durable memory that Sara is Daniele's daughter. No evidence is provided to supersede or delete the existing fact."
+    },
+    "intent": "validate_proposed_memory_against_existing",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No new memory committed.",
+        "Existing durable memory preserved.",
+        "Conflicting proposed relationship rejected."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask for clarification whether Sara is Daniele's daughter or niece.",
+      "Record the niece relationship only if supported by new evidence and after resolving the conflict.",
+      "If the prior daughter relationship is wrong, explicitly mark it as corrected or superseded before adding the new relationship."
+    ]
+  },
+  "raw_text": "{\"intent\":\"validate_proposed_memory_against_existing\",\"decision\":\"reject\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"no_change\",\"entity_id\":null,\"reason\":\"The proposed relationship conflicts with the existing durable memory that Sara is Daniele's daughter. No evidence is provided to supersede or delete the existing fact.\"},\"conflict_classification\":\"direct_conflict_high_confidence_overwrite\",\"answer\":\"Rejected the proposed memory because it would overwrite the existing relationship without sufficient evidence. Current durable memory remains: Sara is Daniele's daughter.\",\"citations\":[\"Existing: Sara is Daniele's daughter.\",\"LLM proposes: Sara is Daniele's niece.\"],\"repair_options\":[\"Ask for clarification whether Sara is Daniele's daughter or niece.\",\"Record the niece relationship only if supported by new evidence and after resolving the conflict.\",\"If the prior daughter relationship is wrong, explicitly mark it as corrected or superseded before adding the new relationship.\"],\"receipt\":{\"success\":false,\"details\":[\"No new memory committed.\",\"Existing durable memory preserved.\",\"Conflicting proposed relationship rejected.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

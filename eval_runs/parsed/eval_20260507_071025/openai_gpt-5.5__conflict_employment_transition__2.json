@@ -1,0 +1,66 @@
+{
+  "fixture_id": "conflict_employment_transition",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "The new fact supersedes the existing current fact: Sam should no longer be treated as currently working at Goldman; Sam is now recorded as having left Goldman and joined Point72.",
+    "citations": [],
+    "conflict_classification": "temporal_supersession",
+    "decision": "supersede_existing_current_fact",
+    "entity_resolution": {
+      "action": "reuse_or_match_existing_person",
+      "entity_id": null,
+      "reason": "The new fact refers to the same Sam as the existing current employment fact."
+    },
+    "intent": "update_employment",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_transition",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "formerly_worked_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Classified as a temporal employment transition.",
+        "Existing current Goldman employment should be superseded, not retained as current.",
+        "New current employer is Point72."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark 'Sam works at Goldman' as superseded/former employment.",
+      "Add 'Sam works at Point72' as current employment.",
+      "Preserve 'Sam left Goldman' as the transition detail."
+    ]
+  },
+  "run_id": "eval_20260507_071025"
+}

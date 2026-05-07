@@ -1,0 +1,82 @@
+{
+  "error": null,
+  "fixture_id": "debug_explain_recall_sam__punctuation",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "Recall returned mem_new because it is the active memory stating Sam is from Goldman. mem_old was filtered out because it is explicitly superseded by mem_new, and superseded memories are not surfaced as current facts.",
+    "citations": [
+      "mem_new",
+      "mem_old"
+    ],
+    "conflict_classification": "superseded_fact",
+    "decision": "return mem_new as current and exclude mem_old because mem_old is marked superseded by the newer Sam-from-Goldman memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No entity merge or disambiguation was required beyond identifying Sam as the subject in both memories."
+    },
+    "intent": "explain_recall_result",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "attribute_source",
+            "type": "organization"
+          }
+        ],
+        "kind": "current_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "is_from",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is from Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "supersession_note",
+        "relationships": [
+          {
+            "object": "mem_new",
+            "predicate": "superseded_by",
+            "subject": "mem_old"
+          }
+        ],
+        "statement": "An older memory about Sam was filtered because it is superseded and should not be presented as current."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Identified mem_new as the current memory for Sam.",
+        "Detected mem_old is superseded.",
+        "Applied strict recall policy to exclude superseded facts from current results."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Verify that mem_old has a superseded status and points to mem_new as its replacement.",
+      "Confirm both memories refer to the same Sam entity.",
+      "If recall should show history, add an option to include superseded memories as non-current context.",
+      "If the supersession link is incorrect, remove or repair the edge so both memories can be reconsidered."
+    ]
+  },
+  "raw_text": "{\"intent\":\"explain_recall_result\",\"decision\":\"return mem_new as current and exclude mem_old because mem_old is marked superseded by the newer Sam-from-Goldman memory\",\"memory_cards\":[{\"kind\":\"current_fact\",\"statement\":\"Sam is from Goldman.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"attribute_source\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"is_from\",\"object\":\"Goldman\"}]},{\"kind\":\"supersession_note\",\"statement\":\"An older memory about Sam was filtered because it is superseded and should not be presented as current.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"mem_old\",\"predicate\":\"superseded_by\",\"object\":\"mem_new\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No entity merge or disambiguation was required beyond identifying Sam as the subject in both memories.\"},\"conflict_classification\":\"superseded_fact\",\"answer\":\"Recall returned mem_new because it is the active memory stating Sam is from Goldman. mem_old was filtered out because it is explicitly superseded by mem_new, and superseded memories are not surfaced as current facts.\",\"citations\":[\"mem_new\",\"mem_old\"],\"repair_options\":[\"Verify that mem_old has a superseded status and points to mem_new as its replacement.\",\"Confirm both memories refer to the same Sam entity.\",\"If recall should show history, add an option to include superseded memories as non-current context.\",\"If the supersession link is incorrect, remove or repair the edge so both memories can be reconsidered.\"],\"receipt\":{\"success\":true,\"details\":[\"Identified mem_new as the current memory for Sam.\",\"Detected mem_old is superseded.\",\"Applied strict recall policy to exclude superseded facts from current results.\"]}}",
+  "run_id": "eval_20260507_065822",
+  "status": "ok"
+}

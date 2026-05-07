@@ -1,0 +1,83 @@
+{
+  "fixture_id": "supersession_sam_job_001__context",
+  "model": "openai:gpt-5.4-high",
+  "payload": {
+    "answer": "Supersession: the prior current fact 'Sam works at Goldman' is no longer current. Store Sam as currently employed by Point72, and retire or mark the Goldman employment as historical rather than current.",
+    "citations": [
+      "Existing memory: Sam works at Goldman.",
+      "New: Sam left Goldman and joined Point72."
+    ],
+    "conflict_classification": "supersession",
+    "decision": "supersede_existing_memory",
+    "entity_resolution": {
+      "action": "reuse_existing",
+      "entity_id": null,
+      "reason": "The new statement refers to the same Sam and provides newer employment information that replaces the prior current-employer fact."
+    },
+    "intent": "update_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "current_fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "employed_by",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Point72."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "historical_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "formerly_employed_by",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected direct temporal update to the same attribute: employer.",
+        "Resolved by treating the new information as more recent than the existing memory.",
+        "Avoided preserving the superseded Goldman employment as a current fact."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace the current employer fact with 'Sam works at Point72.'",
+      "Archive or mark 'Sam works at Goldman' as superseded/historical.",
+      "Optionally retain a historical note that Sam left Goldman."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

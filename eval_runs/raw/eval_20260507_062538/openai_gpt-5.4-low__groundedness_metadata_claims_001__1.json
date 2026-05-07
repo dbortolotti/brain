@@ -1,0 +1,85 @@
+{
+  "error": null,
+  "fixture_id": "groundedness_metadata_claims_001",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Grounded: the claim that the identity is Person is supported by the entity row, and the aliases \"Sam\" and \"Sam from Goldman\" are supported by the alias row.",
+    "citations": [
+      "entity row",
+      "alias row"
+    ],
+    "conflict_classification": "none",
+    "decision": "grounded",
+    "entity_resolution": {
+      "action": "use_existing",
+      "entity_id": null,
+      "reason": "Evidence references an entity row and alias row supporting a person identity and aliases, but no stable entity_id is provided in the prompt."
+    },
+    "intent": "evaluate_groundedness",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "entity",
+            "role": "subject",
+            "type": "Person"
+          }
+        ],
+        "kind": "identity",
+        "relationships": [],
+        "statement": "The entity is a person."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "entity",
+            "role": "subject",
+            "type": "Person"
+          }
+        ],
+        "kind": "alias",
+        "relationships": [
+          {
+            "object": "Sam",
+            "predicate": "has_alias",
+            "subject": "entity"
+          }
+        ],
+        "statement": "The person has the alias \"Sam\"."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "entity",
+            "role": "subject",
+            "type": "Person"
+          }
+        ],
+        "kind": "alias",
+        "relationships": [
+          {
+            "object": "Sam from Goldman",
+            "predicate": "has_alias",
+            "subject": "entity"
+          }
+        ],
+        "statement": "The person has the alias \"Sam from Goldman\"."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Verified support for identity claim from entity row.",
+        "Verified support for alias claims from alias row.",
+        "No unsupported metadata claims detected in the answer."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"evaluate_groundedness\",\"decision\":\"grounded\",\"memory_cards\":[{\"kind\":\"identity\",\"statement\":\"The entity is a person.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"entity\",\"type\":\"Person\",\"role\":\"subject\"}],\"relationships\":[]},{\"kind\":\"alias\",\"statement\":\"The person has the alias \\\"Sam\\\".\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"entity\",\"type\":\"Person\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"entity\",\"predicate\":\"has_alias\",\"object\":\"Sam\"}]},{\"kind\":\"alias\",\"statement\":\"The person has the alias \\\"Sam from Goldman\\\".\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"entity\",\"type\":\"Person\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"entity\",\"predicate\":\"has_alias\",\"object\":\"Sam from Goldman\"}]}],\"entity_resolution\":{\"action\":\"use_existing\",\"entity_id\":null,\"reason\":\"Evidence references an entity row and alias row supporting a person identity and aliases, but no stable entity_id is provided in the prompt.\"},\"conflict_classification\":\"none\",\"answer\":\"Grounded: the claim that the identity is Person is supported by the entity row, and the aliases \\\"Sam\\\" and \\\"Sam from Goldman\\\" are supported by the alias row.\",\"citations\":[\"entity row\",\"alias row\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Verified support for identity claim from entity row.\",\"Verified support for alias claims from alias row.\",\"No unsupported metadata claims detected in the answer.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

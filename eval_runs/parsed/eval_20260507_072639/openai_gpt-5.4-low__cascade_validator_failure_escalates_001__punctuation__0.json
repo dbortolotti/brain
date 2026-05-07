@@ -1,0 +1,33 @@
+{
+  "fixture_id": "cascade_validator_failure_escalates_001__punctuation",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Rejected current output because it is invalid or unsafe. Do not commit any durable memory from this result. Escalate to a stronger model for regeneration, or safely reject if regeneration is unavailable.",
+    "citations": [],
+    "conflict_classification": "validator_failure_escalation_required",
+    "decision": "escalate",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No valid, safe, schema-conformant memory proposal was provided to resolve."
+    },
+    "intent": "validate_and_gate_memory_write",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Input condition indicates cheap model output had invalid schema or unsafe proposal.",
+        "Validator requires escalation to a stronger model or safe rejection.",
+        "No memory was committed.",
+        "Ambiguity and safety preserved by refusing the write."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Regenerate with a stronger model using the exact required JSON schema.",
+      "If escalation is unavailable, return a safe reject with no memory_cards.",
+      "Remove any unsafe or speculative claims before reconsideration.",
+      "Ensure only durable, non-ambiguous facts are proposed for memory."
+    ]
+  },
+  "run_id": "eval_20260507_072639"
+}

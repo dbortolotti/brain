@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Brain Model Eval Summary</title>
+  <style>
+    :root {
+      --bg: #f5f1e7;
+      --panel: #fffdf8;
+      --ink: #1f1d19;
+      --muted: #6a645a;
+      --line: #ddd3c0;
+      --good: #0f766e;
+      --bad: #b42318;
+      --warn: #9a6700;
+      --chip: #efe7d8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at top right, rgba(197, 175, 124, 0.18), transparent 28%),
+        linear-gradient(180deg, #f5f1e7, #eee5d5);
+      color: var(--ink);
+      font-family: Georgia, "Iowan Old Style", serif;
+    }
+    .wrap {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 28px 18px 56px;
+    }
+    .hero,
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.05);
+    }
+    .hero {
+      padding: 24px;
+    }
+    .panel {
+      padding: 18px;
+      margin-top: 16px;
+    }
+    h1, h2, h3 {
+      margin: 0 0 10px;
+      line-height: 1.08;
+    }
+    h1 { font-size: 34px; }
+    h2 { font-size: 23px; margin-top: 8px; }
+    h3 { font-size: 17px; margin-top: 2px; }
+    p {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.55;
+    }
+    .verdict {
+      display: inline-block;
+      margin: 10px 0 14px;
+      padding: 9px 13px;
+      border-radius: 999px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      background: #fee4e2;
+      color: var(--bad);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .metric-card {
+      background: linear-gradient(180deg, #fffdf8, #faf6ed);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 15px;
+    }
+    .metric-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .metric-value {
+      font-size: 30px;
+      font-weight: 700;
+    }
+    .cols {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+    ul {
+      margin: 8px 0 0 20px;
+      padding: 0;
+    }
+    li {
+      margin: 7px 0;
+      line-height: 1.45;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      background: var(--chip);
+      padding: 1px 5px;
+      border-radius: 6px;
+      font-size: 0.95em;
+    }
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .chip {
+      border: 1px solid var(--line);
+      background: var(--chip);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 13px;
+    }
+    .chip.bad {
+      background: #fee4e2;
+      color: var(--bad);
+      border-color: #f3b7b2;
+    }
+    .chip.good {
+      background: #dff7f3;
+      color: var(--good);
+      border-color: #9fd9cf;
+    }
+    .chip.warn {
+      background: #fff1cc;
+      color: var(--warn);
+      border-color: #f0cf72;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      overflow: hidden;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+    }
+    th, td {
+      text-align: left;
+      vertical-align: top;
+      padding: 10px 12px;
+      border-bottom: 1px solid #eadfce;
+      font-size: 14px;
+    }
+    th {
+      background: #f3ebde;
+      font-weight: 700;
+    }
+    tr:last-child td { border-bottom: 0; }
+    .note {
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .footer {
+      margin-top: 18px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    a { color: #0b5f86; }
+    @media (max-width: 760px) {
+      .cols { grid-template-columns: 1fr; }
+      h1 { font-size: 29px; }
+      .metric-value { font-size: 25px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <h1>Brain Model Eval</h1>
+      <div class="verdict">Deployable stack: NO</div>
+      <p>This run is not decision-clean for a production Brain deployment. It is useful as a wide inventory sweep and harness check, but it does not produce an eligible runtime stack.</p>
+      <p>The core reason is simple: none of the mandatory runtime roles ended with an eligible model, and embeddings were also missing as an eligible mandatory role.</p>
+      <div class="grid">
+        <div class="metric-card">
+          <div class="metric-label">Records</div>
+          <div class="metric-value">12,243</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Models</div>
+          <div class="metric-value">33</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Role Summaries</div>
+          <div class="metric-value">171</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Largest Failure Mode</div>
+          <div class="metric-value">Quota</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="cols">
+      <section class="panel">
+        <h2>Why It Is Not Deployable</h2>
+        <ul>
+          <li>No eligible model was found for mandatory runtime roles: <code>router</code>, <code>slack_intake</code>, <code>memory_compiler</code>, <code>conflict_classifier</code>, and <code>recall_synthesizer</code>.</li>
+          <li>No eligible model was found for the mandatory non-runtime role <code>embeddings</code>.</li>
+          <li>The outcome is dominated by operational failures and hard policy/quality rejections, not by one near-miss candidate that simply needs a small threshold adjustment.</li>
+        </ul>
+        <div class="chips">
+          <span class="chip bad">Missing: router</span>
+          <span class="chip bad">Missing: slack_intake</span>
+          <span class="chip bad">Missing: memory_compiler</span>
+          <span class="chip bad">Missing: conflict_classifier</span>
+          <span class="chip bad">Missing: recall_synthesizer</span>
+          <span class="chip bad">Missing: embeddings</span>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>What Did Work</h2>
+        <p>Some non-runtime roles produced eligible models. These are useful partials, but they do not constitute a deployable stack.</p>
+        <ul>
+          <li><code>debug_explainer</code>: <code>openai:gpt-5.4-medium</code></li>
+          <li><code>entity_resolution</code>: <code>google:gemini-3.1-pro-preview</code></li>
+          <li><code>eval_judge</code>: <code>openai:gpt-5.4-low</code></li>
+          <li><code>validator_critic</code>: <code>openai:gpt-5.4-medium</code></li>
+        </ul>
+        <div class="chips">
+          <span class="chip good">Eligible judge pairs: 16</span>
+          <span class="chip good">Eligible debug/admin pairs: 14</span>
+          <span class="chip good">Eligible support pairs: 24</span>
+          <span class="chip bad">Eligible runtime pairs: 0</span>
+          <span class="chip bad">Eligible embedding pairs: 0</span>
+        </div>
+      </section>
+    </div>
+
+    <section class="panel">
+      <h2>Failure Pattern</h2>
+      <p>The biggest story in the run is not subtle quality ranking. It is that operational or gating failures overwhelmed many candidates before a runtime recommendation could even become plausible.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Failure class</th>
+            <th>Count</th>
+            <th>Interpretation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code>quota_error</code></td><td>6,062</td><td>Provider capacity or account limits blocked a very large share of attempted calls.</td></tr>
+          <tr><td><code>quality_failure</code></td><td>2,713</td><td>The model returned usable output, but semantic quality did not meet scoring requirements.</td></tr>
+          <tr><td><code>zero_tolerance_failure</code></td><td>1,176</td><td>Hard policy violations were present, which immediately disqualifies a model-role pair.</td></tr>
+          <tr><td><code>timeout</code></td><td>940</td><td>Operational reliability was too weak to support production use.</td></tr>
+          <tr><td><code>provider_error</code></td><td>783</td><td>Upstream platform or provider failures prevented valid evaluation.</td></tr>
+          <tr><td><code>json_parse_error</code></td><td>137</td><td>Output arrived, but not in a machine-usable format.</td></tr>
+          <tr><td><code>rate_limit_error</code></td><td>66</td><td>Throughput pressure still appears for some providers even with model-level serialization.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <h2>How To Read The Result</h2>
+      <ul>
+        <li>This is not a “pick the cheapest winner” outcome. There is no eligible runtime stack to optimize.</li>
+        <li>The strongest useful signals are in secondary roles: judge, validator, debug/admin, and some entity-resolution behavior.</li>
+        <li>The runtime path is blocked by a combination of quota pressure, provider instability, schema issues, and hard semantic failures.</li>
+        <li>The added GPT-5.4, GPT-5.5, and Gemini 3.1 Pro thinking variants expanded coverage substantially, but they did not change the top-level deployability answer.</li>
+      </ul>
+    </section>
+
+    <section class="panel">
+      <h2>Scope Of This Summary</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Roles covered</td><td><code>conflict_classifier</code>, <code>debug_explainer</code>, <code>embeddings</code>, <code>entity_resolution</code>, <code>eval_judge</code>, <code>memory_compiler</code>, <code>recall_synthesizer</code>, <code>router</code>, <code>slack_intake</code>, <code>validator_critic</code></td></tr>
+          <tr><td>Source JSONL</td><td><code>eval_runs/prod_retry3_workers10_plus_gpt55xhigh_20260507_042233.jsonl</code></td></tr>
+          <tr><td>Source markdown report</td><td><code>eval_reports/model_eval_retry3_workers10_plus_gpt55xhigh_20260507_042233.md</code></td></tr>
+          <tr><td>Run label</td><td><code>appended_new_thinking_variants_reconstructed_20260507</code></td></tr>
+        </tbody>
+      </table>
+      <p class="footer">This page is a translated summary of the report, not a raw markdown embed. It preserves the report’s decision meaning while removing low-signal benchmark bulk.</p>
+    </section>
+  </div>
+</body>
+</html>

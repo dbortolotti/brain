@@ -1,0 +1,56 @@
+{
+  "fixture_id": "conflict_sara_niece_001__punctuation",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "No conflict detected. 'Sara is my niece' can coexist with 'Sara is Daniele's daughter and Nur's twin.'",
+    "citations": [
+      "Existing: Sara is Daniele's daughter and Nur's twin",
+      "New: Sara is my niece"
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "compatible_append",
+    "entity_resolution": {
+      "action": "link_to_existing",
+      "entity_id": "Sara",
+      "reason": "The new statement refers to the same named person, and 'Sara is my niece' is compatible with the existing memory that Sara is Daniele's daughter and Nur's twin."
+    },
+    "intent": "classify_memory_conflict",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "niece",
+            "type": "person"
+          },
+          {
+            "name": "user",
+            "role": "aunt_or_uncle",
+            "type": "person"
+          }
+        ],
+        "kind": "relation",
+        "relationships": [
+          {
+            "object": "user",
+            "predicate": "is_niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is the user's niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed the existing memory as two facts about Sara: daughter of Daniele, twin of Nur.",
+        "Parsed the new memory as a user-relative relationship: Sara is the user's niece.",
+        "Determined the facts are not mutually exclusive.",
+        "Kept ambiguity about whether the user is Sara's aunt or uncle and through which family link."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_071025"
+}

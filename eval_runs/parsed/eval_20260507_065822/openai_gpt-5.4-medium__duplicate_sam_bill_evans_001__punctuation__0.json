@@ -1,0 +1,33 @@
+{
+  "fixture_id": "duplicate_sam_bill_evans_001__punctuation",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "No durable update needed. The new input is a duplicate of the existing memory that Sam from Goldman likes Bill Evans.",
+    "citations": [
+      "Existing memory: 'Sam from Goldman mentioned that he likes Bill Evans'",
+      "New: 'Sam from Goldman said he likes Bill Evans'"
+    ],
+    "conflict_classification": "duplicate",
+    "decision": "no_write_duplicate",
+    "entity_resolution": {
+      "action": "reuse_existing",
+      "entity_id": null,
+      "reason": "The new statement is semantically identical to the existing memory; it differs only in surface wording ('mentioned' vs 'said') and punctuation."
+    },
+    "intent": "classify_memory_conflict",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Compared existing and new statements for semantic equivalence.",
+        "Detected no change in meaning, time, polarity, or certainty.",
+        "Classified as duplicate and skipped creating a new durable memory card."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Normalize both entries to a canonical form such as: 'Sam from Goldman likes Bill Evans.'",
+      "Deduplicate memories that differ only by minor phrasing or punctuation."
+    ]
+  },
+  "run_id": "eval_20260507_065822"
+}

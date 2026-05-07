@@ -1,0 +1,78 @@
+{
+  "fixture_id": "temporal_status_transition_001__punctuation",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Potential update detected, but do not overwrite durable memory as a clean contradiction yet. 'Planned/open' for the Brain Slack agent may be superseded by 'implemented' for the MVP, but the scope differs. Treat as a likely temporal progression with ambiguous entity matching.",
+    "citations": [
+      "Existing project state - The Brain Slack agent is planned, status=open",
+      "New - The Brain Slack agent MVP is now implemented"
+    ],
+    "conflict_classification": "possible_temporal_status_transition_with_scope_ambiguity",
+    "decision": "needs_review",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The records are closely related but not guaranteed identical: one refers to 'The Brain Slack agent' and the other to 'The Brain Slack agent MVP'. This may be a status transition on the same project, or the MVP may be a sub-scope/milestone of the broader project."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain Slack agent MVP",
+            "role": "subject",
+            "type": "project"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "implemented",
+            "predicate": "status",
+            "subject": "Brain Slack agent MVP"
+          }
+        ],
+        "statement": "A new statement reports that the Brain Slack agent MVP is now implemented."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain Slack agent",
+            "role": "subject",
+            "type": "project"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "open",
+            "predicate": "status",
+            "subject": "Brain Slack agent"
+          },
+          {
+            "object": "planned",
+            "predicate": "phase",
+            "subject": "Brain Slack agent"
+          }
+        ],
+        "statement": "Existing state says the Brain Slack agent is planned with status open."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed existing status as planned/open for 'The Brain Slack agent'.",
+        "Parsed new status as implemented for 'The Brain Slack agent MVP'.",
+        "Detected likely temporal progression but withheld hard merge due to scope ambiguity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Link 'Brain Slack agent MVP' as a milestone or subproject of 'Brain Slack agent' and keep both facts with temporal ordering.",
+      "If confirmed same entity, mark the older 'planned/open' status as superseded by the newer implementation status.",
+      "Request clarification whether 'MVP' refers to the whole Slack agent or only an initial deliverable."
+    ]
+  },
+  "run_id": "eval_20260507_065822"
+}

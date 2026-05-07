@@ -1,0 +1,35 @@
+{
+  "fixture_id": "conflict_sara_niece_001__context",
+  "model": "openai:gpt-5.4-high",
+  "payload": {
+    "answer": "No direct conflict. \"Sara is my niece\" is compatible with the existing memory that Sara is Daniele's daughter and Nur's twin. However, because \"my\" is unresolved, this should not be committed as durable memory unless rewritten as an absolute relationship.",
+    "citations": [
+      "Existing memory: Sara is Daniele's daughter.",
+      "Existing memory: Sara is Nur's twin.",
+      "New claim: Sara is my niece."
+    ],
+    "conflict_classification": "no_conflict_relative_claim",
+    "decision": "defer_commit_pending_speaker_resolution",
+    "entity_resolution": {
+      "action": "tentative_match",
+      "entity_id": null,
+      "reason": "\"Sara\" likely refers to the existing Sara in context, but the new claim uses a speaker-relative reference (\"my niece\") that cannot be normalized into a durable absolute fact without knowing who \"my\" refers to."
+    },
+    "intent": "classify_relationship_claim",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Checked for logical inconsistency against existing high-confidence family facts.",
+        "Found no contradiction: daughter/twin facts can coexist with a niece relation.",
+        "Declined durable commit because the new statement is perspective-dependent and underspecified."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Resolve the speaker/user identity behind \"my\".",
+      "Rewrite the claim as an absolute fact, e.g. \"Sara is <person>'s niece.\"",
+      "If useful, add the missing family link that explains the niece relation, e.g. that Daniele is the speaker's sibling or in-law."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

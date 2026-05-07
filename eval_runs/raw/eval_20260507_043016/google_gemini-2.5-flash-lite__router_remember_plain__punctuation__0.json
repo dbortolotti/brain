@@ -1,0 +1,60 @@
+{
+  "error": null,
+  "fixture_id": "router_remember_plain__punctuation",
+  "model": "google:gemini-2.5-flash-lite",
+  "payload": {
+    "answer": "I will remember that Sam from Goldman likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "created",
+      "entity_id": null,
+      "reason": "The entities Sam, Goldman, and Bill Evans were not found in the knowledge base, so new entities were created."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "PERSON"
+          },
+          {
+            "name": "Goldman",
+            "type": "ORGANIZATION"
+          },
+          {
+            "name": "Bill Evans",
+            "type": "PERSON"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "from",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Successfully stored memory card: Sam from Goldman likes Bill Evans"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"remember\",\n  \"decision\": \"store\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam from Goldman likes Bill Evans\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"PERSON\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"ORGANIZATION\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"PERSON\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"from\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"created\",\n    \"entity_id\": null,\n    \"reason\": \"The entities Sam, Goldman, and Bill Evans were not found in the knowledge base, so new entities were created.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"I will remember that Sam from Goldman likes Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Successfully stored memory card: Sam from Goldman likes Bill Evans\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_043016",
+  "status": "ok"
+}

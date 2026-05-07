@@ -1,0 +1,64 @@
+{
+  "error": null,
+  "fixture_id": "italian_memory_note_001",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "Memorizzato: Sam di Goldman preferisce Bill Evans.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_link_ambiguous",
+      "entity_id": null,
+      "reason": "Il riferimento a \u201cSam di Goldman\u201d non identifica in modo univoco una persona esistente; va preservata l\u2019ambiguit\u00e0 e collegato in base al contesto Goldman."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred_item",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with_or_contextualized_by",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam di Goldman preferisce Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Aggiunta preferenza: Sam di Goldman preferisce Bill Evans.",
+        "Identit\u00e0 di Sam non completamente disambiguata."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"remember\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam di Goldman preferisce Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation_context\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"preferred_item\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with_or_contextualized_by\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"prefers\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"create_or_link_ambiguous\",\"entity_id\":null,\"reason\":\"Il riferimento a \u201cSam di Goldman\u201d non identifica in modo univoco una persona esistente; va preservata l\u2019ambiguit\u00e0 e collegato in base al contesto Goldman.\"},\"conflict_classification\":\"none\",\"answer\":\"Memorizzato: Sam di Goldman preferisce Bill Evans.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Aggiunta preferenza: Sam di Goldman preferisce Bill Evans.\",\"Identit\u00e0 di Sam non completamente disambiguata.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

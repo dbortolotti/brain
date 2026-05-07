@@ -1,0 +1,76 @@
+{
+  "error": null,
+  "fixture_id": "personal_routine_morning_reading_001",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "Noted: you usually prefer reading technical papers in the morning before checking email.",
+    "citations": [
+      "\"I usually prefer to read technical papers in the morning before checking email.\""
+    ],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "no_resolution_needed",
+      "entity_id": null,
+      "reason": "The statement refers to the user and generic activities; no external entity disambiguation is required."
+    },
+    "intent": "capture_personal_preference",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "User",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "technical papers",
+            "role": "reading_material",
+            "type": "content_type"
+          },
+          {
+            "name": "morning",
+            "role": "preferred_time",
+            "type": "time_of_day"
+          },
+          {
+            "name": "checking email",
+            "role": "reference_activity",
+            "type": "activity"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "reading technical papers",
+            "predicate": "usually_prefers",
+            "subject": "User"
+          },
+          {
+            "object": "morning",
+            "predicate": "preferred_time",
+            "subject": "reading technical papers"
+          },
+          {
+            "object": "checking email",
+            "predicate": "before",
+            "subject": "reading technical papers"
+          }
+        ],
+        "statement": "User usually prefers to read technical papers in the morning before checking email."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured a soft preference/routine rather than a strict rule.",
+        "Preserved hedging from 'usually prefer' by storing with medium confidence."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"capture_personal_preference\",\"decision\":\"store\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"User usually prefers to read technical papers in the morning before checking email.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"User\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"technical papers\",\"type\":\"content_type\",\"role\":\"reading_material\"},{\"name\":\"morning\",\"type\":\"time_of_day\",\"role\":\"preferred_time\"},{\"name\":\"checking email\",\"type\":\"activity\",\"role\":\"reference_activity\"}],\"relationships\":[{\"subject\":\"User\",\"predicate\":\"usually_prefers\",\"object\":\"reading technical papers\"},{\"subject\":\"reading technical papers\",\"predicate\":\"preferred_time\",\"object\":\"morning\"},{\"subject\":\"reading technical papers\",\"predicate\":\"before\",\"object\":\"checking email\"}]}],\"entity_resolution\":{\"action\":\"no_resolution_needed\",\"entity_id\":null,\"reason\":\"The statement refers to the user and generic activities; no external entity disambiguation is required.\"},\"conflict_classification\":\"none\",\"answer\":\"Noted: you usually prefer reading technical papers in the morning before checking email.\",\"citations\":[\"\\\"I usually prefer to read technical papers in the morning before checking email.\\\"\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Captured a soft preference/routine rather than a strict rule.\",\"Preserved hedging from 'usually prefer' by storing with medium confidence.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

@@ -1,0 +1,61 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001__punctuation",
+  "model": "openai:gpt-5.4-high",
+  "payload": {
+    "answer": "No conflict. The new fact is additive: Sara can be Daniele's daughter, Nur's twin, and the user's niece. Store only the explicit relation that Sara is the user's niece; do not infer that Daniele is the user's sibling unless stated separately.",
+    "citations": [
+      "Existing: Sara is Daniele's daughter and Nur's twin",
+      "New: Sara is my niece"
+    ],
+    "conflict_classification": "no_conflict_additive",
+    "decision": "accept_as_additive",
+    "entity_resolution": {
+      "action": "reuse_existing_entity",
+      "entity_id": null,
+      "reason": "The new statement refers to Sara and is compatible with the existing fact that Sara is Daniele's daughter and Nur's twin. No new person entity is required."
+    },
+    "intent": "classify_memory_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "niece",
+            "type": "person"
+          },
+          {
+            "name": "user",
+            "role": "aunt_or_uncle",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship",
+        "relationships": [
+          {
+            "object": "user",
+            "predicate": "is_niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is the user's niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Compared the new family relation against the existing high-confidence memory.",
+        "Found no contradiction between 'Daniele's daughter' and 'my niece'.",
+        "Preserved ambiguity by not deriving additional family links beyond the explicit niece relation."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Store the direct relation 'Sara is the user's niece.'",
+      "Avoid inferring unstated links such as 'Daniele is the user's sibling.'"
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_memory_conflict\",\"decision\":\"accept_as_additive\",\"memory_cards\":[{\"kind\":\"relationship\",\"statement\":\"Sara is the user's niece.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"niece\"},{\"name\":\"user\",\"type\":\"person\",\"role\":\"aunt_or_uncle\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"is_niece_of\",\"object\":\"user\"}]}],\"entity_resolution\":{\"action\":\"reuse_existing_entity\",\"entity_id\":null,\"reason\":\"The new statement refers to Sara and is compatible with the existing fact that Sara is Daniele's daughter and Nur's twin. No new person entity is required.\"},\"conflict_classification\":\"no_conflict_additive\",\"answer\":\"No conflict. The new fact is additive: Sara can be Daniele's daughter, Nur's twin, and the user's niece. Store only the explicit relation that Sara is the user's niece; do not infer that Daniele is the user's sibling unless stated separately.\",\"citations\":[\"Existing: Sara is Daniele's daughter and Nur's twin\",\"New: Sara is my niece\"],\"repair_options\":[\"Store the direct relation 'Sara is the user's niece.'\",\"Avoid inferring unstated links such as 'Daniele is the user's sibling.'\"],\"receipt\":{\"success\":true,\"details\":[\"Compared the new family relation against the existing high-confidence memory.\",\"Found no contradiction between 'Daniele's daughter' and 'my niece'.\",\"Preserved ambiguity by not deriving additional family links beyond the explicit niece relation.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

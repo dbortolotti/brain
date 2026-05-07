@@ -1,0 +1,34 @@
+{
+  "fixture_id": "debug_sql_disabled_001__context",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "The admin SQL query should be treated as disabled in this context. Because BRAIN_DEBUG_SQL_ENABLED=false, `/brain admin sql SELECT * FROM memory_cards` should not execute and no table contents should be returned. The correct behavior is to explain that debug SQL access is off rather than exposing database rows.",
+    "citations": [
+      "BRAIN_DEBUG_SQL_ENABLED=false",
+      "Requested command: /brain admin sql SELECT * FROM memory_cards"
+    ],
+    "conflict_classification": "none",
+    "decision": "do_not_execute_or_expose_sql_results",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No entity resolution is needed; the input is a request for contextual debugging behavior about an admin SQL command."
+    },
+    "intent": "explain_admin_sql_unavailable",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Interpreted the input as a debug-explanation scenario, not a memory write.",
+        "No durable memory was committed.",
+        "SQL results were not fabricated or exposed because debug SQL is disabled by configuration."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Set BRAIN_DEBUG_SQL_ENABLED=true in the appropriate debug environment if SQL inspection is explicitly intended and permitted.",
+      "Use supported Brain inspection or export commands instead of direct SQL if available.",
+      "Verify that the command is being run in an environment where admin debug features are allowed."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

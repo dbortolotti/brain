@@ -1,0 +1,32 @@
+{
+  "fixture_id": "validator_blocks_large_table_atomization_001__punctuation",
+  "model": "openai:gpt-5.5-low",
+  "payload": {
+    "answer": "Rejected. A large table should not be stored as 500 separate durable memory cards merely because it was provided in CSV form. The content should remain in the source document or be summarized into a small number of meaningful, durable memories only if the user explicitly indicates long-term personal relevance. Punctuation or row structure alone is not a valid basis for memory creation.",
+    "citations": [],
+    "conflict_classification": "not_applicable",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The proposal appears to convert a large structured table into many durable memory cards without evidence that each row is personally meaningful, stable, non-ephemeral, and worth long-term recall. Bulk CSV-row atomization should not be committed as memory."
+    },
+    "intent": "Evaluate a proposed bulk memory write consisting of 500 atomized memory cards, one per CSV row.",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Blocked bulk creation of 500 memory cards.",
+        "No durable memory was committed.",
+        "Reason: proposed memories are over-atomized table rows and lack demonstrated long-term personal relevance."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask the user which specific rows, if any, should be remembered long-term.",
+      "Store a concise summary of the table only if it captures durable user preferences, plans, relationships, or identity-relevant facts.",
+      "Keep the CSV as an external artifact/reference rather than converting every row into memory.",
+      "If only a few rows are important, create narrowly scoped memory cards for those rows with clear provenance and confidence."
+    ]
+  },
+  "run_id": "eval_20260507_072639"
+}

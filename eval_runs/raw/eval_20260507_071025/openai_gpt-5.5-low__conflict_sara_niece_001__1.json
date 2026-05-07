@@ -1,0 +1,54 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001",
+  "model": "openai:gpt-5.5-low",
+  "payload": {
+    "answer": "Stored: Sara is your niece. This is compatible with the existing memory that Sara is Daniele's daughter and Nur's twin.",
+    "citations": [],
+    "conflict_classification": "no_conflict_additive",
+    "decision": "add_new_compatible_memory",
+    "entity_resolution": {
+      "action": "link_to_existing_entity",
+      "entity_id": "Sara",
+      "reason": "The new statement refers to Sara, matching the existing Sara entity described as Daniele's daughter and Nur's twin; no distinct Sara is indicated."
+    },
+    "intent": "store_relationship_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "niece",
+            "type": "person"
+          },
+          {
+            "name": "user",
+            "role": "aunt_or_uncle",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship",
+        "relationships": [
+          {
+            "object": "user",
+            "predicate": "is_niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is the user's niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Added a new relationship memory: Sara is the user's niece.",
+        "Preserved existing memories: Sara is Daniele's daughter; Sara is Nur's twin."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"store_relationship_memory\",\"decision\":\"add_new_compatible_memory\",\"memory_cards\":[{\"kind\":\"relationship\",\"statement\":\"Sara is the user's niece.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"niece\"},{\"name\":\"user\",\"type\":\"person\",\"role\":\"aunt_or_uncle\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"is_niece_of\",\"object\":\"user\"}]}],\"entity_resolution\":{\"action\":\"link_to_existing_entity\",\"entity_id\":\"Sara\",\"reason\":\"The new statement refers to Sara, matching the existing Sara entity described as Daniele's daughter and Nur's twin; no distinct Sara is indicated.\"},\"conflict_classification\":\"no_conflict_additive\",\"answer\":\"Stored: Sara is your niece. This is compatible with the existing memory that Sara is Daniele's daughter and Nur's twin.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Added a new relationship memory: Sara is the user's niece.\",\"Preserved existing memories: Sara is Daniele's daughter; Sara is Nur's twin.\"]}}",
+  "run_id": "eval_20260507_071025",
+  "status": "ok"
+}

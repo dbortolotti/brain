@@ -1,0 +1,81 @@
+{
+  "error": null,
+  "fixture_id": "concurrent_conflict_writes_001__punctuation",
+  "model": "google:gemini-3.1-pro-preview-low",
+  "payload": {
+    "answer": "There is a conflict regarding Sam's employment. Did Sam leave Goldman to join Point72, or are these concurrent roles?",
+    "citations": [],
+    "conflict_classification": "concurrent_writes",
+    "decision": "flag_conflict",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "Sam",
+      "reason": "Both statements refer to the same person, Sam."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected concurrent writes with conflicting employment information for Sam."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Update Sam's employer to Point72 and mark Goldman as past employer",
+      "Record both Goldman and Point72 as concurrent employers",
+      "Discard Point72 and keep Goldman as current employer"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"classify_conflict\",\n  \"decision\": \"flag_conflict\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam works at Goldman\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"employee\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works at\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam joined Point72\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"employee\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge\",\n    \"entity_id\": \"Sam\",\n    \"reason\": \"Both statements refer to the same person, Sam.\"\n  },\n  \"conflict_classification\": \"concurrent_writes\",\n  \"answer\": \"There is a conflict regarding Sam's employment. Did Sam leave Goldman to join Point72, or are these concurrent roles?\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Update Sam's employer to Point72 and mark Goldman as past employer\",\n    \"Record both Goldman and Point72 as concurrent employers\",\n    \"Discard Point72 and keep Goldman as current employer\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Detected concurrent writes with conflicting employment information for Sam.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

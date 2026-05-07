@@ -1,0 +1,35 @@
+{
+  "fixture_id": "debug_sql_disabled_001",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Cannot execute /brain admin sql because BRAIN_DEBUG_SQL_ENABLED=false. Debug SQL access is disabled, so no query was run and no results are available.",
+    "citations": [
+      "Input command: /brain admin sql SELECT * FROM memory_cards",
+      "Runtime flag: BRAIN_DEBUG_SQL_ENABLED=false"
+    ],
+    "conflict_classification": "not_applicable",
+    "decision": "deny_execution",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No durable memory should be created from an administrative SQL debug request."
+    },
+    "intent": "admin_sql_debug_request",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Recognized an administrative SQL debug command.",
+        "Blocked execution because debug SQL is disabled by configuration.",
+        "No memory changes were made.",
+        "No SQL was executed."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Enable BRAIN_DEBUG_SQL_ENABLED=true in a debug-safe environment, then retry the command.",
+      "Use supported non-SQL Brain inspection/admin endpoints instead of direct SQL if available.",
+      "If you only need memory contents, request them through the normal memory retrieval interface rather than admin SQL."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

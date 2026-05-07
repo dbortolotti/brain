@@ -1,0 +1,67 @@
+{
+  "error": null,
+  "fixture_id": "conflict_correction_like__context",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "Apply the correction by superseding the prior preference. Keep only the updated current fact: Sam from Goldman likes early Coltrane.",
+    "citations": [
+      "Existing current fact: Sam from Goldman likes Bill Evans.",
+      "Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans."
+    ],
+    "conflict_classification": "direct_correction_of_existing_preference",
+    "decision": "accept_correction_and_replace_conflicting_preference",
+    "entity_resolution": {
+      "action": "resolve_to_existing",
+      "entity_id": null,
+      "reason": "The correction refers to the same person already identified as 'Sam from Goldman'; no new entity is introduced."
+    },
+    "intent": "correct_existing_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "artist/style"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected an explicit correction to an existing current fact.",
+        "Classified the old Bill Evans preference as superseded, not current.",
+        "Created one updated preference memory for early Coltrane."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Supersede the existing 'likes Bill Evans' fact with the corrected 'likes early Coltrane' fact.",
+      "Do not store an additional negative fact about Bill Evans unless separately asserted; treat 'not Bill Evans' as part of the correction context.",
+      "Preserve the same Sam entity and update only the conflicting preference slot."
+    ]
+  },
+  "raw_text": "{\"intent\":\"correct_existing_memory\",\"decision\":\"accept_correction_and_replace_conflicting_preference\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman likes early Coltrane.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam from Goldman\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"early Coltrane\",\"type\":\"artist/style\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"Sam from Goldman\",\"predicate\":\"likes\",\"object\":\"early Coltrane\"}]}],\"entity_resolution\":{\"action\":\"resolve_to_existing\",\"entity_id\":null,\"reason\":\"The correction refers to the same person already identified as 'Sam from Goldman'; no new entity is introduced.\"},\"conflict_classification\":\"direct_correction_of_existing_preference\",\"answer\":\"Apply the correction by superseding the prior preference. Keep only the updated current fact: Sam from Goldman likes early Coltrane.\",\"citations\":[\"Existing current fact: Sam from Goldman likes Bill Evans.\",\"Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans.\"],\"repair_options\":[\"Supersede the existing 'likes Bill Evans' fact with the corrected 'likes early Coltrane' fact.\",\"Do not store an additional negative fact about Bill Evans unless separately asserted; treat 'not Bill Evans' as part of the correction context.\",\"Preserve the same Sam entity and update only the conflicting preference slot.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected an explicit correction to an existing current fact.\",\"Classified the old Bill Evans preference as superseded, not current.\",\"Created one updated preference memory for early Coltrane.\"]}}",
+  "run_id": "eval_20260507_071025",
+  "status": "ok"
+}

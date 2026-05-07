@@ -1,0 +1,119 @@
+{
+  "fixture_id": "concurrent_conflict_writes_001",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "Conflict detected. Do not commit a durable current employer for Sam. Preserve both writes only as unresolved claims until ordering, timestamps, or confirmation clarifies whether Point72 supersedes Goldman or both statements can coexist.",
+    "citations": [
+      "Sam works at Goldman.",
+      "Sam joined Point72."
+    ],
+    "conflict_classification": "concurrent_current_state_conflict",
+    "decision": "defer_committing_any_current_employer_fact_for_Sam_and_store_only_unresolved_conflicting_claims",
+    "entity_resolution": {
+      "action": "provisional_entity",
+      "entity_id": null,
+      "reason": "Treat 'Sam' within this input as the same provisional subject, but do not resolve to a durable existing entity without additional identity context."
+    },
+    "intent": "classify_conflict_from_concurrent_writes",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "candidate_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "claim",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Unresolved concurrent claim: Sam works at Goldman."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "candidate_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "claim",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Unresolved concurrent claim: Sam joined Point72."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "candidate_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "candidate_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "conflict",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Concurrent writes suggest incompatible current employment states for Sam; ordering and supersession are unknown."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed two concurrent writes about Sam.",
+        "Identified possible conflict over current employment state.",
+        "Deferred durable commitment of a current employer.",
+        "Recorded only unresolved claims plus a conflict marker."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Require timestamps or causal ordering for both writes.",
+      "Ask whether joining Point72 means Sam left Goldman.",
+      "Store both as unresolved claims and suppress any single current-employer view.",
+      "If later evidence arrives, mark one claim as superseded rather than keeping both as current."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

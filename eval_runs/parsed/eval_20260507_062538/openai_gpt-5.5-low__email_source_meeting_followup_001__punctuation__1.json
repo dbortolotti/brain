@@ -1,0 +1,82 @@
+{
+  "fixture_id": "email_source_meeting_followup_001__punctuation",
+  "model": "openai:gpt-5.5-low",
+  "payload": {
+    "answer": "Compiled memory from the email follow-up while preserving the ambiguity of 'last month' relative to the source message date.",
+    "citations": [
+      "From - sam@examplecom Subject - Follow up Great seeing you Yes, I joined Point72 last month Please send the AI infra article"
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "commit_durable_memory",
+    "entity_resolution": {
+      "action": "create_or_link_candidate",
+      "entity_id": null,
+      "reason": "Sender appears to be Sam, but the email address is malformed as 'sam@examplecom' and no existing entity context is provided."
+    },
+    "intent": "compile_memory_from_email",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "sender",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "professional_update",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said they joined Point72 last month, relative to the date of the email/source message."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "requester",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure article",
+            "role": "requested_item",
+            "type": "content"
+          }
+        ],
+        "kind": "request",
+        "relationships": [
+          {
+            "object": "AI infrastructure article",
+            "predicate": "requested",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam asked to be sent the AI infrastructure article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed professional update that Sam joined Point72, with relative-date ambiguity preserved.",
+        "Captured Sam's request for the AI infrastructure article.",
+        "No conflicts or superseded facts were detected."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm the sender's correct email address.",
+      "Confirm the source email date to resolve when 'last month' was.",
+      "Confirm whether 'AI infra article' refers to a specific article title or URL."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

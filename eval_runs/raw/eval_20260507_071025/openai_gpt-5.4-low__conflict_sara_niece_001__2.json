@@ -1,0 +1,38 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "No direct conflict. 'Sara is my niece' can be compatible with the existing memory, but it is user-relative and too ambiguous to store as a durable standalone fact without clarifying the user's relationship to Sara or Daniele.",
+    "citations": [
+      "Existing memory: Sara is Daniele's daughter.",
+      "Existing memory: Sara is Nur's twin.",
+      "New statement: Sara is my niece."
+    ],
+    "conflict_classification": "no_direct_conflict_user_relative_ambiguous",
+    "decision": "do_not_commit_durable_fact_without_linking_context",
+    "entity_resolution": {
+      "action": "link_to_existing_entity_with_ambiguity",
+      "entity_id": "Sara",
+      "reason": "The new statement likely refers to the same Sara, but 'my niece' is user-relative and does not conflict with Sara being Daniele's daughter and Nur's twin. It is also too underspecified to derive a durable family link without knowing how the user is related to Daniele or Sara."
+    },
+    "intent": "classify_and_decide_memory_update",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Checked for contradiction against existing family facts.",
+        "Found no inconsistency: a daughter/twin can also be a niece relative to the user.",
+        "Declined durable commit because the new fact is user-relative and underspecified."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask how the user is related to Sara or Daniele before storing a durable family relationship.",
+      "If user identity is modeled, store a scoped relation: Sara is the user's niece.",
+      "Keep the existing facts unchanged and avoid inferring any new parent/sibling relationship."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_and_decide_memory_update\",\"decision\":\"do_not_commit_durable_fact_without_linking_context\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"link_to_existing_entity_with_ambiguity\",\"entity_id\":\"Sara\",\"reason\":\"The new statement likely refers to the same Sara, but 'my niece' is user-relative and does not conflict with Sara being Daniele's daughter and Nur's twin. It is also too underspecified to derive a durable family link without knowing how the user is related to Daniele or Sara.\"},\"conflict_classification\":\"no_direct_conflict_user_relative_ambiguous\",\"answer\":\"No direct conflict. 'Sara is my niece' can be compatible with the existing memory, but it is user-relative and too ambiguous to store as a durable standalone fact without clarifying the user's relationship to Sara or Daniele.\",\"citations\":[\"Existing memory: Sara is Daniele's daughter.\",\"Existing memory: Sara is Nur's twin.\",\"New statement: Sara is my niece.\"],\"repair_options\":[\"Ask how the user is related to Sara or Daniele before storing a durable family relationship.\",\"If user identity is modeled, store a scoped relation: Sara is the user's niece.\",\"Keep the existing facts unchanged and avoid inferring any new parent/sibling relationship.\"],\"receipt\":{\"success\":true,\"details\":[\"Checked for contradiction against existing family facts.\",\"Found no inconsistency: a daughter/twin can also be a niece relative to the user.\",\"Declined durable commit because the new fact is user-relative and underspecified.\"]}}",
+  "run_id": "eval_20260507_071025",
+  "status": "ok"
+}

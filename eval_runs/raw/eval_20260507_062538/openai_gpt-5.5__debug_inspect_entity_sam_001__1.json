@@ -1,0 +1,34 @@
+{
+  "error": null,
+  "fixture_id": "debug_inspect_entity_sam_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "I can\u2019t inspect \"Sam from Goldman\" because no Brain entity record or memory context was provided with the fixture. I would treat this as a lookup request, not a durable-memory commit.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "no_memory_write",
+    "entity_resolution": {
+      "action": "inspect_existing_entity_or_alias",
+      "entity_id": null,
+      "reason": "The input requests inspection of the entity phrase \"Sam from Goldman\". No underlying Brain store contents or entity records were provided in the fixture, so a specific entity_id cannot be resolved without inventing data."
+    },
+    "intent": "inspect_entity",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Parsed request as /brain inspect entity \"Sam from Goldman\".",
+        "No durable memory was committed.",
+        "No entity_id was resolved because fixture data did not include a memory store snapshot or matching entity records."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide the Brain inspection results or matching entity records for \"Sam from Goldman\".",
+      "If multiple Sams match Goldman, disambiguate by full name, organization, role, email, or relationship to the user.",
+      "If this is meant to create or update memory, provide an explicit fact rather than an inspect command."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"inspect_entity\",\n  \"decision\": \"no_memory_write\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"inspect_existing_entity_or_alias\",\n    \"entity_id\": null,\n    \"reason\": \"The input requests inspection of the entity phrase \\\"Sam from Goldman\\\". No underlying Brain store contents or entity records were provided in the fixture, so a specific entity_id cannot be resolved without inventing data.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"I can\u2019t inspect \\\"Sam from Goldman\\\" because no Brain entity record or memory context was provided with the fixture. I would treat this as a lookup request, not a durable-memory commit.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Provide the Brain inspection results or matching entity records for \\\"Sam from Goldman\\\".\",\n    \"If multiple Sams match Goldman, disambiguate by full name, organization, role, email, or relationship to the user.\",\n    \"If this is meant to create or update memory, provide an explicit fact rather than an inspect command.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Parsed request as /brain inspect entity \\\"Sam from Goldman\\\".\",\n      \"No durable memory was committed.\",\n      \"No entity_id was resolved because fixture data did not include a memory store snapshot or matching entity records.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

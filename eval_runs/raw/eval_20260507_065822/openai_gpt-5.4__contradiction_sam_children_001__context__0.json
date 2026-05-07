@@ -1,0 +1,37 @@
+{
+  "error": null,
+  "fixture_id": "contradiction_sam_children_001__context",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "Conflict detected: existing memory says Sam from Goldman has two children, while the new statement says Sam from Goldman has no children. Do not commit either as an updated current fact without verification; preserve both as conflicting claims or request clarification.",
+    "citations": [
+      "Existing memory: Sam from Goldman has two children.",
+      "New input: Sam from Goldman has no children."
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "flag_conflict_do_not_commit",
+    "entity_resolution": {
+      "action": "reuse_existing_entity",
+      "entity_id": null,
+      "reason": "The new statement refers to the same person contextually identified as Sam from Goldman."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Identified same entity by matching name and affiliation context.",
+        "Detected mutually exclusive child-count claims: two children vs no children.",
+        "Chose not to commit a durable update due to unresolved contradiction."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request a timestamp or source for both claims to determine recency or reliability.",
+      "Store the new statement only as an unverified conflicting claim, not as a durable current fact.",
+      "Ask a clarifying follow-up: is this a different Sam from Goldman, or did Sam's family situation change?"
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict\",\"decision\":\"flag_conflict_do_not_commit\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"reuse_existing_entity\",\"entity_id\":null,\"reason\":\"The new statement refers to the same person contextually identified as Sam from Goldman.\"},\"conflict_classification\":\"direct_contradiction\",\"answer\":\"Conflict detected: existing memory says Sam from Goldman has two children, while the new statement says Sam from Goldman has no children. Do not commit either as an updated current fact without verification; preserve both as conflicting claims or request clarification.\",\"citations\":[\"Existing memory: Sam from Goldman has two children.\",\"New input: Sam from Goldman has no children.\"],\"repair_options\":[\"Request a timestamp or source for both claims to determine recency or reliability.\",\"Store the new statement only as an unverified conflicting claim, not as a durable current fact.\",\"Ask a clarifying follow-up: is this a different Sam from Goldman, or did Sam's family situation change?\"],\"receipt\":{\"success\":true,\"details\":[\"Identified same entity by matching name and affiliation context.\",\"Detected mutually exclusive child-count claims: two children vs no children.\",\"Chose not to commit a durable update due to unresolved contradiction.\"]}}",
+  "run_id": "eval_20260507_065822",
+  "status": "ok"
+}

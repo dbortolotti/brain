@@ -1,0 +1,77 @@
+{
+  "error": null,
+  "fixture_id": "personal_routine_morning_reading_001",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "Noted as a tentative routine/preference: you usually prefer reading technical papers in the morning before checking email.",
+    "citations": [
+      "\"I usually prefer to read technical papers in the morning before checking email.\""
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "store_with_hedging",
+    "entity_resolution": {
+      "action": "implicit_self",
+      "entity_id": null,
+      "reason": "The statement is a first-person report about the speaker's own routine and preference."
+    },
+    "intent": "store_personal_preference",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "user",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "reading technical papers",
+            "role": "preferred_activity",
+            "type": "activity"
+          },
+          {
+            "name": "morning",
+            "role": "timing",
+            "type": "time_period"
+          },
+          {
+            "name": "checking email",
+            "role": "reference_activity",
+            "type": "activity"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "reading technical papers",
+            "predicate": "usually_prefers",
+            "subject": "user"
+          },
+          {
+            "object": "morning",
+            "predicate": "typically_occurs_in",
+            "subject": "reading technical papers"
+          },
+          {
+            "object": "checking email",
+            "predicate": "typically_before",
+            "subject": "reading technical papers"
+          }
+        ],
+        "statement": "The user usually prefers to read technical papers in the morning before checking email."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured a habitual preference rather than a permanent fact.",
+        "Preserved uncertainty with 'usually prefer'.",
+        "Did not infer a rigid daily rule."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"store_personal_preference\",\"decision\":\"store_with_hedging\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"The user usually prefers to read technical papers in the morning before checking email.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"user\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"reading technical papers\",\"type\":\"activity\",\"role\":\"preferred_activity\"},{\"name\":\"morning\",\"type\":\"time_period\",\"role\":\"timing\"},{\"name\":\"checking email\",\"type\":\"activity\",\"role\":\"reference_activity\"}],\"relationships\":[{\"subject\":\"user\",\"predicate\":\"usually_prefers\",\"object\":\"reading technical papers\"},{\"subject\":\"reading technical papers\",\"predicate\":\"typically_occurs_in\",\"object\":\"morning\"},{\"subject\":\"reading technical papers\",\"predicate\":\"typically_before\",\"object\":\"checking email\"}]}],\"entity_resolution\":{\"action\":\"implicit_self\",\"entity_id\":null,\"reason\":\"The statement is a first-person report about the speaker's own routine and preference.\"},\"conflict_classification\":\"no_conflict\",\"answer\":\"Noted as a tentative routine/preference: you usually prefer reading technical papers in the morning before checking email.\",\"citations\":[\"\\\"I usually prefer to read technical papers in the morning before checking email.\\\"\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Captured a habitual preference rather than a permanent fact.\",\"Preserved uncertainty with 'usually prefer'.\",\"Did not infer a rigid daily rule.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "fixture_id": "supersession_sam_job_001__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Commit the new employment update and mark the older memory 'Sam works at Goldman' as superseded by the newer fact that Sam left Goldman and joined Point72.",
+    "citations": [
+      "Existing memory: Sam works at Goldman.",
+      "New: Sam left Goldman and joined Point72."
+    ],
+    "conflict_classification": "supersession",
+    "decision": "commit_with_supersession",
+    "entity_resolution": {
+      "action": "resolve_to_existing",
+      "entity_id": "Sam",
+      "reason": "The new statement refers to the same person and provides a newer employment update that supersedes the prior employer fact."
+    },
+    "intent": "update_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "formerly_employed_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "employed_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected direct contradiction on current employer.",
+        "Classified as supersession because the new statement explicitly indicates a job change.",
+        "Preserved historical ambiguity minimally by storing Goldman as former employer and Point72 as current employer."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace the current-employer fact 'Sam works at Goldman' with 'Sam works at Point72'.",
+      "If temporal history is supported, retain Goldman as a former employer and Point72 as the current employer.",
+      "Mark the older Goldman employment memory as superseded rather than current."
+    ]
+  },
+  "raw_text": "{\"intent\":\"update_memory\",\"decision\":\"commit_with_supersession\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam left Goldman and joined Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"employee\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former_employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"current_employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"formerly_employed_at\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"employed_at\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"resolve_to_existing\",\"entity_id\":\"Sam\",\"reason\":\"The new statement refers to the same person and provides a newer employment update that supersedes the prior employer fact.\"},\"conflict_classification\":\"supersession\",\"answer\":\"Commit the new employment update and mark the older memory 'Sam works at Goldman' as superseded by the newer fact that Sam left Goldman and joined Point72.\",\"citations\":[\"Existing memory: Sam works at Goldman.\",\"New: Sam left Goldman and joined Point72.\"],\"repair_options\":[\"Replace the current-employer fact 'Sam works at Goldman' with 'Sam works at Point72'.\",\"If temporal history is supported, retain Goldman as a former employer and Point72 as the current employer.\",\"Mark the older Goldman employment memory as superseded rather than current.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected direct contradiction on current employer.\",\"Classified as supersession because the new statement explicitly indicates a job change.\",\"Preserved historical ambiguity minimally by storing Goldman as former employer and Point72 as current employer.\"]}}",
+  "run_id": "eval_20260507_071025",
+  "status": "ok"
+}

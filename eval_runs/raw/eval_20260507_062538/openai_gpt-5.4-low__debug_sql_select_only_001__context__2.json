@@ -1,0 +1,38 @@
+{
+  "error": null,
+  "fixture_id": "debug_sql_select_only_001__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Context noted: in Admin SQL select-only mode, read queries like `SELECT id FROM memory_cards LIMIT 10` are allowed, while destructive queries like `DELETE FROM memory_cards` are denied.",
+    "citations": [
+      "Admin SQL select-only mode",
+      "SELECT id FROM memory_cards LIMIT 10 allowed",
+      "DELETE FROM memory_cards denied"
+    ],
+    "conflict_classification": "none",
+    "decision": "do_not_store",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input provides ephemeral debugging/contextual information about current SQL permissions, not a durable user-specific fact to commit to memory."
+    },
+    "intent": "debug_explainer",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Parsed the input as operational/debug context.",
+        "Chose not to create memory cards due to non-durable, environment-specific nature of the information.",
+        "Preserved the distinction between allowed SELECT behavior and denied DELETE behavior without overgeneralizing."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Keep this as session/debug context only; do not write it as durable memory.",
+      "If persistence is required, store a scoped capability note with an explicit validity window and environment label.",
+      "If behavior differs by role or environment, provide that metadata before considering any durable record."
+    ]
+  },
+  "raw_text": "{\"intent\":\"debug_explainer\",\"decision\":\"do_not_store\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input provides ephemeral debugging/contextual information about current SQL permissions, not a durable user-specific fact to commit to memory.\"},\"conflict_classification\":\"none\",\"answer\":\"Context noted: in Admin SQL select-only mode, read queries like `SELECT id FROM memory_cards LIMIT 10` are allowed, while destructive queries like `DELETE FROM memory_cards` are denied.\",\"citations\":[\"Admin SQL select-only mode\",\"SELECT id FROM memory_cards LIMIT 10 allowed\",\"DELETE FROM memory_cards denied\"],\"repair_options\":[\"Keep this as session/debug context only; do not write it as durable memory.\",\"If persistence is required, store a scoped capability note with an explicit validity window and environment label.\",\"If behavior differs by role or environment, provide that metadata before considering any durable record.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed the input as operational/debug context.\",\"Chose not to create memory cards due to non-durable, environment-specific nature of the information.\",\"Preserved the distinction between allowed SELECT behavior and denied DELETE behavior without overgeneralizing.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

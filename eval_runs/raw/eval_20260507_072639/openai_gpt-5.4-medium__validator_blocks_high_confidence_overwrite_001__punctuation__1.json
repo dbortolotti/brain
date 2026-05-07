@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_high_confidence_overwrite_001__punctuation",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "Reject the proposed update. 'Sara is Daniele's niece' directly conflicts with the existing durable fact 'Sara is Daniele's daughter' and must not overwrite it without strong supporting evidence.",
+    "citations": [
+      "Existing: Sara is Daniele's daughter",
+      "Proposed: Sara is Daniele's niece"
+    ],
+    "conflict_classification": "direct_relationship_conflict_high_confidence_overwrite_attempt",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "reuse_existing",
+      "entity_id": null,
+      "reason": "The proposed statement refers to the same named entities ('Sara' and 'Daniele') but introduces a directly conflicting kinship relation. No entity split or overwrite should occur without strong disambiguating evidence."
+    },
+    "intent": "validate_memory_update",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Validation completed.",
+        "Detected a direct contradiction on the relationship between the same entities.",
+        "Blocked high-confidence overwrite of an existing durable fact.",
+        "No new durable memory card was created."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Keep the existing memory unchanged.",
+      "Do not commit the proposed fact as durable memory.",
+      "If needed, record the new statement only as an unverified conflicting claim with explicit uncertainty and source context.",
+      "Request clarification or evidence to resolve whether the relationship was misidentified or the entities were conflated."
+    ]
+  },
+  "raw_text": "{\"intent\":\"validate_memory_update\",\"decision\":\"reject\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"reuse_existing\",\"entity_id\":null,\"reason\":\"The proposed statement refers to the same named entities ('Sara' and 'Daniele') but introduces a directly conflicting kinship relation. No entity split or overwrite should occur without strong disambiguating evidence.\"},\"conflict_classification\":\"direct_relationship_conflict_high_confidence_overwrite_attempt\",\"answer\":\"Reject the proposed update. 'Sara is Daniele's niece' directly conflicts with the existing durable fact 'Sara is Daniele's daughter' and must not overwrite it without strong supporting evidence.\",\"citations\":[\"Existing: Sara is Daniele's daughter\",\"Proposed: Sara is Daniele's niece\"],\"repair_options\":[\"Keep the existing memory unchanged.\",\"Do not commit the proposed fact as durable memory.\",\"If needed, record the new statement only as an unverified conflicting claim with explicit uncertainty and source context.\",\"Request clarification or evidence to resolve whether the relationship was misidentified or the entities were conflated.\"],\"receipt\":{\"success\":true,\"details\":[\"Validation completed.\",\"Detected a direct contradiction on the relationship between the same entities.\",\"Blocked high-confidence overwrite of an existing durable fact.\",\"No new durable memory card was created.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

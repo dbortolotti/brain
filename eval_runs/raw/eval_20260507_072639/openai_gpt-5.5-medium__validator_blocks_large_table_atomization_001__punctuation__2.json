@@ -1,0 +1,35 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_large_table_atomization_001__punctuation",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "Rejected. Do not create 500 memory cards from one CSV row each. The proposed write is over-atomized bulk table ingestion rather than validated durable memory. Preserve the data outside memory or ask for a specific subset and purpose before committing any individual facts.",
+    "citations": [],
+    "conflict_classification": "not_applicable",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The proposal atomizes a large CSV/table into 500 separate memory cards without evidence that each row is a durable, user-relevant memory. Bulk row-by-row ingestion should not be committed as personal memory, especially when punctuation or CSV formatting may affect parsing and meaning."
+    },
+    "intent": "validate_proposed_memory_write",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Blocked bulk creation of 500 row-level memory cards.",
+        "No durable personal-memory claim was established for each CSV row.",
+        "Avoided committing potentially malformed or punctuation-sensitive CSV fragments as current facts."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Do not store the CSV rows as personal memory; keep them in a document, file, or structured datastore instead.",
+      "Ask the user which specific rows, entities, or durable facts should be remembered.",
+      "Summarize the table at a high level only if the summary represents a stable user-relevant preference, commitment, identity fact, or long-term project context.",
+      "If any row is to be stored, validate it individually for durability, relevance, unambiguous parsing, and conflicts before creating a memory card."
+    ]
+  },
+  "raw_text": "{\"intent\":\"validate_proposed_memory_write\",\"decision\":\"reject\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The proposal atomizes a large CSV/table into 500 separate memory cards without evidence that each row is a durable, user-relevant memory. Bulk row-by-row ingestion should not be committed as personal memory, especially when punctuation or CSV formatting may affect parsing and meaning.\"},\"conflict_classification\":\"not_applicable\",\"answer\":\"Rejected. Do not create 500 memory cards from one CSV row each. The proposed write is over-atomized bulk table ingestion rather than validated durable memory. Preserve the data outside memory or ask for a specific subset and purpose before committing any individual facts.\",\"citations\":[],\"repair_options\":[\"Do not store the CSV rows as personal memory; keep them in a document, file, or structured datastore instead.\",\"Ask the user which specific rows, entities, or durable facts should be remembered.\",\"Summarize the table at a high level only if the summary represents a stable user-relevant preference, commitment, identity fact, or long-term project context.\",\"If any row is to be stored, validate it individually for durability, relevance, unambiguous parsing, and conflicts before creating a memory card.\"],\"receipt\":{\"success\":false,\"details\":[\"Blocked bulk creation of 500 row-level memory cards.\",\"No durable personal-memory claim was established for each CSV row.\",\"Avoided committing potentially malformed or punctuation-sensitive CSV fragments as current facts.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

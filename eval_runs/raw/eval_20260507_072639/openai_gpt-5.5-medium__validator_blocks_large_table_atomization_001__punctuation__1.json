@@ -1,0 +1,36 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_large_table_atomization_001__punctuation",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "Rejected. Creating 500 memory cards, one per CSV row, is excessive table atomization and should not be committed as durable memory without evidence that each row is a durable, user-relevant fact. Large tabular data should be summarized, stored as a referenced document/dataset, or selectively distilled into a small number of durable memories only when clearly warranted.",
+    "citations": [],
+    "conflict_classification": "not_applicable",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No stable user-specific entity or durable memory claim was provided; the proposal describes a bulk atomization strategy rather than validated facts to remember."
+    },
+    "intent": "Validate whether a proposed bulk import of 500 one-row CSV-derived memory cards should be committed as durable memory.",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Blocked proposed creation of 500 memory cards.",
+        "Reason: excessive atomization of large tabular data.",
+        "No durable, user-specific facts were validated for memory commitment."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Do not create memory cards for every CSV row.",
+      "Create a single summary memory describing the dataset only if it is user-relevant and durable.",
+      "Store or reference the CSV externally instead of converting each row into memory.",
+      "Ask the user which specific rows or facts should be remembered.",
+      "Extract only high-salience, durable preferences, identities, commitments, or long-term facts from the CSV."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Validate whether a proposed bulk import of 500 one-row CSV-derived memory cards should be committed as durable memory.\",\"decision\":\"reject\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No stable user-specific entity or durable memory claim was provided; the proposal describes a bulk atomization strategy rather than validated facts to remember.\"},\"conflict_classification\":\"not_applicable\",\"answer\":\"Rejected. Creating 500 memory cards, one per CSV row, is excessive table atomization and should not be committed as durable memory without evidence that each row is a durable, user-relevant fact. Large tabular data should be summarized, stored as a referenced document/dataset, or selectively distilled into a small number of durable memories only when clearly warranted.\",\"citations\":[],\"repair_options\":[\"Do not create memory cards for every CSV row.\",\"Create a single summary memory describing the dataset only if it is user-relevant and durable.\",\"Store or reference the CSV externally instead of converting each row into memory.\",\"Ask the user which specific rows or facts should be remembered.\",\"Extract only high-salience, durable preferences, identities, commitments, or long-term facts from the CSV.\"],\"receipt\":{\"success\":false,\"details\":[\"Blocked proposed creation of 500 memory cards.\",\"Reason: excessive atomization of large tabular data.\",\"No durable, user-specific facts were validated for memory commitment.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

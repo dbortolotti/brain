@@ -1,0 +1,96 @@
+{
+  "error": null,
+  "fixture_id": "temporal_status_transition_001__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "This is a temporal status transition, not an irreconcilable conflict. Preserve the older planned/open state as prior context, but do not present it as the current state. Record the newer fact that the Brain Slack agent MVP is now implemented.",
+    "citations": [
+      "Existing context: The Brain Slack agent is planned, status=open.",
+      "New update: The Brain Slack agent MVP is now implemented."
+    ],
+    "conflict_classification": "temporal_status_transition",
+    "decision": "accept_with_status_transition",
+    "entity_resolution": {
+      "action": "link_to_existing_entity",
+      "entity_id": "The Brain Slack agent",
+      "reason": "The new statement refers to the same project context and adds a newer milestone/status update rather than introducing a distinct unrelated entity."
+    },
+    "intent": "classify_and_update_context",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "The Brain Slack agent MVP",
+            "role": "subject",
+            "type": "project_milestone"
+          },
+          {
+            "name": "The Brain Slack agent",
+            "role": "parent_project",
+            "type": "project"
+          }
+        ],
+        "kind": "project_update",
+        "relationships": [
+          {
+            "object": "implemented",
+            "predicate": "status",
+            "subject": "The Brain Slack agent MVP"
+          },
+          {
+            "object": "The Brain Slack agent",
+            "predicate": "part_of",
+            "subject": "The Brain Slack agent MVP"
+          }
+        ],
+        "statement": "The Brain Slack agent MVP is now implemented."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "The Brain Slack agent",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "The Brain Slack agent MVP",
+            "role": "new_state",
+            "type": "project_milestone"
+          }
+        ],
+        "kind": "project_state_transition",
+        "relationships": [
+          {
+            "object": "planned/open",
+            "predicate": "had_prior_status",
+            "subject": "The Brain Slack agent"
+          },
+          {
+            "object": "implemented",
+            "predicate": "has_new_status",
+            "subject": "The Brain Slack agent MVP"
+          }
+        ],
+        "statement": "The prior context that the Brain Slack agent was planned/open is superseded as current state by the newer update that its MVP is now implemented."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected same project context with newer status information.",
+        "Classified as temporal progression from planned/open to MVP implemented.",
+        "Avoided keeping the older status as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark the previous planned/open state as historical or superseded.",
+      "Store the new implemented state as the current milestone status.",
+      "If the system tracks both project and milestone separately, keep project-level status ambiguous unless explicitly updated beyond the MVP milestone."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_and_update_context\",\"decision\":\"accept_with_status_transition\",\"memory_cards\":[{\"kind\":\"project_update\",\"statement\":\"The Brain Slack agent MVP is now implemented.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"The Brain Slack agent MVP\",\"type\":\"project_milestone\",\"role\":\"subject\"},{\"name\":\"The Brain Slack agent\",\"type\":\"project\",\"role\":\"parent_project\"}],\"relationships\":[{\"subject\":\"The Brain Slack agent MVP\",\"predicate\":\"status\",\"object\":\"implemented\"},{\"subject\":\"The Brain Slack agent MVP\",\"predicate\":\"part_of\",\"object\":\"The Brain Slack agent\"}]},{\"kind\":\"project_state_transition\",\"statement\":\"The prior context that the Brain Slack agent was planned/open is superseded as current state by the newer update that its MVP is now implemented.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"The Brain Slack agent\",\"type\":\"project\",\"role\":\"subject\"},{\"name\":\"The Brain Slack agent MVP\",\"type\":\"project_milestone\",\"role\":\"new_state\"}],\"relationships\":[{\"subject\":\"The Brain Slack agent\",\"predicate\":\"had_prior_status\",\"object\":\"planned/open\"},{\"subject\":\"The Brain Slack agent MVP\",\"predicate\":\"has_new_status\",\"object\":\"implemented\"}]}],\"entity_resolution\":{\"action\":\"link_to_existing_entity\",\"entity_id\":\"The Brain Slack agent\",\"reason\":\"The new statement refers to the same project context and adds a newer milestone/status update rather than introducing a distinct unrelated entity.\"},\"conflict_classification\":\"temporal_status_transition\",\"answer\":\"This is a temporal status transition, not an irreconcilable conflict. Preserve the older planned/open state as prior context, but do not present it as the current state. Record the newer fact that the Brain Slack agent MVP is now implemented.\",\"citations\":[\"Existing context: The Brain Slack agent is planned, status=open.\",\"New update: The Brain Slack agent MVP is now implemented.\"],\"repair_options\":[\"Mark the previous planned/open state as historical or superseded.\",\"Store the new implemented state as the current milestone status.\",\"If the system tracks both project and milestone separately, keep project-level status ambiguous unless explicitly updated beyond the MVP milestone.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected same project context with newer status information.\",\"Classified as temporal progression from planned/open to MVP implemented.\",\"Avoided keeping the older status as current.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

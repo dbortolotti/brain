@@ -1,0 +1,68 @@
+{
+  "error": null,
+  "fixture_id": "additive_sam_preferences_001",
+  "model": "openai:gpt-5.4-high",
+  "payload": {
+    "answer": "Add the new preference as a separate memory; it complements the existing fact that Sam from Goldman likes Bill Evans.",
+    "citations": [
+      "Existing memory: Sam from Goldman likes Bill Evans.",
+      "New: Sam from Goldman also likes Sonny Rollins."
+    ],
+    "conflict_classification": "additive_non_conflicting",
+    "decision": "add",
+    "entity_resolution": {
+      "action": "match_existing_entity",
+      "entity_id": null,
+      "reason": "The new statement refers to the same person already described as 'Sam from Goldman'; the new preference is additive and does not contradict the existing one."
+    },
+    "intent": "store_preference",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "preference_object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Sonny Rollins",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Sonny Rollins."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected no conflict between the existing and new memories.",
+        "Resolved 'Sam from Goldman' to the existing person reference.",
+        "Created one new preference memory card for Sonny Rollins only; did not alter the Bill Evans memory."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"store_preference\",\"decision\":\"add\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman likes Sonny Rollins.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Sonny Rollins\",\"type\":\"person\",\"role\":\"preference_object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Sonny Rollins\"}]}],\"entity_resolution\":{\"action\":\"match_existing_entity\",\"entity_id\":null,\"reason\":\"The new statement refers to the same person already described as 'Sam from Goldman'; the new preference is additive and does not contradict the existing one.\"},\"conflict_classification\":\"additive_non_conflicting\",\"answer\":\"Add the new preference as a separate memory; it complements the existing fact that Sam from Goldman likes Bill Evans.\",\"citations\":[\"Existing memory: Sam from Goldman likes Bill Evans.\",\"New: Sam from Goldman also likes Sonny Rollins.\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Detected no conflict between the existing and new memories.\",\"Resolved 'Sam from Goldman' to the existing person reference.\",\"Created one new preference memory card for Sonny Rollins only; did not alter the Bill Evans memory.\"]}}",
+  "run_id": "eval_20260507_065822",
+  "status": "ok"
+}

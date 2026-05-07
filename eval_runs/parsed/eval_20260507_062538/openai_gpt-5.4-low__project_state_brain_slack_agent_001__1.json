@@ -1,0 +1,68 @@
+{
+  "fixture_id": "project_state_brain_slack_agent_001",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Store a cautious project-direction memory: Slack is the current primary guardrailed memory ingestion interface for Brain, and Telegram is a possible later interface.",
+    "citations": [
+      "Brain project state: Slack should be the primary guardrailed memory ingestion interface; Telegram can come later."
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "store_with_caution",
+    "entity_resolution": {
+      "action": "create_or_link_by_name",
+      "entity_id": null,
+      "reason": "The statement references a project and platforms by name, but no canonical entity IDs are provided in the input."
+    },
+    "intent": "Evaluate whether the stated Brain project preference should be stored as durable memory.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "Slack",
+            "role": "preferred_primary_interface",
+            "type": "platform"
+          },
+          {
+            "name": "Telegram",
+            "role": "possible_future_interface",
+            "type": "platform"
+          }
+        ],
+        "kind": "project_direction",
+        "relationships": [
+          {
+            "object": "Slack",
+            "predicate": "prefers_primary_guardrailed_memory_ingestion_interface",
+            "subject": "Brain"
+          },
+          {
+            "object": "Telegram",
+            "predicate": "may_add_later",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "For the Brain project, Slack is currently preferred as the primary guardrailed memory ingestion interface, while Telegram is considered a possible later addition."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted a present project preference with future-facing uncertainty preserved.",
+        "Avoided overstating Telegram as committed or current.",
+        "No conflicting or superseding project-state facts were provided in the input."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If this is meant to be a short-term roadmap item rather than durable memory, store it as a time-bounded plan.",
+      "If stronger certainty is desired, clarify whether Telegram is planned, merely possible, or explicitly deferred.",
+      "If 'guardrailed memory ingestion interface' has a canonical internal term, normalize the statement to that vocabulary."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

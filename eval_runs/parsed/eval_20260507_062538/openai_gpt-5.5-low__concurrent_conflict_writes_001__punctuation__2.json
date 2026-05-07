@@ -1,0 +1,83 @@
+{
+  "fixture_id": "concurrent_conflict_writes_001__punctuation",
+  "model": "openai:gpt-5.5-low",
+  "payload": {
+    "answer": "I found potentially conflicting concurrent employment claims for Sam: that Sam works at Goldman and that Sam joined Point72. I would not commit either as the current employer without clarification about timing and whether the same Sam is meant.",
+    "citations": [
+      "Concurrent writes - Sam works at Goldman Sam joined Point72"
+    ],
+    "conflict_classification": "concurrent_conflict_ambiguous_employment",
+    "decision": "needs_clarification",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The input appears to contain two concurrent employment-related claims about Sam without punctuation or timing context; it is unclear whether they refer to the same Sam, whether Goldman is Goldman Sachs, and whether Point72 supersedes Goldman."
+    },
+    "intent": "memory_write",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_claim",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_claim",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected concurrent ambiguous employment writes.",
+        "No durable current-employment memory committed.",
+        "Clarification required before resolving the conflict."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Clarify whether Goldman refers to Goldman Sachs.",
+      "Clarify whether Sam left Goldman before joining Point72.",
+      "Clarify whether both claims refer to the same Sam.",
+      "Provide dates for each employment claim."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

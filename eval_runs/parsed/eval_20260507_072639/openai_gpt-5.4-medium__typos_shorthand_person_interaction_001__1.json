@@ -1,0 +1,35 @@
+{
+  "fixture_id": "typos_shorthand_person_interaction_001",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "I would not store this as durable memory. It appears to mean 'Sam from Goldman likes Bill Evans,' but the identities are not uniquely resolved and 'apparently' signals uncertainty/rumor rather than a confirmed fact.",
+    "citations": [
+      "sam frm goldmn likes bill evns apparently"
+    ],
+    "conflict_classification": "ambiguous_hearsay",
+    "decision": "defer_memory_write",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The message contains unresolved shorthand/typos ('frm', 'goldmn', 'evns'), multiple ambiguous entities ('Sam', 'Goldman', 'Bill Evans'), and a hedge word ('apparently'), so it is not reliable enough for durable memory."
+    },
+    "intent": "ingest_possible_preference",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No durable memory committed.",
+        "Reason: ambiguous entity resolution.",
+        "Reason: hedged/uncertain claim ('apparently').",
+        "Reason: shorthand/typos reduce confidence in exact meaning."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Clarify the entities in full, e.g. 'Sam [last name] from Goldman Sachs'.",
+      "Specify which Bill Evans you mean.",
+      "Confirm whether this is a verified, durable preference or just hearsay/context.",
+      "Rewrite the statement without shorthand or hedging if you want it remembered."
+    ]
+  },
+  "run_id": "eval_20260507_072639"
+}

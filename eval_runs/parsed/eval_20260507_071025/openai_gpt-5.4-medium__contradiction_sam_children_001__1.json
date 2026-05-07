@@ -1,0 +1,35 @@
+{
+  "fixture_id": "contradiction_sam_children_001",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "The new statement conflicts directly with existing memory: 'has two children' vs 'has no children.' Do not overwrite or store either as current without additional evidence, timeframe, or source clarification.",
+    "citations": [
+      "Existing memory: Sam from Goldman has two children.",
+      "New input: Sam from Goldman has no children."
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "do_not_commit_durable_update_without_review",
+    "entity_resolution": {
+      "action": "match_existing_entity",
+      "entity_id": null,
+      "reason": "Both statements refer to Sam associated with Goldman, so they likely target the same person, but the new claim directly contradicts the existing memory."
+    },
+    "intent": "assess_conflict",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected a direct contradiction on the same attribute (number of children).",
+        "Applied conservative memory policy: no durable commit of the contradictory update.",
+        "Recommended review and disambiguation before any overwrite or supersession."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request a source for the new claim.",
+      "Ask whether one statement is outdated and, if so, capture the applicable timeframe.",
+      "Verify whether both statements refer to the same Sam from Goldman.",
+      "If stronger evidence arrives, mark the older fact as superseded rather than keeping both as current."
+    ]
+  },
+  "run_id": "eval_20260507_071025"
+}

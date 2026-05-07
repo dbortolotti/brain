@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "groundedness_metadata_claims_001__punctuation",
+  "model": "anthropic:claude-sonnet-4-6",
+  "payload": {
+    "answer": "The identity claim is grounded. The evidence includes an entity row establishing the person and an alias row confirming the aliases 'Sam' and 'Sam from Goldman'. Confidence is medium as provided.",
+    "citations": [
+      "entity_row: Person - Sam",
+      "alias_row: Sam from Goldman"
+    ],
+    "conflict_classification": "none",
+    "decision": "GROUNDED",
+    "entity_resolution": {
+      "action": "merge_aliases",
+      "entity_id": "person::sam",
+      "reason": "Evidence contains both an entity row identifying the person and an alias row confirming 'Sam' and 'Sam from Goldman' refer to the same individual. Aliases are grounded in the provided evidence."
+    },
+    "intent": "Evaluate groundedness of identity claim for a person with aliases 'Sam' and 'Sam from Goldman', with medium confidence, supported by entity row and alias row in evidence.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "primary",
+            "type": "Person"
+          },
+          {
+            "name": "Sam from Goldman",
+            "role": "alias",
+            "type": "Person"
+          }
+        ],
+        "kind": "identity",
+        "relationships": [
+          {
+            "object": "Sam from Goldman",
+            "predicate": "has_alias",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "There is a person referred to as 'Sam' and 'Sam from Goldman'."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Identity entity created or matched for 'Sam'.",
+        "Alias 'Sam from Goldman' recorded and linked to primary entity.",
+        "Confidence set to medium per input specification.",
+        "No conflicts detected with existing memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Seek additional context to elevate confidence from medium to high (e.g., full name, employer confirmation at Goldman).",
+      "If 'Goldman' refers to a specific organization, create a separate entity for that organization and link via employment relationship."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Evaluate groundedness of identity claim for a person with aliases 'Sam' and 'Sam from Goldman', with medium confidence, supported by entity row and alias row in evidence.\",\n  \"decision\": \"GROUNDED\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"identity\",\n      \"statement\": \"There is a person referred to as 'Sam' and 'Sam from Goldman'.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"Person\",\n          \"role\": \"primary\"\n        },\n        {\n          \"name\": \"Sam from Goldman\",\n          \"type\": \"Person\",\n          \"role\": \"alias\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has_alias\",\n          \"object\": \"Sam from Goldman\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge_aliases\",\n    \"entity_id\": \"person::sam\",\n    \"reason\": \"Evidence contains both an entity row identifying the person and an alias row confirming 'Sam' and 'Sam from Goldman' refer to the same individual. Aliases are grounded in the provided evidence.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"The identity claim is grounded. The evidence includes an entity row establishing the person and an alias row confirming the aliases 'Sam' and 'Sam from Goldman'. Confidence is medium as provided.\",\n  \"citations\": [\n    \"entity_row: Person - Sam\",\n    \"alias_row: Sam from Goldman\"\n  ],\n  \"repair_options\": [\n    \"Seek additional context to elevate confidence from medium to high (e.g., full name, employer confirmation at Goldman).\",\n    \"If 'Goldman' refers to a specific organization, create a separate entity for that organization and link via employment relationship.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Identity entity created or matched for 'Sam'.\",\n      \"Alias 'Sam from Goldman' recorded and linked to primary entity.\",\n      \"Confidence set to medium per input specification.\",\n      \"No conflicts detected with existing memory.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_043601",
+  "status": "ok"
+}

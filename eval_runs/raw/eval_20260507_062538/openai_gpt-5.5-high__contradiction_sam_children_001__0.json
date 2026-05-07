@@ -1,0 +1,47 @@
+{
+  "error": null,
+  "fixture_id": "contradiction_sam_children_001",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "Direct contradiction detected. Do not store the new claim as current fact without clarification or an explicit correction of the existing memory.",
+    "citations": [],
+    "conflict_classification": "direct_contradiction",
+    "decision": "defer_commit_pending_clarification",
+    "entity_resolution": {
+      "action": "match_existing",
+      "entity_id": null,
+      "reason": "Both claims refer to the same identifiable person descriptor: Sam from Goldman."
+    },
+    "intent": "memory_update_conflict_check",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "conflict",
+        "relationships": [],
+        "statement": "There is a direct conflict about Sam from Goldman\u2019s children: existing memory says Sam from Goldman has two children, while the new information says Sam from Goldman has no children."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict classified as direct contradiction.",
+        "No current child-count fact was committed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for clarification: does Sam from Goldman have two children or no children?",
+      "If the new statement is an explicit correction, mark the prior memory as superseded and store that Sam from Goldman has no children.",
+      "If the new statement may refer to a different Sam from Goldman, create or resolve a separate entity before storing."
+    ]
+  },
+  "raw_text": "{\"intent\":\"memory_update_conflict_check\",\"decision\":\"defer_commit_pending_clarification\",\"memory_cards\":[{\"kind\":\"conflict\",\"statement\":\"There is a direct conflict about Sam from Goldman\u2019s children: existing memory says Sam from Goldman has two children, while the new information says Sam from Goldman has no children.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam from Goldman\",\"type\":\"person\",\"role\":\"subject\"}],\"relationships\":[]}],\"entity_resolution\":{\"action\":\"match_existing\",\"entity_id\":null,\"reason\":\"Both claims refer to the same identifiable person descriptor: Sam from Goldman.\"},\"conflict_classification\":\"direct_contradiction\",\"answer\":\"Direct contradiction detected. Do not store the new claim as current fact without clarification or an explicit correction of the existing memory.\",\"citations\":[],\"repair_options\":[\"Ask for clarification: does Sam from Goldman have two children or no children?\",\"If the new statement is an explicit correction, mark the prior memory as superseded and store that Sam from Goldman has no children.\",\"If the new statement may refer to a different Sam from Goldman, create or resolve a separate entity before storing.\"],\"receipt\":{\"success\":true,\"details\":[\"Conflict classified as direct contradiction.\",\"No current child-count fact was committed.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

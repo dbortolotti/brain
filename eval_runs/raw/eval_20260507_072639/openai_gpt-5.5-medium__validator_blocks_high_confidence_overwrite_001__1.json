@@ -1,0 +1,36 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_high_confidence_overwrite_001",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "Blocked: the proposed memory conflicts with the existing memory that Sara is Daniele's daughter. No durable update should be committed unless the user explicitly clarifies that the prior fact was wrong or that both relationships apply in a specific way.",
+    "citations": [
+      "Existing memory: Sara is Daniele's daughter.",
+      "Proposed memory: Sara is Daniele's niece."
+    ],
+    "conflict_classification": "high_confidence_overwrite_conflict",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "no_change",
+      "entity_id": null,
+      "reason": "The proposed relationship reclassifies Sara from Daniele's daughter to Daniele's niece, conflicting with the existing durable memory. Do not overwrite the existing fact without explicit correction or clarification."
+    },
+    "intent": "validate_memory_update",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Rejected proposed overwrite of an existing family relationship.",
+        "No new memory card was committed."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask the user to clarify whether Sara is Daniele's daughter, niece, or both.",
+      "If the existing memory is wrong, request an explicit correction before replacing it.",
+      "If both are true due to adoption, marriage, or another family structure, store both relationships with that context."
+    ]
+  },
+  "raw_text": "{\"intent\":\"validate_memory_update\",\"decision\":\"reject\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"no_change\",\"entity_id\":null,\"reason\":\"The proposed relationship reclassifies Sara from Daniele's daughter to Daniele's niece, conflicting with the existing durable memory. Do not overwrite the existing fact without explicit correction or clarification.\"},\"conflict_classification\":\"high_confidence_overwrite_conflict\",\"answer\":\"Blocked: the proposed memory conflicts with the existing memory that Sara is Daniele's daughter. No durable update should be committed unless the user explicitly clarifies that the prior fact was wrong or that both relationships apply in a specific way.\",\"citations\":[\"Existing memory: Sara is Daniele's daughter.\",\"Proposed memory: Sara is Daniele's niece.\"],\"repair_options\":[\"Ask the user to clarify whether Sara is Daniele's daughter, niece, or both.\",\"If the existing memory is wrong, request an explicit correction before replacing it.\",\"If both are true due to adoption, marriage, or another family structure, store both relationships with that context.\"],\"receipt\":{\"success\":false,\"details\":[\"Rejected proposed overwrite of an existing family relationship.\",\"No new memory card was committed.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

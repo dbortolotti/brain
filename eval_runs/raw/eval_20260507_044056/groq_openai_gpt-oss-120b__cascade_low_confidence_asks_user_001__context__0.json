@@ -1,0 +1,53 @@
+{
+  "error": null,
+  "fixture_id": "cascade_low_confidence_asks_user_001__context",
+  "model": "groq:openai/gpt-oss-120b",
+  "payload": {
+    "answer": "The system will not commit the ambiguous Sam note due to low confidence and will keep the cloud escalation disabled status.",
+    "citations": [],
+    "conflict_classification": "low_confidence_ambiguous",
+    "decision": "defer_commit",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Low confidence in ambiguous Sam note; awaiting clarification."
+    },
+    "intent": "evaluate_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [],
+        "kind": "status",
+        "relationships": [],
+        "statement": "Cloud escalation is disabled."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "note",
+        "relationships": [],
+        "statement": "Sam note is ambiguous with low model confidence."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card for cloud escalation recorded.",
+        "Ambiguous Sam note flagged for review."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask user for clarification on Sam note",
+      "Increase confidence threshold before committing"
+    ]
+  },
+  "raw_text": "{\"intent\":\"evaluate_memory\",\"decision\":\"defer_commit\",\"memory_cards\":[{\"kind\":\"status\",\"statement\":\"Cloud escalation is disabled.\",\"confidence\":\"high\",\"entities\":[],\"relationships\":[]},{\"kind\":\"note\",\"statement\":\"Sam note is ambiguous with low model confidence.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"}],\"relationships\":[]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"Low confidence in ambiguous Sam note; awaiting clarification.\"},\"conflict_classification\":\"low_confidence_ambiguous\",\"answer\":\"The system will not commit the ambiguous Sam note due to low confidence and will keep the cloud escalation disabled status.\",\"citations\":[],\"repair_options\":[\"Ask user for clarification on Sam note\",\"Increase confidence threshold before committing\"],\"receipt\":{\"success\":true,\"details\":[\"Memory card for cloud escalation recorded.\",\"Ambiguous Sam note flagged for review.\"]}}",
+  "run_id": "eval_20260507_044056",
+  "status": "ok"
+}

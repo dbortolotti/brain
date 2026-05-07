@@ -1,0 +1,38 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "No durable update committed. 'Sara is my niece' is ambiguous because the referent of 'my' is unspecified. It may be consistent with existing memory that Sara is Daniele's daughter and Nur's twin, but the exact kinship path to the speaker cannot be safely inferred.",
+    "citations": [
+      "Existing memory: Sara is Daniele's daughter.",
+      "Existing memory: Sara is Nur's twin.",
+      "New statement: Sara is my niece."
+    ],
+    "conflict_classification": "relation_ambiguity_no_direct_conflict",
+    "decision": "needs_clarification",
+    "entity_resolution": {
+      "action": "link_existing_entity",
+      "entity_id": "Sara",
+      "reason": "The new statement likely refers to the same Sara, but 'my niece' depends on the speaker's identity and does not directly contradict the existing family facts."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected no direct contradiction with existing high-confidence memory.",
+        "Refused durable commit due to unresolved first-person reference.",
+        "Preserved existing facts as current without modification."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask who 'my' refers to so the kinship relation can be grounded.",
+      "Store only as an attributed/ephemeral claim until the speaker identity is resolved.",
+      "If clarified, add an explicit relation between the speaker (or named person) and Sara, e.g. '<person> is Sara's aunt/uncle' or 'Sara is <person>'s niece'."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict\",\"decision\":\"needs_clarification\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"link_existing_entity\",\"entity_id\":\"Sara\",\"reason\":\"The new statement likely refers to the same Sara, but 'my niece' depends on the speaker's identity and does not directly contradict the existing family facts.\"},\"conflict_classification\":\"relation_ambiguity_no_direct_conflict\",\"answer\":\"No durable update committed. 'Sara is my niece' is ambiguous because the referent of 'my' is unspecified. It may be consistent with existing memory that Sara is Daniele's daughter and Nur's twin, but the exact kinship path to the speaker cannot be safely inferred.\",\"citations\":[\"Existing memory: Sara is Daniele's daughter.\",\"Existing memory: Sara is Nur's twin.\",\"New statement: Sara is my niece.\"],\"repair_options\":[\"Ask who 'my' refers to so the kinship relation can be grounded.\",\"Store only as an attributed/ephemeral claim until the speaker identity is resolved.\",\"If clarified, add an explicit relation between the speaker (or named person) and Sara, e.g. '<person> is Sara's aunt/uncle' or 'Sara is <person>'s niece'.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected no direct contradiction with existing high-confidence memory.\",\"Refused durable commit due to unresolved first-person reference.\",\"Preserved existing facts as current without modification.\"]}}",
+  "run_id": "eval_20260507_065822",
+  "status": "ok"
+}

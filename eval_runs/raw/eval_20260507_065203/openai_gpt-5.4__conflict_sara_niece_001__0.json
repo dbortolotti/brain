@@ -1,0 +1,38 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "Do not commit a durable fact as stated. 'Sara is my niece' is speaker-relative and ambiguous without knowing who 'my' refers to. It may be compatible with existing memory that Sara is Daniele's daughter and Nur's twin.",
+    "citations": [
+      "Existing memory: Sara is Daniele's daughter.",
+      "Existing memory: Sara is Nur's twin.",
+      "New statement: Sara is my niece."
+    ],
+    "conflict_classification": "apparent_no_direct_conflict_context_dependent",
+    "decision": "needs_clarification",
+    "entity_resolution": {
+      "action": "link_existing_entity",
+      "entity_id": "Sara",
+      "reason": "The new statement likely refers to the same Sara, but 'my niece' depends on the speaker's identity and does not directly contradict the existing family facts."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected no direct contradiction with existing high-confidence memory.",
+        "Classified the issue as ambiguity/context dependence rather than factual conflict.",
+        "Chose not to write a durable memory card because the statement is not absolute."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask who 'my' refers to before storing the relationship durably.",
+      "If the speaker identity is known, rewrite as an absolute relation, e.g. 'Sara is <speaker_name>'s niece.'",
+      "Store only as an ephemeral utterance attribution rather than durable memory until resolved."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict\",\"decision\":\"needs_clarification\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"link_existing_entity\",\"entity_id\":\"Sara\",\"reason\":\"The new statement likely refers to the same Sara, but 'my niece' depends on the speaker's identity and does not directly contradict the existing family facts.\"},\"conflict_classification\":\"apparent_no_direct_conflict_context_dependent\",\"answer\":\"Do not commit a durable fact as stated. 'Sara is my niece' is speaker-relative and ambiguous without knowing who 'my' refers to. It may be compatible with existing memory that Sara is Daniele's daughter and Nur's twin.\",\"citations\":[\"Existing memory: Sara is Daniele's daughter.\",\"Existing memory: Sara is Nur's twin.\",\"New statement: Sara is my niece.\"],\"repair_options\":[\"Ask who 'my' refers to before storing the relationship durably.\",\"If the speaker identity is known, rewrite as an absolute relation, e.g. 'Sara is <speaker_name>'s niece.'\",\"Store only as an ephemeral utterance attribution rather than durable memory until resolved.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected no direct contradiction with existing high-confidence memory.\",\"Classified the issue as ambiguity/context dependence rather than factual conflict.\",\"Chose not to write a durable memory card because the statement is not absolute.\"]}}",
+  "run_id": "eval_20260507_065203",
+  "status": "ok"
+}

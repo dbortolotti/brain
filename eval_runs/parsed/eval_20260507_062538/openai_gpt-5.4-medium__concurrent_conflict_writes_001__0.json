@@ -1,0 +1,35 @@
+{
+  "fixture_id": "concurrent_conflict_writes_001",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "Treat this as an unresolved conflict. Do not commit either Goldman or Point72 as Sam's current employer. Preserve both only as unverified competing claims until temporal context, source priority, or identity clarification is available.",
+    "citations": [
+      "Sam works at Goldman.",
+      "Sam joined Point72."
+    ],
+    "conflict_classification": "concurrent_mutually_exclusive_current_state",
+    "decision": "defer_commit_pending_resolution",
+    "entity_resolution": {
+      "action": "defer_entity_resolution",
+      "entity_id": null,
+      "reason": "\"Sam\" is underspecified, and the two concurrent employment writes imply different current employers without timestamps or ordering."
+    },
+    "intent": "classify_concurrent_conflict",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected concurrent conflict about Sam's employer.",
+        "Avoided writing a superseding current-state fact without temporal evidence.",
+        "No durable memory card committed due to unresolved ambiguity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add timestamps or source ordering to both writes.",
+      "Rewrite one or both as dated events, e.g. 'Sam joined Point72 on <date>'.",
+      "Clarify whether Goldman is former employer and Point72 is current employer.",
+      "Confirm whether both statements refer to the same Sam."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

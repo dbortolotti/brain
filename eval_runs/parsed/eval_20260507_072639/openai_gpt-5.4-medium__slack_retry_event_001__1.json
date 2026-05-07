@@ -1,0 +1,33 @@
+{
+  "fixture_id": "slack_retry_event_001",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "Duplicate Slack retry detected for the same event ID. No additional durable memory created.",
+    "citations": [
+      "Input text: 'Same Slack event ID delivered twice for: Sam from Goldman likes Bill Evans.'"
+    ],
+    "conflict_classification": "duplicate_event",
+    "decision": "idempotent_noop",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Same Slack event ID was delivered twice, so this retry should not create a second memory. Also, 'Sam', 'Goldman', and 'Bill Evans' are not uniquely resolved from the message."
+    },
+    "intent": "capture_preference",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected duplicate delivery of the same Slack event ID.",
+        "Applied idempotency: no duplicate memory write.",
+        "Deferred entity resolution due to ambiguity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Process the event only once per Slack event ID.",
+      "If first delivery was not previously persisted, create a single memory for Sam's preference.",
+      "Ask for clarification on which Sam, which Goldman, and which Bill Evans before committing a durable memory."
+    ]
+  },
+  "run_id": "eval_20260507_072639"
+}

@@ -1,0 +1,38 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_place_001",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Do not attach this note to any existing entity yet. Request clarification about which 'Brutto' is being referenced.",
+    "citations": [
+      "Existing: Brutto restaurant in London",
+      "Existing: Brutto article alias",
+      "New note: Brutto was better than expected."
+    ],
+    "conflict_classification": "ambiguous_reference",
+    "decision": "defer",
+    "entity_resolution": {
+      "action": "unresolved",
+      "entity_id": null,
+      "reason": "The mention 'Brutto' is ambiguous between the existing restaurant entity and the article alias. The note expresses a subjective evaluation but does not provide enough context to safely bind it to one entity."
+    },
+    "intent": "entity_resolution",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Evaluated the note against existing entities.",
+        "Detected ambiguous surface form with multiple candidate entities.",
+        "Chose not to create or update durable memory without disambiguation."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask whether 'Brutto' refers to the London restaurant or the article alias.",
+      "If the user means the restaurant, store it as a subjective experience/opinion linked to that entity.",
+      "If the user means the article, clarify what 'better than expected' refers to before storing."
+    ]
+  },
+  "raw_text": "{\"intent\":\"entity_resolution\",\"decision\":\"defer\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"unresolved\",\"entity_id\":null,\"reason\":\"The mention 'Brutto' is ambiguous between the existing restaurant entity and the article alias. The note expresses a subjective evaluation but does not provide enough context to safely bind it to one entity.\"},\"conflict_classification\":\"ambiguous_reference\",\"answer\":\"Do not attach this note to any existing entity yet. Request clarification about which 'Brutto' is being referenced.\",\"citations\":[\"Existing: Brutto restaurant in London\",\"Existing: Brutto article alias\",\"New note: Brutto was better than expected.\"],\"repair_options\":[\"Ask whether 'Brutto' refers to the London restaurant or the article alias.\",\"If the user means the restaurant, store it as a subjective experience/opinion linked to that entity.\",\"If the user means the article, clarify what 'better than expected' refers to before storing.\"],\"receipt\":{\"success\":true,\"details\":[\"Evaluated the note against existing entities.\",\"Detected ambiguous surface form with multiple candidate entities.\",\"Chose not to create or update durable memory without disambiguation.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

@@ -1,0 +1,73 @@
+{
+  "error": null,
+  "fixture_id": "concurrent_conflict_writes_001__context",
+  "model": "openai:gpt-5.4-high",
+  "payload": {
+    "answer": "Potential conflict detected. The writes suggest different employer states for Sam, so no single current-employer fact should be committed. Keep these as unresolved observations until dates or identity are clarified.",
+    "citations": [
+      "Sam works at Goldman.",
+      "Sam joined Point72."
+    ],
+    "conflict_classification": "potential_concurrent_employment_conflict",
+    "decision": "defer_durable_commit",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The person 'Sam' is not uniquely identified, and the writes imply competing employment states that may be sequential, concurrent, or about different people."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer_candidate",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "employer_candidate",
+            "type": "organization"
+          }
+        ],
+        "kind": "conflict",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Potential concurrent employment conflict for Sam: one write says Sam works at Goldman, while another says Sam joined Point72. Do not treat either employer as the resolved current employer without timing or identity clarification."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected competing employment-related writes about Sam.",
+        "Withheld durable current-employer memory due to ambiguity.",
+        "Recommended temporal and identity resolution before merge."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add timestamps or effective dates to both writes.",
+      "Confirm whether both writes refer to the same Sam.",
+      "Clarify whether joining Point72 supersedes Goldman employment or is an additional role.",
+      "Store these as dated observations/events rather than a single current-state fact."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict\",\"decision\":\"defer_durable_commit\",\"memory_cards\":[{\"kind\":\"conflict\",\"statement\":\"Potential concurrent employment conflict for Sam: one write says Sam works at Goldman, while another says Sam joined Point72. Do not treat either employer as the resolved current employer without timing or identity clarification.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"employer_candidate\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer_candidate\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"The person 'Sam' is not uniquely identified, and the writes imply competing employment states that may be sequential, concurrent, or about different people.\"},\"conflict_classification\":\"potential_concurrent_employment_conflict\",\"answer\":\"Potential conflict detected. The writes suggest different employer states for Sam, so no single current-employer fact should be committed. Keep these as unresolved observations until dates or identity are clarified.\",\"citations\":[\"Sam works at Goldman.\",\"Sam joined Point72.\"],\"repair_options\":[\"Add timestamps or effective dates to both writes.\",\"Confirm whether both writes refer to the same Sam.\",\"Clarify whether joining Point72 supersedes Goldman employment or is an additional role.\",\"Store these as dated observations/events rather than a single current-state fact.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected competing employment-related writes about Sam.\",\"Withheld durable current-employer memory due to ambiguity.\",\"Recommended temporal and identity resolution before merge.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

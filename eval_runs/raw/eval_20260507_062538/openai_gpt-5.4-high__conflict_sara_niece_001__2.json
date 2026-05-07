@@ -1,0 +1,38 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001",
+  "model": "openai:gpt-5.4-high",
+  "payload": {
+    "answer": "Do not overwrite or add a durable family-relation memory yet. 'Sara is my niece' can be consistent with 'Sara is Daniele's daughter and Nur's twin,' but it could also conflict if the speaker is Daniele or if this is a different Sara. Clarify before storing.",
+    "citations": [
+      "Existing high-confidence memory: Sara is Daniele's daughter.",
+      "Existing high-confidence memory: Sara is Nur's twin.",
+      "New claim: Sara is my niece."
+    ],
+    "conflict_classification": "ambiguous_no_direct_conflict",
+    "decision": "needs_clarification_no_durable_write",
+    "entity_resolution": {
+      "action": "provisional_match_existing_entity",
+      "entity_id": null,
+      "reason": "The name 'Sara' may refer to the existing Sara, but 'my niece' is indexical and depends on the speaker's identity. It is not enough to confirm or refute the existing family relationships."
+    },
+    "intent": "classify_conflict_and_recommend_memory_action",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Processed the new kinship claim against existing high-confidence family memory.",
+        "Found no explicit contradiction, but the new claim is under-specified and speaker-dependent.",
+        "Selected clarification over durable write to avoid storing a potentially incorrect family relation."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask whether this is the same Sara who is Daniele's daughter and Nur's twin.",
+      "Ask how the speaker is related to Daniele or to Sara's parent(s).",
+      "If confirmed, store an explicit relation between the speaker/self entity and Sara (e.g., Sara is the speaker's niece)."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict_and_recommend_memory_action\",\"decision\":\"needs_clarification_no_durable_write\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"provisional_match_existing_entity\",\"entity_id\":null,\"reason\":\"The name 'Sara' may refer to the existing Sara, but 'my niece' is indexical and depends on the speaker's identity. It is not enough to confirm or refute the existing family relationships.\"},\"conflict_classification\":\"ambiguous_no_direct_conflict\",\"answer\":\"Do not overwrite or add a durable family-relation memory yet. 'Sara is my niece' can be consistent with 'Sara is Daniele's daughter and Nur's twin,' but it could also conflict if the speaker is Daniele or if this is a different Sara. Clarify before storing.\",\"citations\":[\"Existing high-confidence memory: Sara is Daniele's daughter.\",\"Existing high-confidence memory: Sara is Nur's twin.\",\"New claim: Sara is my niece.\"],\"repair_options\":[\"Ask whether this is the same Sara who is Daniele's daughter and Nur's twin.\",\"Ask how the speaker is related to Daniele or to Sara's parent(s).\",\"If confirmed, store an explicit relation between the speaker/self entity and Sara (e.g., Sara is the speaker's niece).\"],\"receipt\":{\"success\":true,\"details\":[\"Processed the new kinship claim against existing high-confidence family memory.\",\"Found no explicit contradiction, but the new claim is under-specified and speaker-dependent.\",\"Selected clarification over durable write to avoid storing a potentially incorrect family relation.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

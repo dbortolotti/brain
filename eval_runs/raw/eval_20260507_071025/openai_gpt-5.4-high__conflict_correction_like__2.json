@@ -1,0 +1,63 @@
+{
+  "error": null,
+  "fixture_id": "conflict_correction_like",
+  "model": "openai:gpt-5.4-high",
+  "payload": {
+    "answer": "Apply the correction by superseding the current fact that Sam from Goldman likes Bill Evans and replacing it with the current fact that Sam from Goldman likes early Coltrane. Do not store 'does not like Bill Evans' as a new durable fact, since the correction only establishes that the prior liked-artist fact was wrong.",
+    "citations": [
+      "Existing current fact: Sam from Goldman likes Bill Evans.",
+      "Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans."
+    ],
+    "conflict_classification": "explicit_correction_direct_conflict",
+    "decision": "supersede_and_replace",
+    "entity_resolution": {
+      "action": "match_existing_entity",
+      "entity_id": null,
+      "reason": "The correction refers to the same subject descriptor, 'Sam from Goldman', as the existing fact, so it should update that same person record."
+    },
+    "intent": "correction",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "preference_object",
+            "type": "artist_era"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected a direct contradiction between the existing current preference and the correction.",
+        "Classified the new statement as an explicit user correction with replacement semantics.",
+        "Prepared one new current memory card for the corrected preference.",
+        "Flagged the old Bill Evans preference as superseded rather than current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark 'Sam from Goldman likes Bill Evans' as superseded/incorrect so it is not returned as current.",
+      "Store 'Sam from Goldman likes early Coltrane' as the new current preference.",
+      "Avoid inferring a lasting negative preference toward Bill Evans from this correction alone."
+    ]
+  },
+  "raw_text": "{\"intent\":\"correction\",\"decision\":\"supersede_and_replace\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman likes early Coltrane.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam from Goldman\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"early Coltrane\",\"type\":\"artist_era\",\"role\":\"preference_object\"}],\"relationships\":[{\"subject\":\"Sam from Goldman\",\"predicate\":\"likes\",\"object\":\"early Coltrane\"}]}],\"entity_resolution\":{\"action\":\"match_existing_entity\",\"entity_id\":null,\"reason\":\"The correction refers to the same subject descriptor, 'Sam from Goldman', as the existing fact, so it should update that same person record.\"},\"conflict_classification\":\"explicit_correction_direct_conflict\",\"answer\":\"Apply the correction by superseding the current fact that Sam from Goldman likes Bill Evans and replacing it with the current fact that Sam from Goldman likes early Coltrane. Do not store 'does not like Bill Evans' as a new durable fact, since the correction only establishes that the prior liked-artist fact was wrong.\",\"citations\":[\"Existing current fact: Sam from Goldman likes Bill Evans.\",\"Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans.\"],\"repair_options\":[\"Mark 'Sam from Goldman likes Bill Evans' as superseded/incorrect so it is not returned as current.\",\"Store 'Sam from Goldman likes early Coltrane' as the new current preference.\",\"Avoid inferring a lasting negative preference toward Bill Evans from this correction alone.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected a direct contradiction between the existing current preference and the correction.\",\"Classified the new statement as an explicit user correction with replacement semantics.\",\"Prepared one new current memory card for the corrected preference.\",\"Flagged the old Bill Evans preference as superseded rather than current.\"]}}",
+  "run_id": "eval_20260507_071025",
+  "status": "ok"
+}

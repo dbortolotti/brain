@@ -1,0 +1,33 @@
+{
+  "fixture_id": "conflict_sara_niece_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "The new fact is not necessarily in conflict with the existing memory, but it should not be committed durably without confirming that this is the same Sara and identifying the user's relationship to her.",
+    "citations": [
+      "Existing memory: Sara is Daniele's daughter and Nur's twin.",
+      "New statement: Sara is my niece."
+    ],
+    "conflict_classification": "ambiguous_non_conflicting_addition",
+    "decision": "do_not_commit_as_durable_without_disambiguation",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The new statement 'Sara is my niece' could refer to the same Sara already known as Daniele's daughter and Nur's twin, but the user's relationship to Sara is not established. This is compatible if the user is Daniele's sibling or related through another parent, but it requires identifying who 'my' refers to and confirming the relationship."
+    },
+    "intent": "classify_potential_conflict",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Classified the new statement as an ambiguous addition rather than a contradiction.",
+        "No durable memory card was created because the referent of 'my' and entity identity require confirmation."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm whether the Sara who is your niece is the same Sara who is Daniele's daughter and Nur's twin.",
+      "Confirm your relationship to Daniele or Sara's other parent to support the niece relationship.",
+      "Store a provisional note that the user says Sara is their niece, pending entity confirmation."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

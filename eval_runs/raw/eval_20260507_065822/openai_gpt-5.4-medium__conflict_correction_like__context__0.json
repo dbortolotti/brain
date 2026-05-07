@@ -1,0 +1,106 @@
+{
+  "error": null,
+  "fixture_id": "conflict_correction_like__context",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "Apply the correction: set the current preference to early Coltrane and mark the Bill Evans preference as superseded, not current.",
+    "citations": [
+      "Existing current fact: Sam from Goldman likes Bill Evans.",
+      "Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans."
+    ],
+    "conflict_classification": "direct_correction_of_current_fact",
+    "decision": "update_current_fact_and_supersede_old",
+    "entity_resolution": {
+      "action": "resolve_to_existing_entity",
+      "entity_id": null,
+      "reason": "The correction explicitly refers to the same 'Sam from Goldman' as the existing current fact."
+    },
+    "intent": "correct_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "music_preference"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "superseded_object",
+            "type": "artist"
+          }
+        ],
+        "kind": "supersession",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "no_longer_currently_recorded_as_liking",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "The prior current fact that Sam from Goldman likes Bill Evans is corrected and should no longer be treated as current."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected an explicit correction to an existing current fact.",
+        "Classified the new statement as a replacement, not an additional coexisting preference.",
+        "Prepared one current memory card and one supersession record to avoid presenting the old fact as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace the existing current preference with the corrected preference for early Coltrane.",
+      "Mark the Bill Evans preference as superseded/retracted rather than keeping both as current.",
+      "If downstream systems require history, preserve the old fact only as a superseded record."
+    ]
+  },
+  "raw_text": "{\"intent\":\"correct_memory\",\"decision\":\"update_current_fact_and_supersede_old\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman likes early Coltrane.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"early Coltrane\",\"type\":\"music_preference\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"early Coltrane\"},{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"}]},{\"kind\":\"supersession\",\"statement\":\"The prior current fact that Sam from Goldman likes Bill Evans is corrected and should no longer be treated as current.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"artist\",\"role\":\"superseded_object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"no_longer_currently_recorded_as_liking\",\"object\":\"Bill Evans\"},{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"resolve_to_existing_entity\",\"entity_id\":null,\"reason\":\"The correction explicitly refers to the same 'Sam from Goldman' as the existing current fact.\"},\"conflict_classification\":\"direct_correction_of_current_fact\",\"answer\":\"Apply the correction: set the current preference to early Coltrane and mark the Bill Evans preference as superseded, not current.\",\"citations\":[\"Existing current fact: Sam from Goldman likes Bill Evans.\",\"Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans.\"],\"repair_options\":[\"Replace the existing current preference with the corrected preference for early Coltrane.\",\"Mark the Bill Evans preference as superseded/retracted rather than keeping both as current.\",\"If downstream systems require history, preserve the old fact only as a superseded record.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected an explicit correction to an existing current fact.\",\"Classified the new statement as a replacement, not an additional coexisting preference.\",\"Prepared one current memory card and one supersession record to avoid presenting the old fact as current.\"]}}",
+  "run_id": "eval_20260507_065822",
+  "status": "ok"
+}

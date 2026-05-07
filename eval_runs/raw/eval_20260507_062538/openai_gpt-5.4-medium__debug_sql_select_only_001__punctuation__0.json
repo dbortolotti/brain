@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "fixture_id": "debug_sql_select_only_001__punctuation",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "The statement indicates a select-only admin SQL mode: the SELECT query `SELECT id FROM memory_cards LIMIT 10` is allowed, while `DELETE FROM memory_cards` is denied. Because this is operational/debug context rather than durable personal memory, no memory card was committed.",
+    "citations": [
+      "Admin SQL select-only mode",
+      "SELECT id FROM memory_cards LIMIT 10 allowed",
+      "DELETE FROM memory_cards denied"
+    ],
+    "conflict_classification": "none",
+    "decision": "do_not_store_durable_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input describes an environment/debug permission rule, not a durable personal fact tied to a stable user entity."
+    },
+    "intent": "classify_admin_sql_mode_permissions",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Parsed the input as an access-control statement with two permissions.",
+        "Identified allowed action: SELECT on memory_cards with LIMIT 10.",
+        "Identified denied action: DELETE on memory_cards.",
+        "Declined durable storage due to non-personal, environment-specific content."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If this rule should be stored, restate it as a stable system policy or capability.",
+      "If you want extraction only, split into two explicit assertions: one allowed operation and one denied operation.",
+      "If this was meant as a test fixture, mark it as non-memory/debug metadata."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_admin_sql_mode_permissions\",\"decision\":\"do_not_store_durable_memory\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input describes an environment/debug permission rule, not a durable personal fact tied to a stable user entity.\"},\"conflict_classification\":\"none\",\"answer\":\"The statement indicates a select-only admin SQL mode: the SELECT query `SELECT id FROM memory_cards LIMIT 10` is allowed, while `DELETE FROM memory_cards` is denied. Because this is operational/debug context rather than durable personal memory, no memory card was committed.\",\"citations\":[\"Admin SQL select-only mode\",\"SELECT id FROM memory_cards LIMIT 10 allowed\",\"DELETE FROM memory_cards denied\"],\"repair_options\":[\"If this rule should be stored, restate it as a stable system policy or capability.\",\"If you want extraction only, split into two explicit assertions: one allowed operation and one denied operation.\",\"If this was meant as a test fixture, mark it as non-memory/debug metadata.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed the input as an access-control statement with two permissions.\",\"Identified allowed action: SELECT on memory_cards with LIMIT 10.\",\"Identified denied action: DELETE on memory_cards.\",\"Declined durable storage due to non-personal, environment-specific content.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

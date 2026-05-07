@@ -1,0 +1,71 @@
+{
+  "error": null,
+  "fixture_id": "concurrent_conflict_writes_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "The statements should be treated as a potential conflict or temporal ambiguity: Sam works at Goldman, and Sam joined Point72. Do not infer a single current employer without clarification.",
+    "citations": [
+      "For context, Concurrent writes: Sam works at Goldman. Sam joined Point72."
+    ],
+    "conflict_classification": "potential_temporal_or_employment_conflict",
+    "decision": "do_not_commit_as_single_current_employer",
+    "entity_resolution": {
+      "action": "ambiguous_no_merge",
+      "entity_id": null,
+      "reason": "The input refers to 'Sam' without enough context to resolve to a unique existing person entity, and the two employment-related statements may represent either a job change, concurrent roles, or conflicting concurrent writes."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer_or_workplace",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "joined_organization",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_ambiguous",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman. Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Classified the employment statements as ambiguous/conflicting rather than committing a resolved current-employer fact.",
+        "Preserved both source statements without presenting either as definitively superseding the other."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask whether Sam still works at Goldman after joining Point72.",
+      "Ask whether Point72 replaced Goldman as Sam's current employer.",
+      "Ask whether Sam has concurrent roles at Goldman and Point72.",
+      "Ask for dates associated with each employment statement."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict\",\"decision\":\"do_not_commit_as_single_current_employer\",\"memory_cards\":[{\"kind\":\"employment_ambiguous\",\"statement\":\"Sam works at Goldman. Sam joined Point72.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"employer_or_workplace\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"joined_organization\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"ambiguous_no_merge\",\"entity_id\":null,\"reason\":\"The input refers to 'Sam' without enough context to resolve to a unique existing person entity, and the two employment-related statements may represent either a job change, concurrent roles, or conflicting concurrent writes.\"},\"conflict_classification\":\"potential_temporal_or_employment_conflict\",\"answer\":\"The statements should be treated as a potential conflict or temporal ambiguity: Sam works at Goldman, and Sam joined Point72. Do not infer a single current employer without clarification.\",\"citations\":[\"For context, Concurrent writes: Sam works at Goldman. Sam joined Point72.\"],\"repair_options\":[\"Ask whether Sam still works at Goldman after joining Point72.\",\"Ask whether Point72 replaced Goldman as Sam's current employer.\",\"Ask whether Sam has concurrent roles at Goldman and Point72.\",\"Ask for dates associated with each employment statement.\"],\"receipt\":{\"success\":true,\"details\":[\"Classified the employment statements as ambiguous/conflicting rather than committing a resolved current-employer fact.\",\"Preserved both source statements without presenting either as definitively superseding the other.\"]}}",
+  "run_id": "eval_20260507_065822",
+  "status": "ok"
+}

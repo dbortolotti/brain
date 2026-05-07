@@ -1,0 +1,54 @@
+{
+  "fixture_id": "temporal_status_transition_001",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "Treat this as a status progression, not a contradiction. The prior state 'planned, status=open' is superseded by the newer update that the MVP is now implemented; do not present the old open/planned status as current.",
+    "citations": [
+      "Existing: 'The Brain Slack agent is planned, status=open.'",
+      "New: 'The Brain Slack agent MVP is now implemented.'"
+    ],
+    "conflict_classification": "temporal_status_transition",
+    "decision": "update_existing_fact_with_status_transition",
+    "entity_resolution": {
+      "action": "link_to_existing_entity",
+      "entity_id": null,
+      "reason": "The new statement refers to the same underlying project as the existing 'Brain Slack agent' with a more specific milestone/state ('MVP')."
+    },
+    "intent": "classify_conflict_and_update",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "The Brain Slack agent MVP",
+            "role": "subject",
+            "type": "project"
+          }
+        ],
+        "kind": "project_update",
+        "relationships": [
+          {
+            "object": "implemented",
+            "predicate": "status",
+            "subject": "The Brain Slack agent MVP"
+          }
+        ],
+        "statement": "The Brain Slack agent MVP is implemented."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected same project/entity across existing and new statements.",
+        "Classified difference as a temporal status transition.",
+        "Committed only the current durable fact and avoided retaining the superseded status as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark the previous 'planned/open' status as historical or superseded.",
+      "Update the project record to current status 'MVP implemented'.",
+      "If the system distinguishes project vs milestone, store 'MVP implemented' as the current milestone while preserving the earlier planning state as history."
+    ]
+  },
+  "run_id": "eval_20260507_065822"
+}

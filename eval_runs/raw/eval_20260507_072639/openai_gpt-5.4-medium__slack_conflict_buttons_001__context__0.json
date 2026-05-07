@@ -1,0 +1,71 @@
+{
+  "error": null,
+  "fixture_id": "slack_conflict_buttons_001__context",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "Recorded Sam\u2019s job change: Sam left Goldman and joined Point72. The prior memory that Sam works at Goldman should no longer be treated as current.",
+    "citations": [
+      "Existing context: \"Sam works at Goldman.\"",
+      "New input: \"Sam left Goldman and joined Point72.\""
+    ],
+    "conflict_classification": "temporal_update_supersedes_prior_current_state",
+    "decision": "accept_and_update",
+    "entity_resolution": {
+      "action": "reuse_existing",
+      "entity_id": null,
+      "reason": "The new statement appears to refer to the same Sam as the existing memory and provides a newer employment update rather than introducing a distinct entity."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "new_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Accepted the new memory as a newer update.",
+        "Classified the prior employment fact as superseded, not current.",
+        "Avoided retaining the old employer as Sam's current employer."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark the existing memory \"Sam works at Goldman\" as no longer current or superseded.",
+      "Store the new employment transition \"Sam left Goldman and joined Point72.\" as the current update."
+    ]
+  },
+  "raw_text": "{\"intent\":\"remember\",\"decision\":\"accept_and_update\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam left Goldman and joined Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former_employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"new_employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"left\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"reuse_existing\",\"entity_id\":null,\"reason\":\"The new statement appears to refer to the same Sam as the existing memory and provides a newer employment update rather than introducing a distinct entity.\"},\"conflict_classification\":\"temporal_update_supersedes_prior_current_state\",\"answer\":\"Recorded Sam\u2019s job change: Sam left Goldman and joined Point72. The prior memory that Sam works at Goldman should no longer be treated as current.\",\"citations\":[\"Existing context: \\\"Sam works at Goldman.\\\"\",\"New input: \\\"Sam left Goldman and joined Point72.\\\"\"],\"repair_options\":[\"Mark the existing memory \\\"Sam works at Goldman\\\" as no longer current or superseded.\",\"Store the new employment transition \\\"Sam left Goldman and joined Point72.\\\" as the current update.\"],\"receipt\":{\"success\":true,\"details\":[\"Accepted the new memory as a newer update.\",\"Classified the prior employment fact as superseded, not current.\",\"Avoided retaining the old employer as Sam's current employer.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

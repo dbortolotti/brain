@@ -1,0 +1,54 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_time_reference_001",
+  "model": "groq:openai/gpt-oss-120b",
+  "payload": {
+    "answer": "Recorded Sam's intent to leave Goldman next month, noting the timing is ambiguous.",
+    "citations": [],
+    "conflict_classification": "temporal_ambiguity",
+    "decision": "add_memory",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "New employment change statement"
+    },
+    "intent": "record_statement",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_change",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "will_leave",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said he will leave Goldman next month."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created successfully"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify the exact date of departure",
+      "Specify which month is referred to"
+    ]
+  },
+  "raw_text": "{\"intent\":\"record_statement\",\"decision\":\"add_memory\",\"memory_cards\":[{\"kind\":\"employment_change\",\"statement\":\"Sam said he will leave Goldman next month.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\"},{\"name\":\"Goldman\",\"type\":\"organization\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"will_leave\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"create\",\"entity_id\":null,\"reason\":\"New employment change statement\"},\"conflict_classification\":\"temporal_ambiguity\",\"answer\":\"Recorded Sam's intent to leave Goldman next month, noting the timing is ambiguous.\",\"citations\":[],\"repair_options\":[\"Clarify the exact date of departure\",\"Specify which month is referred to\"],\"receipt\":{\"success\":true,\"details\":[\"Memory card created successfully\"]}}",
+  "run_id": "eval_20260507_044056",
+  "status": "ok"
+}

@@ -1,0 +1,71 @@
+{
+  "error": null,
+  "fixture_id": "cascade_clean_fact_no_escalation_001__punctuation",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Noted.",
+    "citations": [
+      "\"Nur and Sara are my twin daughters\""
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": null,
+      "reason": "Introduces two named family members with clear roles and no prior entity references provided."
+    },
+    "intent": "store_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "user",
+            "predicate": "child_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "user",
+            "predicate": "child_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Sara",
+            "predicate": "twin_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Nur",
+            "predicate": "twin_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "The user has twin daughters named Nur and Sara."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed a durable family fact about the user's daughters Nur and Sara.",
+        "Recorded the sibling relationship as twins."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"store_memory\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"The user has twin daughters named Nur and Sara.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Nur\",\"type\":\"person\",\"role\":\"daughter\"},{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"daughter\"}],\"relationships\":[{\"subject\":\"Nur\",\"predicate\":\"child_of\",\"object\":\"user\"},{\"subject\":\"Sara\",\"predicate\":\"child_of\",\"object\":\"user\"},{\"subject\":\"Nur\",\"predicate\":\"twin_of\",\"object\":\"Sara\"},{\"subject\":\"Sara\",\"predicate\":\"twin_of\",\"object\":\"Nur\"}]}],\"entity_resolution\":{\"action\":\"create_new\",\"entity_id\":null,\"reason\":\"Introduces two named family members with clear roles and no prior entity references provided.\"},\"conflict_classification\":\"no_conflict\",\"answer\":\"Noted.\",\"citations\":[\"\\\"Nur and Sara are my twin daughters\\\"\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Committed a durable family fact about the user's daughters Nur and Sara.\",\"Recorded the sibling relationship as twins.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

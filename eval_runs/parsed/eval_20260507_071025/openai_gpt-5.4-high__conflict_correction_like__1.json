@@ -1,0 +1,68 @@
+{
+  "fixture_id": "conflict_correction_like",
+  "model": "openai:gpt-5.4-high",
+  "payload": {
+    "answer": "This is an explicit correction of a current fact. Replace 'Sam from Goldman likes Bill Evans' with 'Sam from Goldman likes early Coltrane' and mark the Bill Evans preference as superseded, not current.",
+    "citations": [
+      "Existing current fact: Sam from Goldman likes Bill Evans.",
+      "Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans."
+    ],
+    "conflict_classification": "explicit_correction_direct_conflict",
+    "decision": "replace_current_fact",
+    "entity_resolution": {
+      "action": "reuse_existing_entity",
+      "entity_id": null,
+      "reason": "The correction uses the same subject descriptor, 'Sam from Goldman', so it should update the existing person reference rather than create a new one."
+    },
+    "intent": "correct_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "disambiguator",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "music_preference"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected explicit correction language ('actually' and 'not Bill Evans').",
+        "Confirmed same subject reference: 'Sam from Goldman'.",
+        "Classified as a direct conflict where the old preference should be retired and the new preference becomes current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Supersede the old preference with the new preference.",
+      "If historical versioning is supported, retain the Bill Evans statement only as retracted history, not as a current fact."
+    ]
+  },
+  "run_id": "eval_20260507_071025"
+}

@@ -1,0 +1,51 @@
+{
+  "fixture_id": "additive_sam_preferences_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Add the new preference while preserving the existing preference for Bill Evans.",
+    "citations": [],
+    "conflict_classification": "additive",
+    "decision": "add",
+    "entity_resolution": {
+      "action": "merge_with_existing_entity",
+      "entity_id": null,
+      "reason": "The new memory refers to the same identified person, Sam from Goldman; liking Sonny Rollins is additive and does not conflict with liking Bill Evans."
+    },
+    "intent": "memory_update",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "liked_artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Sonny Rollins",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes Sonny Rollins."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Classified as additive: Sam from Goldman can like both Bill Evans and Sonny Rollins.",
+        "Created a new preference memory for Sonny Rollins without superseding or deleting the Bill Evans preference."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_065822"
+}

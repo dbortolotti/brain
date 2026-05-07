@@ -1,0 +1,35 @@
+{
+  "error": null,
+  "fixture_id": "large_table_500_rows_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Do not store the 500-row CSV table as durable memory. Large raw tables, repetitive rows, and transient datasets should not be committed to personal memory. If relevant, store only a concise durable summary, schema description, provenance, or explicit long-term preference derived from the table, preserving uncertainty and avoiding the full row payload.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "do_not_store_bulk_table",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input describes a bulk data table and a storage policy question, not a durable personal fact or stable user preference."
+    },
+    "intent": "Evaluate whether a large CSV table with 500 repetitive rows should be committed as durable personal memory.",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No durable memory cards created.",
+        "Bulk CSV content was rejected for memory storage.",
+        "No entities were resolved or merged."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Store a brief summary of the table only if the user explicitly wants it remembered.",
+      "Store the schema, e.g. columns: id, name, value, if it is durable and useful.",
+      "Store a pointer or reference to the dataset location instead of the full data, if provided.",
+      "Ask the user what lasting fact or preference should be remembered from the dataset."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Evaluate whether a large CSV table with 500 repetitive rows should be committed as durable personal memory.\",\n  \"decision\": \"do_not_store_bulk_table\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"The input describes a bulk data table and a storage policy question, not a durable personal fact or stable user preference.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Do not store the 500-row CSV table as durable memory. Large raw tables, repetitive rows, and transient datasets should not be committed to personal memory. If relevant, store only a concise durable summary, schema description, provenance, or explicit long-term preference derived from the table, preserving uncertainty and avoiding the full row payload.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Store a brief summary of the table only if the user explicitly wants it remembered.\",\n    \"Store the schema, e.g. columns: id, name, value, if it is durable and useful.\",\n    \"Store a pointer or reference to the dataset location instead of the full data, if provided.\",\n    \"Ask the user what lasting fact or preference should be remembered from the dataset.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"No durable memory cards created.\",\n      \"Bulk CSV content was rejected for memory storage.\",\n      \"No entities were resolved or merged.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

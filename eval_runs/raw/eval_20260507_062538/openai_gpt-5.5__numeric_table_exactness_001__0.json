@@ -1,0 +1,92 @@
+{
+  "error": null,
+  "fixture_id": "numeric_table_exactness_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Extracted exact table values without committing durable memory.",
+    "citations": [
+      "Input table: PPO-001 reward 0.12, Sharpe 0.45, notes baseline.",
+      "Input table: PPO-002 reward 0.18, Sharpe 0.51, notes entropy tuned."
+    ],
+    "conflict_classification": "none",
+    "decision": "no_durable_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input is a small numeric experiment table with run identifiers and metrics, but it does not establish durable personal memory or a persistent user preference/profile fact."
+    },
+    "intent": "extract_structured_run_metrics",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "subject",
+            "type": "run"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "0.12",
+            "predicate": "has_reward",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "0.45",
+            "predicate": "has_sharpe",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "baseline",
+            "predicate": "has_notes",
+            "subject": "PPO-001"
+          }
+        ],
+        "statement": "Run PPO-001 has Reward 0.12, Sharpe 0.45, and notes 'baseline'."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "subject",
+            "type": "run"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "0.18",
+            "predicate": "has_reward",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "0.51",
+            "predicate": "has_sharpe",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "entropy tuned",
+            "predicate": "has_notes",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "Run PPO-002 has Reward 0.18, Sharpe 0.51, and notes 'entropy tuned'."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preserved exact numeric values: 0.12, 0.45, 0.18, 0.51.",
+        "No superseded or deleted facts were present.",
+        "No durable memory commitment made."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"extract_structured_run_metrics\",\"decision\":\"no_durable_memory\",\"memory_cards\":[{\"kind\":\"observation\",\"statement\":\"Run PPO-001 has Reward 0.12, Sharpe 0.45, and notes 'baseline'.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"PPO-001\",\"type\":\"run\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"PPO-001\",\"predicate\":\"has_reward\",\"object\":\"0.12\"},{\"subject\":\"PPO-001\",\"predicate\":\"has_sharpe\",\"object\":\"0.45\"},{\"subject\":\"PPO-001\",\"predicate\":\"has_notes\",\"object\":\"baseline\"}]},{\"kind\":\"observation\",\"statement\":\"Run PPO-002 has Reward 0.18, Sharpe 0.51, and notes 'entropy tuned'.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"PPO-002\",\"type\":\"run\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"PPO-002\",\"predicate\":\"has_reward\",\"object\":\"0.18\"},{\"subject\":\"PPO-002\",\"predicate\":\"has_sharpe\",\"object\":\"0.51\"},{\"subject\":\"PPO-002\",\"predicate\":\"has_notes\",\"object\":\"entropy tuned\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input is a small numeric experiment table with run identifiers and metrics, but it does not establish durable personal memory or a persistent user preference/profile fact.\"},\"conflict_classification\":\"none\",\"answer\":\"Extracted exact table values without committing durable memory.\",\"citations\":[\"Input table: PPO-001 reward 0.12, Sharpe 0.45, notes baseline.\",\"Input table: PPO-002 reward 0.18, Sharpe 0.51, notes entropy tuned.\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Preserved exact numeric values: 0.12, 0.45, 0.18, 0.51.\",\"No superseded or deleted facts were present.\",\"No durable memory commitment made.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

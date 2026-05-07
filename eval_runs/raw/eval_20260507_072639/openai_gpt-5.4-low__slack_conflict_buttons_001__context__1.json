@@ -1,0 +1,70 @@
+{
+  "error": null,
+  "fixture_id": "slack_conflict_buttons_001__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Noted as an update: Sam left Goldman and joined Point72. The prior fact that Sam works at Goldman should no longer be treated as current.",
+    "citations": [
+      "Existing: Sam works at Goldman.",
+      "User update: Sam left Goldman and joined Point72."
+    ],
+    "conflict_classification": "superseding_update",
+    "decision": "commit_with_conflict",
+    "entity_resolution": {
+      "action": "reuse_existing",
+      "entity_id": "Sam",
+      "reason": "The new statement refers to the same person already present in memory as Sam."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed a durable update about Sam's employment change.",
+        "Classified the existing Goldman employment fact as superseded, not current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark 'Sam works at Goldman' as superseded by the newer employment update.",
+      "If needed, store the older Goldman fact as historical/former employment rather than current employment."
+    ]
+  },
+  "raw_text": "{\"intent\":\"remember\",\"decision\":\"commit_with_conflict\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam left Goldman and joined Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former_employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"current_employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"left\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"reuse_existing\",\"entity_id\":\"Sam\",\"reason\":\"The new statement refers to the same person already present in memory as Sam.\"},\"conflict_classification\":\"superseding_update\",\"answer\":\"Noted as an update: Sam left Goldman and joined Point72. The prior fact that Sam works at Goldman should no longer be treated as current.\",\"citations\":[\"Existing: Sam works at Goldman.\",\"User update: Sam left Goldman and joined Point72.\"],\"repair_options\":[\"Mark 'Sam works at Goldman' as superseded by the newer employment update.\",\"If needed, store the older Goldman fact as historical/former employment rather than current employment.\"],\"receipt\":{\"success\":true,\"details\":[\"Committed a durable update about Sam's employment change.\",\"Classified the existing Goldman employment fact as superseded, not current.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

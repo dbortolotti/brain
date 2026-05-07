@@ -1,0 +1,68 @@
+{
+  "fixture_id": "project_state_brain_slack_agent_001__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Stored as a tentative project-state preference: Slack is the primary guardrailed memory ingestion interface for Brain, with Telegram deferred until later.",
+    "citations": [
+      "Input: \"For context, Brain project state: Slack should be the primary guardrailed memory ingestion interface; Telegram can come later.\""
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "store_with_caution",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No entity disambiguation needed beyond the provided project and platform names."
+    },
+    "intent": "Capture project-state context about preferred memory ingestion interface order for Brain.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "Slack",
+            "role": "primary_ingestion_interface",
+            "type": "platform"
+          },
+          {
+            "name": "Telegram",
+            "role": "possible_later_interface",
+            "type": "platform"
+          }
+        ],
+        "kind": "project_state",
+        "relationships": [
+          {
+            "object": "Slack",
+            "predicate": "prioritizes_primary_guardrailed_memory_ingestion_interface",
+            "subject": "Brain"
+          },
+          {
+            "object": "Telegram",
+            "predicate": "may_add_later_interface",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "For the Brain project, Slack should be the primary guardrailed memory ingestion interface; Telegram may be added later."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured one project-state memory card.",
+        "Preserved ambiguity by storing Telegram as a later possibility, not a committed current interface.",
+        "No conflicting or superseded facts were provided in this input."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If this is only a temporary planning preference, mark it as provisional or add an expiry/review date.",
+      "If 'can come later' implies a specific sequence or milestone, provide that timeline for more precise storage.",
+      "If Slack is mandatory rather than preferred, restate with stronger commitment language."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

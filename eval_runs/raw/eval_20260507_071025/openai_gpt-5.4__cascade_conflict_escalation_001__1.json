@@ -1,0 +1,38 @@
+{
+  "error": null,
+  "fixture_id": "cascade_conflict_escalation_001",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "Conflict detected: existing memory says Sara is your daughter, while new input says Sara is your niece. These relationships are mutually inconsistent for the same person in normal kinship usage, so no durable update should be committed without clarification.",
+    "citations": [
+      "Existing: 'Sara is my daughter.'",
+      "New input: 'Sara is my niece.'"
+    ],
+    "conflict_classification": "direct_relationship_conflict",
+    "decision": "reject_durable_update",
+    "entity_resolution": {
+      "action": "reuse_existing_entity_with_conflict_flag",
+      "entity_id": null,
+      "reason": "The name Sara likely refers to the same person, but the new claim directly contradicts an existing close-family relationship and cannot be safely merged as current fact without clarification."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Identified a direct contradiction in relationship type for Sara.",
+        "Preserved ambiguity by not writing a new durable fact.",
+        "Did not present the superseded or conflicting claim as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask whether these refer to two different people named Sara.",
+      "Ask which relationship is correct now.",
+      "If the earlier memory was wrong, explicitly replace 'daughter' with 'niece'.",
+      "If both are somehow context-dependent, store only after adding disambiguating context."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict\",\"decision\":\"reject_durable_update\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"reuse_existing_entity_with_conflict_flag\",\"entity_id\":null,\"reason\":\"The name Sara likely refers to the same person, but the new claim directly contradicts an existing close-family relationship and cannot be safely merged as current fact without clarification.\"},\"conflict_classification\":\"direct_relationship_conflict\",\"answer\":\"Conflict detected: existing memory says Sara is your daughter, while new input says Sara is your niece. These relationships are mutually inconsistent for the same person in normal kinship usage, so no durable update should be committed without clarification.\",\"citations\":[\"Existing: 'Sara is my daughter.'\",\"New input: 'Sara is my niece.'\"],\"repair_options\":[\"Ask whether these refer to two different people named Sara.\",\"Ask which relationship is correct now.\",\"If the earlier memory was wrong, explicitly replace 'daughter' with 'niece'.\",\"If both are somehow context-dependent, store only after adding disambiguating context.\"],\"receipt\":{\"success\":true,\"details\":[\"Identified a direct contradiction in relationship type for Sara.\",\"Preserved ambiguity by not writing a new durable fact.\",\"Did not present the superseded or conflicting claim as current.\"]}}",
+  "run_id": "eval_20260507_071025",
+  "status": "ok"
+}

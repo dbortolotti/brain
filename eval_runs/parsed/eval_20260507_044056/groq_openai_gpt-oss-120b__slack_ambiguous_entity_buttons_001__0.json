@@ -1,0 +1,53 @@
+{
+  "fixture_id": "slack_ambiguous_entity_buttons_001",
+  "model": "groq:openai/gpt-oss-120b",
+  "payload": {
+    "answer": "Ambiguous entity 'Sam' detected; please specify which Sam (Goldman or Point72).",
+    "citations": [],
+    "conflict_classification": "ambiguous_entity",
+    "decision": "defer",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Multiple Sam entities (Goldman, Point72) exist; cannot disambiguate."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "statement",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguity prevented storing the memory."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Specify Sam's affiliation (Goldman or Point72)",
+      "Provide additional identifier for Sam"
+    ]
+  },
+  "run_id": "eval_20260507_044056"
+}

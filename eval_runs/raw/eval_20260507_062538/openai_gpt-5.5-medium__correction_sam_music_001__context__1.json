@@ -1,0 +1,82 @@
+{
+  "error": null,
+  "fixture_id": "correction_sam_music_001__context",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "Replace the prior Bill Evans preference with: Sam from Goldman likes early Coltrane.",
+    "citations": [],
+    "conflict_classification": "direct_correction",
+    "decision": "replace_superseded_memory",
+    "entity_resolution": {
+      "action": "reuse_existing_entity",
+      "entity_id": null,
+      "reason": "The correction refers to the same entity, Sam from Goldman, as the existing memory."
+    },
+    "intent": "correction",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "music"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "superseded_object",
+            "type": "person"
+          }
+        ],
+        "kind": "retraction",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "does_not_currently_have_confirmed_preference_for",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "The prior memory that Sam from Goldman likes Bill Evans is corrected and should not be treated as current."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Classified as a direct correction of an existing preference memory.",
+        "Prior Bill Evans preference is superseded and should not be presented as current.",
+        "Corrected preference for early Coltrane should be committed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Supersede or delete the prior memory: Sam from Goldman likes Bill Evans.",
+      "Add the corrected current memory: Sam from Goldman likes early Coltrane."
+    ]
+  },
+  "raw_text": "{\"intent\":\"correction\",\"decision\":\"replace_superseded_memory\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman likes early Coltrane.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam from Goldman\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"early Coltrane\",\"type\":\"music\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"Sam from Goldman\",\"predicate\":\"likes\",\"object\":\"early Coltrane\"}]},{\"kind\":\"retraction\",\"statement\":\"The prior memory that Sam from Goldman likes Bill Evans is corrected and should not be treated as current.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam from Goldman\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"superseded_object\"}],\"relationships\":[{\"subject\":\"Sam from Goldman\",\"predicate\":\"does_not_currently_have_confirmed_preference_for\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"reuse_existing_entity\",\"entity_id\":null,\"reason\":\"The correction refers to the same entity, Sam from Goldman, as the existing memory.\"},\"conflict_classification\":\"direct_correction\",\"answer\":\"Replace the prior Bill Evans preference with: Sam from Goldman likes early Coltrane.\",\"citations\":[],\"repair_options\":[\"Supersede or delete the prior memory: Sam from Goldman likes Bill Evans.\",\"Add the corrected current memory: Sam from Goldman likes early Coltrane.\"],\"receipt\":{\"success\":true,\"details\":[\"Classified as a direct correction of an existing preference memory.\",\"Prior Bill Evans preference is superseded and should not be presented as current.\",\"Corrected preference for early Coltrane should be committed.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

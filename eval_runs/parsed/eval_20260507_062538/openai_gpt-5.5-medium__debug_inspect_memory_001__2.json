@@ -1,0 +1,30 @@
+{
+  "fixture_id": "debug_inspect_memory_001",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "Requested inspection of memory mem_123. No durable memory was committed or modified. The memory contents are not available in the provided input, so no current facts can be reported.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "no_commit_inspect_only",
+    "entity_resolution": {
+      "action": "lookup_by_memory_id",
+      "entity_id": "mem_123",
+      "reason": "The input is a debug inspection command targeting the explicit memory identifier mem_123, not a request to create or update durable memory."
+    },
+    "intent": "inspect_memory",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Parsed command: /brain inspect memory mem_123",
+        "No memory write was performed.",
+        "Unable to inspect actual memory contents because no backing memory record was included in the fixture input."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide the stored record for mem_123 to inspect its contents.",
+      "Retry with a valid memory identifier if mem_123 is missing or inaccessible."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

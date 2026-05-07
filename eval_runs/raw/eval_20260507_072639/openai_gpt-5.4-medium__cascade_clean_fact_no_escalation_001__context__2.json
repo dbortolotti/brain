@@ -1,0 +1,67 @@
+{
+  "error": null,
+  "fixture_id": "cascade_clean_fact_no_escalation_001__context",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "Noted.",
+    "citations": [
+      "\"Nur and Sara are my twin daughters.\""
+    ],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": null,
+      "reason": "No prior entity IDs are provided; create person entities for Nur and Sara from this direct self-report."
+    },
+    "intent": "share_personal_fact",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Nur",
+            "predicate": "parent_of",
+            "subject": "user"
+          },
+          {
+            "object": "Sara",
+            "predicate": "parent_of",
+            "subject": "user"
+          },
+          {
+            "object": "Sara",
+            "predicate": "twin_of",
+            "subject": "Nur"
+          }
+        ],
+        "statement": "Nur and Sara are the user's twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured a durable family fact from a direct first-person statement.",
+        "Stored Nur and Sara as the user's daughters and twins of each other.",
+        "No conflict detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"share_personal_fact\",\"decision\":\"store\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Nur and Sara are the user's twin daughters.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Nur\",\"type\":\"person\",\"role\":\"daughter\"},{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"daughter\"}],\"relationships\":[{\"subject\":\"user\",\"predicate\":\"parent_of\",\"object\":\"Nur\"},{\"subject\":\"user\",\"predicate\":\"parent_of\",\"object\":\"Sara\"},{\"subject\":\"Nur\",\"predicate\":\"twin_of\",\"object\":\"Sara\"}]}],\"entity_resolution\":{\"action\":\"create_new\",\"entity_id\":null,\"reason\":\"No prior entity IDs are provided; create person entities for Nur and Sara from this direct self-report.\"},\"conflict_classification\":\"none\",\"answer\":\"Noted.\",\"citations\":[\"\\\"Nur and Sara are my twin daughters.\\\"\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Captured a durable family fact from a direct first-person statement.\",\"Stored Nur and Sara as the user's daughters and twins of each other.\",\"No conflict detected.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

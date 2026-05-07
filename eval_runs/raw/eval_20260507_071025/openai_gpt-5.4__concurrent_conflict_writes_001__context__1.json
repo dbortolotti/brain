@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "fixture_id": "concurrent_conflict_writes_001__context",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "Detected unresolved concurrent employment writes for Sam. Do not store either employer as the sole current durable fact without disambiguation or timestamp ordering.",
+    "citations": [
+      "Sam works at Goldman.",
+      "Sam joined Point72."
+    ],
+    "conflict_classification": "concurrent_conflicting_writes",
+    "decision": "do_not_commit_durable_fact",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Sam is ambiguous and the employment statements may represent a temporal update or concurrent conflict without resolution."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "conflict_note",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Concurrent context reports two potentially conflicting employment facts for Sam: Sam works at Goldman; Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Classified input as concurrent conflicting writes.",
+        "Preserved ambiguity and avoided asserting a superseded/current employer."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add timestamps or recency metadata to both writes.",
+      "Represent temporally: Sam previously worked at Goldman; Sam later joined Point72, if ordering is confirmed.",
+      "Ask for disambiguation of which Sam is intended.",
+      "Store both as unresolved claims pending resolution rather than current fact."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict\",\"decision\":\"do_not_commit_durable_fact\",\"memory_cards\":[{\"kind\":\"conflict_note\",\"statement\":\"Concurrent context reports two potentially conflicting employment facts for Sam: Sam works at Goldman; Sam joined Point72.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"Sam is ambiguous and the employment statements may represent a temporal update or concurrent conflict without resolution.\"},\"conflict_classification\":\"concurrent_conflicting_writes\",\"answer\":\"Detected unresolved concurrent employment writes for Sam. Do not store either employer as the sole current durable fact without disambiguation or timestamp ordering.\",\"citations\":[\"Sam works at Goldman.\",\"Sam joined Point72.\"],\"repair_options\":[\"Add timestamps or recency metadata to both writes.\",\"Represent temporally: Sam previously worked at Goldman; Sam later joined Point72, if ordering is confirmed.\",\"Ask for disambiguation of which Sam is intended.\",\"Store both as unresolved claims pending resolution rather than current fact.\"],\"receipt\":{\"success\":true,\"details\":[\"Classified input as concurrent conflicting writes.\",\"Preserved ambiguity and avoided asserting a superseded/current employer.\"]}}",
+  "run_id": "eval_20260507_071025",
+  "status": "ok"
+}

@@ -1,0 +1,33 @@
+{
+  "fixture_id": "ambiguous_time_reference_001__punctuation",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Do not store as durable memory. The statement contains unresolved relative dates ('last Friday' and 'next month'), so the timing of the reported job departure is ambiguous.",
+    "citations": [
+      "Sam said last Friday that he is leaving Goldman next month"
+    ],
+    "conflict_classification": "ambiguous_time_reference",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Insufficient context to resolve time references and no stable entity identifier for Sam."
+    },
+    "intent": "ingest_memory",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No memory card created.",
+        "Relative time expressions are ambiguous for durable storage.",
+        "Preserved uncertainty rather than inferring dates."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask for absolute dates: 'What calendar date was last Friday, and which month is next month?'",
+      "Rephrase with concrete timing: 'On 2025-__-__, Sam said he plans to leave Goldman in 2025-__.'",
+      "If known, include a stronger identifier for Sam to avoid entity ambiguity."
+    ]
+  },
+  "run_id": "eval_20260507_072639"
+}

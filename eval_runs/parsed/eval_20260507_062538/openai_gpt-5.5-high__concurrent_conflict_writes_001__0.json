@@ -1,0 +1,83 @@
+{
+  "fixture_id": "concurrent_conflict_writes_001",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "The writes may conflict because 'Sam works at Goldman' asserts a current employer, while 'Sam joined Point72' may imply a new current employer. Preserve both only as unresolved claims, not as settled current facts, until timing or job status is clarified.",
+    "citations": [
+      "Sam works at Goldman.",
+      "Sam joined Point72."
+    ],
+    "conflict_classification": "potential_current_employment_conflict",
+    "decision": "do_not_commit_as_current_facts_without_clarification",
+    "entity_resolution": {
+      "action": "provisional_match",
+      "entity_id": null,
+      "reason": "Both statements refer to 'Sam', but only a first name is provided. Treat as the same provisional person for conflict analysis, without durable entity resolution."
+    },
+    "intent": "classify_memory_write_conflict",
+    "memory_cards": [
+      {
+        "confidence": "conflicting_unverified",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_claim",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "conflicting_unverified",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_claim",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected a potential conflict between current employment claims.",
+        "No durable current-employer fact should be committed without clarification."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask whether Sam left Goldman before joining Point72.",
+      "Ask whether Sam currently works at Goldman, Point72, both, or neither.",
+      "Record the Point72 statement as a dated career event only if a date is provided.",
+      "Record Goldman employment as former if clarified that joining Point72 superseded it."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

@@ -1,0 +1,36 @@
+{
+  "error": null,
+  "fixture_id": "debug_inspect_memory_001__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Context request detected: inspect existing memory `mem_123`. This is a read-only operation and should not create, update, or delete durable memory. No memory contents were provided here, so there is nothing further to summarize from the fixture alone.",
+    "citations": [
+      "mem_123"
+    ],
+    "conflict_classification": "none",
+    "decision": "read_only_context_request",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": "mem_123",
+      "reason": "The input explicitly references an existing memory identifier for inspection, not creation or update."
+    },
+    "intent": "inspect_memory",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Parsed `/brain inspect memory mem_123` as an inspection command.",
+        "Determined this is a non-mutating request.",
+        "Preserved ambiguity by not inventing contents for `mem_123`."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Run the memory inspection for `mem_123` and return its stored contents/metadata.",
+      "If `mem_123` does not exist, return a not-found result rather than inferring or fabricating content.",
+      "If additional context is needed, provide the actual inspected memory payload for explanation."
+    ]
+  },
+  "raw_text": "{\"intent\":\"inspect_memory\",\"decision\":\"read_only_context_request\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":\"mem_123\",\"reason\":\"The input explicitly references an existing memory identifier for inspection, not creation or update.\"},\"conflict_classification\":\"none\",\"answer\":\"Context request detected: inspect existing memory `mem_123`. This is a read-only operation and should not create, update, or delete durable memory. No memory contents were provided here, so there is nothing further to summarize from the fixture alone.\",\"citations\":[\"mem_123\"],\"repair_options\":[\"Run the memory inspection for `mem_123` and return its stored contents/metadata.\",\"If `mem_123` does not exist, return a not-found result rather than inferring or fabricating content.\",\"If additional context is needed, provide the actual inspected memory payload for explanation.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed `/brain inspect memory mem_123` as an inspection command.\",\"Determined this is a non-mutating request.\",\"Preserved ambiguity by not inventing contents for `mem_123`.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

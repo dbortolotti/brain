@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "No direct conflict detected. 'Sara is my niece' could be consistent with the existing memory that Sara is Daniele's daughter and Nur's twin, depending on who 'my' refers to. Do not overwrite existing memory; request clarification of the speaker's relationship.",
+    "citations": [
+      "Existing memory: Sara is Daniele's daughter.",
+      "Existing memory: Sara is Nur's twin.",
+      "New statement: Sara is my niece."
+    ],
+    "conflict_classification": "ambiguous_non_conflict",
+    "decision": "needs_clarification",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The new statement uses a relative reference ('my niece') without identifying the speaker's relation to Sara, Daniele, or Nur. It cannot be reliably resolved into durable memory."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Compared new kinship claim against existing family facts.",
+        "Found no logical contradiction; the claim is underspecified due to unresolved first-person reference.",
+        "Chose not to commit a new durable memory card."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask who 'my' refers to in relation to Sara, Daniele, or Nur.",
+      "If the speaker is a sibling of Daniele, store: Sara is the speaker's niece.",
+      "If the speaker is a sibling of Sara's other parent, store that relation explicitly once identified.",
+      "Keep the existing high-confidence memory unchanged until the speaker identity is resolved."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict\",\"decision\":\"needs_clarification\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The new statement uses a relative reference ('my niece') without identifying the speaker's relation to Sara, Daniele, or Nur. It cannot be reliably resolved into durable memory.\"},\"conflict_classification\":\"ambiguous_non_conflict\",\"answer\":\"No direct conflict detected. 'Sara is my niece' could be consistent with the existing memory that Sara is Daniele's daughter and Nur's twin, depending on who 'my' refers to. Do not overwrite existing memory; request clarification of the speaker's relationship.\",\"citations\":[\"Existing memory: Sara is Daniele's daughter.\",\"Existing memory: Sara is Nur's twin.\",\"New statement: Sara is my niece.\"],\"repair_options\":[\"Ask who 'my' refers to in relation to Sara, Daniele, or Nur.\",\"If the speaker is a sibling of Daniele, store: Sara is the speaker's niece.\",\"If the speaker is a sibling of Sara's other parent, store that relation explicitly once identified.\",\"Keep the existing high-confidence memory unchanged until the speaker identity is resolved.\"],\"receipt\":{\"success\":true,\"details\":[\"Compared new kinship claim against existing family facts.\",\"Found no logical contradiction; the claim is underspecified due to unresolved first-person reference.\",\"Chose not to commit a new durable memory card.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

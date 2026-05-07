@@ -1,0 +1,38 @@
+{
+  "error": null,
+  "fixture_id": "concurrent_conflict_writes_001__punctuation",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "I did not commit a durable memory because the input may contain conflicting current-employment claims: 'Sam works at Goldman' and 'Sam joined Point72'. Please clarify whether Sam currently works at Goldman, joined Point72 after leaving Goldman, or whether these refer to different people named Sam.",
+    "citations": [
+      "Concurrent writes - Sam works at Goldman Sam joined Point72"
+    ],
+    "conflict_classification": "potential_current_employment_conflict",
+    "decision": "needs_clarification",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The name 'Sam' is ambiguous and no stable existing entity was provided; the input also contains two concurrent employment-related claims without punctuation or timing context."
+    },
+    "intent": "memory_write",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No durable memory was committed.",
+        "Detected possible conflict between current employment at Goldman and joining Point72.",
+        "Entity resolution for 'Sam' was deferred due to ambiguity."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Confirm: Sam currently works at Goldman.",
+      "Confirm: Sam joined Point72 and no longer works at Goldman.",
+      "Confirm: Sam works at Goldman and also joined Point72 in a non-employment capacity.",
+      "Confirm these statements refer to different people named Sam.",
+      "Provide dates or punctuation to disambiguate the two claims."
+    ]
+  },
+  "raw_text": "{\"intent\":\"memory_write\",\"decision\":\"needs_clarification\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"The name 'Sam' is ambiguous and no stable existing entity was provided; the input also contains two concurrent employment-related claims without punctuation or timing context.\"},\"conflict_classification\":\"potential_current_employment_conflict\",\"answer\":\"I did not commit a durable memory because the input may contain conflicting current-employment claims: 'Sam works at Goldman' and 'Sam joined Point72'. Please clarify whether Sam currently works at Goldman, joined Point72 after leaving Goldman, or whether these refer to different people named Sam.\",\"citations\":[\"Concurrent writes - Sam works at Goldman Sam joined Point72\"],\"repair_options\":[\"Confirm: Sam currently works at Goldman.\",\"Confirm: Sam joined Point72 and no longer works at Goldman.\",\"Confirm: Sam works at Goldman and also joined Point72 in a non-employment capacity.\",\"Confirm these statements refer to different people named Sam.\",\"Provide dates or punctuation to disambiguate the two claims.\"],\"receipt\":{\"success\":false,\"details\":[\"No durable memory was committed.\",\"Detected possible conflict between current employment at Goldman and joining Point72.\",\"Entity resolution for 'Sam' was deferred due to ambiguity.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

@@ -1,0 +1,116 @@
+{
+  "error": null,
+  "fixture_id": "correction_sam_music_001",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "Updated memory to reflect that Sam from Goldman likes early Coltrane, and marked the prior Bill Evans preference as superseded by correction.",
+    "citations": [
+      "Existing memory: Sam from Goldman likes Bill Evans.",
+      "Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans."
+    ],
+    "conflict_classification": "explicit_user_correction_overwrites_prior_fact",
+    "decision": "apply_correction_and_supersede_conflicting_fact",
+    "entity_resolution": {
+      "action": "reuse_existing_entity",
+      "entity_id": null,
+      "reason": "The correction refers to the same person descriptor, 'Sam from Goldman', so the existing Sam entity should be updated rather than creating a new one."
+    },
+    "intent": "update_memory_with_correction",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "music_preference"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "superseded_object",
+            "type": "artist"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "corrected_object",
+            "type": "music_preference"
+          }
+        ],
+        "kind": "tombstone",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "not_likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Superseded prior memory that Sam from Goldman likes Bill Evans; corrected preference is early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected direct contradiction between existing memory and explicit correction.",
+        "Committed corrected preference as current durable memory.",
+        "Recorded prior Bill Evans preference as superseded to prevent it from being presented as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace the prior preference fact with the corrected preference.",
+      "Mark the Bill Evans preference as superseded/deleted so it is not surfaced as current.",
+      "If the system supports provenance, retain both statements with the correction designated as authoritative."
+    ]
+  },
+  "raw_text": "{\"intent\":\"update_memory_with_correction\",\"decision\":\"apply_correction_and_supersede_conflicting_fact\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam from Goldman likes early Coltrane.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"early Coltrane\",\"type\":\"music_preference\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"early Coltrane\"}]},{\"kind\":\"tombstone\",\"statement\":\"Superseded prior memory that Sam from Goldman likes Bill Evans; corrected preference is early Coltrane.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"artist\",\"role\":\"superseded_object\"},{\"name\":\"early Coltrane\",\"type\":\"music_preference\",\"role\":\"corrected_object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"not_likes\",\"object\":\"Bill Evans\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"early Coltrane\"}]}],\"entity_resolution\":{\"action\":\"reuse_existing_entity\",\"entity_id\":null,\"reason\":\"The correction refers to the same person descriptor, 'Sam from Goldman', so the existing Sam entity should be updated rather than creating a new one.\"},\"conflict_classification\":\"explicit_user_correction_overwrites_prior_fact\",\"answer\":\"Updated memory to reflect that Sam from Goldman likes early Coltrane, and marked the prior Bill Evans preference as superseded by correction.\",\"citations\":[\"Existing memory: Sam from Goldman likes Bill Evans.\",\"Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans.\"],\"repair_options\":[\"Replace the prior preference fact with the corrected preference.\",\"Mark the Bill Evans preference as superseded/deleted so it is not surfaced as current.\",\"If the system supports provenance, retain both statements with the correction designated as authoritative.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected direct contradiction between existing memory and explicit correction.\",\"Committed corrected preference as current durable memory.\",\"Recorded prior Bill Evans preference as superseded to prevent it from being presented as current.\"]}}",
+  "run_id": "eval_20260507_065203",
+  "status": "ok"
+}

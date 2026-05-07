@@ -1,0 +1,71 @@
+{
+  "error": null,
+  "fixture_id": "idempotent_retry_same_message_001",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "Committed one deduplicated memory: Sam from Goldman mentioned that he likes Bill Evans.",
+    "citations": [
+      "Sam from Goldman mentioned that he likes Bill Evans."
+    ],
+    "conflict_classification": "none",
+    "decision": "accept_commit_once_deduplicated",
+    "entity_resolution": {
+      "action": "defer_merge_create_ambiguous_reference",
+      "entity_id": null,
+      "reason": "Only a first name plus affiliation descriptor was provided; do not merge with any existing Sam without additional identifying details. Repeated identical delivery should not create duplicate memories."
+    },
+    "intent": "store_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject; identity ambiguous",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation/source descriptor for Sam",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked entity",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "described_as_from",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman mentioned that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Processed identical input as an idempotent retry.",
+        "Created only one memory card.",
+        "No conflict detected."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for Sam's full name or additional identifier.",
+      "Clarify whether Goldman means Goldman Sachs or another organization.",
+      "Clarify which Bill Evans is meant if needed."
+    ]
+  },
+  "raw_text": "{\"intent\":\"store_memory\",\"decision\":\"accept_commit_once_deduplicated\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman mentioned that he likes Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject; identity ambiguous\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation/source descriptor for Sam\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked entity\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"described_as_from\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"defer_merge_create_ambiguous_reference\",\"entity_id\":null,\"reason\":\"Only a first name plus affiliation descriptor was provided; do not merge with any existing Sam without additional identifying details. Repeated identical delivery should not create duplicate memories.\"},\"conflict_classification\":\"none\",\"answer\":\"Committed one deduplicated memory: Sam from Goldman mentioned that he likes Bill Evans.\",\"citations\":[\"Sam from Goldman mentioned that he likes Bill Evans.\"],\"repair_options\":[\"Ask for Sam's full name or additional identifier.\",\"Clarify whether Goldman means Goldman Sachs or another organization.\",\"Clarify which Bill Evans is meant if needed.\"],\"receipt\":{\"success\":true,\"details\":[\"Processed identical input as an idempotent retry.\",\"Created only one memory card.\",\"No conflict detected.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

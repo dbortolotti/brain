@@ -1,0 +1,64 @@
+{
+  "error": null,
+  "fixture_id": "conflict_employment_transition__punctuation",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "Sam's employment at Goldman should no longer be treated as current. The current durable memory is that Sam left Goldman and joined Point72.",
+    "citations": [],
+    "conflict_classification": "supersedes_existing_current_fact",
+    "decision": "commit_new_fact_and_supersede_existing",
+    "entity_resolution": {
+      "action": "use_existing_entity",
+      "entity_id": null,
+      "reason": "The new fact refers to the same named person, Sam, as the existing current fact; no additional disambiguating identifier is provided."
+    },
+    "intent": "update_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_transition",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "formerly_worked_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed the employment transition: Sam left Goldman and joined Point72.",
+        "Superseded the prior current fact that Sam works at Goldman."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"update_memory\",\"decision\":\"commit_new_fact_and_supersede_existing\",\"memory_cards\":[{\"kind\":\"employment_transition\",\"statement\":\"Sam left Goldman and joined Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"employee\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former_employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"current_employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"formerly_worked_at\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"use_existing_entity\",\"entity_id\":null,\"reason\":\"The new fact refers to the same named person, Sam, as the existing current fact; no additional disambiguating identifier is provided.\"},\"conflict_classification\":\"supersedes_existing_current_fact\",\"answer\":\"Sam's employment at Goldman should no longer be treated as current. The current durable memory is that Sam left Goldman and joined Point72.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Committed the employment transition: Sam left Goldman and joined Point72.\",\"Superseded the prior current fact that Sam works at Goldman.\"]}}",
+  "run_id": "eval_20260507_065822",
+  "status": "ok"
+}

@@ -1,0 +1,78 @@
+{
+  "error": null,
+  "fixture_id": "cascade_clean_fact_no_escalation_001",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Stored: Nur and Sara are your twin daughters.",
+    "citations": [
+      "User stated: \"Nur and Sara are my twin daughters.\""
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "No prior entity IDs provided; create or attach person entities for Nur and Sara as the user's daughters."
+    },
+    "intent": "store_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "user",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "user",
+            "predicate": "child_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "user",
+            "predicate": "child_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Sara",
+            "predicate": "twin_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Nur",
+            "predicate": "twin_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "The user has twin daughters named Nur and Sara."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed one durable family-relationship memory card.",
+        "Captured parent-child relationships for Nur and Sara.",
+        "Captured twin relationship between Nur and Sara.",
+        "No conflict or escalation detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"store_memory\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"The user has twin daughters named Nur and Sara.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"user\",\"type\":\"person\",\"role\":\"parent\"},{\"name\":\"Nur\",\"type\":\"person\",\"role\":\"daughter\"},{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"daughter\"}],\"relationships\":[{\"subject\":\"Nur\",\"predicate\":\"child_of\",\"object\":\"user\"},{\"subject\":\"Sara\",\"predicate\":\"child_of\",\"object\":\"user\"},{\"subject\":\"Nur\",\"predicate\":\"twin_of\",\"object\":\"Sara\"},{\"subject\":\"Sara\",\"predicate\":\"twin_of\",\"object\":\"Nur\"}]}],\"entity_resolution\":{\"action\":\"create\",\"entity_id\":null,\"reason\":\"No prior entity IDs provided; create or attach person entities for Nur and Sara as the user's daughters.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored: Nur and Sara are your twin daughters.\",\"citations\":[\"User stated: \\\"Nur and Sara are my twin daughters.\\\"\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Committed one durable family-relationship memory card.\",\"Captured parent-child relationships for Nur and Sara.\",\"Captured twin relationship between Nur and Sara.\",\"No conflict or escalation detected.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

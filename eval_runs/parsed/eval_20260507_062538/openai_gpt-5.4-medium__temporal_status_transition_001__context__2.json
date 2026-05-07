@@ -1,0 +1,64 @@
+{
+  "fixture_id": "temporal_status_transition_001__context",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "Treat this as a temporal update, not a hard contradiction. The prior 'planned/open' state becomes historical context for the project, while the current scoped fact is that the Brain Slack agent MVP is implemented. Do not generalize this to mean the entire project is fully complete unless separately stated.",
+    "citations": [
+      "Existing: 'The Brain Slack agent is planned, status=open.'",
+      "New: 'The Brain Slack agent MVP is now implemented.'"
+    ],
+    "conflict_classification": "temporal_status_transition",
+    "decision": "record_temporal_update_with_scope",
+    "entity_resolution": {
+      "action": "link_to_existing_entity",
+      "entity_id": null,
+      "reason": "The new statement refers to the same project ('Brain Slack agent') but updates its state with narrower scope ('MVP'). This is best treated as a temporal status transition rather than a separate project."
+    },
+    "intent": "update_project_status",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain Slack agent",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "MVP",
+            "role": "scope",
+            "type": "milestone"
+          }
+        ],
+        "kind": "state_update",
+        "relationships": [
+          {
+            "object": "MVP",
+            "predicate": "has_scope",
+            "subject": "Brain Slack agent"
+          },
+          {
+            "object": "implemented",
+            "predicate": "status_for_scope",
+            "subject": "Brain Slack agent"
+          }
+        ],
+        "statement": "The Brain Slack agent MVP is now implemented."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected same underlying project entity with a scoped status update.",
+        "Classified as temporal status transition with scope refinement.",
+        "Avoided preserving the older planned/open state as current for the MVP."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Supersede the prior current status for the MVP scope with 'implemented'.",
+      "Retain the earlier planned/open state only as historical timeline context.",
+      "If the system tracks project-wide and milestone-specific states separately, keep project status unresolved/open unless explicitly updated beyond the MVP."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

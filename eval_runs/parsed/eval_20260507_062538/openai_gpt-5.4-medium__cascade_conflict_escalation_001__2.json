@@ -1,0 +1,34 @@
+{
+  "fixture_id": "cascade_conflict_escalation_001",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "Conflict detected: existing memory says Sara is your daughter, while the new input says Sara is your niece. Durable memory should not be updated until the conflict is resolved.",
+    "citations": [
+      "Existing: Sara is my daughter.",
+      "Input: Sara is my niece."
+    ],
+    "conflict_classification": "direct_relationship_conflict",
+    "decision": "defer_due_to_direct_conflict",
+    "entity_resolution": {
+      "action": "unresolved",
+      "entity_id": null,
+      "reason": "The name 'Sara' matches an existing person reference, but the new relationship ('niece') directly conflicts with the existing relationship ('daughter'). This could be a correction or a different Sara; do not merge or overwrite without clarification."
+    },
+    "intent": "assert_family_relationship",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Processed a direct contradiction between existing and new family-relationship claims.",
+        "No durable memory committed.",
+        "Existing fact not overwritten due to unresolved conflict."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask whether this is the same Sara or a different person with the same name.",
+      "Ask which relationship is correct and whether the old memory should be replaced.",
+      "If intended as a correction, require explicit overwrite confirmation before updating durable memory."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

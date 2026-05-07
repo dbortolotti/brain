@@ -1,0 +1,56 @@
+{
+  "error": null,
+  "fixture_id": "contradiction_sam_children_001__punctuation",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "The new claim directly contradicts the existing memory that Sam from Goldman has two children. Do not overwrite the existing memory without clarification or stronger evidence.",
+    "citations": [
+      "Existing memory: Sam from Goldman has two children",
+      "New input: Sam from Goldman has no children"
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "conflict_detected_needs_resolution",
+    "entity_resolution": {
+      "action": "matched_existing_entity",
+      "entity_id": null,
+      "reason": "Both statements refer to the same named entity, 'Sam from Goldman.'"
+    },
+    "intent": "update_memory",
+    "memory_cards": [
+      {
+        "confidence": "unverified",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "claim",
+        "relationships": [
+          {
+            "object": "0",
+            "predicate": "has_children_count",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman has no children."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected contradiction between existing and new child-count claims.",
+        "No durable memory update should be committed without resolution."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask for clarification: Does this refer to the same Sam from Goldman?",
+      "Ask whether the existing memory is outdated and should be replaced.",
+      "Store the new statement only as an unresolved conflicting claim until confirmed."
+    ]
+  },
+  "raw_text": "{\"intent\":\"update_memory\",\"decision\":\"conflict_detected_needs_resolution\",\"memory_cards\":[{\"kind\":\"claim\",\"statement\":\"Sam from Goldman has no children.\",\"confidence\":\"unverified\",\"entities\":[{\"name\":\"Sam from Goldman\",\"type\":\"person\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"Sam from Goldman\",\"predicate\":\"has_children_count\",\"object\":\"0\"}]}],\"entity_resolution\":{\"action\":\"matched_existing_entity\",\"entity_id\":null,\"reason\":\"Both statements refer to the same named entity, 'Sam from Goldman.'\"},\"conflict_classification\":\"direct_contradiction\",\"answer\":\"The new claim directly contradicts the existing memory that Sam from Goldman has two children. Do not overwrite the existing memory without clarification or stronger evidence.\",\"citations\":[\"Existing memory: Sam from Goldman has two children\",\"New input: Sam from Goldman has no children\"],\"repair_options\":[\"Ask for clarification: Does this refer to the same Sam from Goldman?\",\"Ask whether the existing memory is outdated and should be replaced.\",\"Store the new statement only as an unresolved conflicting claim until confirmed.\"],\"receipt\":{\"success\":false,\"details\":[\"Detected contradiction between existing and new child-count claims.\",\"No durable memory update should be committed without resolution.\"]}}",
+  "run_id": "eval_20260507_071025",
+  "status": "ok"
+}

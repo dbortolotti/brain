@@ -1,0 +1,81 @@
+{
+  "error": null,
+  "fixture_id": "conflict_correction_like__punctuation",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "Update the current memory to: Sam from Goldman likes early Coltrane. Mark the prior fact that Sam likes Bill Evans as superseded and not current.",
+    "citations": [
+      "Existing current fact: Sam from Goldman likes Bill Evans",
+      "Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans"
+    ],
+    "conflict_classification": "direct_correction",
+    "decision": "update_current_fact",
+    "entity_resolution": {
+      "action": "reuse_existing_entity",
+      "entity_id": null,
+      "reason": "The correction refers to the same Sam from Goldman as the existing current fact."
+    },
+    "intent": "correct_existing_fact",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "liked_item",
+            "type": "preference_target"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "rejected_prior_item",
+            "type": "preference_target"
+          }
+        ],
+        "kind": "replacement_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "not_likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane, not Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected explicit correction cue: 'actually' and 'not'.",
+        "New statement directly contradicts the existing current preference.",
+        "Applied conservative update: retain only corrected preference as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace the existing preference fact with the corrected preference.",
+      "Store the prior Bill Evans preference only as superseded history, not as a current fact."
+    ]
+  },
+  "raw_text": "{\"intent\":\"correct_existing_fact\",\"decision\":\"update_current_fact\",\"memory_cards\":[{\"kind\":\"replacement_fact\",\"statement\":\"Sam from Goldman likes early Coltrane, not Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"early Coltrane\",\"type\":\"preference_target\",\"role\":\"liked_item\"},{\"name\":\"Bill Evans\",\"type\":\"preference_target\",\"role\":\"rejected_prior_item\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"early Coltrane\"},{\"subject\":\"Sam\",\"predicate\":\"not_likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"reuse_existing_entity\",\"entity_id\":null,\"reason\":\"The correction refers to the same Sam from Goldman as the existing current fact.\"},\"conflict_classification\":\"direct_correction\",\"answer\":\"Update the current memory to: Sam from Goldman likes early Coltrane. Mark the prior fact that Sam likes Bill Evans as superseded and not current.\",\"citations\":[\"Existing current fact: Sam from Goldman likes Bill Evans\",\"Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans\"],\"repair_options\":[\"Replace the existing preference fact with the corrected preference.\",\"Store the prior Bill Evans preference only as superseded history, not as a current fact.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected explicit correction cue: 'actually' and 'not'.\",\"New statement directly contradicts the existing current preference.\",\"Applied conservative update: retain only corrected preference as current.\"]}}",
+  "run_id": "eval_20260507_070347",
+  "status": "ok"
+}

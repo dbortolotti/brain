@@ -1,0 +1,73 @@
+{
+  "fixture_id": "groundedness_metadata_claims_001__punctuation",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "The answer is grounded: the person identity for Sam with medium confidence and the aliases Sam and Sam from Goldman are supported by the evidence rows.",
+    "citations": [
+      "entity row",
+      "alias row"
+    ],
+    "conflict_classification": "none",
+    "decision": "grounded",
+    "entity_resolution": {
+      "action": "link_to_evidence_entity",
+      "entity_id": null,
+      "reason": "Evidence contains both an entity row for Sam and an alias row supporting the listed aliases; no explicit entity_id was provided."
+    },
+    "intent": "evaluate_groundedness",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "Person"
+          }
+        ],
+        "kind": "identity",
+        "relationships": [],
+        "statement": "Sam is a person."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "Person"
+          },
+          {
+            "name": "Sam from Goldman",
+            "role": "alias",
+            "type": "Alias"
+          }
+        ],
+        "kind": "alias",
+        "relationships": [
+          {
+            "object": "Sam",
+            "predicate": "has_alias",
+            "subject": "Sam"
+          },
+          {
+            "object": "Sam from Goldman",
+            "predicate": "has_alias",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam has aliases: Sam and Sam from Goldman."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Identity claim is supported by the entity row.",
+        "Alias claims are supported by the alias row.",
+        "No unsupported affiliation or employer claim is inferred from the alias 'Sam from Goldman'."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_062538"
+}

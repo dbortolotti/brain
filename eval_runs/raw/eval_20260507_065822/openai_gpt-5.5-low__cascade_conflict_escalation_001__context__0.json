@@ -1,0 +1,36 @@
+{
+  "error": null,
+  "fixture_id": "cascade_conflict_escalation_001__context",
+  "model": "openai:gpt-5.5-low",
+  "payload": {
+    "answer": "I found a conflict: existing memory says Sara is your daughter, while the new input says Sara is your niece. I did not update the memory without clarification.",
+    "citations": [
+      "Existing: Sara is my daughter.",
+      "Input: Sara is my niece."
+    ],
+    "conflict_classification": "relationship_conflict",
+    "decision": "needs_clarification",
+    "entity_resolution": {
+      "action": "match_existing",
+      "entity_id": null,
+      "reason": "The new input refers to Sara, which appears to be the same person as the existing Sara, but the relationship conflicts with the existing memory."
+    },
+    "intent": "memory_update",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No durable memory was committed because the new relationship conflicts with an existing relationship."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Replace the existing relationship with: Sara is my niece.",
+      "Keep the existing relationship: Sara is my daughter.",
+      "Record that Sara is both your daughter and niece if that is intentionally true.",
+      "Clarify whether these refer to two different people named Sara."
+    ]
+  },
+  "raw_text": "{\"intent\":\"memory_update\",\"decision\":\"needs_clarification\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"match_existing\",\"entity_id\":null,\"reason\":\"The new input refers to Sara, which appears to be the same person as the existing Sara, but the relationship conflicts with the existing memory.\"},\"conflict_classification\":\"relationship_conflict\",\"answer\":\"I found a conflict: existing memory says Sara is your daughter, while the new input says Sara is your niece. I did not update the memory without clarification.\",\"citations\":[\"Existing: Sara is my daughter.\",\"Input: Sara is my niece.\"],\"repair_options\":[\"Replace the existing relationship with: Sara is my niece.\",\"Keep the existing relationship: Sara is my daughter.\",\"Record that Sara is both your daughter and niece if that is intentionally true.\",\"Clarify whether these refer to two different people named Sara.\"],\"receipt\":{\"success\":false,\"details\":[\"No durable memory was committed because the new relationship conflicts with an existing relationship.\"]}}",
+  "run_id": "eval_20260507_065822",
+  "status": "ok"
+}

@@ -1,0 +1,70 @@
+{
+  "error": null,
+  "fixture_id": "project_state_brain_slack_agent_001",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Stored a cautious project-state memory: Slack is the current primary guardrailed ingestion interface for Brain, while Telegram is deferred to a later phase.",
+    "citations": [
+      "Brain project state: Slack should be the primary guardrailed memory ingestion interface; Telegram can come later."
+    ],
+    "conflict_classification": "none",
+    "decision": "store_with_caution",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "Brain is identified as the project/memory system in the input, but no prior entity ID is provided."
+    },
+    "intent": "compile_project_state_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "memory_system",
+            "type": "project"
+          },
+          {
+            "name": "Slack",
+            "role": "primary_ingestion_interface",
+            "type": "platform"
+          },
+          {
+            "name": "Telegram",
+            "role": "later_phase_interface",
+            "type": "platform"
+          }
+        ],
+        "kind": "project_state",
+        "relationships": [
+          {
+            "object": "Slack",
+            "predicate": "prioritizes_as_primary_guardrailed_memory_ingestion_interface",
+            "subject": "Brain"
+          },
+          {
+            "object": "Telegram",
+            "predicate": "may_add_later",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "Current project direction for Brain is to prioritize Slack as the primary guardrailed memory ingestion interface, with Telegram considered for a later phase."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured this as current project direction rather than a permanent product fact.",
+        "Preserved ambiguity by using 'current project direction' and 'considered for a later phase' instead of stronger commitment language."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If this is only a tentative preference, downgrade it to a short-lived planning note.",
+      "If Telegram is no longer planned, replace the later-phase wording with a stronger exclusion.",
+      "If 'guardrailed memory ingestion interface' has a specific internal meaning, add a definition card."
+    ]
+  },
+  "raw_text": "{\"intent\":\"compile_project_state_memory\",\"decision\":\"store_with_caution\",\"memory_cards\":[{\"kind\":\"project_state\",\"statement\":\"Current project direction for Brain is to prioritize Slack as the primary guardrailed memory ingestion interface, with Telegram considered for a later phase.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Brain\",\"type\":\"project\",\"role\":\"memory_system\"},{\"name\":\"Slack\",\"type\":\"platform\",\"role\":\"primary_ingestion_interface\"},{\"name\":\"Telegram\",\"type\":\"platform\",\"role\":\"later_phase_interface\"}],\"relationships\":[{\"subject\":\"Brain\",\"predicate\":\"prioritizes_as_primary_guardrailed_memory_ingestion_interface\",\"object\":\"Slack\"},{\"subject\":\"Brain\",\"predicate\":\"may_add_later\",\"object\":\"Telegram\"}]}],\"entity_resolution\":{\"action\":\"create_or_update\",\"entity_id\":null,\"reason\":\"Brain is identified as the project/memory system in the input, but no prior entity ID is provided.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored a cautious project-state memory: Slack is the current primary guardrailed ingestion interface for Brain, while Telegram is deferred to a later phase.\",\"citations\":[\"Brain project state: Slack should be the primary guardrailed memory ingestion interface; Telegram can come later.\"],\"repair_options\":[\"If this is only a tentative preference, downgrade it to a short-lived planning note.\",\"If Telegram is no longer planned, replace the later-phase wording with a stronger exclusion.\",\"If 'guardrailed memory ingestion interface' has a specific internal meaning, add a definition card.\"],\"receipt\":{\"success\":true,\"details\":[\"Captured this as current project direction rather than a permanent product fact.\",\"Preserved ambiguity by using 'current project direction' and 'considered for a later phase' instead of stronger commitment language.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

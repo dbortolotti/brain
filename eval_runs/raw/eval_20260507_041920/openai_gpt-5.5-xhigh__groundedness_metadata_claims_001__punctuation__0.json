@@ -1,0 +1,52 @@
+{
+  "error": null,
+  "fixture_id": "groundedness_metadata_claims_001__punctuation",
+  "model": "openai:gpt-5.5-xhigh",
+  "payload": {
+    "answer": "Grounded: the Person identity with medium confidence and aliases \"Sam\" and \"Sam from Goldman\" are supported by the evidence.",
+    "citations": [
+      "entity row",
+      "alias row"
+    ],
+    "conflict_classification": "none",
+    "decision": "grounded",
+    "entity_resolution": {
+      "action": "accept",
+      "entity_id": null,
+      "reason": "The evidence includes an entity row supporting the Person identity and an alias row supporting both aliases. The phrase \"Sam from Goldman\" is treated only as an alias string, not as an employment claim."
+    },
+    "intent": "evaluate_groundedness",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "alias",
+            "type": "Person"
+          },
+          {
+            "name": "Sam from Goldman",
+            "role": "alias",
+            "type": "Person"
+          }
+        ],
+        "kind": "identity",
+        "relationships": [],
+        "statement": "A person identity is supported with medium confidence and the aliases \"Sam\" and \"Sam from Goldman\"."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Person identity and medium confidence are supported by the entity row.",
+        "Aliases \"Sam\" and \"Sam from Goldman\" are supported by the alias row.",
+        "No separate claim about Goldman is inferred."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"evaluate_groundedness\",\"decision\":\"grounded\",\"memory_cards\":[{\"kind\":\"identity\",\"statement\":\"A person identity is supported with medium confidence and the aliases \\\"Sam\\\" and \\\"Sam from Goldman\\\".\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"Person\",\"role\":\"alias\"},{\"name\":\"Sam from Goldman\",\"type\":\"Person\",\"role\":\"alias\"}],\"relationships\":[]}],\"entity_resolution\":{\"action\":\"accept\",\"entity_id\":null,\"reason\":\"The evidence includes an entity row supporting the Person identity and an alias row supporting both aliases. The phrase \\\"Sam from Goldman\\\" is treated only as an alias string, not as an employment claim.\"},\"conflict_classification\":\"none\",\"answer\":\"Grounded: the Person identity with medium confidence and aliases \\\"Sam\\\" and \\\"Sam from Goldman\\\" are supported by the evidence.\",\"citations\":[\"entity row\",\"alias row\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Person identity and medium confidence are supported by the entity row.\",\"Aliases \\\"Sam\\\" and \\\"Sam from Goldman\\\" are supported by the alias row.\",\"No separate claim about Goldman is inferred.\"]}}",
+  "run_id": "eval_20260507_041920",
+  "status": "ok"
+}

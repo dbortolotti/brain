@@ -1,0 +1,59 @@
+{
+  "fixture_id": "supersession_sam_job_001",
+  "model": "openai:gpt-5.4-high",
+  "payload": {
+    "answer": "This is a supersession conflict. The prior current fact 'Sam works at Goldman' should no longer be treated as current. Store Sam's current employer as Point72 and mark the Goldman employment as superseded or historical.",
+    "citations": [
+      "Existing memory: Sam works at Goldman.",
+      "New: Sam left Goldman and joined Point72."
+    ],
+    "conflict_classification": "supersession",
+    "decision": "accept_new_fact_and_supersede_prior_current_employment",
+    "entity_resolution": {
+      "action": "reuse_existing",
+      "entity_id": null,
+      "reason": "The new statement refers to the same person and explicitly updates the prior employer from Goldman to Point72."
+    },
+    "intent": "classify_conflict_and_recommend_resolution",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected direct employment update affecting the same subject.",
+        "Classified the old fact as superseded rather than coexisting.",
+        "Recommended committing only the new current employment as durable memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark 'Sam works at Goldman' as superseded/non-current.",
+      "Store 'Sam works at Point72' as the current employment fact.",
+      "If employment history is tracked, retain Goldman only as former employment, not current."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

@@ -1,0 +1,35 @@
+{
+  "error": null,
+  "fixture_id": "large_table_500_rows_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Do not store the 500-row CSV table as durable memory. Large raw tables, repeated rows, or bulk data should not be committed to personal memory unless the user explicitly asks to remember a concise, stable summary or a specific durable fact derived from it. If needed, store only a brief summary, schema, source reference, or user-approved key facts; otherwise treat the CSV as transient context.",
+    "citations": [
+      "Input: \"For context, CSV table with 500 rows: id,name,value repeated many times. Policy question: how should it be stored?\""
+    ],
+    "conflict_classification": "none",
+    "decision": "do_not_commit_as_durable_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input describes a large repeated CSV table and asks a storage policy question, but provides no durable personal preference, identity fact, relationship, commitment, or stable user-specific knowledge to remember."
+    },
+    "intent": "policy_question_about_storing_large_csv_table",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No memory cards created.",
+        "Classified the large CSV as transient bulk context, not durable personal memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask the user whether they want a concise summary or specific extracted facts remembered.",
+      "Store only metadata such as: 'User provided a CSV with columns id, name, value for temporary analysis' if explicitly requested.",
+      "Keep the raw CSV in external/document storage rather than durable personal memory."
+    ]
+  },
+  "raw_text": "{\"intent\":\"policy_question_about_storing_large_csv_table\",\"decision\":\"do_not_commit_as_durable_memory\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input describes a large repeated CSV table and asks a storage policy question, but provides no durable personal preference, identity fact, relationship, commitment, or stable user-specific knowledge to remember.\"},\"conflict_classification\":\"none\",\"answer\":\"Do not store the 500-row CSV table as durable memory. Large raw tables, repeated rows, or bulk data should not be committed to personal memory unless the user explicitly asks to remember a concise, stable summary or a specific durable fact derived from it. If needed, store only a brief summary, schema, source reference, or user-approved key facts; otherwise treat the CSV as transient context.\",\"citations\":[\"Input: \\\"For context, CSV table with 500 rows: id,name,value repeated many times. Policy question: how should it be stored?\\\"\"],\"repair_options\":[\"Ask the user whether they want a concise summary or specific extracted facts remembered.\",\"Store only metadata such as: 'User provided a CSV with columns id, name, value for temporary analysis' if explicitly requested.\",\"Keep the raw CSV in external/document storage rather than durable personal memory.\"],\"receipt\":{\"success\":true,\"details\":[\"No memory cards created.\",\"Classified the large CSV as transient bulk context, not durable personal memory.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

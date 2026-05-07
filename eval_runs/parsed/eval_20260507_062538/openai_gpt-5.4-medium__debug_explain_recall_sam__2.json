@@ -1,0 +1,85 @@
+{
+  "fixture_id": "debug_explain_recall_sam",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "The recall path appears to use current-state retrieval. Under that policy, mem_new is returned because it is the latest active memory attached to Sam in the Goldman-related slot. mem_old is filtered because it has been superseded by mem_new, and superseded memories are retained only as history/debug lineage, not as current recall results. This prevents an outdated version from being presented as if it were still current.",
+    "citations": [
+      "mem_new",
+      "mem_old"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "Recall returned mem_new because it is the active, non-superseded memory for Sam in the Goldman-related fact slot, and it filtered mem_old because mem_old is explicitly superseded and therefore excluded from current-state recall.",
+    "entity_resolution": {
+      "action": "resolved_to_existing_entities",
+      "entity_id": null,
+      "reason": "Both memories were interpreted as referring to the same Sam and the same Goldman context, so conflict resolution was applied within one entity timeline rather than treating them as separate facts."
+    },
+    "intent": "explain_recall_decision",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "related_entity",
+            "type": "organization"
+          }
+        ],
+        "kind": "active",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "mem_new is the current memory retained for Sam with respect to Goldman, so it is eligible for recall."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "related_entity",
+            "type": "organization"
+          }
+        ],
+        "kind": "superseded",
+        "relationships": [
+          {
+            "object": "mem_new",
+            "predicate": "superseded_by",
+            "subject": "mem_old"
+          }
+        ],
+        "statement": "mem_old refers to the same Sam/Goldman memory line but is marked as superseded, so it is not returned as a current fact."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected a supersession relationship where mem_new is the surviving card.",
+        "Applied current-state recall filtering.",
+        "Excluded mem_old because superseded memories should not be surfaced as current facts."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Inspect the superseded_by/supersedes link between mem_old and mem_new.",
+      "Verify mem_new is marked active and mem_old is marked superseded in storage and the retrieval index.",
+      "Check that Sam and Goldman resolved to the same underlying entities for both memories.",
+      "Run a history-inclusive debug recall mode if you want to see both current and superseded cards.",
+      "Confirm the recall policy is current-only rather than archival/history-aware."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

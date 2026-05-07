@@ -1,0 +1,36 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_high_confidence_overwrite_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Rejected the proposed memory because it would overwrite an existing relationship: Sara is currently remembered as Daniele's daughter, not niece.",
+    "citations": [
+      "Existing: Sara is Daniele's daughter.",
+      "LLM proposes: Sara is Daniele's niece."
+    ],
+    "conflict_classification": "direct_conflict_high_confidence_existing",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "no_change",
+      "entity_id": null,
+      "reason": "The proposed relationship conflicts with the existing durable memory that Sara is Daniele's daughter. No evidence is provided to supersede or qualify the existing fact."
+    },
+    "intent": "validate_memory_proposal",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Blocked high-confidence overwrite of existing kinship relationship.",
+        "No new durable memory was committed."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask the user to clarify whether Sara is Daniele's daughter or niece.",
+      "If both are possible due to family complexity, store a qualified note only with explicit clarification.",
+      "If the existing memory is wrong, update it only after explicit user correction."
+    ]
+  },
+  "raw_text": "{\"intent\":\"validate_memory_proposal\",\"decision\":\"reject\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"no_change\",\"entity_id\":null,\"reason\":\"The proposed relationship conflicts with the existing durable memory that Sara is Daniele's daughter. No evidence is provided to supersede or qualify the existing fact.\"},\"conflict_classification\":\"direct_conflict_high_confidence_existing\",\"answer\":\"Rejected the proposed memory because it would overwrite an existing relationship: Sara is currently remembered as Daniele's daughter, not niece.\",\"citations\":[\"Existing: Sara is Daniele's daughter.\",\"LLM proposes: Sara is Daniele's niece.\"],\"repair_options\":[\"Ask the user to clarify whether Sara is Daniele's daughter or niece.\",\"If both are possible due to family complexity, store a qualified note only with explicit clarification.\",\"If the existing memory is wrong, update it only after explicit user correction.\"],\"receipt\":{\"success\":false,\"details\":[\"Blocked high-confidence overwrite of existing kinship relationship.\",\"No new durable memory was committed.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

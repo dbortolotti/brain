@@ -1,0 +1,35 @@
+{
+  "error": null,
+  "fixture_id": "slack_retry_event_001__context",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "Duplicate Slack event detected from context; do not write any new memory cards for this retry.",
+    "citations": [
+      "\"Same Slack event ID delivered twice\"",
+      "\"Sam from Goldman likes Bill Evans.\""
+    ],
+    "conflict_classification": "duplicate_event_retry",
+    "decision": "no_op_duplicate_event",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The prompt states the same Slack event ID was delivered twice, so this delivery should not create or repeat durable memory."
+    },
+    "intent": "slack_event_retry_deduplication",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Recognized this intake as a retry of an already-delivered Slack event.",
+        "Suppressed additional durable writes to avoid duplicate memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Use the Slack event ID as an idempotency key and ignore repeated deliveries.",
+      "If the original delivery was not persisted, process exactly once and mark the event ID as consumed."
+    ]
+  },
+  "raw_text": "{\"intent\":\"slack_event_retry_deduplication\",\"decision\":\"no_op_duplicate_event\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The prompt states the same Slack event ID was delivered twice, so this delivery should not create or repeat durable memory.\"},\"conflict_classification\":\"duplicate_event_retry\",\"answer\":\"Duplicate Slack event detected from context; do not write any new memory cards for this retry.\",\"citations\":[\"\\\"Same Slack event ID delivered twice\\\"\",\"\\\"Sam from Goldman likes Bill Evans.\\\"\"],\"repair_options\":[\"Use the Slack event ID as an idempotency key and ignore repeated deliveries.\",\"If the original delivery was not persisted, process exactly once and mark the event ID as consumed.\"],\"receipt\":{\"success\":true,\"details\":[\"Recognized this intake as a retry of an already-delivered Slack event.\",\"Suppressed additional durable writes to avoid duplicate memory.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

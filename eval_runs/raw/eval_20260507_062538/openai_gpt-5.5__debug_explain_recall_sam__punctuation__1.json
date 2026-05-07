@@ -1,0 +1,68 @@
+{
+  "error": null,
+  "fixture_id": "debug_explain_recall_sam__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Recall returned mem_new for Sam from Goldman because mem_new is the current surviving memory. mem_old was filtered out because it is superseded, so presenting it as current would be incorrect.",
+    "citations": [
+      "mem_new",
+      "mem_old"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "Recall returned mem_new because it is the current, non-superseded memory for Sam from Goldman; mem_old was filtered because it is marked superseded and should not be presented as current.",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": null,
+      "reason": "The query identifies Sam with the qualifier 'from Goldman', which is sufficient for this debug explanation; no durable entity ID was provided in the fixture."
+    },
+    "intent": "debug_explain_recall",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation/source",
+            "type": "organization"
+          }
+        ],
+        "kind": "debug_explanation",
+        "relationships": [
+          {
+            "object": "mem_new",
+            "predicate": "is_superseded_by",
+            "subject": "mem_old"
+          },
+          {
+            "object": "Sam",
+            "predicate": "applies_to",
+            "subject": "mem_new"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "mem_new is eligible for recall for Sam from Goldman because it is the active/current memory, while mem_old is excluded because it has been superseded."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Explained recall behavior for Sam from Goldman.",
+        "Identified mem_old as superseded and therefore filtered.",
+        "Did not present superseded/deleted facts as current."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"debug_explain_recall\",\"decision\":\"Recall returned mem_new because it is the current, non-superseded memory for Sam from Goldman; mem_old was filtered because it is marked superseded and should not be presented as current.\",\"memory_cards\":[{\"kind\":\"debug_explanation\",\"statement\":\"mem_new is eligible for recall for Sam from Goldman because it is the active/current memory, while mem_old is excluded because it has been superseded.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation/source\"}],\"relationships\":[{\"subject\":\"mem_old\",\"predicate\":\"is_superseded_by\",\"object\":\"mem_new\"},{\"subject\":\"mem_new\",\"predicate\":\"applies_to\",\"object\":\"Sam\"},{\"subject\":\"Sam\",\"predicate\":\"associated_with\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"resolved\",\"entity_id\":null,\"reason\":\"The query identifies Sam with the qualifier 'from Goldman', which is sufficient for this debug explanation; no durable entity ID was provided in the fixture.\"},\"conflict_classification\":\"supersession\",\"answer\":\"Recall returned mem_new for Sam from Goldman because mem_new is the current surviving memory. mem_old was filtered out because it is superseded, so presenting it as current would be incorrect.\",\"citations\":[\"mem_new\",\"mem_old\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Explained recall behavior for Sam from Goldman.\",\"Identified mem_old as superseded and therefore filtered.\",\"Did not present superseded/deleted facts as current.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

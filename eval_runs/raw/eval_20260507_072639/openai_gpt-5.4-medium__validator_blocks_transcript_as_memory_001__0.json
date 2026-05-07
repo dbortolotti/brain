@@ -1,0 +1,42 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_transcript_as_memory_001",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "Rejected. A single conversation_summary card containing an entire 8000 word transcript is not an acceptable durable memory. It is overly broad, high-noise, not atomic, and likely contains transient, ambiguous, or superseded statements that should not be stored as current memory. The transcript must be distilled into a small number of atomic, durable, non-redundant memory cards only if stable facts can be justified.",
+    "citations": [
+      "LLM proposal: one conversation_summary card containing an entire 8000 word transcript.",
+      "Be strict on committing durable memory, preserve ambiguity, and never present superseded/deleted facts as current."
+    ],
+    "conflict_classification": "invalid_memory_shape",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No durable entities or stable facts were extracted; the proposal is a raw transcript dump rather than resolved memory."
+    },
+    "intent": "validate_memory_proposal",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Proposal blocked because it attempts to store an entire transcript instead of distilled memory.",
+        "Rejected for lack of atomicity and excessive scope.",
+        "Rejected due to high risk of preserving transient or superseded statements as current facts.",
+        "No memory cards committed."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Do not store the full transcript as a memory card.",
+      "Extract only durable, user-relevant facts with clear long-term value.",
+      "Split any valid content into atomic cards, one fact per card.",
+      "Exclude ephemeral dialogue, brainstorming, hedged claims, and unresolved discussion.",
+      "Preserve uncertainty explicitly when a fact is not fully established.",
+      "Avoid storing statements that may already be superseded or later retracted.",
+      "If no stable facts can be confidently extracted, return no memory cards."
+    ]
+  },
+  "raw_text": "{\"intent\":\"validate_memory_proposal\",\"decision\":\"reject\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No durable entities or stable facts were extracted; the proposal is a raw transcript dump rather than resolved memory.\"},\"conflict_classification\":\"invalid_memory_shape\",\"answer\":\"Rejected. A single conversation_summary card containing an entire 8000 word transcript is not an acceptable durable memory. It is overly broad, high-noise, not atomic, and likely contains transient, ambiguous, or superseded statements that should not be stored as current memory. The transcript must be distilled into a small number of atomic, durable, non-redundant memory cards only if stable facts can be justified.\",\"citations\":[\"LLM proposal: one conversation_summary card containing an entire 8000 word transcript.\",\"Be strict on committing durable memory, preserve ambiguity, and never present superseded/deleted facts as current.\"],\"repair_options\":[\"Do not store the full transcript as a memory card.\",\"Extract only durable, user-relevant facts with clear long-term value.\",\"Split any valid content into atomic cards, one fact per card.\",\"Exclude ephemeral dialogue, brainstorming, hedged claims, and unresolved discussion.\",\"Preserve uncertainty explicitly when a fact is not fully established.\",\"Avoid storing statements that may already be superseded or later retracted.\",\"If no stable facts can be confidently extracted, return no memory cards.\"],\"receipt\":{\"success\":false,\"details\":[\"Proposal blocked because it attempts to store an entire transcript instead of distilled memory.\",\"Rejected for lack of atomicity and excessive scope.\",\"Rejected due to high risk of preserving transient or superseded statements as current facts.\",\"No memory cards committed.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

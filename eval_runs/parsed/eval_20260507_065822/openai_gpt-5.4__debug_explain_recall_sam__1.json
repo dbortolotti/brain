@@ -1,0 +1,109 @@
+{
+  "fixture_id": "debug_explain_recall_sam",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "Recall returned mem_new because Brain prefers the latest active durable memory for the same subject/context. mem_old was excluded because its status indicates it has been superseded by mem_new, and superseded memories are filtered from current recall to avoid presenting outdated facts as current.",
+    "citations": [
+      "mem_new",
+      "mem_old"
+    ],
+    "conflict_classification": "superseded_fact",
+    "decision": "Recall selected mem_new as the current durable memory for Sam at Goldman because mem_old is marked superseded and therefore filtered from current-state results.",
+    "entity_resolution": {
+      "action": "resolved_existing",
+      "entity_id": "Sam",
+      "reason": "The query explicitly targets Sam in the Goldman context, and recall explains selection among existing memories rather than creating or changing identity resolution."
+    },
+    "intent": "debug_explain_recall",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "object",
+            "type": "organization"
+          },
+          {
+            "name": "mem_new",
+            "role": "active_record",
+            "type": "memory"
+          }
+        ],
+        "kind": "current_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Sam at Goldman",
+            "predicate": "is_current_record_for",
+            "subject": "mem_new"
+          }
+        ],
+        "statement": "Sam is associated with Goldman according to mem_new, which is the active memory returned by recall."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "mem_old",
+            "role": "superseded_record",
+            "type": "memory"
+          },
+          {
+            "name": "mem_new",
+            "role": "replacement_record",
+            "type": "memory"
+          },
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          }
+        ],
+        "kind": "supersession",
+        "relationships": [
+          {
+            "object": "mem_new",
+            "predicate": "superseded_by",
+            "subject": "mem_old"
+          },
+          {
+            "object": "Sam at Goldman",
+            "predicate": "not_returned_as_current",
+            "subject": "mem_old"
+          }
+        ],
+        "statement": "mem_old was filtered because it is superseded, so it is not presented as the current fact."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Identified mem_new as the active record returned by recall.",
+        "Identified mem_old as filtered due to superseded status.",
+        "Explained behavior using current-state recall rules that exclude outdated memories."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Verify that mem_old has an explicit superseded_by link to mem_new.",
+      "Check whether both memories are scoped to the same entity pair: Sam and Goldman.",
+      "If mem_old should still be visible, query history/audit mode instead of current-state recall.",
+      "If the supersession was applied incorrectly, remove or correct the superseded status/link."
+    ]
+  },
+  "run_id": "eval_20260507_065822"
+}

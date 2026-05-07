@@ -1,0 +1,73 @@
+{
+  "error": null,
+  "fixture_id": "concurrent_conflict_writes_001",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "Detected concurrent potentially conflicting writes about Sam's affiliation. Do not store either employer as the current durable fact; preserve both claims as unresolved until corroborated or timestamped.",
+    "citations": [
+      "Sam works at Goldman.",
+      "Sam joined Point72."
+    ],
+    "conflict_classification": "concurrent_potential_conflict",
+    "decision": "store_as_ambiguous_conflict_without_committing_current_employment",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Insufficient evidence to determine whether both writes refer to the same employment timeline, a job change, dual affiliation, or conflicting reports."
+    },
+    "intent": "classify_concurrent_writes",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer_candidate",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "employer_candidate",
+            "type": "organization"
+          }
+        ],
+        "kind": "ambiguous_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Concurrent writes report that Sam works at Goldman and that Sam joined Point72; current employment cannot be resolved from these writes alone."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Classified as a concurrent potential conflict.",
+        "Stored only an ambiguity-preserving memory card.",
+        "Avoided committing a superseded or unresolved employment fact as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request timestamps for both writes.",
+      "Clarify whether 'joined Point72' means changed employment from Goldman to Point72.",
+      "Ask whether Sam has concurrent roles or affiliations.",
+      "Wait for corroborating evidence before promoting any employer to current memory."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_concurrent_writes\",\"decision\":\"store_as_ambiguous_conflict_without_committing_current_employment\",\"memory_cards\":[{\"kind\":\"ambiguous_fact\",\"statement\":\"Concurrent writes report that Sam works at Goldman and that Sam joined Point72; current employment cannot be resolved from these writes alone.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"employer_candidate\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer_candidate\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"Insufficient evidence to determine whether both writes refer to the same employment timeline, a job change, dual affiliation, or conflicting reports.\"},\"conflict_classification\":\"concurrent_potential_conflict\",\"answer\":\"Detected concurrent potentially conflicting writes about Sam's affiliation. Do not store either employer as the current durable fact; preserve both claims as unresolved until corroborated or timestamped.\",\"citations\":[\"Sam works at Goldman.\",\"Sam joined Point72.\"],\"repair_options\":[\"Request timestamps for both writes.\",\"Clarify whether 'joined Point72' means changed employment from Goldman to Point72.\",\"Ask whether Sam has concurrent roles or affiliations.\",\"Wait for corroborating evidence before promoting any employer to current memory.\"],\"receipt\":{\"success\":true,\"details\":[\"Classified as a concurrent potential conflict.\",\"Stored only an ambiguity-preserving memory card.\",\"Avoided committing a superseded or unresolved employment fact as current.\"]}}",
+  "run_id": "eval_20260507_065822",
+  "status": "ok"
+}

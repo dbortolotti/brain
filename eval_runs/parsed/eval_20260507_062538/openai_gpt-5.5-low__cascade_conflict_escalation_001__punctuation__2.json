@@ -1,0 +1,33 @@
+{
+  "fixture_id": "cascade_conflict_escalation_001__punctuation",
+  "model": "openai:gpt-5.5-low",
+  "payload": {
+    "answer": "I found a conflict: existing memory says Sara is your daughter, but the new input says Sara is your niece. Please clarify which relationship should be stored, or whether both are true in your family context.",
+    "citations": [
+      "Existing: Sara is my daughter",
+      "Input: Sara is my niece"
+    ],
+    "conflict_classification": "direct_conflict",
+    "decision": "needs_clarification",
+    "entity_resolution": {
+      "action": "match_existing",
+      "entity_id": null,
+      "reason": "The input refers to Sara, which appears to be the same named person as the existing memory, but the relationship differs."
+    },
+    "intent": "inform_memory_update",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No durable memory was committed because the new input conflicts with an existing relationship fact."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Replace the existing memory with: Sara is my niece",
+      "Keep the existing memory: Sara is my daughter",
+      "Store both relationships if both are true",
+      "Mark the relationship to Sara as uncertain until clarified"
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

@@ -1,0 +1,61 @@
+{
+  "fixture_id": "conflict_correction_like__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Updated: Sam from Goldman likes early Coltrane, not Bill Evans.",
+    "citations": [],
+    "conflict_classification": "correction_supersedes_existing_fact",
+    "decision": "supersede_existing_fact_and_store_correction",
+    "entity_resolution": {
+      "action": "reuse_existing_entity",
+      "entity_id": null,
+      "reason": "The correction refers to the same existing entity, 'Sam from Goldman,' and updates the previously stored preference."
+    },
+    "intent": "correct_existing_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "liked_object",
+            "type": "music/artist_period"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "negated_object",
+            "type": "musician"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "does_not_like_as_corrected",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane, not Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded the existing current fact that Sam from Goldman likes Bill Evans.",
+        "Stored the corrected preference that Sam from Goldman likes early Coltrane."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_071025"
+}

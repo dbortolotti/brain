@@ -1,0 +1,73 @@
+{
+  "error": null,
+  "fixture_id": "conflict_correction_like__punctuation",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "Use the correction as the new current fact and treat the prior preference for Bill Evans as superseded, not current.",
+    "citations": [
+      "Existing current fact: Sam from Goldman likes Bill Evans",
+      "Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans"
+    ],
+    "conflict_classification": "explicit_correction_supersedes_prior_fact",
+    "decision": "update_current_fact_with_correction",
+    "entity_resolution": {
+      "action": "reuse_existing_entity",
+      "entity_id": null,
+      "reason": "The correction refers to the same person and affiliation as the existing fact: Sam from Goldman."
+    },
+    "intent": "correct_existing_fact",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "liked_artist_style",
+            "type": "preference_object"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected explicit correction signaled by 'actually' and 'not'.",
+        "Classified as a direct contradiction of an existing current fact.",
+        "Committed only the corrected fact as current durable memory.",
+        "Prevented the superseded Bill Evans preference from being presented as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace the current preference 'likes Bill Evans' with 'likes early Coltrane'.",
+      "Mark the prior Bill Evans preference as superseded by explicit user correction.",
+      "Do not retain both preferences as simultaneously current."
+    ]
+  },
+  "raw_text": "{\"intent\":\"correct_existing_fact\",\"decision\":\"update_current_fact_with_correction\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam from Goldman likes early Coltrane.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"early Coltrane\",\"type\":\"preference_object\",\"role\":\"liked_artist_style\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"early Coltrane\"}]}],\"entity_resolution\":{\"action\":\"reuse_existing_entity\",\"entity_id\":null,\"reason\":\"The correction refers to the same person and affiliation as the existing fact: Sam from Goldman.\"},\"conflict_classification\":\"explicit_correction_supersedes_prior_fact\",\"answer\":\"Use the correction as the new current fact and treat the prior preference for Bill Evans as superseded, not current.\",\"citations\":[\"Existing current fact: Sam from Goldman likes Bill Evans\",\"Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans\"],\"repair_options\":[\"Replace the current preference 'likes Bill Evans' with 'likes early Coltrane'.\",\"Mark the prior Bill Evans preference as superseded by explicit user correction.\",\"Do not retain both preferences as simultaneously current.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected explicit correction signaled by 'actually' and 'not'.\",\"Classified as a direct contradiction of an existing current fact.\",\"Committed only the corrected fact as current durable memory.\",\"Prevented the superseded Bill Evans preference from being presented as current.\"]}}",
+  "run_id": "eval_20260507_065822",
+  "status": "ok"
+}

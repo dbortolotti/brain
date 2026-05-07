@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "fixture_id": "correction_sam_music_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Updated: Sam from Goldman likes early Coltrane, not Bill Evans.",
+    "citations": [],
+    "conflict_classification": "correction",
+    "decision": "replace_superseded_fact",
+    "entity_resolution": {
+      "action": "use_existing",
+      "entity_id": null,
+      "reason": "The correction explicitly refers to the existing 'Sam from Goldman' memory, so the same ambiguous person entity should be updated rather than creating a new one."
+    },
+    "intent": "correct_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "liked_object",
+            "type": "music/artist-period"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "negated_object",
+            "type": "musician"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "does_not_like_as_correction",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane, not Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Supersede prior memory: Sam from Goldman likes Bill Evans.",
+        "Commit corrected memory: Sam from Goldman likes early Coltrane, not Bill Evans."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"correct_memory\",\"decision\":\"replace_superseded_fact\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman likes early Coltrane, not Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"early Coltrane\",\"type\":\"music/artist-period\",\"role\":\"liked_object\"},{\"name\":\"Bill Evans\",\"type\":\"musician\",\"role\":\"negated_object\"}],\"relationships\":[{\"subject\":\"Sam from Goldman\",\"predicate\":\"likes\",\"object\":\"early Coltrane\"},{\"subject\":\"Sam from Goldman\",\"predicate\":\"does_not_like_as_correction\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"use_existing\",\"entity_id\":null,\"reason\":\"The correction explicitly refers to the existing 'Sam from Goldman' memory, so the same ambiguous person entity should be updated rather than creating a new one.\"},\"conflict_classification\":\"correction\",\"answer\":\"Updated: Sam from Goldman likes early Coltrane, not Bill Evans.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Supersede prior memory: Sam from Goldman likes Bill Evans.\",\"Commit corrected memory: Sam from Goldman likes early Coltrane, not Bill Evans.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

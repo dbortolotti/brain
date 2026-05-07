@@ -1,0 +1,61 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001__punctuation",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "No conflict. \"Sara is my niece\" is compatible with the existing memory that Sara is Daniele's daughter and Nur's twin; it adds a new family relationship without superseding prior facts.",
+    "citations": [
+      "Existing: Sara is Daniele's daughter and Nur's twin.",
+      "New: Sara is my niece."
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "compatible_additive",
+    "entity_resolution": {
+      "action": "merge_with_existing_entity",
+      "entity_id": "Sara",
+      "reason": "The new statement names Sara and is compatible with the existing memory that Sara is Daniele's daughter and Nur's twin. Being the user's niece does not contradict those facts."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "niece",
+            "type": "person"
+          },
+          {
+            "name": "user",
+            "role": "self",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship",
+        "relationships": [
+          {
+            "object": "user",
+            "predicate": "niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is the user's niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Compared the new claim against the existing high-confidence memory.",
+        "Found no logical contradiction between Sara being Daniele's daughter, Nur's twin, and the user's niece.",
+        "Preserved ambiguity about the exact path of the niece relationship."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Store the new relation as an additional fact linked to the existing Sara entity.",
+      "If needed, ask a follow-up to clarify whether Daniele is the user's sibling or whether the niece relationship is through another parent."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict\",\"decision\":\"compatible_additive\",\"memory_cards\":[{\"kind\":\"relationship\",\"statement\":\"Sara is the user's niece.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"niece\"},{\"name\":\"user\",\"type\":\"person\",\"role\":\"self\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"niece_of\",\"object\":\"user\"}]}],\"entity_resolution\":{\"action\":\"merge_with_existing_entity\",\"entity_id\":\"Sara\",\"reason\":\"The new statement names Sara and is compatible with the existing memory that Sara is Daniele's daughter and Nur's twin. Being the user's niece does not contradict those facts.\"},\"conflict_classification\":\"no_conflict\",\"answer\":\"No conflict. \\\"Sara is my niece\\\" is compatible with the existing memory that Sara is Daniele's daughter and Nur's twin; it adds a new family relationship without superseding prior facts.\",\"citations\":[\"Existing: Sara is Daniele's daughter and Nur's twin.\",\"New: Sara is my niece.\"],\"repair_options\":[\"Store the new relation as an additional fact linked to the existing Sara entity.\",\"If needed, ask a follow-up to clarify whether Daniele is the user's sibling or whether the niece relationship is through another parent.\"],\"receipt\":{\"success\":true,\"details\":[\"Compared the new claim against the existing high-confidence memory.\",\"Found no logical contradiction between Sara being Daniele's daughter, Nur's twin, and the user's niece.\",\"Preserved ambiguity about the exact path of the niece relationship.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

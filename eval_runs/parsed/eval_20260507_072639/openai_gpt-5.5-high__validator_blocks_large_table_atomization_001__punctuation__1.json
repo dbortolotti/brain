@@ -1,0 +1,32 @@
+{
+  "fixture_id": "validator_blocks_large_table_atomization_001__punctuation",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "Reject the proposed 500 memory cards. Bulk CSV rows should not be committed as durable personal memory by default. This is excessive table atomization, likely low-signal, and may preserve transient or ambiguous data as current facts. The system should instead ask what, if anything, should be remembered, summarize only high-level durable facts if explicitly supported, or store the CSV outside memory with a reference if needed.",
+    "citations": [],
+    "conflict_classification": "not_applicable",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No specific durable user/entity fact is identified; the proposal is a bulk atomization of tabular data rather than a memory-worthy personal fact."
+    },
+    "intent": "Evaluate whether a proposal to create 500 durable memory cards from a CSV, one per row, should be accepted.",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Blocked creation of 500 row-level memory cards.",
+        "No durable memory was committed.",
+        "Reason: bulk table atomization is not appropriate for personal memory without explicit user selection or summarization."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask the user which specific rows or facts are important enough to remember.",
+      "Create at most a small number of high-signal summary memories if the CSV clearly supports durable user preferences or facts.",
+      "Store the CSV as an external document/reference rather than converting each row into memory.",
+      "Defer memory creation until the user confirms the data is stable, personally relevant, and intended for long-term recall."
+    ]
+  },
+  "run_id": "eval_20260507_072639"
+}

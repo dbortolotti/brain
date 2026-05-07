@@ -1,0 +1,44 @@
+{
+  "fixture_id": "ambiguous_place_001__punctuation",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "Which Brutto did you mean \u2014 the restaurant in London or something else?",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "do_not_merge_due_to_ambiguous_entity",
+    "entity_resolution": {
+      "action": "needs_clarification",
+      "entity_id": null,
+      "reason": "The note mentions only \u201cBrutto.\u201d Existing context includes a Brutto restaurant in London and another Brutto alias/article reference, so the system should not automatically merge the note into the restaurant entity without clarification."
+    },
+    "intent": "record_experience_opinion",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brutto",
+            "role": "subject",
+            "type": "ambiguous"
+          }
+        ],
+        "kind": "preference_or_experience",
+        "relationships": [],
+        "statement": "The user said \u201cBrutto was better than expected,\u201d but the referenced Brutto is ambiguous."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preserved ambiguity in the Brutto reference.",
+        "Did not present the statement as a current fact about the London restaurant."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Attach the note to Brutto restaurant in London if the user confirms it refers to the restaurant.",
+      "Create or use a separate Brutto entity if the user meant the article/alias or another Brutto.",
+      "Keep the note as an unresolved mention of Brutto until clarified."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

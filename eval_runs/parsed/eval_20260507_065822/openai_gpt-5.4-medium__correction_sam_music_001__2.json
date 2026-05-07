@@ -1,0 +1,98 @@
+{
+  "fixture_id": "correction_sam_music_001",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "Apply the correction by superseding the old preference. Store that Sam from Goldman likes early Coltrane, and mark the Bill Evans preference as corrected/not current.",
+    "citations": [
+      "Existing memory: \"Sam from Goldman likes Bill Evans.\"",
+      "Correction: \"Sam from Goldman actually likes early Coltrane, not Bill Evans.\""
+    ],
+    "conflict_classification": "direct_conflict_correction",
+    "decision": "supersede_existing_fact",
+    "entity_resolution": {
+      "action": "match_existing_entity",
+      "entity_id": null,
+      "reason": "\"Sam from Goldman\" in the correction refers to the same person as in the existing memory, but no stable entity ID is provided."
+    },
+    "intent": "correct_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "music_preference"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "retracted_object",
+            "type": "artist"
+          }
+        ],
+        "kind": "retraction",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "not_likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "The prior memory that Sam from Goldman likes Bill Evans is corrected and should not be treated as current."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected a direct contradiction between existing memory and correction.",
+        "Classified the new statement as a corrective update, not an additional parallel preference.",
+        "Prepared one current preference card and one retraction card to avoid surfacing superseded information as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace the existing preference \"likes Bill Evans\" with \"likes early Coltrane\".",
+      "Mark the Bill Evans preference as superseded/retracted so it is never surfaced as current.",
+      "If supported, attach provenance linking the correction to the prior mistaken fact."
+    ]
+  },
+  "run_id": "eval_20260507_065822"
+}

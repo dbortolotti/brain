@@ -1,0 +1,71 @@
+{
+  "fixture_id": "groundedness_metadata_claims_001__punctuation",
+  "model": "openai:gpt-5.5-low",
+  "payload": {
+    "answer": "The answer is grounded in the provided evidence. The person identity and aliases are supported by the entity row and alias row.",
+    "citations": [
+      "entity row",
+      "alias row"
+    ],
+    "conflict_classification": "none",
+    "decision": "grounded",
+    "entity_resolution": {
+      "action": "accept",
+      "entity_id": null,
+      "reason": "The evidence contains both an entity row identifying the person and an alias row supporting the listed aliases."
+    },
+    "intent": "evaluate_groundedness",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "Person"
+          }
+        ],
+        "kind": "identity",
+        "statement": "The entity is a person."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "Person"
+          },
+          {
+            "name": "Sam from Goldman",
+            "role": "alias",
+            "type": "Alias"
+          }
+        ],
+        "kind": "alias",
+        "relationships": [
+          {
+            "object": "Sam",
+            "predicate": "has_alias",
+            "subject": "Sam"
+          },
+          {
+            "object": "Sam from Goldman",
+            "predicate": "has_alias",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam has aliases: Sam and Sam from Goldman."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Identity as a person is supported.",
+        "Aliases Sam and Sam from Goldman are supported."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_062538"
+}

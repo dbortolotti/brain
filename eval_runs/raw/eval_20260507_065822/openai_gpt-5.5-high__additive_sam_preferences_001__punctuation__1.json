@@ -1,0 +1,56 @@
+{
+  "error": null,
+  "fixture_id": "additive_sam_preferences_001__punctuation",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "Added that Sam from Goldman also likes Sonny Rollins.",
+    "citations": [
+      "Existing memory: Sam from Goldman likes Bill Evans",
+      "New: Sam from Goldman also likes Sonny Rollins"
+    ],
+    "conflict_classification": "additive_no_conflict",
+    "decision": "add",
+    "entity_resolution": {
+      "action": "merge_with_existing",
+      "entity_id": null,
+      "reason": "The new statement refers to the same entity described as 'Sam from Goldman' in existing memory."
+    },
+    "intent": "add_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "liked_artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Sonny Rollins",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes Sonny Rollins."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No conflict detected; the new preference is additive and does not supersede the existing Bill Evans preference."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"add_memory\",\"decision\":\"add\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman likes Sonny Rollins.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam from Goldman\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Sonny Rollins\",\"type\":\"person\",\"role\":\"liked_artist\"}],\"relationships\":[{\"subject\":\"Sam from Goldman\",\"predicate\":\"likes\",\"object\":\"Sonny Rollins\"}]}],\"entity_resolution\":{\"action\":\"merge_with_existing\",\"entity_id\":null,\"reason\":\"The new statement refers to the same entity described as 'Sam from Goldman' in existing memory.\"},\"conflict_classification\":\"additive_no_conflict\",\"answer\":\"Added that Sam from Goldman also likes Sonny Rollins.\",\"citations\":[\"Existing memory: Sam from Goldman likes Bill Evans\",\"New: Sam from Goldman also likes Sonny Rollins\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"No conflict detected; the new preference is additive and does not supersede the existing Bill Evans preference.\"]}}",
+  "run_id": "eval_20260507_065822",
+  "status": "ok"
+}

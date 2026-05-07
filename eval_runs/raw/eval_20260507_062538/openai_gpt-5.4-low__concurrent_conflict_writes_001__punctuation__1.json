@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "fixture_id": "concurrent_conflict_writes_001__punctuation",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Detected a concurrent conflict/ambiguity: 'Sam works at Goldman' and 'Sam joined Point72' should not both be stored as current durable facts without a timestamp or clarification. Preserve both as unresolved claims or request disambiguation.",
+    "citations": [
+      "Concurrent writes - Sam works at Goldman Sam joined Point72"
+    ],
+    "conflict_classification": "concurrent_potential_employment_conflict_with_ambiguous_timeline",
+    "decision": "do_not_commit_as_current_fact_without_resolution",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The subject is only identified as Sam, which is insufficient for reliable entity resolution, and the concurrent employment-related writes require timeline clarification."
+    },
+    "intent": "classify_concurrent_memory_write_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer_claim_1",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "employer_claim_2",
+            "type": "organization"
+          }
+        ],
+        "kind": "conflict_note",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Concurrent writes assert that Sam works at Goldman and that Sam joined Point72. These may refer to a job change or conflicting current-employment claims, so the timeline is ambiguous."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed two concurrent employment-related claims from the input.",
+        "Identified possible contradiction or temporal succession rather than a single stable current fact.",
+        "Chose not to commit either claim as the sole current durable memory without clarification."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add timestamps for both claims.",
+      "Clarify whether Sam left Goldman before joining Point72.",
+      "Confirm whether 'joined Point72' refers to a new current employer or a historical event.",
+      "Provide a unique identifier for Sam to resolve the entity safely."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_concurrent_memory_write_conflict\",\"decision\":\"do_not_commit_as_current_fact_without_resolution\",\"memory_cards\":[{\"kind\":\"conflict_note\",\"statement\":\"Concurrent writes assert that Sam works at Goldman and that Sam joined Point72. These may refer to a job change or conflicting current-employment claims, so the timeline is ambiguous.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"employer_claim_1\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer_claim_2\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"The subject is only identified as Sam, which is insufficient for reliable entity resolution, and the concurrent employment-related writes require timeline clarification.\"},\"conflict_classification\":\"concurrent_potential_employment_conflict_with_ambiguous_timeline\",\"answer\":\"Detected a concurrent conflict/ambiguity: 'Sam works at Goldman' and 'Sam joined Point72' should not both be stored as current durable facts without a timestamp or clarification. Preserve both as unresolved claims or request disambiguation.\",\"citations\":[\"Concurrent writes - Sam works at Goldman Sam joined Point72\"],\"repair_options\":[\"Add timestamps for both claims.\",\"Clarify whether Sam left Goldman before joining Point72.\",\"Confirm whether 'joined Point72' refers to a new current employer or a historical event.\",\"Provide a unique identifier for Sam to resolve the entity safely.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed two concurrent employment-related claims from the input.\",\"Identified possible contradiction or temporal succession rather than a single stable current fact.\",\"Chose not to commit either claim as the sole current durable memory without clarification.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

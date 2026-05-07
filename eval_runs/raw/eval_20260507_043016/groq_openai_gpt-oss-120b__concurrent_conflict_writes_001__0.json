@@ -1,0 +1,86 @@
+{
+  "error": null,
+  "fixture_id": "concurrent_conflict_writes_001",
+  "model": "groq:openai/gpt-oss-120b",
+  "payload": {
+    "answer": "The two statements present a conflict regarding Sam's current employer; one says Sam works at Goldman, the other says Sam joined Point72. Without temporal context, both could be true at different times, but as presented they are contradictory.",
+    "citations": [
+      "Input line 1",
+      "Input line 2"
+    ],
+    "conflict_classification": "employment_conflict",
+    "decision": "conflict_detected",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "no duplicate entity detected"
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed input",
+        "Identified conflict",
+        "Generated classification"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for clarification on the timeline of Sam's employment",
+      "Mark one statement as outdated based on additional evidence",
+      "Create separate temporal memory cards indicating possible sequence"
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict\",\"decision\":\"conflict_detected\",\"memory_cards\":[{\"kind\":\"employment\",\"statement\":\"Sam works at Goldman.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"employee\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Goldman\"}]},{\"kind\":\"employment\",\"statement\":\"Sam joined Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"employee\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"no duplicate entity detected\"},\"conflict_classification\":\"employment_conflict\",\"answer\":\"The two statements present a conflict regarding Sam's current employer; one says Sam works at Goldman, the other says Sam joined Point72. Without temporal context, both could be true at different times, but as presented they are contradictory.\",\"citations\":[\"Input line 1\",\"Input line 2\"],\"repair_options\":[\"Ask for clarification on the timeline of Sam's employment\",\"Mark one statement as outdated based on additional evidence\",\"Create separate temporal memory cards indicating possible sequence\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed input\",\"Identified conflict\",\"Generated classification\"]}}",
+  "run_id": "eval_20260507_043016",
+  "status": "ok"
+}

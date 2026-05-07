@@ -1,0 +1,56 @@
+{
+  "error": null,
+  "fixture_id": "preference_jazz_001",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "Stored a contextual music preference: for relaxed Sunday listening, you prefer Sonny Rollins over John Coltrane.",
+    "citations": [
+      "I prefer Sonny Rollins over John Coltrane for relaxed Sunday listening."
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "No existing canonical entity IDs provided; artist names are clear enough to store as named entities without hard resolution."
+    },
+    "intent": "capture_preference",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sonny Rollins",
+            "role": "preferred_artist",
+            "type": "person"
+          },
+          {
+            "name": "John Coltrane",
+            "role": "comparison_artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Sonny Rollins over John Coltrane for relaxed Sunday listening",
+            "predicate": "prefers_over_for_context",
+            "subject": "user"
+          }
+        ],
+        "statement": "For relaxed Sunday listening, the user prefers Sonny Rollins over John Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured a context-specific listening preference rather than a global artist preference.",
+        "Preserved the comparison and the condition 'for relaxed Sunday listening'."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"capture_preference\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"For relaxed Sunday listening, the user prefers Sonny Rollins over John Coltrane.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sonny Rollins\",\"type\":\"person\",\"role\":\"preferred_artist\"},{\"name\":\"John Coltrane\",\"type\":\"person\",\"role\":\"comparison_artist\"}],\"relationships\":[{\"subject\":\"user\",\"predicate\":\"prefers_over_for_context\",\"object\":\"Sonny Rollins over John Coltrane for relaxed Sunday listening\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"No existing canonical entity IDs provided; artist names are clear enough to store as named entities without hard resolution.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored a contextual music preference: for relaxed Sunday listening, you prefer Sonny Rollins over John Coltrane.\",\"citations\":[\"I prefer Sonny Rollins over John Coltrane for relaxed Sunday listening.\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Captured a context-specific listening preference rather than a global artist preference.\",\"Preserved the comparison and the condition 'for relaxed Sunday listening'.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

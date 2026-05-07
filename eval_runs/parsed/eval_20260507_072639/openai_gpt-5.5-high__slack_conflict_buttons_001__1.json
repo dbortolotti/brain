@@ -1,0 +1,77 @@
+{
+  "fixture_id": "slack_conflict_buttons_001",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "Remembered: Sam left Goldman and joined Point72. The prior memory that Sam works at Goldman should be treated as outdated, not current.",
+    "citations": [
+      "Existing memory: Sam works at Goldman.",
+      "New request: /brain remember Sam left Goldman and joined Point72."
+    ],
+    "conflict_classification": "temporal_update_supersedes_existing_current_fact",
+    "decision": "commit_and_supersede_prior_current_employment",
+    "entity_resolution": {
+      "action": "match_existing_entity",
+      "entity_id": null,
+      "reason": "The new memory refers to Sam in the existing memory and updates Sam's employment status."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_update",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "current_employer",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "former_employer",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed new employment update for Sam.",
+        "Superseded the prior current-employer claim that Sam works at Goldman."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If this refers to a different Sam, create a separate Sam entity.",
+      "If Sam still works at Goldman in another capacity, store that as a separate current affiliation."
+    ]
+  },
+  "run_id": "eval_20260507_072639"
+}

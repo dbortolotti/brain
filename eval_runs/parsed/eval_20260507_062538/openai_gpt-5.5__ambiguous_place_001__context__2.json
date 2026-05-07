@@ -1,0 +1,54 @@
+{
+  "fixture_id": "ambiguous_place_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Recorded that Brutto restaurant in London was better than expected.",
+    "citations": [
+      "New note: Brutto was better than expected.",
+      "Existing: Brutto restaurant in London; Brutto article alias."
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_with_resolved_entity",
+    "entity_resolution": {
+      "action": "link_existing",
+      "entity_id": "Brutto restaurant in London",
+      "reason": "Existing context includes Brutto restaurant in London and a Brutto article alias; the note is an evaluative statement that more plausibly refers to the restaurant, while preserving moderate confidence due to the ambiguous short name."
+    },
+    "intent": "record_evaluation",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brutto restaurant in London",
+            "role": "subject",
+            "type": "restaurant"
+          }
+        ],
+        "kind": "experience",
+        "relationships": [
+          {
+            "object": "Brutto restaurant in London",
+            "predicate": "evaluated",
+            "subject": "user"
+          },
+          {
+            "object": "better than expected",
+            "predicate": "was",
+            "subject": "Brutto restaurant in London"
+          }
+        ],
+        "statement": "The user thought Brutto restaurant in London was better than expected."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Linked the ambiguous name 'Brutto' to the existing restaurant entity rather than the article alias.",
+        "Committed an experience memory with medium confidence."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_062538"
+}

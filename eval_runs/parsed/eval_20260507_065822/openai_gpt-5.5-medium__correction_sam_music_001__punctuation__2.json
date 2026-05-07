@@ -1,0 +1,69 @@
+{
+  "fixture_id": "correction_sam_music_001__punctuation",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "The existing memory is superseded: Sam from Goldman should be remembered as liking early Coltrane, not Bill Evans.",
+    "citations": [
+      "Existing memory: Sam from Goldman likes Bill Evans",
+      "Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans"
+    ],
+    "conflict_classification": "direct_correction",
+    "decision": "replace_superseded_fact",
+    "entity_resolution": {
+      "action": "match_existing",
+      "entity_id": null,
+      "reason": "The correction refers to the same person described as 'Sam from Goldman' in the existing memory."
+    },
+    "intent": "correct_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "liked_object",
+            "type": "music"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "negated_object",
+            "type": "music"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "does_not_like",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane, not Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Classified as a direct correction of a prior preference memory.",
+        "Superseded fact was not preserved as current.",
+        "Generated corrected memory reflecting early Coltrane preference and Bill Evans negation."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Delete or mark superseded the memory that Sam from Goldman likes Bill Evans.",
+      "Add the corrected memory that Sam from Goldman likes early Coltrane.",
+      "Record that Bill Evans was explicitly negated in the correction."
+    ]
+  },
+  "run_id": "eval_20260507_065822"
+}

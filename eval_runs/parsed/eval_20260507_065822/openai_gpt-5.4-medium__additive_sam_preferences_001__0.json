@@ -1,0 +1,60 @@
+{
+  "fixture_id": "additive_sam_preferences_001",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "Add the new preference as an additional memory. It is compatible with the existing memory that Sam from Goldman likes Bill Evans.",
+    "citations": [
+      "Existing memory: Sam from Goldman likes Bill Evans.",
+      "New: Sam from Goldman also likes Sonny Rollins."
+    ],
+    "conflict_classification": "additive_non_conflict",
+    "decision": "add",
+    "entity_resolution": {
+      "action": "link_to_existing_entity",
+      "entity_id": null,
+      "reason": "The subject description matches the existing memory ('Sam from Goldman'), so the new statement appears to refer to the same person."
+    },
+    "intent": "update_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "disambiguator",
+            "type": "organization"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Sonny Rollins",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes Sonny Rollins."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected no contradiction between the existing and new preferences.",
+        "Classified the update as additive because a person can like multiple artists.",
+        "Prepared one new memory card for the additional preference only."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_065822"
+}

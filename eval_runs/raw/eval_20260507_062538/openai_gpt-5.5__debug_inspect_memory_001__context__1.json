@@ -1,0 +1,36 @@
+{
+  "error": null,
+  "fixture_id": "debug_inspect_memory_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Inspect requested for memory mem_123. No memory contents were provided in the input fixture, so there are no current facts to report or verify. No durable memory should be committed from this command alone.",
+    "citations": [
+      "/brain inspect memory mem_123"
+    ],
+    "conflict_classification": "none",
+    "decision": "explain_existing_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input is a debug inspection command for an existing memory ID, not a request to create or update durable memory."
+    },
+    "intent": "inspect_memory",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Recognized debug inspection intent.",
+        "Did not infer or create memory content from the memory ID alone.",
+        "Preserved ambiguity because the inspected memory payload was not included."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide the stored contents and metadata for mem_123 to inspect it.",
+      "If mem_123 is missing, return a not-found receipt.",
+      "If mem_123 is superseded or deleted, show that status rather than presenting its facts as current."
+    ]
+  },
+  "raw_text": "{\"intent\":\"inspect_memory\",\"decision\":\"explain_existing_memory\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input is a debug inspection command for an existing memory ID, not a request to create or update durable memory.\"},\"conflict_classification\":\"none\",\"answer\":\"Inspect requested for memory mem_123. No memory contents were provided in the input fixture, so there are no current facts to report or verify. No durable memory should be committed from this command alone.\",\"citations\":[\"/brain inspect memory mem_123\"],\"repair_options\":[\"Provide the stored contents and metadata for mem_123 to inspect it.\",\"If mem_123 is missing, return a not-found receipt.\",\"If mem_123 is superseded or deleted, show that status rather than presenting its facts as current.\"],\"receipt\":{\"success\":true,\"details\":[\"Recognized debug inspection intent.\",\"Did not infer or create memory content from the memory ID alone.\",\"Preserved ambiguity because the inspected memory payload was not included.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

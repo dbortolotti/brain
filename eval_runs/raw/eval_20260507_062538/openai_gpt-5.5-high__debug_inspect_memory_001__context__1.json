@@ -1,0 +1,35 @@
+{
+  "error": null,
+  "fixture_id": "debug_inspect_memory_001__context",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "Requested inspection of memory mem_123. No underlying memory record is available in this context, so I cannot verify or present its contents. No new memory should be committed from this command alone.",
+    "citations": [
+      "/brain inspect memory mem_123"
+    ],
+    "conflict_classification": "none",
+    "decision": "no_memory_write",
+    "entity_resolution": {
+      "action": "reference_existing_memory_by_id",
+      "entity_id": "mem_123",
+      "reason": "The input is an inspection command targeting an existing memory identifier, not a durable fact to store."
+    },
+    "intent": "debug_inspect_memory",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Inspection command recognized.",
+        "No memory backend or record contents were available.",
+        "No durable memory was written."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide the raw contents and metadata for mem_123 to inspect it.",
+      "If mem_123 does not exist, return a not-found result rather than inferring its contents."
+    ]
+  },
+  "raw_text": "{\"intent\":\"debug_inspect_memory\",\"decision\":\"no_memory_write\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"reference_existing_memory_by_id\",\"entity_id\":\"mem_123\",\"reason\":\"The input is an inspection command targeting an existing memory identifier, not a durable fact to store.\"},\"conflict_classification\":\"none\",\"answer\":\"Requested inspection of memory mem_123. No underlying memory record is available in this context, so I cannot verify or present its contents. No new memory should be committed from this command alone.\",\"citations\":[\"/brain inspect memory mem_123\"],\"repair_options\":[\"Provide the raw contents and metadata for mem_123 to inspect it.\",\"If mem_123 does not exist, return a not-found result rather than inferring its contents.\"],\"receipt\":{\"success\":false,\"details\":[\"Inspection command recognized.\",\"No memory backend or record contents were available.\",\"No durable memory was written.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

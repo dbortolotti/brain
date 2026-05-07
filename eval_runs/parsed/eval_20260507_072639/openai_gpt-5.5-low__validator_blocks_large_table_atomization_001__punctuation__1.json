@@ -1,0 +1,32 @@
+{
+  "fixture_id": "validator_blocks_large_table_atomization_001__punctuation",
+  "model": "openai:gpt-5.5-low",
+  "payload": {
+    "answer": "Rejected. Do not commit 500 row-level memory cards from a CSV table. Large tables should not be blindly atomized into durable memories; only explicitly user-relevant, stable, and meaningful facts should be stored after summarization or selection.",
+    "citations": [],
+    "conflict_classification": "not_applicable",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The proposal attempts to create 500 durable memory cards from a CSV table, one per row. This is bulk ingestion of tabular data rather than selective, user-salient durable memory. Individual rows may also contain punctuation or formatting that should not be treated as independent memories without interpretation and relevance assessment."
+    },
+    "intent": "validate_proposed_memory_cards",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Blocked bulk memory creation from 500 CSV rows.",
+        "No durable memory cards committed.",
+        "Reason: proposed cards are unfiltered table atomization, not validated long-term personal memory."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask the user which rows or fields are important enough to remember.",
+      "Summarize the table at a high level instead of storing every row.",
+      "Store only durable preferences, commitments, identities, or long-term facts derived from the CSV, if clearly supported.",
+      "Keep the CSV as an external document or transient context rather than durable personal memory."
+    ]
+  },
+  "run_id": "eval_20260507_072639"
+}

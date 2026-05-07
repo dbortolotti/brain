@@ -1,0 +1,35 @@
+{
+  "error": null,
+  "fixture_id": "debug_inspect_memory_001__context",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "Requested inspection of memory mem_123. No durable memory should be created or updated from this request. The referenced memory cannot be inspected because its stored contents were not provided in the input.",
+    "citations": [
+      "/brain inspect memory mem_123"
+    ],
+    "conflict_classification": "none",
+    "decision": "no_memory_commit",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": "mem_123",
+      "reason": "The request references an existing memory ID for inspection, but no memory record contents are available in the provided input."
+    },
+    "intent": "inspect_memory",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Recognized debug inspect request for memory ID mem_123.",
+        "No memory contents were available to inspect.",
+        "No new memory was committed."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide the full stored record for mem_123 to inspect it.",
+      "Retry the inspect command in an environment with access to Brain memory storage."
+    ]
+  },
+  "raw_text": "{\"intent\":\"inspect_memory\",\"decision\":\"no_memory_commit\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":\"mem_123\",\"reason\":\"The request references an existing memory ID for inspection, but no memory record contents are available in the provided input.\"},\"conflict_classification\":\"none\",\"answer\":\"Requested inspection of memory mem_123. No durable memory should be created or updated from this request. The referenced memory cannot be inspected because its stored contents were not provided in the input.\",\"citations\":[\"/brain inspect memory mem_123\"],\"repair_options\":[\"Provide the full stored record for mem_123 to inspect it.\",\"Retry the inspect command in an environment with access to Brain memory storage.\"],\"receipt\":{\"success\":false,\"details\":[\"Recognized debug inspect request for memory ID mem_123.\",\"No memory contents were available to inspect.\",\"No new memory was committed.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

@@ -1,0 +1,77 @@
+{
+  "fixture_id": "email_source_meeting_followup_001__punctuation",
+  "model": "openai:gpt-5.5-low",
+  "payload": {
+    "answer": "Compiled two candidate memories from the email: Sam joined Point72 last month relative to the email/source date, and Sam requested the AI infrastructure article.",
+    "citations": [
+      "From - sam@examplecom Subject - Follow up Great seeing you Yes, I joined Point72 last month Please send the AI infra article"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_match_contact",
+      "entity_id": null,
+      "reason": "Sender is identified as Sam with email-like string sam@examplecom, but the address appears malformed and no existing entity ID was provided."
+    },
+    "intent": "compile_memory_from_email",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "sender",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "professional_update",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said they joined Point72 last month, relative to the date of this email/source."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "requester",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure article",
+            "role": "requested_item",
+            "type": "content"
+          }
+        ],
+        "kind": "request",
+        "relationships": [
+          {
+            "object": "AI infrastructure article",
+            "predicate": "requested",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam asked to be sent the AI infrastructure article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preserved temporal ambiguity for 'last month' because the email/source date is not provided.",
+        "Did not normalize the malformed sender address beyond recording it as evidence."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_062538"
+}

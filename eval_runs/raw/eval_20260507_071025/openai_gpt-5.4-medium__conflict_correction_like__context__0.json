@@ -1,0 +1,67 @@
+{
+  "error": null,
+  "fixture_id": "conflict_correction_like__context",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "This is an explicit correction of an existing current fact. Update the current memory to 'Sam from Goldman likes early Coltrane' and retire the superseded fact that Sam from Goldman likes Bill Evans so it is not presented as current.",
+    "citations": [
+      "Existing current fact: Sam from Goldman likes Bill Evans.",
+      "Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans."
+    ],
+    "conflict_classification": "explicit_correction_direct_conflict",
+    "decision": "apply_correction_and_supersede_old_fact",
+    "entity_resolution": {
+      "action": "match_existing_entity",
+      "entity_id": null,
+      "reason": "The correction explicitly refers to the same subject as the existing current fact: 'Sam from Goldman'."
+    },
+    "intent": "correct_fact",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "preference_target"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected a direct contradiction between the existing current fact and the correction.",
+        "Classified the new statement as an explicit correction with strong overwrite intent ('actually', 'not Bill Evans').",
+        "Prepared one durable replacement fact and recommended retiring the superseded fact."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace the current preference fact with the corrected preference.",
+      "Mark the Bill Evans preference as superseded/incorrect rather than current.",
+      "If versioning is supported, retain the old fact only as historical conflict context, not as an active fact."
+    ]
+  },
+  "raw_text": "{\"intent\":\"correct_fact\",\"decision\":\"apply_correction_and_supersede_old_fact\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam from Goldman likes early Coltrane.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam from Goldman\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"early Coltrane\",\"type\":\"preference_target\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"Sam from Goldman\",\"predicate\":\"likes\",\"object\":\"early Coltrane\"}]}],\"entity_resolution\":{\"action\":\"match_existing_entity\",\"entity_id\":null,\"reason\":\"The correction explicitly refers to the same subject as the existing current fact: 'Sam from Goldman'.\"},\"conflict_classification\":\"explicit_correction_direct_conflict\",\"answer\":\"This is an explicit correction of an existing current fact. Update the current memory to 'Sam from Goldman likes early Coltrane' and retire the superseded fact that Sam from Goldman likes Bill Evans so it is not presented as current.\",\"citations\":[\"Existing current fact: Sam from Goldman likes Bill Evans.\",\"Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans.\"],\"repair_options\":[\"Replace the current preference fact with the corrected preference.\",\"Mark the Bill Evans preference as superseded/incorrect rather than current.\",\"If versioning is supported, retain the old fact only as historical conflict context, not as an active fact.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected a direct contradiction between the existing current fact and the correction.\",\"Classified the new statement as an explicit correction with strong overwrite intent ('actually', 'not Bill Evans').\",\"Prepared one durable replacement fact and recommended retiring the superseded fact.\"]}}",
+  "run_id": "eval_20260507_071025",
+  "status": "ok"
+}

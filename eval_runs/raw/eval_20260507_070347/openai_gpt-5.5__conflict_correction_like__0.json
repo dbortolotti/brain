@@ -1,0 +1,68 @@
+{
+  "error": null,
+  "fixture_id": "conflict_correction_like",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Update the memory: Sam from Goldman likes early Coltrane, not Bill Evans.",
+    "citations": [],
+    "conflict_classification": "explicit_correction",
+    "decision": "replace_existing_fact",
+    "entity_resolution": {
+      "action": "use_existing_entity",
+      "entity_id": null,
+      "reason": "The correction refers to the same entity as the existing current fact: Sam from Goldman."
+    },
+    "intent": "correct_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "liked_object",
+            "type": "music"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "negated_object",
+            "type": "music"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "does_not_like",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane, not Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Classified as an explicit correction of an existing current fact.",
+        "Do not present the superseded Bill Evans preference as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Supersede the existing fact that Sam from Goldman likes Bill Evans.",
+      "Store the corrected preference that Sam from Goldman likes early Coltrane.",
+      "Preserve the negation that the Bill Evans preference was incorrect."
+    ]
+  },
+  "raw_text": "{\"intent\":\"correct_memory\",\"decision\":\"replace_existing_fact\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman likes early Coltrane, not Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam from Goldman\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"early Coltrane\",\"type\":\"music\",\"role\":\"liked_object\"},{\"name\":\"Bill Evans\",\"type\":\"music\",\"role\":\"negated_object\"}],\"relationships\":[{\"subject\":\"Sam from Goldman\",\"predicate\":\"likes\",\"object\":\"early Coltrane\"},{\"subject\":\"Sam from Goldman\",\"predicate\":\"does_not_like\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"use_existing_entity\",\"entity_id\":null,\"reason\":\"The correction refers to the same entity as the existing current fact: Sam from Goldman.\"},\"conflict_classification\":\"explicit_correction\",\"answer\":\"Update the memory: Sam from Goldman likes early Coltrane, not Bill Evans.\",\"citations\":[],\"repair_options\":[\"Supersede the existing fact that Sam from Goldman likes Bill Evans.\",\"Store the corrected preference that Sam from Goldman likes early Coltrane.\",\"Preserve the negation that the Bill Evans preference was incorrect.\"],\"receipt\":{\"success\":true,\"details\":[\"Classified as an explicit correction of an existing current fact.\",\"Do not present the superseded Bill Evans preference as current.\"]}}",
+  "run_id": "eval_20260507_070347",
+  "status": "ok"
+}

@@ -1,0 +1,89 @@
+{
+  "error": null,
+  "fixture_id": "groundedness_absence_claims_001",
+  "model": "anthropic:claude-sonnet-4-6",
+  "payload": {
+    "answer": "The answer is NOT grounded. Stating 'No conflicts recorded' is only valid if conflict links were explicitly checked and returned empty. The evidence provided does not confirm that check occurred, making the claim epistemically unsupported and potentially misleading.",
+    "citations": [
+      "Input answer: 'No conflicts recorded.'",
+      "Input qualifier: 'Evidence only supports this if conflict links were checked.'"
+    ],
+    "conflict_classification": "UNGROUNDED_ABSENCE_CLAIM \u2014 The system asserted a negative fact without evidence of the required lookup, violating groundedness standards.",
+    "decision": "REJECT \u2014 The answer makes an absence claim ('No conflicts recorded') without demonstrating that conflict links were actually inspected. An absence of evidence is not evidence of absence unless the check was explicitly performed and documented.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No persistent entity requires resolution; this is a groundedness evaluation of a single answer."
+    },
+    "intent": "Evaluate whether the answer 'No conflicts recorded' is grounded in evidence, specifically whether conflict links were actually checked before making that claim.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "subject_under_evaluation",
+            "type": "system"
+          },
+          {
+            "name": "conflict_links",
+            "role": "required_evidence_source",
+            "type": "data_structure"
+          }
+        ],
+        "kind": "evaluation_finding",
+        "relationships": [
+          {
+            "object": "conflict_links_check",
+            "predicate": "lacks_grounding_from",
+            "subject": "answer"
+          },
+          {
+            "object": "explicit_negative_evidence",
+            "predicate": "requires",
+            "subject": "absence_claim"
+          }
+        ],
+        "statement": "The answer 'No conflicts recorded' is an ungrounded absence claim because there is no evidence that conflict links were queried or traversed prior to making the assertion."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "absence_claim_policy",
+            "role": "evaluation_criterion",
+            "type": "rule"
+          }
+        ],
+        "kind": "policy_note",
+        "relationships": [
+          {
+            "object": "source_was_checked",
+            "predicate": "is_valid_only_if",
+            "subject": "absence_claim"
+          }
+        ],
+        "statement": "Absence claims (e.g., 'no conflicts exist') must be supported by a documented traversal or query of the relevant data source; otherwise they are epistemically ungrounded."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Answer rejected: absence claim lacks grounding evidence.",
+        "Conflict links were not confirmed as checked.",
+        "No memory card committed for the unverified claim.",
+        "Repair options generated for remediation.",
+        "Evaluation fixture groundedness_absence_claims_001 processed successfully by eval_judge."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Re-run the conflict-link query explicitly and document the result (empty set or otherwise) before asserting no conflicts exist.",
+      "Rephrase the answer to reflect uncertainty: 'Conflict links were not checked; conflict status is unknown.'",
+      "Add a provenance tag to the answer indicating the source query, timestamp, and result set used to support the absence claim.",
+      "Implement a mandatory pre-condition in Brain that requires a conflict-link traversal before any 'no conflicts' assertion is committed to memory."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Evaluate whether the answer 'No conflicts recorded' is grounded in evidence, specifically whether conflict links were actually checked before making that claim.\",\n  \"decision\": \"REJECT \u2014 The answer makes an absence claim ('No conflicts recorded') without demonstrating that conflict links were actually inspected. An absence of evidence is not evidence of absence unless the check was explicitly performed and documented.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"evaluation_finding\",\n      \"statement\": \"The answer 'No conflicts recorded' is an ungrounded absence claim because there is no evidence that conflict links were queried or traversed prior to making the assertion.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain\",\n          \"type\": \"system\",\n          \"role\": \"subject_under_evaluation\"\n        },\n        {\n          \"name\": \"conflict_links\",\n          \"type\": \"data_structure\",\n          \"role\": \"required_evidence_source\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"answer\",\n          \"predicate\": \"lacks_grounding_from\",\n          \"object\": \"conflict_links_check\"\n        },\n        {\n          \"subject\": \"absence_claim\",\n          \"predicate\": \"requires\",\n          \"object\": \"explicit_negative_evidence\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"policy_note\",\n      \"statement\": \"Absence claims (e.g., 'no conflicts exist') must be supported by a documented traversal or query of the relevant data source; otherwise they are epistemically ungrounded.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"absence_claim_policy\",\n          \"type\": \"rule\",\n          \"role\": \"evaluation_criterion\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"absence_claim\",\n          \"predicate\": \"is_valid_only_if\",\n          \"object\": \"source_was_checked\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No persistent entity requires resolution; this is a groundedness evaluation of a single answer.\"\n  },\n  \"conflict_classification\": \"UNGROUNDED_ABSENCE_CLAIM \u2014 The system asserted a negative fact without evidence of the required lookup, violating groundedness standards.\",\n  \"answer\": \"The answer is NOT grounded. Stating 'No conflicts recorded' is only valid if conflict links were explicitly checked and returned empty. The evidence provided does not confirm that check occurred, making the claim epistemically unsupported and potentially misleading.\",\n  \"citations\": [\n    \"Input answer: 'No conflicts recorded.'\",\n    \"Input qualifier: 'Evidence only supports this if conflict links were checked.'\"\n  ],\n  \"repair_options\": [\n    \"Re-run the conflict-link query explicitly and document the result (empty set or otherwise) before asserting no conflicts exist.\",\n    \"Rephrase the answer to reflect uncertainty: 'Conflict links were not checked; conflict status is unknown.'\",\n    \"Add a provenance tag to the answer indicating the source query, timestamp, and result set used to support the absence claim.\",\n    \"Implement a mandatory pre-condition in Brain that requires a conflict-link traversal before any 'no conflicts' assertion is committed to memory.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Answer rejected: absence claim lacks grounding evidence.\",\n      \"Conflict links were not confirmed as checked.\",\n      \"No memory card committed for the unverified claim.\",\n      \"Repair options generated for remediation.\",\n      \"Evaluation fixture groundedness_absence_claims_001 processed successfully by eval_judge.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_043601",
+  "status": "ok"
+}

@@ -1,0 +1,59 @@
+{
+  "fixture_id": "groundedness_metadata_claims_001__punctuation",
+  "model": "anthropic:claude-sonnet-4-6",
+  "payload": {
+    "answer": "The identity claim is grounded. The evidence includes an entity row establishing the person and an alias row confirming the aliases 'Sam' and 'Sam from Goldman'. Confidence is medium as provided.",
+    "citations": [
+      "entity_row: Person - Sam",
+      "alias_row: Sam from Goldman"
+    ],
+    "conflict_classification": "none",
+    "decision": "GROUNDED",
+    "entity_resolution": {
+      "action": "merge_aliases",
+      "entity_id": "person::sam",
+      "reason": "Evidence contains both an entity row identifying the person and an alias row confirming 'Sam' and 'Sam from Goldman' refer to the same individual. Aliases are grounded in the provided evidence."
+    },
+    "intent": "Evaluate groundedness of identity claim for a person with aliases 'Sam' and 'Sam from Goldman', with medium confidence, supported by entity row and alias row in evidence.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "primary",
+            "type": "Person"
+          },
+          {
+            "name": "Sam from Goldman",
+            "role": "alias",
+            "type": "Person"
+          }
+        ],
+        "kind": "identity",
+        "relationships": [
+          {
+            "object": "Sam from Goldman",
+            "predicate": "has_alias",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "There is a person referred to as 'Sam' and 'Sam from Goldman'."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Identity entity created or matched for 'Sam'.",
+        "Alias 'Sam from Goldman' recorded and linked to primary entity.",
+        "Confidence set to medium per input specification.",
+        "No conflicts detected with existing memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Seek additional context to elevate confidence from medium to high (e.g., full name, employer confirmation at Goldman).",
+      "If 'Goldman' refers to a specific organization, create a separate entity for that organization and link via employment relationship."
+    ]
+  },
+  "run_id": "eval_20260507_043601"
+}

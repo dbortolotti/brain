@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_time_reference_001",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "Do not commit durable memory yet. The report contains ambiguous relative dates and a future-looking employment change that should be anchored to exact dates before storage.",
+    "citations": [
+      "Sam said last Friday",
+      "he is leaving Goldman next month"
+    ],
+    "conflict_classification": "ambiguous_time_reference",
+    "decision": "defer",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Cannot safely resolve 'Sam' to a unique entity, and the timing is ambiguous because both 'last Friday' and 'next month' are relative references without an anchor date."
+    },
+    "intent": "ingest_memory",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No durable memory written.",
+        "Blocked on ambiguous relative time references.",
+        "Blocked on unresolved person identity.",
+        "Future employment intent should be confirmed with absolute timing before storage."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask for the exact calendar date of 'last Friday'.",
+      "Ask which month 'next month' refers to.",
+      "Ask for Sam's full identity or another disambiguating detail.",
+      "If confirmed, restate as an absolute, dated fact or as a time-bounded planned change."
+    ]
+  },
+  "raw_text": "{\"intent\":\"ingest_memory\",\"decision\":\"defer\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"Cannot safely resolve 'Sam' to a unique entity, and the timing is ambiguous because both 'last Friday' and 'next month' are relative references without an anchor date.\"},\"conflict_classification\":\"ambiguous_time_reference\",\"answer\":\"Do not commit durable memory yet. The report contains ambiguous relative dates and a future-looking employment change that should be anchored to exact dates before storage.\",\"citations\":[\"Sam said last Friday\",\"he is leaving Goldman next month\"],\"repair_options\":[\"Ask for the exact calendar date of 'last Friday'.\",\"Ask which month 'next month' refers to.\",\"Ask for Sam's full identity or another disambiguating detail.\",\"If confirmed, restate as an absolute, dated fact or as a time-bounded planned change.\"],\"receipt\":{\"success\":false,\"details\":[\"No durable memory written.\",\"Blocked on ambiguous relative time references.\",\"Blocked on unresolved person identity.\",\"Future employment intent should be confirmed with absolute timing before storage.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

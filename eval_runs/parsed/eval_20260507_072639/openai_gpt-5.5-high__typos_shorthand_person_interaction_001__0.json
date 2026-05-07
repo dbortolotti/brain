@@ -1,0 +1,65 @@
+{
+  "fixture_id": "typos_shorthand_person_interaction_001",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "Noted as low-confidence: Sam from \u201cgoldmn\u201d apparently likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "record_with_low_confidence",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The subject is identified only as \u201csam\u201d with a shorthand/possibly misspelled affiliation \u201cgoldmn\u201d; not enough information to safely resolve or create a durable canonical person record."
+    },
+    "intent": "capture_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "goldmn",
+            "role": "affiliation",
+            "type": "organization_or_affiliation"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_object",
+            "type": "person_or_topic"
+          }
+        ],
+        "kind": "person_preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "apparently_likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "goldmn",
+            "predicate": "possibly_affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "A person referred to as Sam from \u201cgoldmn\u201d apparently likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured the preference as uncertain due to shorthand, typos, and the word \u201capparently\u201d.",
+        "Did not resolve Sam to a durable canonical entity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm whether \u201cgoldmn\u201d means Goldman or Goldman Sachs.",
+      "Confirm which Sam this refers to.",
+      "Confirm whether \u201cBill Evns\u201d means Bill Evans and whether this is the jazz musician."
+    ]
+  },
+  "run_id": "eval_20260507_072639"
+}

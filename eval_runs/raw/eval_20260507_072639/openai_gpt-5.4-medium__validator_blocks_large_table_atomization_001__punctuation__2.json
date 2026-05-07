@@ -1,0 +1,38 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_large_table_atomization_001__punctuation",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "Reject the proposal. Creating 500 memory cards, one per CSV row, is over-atomized and not appropriate for durable personal memory without clear evidence that each row is a stable, user-relevant fact worth long-term retention.",
+    "citations": [
+      "LLM proposes 500 memory cards, one per CSV row"
+    ],
+    "conflict_classification": "bulk_atomization_not_allowed",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No durable entity-level memory should be created from a bulk row-wise CSV import proposal alone."
+    },
+    "intent": "validate_proposed_memory_write",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Blocked bulk memory creation from tabular data.",
+        "Rejected row-wise atomization of 500 CSV records.",
+        "No current memory cards were committed."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Do not create one card per row; instead extract only a small number of durable, user-relevant summaries.",
+      "If the table contains repeated observations, aggregate them into higher-level facts with clear temporal scope.",
+      "Store the source artifact as an external document reference rather than atomizing every row into memory.",
+      "Only promote rows to memory when a row represents a stable preference, identity fact, ongoing project, or other long-lived personal detail.",
+      "Ask for filtering criteria or user intent before committing any table-derived memories."
+    ]
+  },
+  "raw_text": "{\"intent\":\"validate_proposed_memory_write\",\"decision\":\"reject\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No durable entity-level memory should be created from a bulk row-wise CSV import proposal alone.\"},\"conflict_classification\":\"bulk_atomization_not_allowed\",\"answer\":\"Reject the proposal. Creating 500 memory cards, one per CSV row, is over-atomized and not appropriate for durable personal memory without clear evidence that each row is a stable, user-relevant fact worth long-term retention.\",\"citations\":[\"LLM proposes 500 memory cards, one per CSV row\"],\"repair_options\":[\"Do not create one card per row; instead extract only a small number of durable, user-relevant summaries.\",\"If the table contains repeated observations, aggregate them into higher-level facts with clear temporal scope.\",\"Store the source artifact as an external document reference rather than atomizing every row into memory.\",\"Only promote rows to memory when a row represents a stable preference, identity fact, ongoing project, or other long-lived personal detail.\",\"Ask for filtering criteria or user intent before committing any table-derived memories.\"],\"receipt\":{\"success\":false,\"details\":[\"Blocked bulk memory creation from tabular data.\",\"Rejected row-wise atomization of 500 CSV records.\",\"No current memory cards were committed.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

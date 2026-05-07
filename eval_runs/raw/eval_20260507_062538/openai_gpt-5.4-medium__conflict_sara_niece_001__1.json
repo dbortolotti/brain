@@ -1,0 +1,38 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "No direct conflict detected. 'Sara is my niece' is ambiguous and potentially consistent with 'Sara is Daniele's daughter and Nur's twin.' Do not modify existing high-confidence memory or commit a new durable fact until the user's relationship to Sara or Daniele is clarified.",
+    "citations": [
+      "Existing high-confidence memory: Sara is Daniele's daughter and Nur's twin.",
+      "New statement: Sara is my niece."
+    ],
+    "conflict_classification": "ambiguous_non_conflict_user_relative",
+    "decision": "needs_clarification",
+    "entity_resolution": {
+      "action": "defer_resolution",
+      "entity_id": null,
+      "reason": "The new statement is user-relative ('my niece') and does not directly contradict the existing facts. It could be consistent if the user is Daniele's sibling or related through Sara's other parent, so durable storage should wait for clarification."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Existing memory was preserved.",
+        "No superseded or deleted fact was presented as current.",
+        "New statement was treated as ambiguous rather than contradictory.",
+        "Durable memory write was deferred pending clarification."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask how the user is related to Sara or Daniele.",
+      "If clarified, store the user-relative relationship separately from the existing family facts.",
+      "Keep the current high-confidence memory unchanged unless explicit contradictory evidence is provided."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict\",\"decision\":\"needs_clarification\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"defer_resolution\",\"entity_id\":null,\"reason\":\"The new statement is user-relative ('my niece') and does not directly contradict the existing facts. It could be consistent if the user is Daniele's sibling or related through Sara's other parent, so durable storage should wait for clarification.\"},\"conflict_classification\":\"ambiguous_non_conflict_user_relative\",\"answer\":\"No direct conflict detected. 'Sara is my niece' is ambiguous and potentially consistent with 'Sara is Daniele's daughter and Nur's twin.' Do not modify existing high-confidence memory or commit a new durable fact until the user's relationship to Sara or Daniele is clarified.\",\"citations\":[\"Existing high-confidence memory: Sara is Daniele's daughter and Nur's twin.\",\"New statement: Sara is my niece.\"],\"repair_options\":[\"Ask how the user is related to Sara or Daniele.\",\"If clarified, store the user-relative relationship separately from the existing family facts.\",\"Keep the current high-confidence memory unchanged unless explicit contradictory evidence is provided.\"],\"receipt\":{\"success\":true,\"details\":[\"Existing memory was preserved.\",\"No superseded or deleted fact was presented as current.\",\"New statement was treated as ambiguous rather than contradictory.\",\"Durable memory write was deferred pending clarification.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

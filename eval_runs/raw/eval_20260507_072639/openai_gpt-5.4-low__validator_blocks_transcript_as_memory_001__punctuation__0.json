@@ -1,0 +1,40 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_transcript_as_memory_001__punctuation",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Rejected. A single conversation_summary card containing an entire 8000 word transcript is not an acceptable durable memory entry. Raw or near-raw transcript storage is overly broad, mixes transient and conflicting statements, lacks curation, and risks preserving superseded or ambiguous claims as current memory. Durable memory should be extracted into small, discrete, attributable facts or concise summaries with clear scope and uncertainty.",
+    "citations": [
+      "Proposal contains one conversation_summary card",
+      "Card contains an entire 8000 word transcript"
+    ],
+    "conflict_classification": "invalid_candidate_format",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No entity resolution should be performed because the proposal is a bulk transcript dump rather than a normalized memory candidate."
+    },
+    "intent": "validate_memory_proposal",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Rejected oversized transcript-as-memory proposal.",
+        "No memory cards committed.",
+        "Requires extraction and normalization into discrete durable memories."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Do not store the full transcript as a memory card.",
+      "Extract only durable, high-signal facts that are likely to matter later.",
+      "Split content into atomic cards, one fact or one tightly scoped summary per card.",
+      "Mark uncertainty explicitly when the conversation contains ambiguity or unresolved claims.",
+      "Exclude ephemeral chatter, brainstorming, and superseded statements.",
+      "If a summary is needed, create a brief curated conversation_summary focused on lasting outcomes, decisions, or preferences rather than verbatim transcript content."
+    ]
+  },
+  "raw_text": "{\"intent\":\"validate_memory_proposal\",\"decision\":\"reject\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No entity resolution should be performed because the proposal is a bulk transcript dump rather than a normalized memory candidate.\"},\"conflict_classification\":\"invalid_candidate_format\",\"answer\":\"Rejected. A single conversation_summary card containing an entire 8000 word transcript is not an acceptable durable memory entry. Raw or near-raw transcript storage is overly broad, mixes transient and conflicting statements, lacks curation, and risks preserving superseded or ambiguous claims as current memory. Durable memory should be extracted into small, discrete, attributable facts or concise summaries with clear scope and uncertainty.\",\"citations\":[\"Proposal contains one conversation_summary card\",\"Card contains an entire 8000 word transcript\"],\"repair_options\":[\"Do not store the full transcript as a memory card.\",\"Extract only durable, high-signal facts that are likely to matter later.\",\"Split content into atomic cards, one fact or one tightly scoped summary per card.\",\"Mark uncertainty explicitly when the conversation contains ambiguity or unresolved claims.\",\"Exclude ephemeral chatter, brainstorming, and superseded statements.\",\"If a summary is needed, create a brief curated conversation_summary focused on lasting outcomes, decisions, or preferences rather than verbatim transcript content.\"],\"receipt\":{\"success\":false,\"details\":[\"Rejected oversized transcript-as-memory proposal.\",\"No memory cards committed.\",\"Requires extraction and normalization into discrete durable memories.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

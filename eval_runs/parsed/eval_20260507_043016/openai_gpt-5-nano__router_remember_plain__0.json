@@ -1,0 +1,67 @@
+{
+  "fixture_id": "router_remember_plain",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Stored memory with caveat: Sam from Goldman is linked to liking Bill Evans, but subject identity and organizational linkage are ambiguous and may require clarification.",
+    "citations": [],
+    "conflict_classification": "ambiguous_subject_identity",
+    "decision": "store_or_update",
+    "entity_resolution": {
+      "action": "tentative_association",
+      "entity_id": null,
+      "reason": "Name ambiguity: 'Sam' could refer to multiple individuals; 'Goldman' could be a firm or other entity; no explicit disambiguation provided."
+    },
+    "intent": "store_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unknown",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "musician",
+            "type": "person"
+          }
+        ],
+        "kind": "person",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans"
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "organization",
+        "relationships": [],
+        "statement": "Goldman"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created for person relationship: Sam -> likes -> Bill Evans.",
+        "Ambiguity noted for Sam and Goldman identity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request clarification for 'Sam' (e.g., full name, affiliation) and 'Goldman' (organization type or department).",
+      "If known, add a unique identifier for Sam and for the Goldman entity to disambiguate future references."
+    ]
+  },
+  "run_id": "eval_20260507_043016"
+}

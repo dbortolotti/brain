@@ -1,0 +1,127 @@
+{
+  "error": null,
+  "fixture_id": "debug_explain_recall_sam__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "mem_new was returned because it is the latest active memory for Sam involving Goldman. mem_old was filtered because it has a superseded status, so recall excludes it from current results to avoid presenting outdated information as if it were still current. In short: both memories may concern the same context, but only the non-superseded successor is recallable as current.",
+    "citations": [
+      "mem_new",
+      "mem_old"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "Recall returned mem_new as the active memory for Sam from Goldman and filtered mem_old because mem_old is marked as superseded by a newer memory covering the same subject/fact.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No entity merge decision is required for this explanation; the behavior is explained by memory lifecycle state, not unresolved identity."
+    },
+    "intent": "debug_explain_recall",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "associated_entity",
+            "type": "organization"
+          },
+          {
+            "name": "mem_new",
+            "role": "returned_memory",
+            "type": "memory"
+          }
+        ],
+        "kind": "active_memory",
+        "relationships": [
+          {
+            "object": "Sam",
+            "predicate": "about",
+            "subject": "mem_new"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "references",
+            "subject": "mem_new"
+          },
+          {
+            "object": "active",
+            "predicate": "status",
+            "subject": "mem_new"
+          }
+        ],
+        "statement": "Sam is associated with Goldman according to mem_new, which is the current non-superseded memory eligible for recall."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "associated_entity",
+            "type": "organization"
+          },
+          {
+            "name": "mem_old",
+            "role": "filtered_memory",
+            "type": "memory"
+          },
+          {
+            "name": "mem_new",
+            "role": "superseding_memory",
+            "type": "memory"
+          }
+        ],
+        "kind": "superseded_memory",
+        "relationships": [
+          {
+            "object": "Sam",
+            "predicate": "about",
+            "subject": "mem_old"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "references",
+            "subject": "mem_old"
+          },
+          {
+            "object": "mem_new",
+            "predicate": "superseded_by",
+            "subject": "mem_old"
+          },
+          {
+            "object": "inactive_for_recall",
+            "predicate": "status",
+            "subject": "mem_old"
+          }
+        ],
+        "statement": "mem_old was excluded from recall because it is superseded and should not be presented as current."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Identified mem_new as the returned active memory.",
+        "Identified mem_old as filtered due to supersession.",
+        "Explained recall behavior without treating the superseded memory as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Verify that mem_old has an explicit superseded_by link to mem_new.",
+      "Verify that recall filters memories with superseded/inactive status.",
+      "If both should be visible for audit, add a debug mode that includes superseded memories separately from active recall results.",
+      "If mem_old was filtered incorrectly, repair its status or remove the supersession edge."
+    ]
+  },
+  "raw_text": "{\"intent\":\"debug_explain_recall\",\"decision\":\"Recall returned mem_new as the active memory for Sam from Goldman and filtered mem_old because mem_old is marked as superseded by a newer memory covering the same subject/fact.\",\"memory_cards\":[{\"kind\":\"active_memory\",\"statement\":\"Sam is associated with Goldman according to mem_new, which is the current non-superseded memory eligible for recall.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"associated_entity\"},{\"name\":\"mem_new\",\"type\":\"memory\",\"role\":\"returned_memory\"}],\"relationships\":[{\"subject\":\"mem_new\",\"predicate\":\"about\",\"object\":\"Sam\"},{\"subject\":\"mem_new\",\"predicate\":\"references\",\"object\":\"Goldman\"},{\"subject\":\"mem_new\",\"predicate\":\"status\",\"object\":\"active\"}]},{\"kind\":\"superseded_memory\",\"statement\":\"mem_old was excluded from recall because it is superseded and should not be presented as current.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"associated_entity\"},{\"name\":\"mem_old\",\"type\":\"memory\",\"role\":\"filtered_memory\"},{\"name\":\"mem_new\",\"type\":\"memory\",\"role\":\"superseding_memory\"}],\"relationships\":[{\"subject\":\"mem_old\",\"predicate\":\"about\",\"object\":\"Sam\"},{\"subject\":\"mem_old\",\"predicate\":\"references\",\"object\":\"Goldman\"},{\"subject\":\"mem_old\",\"predicate\":\"superseded_by\",\"object\":\"mem_new\"},{\"subject\":\"mem_old\",\"predicate\":\"status\",\"object\":\"inactive_for_recall\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No entity merge decision is required for this explanation; the behavior is explained by memory lifecycle state, not unresolved identity.\"},\"conflict_classification\":\"supersession\",\"answer\":\"mem_new was returned because it is the latest active memory for Sam involving Goldman. mem_old was filtered because it has a superseded status, so recall excludes it from current results to avoid presenting outdated information as if it were still current. In short: both memories may concern the same context, but only the non-superseded successor is recallable as current.\",\"citations\":[\"mem_new\",\"mem_old\"],\"repair_options\":[\"Verify that mem_old has an explicit superseded_by link to mem_new.\",\"Verify that recall filters memories with superseded/inactive status.\",\"If both should be visible for audit, add a debug mode that includes superseded memories separately from active recall results.\",\"If mem_old was filtered incorrectly, repair its status or remove the supersession edge.\"],\"receipt\":{\"success\":true,\"details\":[\"Identified mem_new as the returned active memory.\",\"Identified mem_old as filtered due to supersession.\",\"Explained recall behavior without treating the superseded memory as current.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

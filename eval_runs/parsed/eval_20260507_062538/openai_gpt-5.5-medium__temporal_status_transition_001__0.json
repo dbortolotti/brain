@@ -1,0 +1,60 @@
+{
+  "fixture_id": "temporal_status_transition_001",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "Committed the new implemented status for the Brain Slack agent MVP; the prior planned/open status is superseded for that MVP scope.",
+    "citations": [],
+    "conflict_classification": "temporal_status_transition",
+    "decision": "commit_update",
+    "entity_resolution": {
+      "action": "update_existing_or_related_project",
+      "entity_id": null,
+      "reason": "The new statement refers to the Brain Slack agent MVP, which appears to be the same project scope or a more specific deliverable of the existing Brain Slack agent. The prior planned/open status should be treated as superseded for the MVP, while preserving ambiguity about whether the full Brain Slack agent beyond the MVP is also complete."
+    },
+    "intent": "update_project_status",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain Slack agent MVP",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "Brain Slack agent",
+            "role": "parent_or_related_project",
+            "type": "project"
+          }
+        ],
+        "kind": "project_status",
+        "relationships": [
+          {
+            "object": "implemented",
+            "predicate": "has_status",
+            "subject": "Brain Slack agent MVP"
+          },
+          {
+            "object": "Brain Slack agent",
+            "predicate": "is_related_to",
+            "subject": "Brain Slack agent MVP"
+          }
+        ],
+        "statement": "The Brain Slack agent MVP is now implemented."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recorded current status: Brain Slack agent MVP is implemented.",
+        "Classified as a temporal status transition, not a contradiction.",
+        "Preserved ambiguity between the MVP and the broader Brain Slack agent."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark the previous planned/open status as superseded for the Brain Slack agent MVP.",
+      "If the full Brain Slack agent differs from the MVP, retain the broader Brain Slack agent as open/planned until clarified."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

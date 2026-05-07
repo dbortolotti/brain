@@ -1,0 +1,38 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001__context",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "No direct conflict: 'Sara is my niece' can be compatible with the existing memory that Sara is Daniele's daughter and Nur's twin. However, 'my niece' is speaker-relative and not durable without anchoring who 'my' refers to, so it should not be committed as a standalone long-term fact.",
+    "citations": [
+      "Existing memory: Sara is Daniele's daughter.",
+      "Existing memory: Sara is Nur's twin.",
+      "New statement: Sara is my niece."
+    ],
+    "conflict_classification": "no_direct_conflict_ambiguous_perspective",
+    "decision": "needs_clarification_no_durable_commit",
+    "entity_resolution": {
+      "action": "link_existing_entity",
+      "entity_id": "Sara",
+      "reason": "The new statement appears to refer to the same Sara, but 'my niece' is speaker-relative and depends on the user's identity and family relation to Daniele or Nur."
+    },
+    "intent": "classify_conflict_with_contextual_kinship",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected no contradiction with existing family facts.",
+        "Refused durable storage because the new claim is deictic/speaker-relative and under-specified.",
+        "Preserved ambiguity and avoided introducing a possibly unstable kinship fact."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask who 'my' refers to so the relationship can be anchored to a named person.",
+      "If the speaker is the user, rewrite as 'Sara is [User]'s niece.'",
+      "If known, store the durable relation instead, e.g. '[Named person] is Sara's aunt/uncle' or 'Sara is the niece of [Named person].'"
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict_with_contextual_kinship\",\"decision\":\"needs_clarification_no_durable_commit\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"link_existing_entity\",\"entity_id\":\"Sara\",\"reason\":\"The new statement appears to refer to the same Sara, but 'my niece' is speaker-relative and depends on the user's identity and family relation to Daniele or Nur.\"},\"conflict_classification\":\"no_direct_conflict_ambiguous_perspective\",\"answer\":\"No direct conflict: 'Sara is my niece' can be compatible with the existing memory that Sara is Daniele's daughter and Nur's twin. However, 'my niece' is speaker-relative and not durable without anchoring who 'my' refers to, so it should not be committed as a standalone long-term fact.\",\"citations\":[\"Existing memory: Sara is Daniele's daughter.\",\"Existing memory: Sara is Nur's twin.\",\"New statement: Sara is my niece.\"],\"repair_options\":[\"Ask who 'my' refers to so the relationship can be anchored to a named person.\",\"If the speaker is the user, rewrite as 'Sara is [User]'s niece.'\",\"If known, store the durable relation instead, e.g. '[Named person] is Sara's aunt/uncle' or 'Sara is the niece of [Named person].'\"],\"receipt\":{\"success\":true,\"details\":[\"Detected no contradiction with existing family facts.\",\"Refused durable storage because the new claim is deictic/speaker-relative and under-specified.\",\"Preserved ambiguity and avoided introducing a possibly unstable kinship fact.\"]}}",
+  "run_id": "eval_20260507_065203",
+  "status": "ok"
+}

@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "groundedness_metadata_claims_001__context",
+  "model": "openai:gpt-5.5-xhigh",
+  "payload": {
+    "answer": "Grounded: the claimed person identity and aliases are supported by the described entity row and alias row. Confidence remains medium because the canonical name or entity ID is not specified.",
+    "citations": [
+      "entity row",
+      "alias row"
+    ],
+    "conflict_classification": "none",
+    "decision": "grounded",
+    "entity_resolution": {
+      "action": "accept",
+      "entity_id": null,
+      "reason": "The evidence is described as containing both an entity row and an alias row supporting a person identity and the listed aliases, but no stable canonical entity ID is provided."
+    },
+    "intent": "evaluate_groundedness",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "alias",
+            "type": "Person"
+          },
+          {
+            "name": "Sam from Goldman",
+            "role": "alias",
+            "type": "Person"
+          }
+        ],
+        "kind": "identity",
+        "relationships": [
+          {
+            "object": "Sam",
+            "predicate": "has_alias",
+            "subject": "unknown person"
+          },
+          {
+            "object": "Sam from Goldman",
+            "predicate": "has_alias",
+            "subject": "unknown person"
+          }
+        ],
+        "statement": "A person identity record is supported with aliases \"Sam\" and \"Sam from Goldman\"; the person's canonical name is not specified."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Accepted grounded identity claim as a person with aliases only.",
+        "Did not infer a canonical name beyond the supported aliases."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"evaluate_groundedness\",\"decision\":\"grounded\",\"memory_cards\":[{\"kind\":\"identity\",\"statement\":\"A person identity record is supported with aliases \\\"Sam\\\" and \\\"Sam from Goldman\\\"; the person's canonical name is not specified.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"Person\",\"role\":\"alias\"},{\"name\":\"Sam from Goldman\",\"type\":\"Person\",\"role\":\"alias\"}],\"relationships\":[{\"subject\":\"unknown person\",\"predicate\":\"has_alias\",\"object\":\"Sam\"},{\"subject\":\"unknown person\",\"predicate\":\"has_alias\",\"object\":\"Sam from Goldman\"}]}],\"entity_resolution\":{\"action\":\"accept\",\"entity_id\":null,\"reason\":\"The evidence is described as containing both an entity row and an alias row supporting a person identity and the listed aliases, but no stable canonical entity ID is provided.\"},\"conflict_classification\":\"none\",\"answer\":\"Grounded: the claimed person identity and aliases are supported by the described entity row and alias row. Confidence remains medium because the canonical name or entity ID is not specified.\",\"citations\":[\"entity row\",\"alias row\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Accepted grounded identity claim as a person with aliases only.\",\"Did not infer a canonical name beyond the supported aliases.\"]}}",
+  "run_id": "eval_20260507_041920",
+  "status": "ok"
+}

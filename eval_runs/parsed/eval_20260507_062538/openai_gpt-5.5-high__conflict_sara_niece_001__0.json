@@ -1,0 +1,52 @@
+{
+  "fixture_id": "conflict_sara_niece_001",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "Committed: Sara is your niece. This does not conflict with the existing memory that Sara is Daniele's daughter and Nur's twin.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "commit_new_memory",
+    "entity_resolution": {
+      "action": "link_to_existing",
+      "entity_id": null,
+      "reason": "The new statement refers to Sara and is compatible with the existing high-confidence memory that Sara is Daniele's daughter and Nur's twin; no separate Sara entity is indicated."
+    },
+    "intent": "store_personal_relationship",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "niece",
+            "type": "person"
+          },
+          {
+            "name": "user",
+            "role": "aunt_or_uncle",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship",
+        "relationships": [
+          {
+            "object": "user",
+            "predicate": "is_niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is the user's niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Added niece relationship for Sara.",
+        "Preserved existing facts about Sara as Daniele's daughter and Nur's twin.",
+        "Did not infer how Daniele is related to the user."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_062538"
+}

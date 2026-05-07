@@ -1,0 +1,71 @@
+{
+  "error": null,
+  "fixture_id": "supersession_sam_job_001__punctuation",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "The newer fact supersedes the older employment fact. Treat 'Sam works at Goldman' as no longer current and retain only the transition: Sam left Goldman and joined Point72.",
+    "citations": [
+      "Existing memory: 'Sam works at Goldman'",
+      "Existing memory: 'Sam left Goldman and joined Point72'"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "supersede_prior_fact",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No entity ambiguity indicated beyond punctuation/concatenation issues."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "event",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected direct temporal supersession: prior employer replaced by later job change.",
+        "Avoided presenting the older Goldman employment as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark 'Sam works at Goldman' as superseded/not current.",
+      "Keep 'Sam left Goldman and joined Point72' as the durable current-relevant memory.",
+      "Optionally normalize source punctuation to separate the two statements clearly."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict\",\"decision\":\"supersede_prior_fact\",\"memory_cards\":[{\"kind\":\"event\",\"statement\":\"Sam left Goldman and joined Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"employee\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"current employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"left\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No entity ambiguity indicated beyond punctuation/concatenation issues.\"},\"conflict_classification\":\"supersession\",\"answer\":\"The newer fact supersedes the older employment fact. Treat 'Sam works at Goldman' as no longer current and retain only the transition: Sam left Goldman and joined Point72.\",\"citations\":[\"Existing memory: 'Sam works at Goldman'\",\"Existing memory: 'Sam left Goldman and joined Point72'\"],\"repair_options\":[\"Mark 'Sam works at Goldman' as superseded/not current.\",\"Keep 'Sam left Goldman and joined Point72' as the durable current-relevant memory.\",\"Optionally normalize source punctuation to separate the two statements clearly.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected direct temporal supersession: prior employer replaced by later job change.\",\"Avoided presenting the older Goldman employment as current.\"]}}",
+  "run_id": "eval_20260507_071025",
+  "status": "ok"
+}

@@ -1,0 +1,35 @@
+{
+  "fixture_id": "ambiguous_sam_001__punctuation",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "No durable memory written. 'Sam' could refer to Sam from Goldman or Sam from Point72, so the statement about liking Bill Evans should not be committed until clarified.",
+    "citations": [
+      "Existing entities: Sam from Goldman",
+      "Existing entities: Sam from Point72",
+      "New message: Sam mentioned that he likes Bill Evans"
+    ],
+    "conflict_classification": "ambiguous_reference",
+    "decision": "defer_due_to_ambiguous_entity",
+    "entity_resolution": {
+      "action": "no_write",
+      "entity_id": null,
+      "reason": "The mention of 'Sam' is ambiguous because there are two existing entities: Sam from Goldman and Sam from Point72. The preference cannot be safely attached to either person without additional disambiguation."
+    },
+    "intent": "assess_memory_write",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected ambiguous entity reference for 'Sam'.",
+        "Skipped creating a memory card to avoid misattribution.",
+        "Awaiting clarification before any durable write."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask which Sam this refers to: Sam from Goldman or Sam from Point72.",
+      "Provide additional identifying context for Sam before saving the preference.",
+      "If known, restate with a unique identifier, e.g. 'Sam from Goldman likes Bill Evans.'"
+    ]
+  },
+  "run_id": "eval_20260507_072639"
+}

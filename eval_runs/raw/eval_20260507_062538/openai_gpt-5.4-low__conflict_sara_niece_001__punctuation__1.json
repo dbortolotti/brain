@@ -1,0 +1,37 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001__punctuation",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Do not overwrite or promote a new durable fact. 'Sara is my niece' could be consistent with the existing memory that Sara is Daniele's daughter and Nur's twin, but it requires knowing how the speaker is related to Daniele or Sara's other parent. Treat this as ambiguous and request clarification if needed.",
+    "citations": [
+      "Existing: 'Sara is Daniele's daughter and Nur's twin'",
+      "New: 'Sara is my niece'"
+    ],
+    "conflict_classification": "ambiguous_no_direct_conflict",
+    "decision": "needs_clarification",
+    "entity_resolution": {
+      "action": "match_existing",
+      "entity_id": "Sara",
+      "reason": "The new statement appears to refer to the same Sara, but it is underspecified because 'my niece' depends on the speaker's family relationship."
+    },
+    "intent": "classify_memory_conflict",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No direct contradiction detected.",
+        "New statement is relationship-relative and cannot be durably grounded without speaker-family context.",
+        "Existing high-confidence memory remains current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask: 'Is Sara your niece because you are Daniele's sibling, or through Sara's other parent?'",
+      "Ask whether the speaker is related to Daniele or to Sara's other parent.",
+      "Store only after clarification of the speaker-to-family relationship."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_memory_conflict\",\"decision\":\"needs_clarification\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"match_existing\",\"entity_id\":\"Sara\",\"reason\":\"The new statement appears to refer to the same Sara, but it is underspecified because 'my niece' depends on the speaker's family relationship.\"},\"conflict_classification\":\"ambiguous_no_direct_conflict\",\"answer\":\"Do not overwrite or promote a new durable fact. 'Sara is my niece' could be consistent with the existing memory that Sara is Daniele's daughter and Nur's twin, but it requires knowing how the speaker is related to Daniele or Sara's other parent. Treat this as ambiguous and request clarification if needed.\",\"citations\":[\"Existing: 'Sara is Daniele's daughter and Nur's twin'\",\"New: 'Sara is my niece'\"],\"repair_options\":[\"Ask: 'Is Sara your niece because you are Daniele's sibling, or through Sara's other parent?'\",\"Ask whether the speaker is related to Daniele or to Sara's other parent.\",\"Store only after clarification of the speaker-to-family relationship.\"],\"receipt\":{\"success\":true,\"details\":[\"No direct contradiction detected.\",\"New statement is relationship-relative and cannot be durably grounded without speaker-family context.\",\"Existing high-confidence memory remains current.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

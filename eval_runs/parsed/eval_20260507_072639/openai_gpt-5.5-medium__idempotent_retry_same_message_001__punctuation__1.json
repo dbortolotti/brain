@@ -1,0 +1,58 @@
+{
+  "fixture_id": "idempotent_retry_same_message_001__punctuation",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "Recorded one memory: Sam from Goldman mentioned that he likes Bill Evans.",
+    "citations": [
+      "Sam from Goldman mentioned that he likes Bill Evans"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_once",
+    "entity_resolution": {
+      "action": "create_or_match_ambiguous",
+      "entity_id": null,
+      "reason": "The input identifies the person only as 'Sam from Goldman'; do not infer a specific full name or that Goldman necessarily means Goldman Sachs. Treat repeated delivery of the same message as an idempotent retry and create only one memory."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_descriptor",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_entity",
+            "type": "person_or_artist"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman mentioned that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed a single memory card despite the same input being delivered three times.",
+        "Preserved ambiguity around Sam's identity and Goldman's exact meaning."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_072639"
+}

@@ -1,0 +1,82 @@
+{
+  "error": null,
+  "fixture_id": "conflict_correction_like__punctuation",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Treat this as a direct correction: replace the current preference fact with 'Sam from Goldman likes early Coltrane' and mark the prior 'likes Bill Evans' fact as superseded/not current.",
+    "citations": [
+      "Existing current fact: Sam from Goldman likes Bill Evans",
+      "Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans"
+    ],
+    "conflict_classification": "direct_correction_of_current_fact",
+    "decision": "apply_correction",
+    "entity_resolution": {
+      "action": "reuse_existing_entity",
+      "entity_id": null,
+      "reason": "The correction refers to the same person already identified as Sam from Goldman and updates the preference value."
+    },
+    "intent": "correction",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "preferred_artist",
+            "type": "preference_target"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "rejected_previous_artist",
+            "type": "preference_target"
+          }
+        ],
+        "kind": "replacement_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "does_not_like",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane, not Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected explicit correction cue: 'actually' and negation 'not Bill Evans'.",
+        "New statement directly conflicts with existing current preference fact.",
+        "Recommended durable memory action is replacement, not coexistence."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Supersede the existing fact 'Sam from Goldman likes Bill Evans.'",
+      "Store the corrected current fact 'Sam from Goldman likes early Coltrane.'",
+      "Optionally retain the old fact only as historical/superseded provenance, not as current memory."
+    ]
+  },
+  "raw_text": "{\"intent\":\"correction\",\"decision\":\"apply_correction\",\"memory_cards\":[{\"kind\":\"replacement_fact\",\"statement\":\"Sam from Goldman likes early Coltrane, not Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"early Coltrane\",\"type\":\"preference_target\",\"role\":\"preferred_artist\"},{\"name\":\"Bill Evans\",\"type\":\"preference_target\",\"role\":\"rejected_previous_artist\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"early Coltrane\"},{\"subject\":\"Sam\",\"predicate\":\"does_not_like\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"reuse_existing_entity\",\"entity_id\":null,\"reason\":\"The correction refers to the same person already identified as Sam from Goldman and updates the preference value.\"},\"conflict_classification\":\"direct_correction_of_current_fact\",\"answer\":\"Treat this as a direct correction: replace the current preference fact with 'Sam from Goldman likes early Coltrane' and mark the prior 'likes Bill Evans' fact as superseded/not current.\",\"citations\":[\"Existing current fact: Sam from Goldman likes Bill Evans\",\"Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans\"],\"repair_options\":[\"Supersede the existing fact 'Sam from Goldman likes Bill Evans.'\",\"Store the corrected current fact 'Sam from Goldman likes early Coltrane.'\",\"Optionally retain the old fact only as historical/superseded provenance, not as current memory.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected explicit correction cue: 'actually' and negation 'not Bill Evans'.\",\"New statement directly conflicts with existing current preference fact.\",\"Recommended durable memory action is replacement, not coexistence.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

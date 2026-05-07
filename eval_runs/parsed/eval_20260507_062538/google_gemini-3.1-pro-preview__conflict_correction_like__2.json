@@ -1,0 +1,56 @@
+{
+  "fixture_id": "conflict_correction_like",
+  "model": "google:gemini-3.1-pro-preview",
+  "payload": {
+    "answer": "Got it. I've updated Sam's preference to early Coltrane instead of Bill Evans.",
+    "citations": [],
+    "conflict_classification": "correction",
+    "decision": "update_memory",
+    "entity_resolution": {
+      "action": "update",
+      "entity_id": "Sam",
+      "reason": "Explicit correction of previously recorded preference."
+    },
+    "intent": "correction",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Removed preference for Bill Evans.",
+        "Added preference for early Coltrane."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_062538"
+}

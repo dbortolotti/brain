@@ -1,0 +1,70 @@
+{
+  "error": null,
+  "fixture_id": "recall_profile_sara_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Sara is one of Daniele's twin daughters. Her twin sister is Nur.",
+    "citations": [
+      "Fact - Nur and Sara are Daniele's twin daughters"
+    ],
+    "conflict_classification": "none",
+    "decision": "answer_from_memory",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": null,
+      "reason": "The query asks about Sara, who is explicitly named in the provided fact as one of Daniele's twin daughters."
+    },
+    "intent": "recall",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "sibling",
+            "type": "person"
+          }
+        ],
+        "kind": "profile",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "child_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "twin_sibling_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Daniele",
+            "predicate": "child_of",
+            "subject": "Nur"
+          }
+        ],
+        "statement": "Sara is one of Daniele's twin daughters; her twin sister is Nur."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Returned current known information about Sara from the provided fact."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"recall\",\n  \"decision\": \"answer_from_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"profile\",\n      \"statement\": \"Sara is one of Daniele's twin daughters; her twin sister is Nur.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"parent\"\n        },\n        {\n          \"name\": \"Nur\",\n          \"type\": \"person\",\n          \"role\": \"sibling\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"child_of\",\n          \"object\": \"Daniele\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"twin_sibling_of\",\n          \"object\": \"Nur\"\n        },\n        {\n          \"subject\": \"Nur\",\n          \"predicate\": \"child_of\",\n          \"object\": \"Daniele\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolved\",\n    \"entity_id\": null,\n    \"reason\": \"The query asks about Sara, who is explicitly named in the provided fact as one of Daniele's twin daughters.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Sara is one of Daniele's twin daughters. Her twin sister is Nur.\",\n  \"citations\": [\n    \"Fact - Nur and Sara are Daniele's twin daughters\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Returned current known information about Sara from the provided fact.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

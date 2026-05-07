@@ -1,0 +1,65 @@
+{
+  "error": null,
+  "fixture_id": "idempotent_retry_same_message_001__context",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "Recorded once: Sam from Goldman mentioned that he likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit_once",
+    "entity_resolution": {
+      "action": "deduplicate_retry_create_or_update_single_record",
+      "entity_id": null,
+      "reason": "The same message was delivered three times, so the memory should be recorded only once. 'Sam from Goldman' is insufficient to uniquely resolve an existing person without additional identifiers."
+    },
+    "intent": "store_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_context",
+            "type": "organization_or_affiliation"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "mentioned_liking",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman mentioned that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected repeated identical input and treated it as an idempotent retry.",
+        "Committed a single durable memory card.",
+        "Preserved ambiguity around Sam's identity and Goldman affiliation."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"store_memory\",\"decision\":\"commit_once\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman mentioned that he likes Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization_or_affiliation\",\"role\":\"affiliation_context\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked_artist\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"mentioned_liking\",\"object\":\"Bill Evans\"},{\"subject\":\"Sam\",\"predicate\":\"associated_with\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"deduplicate_retry_create_or_update_single_record\",\"entity_id\":null,\"reason\":\"The same message was delivered three times, so the memory should be recorded only once. 'Sam from Goldman' is insufficient to uniquely resolve an existing person without additional identifiers.\"},\"conflict_classification\":\"none\",\"answer\":\"Recorded once: Sam from Goldman mentioned that he likes Bill Evans.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Detected repeated identical input and treated it as an idempotent retry.\",\"Committed a single durable memory card.\",\"Preserved ambiguity around Sam's identity and Goldman affiliation.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

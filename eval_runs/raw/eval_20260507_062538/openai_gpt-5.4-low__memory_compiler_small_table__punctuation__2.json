@@ -1,0 +1,85 @@
+{
+  "error": null,
+  "fixture_id": "memory_compiler_small_table__punctuation",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Captured two preference memories from the table, preserving the table's ambiguity by using generic preference wording.",
+    "citations": [
+      "Row: Sam | Bill Evans",
+      "Row: Daniele | Knowledge graphs"
+    ],
+    "conflict_classification": "none",
+    "decision": "store_with_caution",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Names and topics are taken as provided, but there is not enough context to uniquely resolve 'Sam' or 'Bill Evans' to specific existing entities."
+    },
+    "intent": "compile_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object_of_preference",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "has_preference_for",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam has a stated preference for Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Knowledge graphs",
+            "role": "object_of_preference",
+            "type": "topic"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Knowledge graphs",
+            "predicate": "has_preference_for",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Daniele has a stated preference for knowledge graphs."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed 2 table rows.",
+        "Stored 2 preference memory cards with cautious phrasing.",
+        "Deferred hard entity resolution due to limited context."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add context for the preference type (for example, favorite musician, topic of interest, or reading preference).",
+      "Provide identifiers or additional details to resolve 'Sam' and 'Bill Evans' to specific entities if needed."
+    ]
+  },
+  "raw_text": "{\"intent\":\"compile_memory\",\"decision\":\"store_with_caution\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam has a stated preference for Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"object_of_preference\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"has_preference_for\",\"object\":\"Bill Evans\"}]},{\"kind\":\"preference\",\"statement\":\"Daniele has a stated preference for knowledge graphs.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Daniele\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Knowledge graphs\",\"type\":\"topic\",\"role\":\"object_of_preference\"}],\"relationships\":[{\"subject\":\"Daniele\",\"predicate\":\"has_preference_for\",\"object\":\"Knowledge graphs\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"Names and topics are taken as provided, but there is not enough context to uniquely resolve 'Sam' or 'Bill Evans' to specific existing entities.\"},\"conflict_classification\":\"none\",\"answer\":\"Captured two preference memories from the table, preserving the table's ambiguity by using generic preference wording.\",\"citations\":[\"Row: Sam | Bill Evans\",\"Row: Daniele | Knowledge graphs\"],\"repair_options\":[\"Add context for the preference type (for example, favorite musician, topic of interest, or reading preference).\",\"Provide identifiers or additional details to resolve 'Sam' and 'Bill Evans' to specific entities if needed.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed 2 table rows.\",\"Stored 2 preference memory cards with cautious phrasing.\",\"Deferred hard entity resolution due to limited context.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

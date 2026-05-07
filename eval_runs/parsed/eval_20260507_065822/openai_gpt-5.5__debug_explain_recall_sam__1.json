@@ -1,0 +1,82 @@
+{
+  "fixture_id": "debug_explain_recall_sam",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Recall returned mem_new because it is the active memory for Sam from Goldman. mem_old was filtered because it is superseded by mem_new, so it should not be shown as a current fact.",
+    "citations": [
+      "mem_new"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "returned mem_new and filtered mem_old",
+    "entity_resolution": {
+      "action": "matched_existing_entity",
+      "entity_id": null,
+      "reason": "The query refers to Sam in the Goldman context; recall selected the active matching memory and excluded the superseded version."
+    },
+    "intent": "debug_explain_recall",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "queried entity",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation/context",
+            "type": "organization"
+          }
+        ],
+        "kind": "recall_result",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "from",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "mem_new was returned for Sam from Goldman because it is the current, non-superseded memory matching the recall query."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "queried entity",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation/context",
+            "type": "organization"
+          }
+        ],
+        "kind": "filtered_result",
+        "relationships": [
+          {
+            "object": "mem_new",
+            "predicate": "superseded_by",
+            "subject": "mem_old"
+          }
+        ],
+        "statement": "mem_old was filtered out because it is marked as superseded by mem_new and should not be presented as current."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Explained why mem_new was returned.",
+        "Explained why mem_old was filtered as superseded.",
+        "Did not present the superseded memory as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If mem_old was incorrectly marked superseded, remove or revise the supersession link.",
+      "If mem_new is inaccurate, correct mem_new rather than reactivating mem_old as current.",
+      "If both memories describe different Sams or different Goldman contexts, split or disambiguate the entities."
+    ]
+  },
+  "run_id": "eval_20260507_065822"
+}

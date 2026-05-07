@@ -1,0 +1,73 @@
+{
+  "error": null,
+  "fixture_id": "idempotent_retry_same_message_001",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "The three deliveries are identical retries. At most one qualified memory should be retained, with ambiguity and hearsay preserved; no duplicate cards should be created.",
+    "citations": [
+      "Input received three times: 'Sam from Goldman mentioned that he likes Bill Evans.'"
+    ],
+    "conflict_classification": "duplicate_input",
+    "decision": "store_once_with_qualification",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Do not resolve or merge on bare names alone; both 'Sam' and 'Bill Evans' are insufficiently specific, and 'Goldman' may be shorthand for an organization."
+    },
+    "intent": "validate_idempotent_retry_and_memory_commit",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "reported speaker / preference holder",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation cue",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked entity",
+            "type": "ambiguous_person_or_artist"
+          }
+        ],
+        "kind": "attributed_preference_report",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "reportedly_likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "A person identified only as Sam, associated with Goldman, reportedly said that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected idempotent duplicate input across three identical messages.",
+        "Deduplicated to a single candidate memory card.",
+        "Stored only an attributed, low-confidence report rather than an asserted fact.",
+        "Deferred entity resolution due to ambiguity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask which Sam is meant.",
+      "Clarify whether 'Goldman' refers to Goldman Sachs or another entity.",
+      "Clarify which Bill Evans is meant.",
+      "If durable storage is desired, record source/context and timestamp."
+    ]
+  },
+  "raw_text": "{\"intent\":\"validate_idempotent_retry_and_memory_commit\",\"decision\":\"store_once_with_qualification\",\"memory_cards\":[{\"kind\":\"attributed_preference_report\",\"statement\":\"A person identified only as Sam, associated with Goldman, reportedly said that he likes Bill Evans.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"reported speaker / preference holder\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation cue\"},{\"name\":\"Bill Evans\",\"type\":\"ambiguous_person_or_artist\",\"role\":\"liked entity\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"associated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"reportedly_likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"Do not resolve or merge on bare names alone; both 'Sam' and 'Bill Evans' are insufficiently specific, and 'Goldman' may be shorthand for an organization.\"},\"conflict_classification\":\"duplicate_input\",\"answer\":\"The three deliveries are identical retries. At most one qualified memory should be retained, with ambiguity and hearsay preserved; no duplicate cards should be created.\",\"citations\":[\"Input received three times: 'Sam from Goldman mentioned that he likes Bill Evans.'\"],\"repair_options\":[\"Ask which Sam is meant.\",\"Clarify whether 'Goldman' refers to Goldman Sachs or another entity.\",\"Clarify which Bill Evans is meant.\",\"If durable storage is desired, record source/context and timestamp.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected idempotent duplicate input across three identical messages.\",\"Deduplicated to a single candidate memory card.\",\"Stored only an attributed, low-confidence report rather than an asserted fact.\",\"Deferred entity resolution due to ambiguity.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

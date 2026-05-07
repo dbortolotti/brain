@@ -1,0 +1,66 @@
+{
+  "error": null,
+  "fixture_id": "idempotent_retry_same_message_001__punctuation",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "Stored once: Sam from Goldman mentioned that he likes Bill Evans.",
+    "citations": [
+      "Sam from Goldman mentioned that he likes Bill Evans"
+    ],
+    "conflict_classification": "none",
+    "decision": "store_once_idempotent",
+    "entity_resolution": {
+      "action": "create_or_merge_if_existing",
+      "entity_id": null,
+      "reason": "The input identifies a person as 'Sam from Goldman' but does not provide enough information to resolve a unique existing entity. The repeated delivery should not create duplicate memories."
+    },
+    "intent": "remember_fact",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker/preference_holder",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_artist_or_person",
+            "type": "person"
+          }
+        ],
+        "kind": "person_preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "mentioned_liking",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman mentioned that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created a single memory card despite the same input being delivered three times.",
+        "Preserved the statement as reported rather than asserting independently that Sam likes Bill Evans."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"remember_fact\",\"decision\":\"store_once_idempotent\",\"memory_cards\":[{\"kind\":\"person_preference\",\"statement\":\"Sam from Goldman mentioned that he likes Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"speaker/preference_holder\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation_context\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked_artist_or_person\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"mentioned_liking\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"create_or_merge_if_existing\",\"entity_id\":null,\"reason\":\"The input identifies a person as 'Sam from Goldman' but does not provide enough information to resolve a unique existing entity. The repeated delivery should not create duplicate memories.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored once: Sam from Goldman mentioned that he likes Bill Evans.\",\"citations\":[\"Sam from Goldman mentioned that he likes Bill Evans\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Created a single memory card despite the same input being delivered three times.\",\"Preserved the statement as reported rather than asserting independently that Sam likes Bill Evans.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

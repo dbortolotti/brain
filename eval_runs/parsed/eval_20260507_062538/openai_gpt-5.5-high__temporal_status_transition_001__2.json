@@ -1,0 +1,60 @@
+{
+  "fixture_id": "temporal_status_transition_001",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "Committed the update that the Brain Slack agent MVP is now implemented. The prior planned/open state should be treated as superseded for the MVP milestone, without inferring that every part of the full Slack agent is complete.",
+    "citations": [
+      "Existing project state: The Brain Slack agent is planned, status=open.",
+      "New: The Brain Slack agent MVP is now implemented."
+    ],
+    "conflict_classification": "temporal_status_transition",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "merge_with_existing_project",
+      "entity_id": null,
+      "reason": "The new update refers to the same Brain Slack agent project, with the MVP as a milestone or scoped deliverable rather than a separate unrelated entity."
+    },
+    "intent": "update_project_status",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain Slack agent",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "Brain Slack agent MVP",
+            "role": "implemented_milestone",
+            "type": "milestone"
+          }
+        ],
+        "kind": "project_status",
+        "relationships": [
+          {
+            "object": "Brain Slack agent MVP",
+            "predicate": "has_milestone",
+            "subject": "Brain Slack agent"
+          },
+          {
+            "object": "implemented",
+            "predicate": "status",
+            "subject": "Brain Slack agent MVP"
+          }
+        ],
+        "statement": "The Brain Slack agent MVP is now implemented."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recorded current MVP implementation status.",
+        "Marked the prior planned/open status as superseded for the MVP milestone.",
+        "Preserved scope: MVP implemented does not necessarily mean the full Slack agent is complete."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_062538"
+}

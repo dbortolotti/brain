@@ -1,0 +1,68 @@
+{
+  "fixture_id": "italian_memory_note_001__punctuation",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Ho salvato che Sam di Goldman preferisce Bill Evans.",
+    "citations": [
+      "Ricordami che Sam di Goldman preferisce Bill Evans"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_with_ambiguity",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "'Sam' and 'Goldman' are not uniquely identifiable from the note, so the memory is stored without resolving to a specific known entity."
+    },
+    "intent": "store_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam di Goldman preferisce Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured a preference memory.",
+        "Preserved ambiguity around unresolved entities.",
+        "Did not infer identities beyond the provided text."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Specifica chi \u00e8 Sam per collegare il ricordo a una persona precisa.",
+      "Specifica se 'Goldman' si riferisce a Goldman Sachs o a un'altra entit\u00e0.",
+      "Indica se Bill Evans \u00e8 la persona/musicista intesa."
+    ]
+  },
+  "run_id": "eval_20260507_072639"
+}

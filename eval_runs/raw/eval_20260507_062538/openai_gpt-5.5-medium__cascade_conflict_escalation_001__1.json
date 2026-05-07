@@ -1,0 +1,37 @@
+{
+  "error": null,
+  "fixture_id": "cascade_conflict_escalation_001",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "I found a conflict: existing memory says Sara is your daughter, but the new input says Sara is your niece. I will not update the memory until clarified.",
+    "citations": [
+      "Existing: Sara is my daughter.",
+      "Input: Sara is my niece."
+    ],
+    "conflict_classification": "direct_relationship_conflict_with_entity_ambiguity",
+    "decision": "do_not_commit_escalate_for_clarification",
+    "entity_resolution": {
+      "action": "needs_clarification",
+      "entity_id": null,
+      "reason": "The input refers to Sara, which matches an existing entity named Sara, but the stated relationship conflicts with the existing relationship and could also indicate a different person with the same name."
+    },
+    "intent": "assert_relationship",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected conflicting relationship claims for Sara.",
+        "No durable memory was committed."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Confirm the existing memory is correct: Sara is your daughter.",
+      "Replace the existing memory: Sara is your niece, not your daughter.",
+      "Keep both by clarifying they refer to different people named Sara.",
+      "Record a nuanced relationship if both are true in your family context."
+    ]
+  },
+  "raw_text": "{\"intent\":\"assert_relationship\",\"decision\":\"do_not_commit_escalate_for_clarification\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"needs_clarification\",\"entity_id\":null,\"reason\":\"The input refers to Sara, which matches an existing entity named Sara, but the stated relationship conflicts with the existing relationship and could also indicate a different person with the same name.\"},\"conflict_classification\":\"direct_relationship_conflict_with_entity_ambiguity\",\"answer\":\"I found a conflict: existing memory says Sara is your daughter, but the new input says Sara is your niece. I will not update the memory until clarified.\",\"citations\":[\"Existing: Sara is my daughter.\",\"Input: Sara is my niece.\"],\"repair_options\":[\"Confirm the existing memory is correct: Sara is your daughter.\",\"Replace the existing memory: Sara is your niece, not your daughter.\",\"Keep both by clarifying they refer to different people named Sara.\",\"Record a nuanced relationship if both are true in your family context.\"],\"receipt\":{\"success\":false,\"details\":[\"Detected conflicting relationship claims for Sara.\",\"No durable memory was committed.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

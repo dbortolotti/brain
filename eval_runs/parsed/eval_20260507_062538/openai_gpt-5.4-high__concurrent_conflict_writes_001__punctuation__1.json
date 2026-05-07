@@ -1,0 +1,35 @@
+{
+  "fixture_id": "concurrent_conflict_writes_001__punctuation",
+  "model": "openai:gpt-5.4-high",
+  "payload": {
+    "answer": "The input contains two concurrent employment-related claims for Sam: a current-state claim ('Sam works at Goldman') and a likely employment-start event ('Sam joined Point72'). These could describe a job change, concurrent roles, or conflicting reports. Do not commit durable current employment memory until identity and timing are clarified.",
+    "citations": [
+      "Sam works at Goldman",
+      "Sam joined Point72"
+    ],
+    "conflict_classification": "possible_employment_supersession_conflict",
+    "decision": "defer_commit",
+    "entity_resolution": {
+      "action": "unresolved",
+      "entity_id": null,
+      "reason": "The person 'Sam' is not uniquely identifiable from the input alone, and the employment claims do not include timestamps or effective dates needed to determine whether one supersedes the other."
+    },
+    "intent": "classify_concurrent_memory_write_conflict",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Parsed the punctuation-light input into two separate clauses.",
+        "Detected a potential conflict involving Sam's current employer.",
+        "Withheld durable memory creation because identity and temporal ordering remain unresolved."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Identify which Sam this refers to with a stable identifier or fuller name.",
+      "Add dates or effective times for the Goldman and Point72 statements.",
+      "Clarify whether joining Point72 replaced the Goldman role or was concurrent.",
+      "If Point72 supersedes Goldman, store Goldman only as historical employment, not as current."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

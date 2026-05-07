@@ -1,0 +1,96 @@
+{
+  "error": null,
+  "fixture_id": "supersession_sam_job_001__punctuation",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "The statement 'Sam works at Goldman' is superseded by the later statement 'Sam left Goldman and joined Point72.' Treat Goldman employment as historical, not current.",
+    "citations": [
+      "Existing memory: 'Sam works at Goldman'",
+      "Existing memory: 'Sam left Goldman and joined Point72'"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "supersession_detected",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Insufficient information to resolve Sam to a unique entity."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "event",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "historical_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "previously_worked_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam previously worked at Goldman."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected punctuation-separated clauses describing an older state and a newer update.",
+        "Classified the newer clause as superseding the older current-employment claim.",
+        "Avoided preserving the superseded Goldman employment as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace 'Sam works at Goldman' with 'Sam previously worked at Goldman.'",
+      "Keep 'Sam left Goldman and joined Point72.' as the current employment update",
+      "Store Goldman employment only as historical context, not as a current fact"
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict\",\"decision\":\"supersession_detected\",\"memory_cards\":[{\"kind\":\"event\",\"statement\":\"Sam left Goldman and joined Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"employee\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former_employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"current_employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"left\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]},{\"kind\":\"historical_fact\",\"statement\":\"Sam previously worked at Goldman.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"employee\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former_employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"previously_worked_at\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"Insufficient information to resolve Sam to a unique entity.\"},\"conflict_classification\":\"supersession\",\"answer\":\"The statement 'Sam works at Goldman' is superseded by the later statement 'Sam left Goldman and joined Point72.' Treat Goldman employment as historical, not current.\",\"citations\":[\"Existing memory: 'Sam works at Goldman'\",\"Existing memory: 'Sam left Goldman and joined Point72'\"],\"repair_options\":[\"Replace 'Sam works at Goldman' with 'Sam previously worked at Goldman.'\",\"Keep 'Sam left Goldman and joined Point72.' as the current employment update\",\"Store Goldman employment only as historical context, not as a current fact\"],\"receipt\":{\"success\":true,\"details\":[\"Detected punctuation-separated clauses describing an older state and a newer update.\",\"Classified the newer clause as superseding the older current-employment claim.\",\"Avoided preserving the superseded Goldman employment as current.\"]}}",
+  "run_id": "eval_20260507_065822",
+  "status": "ok"
+}

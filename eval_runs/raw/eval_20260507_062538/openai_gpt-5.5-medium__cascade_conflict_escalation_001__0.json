@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "cascade_conflict_escalation_001",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "I found a conflict: existing memory says Sara is your daughter, while the new input says Sara is your niece. Please clarify whether this is the same Sara, a different Sara, or whether the earlier memory should be corrected.",
+    "citations": [
+      "Existing: Sara is my daughter.",
+      "Input: Sara is my niece."
+    ],
+    "conflict_classification": "direct_relationship_conflict_or_entity_ambiguity",
+    "decision": "defer_commit_pending_clarification",
+    "entity_resolution": {
+      "action": "do_not_merge_or_overwrite_without_clarification",
+      "entity_id": null,
+      "reason": "The new statement uses the same name as an existing memory but asserts an incompatible family relationship; it may refer to the same Sara or a different person named Sara."
+    },
+    "intent": "store_or_update_relationship_memory",
+    "memory_cards": [
+      {
+        "confidence": "unverified",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "potential_family_member",
+            "type": "person"
+          },
+          {
+            "name": "user",
+            "role": "self",
+            "type": "person"
+          }
+        ],
+        "kind": "proposed_conflicting_memory",
+        "relationships": [
+          {
+            "object": "user",
+            "predicate": "is_niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No durable memory was committed.",
+        "Conflict requires user clarification before updating relationship memory."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Confirm the same Sara is your daughter and reject the niece statement.",
+      "Correct the existing memory so Sara is your niece instead of your daughter.",
+      "Create a separate Sara entity for a different person who is your niece.",
+      "Mark both statements as uncertain until clarified."
+    ]
+  },
+  "raw_text": "{\"intent\":\"store_or_update_relationship_memory\",\"decision\":\"defer_commit_pending_clarification\",\"memory_cards\":[{\"kind\":\"proposed_conflicting_memory\",\"statement\":\"Sara is my niece.\",\"confidence\":\"unverified\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"potential_family_member\"},{\"name\":\"user\",\"type\":\"person\",\"role\":\"self\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"is_niece_of\",\"object\":\"user\"}]}],\"entity_resolution\":{\"action\":\"do_not_merge_or_overwrite_without_clarification\",\"entity_id\":null,\"reason\":\"The new statement uses the same name as an existing memory but asserts an incompatible family relationship; it may refer to the same Sara or a different person named Sara.\"},\"conflict_classification\":\"direct_relationship_conflict_or_entity_ambiguity\",\"answer\":\"I found a conflict: existing memory says Sara is your daughter, while the new input says Sara is your niece. Please clarify whether this is the same Sara, a different Sara, or whether the earlier memory should be corrected.\",\"citations\":[\"Existing: Sara is my daughter.\",\"Input: Sara is my niece.\"],\"repair_options\":[\"Confirm the same Sara is your daughter and reject the niece statement.\",\"Correct the existing memory so Sara is your niece instead of your daughter.\",\"Create a separate Sara entity for a different person who is your niece.\",\"Mark both statements as uncertain until clarified.\"],\"receipt\":{\"success\":false,\"details\":[\"No durable memory was committed.\",\"Conflict requires user clarification before updating relationship memory.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

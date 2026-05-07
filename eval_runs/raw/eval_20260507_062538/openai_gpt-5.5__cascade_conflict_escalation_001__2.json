@@ -1,0 +1,37 @@
+{
+  "error": null,
+  "fixture_id": "cascade_conflict_escalation_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "I found a conflict: existing memory says Sara is your daughter, while the new input says Sara is your niece. I won\u2019t update this as a durable memory without clarification.",
+    "citations": [
+      "Existing: Sara is my daughter.",
+      "Input: Sara is my niece."
+    ],
+    "conflict_classification": "direct_conflict",
+    "decision": "escalate_for_clarification",
+    "entity_resolution": {
+      "action": "same_entity_assumed_pending_clarification",
+      "entity_id": null,
+      "reason": "Both statements refer to Sara in a family relationship to the user, but 'daughter' and 'niece' are conflicting relationship types unless there are unusual family circumstances or multiple Saras."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected direct conflict between existing and new family relationship statements.",
+        "No durable memory committed."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Confirm that Sara is your daughter and reject the niece statement.",
+      "Confirm that Sara is your niece and replace the daughter statement.",
+      "Clarify that there are two different people named Sara.",
+      "Clarify any special family circumstance where both relationships are true."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict\",\"decision\":\"escalate_for_clarification\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"same_entity_assumed_pending_clarification\",\"entity_id\":null,\"reason\":\"Both statements refer to Sara in a family relationship to the user, but 'daughter' and 'niece' are conflicting relationship types unless there are unusual family circumstances or multiple Saras.\"},\"conflict_classification\":\"direct_conflict\",\"answer\":\"I found a conflict: existing memory says Sara is your daughter, while the new input says Sara is your niece. I won\u2019t update this as a durable memory without clarification.\",\"citations\":[\"Existing: Sara is my daughter.\",\"Input: Sara is my niece.\"],\"repair_options\":[\"Confirm that Sara is your daughter and reject the niece statement.\",\"Confirm that Sara is your niece and replace the daughter statement.\",\"Clarify that there are two different people named Sara.\",\"Clarify any special family circumstance where both relationships are true.\"],\"receipt\":{\"success\":false,\"details\":[\"Detected direct conflict between existing and new family relationship statements.\",\"No durable memory committed.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

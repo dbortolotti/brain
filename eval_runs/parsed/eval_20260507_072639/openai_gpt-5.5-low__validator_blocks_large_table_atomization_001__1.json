@@ -1,0 +1,32 @@
+{
+  "fixture_id": "validator_blocks_large_table_atomization_001",
+  "model": "openai:gpt-5.5-low",
+  "payload": {
+    "answer": "Rejected. Do not commit 500 one-per-row memory cards from a CSV as durable memory. This is likely bulk data ingestion rather than personal memory, and it risks storing excessive, low-salience, or non-durable facts. Preserve the CSV externally or summarize only clearly durable, user-relevant preferences, commitments, identities, or long-term facts if explicitly supported.",
+    "citations": [],
+    "conflict_classification": "not_applicable",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The proposal attempts to create 500 separate memory cards from CSV rows without evidence that each row represents durable, user-relevant personal memory. Large tabular data should not be atomized into many memory cards by default."
+    },
+    "intent": "evaluate_memory_write_proposal",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Blocked bulk atomization of a large CSV into 500 memory cards.",
+        "No durable memory cards were accepted.",
+        "Ambiguity preserved: the CSV content may contain useful information, but it was not provided or justified as durable memory."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask the user what purpose the CSV serves and whether any rows contain durable personal facts worth remembering.",
+      "Store a concise summary of the dataset only if the user explicitly wants it remembered and the summary is durable.",
+      "Extract only high-salience recurring preferences, long-term commitments, or stable personal facts, not every row.",
+      "If the table is reference data, suggest keeping it in a file, database, or document rather than memory cards."
+    ]
+  },
+  "run_id": "eval_20260507_072639"
+}

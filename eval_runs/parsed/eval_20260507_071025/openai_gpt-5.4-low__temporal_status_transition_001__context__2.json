@@ -1,0 +1,64 @@
+{
+  "fixture_id": "temporal_status_transition_001__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Record a temporal status transition: the previously planned/open Brain Slack agent effort now has an implemented MVP. Store the implemented MVP as the current state for that scope, and treat the older planned/open state as superseded context rather than current fact.",
+    "citations": [
+      "Existing project state: The Brain Slack agent is planned, status=open.",
+      "New: The Brain Slack agent MVP is now implemented."
+    ],
+    "conflict_classification": "temporal_status_transition",
+    "decision": "accept_with_status_transition",
+    "entity_resolution": {
+      "action": "link_related",
+      "entity_id": null,
+      "reason": "The new statement appears to refer to the MVP of the existing Brain Slack agent effort, indicating a later implementation state for a scoped milestone rather than a clean contradiction. Do not keep the older planned/open status as current for the same implemented scope."
+    },
+    "intent": "classify_and_update_project_state",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "The Brain Slack agent",
+            "role": "parent_project",
+            "type": "project"
+          },
+          {
+            "name": "The Brain Slack agent MVP",
+            "role": "implemented_scope",
+            "type": "milestone"
+          }
+        ],
+        "kind": "project_update",
+        "relationships": [
+          {
+            "object": "implemented",
+            "predicate": "status",
+            "subject": "The Brain Slack agent MVP"
+          },
+          {
+            "object": "The Brain Slack agent",
+            "predicate": "part_of",
+            "subject": "The Brain Slack agent MVP"
+          }
+        ],
+        "statement": "The Brain Slack agent MVP is now implemented."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected same overall project family with a later implementation update.",
+        "Classified as a temporal progression, not a hard contradiction.",
+        "Avoided preserving the older planned/open status as current for the implemented MVP scope."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Update the Brain Slack agent record to reflect that its MVP milestone is implemented.",
+      "Retain the older planned/open state only as historical context with a timestamp/order marker.",
+      "If the system requires one current status per project, set the project to a later-phase status such as in_progress_or_partially_complete rather than leaving it as planned/open."
+    ]
+  },
+  "run_id": "eval_20260507_071025"
+}

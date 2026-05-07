@@ -125,6 +125,23 @@ def test_model_matrix_selects_gpt_5_5_xhigh_inventory_variant() -> None:
     assert candidate.reasoning_effort == "xhigh"
 
 
+def test_model_matrix_selects_gpt_5_4_and_gemini_3_1_pro_thinking_variants() -> None:
+    registry = load_model_registry(REGISTRY_PATH)
+
+    candidates = select_model_candidates(
+        registry,
+        model_refs=["openai:gpt-5.4-high", "google:gemini-3.1-pro-preview-medium"],
+        roles={"eval_judge"},
+        scope="core",
+        include_judge=True,
+    )
+
+    assert candidates[0].api_model == "gpt-5.4"
+    assert candidates[0].reasoning_effort == "high"
+    assert candidates[1].api_model == "gemini-3.1-pro-preview"
+    assert candidates[1].reasoning_effort == "medium"
+
+
 def test_model_test_initial_model_set_runs_through_config(tmp_path) -> None:
     output = tmp_path / "eval.jsonl"
     config = ModelEvalRunConfig(
@@ -429,6 +446,47 @@ def test_live_provider_client_uses_reasoning_effort_override() -> None:
     assert http_client.last_json is not None
     assert http_client.last_json["model"] == "gpt-5.5"
     assert http_client.last_json["reasoning"] == {"effort": "xhigh"}
+
+
+def test_live_provider_client_maps_google_reasoning_effort_to_thinking_level() -> None:
+    class RecordingClient:
+        def __init__(self) -> None:
+            self.last_json: dict[str, Any] | None = None
+
+        def post(self, _url: str, *, headers: dict[str, str], json: dict[str, Any]) -> Any:
+            self.last_json = json
+
+            class Response:
+                status_code = 200
+
+                @staticmethod
+                def json() -> dict[str, Any]:
+                    return {
+                        "candidates": [
+                            {
+                                "content": {
+                                    "parts": [{"text": "{}"}],
+                                }
+                            }
+                        ]
+                    }
+
+            return Response()
+
+    http_client = RecordingClient()
+    client = LiveProviderClient(Settings(gemini_api_key="test-key"), http_client=http_client)
+    candidate = select_model_candidates(
+        load_model_registry(REGISTRY_PATH),
+        model_refs=["google:gemini-3.1-pro-preview-medium"],
+        roles={"eval_judge"},
+        scope="core",
+        include_judge=True,
+    )[0]
+
+    client.complete_json(candidate, prompt="test", schema={})
+
+    assert http_client.last_json is not None
+    assert http_client.last_json["generationConfig"]["thinkingConfig"] == {"thinkingLevel": "medium"}
 
 
 def test_model_eval_runner_writes_jsonl_and_markdown(tmp_path) -> None:

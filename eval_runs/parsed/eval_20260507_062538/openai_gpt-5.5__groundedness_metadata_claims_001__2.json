@@ -1,0 +1,59 @@
+{
+  "fixture_id": "groundedness_metadata_claims_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "The claim is grounded: the evidence contains both an entity row and an alias row supporting a Person identity with medium confidence and aliases \u201cSam\u201d and \u201cSam from Goldman.\u201d",
+    "citations": [
+      "entity row",
+      "alias row"
+    ],
+    "conflict_classification": "none",
+    "decision": "supported",
+    "entity_resolution": {
+      "action": "link_or_create",
+      "entity_id": null,
+      "reason": "Evidence contains an entity row and alias row supporting a Person identity with aliases, but no durable entity ID was provided."
+    },
+    "intent": "evaluate_groundedness",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "alias",
+            "type": "Person"
+          },
+          {
+            "name": "Sam from Goldman",
+            "role": "alias",
+            "type": "Person"
+          }
+        ],
+        "kind": "identity",
+        "relationships": [
+          {
+            "object": "Person entity",
+            "predicate": "alias_of",
+            "subject": "Sam"
+          },
+          {
+            "object": "Person entity",
+            "predicate": "alias_of",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Identity - Person; confidence medium. Aliases: Sam, Sam from Goldman."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Groundedness evaluation completed.",
+        "No conflict or supersession indicated."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_062538"
+}

@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "fixture_id": "typos_shorthand_person_interaction_001",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "Captured as a tentative memory: Sam from Goldman apparently likes Bill Evans.",
+    "citations": [
+      "sam frm goldmn likes bill evns apparently"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_tentative",
+    "entity_resolution": {
+      "action": "create_tentative",
+      "entity_id": null,
+      "reason": "Input contains shorthand/typos and lacks enough identifiers to confidently match Sam, Goldman, or Bill Evans to existing entities."
+    },
+    "intent": "capture_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_person",
+            "type": "person"
+          }
+        ],
+        "kind": "person_preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "apparently_likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman apparently likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored with low confidence due to typos, shorthand, and the qualifier 'apparently'."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm whether 'goldmn' means Goldman or Goldman Sachs.",
+      "Confirm whether 'bill evns' means Bill Evans.",
+      "Provide Sam's full name or additional context."
+    ]
+  },
+  "raw_text": "{\"intent\":\"capture_memory\",\"decision\":\"commit_tentative\",\"memory_cards\":[{\"kind\":\"person_preference\",\"statement\":\"Sam from Goldman apparently likes Bill Evans.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation_context\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked_person\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"apparently_likes\",\"object\":\"Bill Evans\"},{\"subject\":\"Sam\",\"predicate\":\"associated_with\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"create_tentative\",\"entity_id\":null,\"reason\":\"Input contains shorthand/typos and lacks enough identifiers to confidently match Sam, Goldman, or Bill Evans to existing entities.\"},\"conflict_classification\":\"none\",\"answer\":\"Captured as a tentative memory: Sam from Goldman apparently likes Bill Evans.\",\"citations\":[\"sam frm goldmn likes bill evns apparently\"],\"repair_options\":[\"Confirm whether 'goldmn' means Goldman or Goldman Sachs.\",\"Confirm whether 'bill evns' means Bill Evans.\",\"Provide Sam's full name or additional context.\"],\"receipt\":{\"success\":true,\"details\":[\"Stored with low confidence due to typos, shorthand, and the qualifier 'apparently'.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

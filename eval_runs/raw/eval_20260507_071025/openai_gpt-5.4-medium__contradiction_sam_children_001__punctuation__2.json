@@ -1,0 +1,37 @@
+{
+  "error": null,
+  "fixture_id": "contradiction_sam_children_001__punctuation",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "The new claim is a direct contradiction of the existing memory about Sam from Goldman\u2019s children. Do not commit the new claim as current durable memory without clarification or stronger evidence.",
+    "citations": [
+      "Existing memory: \"Sam from Goldman has two children\"",
+      "New: \"Sam from Goldman has no children\""
+    ],
+    "conflict_classification": "contradiction",
+    "decision": "flag_conflict_do_not_overwrite",
+    "entity_resolution": {
+      "action": "match_existing_entity",
+      "entity_id": "sam_from_goldman",
+      "reason": "Both statements refer to the same person descriptor, 'Sam from Goldman'."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected same entity reference: Sam from Goldman.",
+        "Detected mutually exclusive child-count claims: two children vs no children.",
+        "Chose not to write a new durable fact because the claims conflict directly."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request clarification or a timestamped update to determine which claim is correct.",
+      "Record the new statement only as an unverified conflicting report, not as current fact.",
+      "If reliable newer evidence exists, explicitly supersede the older memory rather than merging both as current."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict\",\"decision\":\"flag_conflict_do_not_overwrite\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"match_existing_entity\",\"entity_id\":\"sam_from_goldman\",\"reason\":\"Both statements refer to the same person descriptor, 'Sam from Goldman'.\"},\"conflict_classification\":\"contradiction\",\"answer\":\"The new claim is a direct contradiction of the existing memory about Sam from Goldman\u2019s children. Do not commit the new claim as current durable memory without clarification or stronger evidence.\",\"citations\":[\"Existing memory: \\\"Sam from Goldman has two children\\\"\",\"New: \\\"Sam from Goldman has no children\\\"\"],\"repair_options\":[\"Request clarification or a timestamped update to determine which claim is correct.\",\"Record the new statement only as an unverified conflicting report, not as current fact.\",\"If reliable newer evidence exists, explicitly supersede the older memory rather than merging both as current.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected same entity reference: Sam from Goldman.\",\"Detected mutually exclusive child-count claims: two children vs no children.\",\"Chose not to write a new durable fact because the claims conflict directly.\"]}}",
+  "run_id": "eval_20260507_071025",
+  "status": "ok"
+}

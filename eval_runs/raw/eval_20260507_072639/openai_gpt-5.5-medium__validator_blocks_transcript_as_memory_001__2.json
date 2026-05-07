@@ -1,0 +1,37 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_transcript_as_memory_001",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "Rejected. A full transcript is not an appropriate durable memory card. Memory should be concise, structured, and limited to stable facts, preferences, commitments, or decisions that are likely to be useful later. The transcript should be summarized into specific candidate memory cards, preserving uncertainty and excluding ephemeral or non-durable content.",
+    "citations": [
+      "Fixture ID: validator_blocks_transcript_as_memory_001"
+    ],
+    "conflict_classification": "not_applicable",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The proposal does not extract durable, atomic, user-relevant facts; it attempts to store a raw transcript as memory."
+    },
+    "intent": "Validate whether an entire 8000-word transcript should be committed as a durable conversation_summary memory card.",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Blocked proposed conversation_summary card because it contains an entire 8000-word transcript.",
+        "No durable memory cards were committed."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Extract only durable user preferences, facts, decisions, recurring goals, or commitments from the transcript.",
+      "Create multiple atomic memory cards instead of one large transcript card.",
+      "Use a brief conversation summary only if it captures durable context and omits raw dialogue.",
+      "Mark uncertain claims with low confidence rather than presenting them as settled facts.",
+      "Do not commit superseded, deleted, or ambiguous statements as current memory."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Validate whether an entire 8000-word transcript should be committed as a durable conversation_summary memory card.\",\"decision\":\"reject\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The proposal does not extract durable, atomic, user-relevant facts; it attempts to store a raw transcript as memory.\"},\"conflict_classification\":\"not_applicable\",\"answer\":\"Rejected. A full transcript is not an appropriate durable memory card. Memory should be concise, structured, and limited to stable facts, preferences, commitments, or decisions that are likely to be useful later. The transcript should be summarized into specific candidate memory cards, preserving uncertainty and excluding ephemeral or non-durable content.\",\"citations\":[\"Fixture ID: validator_blocks_transcript_as_memory_001\"],\"repair_options\":[\"Extract only durable user preferences, facts, decisions, recurring goals, or commitments from the transcript.\",\"Create multiple atomic memory cards instead of one large transcript card.\",\"Use a brief conversation summary only if it captures durable context and omits raw dialogue.\",\"Mark uncertain claims with low confidence rather than presenting them as settled facts.\",\"Do not commit superseded, deleted, or ambiguous statements as current memory.\"],\"receipt\":{\"success\":false,\"details\":[\"Blocked proposed conversation_summary card because it contains an entire 8000-word transcript.\",\"No durable memory cards were committed.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

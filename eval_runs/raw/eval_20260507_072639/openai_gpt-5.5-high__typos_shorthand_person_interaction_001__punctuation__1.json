@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "fixture_id": "typos_shorthand_person_interaction_001__punctuation",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "Not committed as durable memory without clarification.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "defer_commit_due_to_ambiguity",
+    "entity_resolution": {
+      "action": "needs_clarification",
+      "entity_id": null,
+      "reason": "The note uses shorthand and likely typos (\u201cfrm,\u201d \u201cgoldmn,\u201d \u201cevns\u201d), and the identities of Sam, Goldman, and Bill Evans are not uniquely resolved. The word \u201capparently\u201d also marks the claim as uncertain hearsay."
+    },
+    "intent": "record_potential_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "possible_affiliation",
+            "type": "organization_or_affiliation"
+          },
+          {
+            "name": "Bill Evns / Bill Evans",
+            "role": "object_of_like",
+            "type": "person_or_unknown"
+          }
+        ],
+        "kind": "preference_or_relationship_observation",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "possibly_affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evns / Bill Evans",
+            "predicate": "apparently_likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "A person named Sam, possibly from or affiliated with Goldman, apparently likes someone or something referred to as \u201cBill Evns\u201d / \u201cBill Evans.\u201d"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed a possible low-confidence observation but deferred durable memory due to ambiguous entities and uncertain wording."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Confirm who Sam is.",
+      "Confirm whether \u201cgoldmn\u201d means Goldman, Goldman Sachs, or something else.",
+      "Confirm whether \u201cbill evns\u201d means Bill Evans and whether this is a person, musician, client, colleague, or something else.",
+      "Confirm whether \u201clikes\u201d means personal preference, professional approval, or romantic interest.",
+      "Confirm whether this hearsay should be saved despite uncertainty."
+    ]
+  },
+  "raw_text": "{\"intent\":\"record_potential_memory\",\"decision\":\"defer_commit_due_to_ambiguity\",\"memory_cards\":[{\"kind\":\"preference_or_relationship_observation\",\"statement\":\"A person named Sam, possibly from or affiliated with Goldman, apparently likes someone or something referred to as \u201cBill Evns\u201d / \u201cBill Evans.\u201d\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization_or_affiliation\",\"role\":\"possible_affiliation\"},{\"name\":\"Bill Evns / Bill Evans\",\"type\":\"person_or_unknown\",\"role\":\"object_of_like\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"possibly_affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"apparently_likes\",\"object\":\"Bill Evns / Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"needs_clarification\",\"entity_id\":null,\"reason\":\"The note uses shorthand and likely typos (\u201cfrm,\u201d \u201cgoldmn,\u201d \u201cevns\u201d), and the identities of Sam, Goldman, and Bill Evans are not uniquely resolved. The word \u201capparently\u201d also marks the claim as uncertain hearsay.\"},\"conflict_classification\":\"none_detected\",\"answer\":\"Not committed as durable memory without clarification.\",\"citations\":[],\"repair_options\":[\"Confirm who Sam is.\",\"Confirm whether \u201cgoldmn\u201d means Goldman, Goldman Sachs, or something else.\",\"Confirm whether \u201cbill evns\u201d means Bill Evans and whether this is a person, musician, client, colleague, or something else.\",\"Confirm whether \u201clikes\u201d means personal preference, professional approval, or romantic interest.\",\"Confirm whether this hearsay should be saved despite uncertainty.\"],\"receipt\":{\"success\":false,\"details\":[\"Parsed a possible low-confidence observation but deferred durable memory due to ambiguous entities and uncertain wording.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

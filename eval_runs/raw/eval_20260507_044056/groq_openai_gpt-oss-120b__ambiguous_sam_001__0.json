@@ -1,0 +1,55 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_sam_001",
+  "model": "groq:openai/gpt-oss-120b",
+  "payload": {
+    "answer": "The statement refers to Sam, but there are multiple Sam entities; clarification is required.",
+    "citations": [],
+    "conflict_classification": "ambiguous_entity",
+    "decision": "defer_due_to_ambiguity",
+    "entity_resolution": {
+      "action": "need_disambiguation",
+      "entity_id": null,
+      "reason": "Multiple Sam entities (Goldman, Point72) exist; cannot determine which Sam liked Bill Evans."
+    },
+    "intent": "store_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "statement",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguity detected; memory not stored until clarification."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask which Sam (Goldman or Point72) liked Bill Evans."
+    ]
+  },
+  "raw_text": "{\"intent\":\"store_memory\",\"decision\":\"defer_due_to_ambiguity\",\"memory_cards\":[{\"kind\":\"statement\",\"statement\":\"Sam likes Bill Evans.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"need_disambiguation\",\"entity_id\":null,\"reason\":\"Multiple Sam entities (Goldman, Point72) exist; cannot determine which Sam liked Bill Evans.\"},\"conflict_classification\":\"ambiguous_entity\",\"answer\":\"The statement refers to Sam, but there are multiple Sam entities; clarification is required.\",\"citations\":[],\"repair_options\":[\"Ask which Sam (Goldman or Point72) liked Bill Evans.\"],\"receipt\":{\"success\":false,\"details\":[\"Ambiguity detected; memory not stored until clarification.\"]}}",
+  "run_id": "eval_20260507_044056",
+  "status": "ok"
+}

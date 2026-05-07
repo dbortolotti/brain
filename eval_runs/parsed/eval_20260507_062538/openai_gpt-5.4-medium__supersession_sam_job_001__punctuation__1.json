@@ -1,0 +1,105 @@
+{
+  "fixture_id": "supersession_sam_job_001__punctuation",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "There is a supersession conflict. The older fact that Sam works at Goldman should not be kept as current because it is overridden by the later fact that Sam left Goldman and joined Point72. The malformed punctuation suggests the record should also be repaired/split.",
+    "citations": [
+      "\"Sam works at Goldman\"",
+      "\"Sam left Goldman and joined Point72\""
+    ],
+    "conflict_classification": "supersession",
+    "decision": "repair_and_supersede",
+    "entity_resolution": {
+      "action": "reuse_existing",
+      "entity_id": null,
+      "reason": "Both statements refer to the same person, Sam. No evidence suggests multiple Sams."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_history",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "superseded_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "formerly_worked_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "The earlier memory that Sam works at Goldman is superseded by the later memory that Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected an older current-employment claim and a newer transition claim.",
+        "Classified the conflict as supersession.",
+        "Avoided presenting the Goldman employment as current.",
+        "Flagged punctuation/malformed formatting as needing repair."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Split the malformed memory into separate facts using sentence boundaries.",
+      "Mark \"Sam works at Goldman\" as superseded or historical, not current.",
+      "Keep \"Sam left Goldman and joined Point72\" as the active employment memory.",
+      "Normalize organization names if needed after confirming whether \"Goldman\" refers to Goldman Sachs."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

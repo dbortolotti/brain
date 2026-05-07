@@ -1,0 +1,66 @@
+{
+  "fixture_id": "typos_shorthand_person_interaction_001__punctuation",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "I would not commit this as a durable current fact yet. It can be held only as a low-confidence note preserving the ambiguity: \u201csam\u201d from \u201cgoldmn\u201d apparently likes \u201cbill evns.\u201d",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "defer_commit_pending_clarification",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Names appear abbreviated or misspelled, and there is not enough context to safely resolve \u201csam,\u201d \u201cgoldmn,\u201d or \u201cbill evns\u201d to existing entities."
+    },
+    "intent": "capture_uncertain_person_interaction",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "goldmn",
+            "role": "affiliation_raw",
+            "type": "organization_or_affiliation"
+          },
+          {
+            "name": "bill evns",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "candidate_relationship_observation",
+        "relationships": [
+          {
+            "object": "goldmn",
+            "predicate": "from",
+            "subject": "sam"
+          },
+          {
+            "object": "bill evns",
+            "predicate": "apparently_likes",
+            "subject": "sam"
+          }
+        ],
+        "statement": "A person referred to as \u201csam\u201d from \u201cgoldmn\u201d apparently likes a person referred to as \u201cbill evns\u201d; the spellings and meaning of \u201clikes\u201d are uncertain."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No durable memory was committed due to uncertain spellings and the hedge \u201capparently.\u201d",
+        "Ambiguity around the nature of \u201clikes\u201d was preserved rather than inferred."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Confirm whether \u201csam\u201d should be capitalized and identify the person more specifically.",
+      "Confirm whether \u201cgoldmn\u201d means Goldman, Goldman Sachs, or something else.",
+      "Confirm whether \u201cbill evns\u201d means Bill Evans or another person.",
+      "Clarify what \u201clikes\u201d means here, since it could mean personal interest, romantic interest, approval, or professional respect."
+    ]
+  },
+  "run_id": "eval_20260507_072639"
+}

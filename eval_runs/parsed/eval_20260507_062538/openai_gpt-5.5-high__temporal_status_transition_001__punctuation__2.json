@@ -1,0 +1,59 @@
+{
+  "fixture_id": "temporal_status_transition_001__punctuation",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "Committed the newer status: the Brain Slack agent MVP is now implemented. The earlier planned/open status should be treated as superseded for the MVP, not as a current fact.",
+    "citations": [
+      "Existing project state - The Brain Slack agent is planned, status=open",
+      "New - The Brain Slack agent MVP is now implemented"
+    ],
+    "conflict_classification": "temporal_status_transition",
+    "decision": "commit_update_supersede_prior_status",
+    "entity_resolution": {
+      "action": "update_existing",
+      "entity_id": null,
+      "reason": "The new statement refers to the same Brain Slack agent project area and indicates a later status for the MVP; no stable entity_id was provided."
+    },
+    "intent": "update_project_status",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain Slack agent MVP",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "Brain Slack agent",
+            "role": "parent_or_related_project",
+            "type": "project"
+          }
+        ],
+        "kind": "project_status",
+        "relationships": [
+          {
+            "object": "implemented",
+            "predicate": "has_status",
+            "subject": "Brain Slack agent MVP"
+          },
+          {
+            "object": "Brain Slack agent",
+            "predicate": "is_mvp_of",
+            "subject": "Brain Slack agent MVP"
+          }
+        ],
+        "statement": "The Brain Slack agent MVP is now implemented."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Added current implemented status for the Brain Slack agent MVP.",
+        "Marked the prior planned/open status as superseded where it applies to the MVP."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_062538"
+}

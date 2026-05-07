@@ -1,0 +1,73 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_time_reference_001",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Do not commit a durable current fact. The message is hearsay/self-report with unresolved relative dates ('last Friday', 'next month') and unverified entities. At most, retain it as a low-confidence attributed statement pending clarification of absolute dates and identities.",
+    "citations": [
+      "Sam said last Friday that he is leaving Goldman next month."
+    ],
+    "conflict_classification": "ambiguous_time_reference",
+    "decision": "defer",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Sam and Goldman are not uniquely identifiable from the message, and the time references are relative/ambiguous."
+    },
+    "intent": "extract_memory_candidate",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "current_or_departing_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "reported_statement",
+        "relationships": [
+          {
+            "object": "last Friday",
+            "predicate": "said_on_relative_date",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "may_leave",
+            "subject": "Sam"
+          },
+          {
+            "object": "next month",
+            "predicate": "planned_departure_time_relative_to_statement",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said last Friday that he is leaving Goldman next month."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed a candidate memory as an attributed statement only.",
+        "Declined to store a durable employment-change fact due to ambiguous relative dates and lack of verification.",
+        "Preserved uncertainty and did not present the future departure as current fact."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for the absolute date of 'last Friday'.",
+      "Ask what calendar month 'next month' refers to.",
+      "Confirm Sam's full identity.",
+      "Confirm whether 'Goldman' means Goldman Sachs.",
+      "Wait until the departure is confirmed before storing as a current fact."
+    ]
+  },
+  "raw_text": "{\"intent\":\"extract_memory_candidate\",\"decision\":\"defer\",\"memory_cards\":[{\"kind\":\"reported_statement\",\"statement\":\"Sam said last Friday that he is leaving Goldman next month.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"speaker\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"current_or_departing_employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"said_on_relative_date\",\"object\":\"last Friday\"},{\"subject\":\"Sam\",\"predicate\":\"may_leave\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"planned_departure_time_relative_to_statement\",\"object\":\"next month\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"Sam and Goldman are not uniquely identifiable from the message, and the time references are relative/ambiguous.\"},\"conflict_classification\":\"ambiguous_time_reference\",\"answer\":\"Do not commit a durable current fact. The message is hearsay/self-report with unresolved relative dates ('last Friday', 'next month') and unverified entities. At most, retain it as a low-confidence attributed statement pending clarification of absolute dates and identities.\",\"citations\":[\"Sam said last Friday that he is leaving Goldman next month.\"],\"repair_options\":[\"Ask for the absolute date of 'last Friday'.\",\"Ask what calendar month 'next month' refers to.\",\"Confirm Sam's full identity.\",\"Confirm whether 'Goldman' means Goldman Sachs.\",\"Wait until the departure is confirmed before storing as a current fact.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed a candidate memory as an attributed statement only.\",\"Declined to store a durable employment-change fact due to ambiguous relative dates and lack of verification.\",\"Preserved uncertainty and did not present the future departure as current fact.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

@@ -1,0 +1,63 @@
+{
+  "error": null,
+  "fixture_id": "contradiction_sam_children_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "The new claim directly contradicts the existing memory. Do not commit either child-count claim as an updated current fact without clarification or source validation.",
+    "citations": [],
+    "conflict_classification": "direct_contradiction",
+    "decision": "do_not_commit_as_current_fact",
+    "entity_resolution": {
+      "action": "same_entity_assumed",
+      "entity_id": null,
+      "reason": "Both claims refer to 'Sam from Goldman'; absent evidence of distinct people, treat as the same entity for conflict classification."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "conflict_note",
+        "relationships": [
+          {
+            "object": "2",
+            "predicate": "has_children_count",
+            "subject": "Sam from Goldman"
+          },
+          {
+            "object": "0",
+            "predicate": "has_children_count",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Existing memory says Sam from Goldman has two children, while the new information says Sam from Goldman has no children. These claims directly contradict each other and should not both be treated as current without clarification."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected direct contradiction between existing and new child-count claims.",
+        "No durable current fact was committed because the conflict is unresolved."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask whether this refers to the same Sam from Goldman.",
+      "Ask which statement is current: Sam has two children or no children.",
+      "Mark the existing memory as disputed pending verification rather than replacing it automatically."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict\",\"decision\":\"do_not_commit_as_current_fact\",\"memory_cards\":[{\"kind\":\"conflict_note\",\"statement\":\"Existing memory says Sam from Goldman has two children, while the new information says Sam from Goldman has no children. These claims directly contradict each other and should not both be treated as current without clarification.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"}],\"relationships\":[{\"subject\":\"Sam from Goldman\",\"predicate\":\"has_children_count\",\"object\":\"2\"},{\"subject\":\"Sam from Goldman\",\"predicate\":\"has_children_count\",\"object\":\"0\"}]}],\"entity_resolution\":{\"action\":\"same_entity_assumed\",\"entity_id\":null,\"reason\":\"Both claims refer to 'Sam from Goldman'; absent evidence of distinct people, treat as the same entity for conflict classification.\"},\"conflict_classification\":\"direct_contradiction\",\"answer\":\"The new claim directly contradicts the existing memory. Do not commit either child-count claim as an updated current fact without clarification or source validation.\",\"citations\":[],\"repair_options\":[\"Ask whether this refers to the same Sam from Goldman.\",\"Ask which statement is current: Sam has two children or no children.\",\"Mark the existing memory as disputed pending verification rather than replacing it automatically.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected direct contradiction between existing and new child-count claims.\",\"No durable current fact was committed because the conflict is unresolved.\"]}}",
+  "run_id": "eval_20260507_065822",
+  "status": "ok"
+}

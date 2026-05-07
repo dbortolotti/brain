@@ -1,0 +1,37 @@
+{
+  "error": null,
+  "fixture_id": "contradiction_sam_children_001",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "The new information directly contradicts existing memory about the same person: existing memory says Sam from Goldman has two children, while the new input says Sam from Goldman has no children. Do not present either claim as definitively current without resolution.",
+    "citations": [
+      "Existing memory: 'Sam from Goldman has two children.'",
+      "New input: 'Sam from Goldman has no children.'"
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "flag_conflict_do_not_overwrite",
+    "entity_resolution": {
+      "action": "reuse_existing_entity",
+      "entity_id": null,
+      "reason": "The reference 'Sam from Goldman' appears to point to the same person in both statements, but the new statement directly contradicts the existing memory."
+    },
+    "intent": "classify_memory_conflict",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected same apparent entity reference across both statements.",
+        "Detected mutually exclusive claims about number of children.",
+        "Chose not to commit a durable replacement because the contradiction is unresolved."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark the children-count attribute for Sam from Goldman as disputed until verified.",
+      "Request a timestamp or source for both claims to determine which, if either, is current.",
+      "Store the new claim only as a conflicting report, not as a durable replacement."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_memory_conflict\",\"decision\":\"flag_conflict_do_not_overwrite\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"reuse_existing_entity\",\"entity_id\":null,\"reason\":\"The reference 'Sam from Goldman' appears to point to the same person in both statements, but the new statement directly contradicts the existing memory.\"},\"conflict_classification\":\"direct_contradiction\",\"answer\":\"The new information directly contradicts existing memory about the same person: existing memory says Sam from Goldman has two children, while the new input says Sam from Goldman has no children. Do not present either claim as definitively current without resolution.\",\"citations\":[\"Existing memory: 'Sam from Goldman has two children.'\",\"New input: 'Sam from Goldman has no children.'\"],\"repair_options\":[\"Mark the children-count attribute for Sam from Goldman as disputed until verified.\",\"Request a timestamp or source for both claims to determine which, if either, is current.\",\"Store the new claim only as a conflicting report, not as a durable replacement.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected same apparent entity reference across both statements.\",\"Detected mutually exclusive claims about number of children.\",\"Chose not to commit a durable replacement because the contradiction is unresolved.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

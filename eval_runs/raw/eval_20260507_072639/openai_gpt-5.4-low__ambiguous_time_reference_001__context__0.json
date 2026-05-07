@@ -1,0 +1,38 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_time_reference_001__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Do not commit durable memory from this message as written. The claim is second-hand/reportive (\"Sam said\"), future-looking, and uses ambiguous relative dates (\"last Friday,\" \"next month\") without an anchor date. It also does not reliably resolve which Sam or which Goldman is meant.",
+    "citations": [
+      "For context, Sam said last Friday that he is leaving Goldman next month."
+    ],
+    "conflict_classification": "temporal_ambiguity",
+    "decision": "defer_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Insufficient context to durably resolve \"Sam\" or \"Goldman,\" and the statement contains ambiguous relative time references."
+    },
+    "intent": "slack_intake",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No durable memory cards created.",
+        "Deferred due to ambiguous temporal references.",
+        "Deferred due to unresolved entity references.",
+        "Deferred because the content is a reported future intention rather than a settled fact."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for exact calendar dates for \"last Friday\" and \"next month.\"",
+      "Ask which Sam is being referred to.",
+      "Ask whether \"Goldman\" means Goldman Sachs or another entity.",
+      "If needed, restate as a dated report, e.g. \"On 2026-05-01, Sam said he plans to leave Goldman Sachs in June 2026.\""
+    ]
+  },
+  "raw_text": "{\"intent\":\"slack_intake\",\"decision\":\"defer_memory\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"Insufficient context to durably resolve \\\"Sam\\\" or \\\"Goldman,\\\" and the statement contains ambiguous relative time references.\"},\"conflict_classification\":\"temporal_ambiguity\",\"answer\":\"Do not commit durable memory from this message as written. The claim is second-hand/reportive (\\\"Sam said\\\"), future-looking, and uses ambiguous relative dates (\\\"last Friday,\\\" \\\"next month\\\") without an anchor date. It also does not reliably resolve which Sam or which Goldman is meant.\",\"citations\":[\"For context, Sam said last Friday that he is leaving Goldman next month.\"],\"repair_options\":[\"Ask for exact calendar dates for \\\"last Friday\\\" and \\\"next month.\\\"\",\"Ask which Sam is being referred to.\",\"Ask whether \\\"Goldman\\\" means Goldman Sachs or another entity.\",\"If needed, restate as a dated report, e.g. \\\"On 2026-05-01, Sam said he plans to leave Goldman Sachs in June 2026.\\\"\"],\"receipt\":{\"success\":true,\"details\":[\"No durable memory cards created.\",\"Deferred due to ambiguous temporal references.\",\"Deferred due to unresolved entity references.\",\"Deferred because the content is a reported future intention rather than a settled fact.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

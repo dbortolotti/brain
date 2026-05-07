@@ -1,0 +1,88 @@
+{
+  "fixture_id": "correction_sam_music_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "The correction supersedes the existing memory. Sam from Goldman's musical preference is early Coltrane, not Bill Evans.",
+    "citations": [
+      "Correction input explicitly states 'actually likes early Coltrane, not Bill Evans'"
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "supersede_with_correction",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "sam_goldman",
+      "reason": "Same person referenced in both statements; correction updates preference attribute"
+    },
+    "intent": "correct_preference",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "music_artist"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane"
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "music_artist"
+          }
+        ],
+        "kind": "superseded_fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Existing fact marked as superseded",
+        "New fact committed with high confidence",
+        "Entity Sam from Goldman unified",
+        "Contradiction resolved via correction protocol"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Accept correction and mark Bill Evans preference as superseded",
+      "Preserve both preferences if Sam likes both artists",
+      "Request clarification on when preference changed"
+    ]
+  },
+  "run_id": "eval_20260507_043016"
+}

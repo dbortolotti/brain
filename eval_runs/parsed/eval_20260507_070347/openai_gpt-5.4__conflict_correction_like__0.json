@@ -1,0 +1,79 @@
+{
+  "fixture_id": "conflict_correction_like",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "Update the current memory for Sam from Goldman: current preference is early Coltrane. The prior fact that Sam likes Bill Evans is superseded by the correction and should not remain current.",
+    "citations": [
+      "Existing current fact: Sam from Goldman likes Bill Evans.",
+      "Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans."
+    ],
+    "conflict_classification": "direct_correction",
+    "decision": "update_current_fact",
+    "entity_resolution": {
+      "action": "resolve_to_existing",
+      "entity_id": "Sam from Goldman",
+      "reason": "The correction explicitly refers to the same person as the existing current fact and provides a direct replacement."
+    },
+    "intent": "correction",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "disambiguator",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "current_preference",
+            "type": "preference_target"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "rejected_prior_preference",
+            "type": "preference_target"
+          }
+        ],
+        "kind": "replacement_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "not_likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane, not Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected explicit contradiction via 'actually' and 'not'.",
+        "Classified as a direct correction to an existing current fact.",
+        "Prepared a replacement memory card and indicated that the prior fact is superseded."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace the existing current fact with: Sam from Goldman likes early Coltrane.",
+      "Mark the prior Bill Evans preference as superseded/corrected.",
+      "Do not retain 'Sam from Goldman likes Bill Evans' as a current fact."
+    ]
+  },
+  "run_id": "eval_20260507_070347"
+}

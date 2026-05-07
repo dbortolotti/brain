@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_place_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Stored the note as an experience about the existing Brutto restaurant entity, with medium confidence due to the abbreviated mention.",
+    "citations": [
+      "New note: Brutto was better than expected",
+      "Existing: Brutto restaurant in London"
+    ],
+    "conflict_classification": "none",
+    "decision": "link_to_existing_entity",
+    "entity_resolution": {
+      "action": "merge_with_existing",
+      "entity_id": "Brutto restaurant in London",
+      "reason": "The new note refers to 'Brutto' without additional qualifiers. An existing entity is 'Brutto restaurant in London'; punctuation in the fixture text does not indicate a separate entity. The statement is consistent with a restaurant experience and can be linked to the existing Brutto restaurant entity, while preserving that the note itself did not explicitly mention London."
+    },
+    "intent": "store_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brutto",
+            "role": "subject",
+            "type": "restaurant"
+          },
+          {
+            "name": "London",
+            "role": "location",
+            "type": "place"
+          }
+        ],
+        "kind": "preference_experience",
+        "relationships": [
+          {
+            "object": "London",
+            "predicate": "located_in",
+            "subject": "Brutto"
+          }
+        ],
+        "statement": "Brutto was better than expected."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Linked abbreviated mention 'Brutto' to existing entity 'Brutto restaurant in London'.",
+        "Stored subjective experience: 'Brutto was better than expected.'"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"store_memory\",\"decision\":\"link_to_existing_entity\",\"memory_cards\":[{\"kind\":\"preference_experience\",\"statement\":\"Brutto was better than expected.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Brutto\",\"type\":\"restaurant\",\"role\":\"subject\"},{\"name\":\"London\",\"type\":\"place\",\"role\":\"location\"}],\"relationships\":[{\"subject\":\"Brutto\",\"predicate\":\"located_in\",\"object\":\"London\"}]}],\"entity_resolution\":{\"action\":\"merge_with_existing\",\"entity_id\":\"Brutto restaurant in London\",\"reason\":\"The new note refers to 'Brutto' without additional qualifiers. An existing entity is 'Brutto restaurant in London'; punctuation in the fixture text does not indicate a separate entity. The statement is consistent with a restaurant experience and can be linked to the existing Brutto restaurant entity, while preserving that the note itself did not explicitly mention London.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored the note as an experience about the existing Brutto restaurant entity, with medium confidence due to the abbreviated mention.\",\"citations\":[\"New note: Brutto was better than expected\",\"Existing: Brutto restaurant in London\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Linked abbreviated mention 'Brutto' to existing entity 'Brutto restaurant in London'.\",\"Stored subjective experience: 'Brutto was better than expected.'\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

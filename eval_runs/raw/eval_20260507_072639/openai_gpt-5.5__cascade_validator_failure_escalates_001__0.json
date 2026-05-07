@@ -1,0 +1,35 @@
+{
+  "error": null,
+  "fixture_id": "cascade_validator_failure_escalates_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Rejected: no memory was committed because the referenced model output was invalid, unsafe, or unavailable for reliable validation.",
+    "citations": [],
+    "conflict_classification": "invalid_or_unsafe_proposal",
+    "decision": "safe_reject",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The provided input describes an invalid schema or unsafe proposal from a cheaper model but contains no durable user memory content to commit. Escalation to a stronger model or safe rejection is expected; as validator, reject committing any memory."
+    },
+    "intent": "validate_model_output",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Returned schema-valid JSON only.",
+        "Did not commit any durable memory.",
+        "Preserved ambiguity by not inferring missing facts.",
+        "Classified the issue as an invalid or unsafe proposal and chose safe rejection."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Escalate the original proposal to a stronger validator model for schema and safety review.",
+      "Request the full original model output and source user input before committing memory.",
+      "Return a schema-valid safe rejection with an empty memory_cards array."
+    ]
+  },
+  "raw_text": "{\"intent\":\"validate_model_output\",\"decision\":\"safe_reject\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The provided input describes an invalid schema or unsafe proposal from a cheaper model but contains no durable user memory content to commit. Escalation to a stronger model or safe rejection is expected; as validator, reject committing any memory.\"},\"conflict_classification\":\"invalid_or_unsafe_proposal\",\"answer\":\"Rejected: no memory was committed because the referenced model output was invalid, unsafe, or unavailable for reliable validation.\",\"citations\":[],\"repair_options\":[\"Escalate the original proposal to a stronger validator model for schema and safety review.\",\"Request the full original model output and source user input before committing memory.\",\"Return a schema-valid safe rejection with an empty memory_cards array.\"],\"receipt\":{\"success\":true,\"details\":[\"Returned schema-valid JSON only.\",\"Did not commit any durable memory.\",\"Preserved ambiguity by not inferring missing facts.\",\"Classified the issue as an invalid or unsafe proposal and chose safe rejection.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

@@ -1,0 +1,61 @@
+{
+  "fixture_id": "correction_sam_music_001",
+  "model": "google:gemini-3.1-pro-preview",
+  "payload": {
+    "answer": "I have updated Sam's musical preference to early Coltrane, removing the previous reference to Bill Evans.",
+    "citations": [],
+    "conflict_classification": "correction",
+    "decision": "replace",
+    "entity_resolution": {
+      "action": "update",
+      "entity_id": "sam_goldman",
+      "reason": "The input explicitly refers to the same Sam from Goldman."
+    },
+    "intent": "update_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "Person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "Organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "Artist"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded fact: Sam likes Bill Evans.",
+        "Committed new fact: Sam likes early Coltrane."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_062538"
+}

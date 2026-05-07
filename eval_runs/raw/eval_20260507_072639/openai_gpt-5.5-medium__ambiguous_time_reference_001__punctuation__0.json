@@ -1,0 +1,67 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_time_reference_001__punctuation",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "I would not commit this as a durable current fact yet. It should be stored, at most, as a reported claim with unresolved relative dates.",
+    "citations": [
+      "Sam said last Friday that he is leaving Goldman next month"
+    ],
+    "conflict_classification": "none",
+    "decision": "needs_clarification",
+    "entity_resolution": {
+      "action": "needs_clarification",
+      "entity_id": null,
+      "reason": "The person named Sam is not uniquely identified, and the relative dates 'last Friday' and 'next month' cannot be resolved without a message timestamp or intake date."
+    },
+    "intent": "capture_reported_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker_and_subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "organization_being_left",
+            "type": "organization"
+          }
+        ],
+        "kind": "reported_claim",
+        "relationships": [
+          {
+            "object": "he is leaving Goldman next month",
+            "predicate": "said",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "may_leave",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said on an unspecified 'last Friday' that he is leaving Goldman in an unspecified 'next month'. The exact dates cannot be resolved from the provided text."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Relative time references are ambiguous without an anchor date.",
+        "Entity resolution for Sam is ambiguous.",
+        "No durable employment-change fact was committed as current."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide the date the message was sent or recorded so 'last Friday' and 'next month' can be resolved.",
+      "Clarify which Sam this refers to.",
+      "Clarify whether Goldman means Goldman Sachs or another entity.",
+      "Confirm whether Sam has already left, plans to leave, or merely said he intended to leave."
+    ]
+  },
+  "raw_text": "{\"intent\":\"capture_reported_memory\",\"decision\":\"needs_clarification\",\"memory_cards\":[{\"kind\":\"reported_claim\",\"statement\":\"Sam said on an unspecified 'last Friday' that he is leaving Goldman in an unspecified 'next month'. The exact dates cannot be resolved from the provided text.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"speaker_and_subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"organization_being_left\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"said\",\"object\":\"he is leaving Goldman next month\"},{\"subject\":\"Sam\",\"predicate\":\"may_leave\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"needs_clarification\",\"entity_id\":null,\"reason\":\"The person named Sam is not uniquely identified, and the relative dates 'last Friday' and 'next month' cannot be resolved without a message timestamp or intake date.\"},\"conflict_classification\":\"none\",\"answer\":\"I would not commit this as a durable current fact yet. It should be stored, at most, as a reported claim with unresolved relative dates.\",\"citations\":[\"Sam said last Friday that he is leaving Goldman next month\"],\"repair_options\":[\"Provide the date the message was sent or recorded so 'last Friday' and 'next month' can be resolved.\",\"Clarify which Sam this refers to.\",\"Clarify whether Goldman means Goldman Sachs or another entity.\",\"Confirm whether Sam has already left, plans to leave, or merely said he intended to leave.\"],\"receipt\":{\"success\":false,\"details\":[\"Relative time references are ambiguous without an anchor date.\",\"Entity resolution for Sam is ambiguous.\",\"No durable employment-change fact was committed as current.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

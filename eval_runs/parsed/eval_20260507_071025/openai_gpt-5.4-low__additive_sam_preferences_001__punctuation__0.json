@@ -1,0 +1,65 @@
+{
+  "fixture_id": "additive_sam_preferences_001__punctuation",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "No conflict. The new information adds another preference for the same person without contradicting the existing memory that Sam from Goldman likes Bill Evans.",
+    "citations": [
+      "Existing memory: Sam from Goldman likes Bill Evans",
+      "New memory: Sam from Goldman also likes Sonny Rollins"
+    ],
+    "conflict_classification": "additive_non_conflicting",
+    "decision": "merge_additive",
+    "entity_resolution": {
+      "action": "link_existing",
+      "entity_id": "Sam_from_Goldman",
+      "reason": "The new statement refers to the same person descriptor as the existing memory: Sam from Goldman."
+    },
+    "intent": "classify_memory_update",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "preference_target",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Sonny Rollins",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Sonny Rollins."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected same entity reference: Sam from Goldman.",
+        "Classified update as additive because liking Sonny Rollins does not negate liking Bill Evans.",
+        "Prepared one new memory card for the additional preference."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_071025"
+}

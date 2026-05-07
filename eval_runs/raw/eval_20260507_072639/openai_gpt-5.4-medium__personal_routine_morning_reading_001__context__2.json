@@ -1,0 +1,76 @@
+{
+  "error": null,
+  "fixture_id": "personal_routine_morning_reading_001__context",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "{\"acknowledged\":true}",
+    "citations": [
+      "\"I usually prefer to read technical papers in the morning before checking email.\""
+    ],
+    "conflict_classification": "none",
+    "decision": "store_durable_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No new named entity requiring resolution beyond the user and generic activities."
+    },
+    "intent": "share_preference_and_routine_context",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "User",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "technical papers",
+            "role": "preferred_reading",
+            "type": "content"
+          },
+          {
+            "name": "morning",
+            "role": "preferred_time",
+            "type": "time_period"
+          },
+          {
+            "name": "email",
+            "role": "sequencing_reference",
+            "type": "activity"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "read technical papers",
+            "predicate": "usually_prefers",
+            "subject": "User"
+          },
+          {
+            "object": "morning",
+            "predicate": "preferred_time",
+            "subject": "read technical papers"
+          },
+          {
+            "object": "checking email",
+            "predicate": "typically_before",
+            "subject": "read technical papers"
+          }
+        ],
+        "statement": "User usually prefers to read technical papers in the morning before checking email."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured as a habitual preference/routine with hedging preserved via 'usually prefers'.",
+        "Did not overgeneralize beyond morning reading of technical papers before checking email."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"share_preference_and_routine_context\",\"decision\":\"store_durable_memory\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"User usually prefers to read technical papers in the morning before checking email.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"User\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"technical papers\",\"type\":\"content\",\"role\":\"preferred_reading\"},{\"name\":\"morning\",\"type\":\"time_period\",\"role\":\"preferred_time\"},{\"name\":\"email\",\"type\":\"activity\",\"role\":\"sequencing_reference\"}],\"relationships\":[{\"subject\":\"User\",\"predicate\":\"usually_prefers\",\"object\":\"read technical papers\"},{\"subject\":\"read technical papers\",\"predicate\":\"preferred_time\",\"object\":\"morning\"},{\"subject\":\"read technical papers\",\"predicate\":\"typically_before\",\"object\":\"checking email\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No new named entity requiring resolution beyond the user and generic activities.\"},\"conflict_classification\":\"none\",\"answer\":\"{\\\"acknowledged\\\":true}\",\"citations\":[\"\\\"I usually prefer to read technical papers in the morning before checking email.\\\"\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Captured as a habitual preference/routine with hedging preserved via 'usually prefers'.\",\"Did not overgeneralize beyond morning reading of technical papers before checking email.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

@@ -1,0 +1,88 @@
+{
+  "error": null,
+  "fixture_id": "conflict_employment_transition",
+  "model": "openai:gpt-5.5-low",
+  "payload": {
+    "answer": "The new fact supersedes the existing current employment fact: Sam should no longer be represented as currently working at Goldman. Store Sam as currently working at Point72, with Goldman as a former employer.",
+    "citations": [],
+    "conflict_classification": "superseding_update",
+    "decision": "commit_with_supersession",
+    "entity_resolution": {
+      "action": "reuse_existing_person",
+      "entity_id": null,
+      "reason": "The new fact refers to the same person, Sam, as the existing current fact."
+    },
+    "intent": "update_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_current",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Point72."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "former_employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_historical",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "formerly_worked_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam previously worked at Goldman and has left Goldman."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected employment transition from Goldman to Point72.",
+        "Preserved Goldman only as former employment, not current employment.",
+        "Committed Point72 as Sam's current employer."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark the prior current fact 'Sam works at Goldman' as superseded or historical.",
+      "Add current employment: Sam works at Point72.",
+      "Add historical employment: Sam previously worked at Goldman and left Goldman."
+    ]
+  },
+  "raw_text": "{\"intent\":\"update_memory\",\"decision\":\"commit_with_supersession\",\"memory_cards\":[{\"kind\":\"employment_current\",\"statement\":\"Sam works at Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"employee\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Point72\"}]},{\"kind\":\"employment_historical\",\"statement\":\"Sam previously worked at Goldman and has left Goldman.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"former_employee\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former_employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"formerly_worked_at\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"left\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"reuse_existing_person\",\"entity_id\":null,\"reason\":\"The new fact refers to the same person, Sam, as the existing current fact.\"},\"conflict_classification\":\"superseding_update\",\"answer\":\"The new fact supersedes the existing current employment fact: Sam should no longer be represented as currently working at Goldman. Store Sam as currently working at Point72, with Goldman as a former employer.\",\"citations\":[],\"repair_options\":[\"Mark the prior current fact 'Sam works at Goldman' as superseded or historical.\",\"Add current employment: Sam works at Point72.\",\"Add historical employment: Sam previously worked at Goldman and left Goldman.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected employment transition from Goldman to Point72.\",\"Preserved Goldman only as former employment, not current employment.\",\"Committed Point72 as Sam's current employer.\"]}}",
+  "run_id": "eval_20260507_070347",
+  "status": "ok"
+}

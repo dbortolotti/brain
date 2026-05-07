@@ -1,0 +1,35 @@
+{
+  "fixture_id": "concurrent_conflict_writes_001__punctuation",
+  "model": "openai:gpt-5.4-high",
+  "payload": {
+    "answer": "Detected a conflict: 'Sam works at Goldman' and 'Sam joined Point72' cannot both be stored as Sam's current employer without clarification. Do not commit a durable current-state memory yet.",
+    "citations": [
+      "Sam works at Goldman",
+      "Sam joined Point72"
+    ],
+    "conflict_classification": "concurrent_conflicting_employment",
+    "decision": "defer_due_to_conflict",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The text appears to contain two concurrent writes about Sam's employment, but there is not enough context to know whether they refer to the same Sam, whether one supersedes the other, or whether one is historical."
+    },
+    "intent": "memory_write",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Parsed the unpunctuated input as two writes.",
+        "Identified incompatible employer claims for Sam.",
+        "Withheld durable current-state memory pending clarification."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm whether both statements refer to the same Sam.",
+      "Provide timestamps or effective dates for each employment fact.",
+      "Clarify whether joining Point72 replaced Goldman or was an additional role.",
+      "If clarified, store one fact as historical and only the latest one as current."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

@@ -1,0 +1,51 @@
+{
+  "fixture_id": "temporal_status_transition_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Updated: the Brain Slack agent MVP is now implemented; the prior planned/open status is superseded.",
+    "citations": [],
+    "conflict_classification": "status_transition_supersedes_prior",
+    "decision": "commit_update",
+    "entity_resolution": {
+      "action": "merge_with_existing",
+      "entity_id": null,
+      "reason": "The new statement refers to the same Brain Slack agent project and updates its status from planned/open to implemented for the MVP."
+    },
+    "intent": "update_project_status",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain Slack agent",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "MVP",
+            "role": "implemented_milestone",
+            "type": "milestone"
+          }
+        ],
+        "kind": "project_status",
+        "relationships": [
+          {
+            "object": "implemented",
+            "predicate": "has_status",
+            "subject": "Brain Slack agent MVP"
+          }
+        ],
+        "statement": "The Brain Slack agent MVP is implemented."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed durable status update for the Brain Slack agent MVP.",
+        "Superseded prior planned/open project status."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_065822"
+}

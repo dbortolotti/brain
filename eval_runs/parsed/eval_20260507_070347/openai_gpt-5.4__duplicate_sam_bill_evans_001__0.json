@@ -1,0 +1,33 @@
+{
+  "fixture_id": "duplicate_sam_bill_evans_001",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "No conflict. The new information is a duplicate of an existing memory and should not create a new durable memory card.",
+    "citations": [
+      "Existing memory: \"Sam from Goldman mentioned that he likes Bill Evans.\"",
+      "New memory: \"Sam from Goldman said he likes Bill Evans.\""
+    ],
+    "conflict_classification": "duplicate",
+    "decision": "no_op_duplicate",
+    "entity_resolution": {
+      "action": "reuse_existing",
+      "entity_id": null,
+      "reason": "The new statement matches the existing memory in meaning and entities: Sam from Goldman liking Bill Evans."
+    },
+    "intent": "compare_new_memory_to_existing",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Compared semantic content of existing and new memory.",
+        "Detected same subject (Sam from Goldman), same preference relation (likes), and same object (Bill Evans).",
+        "Classified as duplicate and avoided redundant storage."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Do not create a new memory card.",
+      "Optionally reinforce the existing memory as re-confirmed without changing its content."
+    ]
+  },
+  "run_id": "eval_20260507_070347"
+}

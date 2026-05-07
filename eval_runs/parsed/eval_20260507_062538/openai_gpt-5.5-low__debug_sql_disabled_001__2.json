@@ -1,0 +1,30 @@
+{
+  "fixture_id": "debug_sql_disabled_001",
+  "model": "openai:gpt-5.5-low",
+  "payload": {
+    "answer": "SQL debug execution is disabled because BRAIN_DEBUG_SQL_ENABLED=false. The requested query was not executed, and no memory cards were read or modified.",
+    "citations": [],
+    "conflict_classification": "not_applicable",
+    "decision": "rejected",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input is an administrative/debug SQL command, not a durable user memory statement."
+    },
+    "intent": "admin_sql_debug_request",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Rejected /brain admin sql request because SQL debug mode is disabled.",
+        "No durable memory was committed.",
+        "No SQL results were returned."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Enable BRAIN_DEBUG_SQL_ENABLED in an appropriate administrative environment before running debug SQL.",
+      "Use supported non-SQL Brain admin/debug commands if available."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

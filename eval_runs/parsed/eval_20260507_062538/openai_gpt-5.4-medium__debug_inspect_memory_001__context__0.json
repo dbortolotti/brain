@@ -1,0 +1,33 @@
+{
+  "fixture_id": "debug_inspect_memory_001__context",
+  "model": "openai:gpt-5.4-medium",
+  "payload": {
+    "answer": "This is an inspection request for existing memory mem_123. It should be treated as a read-only/debug action. No new durable memory should be committed, and no current fact should be inferred because the contents of mem_123 were not provided in the fixture.",
+    "citations": [
+      "mem_123"
+    ],
+    "conflict_classification": "none",
+    "decision": "no_memory_write",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input is a debug/context request to inspect an existing memory by ID, not a request to create, update, or resolve durable memory."
+    },
+    "intent": "inspect_memory",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Recognized '/brain inspect memory mem_123' as a read-only inspection command.",
+        "Parsed target memory ID: mem_123.",
+        "Performed no memory creation, update, deletion, or entity resolution."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide the stored contents or metadata for mem_123 if you want an explanation of that memory.",
+      "Run the inspect command against the live memory system to retrieve the actual record.",
+      "If the goal was to update or delete mem_123, issue an explicit write/delete command instead of an inspect command."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

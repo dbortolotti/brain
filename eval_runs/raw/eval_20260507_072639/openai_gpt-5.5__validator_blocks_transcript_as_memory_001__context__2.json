@@ -1,0 +1,35 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_transcript_as_memory_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Rejected. Do not store an entire transcript as one memory card. Durable memory should be atomic, user-relevant, non-duplicative, and expressed as specific facts, preferences, commitments, or stable summaries with ambiguity preserved.",
+    "citations": [],
+    "conflict_classification": "not_applicable",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "A whole 8000 word transcript as a single conversation_summary card is not an appropriate durable memory unit; it is unstructured, overbroad, and likely contains ephemeral or non-atomic content."
+    },
+    "intent": "validate_memory_proposal",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Rejected oversized transcript-as-memory proposal.",
+        "No memory cards committed."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Extract only durable, user-relevant facts from the transcript into separate atomic memory cards.",
+      "Create a concise high-level summary only if it captures stable context needed for future interactions, not the full transcript.",
+      "Omit ephemeral chat content, reasoning traces, filler, and one-off details.",
+      "Preserve uncertainty and source context where facts are ambiguous or unverified.",
+      "Check for conflicts with existing memory before committing any extracted card."
+    ]
+  },
+  "raw_text": "{\"intent\":\"validate_memory_proposal\",\"decision\":\"reject\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"A whole 8000 word transcript as a single conversation_summary card is not an appropriate durable memory unit; it is unstructured, overbroad, and likely contains ephemeral or non-atomic content.\"},\"conflict_classification\":\"not_applicable\",\"answer\":\"Rejected. Do not store an entire transcript as one memory card. Durable memory should be atomic, user-relevant, non-duplicative, and expressed as specific facts, preferences, commitments, or stable summaries with ambiguity preserved.\",\"citations\":[],\"repair_options\":[\"Extract only durable, user-relevant facts from the transcript into separate atomic memory cards.\",\"Create a concise high-level summary only if it captures stable context needed for future interactions, not the full transcript.\",\"Omit ephemeral chat content, reasoning traces, filler, and one-off details.\",\"Preserve uncertainty and source context where facts are ambiguous or unverified.\",\"Check for conflicts with existing memory before committing any extracted card.\"],\"receipt\":{\"success\":false,\"details\":[\"Rejected oversized transcript-as-memory proposal.\",\"No memory cards committed.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

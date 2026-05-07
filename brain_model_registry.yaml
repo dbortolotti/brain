@@ -164,37 +164,231 @@ providers:
       - id: "gpt-5.4"
         enabled_by_default: true
         roles:
+          - router
+          - slack_intake
+          - memory_compiler
+          - validator_critic
+          - entity_resolution
+          - conflict_classifier
+          - recall_synthesizer
+          - debug_explainer
           - eval_judge
           - hard_adjudicator
-        judge_only: true
+        reasoning_effort: "none"
         price_per_1m:
           input: 2.50
           cached_input: 0.25
           output: 15.00
-        expected_use: "Rare judge/adjudicator, not runtime default."
+        context_window_tokens: 1050000
+        max_output_tokens: 128000
+        knowledge_cutoff: "2025-08-31"
+        expected_use: "General frontier candidate with thinking disabled/default for latency-sensitive comparisons."
+
+      - id: "gpt-5.4-low"
+        api_model: "gpt-5.4"
+        enabled_by_default: false
+        roles:
+          - router
+          - slack_intake
+          - memory_compiler
+          - validator_critic
+          - entity_resolution
+          - conflict_classifier
+          - recall_synthesizer
+          - debug_explainer
+          - eval_judge
+          - hard_adjudicator
+        reasoning_effort: "low"
+        price_per_1m:
+          input: 2.50
+          cached_input: 0.25
+          output: 15.00
+        context_window_tokens: 1050000
+        max_output_tokens: 128000
+        knowledge_cutoff: "2025-08-31"
+        expected_use: "Low-thinking GPT-5.4 variant for broad all-role eval coverage."
+
+      - id: "gpt-5.4-medium"
+        api_model: "gpt-5.4"
+        enabled_by_default: false
+        roles:
+          - router
+          - slack_intake
+          - memory_compiler
+          - validator_critic
+          - entity_resolution
+          - conflict_classifier
+          - recall_synthesizer
+          - debug_explainer
+          - eval_judge
+          - hard_adjudicator
+        reasoning_effort: "medium"
+        price_per_1m:
+          input: 2.50
+          cached_input: 0.25
+          output: 15.00
+        context_window_tokens: 1050000
+        max_output_tokens: 128000
+        knowledge_cutoff: "2025-08-31"
+        expected_use: "Balanced-thinking GPT-5.4 variant for all-role evals."
+
+      - id: "gpt-5.4-high"
+        api_model: "gpt-5.4"
+        enabled_by_default: false
+        roles:
+          - router
+          - slack_intake
+          - memory_compiler
+          - validator_critic
+          - entity_resolution
+          - conflict_classifier
+          - recall_synthesizer
+          - debug_explainer
+          - eval_judge
+          - hard_adjudicator
+        reasoning_effort: "high"
+        price_per_1m:
+          input: 2.50
+          cached_input: 0.25
+          output: 15.00
+        context_window_tokens: 1050000
+        max_output_tokens: 128000
+        knowledge_cutoff: "2025-08-31"
+        expected_use: "High-thinking GPT-5.4 variant for difficult runtime and judge tasks."
+
+      - id: "gpt-5.4-xhigh"
+        api_model: "gpt-5.4"
+        enabled_by_default: false
+        roles:
+          - router
+          - slack_intake
+          - memory_compiler
+          - validator_critic
+          - entity_resolution
+          - conflict_classifier
+          - recall_synthesizer
+          - debug_explainer
+          - eval_judge
+          - hard_adjudicator
+        reasoning_effort: "xhigh"
+        price_per_1m:
+          input: 2.50
+          cached_input: 0.25
+          output: 15.00
+        context_window_tokens: 1050000
+        max_output_tokens: 128000
+        knowledge_cutoff: "2025-08-31"
+        expected_use: "Max-thinking GPT-5.4 variant for hardest all-role evals."
 
       - id: "gpt-5.5"
         enabled_by_default: false
         roles:
+          - router
+          - slack_intake
+          - memory_compiler
+          - validator_critic
+          - entity_resolution
+          - conflict_classifier
+          - recall_synthesizer
+          - debug_explainer
           - eval_judge
           - hard_adjudicator
-        judge_only: true
+        reasoning_effort: "none"
         price_per_1m:
           input: 5.00
           cached_input: 0.50
           output: 30.00
-        expected_use: "Optional upper-bound judge; probably overkill."
         context_window_tokens: 1000000
         max_output_tokens: 128000
         knowledge_cutoff: "2025-12-01"
+        expected_use: "Flagship GPT-5.5 baseline with thinking disabled/default for broad role evals."
+
+      - id: "gpt-5.5-low"
+        api_model: "gpt-5.5"
+        enabled_by_default: false
+        roles:
+          - router
+          - slack_intake
+          - memory_compiler
+          - validator_critic
+          - entity_resolution
+          - conflict_classifier
+          - recall_synthesizer
+          - debug_explainer
+          - eval_judge
+          - hard_adjudicator
+        reasoning_effort: "low"
+        price_per_1m:
+          input: 5.00
+          cached_input: 0.50
+          output: 30.00
+        context_window_tokens: 1000000
+        max_output_tokens: 128000
+        knowledge_cutoff: "2025-12-01"
+        expected_use: "Low-thinking GPT-5.5 variant for broad all-role eval coverage."
+
+      - id: "gpt-5.5-medium"
+        api_model: "gpt-5.5"
+        enabled_by_default: false
+        roles:
+          - router
+          - slack_intake
+          - memory_compiler
+          - validator_critic
+          - entity_resolution
+          - conflict_classifier
+          - recall_synthesizer
+          - debug_explainer
+          - eval_judge
+          - hard_adjudicator
+        reasoning_effort: "medium"
+        price_per_1m:
+          input: 5.00
+          cached_input: 0.50
+          output: 30.00
+        context_window_tokens: 1000000
+        max_output_tokens: 128000
+        knowledge_cutoff: "2025-12-01"
+        expected_use: "Balanced-thinking GPT-5.5 variant for all-role evals."
+
+      - id: "gpt-5.5-high"
+        api_model: "gpt-5.5"
+        enabled_by_default: false
+        roles:
+          - router
+          - slack_intake
+          - memory_compiler
+          - validator_critic
+          - entity_resolution
+          - conflict_classifier
+          - recall_synthesizer
+          - debug_explainer
+          - eval_judge
+          - hard_adjudicator
+        reasoning_effort: "high"
+        price_per_1m:
+          input: 5.00
+          cached_input: 0.50
+          output: 30.00
+        context_window_tokens: 1000000
+        max_output_tokens: 128000
+        knowledge_cutoff: "2025-12-01"
+        expected_use: "High-thinking GPT-5.5 variant for difficult runtime and judge tasks."
 
       - id: "gpt-5.5-xhigh"
         api_model: "gpt-5.5"
         enabled_by_default: false
         roles:
+          - router
+          - slack_intake
+          - memory_compiler
+          - validator_critic
+          - entity_resolution
+          - conflict_classifier
+          - recall_synthesizer
+          - debug_explainer
           - eval_judge
           - hard_adjudicator
-        judge_only: true
         reasoning_effort: "xhigh"
         price_per_1m:
           input: 5.00
@@ -273,11 +467,104 @@ providers:
       - id: "gemini-3.1-pro-preview"
         enabled_by_default: false
         roles:
+          - router
+          - slack_intake
+          - memory_compiler
+          - validator_critic
+          - entity_resolution
+          - conflict_classifier
+          - recall_synthesizer
+          - debug_explainer
           - eval_judge
           - hard_adjudicator
         preview: true
-        judge_only: true
-        expected_use: "Optional preview judge; not default."
+        price_per_1m:
+          input_under_200k: 2.00
+          output_under_200k: 12.00
+          input_over_200k: 4.00
+          output_over_200k: 18.00
+        context_window_tokens: 1000000
+        max_output_tokens: 64000
+        knowledge_cutoff: "2025-01-01"
+        expected_use: "Default dynamic-high Gemini 3.1 Pro preview for broad role evals."
+
+      - id: "gemini-3.1-pro-preview-low"
+        api_model: "gemini-3.1-pro-preview"
+        enabled_by_default: false
+        roles:
+          - router
+          - slack_intake
+          - memory_compiler
+          - validator_critic
+          - entity_resolution
+          - conflict_classifier
+          - recall_synthesizer
+          - debug_explainer
+          - eval_judge
+          - hard_adjudicator
+        preview: true
+        reasoning_effort: "low"
+        price_per_1m:
+          input_under_200k: 2.00
+          output_under_200k: 12.00
+          input_over_200k: 4.00
+          output_over_200k: 18.00
+        context_window_tokens: 1000000
+        max_output_tokens: 64000
+        knowledge_cutoff: "2025-01-01"
+        expected_use: "Low-thinking Gemini 3.1 Pro preview for cost/latency-sensitive eval comparisons."
+
+      - id: "gemini-3.1-pro-preview-medium"
+        api_model: "gemini-3.1-pro-preview"
+        enabled_by_default: false
+        roles:
+          - router
+          - slack_intake
+          - memory_compiler
+          - validator_critic
+          - entity_resolution
+          - conflict_classifier
+          - recall_synthesizer
+          - debug_explainer
+          - eval_judge
+          - hard_adjudicator
+        preview: true
+        reasoning_effort: "medium"
+        price_per_1m:
+          input_under_200k: 2.00
+          output_under_200k: 12.00
+          input_over_200k: 4.00
+          output_over_200k: 18.00
+        context_window_tokens: 1000000
+        max_output_tokens: 64000
+        knowledge_cutoff: "2025-01-01"
+        expected_use: "Balanced-thinking Gemini 3.1 Pro preview for broad role evals."
+
+      - id: "gemini-3.1-pro-preview-high"
+        api_model: "gemini-3.1-pro-preview"
+        enabled_by_default: false
+        roles:
+          - router
+          - slack_intake
+          - memory_compiler
+          - validator_critic
+          - entity_resolution
+          - conflict_classifier
+          - recall_synthesizer
+          - debug_explainer
+          - eval_judge
+          - hard_adjudicator
+        preview: true
+        reasoning_effort: "high"
+        price_per_1m:
+          input_under_200k: 2.00
+          output_under_200k: 12.00
+          input_over_200k: 4.00
+          output_over_200k: 18.00
+        context_window_tokens: 1000000
+        max_output_tokens: 64000
+        knowledge_cutoff: "2025-01-01"
+        expected_use: "Max-thinking Gemini 3.1 Pro preview for hardest broad-role evals."
 
   anthropic:
     type: "llm"
@@ -447,6 +734,7 @@ providers:
         enabled_by_default: true
         provider_brand: "openai_open_weight"
         roles:
+          - slack_intake
           - memory_compiler
           - recall_synthesizer
           - conflict_classifier

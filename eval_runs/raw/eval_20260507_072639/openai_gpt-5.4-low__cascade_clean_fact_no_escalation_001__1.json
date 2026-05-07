@@ -1,0 +1,78 @@
+{
+  "error": null,
+  "fixture_id": "cascade_clean_fact_no_escalation_001",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Noted.",
+    "citations": [
+      "User message: \"Nur and Sara are my twin daughters.\""
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_update_by_name",
+      "entity_id": null,
+      "reason": "No prior entity identifiers provided; names are directly asserted in a first-person family relationship."
+    },
+    "intent": "store_personal_fact",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "user",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "user",
+            "predicate": "daughter_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "user",
+            "predicate": "daughter_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Sara",
+            "predicate": "twin_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Nur",
+            "predicate": "twin_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Nur and Sara are the user's twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured family relationship: Nur is the user's daughter.",
+        "Captured family relationship: Sara is the user's daughter.",
+        "Captured sibling relationship: Nur and Sara are twins.",
+        "No conflict detected and no escalation needed."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"store_personal_fact\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Nur and Sara are the user's twin daughters.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"user\",\"type\":\"person\",\"role\":\"parent\"},{\"name\":\"Nur\",\"type\":\"person\",\"role\":\"daughter\"},{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"daughter\"}],\"relationships\":[{\"subject\":\"Nur\",\"predicate\":\"daughter_of\",\"object\":\"user\"},{\"subject\":\"Sara\",\"predicate\":\"daughter_of\",\"object\":\"user\"},{\"subject\":\"Nur\",\"predicate\":\"twin_of\",\"object\":\"Sara\"},{\"subject\":\"Sara\",\"predicate\":\"twin_of\",\"object\":\"Nur\"}]}],\"entity_resolution\":{\"action\":\"create_or_update_by_name\",\"entity_id\":null,\"reason\":\"No prior entity identifiers provided; names are directly asserted in a first-person family relationship.\"},\"conflict_classification\":\"no_conflict\",\"answer\":\"Noted.\",\"citations\":[\"User message: \\\"Nur and Sara are my twin daughters.\\\"\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Captured family relationship: Nur is the user's daughter.\",\"Captured family relationship: Sara is the user's daughter.\",\"Captured sibling relationship: Nur and Sara are twins.\",\"No conflict detected and no escalation needed.\"]}}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

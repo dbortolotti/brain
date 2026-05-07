@@ -1,0 +1,34 @@
+{
+  "error": null,
+  "fixture_id": "debug_inspect_memory_001",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "Inspection requested for memory mem_123. No durable memory facts are being added, changed, or deleted. The referenced memory record is not available in the provided input, so I cannot present its contents or treat any facts from it as current.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "no_write_inspection_only",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The command references memory id mem_123, but no memory record contents were provided in the input to inspect or resolve."
+    },
+    "intent": "inspect_memory",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Parsed command: /brain inspect memory mem_123",
+        "Performed inspection-only flow with no memory mutation.",
+        "Could not inspect contents because the memory payload for mem_123 was not supplied."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide the stored contents and metadata for mem_123 to inspect it.",
+      "Verify that mem_123 exists in the memory store.",
+      "If mem_123 was deleted or superseded, inspect the replacement or deletion record instead."
+    ]
+  },
+  "raw_text": "{\"intent\":\"inspect_memory\",\"decision\":\"no_write_inspection_only\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The command references memory id mem_123, but no memory record contents were provided in the input to inspect or resolve.\"},\"conflict_classification\":\"none_detected\",\"answer\":\"Inspection requested for memory mem_123. No durable memory facts are being added, changed, or deleted. The referenced memory record is not available in the provided input, so I cannot present its contents or treat any facts from it as current.\",\"citations\":[],\"repair_options\":[\"Provide the stored contents and metadata for mem_123 to inspect it.\",\"Verify that mem_123 exists in the memory store.\",\"If mem_123 was deleted or superseded, inspect the replacement or deletion record instead.\"],\"receipt\":{\"success\":false,\"details\":[\"Parsed command: /brain inspect memory mem_123\",\"Performed inspection-only flow with no memory mutation.\",\"Could not inspect contents because the memory payload for mem_123 was not supplied.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

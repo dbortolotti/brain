@@ -1,0 +1,75 @@
+{
+  "fixture_id": "contradiction_sam_children_001",
+  "model": "groq:openai/gpt-oss-120b",
+  "payload": {
+    "answer": "The new statement that Sam has no children directly contradicts the existing memory that Sam has two children.",
+    "citations": [],
+    "conflict_classification": "contradiction",
+    "decision": "flag_conflict",
+    "entity_resolution": {
+      "action": "review",
+      "entity_id": null,
+      "reason": "conflicting child count"
+    },
+    "intent": "conflict_classification",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "type": "organization"
+          }
+        ],
+        "kind": "existing",
+        "relationships": [
+          {
+            "object": "2",
+            "predicate": "hasChildren",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman has two children."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "type": "organization"
+          }
+        ],
+        "kind": "new",
+        "relationships": [
+          {
+            "object": "0",
+            "predicate": "hasChildren",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman has no children."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict identified",
+        "Memory cards processed"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "retain existing memory and discard new",
+      "replace existing with new after verification",
+      "mark as ambiguous pending further evidence"
+    ]
+  },
+  "run_id": "eval_20260507_043016"
+}

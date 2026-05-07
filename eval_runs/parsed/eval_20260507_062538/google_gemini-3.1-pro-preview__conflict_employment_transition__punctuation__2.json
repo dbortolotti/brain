@@ -1,0 +1,75 @@
+{
+  "fixture_id": "conflict_employment_transition__punctuation",
+  "model": "google:gemini-3.1-pro-preview",
+  "payload": {
+    "answer": "I have updated Sam's employment record to reflect that they left Goldman and joined Point72.",
+    "citations": [],
+    "conflict_classification": "temporal_update",
+    "decision": "supersede",
+    "entity_resolution": {
+      "action": "update",
+      "entity_id": "Sam",
+      "reason": "Updating employment history for Sam based on new transition event."
+    },
+    "intent": "update_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "state",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Point72."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "former_employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "event",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded previous employment at Goldman.",
+        "Added new employment at Point72."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_062538"
+}

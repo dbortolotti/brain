@@ -1,0 +1,64 @@
+{
+  "fixture_id": "groundedness_metadata_claims_001__context",
+  "model": "openai:gpt-5.5-medium",
+  "payload": {
+    "answer": "Supported: the person identity and aliases are grounded in the described entity and alias evidence. Do not infer any Goldman affiliation beyond the alias text.",
+    "citations": [
+      "entity row",
+      "alias row"
+    ],
+    "conflict_classification": "none",
+    "decision": "grounded",
+    "entity_resolution": {
+      "action": "identify_existing_entity",
+      "entity_id": null,
+      "reason": "The evidence is described as containing both an entity row and an alias row, supporting the person identity and listed aliases, but no stable entity ID is provided."
+    },
+    "intent": "evaluate_groundedness",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "referenced entity",
+            "role": "subject",
+            "type": "Person"
+          },
+          {
+            "name": "Sam",
+            "role": "alias",
+            "type": "Alias"
+          },
+          {
+            "name": "Sam from Goldman",
+            "role": "alias",
+            "type": "Alias"
+          }
+        ],
+        "kind": "identity",
+        "relationships": [
+          {
+            "object": "Sam",
+            "predicate": "has_alias",
+            "subject": "referenced entity"
+          },
+          {
+            "object": "Sam from Goldman",
+            "predicate": "has_alias",
+            "subject": "referenced entity"
+          }
+        ],
+        "statement": "The referenced entity is classified as a person, with aliases \"Sam\" and \"Sam from Goldman\"."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Groundedness accepted at medium confidence.",
+        "Aliases preserved as aliases only; no additional affiliation claim was inferred."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_062538"
+}

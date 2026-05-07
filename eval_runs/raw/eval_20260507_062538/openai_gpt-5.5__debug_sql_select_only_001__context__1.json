@@ -1,0 +1,33 @@
+{
+  "error": null,
+  "fixture_id": "debug_sql_select_only_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "In Admin SQL select-only mode, a read-only SELECT query such as `SELECT id FROM memory_cards LIMIT 10` is allowed, while a mutating statement such as `DELETE FROM memory_cards` is denied. No durable memory should be created from this debug fixture context.",
+    "citations": [
+      "Fixture ID: debug_sql_select_only_001__context",
+      "Input: SELECT id FROM memory_cards LIMIT 10 allowed; DELETE FROM memory_cards denied."
+    ],
+    "conflict_classification": "none",
+    "decision": "no_memory_commit",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input describes an access-control behavior for an admin SQL select-only mode fixture, not a durable user memory fact."
+    },
+    "intent": "debug_explainer",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Recognized the fixture as debug/context rather than user memory.",
+        "Preserved the access-control distinction: SELECT allowed, DELETE denied.",
+        "Did not create or modify memory cards."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"debug_explainer\",\"decision\":\"no_memory_commit\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input describes an access-control behavior for an admin SQL select-only mode fixture, not a durable user memory fact.\"},\"conflict_classification\":\"none\",\"answer\":\"In Admin SQL select-only mode, a read-only SELECT query such as `SELECT id FROM memory_cards LIMIT 10` is allowed, while a mutating statement such as `DELETE FROM memory_cards` is denied. No durable memory should be created from this debug fixture context.\",\"citations\":[\"Fixture ID: debug_sql_select_only_001__context\",\"Input: SELECT id FROM memory_cards LIMIT 10 allowed; DELETE FROM memory_cards denied.\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Recognized the fixture as debug/context rather than user memory.\",\"Preserved the access-control distinction: SELECT allowed, DELETE denied.\",\"Did not create or modify memory cards.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

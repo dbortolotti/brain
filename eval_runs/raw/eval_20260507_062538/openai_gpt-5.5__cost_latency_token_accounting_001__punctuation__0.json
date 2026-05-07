@@ -1,0 +1,29 @@
+{
+  "error": null,
+  "fixture_id": "cost_latency_token_accounting_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Required eval accounting fields typically include: token counts, provider/model identifiers, estimated price, and latency percentiles.\n\nToken counts: Record input/prompt tokens, output/completion tokens, and total tokens. If available, also track cached tokens, reasoning tokens, tool-call tokens, or embedding tokens separately so cost calculations can match provider billing rules.\n\nProvider/model IDs: Store the provider name and exact model identifier used for the run, such as the API provider and deployed model/version. These fields make results reproducible and allow pricing, latency, and quality comparisons across models.\n\nEstimated price: Compute the estimated cost for the eval run from token counts and the provider/model pricing table. Include currency, pricing version or timestamp when possible, and distinguish estimated from billed cost because actual invoices may include discounts, minimums, cache pricing, retries, or taxes.\n\nLatency p50, p90, p95: Report percentile latency across eval requests. p50 is the median request latency; p90 means 90% of requests completed at or below that time; p95 means 95% completed at or below that time. These should specify units, usually milliseconds, and whether latency measures end-to-end wall time, provider API time, streaming first-token latency, or full completion latency.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "answer_only_no_memory_commit",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input asks for an explanation of evaluation accounting fields, not for storing durable personal memory."
+    },
+    "intent": "Explain required evaluation accounting fields for cost, latency, and token tracking.",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No durable memory was committed.",
+        "Explained token counts, provider/model IDs, estimated price, and latency p50/p90/p95."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"Explain required evaluation accounting fields for cost, latency, and token tracking.\",\"decision\":\"answer_only_no_memory_commit\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input asks for an explanation of evaluation accounting fields, not for storing durable personal memory.\"},\"conflict_classification\":\"none\",\"answer\":\"Required eval accounting fields typically include: token counts, provider/model identifiers, estimated price, and latency percentiles.\\n\\nToken counts: Record input/prompt tokens, output/completion tokens, and total tokens. If available, also track cached tokens, reasoning tokens, tool-call tokens, or embedding tokens separately so cost calculations can match provider billing rules.\\n\\nProvider/model IDs: Store the provider name and exact model identifier used for the run, such as the API provider and deployed model/version. These fields make results reproducible and allow pricing, latency, and quality comparisons across models.\\n\\nEstimated price: Compute the estimated cost for the eval run from token counts and the provider/model pricing table. Include currency, pricing version or timestamp when possible, and distinguish estimated from billed cost because actual invoices may include discounts, minimums, cache pricing, retries, or taxes.\\n\\nLatency p50, p90, p95: Report percentile latency across eval requests. p50 is the median request latency; p90 means 90% of requests completed at or below that time; p95 means 95% completed at or below that time. These should specify units, usually milliseconds, and whether latency measures end-to-end wall time, provider API time, streaming first-token latency, or full completion latency.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"No durable memory was committed.\",\"Explained token counts, provider/model IDs, estimated price, and latency p50/p90/p95.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

@@ -1,0 +1,33 @@
+{
+  "fixture_id": "groundedness_absence_claims_001__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "No. The statement \"No conflicts recorded\" is not grounded unless conflict links were explicitly checked; without that verification, the absence claim is unsupported.",
+    "citations": [
+      "Input states: \"Answer: No conflicts recorded. Evidence only supports this if conflict links were checked.\""
+    ],
+    "conflict_classification": "absence_claim_unverified",
+    "decision": "insufficient_evidence_for_absence_claim",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No durable memory should be committed from a context-only evaluation prompt, and the claim is contingent on missing verification of conflict links."
+    },
+    "intent": "evaluate_groundedness",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Evaluated the claim as an unverified absence assertion.",
+        "Preserved ambiguity by refusing to treat missing evidence as evidence of absence.",
+        "Committed no memory cards."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Check conflict links directly before asserting that no conflicts are recorded.",
+      "If conflict links were not checked, answer with uncertainty, e.g. \"Cannot determine whether conflicts are recorded from the provided evidence.\"",
+      "Avoid committing any durable memory based on this context-only groundedness evaluation."
+    ]
+  },
+  "run_id": "eval_20260507_062538"
+}

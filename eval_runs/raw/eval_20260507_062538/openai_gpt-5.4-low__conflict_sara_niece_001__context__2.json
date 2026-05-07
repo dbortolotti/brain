@@ -1,0 +1,83 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "No direct conflict. 'Sara is my niece' can be consistent with 'Sara is Daniele's daughter and Nur's twin,' but it is too speaker-relative to store as a durable fact without resolving who 'my' refers to and how the speaker relates to Daniele or Sara's other parent.",
+    "citations": [
+      "Existing memory: Sara is Daniele's daughter.",
+      "Existing memory: Sara is Nur's twin.",
+      "New claim: Sara is my niece."
+    ],
+    "conflict_classification": "no_direct_conflict_underspecified",
+    "decision": "do_not_commit_as_durable_fact_without_linking_context",
+    "entity_resolution": {
+      "action": "link_existing_entity",
+      "entity_id": "Sara",
+      "reason": "The new statement refers to the same Sara already present in memory, but the speaker-relative relationship remains unresolved."
+    },
+    "intent": "classify_new_memory_against_existing_context",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "referenced_person",
+            "type": "person"
+          },
+          {
+            "name": "speaker",
+            "role": "claim_source",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "existing_parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "existing_sibling",
+            "type": "person"
+          }
+        ],
+        "kind": "contextual_claim",
+        "relationships": [
+          {
+            "object": "speaker",
+            "predicate": "is_niece_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Daniele",
+            "predicate": "daughter_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "twin_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "The speaker says Sara is their niece, but the relationship is speaker-relative and cannot be grounded without resolving the speaker's family relationship to Sara's parents."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Compared the new claim against existing family facts.",
+        "Found no logical contradiction.",
+        "Declined durable commit because the new relationship is ambiguous and speaker-relative."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask who 'my' refers to in durable identity terms.",
+      "Ask whether the speaker is Daniele's sibling, Sara's parent's sibling, or using 'niece' non-literally.",
+      "Store only as a quoted/ephemeral user-relative claim until the family link is clarified."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_new_memory_against_existing_context\",\"decision\":\"do_not_commit_as_durable_fact_without_linking_context\",\"memory_cards\":[{\"kind\":\"contextual_claim\",\"statement\":\"The speaker says Sara is their niece, but the relationship is speaker-relative and cannot be grounded without resolving the speaker's family relationship to Sara's parents.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"referenced_person\"},{\"name\":\"speaker\",\"type\":\"person\",\"role\":\"claim_source\"},{\"name\":\"Daniele\",\"type\":\"person\",\"role\":\"existing_parent\"},{\"name\":\"Nur\",\"type\":\"person\",\"role\":\"existing_sibling\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"is_niece_of\",\"object\":\"speaker\"},{\"subject\":\"Sara\",\"predicate\":\"daughter_of\",\"object\":\"Daniele\"},{\"subject\":\"Sara\",\"predicate\":\"twin_of\",\"object\":\"Nur\"}]}],\"entity_resolution\":{\"action\":\"link_existing_entity\",\"entity_id\":\"Sara\",\"reason\":\"The new statement refers to the same Sara already present in memory, but the speaker-relative relationship remains unresolved.\"},\"conflict_classification\":\"no_direct_conflict_underspecified\",\"answer\":\"No direct conflict. 'Sara is my niece' can be consistent with 'Sara is Daniele's daughter and Nur's twin,' but it is too speaker-relative to store as a durable fact without resolving who 'my' refers to and how the speaker relates to Daniele or Sara's other parent.\",\"citations\":[\"Existing memory: Sara is Daniele's daughter.\",\"Existing memory: Sara is Nur's twin.\",\"New claim: Sara is my niece.\"],\"repair_options\":[\"Ask who 'my' refers to in durable identity terms.\",\"Ask whether the speaker is Daniele's sibling, Sara's parent's sibling, or using 'niece' non-literally.\",\"Store only as a quoted/ephemeral user-relative claim until the family link is clarified.\"],\"receipt\":{\"success\":true,\"details\":[\"Compared the new claim against existing family facts.\",\"Found no logical contradiction.\",\"Declined durable commit because the new relationship is ambiguous and speaker-relative.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

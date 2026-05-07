@@ -1,0 +1,69 @@
+{
+  "fixture_id": "conflict_correction_like",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Treat this as an explicit correction that supersedes the existing current fact. Update the durable memory to 'Sam from Goldman likes early Coltrane' and mark 'Sam from Goldman likes Bill Evans' as no longer current.",
+    "citations": [
+      "Existing current fact: Sam from Goldman likes Bill Evans.",
+      "Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans."
+    ],
+    "conflict_classification": "explicit_correction_direct_conflict",
+    "decision": "replace_existing_fact_with_correction",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No entity ambiguity requiring merge or split; the correction changes a preference, not identity."
+    },
+    "intent": "correct_fact",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "preference_target"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected explicit negation of the prior fact ('not Bill Evans').",
+        "Classified as a direct correction, not an additive preference.",
+        "Prepared one replacement current-memory card for the corrected preference."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace the current preference fact with the corrected one.",
+      "Mark the prior 'likes Bill Evans' fact as superseded/incorrect so it is not surfaced as current.",
+      "If versioning is supported, preserve the old fact only as historical with a clear superseded status."
+    ]
+  },
+  "run_id": "eval_20260507_065822"
+}

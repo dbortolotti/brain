@@ -1,0 +1,85 @@
+{
+  "error": null,
+  "fixture_id": "concurrent_conflict_writes_001__punctuation",
+  "model": "openai:gpt-5.5-low",
+  "payload": {
+    "answer": "The text suggests conflicting or ambiguous employment information for Sam: Goldman and Point72 are both mentioned, but there is not enough context to determine Sam's current employer. No durable current-employer memory should be committed without clarification.",
+    "citations": [
+      "Concurrent writes - Sam works at Goldman Sam joined Point72"
+    ],
+    "conflict_classification": "potential_current_employment_conflict",
+    "decision": "do_not_commit_current_employer_without_clarification",
+    "entity_resolution": {
+      "action": "ambiguous",
+      "entity_id": null,
+      "reason": "The input appears to contain two concurrent employment-related statements without punctuation or timing, so it is unclear whether Point72 supersedes Goldman, whether both are true in different capacities, or whether one statement is erroneous."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "possible employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "possible_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam may work at Goldman."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "possible employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "possible_fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam may have joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected ambiguous concurrent employment writes.",
+        "Did not treat either Goldman or Point72 as Sam's confirmed current employer.",
+        "Preserved both claims as low-confidence possible facts."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask whether Sam currently works at Goldman or Point72.",
+      "Ask whether joining Point72 superseded the Goldman role.",
+      "Ask whether Goldman and Point72 refer to separate roles, past versus current employment, or an affiliation that can coexist."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict\",\"decision\":\"do_not_commit_current_employer_without_clarification\",\"memory_cards\":[{\"kind\":\"possible_fact\",\"statement\":\"Sam may work at Goldman.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"possible employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Goldman\"}]},{\"kind\":\"possible_fact\",\"statement\":\"Sam may have joined Point72.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"possible employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"ambiguous\",\"entity_id\":null,\"reason\":\"The input appears to contain two concurrent employment-related statements without punctuation or timing, so it is unclear whether Point72 supersedes Goldman, whether both are true in different capacities, or whether one statement is erroneous.\"},\"conflict_classification\":\"potential_current_employment_conflict\",\"answer\":\"The text suggests conflicting or ambiguous employment information for Sam: Goldman and Point72 are both mentioned, but there is not enough context to determine Sam's current employer. No durable current-employer memory should be committed without clarification.\",\"citations\":[\"Concurrent writes - Sam works at Goldman Sam joined Point72\"],\"repair_options\":[\"Ask whether Sam currently works at Goldman or Point72.\",\"Ask whether joining Point72 superseded the Goldman role.\",\"Ask whether Goldman and Point72 refer to separate roles, past versus current employment, or an affiliation that can coexist.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected ambiguous concurrent employment writes.\",\"Did not treat either Goldman or Point72 as Sam's confirmed current employer.\",\"Preserved both claims as low-confidence possible facts.\"]}}",
+  "run_id": "eval_20260507_071025",
+  "status": "ok"
+}

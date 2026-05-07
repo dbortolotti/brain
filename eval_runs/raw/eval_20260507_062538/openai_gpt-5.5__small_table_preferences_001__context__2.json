@@ -1,0 +1,101 @@
+{
+  "error": null,
+  "fixture_id": "small_table_preferences_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Compiled two durable preference memories from the provided table.",
+    "citations": [
+      "Dinner 2026-05-05",
+      "Lunch 2026-05-01"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_merge_if_unambiguous",
+      "entity_id": null,
+      "reason": "The input provides first names and firms only; commit preferences while preserving ambiguity and avoid assuming unique identities beyond the provided context."
+    },
+    "intent": "compile_context_to_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "firm"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_object",
+            "type": "person_or_artist"
+          }
+        ],
+        "kind": "person_preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam at Goldman likes Bill Evans. Source: Dinner 2026-05-05."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Anna",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "JPM",
+            "role": "affiliation",
+            "type": "firm"
+          },
+          {
+            "name": "Barolo",
+            "role": "preference_object",
+            "type": "wine"
+          }
+        ],
+        "kind": "person_preference",
+        "relationships": [
+          {
+            "object": "JPM",
+            "predicate": "affiliated_with",
+            "subject": "Anna"
+          },
+          {
+            "object": "Barolo",
+            "predicate": "likes",
+            "subject": "Anna"
+          }
+        ],
+        "statement": "Anna at JPM likes Barolo. Source: Lunch 2026-05-01."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed preference: Sam at Goldman likes Bill Evans, sourced from Dinner 2026-05-05.",
+        "Committed preference: Anna at JPM likes Barolo, sourced from Lunch 2026-05-01."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"compile_context_to_memory\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"person_preference\",\"statement\":\"Sam at Goldman likes Bill Evans. Source: Dinner 2026-05-05.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"firm\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person_or_artist\",\"role\":\"preference_object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]},{\"kind\":\"person_preference\",\"statement\":\"Anna at JPM likes Barolo. Source: Lunch 2026-05-01.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Anna\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"JPM\",\"type\":\"firm\",\"role\":\"affiliation\"},{\"name\":\"Barolo\",\"type\":\"wine\",\"role\":\"preference_object\"}],\"relationships\":[{\"subject\":\"Anna\",\"predicate\":\"affiliated_with\",\"object\":\"JPM\"},{\"subject\":\"Anna\",\"predicate\":\"likes\",\"object\":\"Barolo\"}]}],\"entity_resolution\":{\"action\":\"create_or_merge_if_unambiguous\",\"entity_id\":null,\"reason\":\"The input provides first names and firms only; commit preferences while preserving ambiguity and avoid assuming unique identities beyond the provided context.\"},\"conflict_classification\":\"none\",\"answer\":\"Compiled two durable preference memories from the provided table.\",\"citations\":[\"Dinner 2026-05-05\",\"Lunch 2026-05-01\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Committed preference: Sam at Goldman likes Bill Evans, sourced from Dinner 2026-05-05.\",\"Committed preference: Anna at JPM likes Barolo, sourced from Lunch 2026-05-01.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

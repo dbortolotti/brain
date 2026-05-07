@@ -1,0 +1,36 @@
+{
+  "error": null,
+  "fixture_id": "cascade_conflict_escalation_001",
+  "model": "openai:gpt-5.5-low",
+  "payload": {
+    "answer": "I have Sara recorded as your daughter, but the new input says Sara is your niece. Please clarify which relationship is correct, or whether these refer to two different people named Sara.",
+    "citations": [
+      "Existing: Sara is my daughter.",
+      "Input: Sara is my niece."
+    ],
+    "conflict_classification": "direct_relationship_conflict",
+    "decision": "conflict_detected_needs_clarification",
+    "entity_resolution": {
+      "action": "matched_existing_entity",
+      "entity_id": null,
+      "reason": "The name 'Sara' matches the existing person record, but the new relationship claim conflicts with the existing relationship."
+    },
+    "intent": "memory_update",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No durable memory update was committed because the new input conflicts with an existing relationship."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Keep Sara as my daughter and ignore the niece statement.",
+      "Replace the existing relationship: Sara is my niece, not my daughter.",
+      "Create a separate person for another Sara who is my niece.",
+      "Record both relationships only if Sara is both your daughter and your niece."
+    ]
+  },
+  "raw_text": "{\"intent\":\"memory_update\",\"decision\":\"conflict_detected_needs_clarification\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"matched_existing_entity\",\"entity_id\":null,\"reason\":\"The name 'Sara' matches the existing person record, but the new relationship claim conflicts with the existing relationship.\"},\"conflict_classification\":\"direct_relationship_conflict\",\"answer\":\"I have Sara recorded as your daughter, but the new input says Sara is your niece. Please clarify which relationship is correct, or whether these refer to two different people named Sara.\",\"citations\":[\"Existing: Sara is my daughter.\",\"Input: Sara is my niece.\"],\"repair_options\":[\"Keep Sara as my daughter and ignore the niece statement.\",\"Replace the existing relationship: Sara is my niece, not my daughter.\",\"Create a separate person for another Sara who is my niece.\",\"Record both relationships only if Sara is both your daughter and your niece.\"],\"receipt\":{\"success\":false,\"details\":[\"No durable memory update was committed because the new input conflicts with an existing relationship.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

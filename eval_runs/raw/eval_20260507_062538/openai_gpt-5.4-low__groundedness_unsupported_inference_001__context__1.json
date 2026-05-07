@@ -1,0 +1,37 @@
+{
+  "error": null,
+  "fixture_id": "groundedness_unsupported_inference_001__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Unsupported claim count: 1. The evidence only supports that Sam likes Bill Evans; it does not support that Sam is a serious jazz pianist.",
+    "citations": [
+      "Evidence: Sam likes Bill Evans.",
+      "Answer: Sam is a serious jazz pianist."
+    ],
+    "conflict_classification": "unsupported_inference",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No durable memory should be committed because the answer adds an unsupported inference beyond the evidence."
+    },
+    "intent": "Evaluate groundedness of the answer against the provided evidence and identify unsupported inference.",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected 1 unsupported claim.",
+        "No supported durable memory extracted from the answer beyond the given evidence.",
+        "Rejected commitment of inferred trait/profession because liking Bill Evans does not imply being a serious jazz pianist."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Revise the answer to: 'Sam likes Bill Evans.'",
+      "If more evidence exists connecting Sam to jazz piano, provide it before asserting that Sam is a serious jazz pianist.",
+      "Preserve ambiguity by saying Sam may enjoy jazz without inferring musicianship or seriousness."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Evaluate groundedness of the answer against the provided evidence and identify unsupported inference.\",\"decision\":\"reject\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No durable memory should be committed because the answer adds an unsupported inference beyond the evidence.\"},\"conflict_classification\":\"unsupported_inference\",\"answer\":\"Unsupported claim count: 1. The evidence only supports that Sam likes Bill Evans; it does not support that Sam is a serious jazz pianist.\",\"citations\":[\"Evidence: Sam likes Bill Evans.\",\"Answer: Sam is a serious jazz pianist.\"],\"repair_options\":[\"Revise the answer to: 'Sam likes Bill Evans.'\",\"If more evidence exists connecting Sam to jazz piano, provide it before asserting that Sam is a serious jazz pianist.\",\"Preserve ambiguity by saying Sam may enjoy jazz without inferring musicianship or seriousness.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected 1 unsupported claim.\",\"No supported durable memory extracted from the answer beyond the given evidence.\",\"Rejected commitment of inferred trait/profession because liking Bill Evans does not imply being a serious jazz pianist.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

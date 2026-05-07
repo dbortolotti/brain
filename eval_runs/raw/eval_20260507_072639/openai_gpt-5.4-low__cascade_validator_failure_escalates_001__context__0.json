@@ -1,0 +1,37 @@
+{
+  "error": null,
+  "fixture_id": "cascade_validator_failure_escalates_001__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Prior output was invalid or unsafe. Do not commit memory from it. Escalate to a stronger model for regeneration; if escalation is unavailable, safely reject.",
+    "citations": [
+      "Cheap model output invalid schema or unsafe proposal.",
+      "Expected escalation to stronger model or safe reject."
+    ],
+    "conflict_classification": "validator_failure_invalid_schema_or_unsafe_proposal",
+    "decision": "escalate_to_stronger_model",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No reliable entity-level memory can be committed from invalid-schema or unsafe prior output."
+    },
+    "intent": "validate_and_escalate_or_reject",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No durable memory committed.",
+        "Ambiguity preserved; no unsupported facts promoted.",
+        "Escalation recommended as primary recovery path."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Escalate the task to a stronger model and request a schema-valid, safety-compliant response.",
+      "If escalation is unavailable, return a safe rejection with no memory writes.",
+      "Discard the prior invalid/unsafe output and regenerate from source context only."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"validate_and_escalate_or_reject\",\n  \"decision\": \"escalate_to_stronger_model\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No reliable entity-level memory can be committed from invalid-schema or unsafe prior output.\"\n  },\n  \"conflict_classification\": \"validator_failure_invalid_schema_or_unsafe_proposal\",\n  \"answer\": \"Prior output was invalid or unsafe. Do not commit memory from it. Escalate to a stronger model for regeneration; if escalation is unavailable, safely reject.\",\n  \"citations\": [\n    \"Cheap model output invalid schema or unsafe proposal.\",\n    \"Expected escalation to stronger model or safe reject.\"\n  ],\n  \"repair_options\": [\n    \"Escalate the task to a stronger model and request a schema-valid, safety-compliant response.\",\n    \"If escalation is unavailable, return a safe rejection with no memory writes.\",\n    \"Discard the prior invalid/unsafe output and regenerate from source context only.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"No durable memory committed.\",\n      \"Ambiguity preserved; no unsupported facts promoted.\",\n      \"Escalation recommended as primary recovery path.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_072639",
+  "status": "ok"
+}

@@ -1,0 +1,38 @@
+{
+  "error": null,
+  "fixture_id": "concurrent_conflict_writes_001__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Conflict detected: 'Sam works at Goldman' and 'Sam joined Point72' are concurrent employment writes that cannot be safely merged into one current durable fact without temporal ordering or clarification. Preserve both as unresolved context only; do not store either as current canonical employment.",
+    "citations": [
+      "Sam works at Goldman.",
+      "Sam joined Point72."
+    ],
+    "conflict_classification": "concurrent_conflicting_writes_employment",
+    "decision": "do_not_commit_durable_memory",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Single person mention ('Sam') lacks stable identity resolution, and the employment facts are in conflict without timestamps or supersession metadata."
+    },
+    "intent": "classify_conflict_from_context",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected conflicting employment updates about Sam.",
+        "Refused durable commit due to ambiguity and lack of temporal resolution.",
+        "No superseded or deleted fact was presented as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request timestamps for both employment statements.",
+      "Ask whether joining Point72 superseded employment at Goldman.",
+      "Store as a temporal sequence only if dates are provided.",
+      "Resolve Sam's identity before committing durable memory."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict_from_context\",\"decision\":\"do_not_commit_durable_memory\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"Single person mention ('Sam') lacks stable identity resolution, and the employment facts are in conflict without timestamps or supersession metadata.\"},\"conflict_classification\":\"concurrent_conflicting_writes_employment\",\"answer\":\"Conflict detected: 'Sam works at Goldman' and 'Sam joined Point72' are concurrent employment writes that cannot be safely merged into one current durable fact without temporal ordering or clarification. Preserve both as unresolved context only; do not store either as current canonical employment.\",\"citations\":[\"Sam works at Goldman.\",\"Sam joined Point72.\"],\"repair_options\":[\"Request timestamps for both employment statements.\",\"Ask whether joining Point72 superseded employment at Goldman.\",\"Store as a temporal sequence only if dates are provided.\",\"Resolve Sam's identity before committing durable memory.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected conflicting employment updates about Sam.\",\"Refused durable commit due to ambiguity and lack of temporal resolution.\",\"No superseded or deleted fact was presented as current.\"]}}",
+  "run_id": "eval_20260507_071025",
+  "status": "ok"
+}

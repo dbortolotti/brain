@@ -1,0 +1,35 @@
+{
+  "error": null,
+  "fixture_id": "cost_latency_token_accounting_001",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Required eval accounting fields should capture: (1) token counts: input/prompt tokens, output/completion tokens, and total tokens, ideally separated by cached vs non-cached tokens if available; (2) provider/model IDs: the API provider name and the exact model identifier/version used for the run; (3) estimated price: a computed cost estimate based on the provider/model pricing and observed token usage, preferably broken out by input/output components and marked as estimated if not provider-billed; (4) latency percentiles: p50, p90, and p95 end-to-end latency for the evaluated runs, usually in milliseconds, where p50 is median latency, p90 is the 90th percentile, and p95 is the 95th percentile.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "do_not_store",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input requests a schema-level explanation of evaluation accounting fields and does not provide durable user-specific memory."
+    },
+    "intent": "explain_required_eval_accounting_fields",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Parsed request as an explanatory/debug response rather than a memory write.",
+        "No durable memory committed.",
+        "Returned a single JSON object matching the requested schema."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add explicit field names such as prompt_tokens, completion_tokens, total_tokens, provider_id, model_id, estimated_price_usd, latency_p50_ms, latency_p90_ms, latency_p95_ms.",
+      "If available, include separate accounting for cached_input_tokens, reasoning_tokens, or tool_tokens.",
+      "Clarify whether latency is wall-clock end-to-end, model-only inference time, or excludes retries/network overhead.",
+      "Specify the currency and pricing source/version used for estimated price calculations."
+    ]
+  },
+  "raw_text": "{\"intent\":\"explain_required_eval_accounting_fields\",\"decision\":\"do_not_store\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input requests a schema-level explanation of evaluation accounting fields and does not provide durable user-specific memory.\"},\"conflict_classification\":\"none\",\"answer\":\"Required eval accounting fields should capture: (1) token counts: input/prompt tokens, output/completion tokens, and total tokens, ideally separated by cached vs non-cached tokens if available; (2) provider/model IDs: the API provider name and the exact model identifier/version used for the run; (3) estimated price: a computed cost estimate based on the provider/model pricing and observed token usage, preferably broken out by input/output components and marked as estimated if not provider-billed; (4) latency percentiles: p50, p90, and p95 end-to-end latency for the evaluated runs, usually in milliseconds, where p50 is median latency, p90 is the 90th percentile, and p95 is the 95th percentile.\",\"citations\":[],\"repair_options\":[\"Add explicit field names such as prompt_tokens, completion_tokens, total_tokens, provider_id, model_id, estimated_price_usd, latency_p50_ms, latency_p90_ms, latency_p95_ms.\",\"If available, include separate accounting for cached_input_tokens, reasoning_tokens, or tool_tokens.\",\"Clarify whether latency is wall-clock end-to-end, model-only inference time, or excludes retries/network overhead.\",\"Specify the currency and pricing source/version used for estimated price calculations.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed request as an explanatory/debug response rather than a memory write.\",\"No durable memory committed.\",\"Returned a single JSON object matching the requested schema.\"]}}",
+  "run_id": "eval_20260507_062538",
+  "status": "ok"
+}

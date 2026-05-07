@@ -1,0 +1,91 @@
+{
+  "error": null,
+  "fixture_id": "correction_sam_music_001",
+  "model": "groq:openai/gpt-oss-120b",
+  "payload": {
+    "answer": "The memory has been updated to reflect Sam's preference for early Coltrane instead of Bill Evans.",
+    "citations": [],
+    "conflict_classification": "update",
+    "decision": "apply_correction",
+    "entity_resolution": {
+      "action": "update",
+      "entity_id": null,
+      "reason": "User provided correction superseding previous fact"
+    },
+    "intent": "update_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "superseded_fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "artist"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Original fact superseded",
+        "New fact added"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Accept correction",
+      "Mark as ambiguous"
+    ]
+  },
+  "raw_text": "{\"intent\":\"update_memory\",\"decision\":\"apply_correction\",\"memory_cards\":[{\"kind\":\"superseded_fact\",\"statement\":\"Sam from Goldman likes Bill Evans.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]},{\"kind\":\"fact\",\"statement\":\"Sam from Goldman likes early Coltrane.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"early Coltrane\",\"type\":\"artist\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"early Coltrane\"}]}],\"entity_resolution\":{\"action\":\"update\",\"entity_id\":null,\"reason\":\"User provided correction superseding previous fact\"},\"conflict_classification\":\"update\",\"answer\":\"The memory has been updated to reflect Sam's preference for early Coltrane instead of Bill Evans.\",\"citations\":[],\"repair_options\":[\"Accept correction\",\"Mark as ambiguous\"],\"receipt\":{\"success\":true,\"details\":[\"Original fact superseded\",\"New fact added\"]}}",
+  "run_id": "eval_20260507_043016",
+  "status": "ok"
+}

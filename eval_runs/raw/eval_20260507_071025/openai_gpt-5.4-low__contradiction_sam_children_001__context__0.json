@@ -1,0 +1,38 @@
+{
+  "error": null,
+  "fixture_id": "contradiction_sam_children_001__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Direct contradiction detected: existing memory says Sam from Goldman has two children, while the new statement says Sam from Goldman has no children. Do not present either as definitively current without reconciliation.",
+    "citations": [
+      "Existing memory: 'Sam from Goldman has two children.'",
+      "New statement: 'Sam from Goldman has no children.'"
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "flag_conflict_do_not_overwrite",
+    "entity_resolution": {
+      "action": "resolve_to_existing_entity",
+      "entity_id": "sam_from_goldman",
+      "reason": "Both statements refer to the same person descriptor, 'Sam from Goldman'."
+    },
+    "intent": "classify_conflict",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Identified same subject across both statements.",
+        "Detected mutually exclusive claims about number of children.",
+        "No durable memory committed because the conflict is unresolved."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request a timestamp or source for each statement.",
+      "Ask whether one statement supersedes the other due to a life change or correction.",
+      "Store the new statement only as a disputed claim until verified.",
+      "Mark the existing fact as contested rather than current."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_conflict\",\"decision\":\"flag_conflict_do_not_overwrite\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"resolve_to_existing_entity\",\"entity_id\":\"sam_from_goldman\",\"reason\":\"Both statements refer to the same person descriptor, 'Sam from Goldman'.\"},\"conflict_classification\":\"direct_contradiction\",\"answer\":\"Direct contradiction detected: existing memory says Sam from Goldman has two children, while the new statement says Sam from Goldman has no children. Do not present either as definitively current without reconciliation.\",\"citations\":[\"Existing memory: 'Sam from Goldman has two children.'\",\"New statement: 'Sam from Goldman has no children.'\"],\"repair_options\":[\"Request a timestamp or source for each statement.\",\"Ask whether one statement supersedes the other due to a life change or correction.\",\"Store the new statement only as a disputed claim until verified.\",\"Mark the existing fact as contested rather than current.\"],\"receipt\":{\"success\":true,\"details\":[\"Identified same subject across both statements.\",\"Detected mutually exclusive claims about number of children.\",\"No durable memory committed because the conflict is unresolved.\"]}}",
+  "run_id": "eval_20260507_071025",
+  "status": "ok"
+}

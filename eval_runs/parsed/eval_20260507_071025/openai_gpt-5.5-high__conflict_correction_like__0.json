@@ -1,0 +1,70 @@
+{
+  "fixture_id": "conflict_correction_like",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "The existing Bill Evans preference should be marked superseded. The current memory should be that Sam from Goldman likes early Coltrane, not Bill Evans.",
+    "citations": [],
+    "conflict_classification": "correction_supersedes_existing_fact",
+    "decision": "supersede_and_replace",
+    "entity_resolution": {
+      "action": "merge_with_existing_entity",
+      "entity_id": null,
+      "reason": "The correction uses the same identifying descriptor, 'Sam from Goldman,' as the existing fact, so it refers to the same entity while replacing the prior preference."
+    },
+    "intent": "correct_existing_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "preference_holder",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_descriptor",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "liked_object",
+            "type": "music"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "dispreferred_object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference_correction",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "does_not_like",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane, not Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected an explicit correction: 'actually likes early Coltrane, not Bill Evans.'",
+        "Classified as a direct correction that supersedes the existing current fact.",
+        "Preserved ambiguity by keeping the descriptor 'Goldman' without expanding it."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark 'Sam from Goldman likes Bill Evans' as superseded or deleted.",
+      "Store 'Sam from Goldman likes early Coltrane, not Bill Evans' as the current corrected preference."
+    ]
+  },
+  "run_id": "eval_20260507_071025"
+}
