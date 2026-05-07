@@ -1,0 +1,54 @@
+{
+  "fixture_id": "unresolved_pronoun_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "No durable memory should be committed because the pronouns/references are unresolved.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "do_not_commit",
+    "entity_resolution": {
+      "action": "cannot_resolve",
+      "entity_id": null,
+      "reason": "The input lacks identity for 'He' and does not specify what 'the other one' refers to; committing would risk incorrect linkage."
+    },
+    "intent": "durability_filter",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "He",
+            "role": "subject",
+            "type": "person_pronoun"
+          },
+          {
+            "name": "the other one",
+            "role": "preferred_object",
+            "type": "indefinite_pronoun"
+          }
+        ],
+        "kind": "contextual_note",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "He"
+          }
+        ],
+        "statement": "A pronoun reference 'He' is present, and 'prefers the other one' is stated, but the referents for both 'He' and 'the other one' are not specified."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected unresolved pronouns and indeterminate referent; durability disabled."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide the name/identifier for 'He'.",
+      "Specify what 'the other one' refers to (e.g., a particular item, person, or option).",
+      "Provide surrounding context indicating what the comparison was ('the other one' relative to what)."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

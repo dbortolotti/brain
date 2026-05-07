@@ -1,0 +1,73 @@
+{
+  "error": null,
+  "fixture_id": "recall_ai_memory_articles_relevance_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Unable to return specific articles without access to the saved articles database. The fixture indicates an AI memory article exists in context but does not provide article titles, metadata, or retrieval results.",
+    "citations": [],
+    "conflict_classification": "missing_data",
+    "decision": "Query cannot be fully resolved without access to actual saved articles in the system",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Actual article records not accessible in provided input; requires database query against saved articles collection"
+    },
+    "intent": "Retrieve saved articles about AI memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "query_subject",
+            "type": "person"
+          },
+          {
+            "name": "AI memory",
+            "role": "search_domain",
+            "type": "topic"
+          }
+        ],
+        "kind": "query_constraint",
+        "relationships": [
+          {
+            "object": "AI memory",
+            "predicate": "has_saved_articles_about",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "User is asking for articles they have saved specifically about AI memory systems"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "AI memory article",
+            "role": "referenced_but_unspecified",
+            "type": "document"
+          }
+        ],
+        "kind": "open_loop",
+        "relationships": [],
+        "statement": "Fixture references 'an AI memory article' in context but specific article titles, URLs, or metadata are not provided in input"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Intent recognized: retrieve saved AI memory articles",
+        "Data gap: article records not included in input",
+        "Ambiguity preserved: open loop flagged for resolution",
+        "No superseded facts presented"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Query the saved articles collection filtered by topic='AI memory'",
+      "Provide article metadata (titles, URLs, dates saved) from the actual memory system",
+      "Clarify whether 'Brain/Cognee chat' records contain article references"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Retrieve saved articles about AI memory\",\n  \"decision\": \"Query cannot be fully resolved without access to actual saved articles in the system\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"query_constraint\",\n      \"statement\": \"User is asking for articles they have saved specifically about AI memory systems\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"query_subject\"\n        },\n        {\n          \"name\": \"AI memory\",\n          \"type\": \"topic\",\n          \"role\": \"search_domain\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has_saved_articles_about\",\n          \"object\": \"AI memory\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"open_loop\",\n      \"statement\": \"Fixture references 'an AI memory article' in context but specific article titles, URLs, or metadata are not provided in input\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"AI memory article\",\n          \"type\": \"document\",\n          \"role\": \"referenced_but_unspecified\"\n        }\n      ],\n      \"relationships\": []\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Actual article records not accessible in provided input; requires database query against saved articles collection\"\n  },\n  \"conflict_classification\": \"missing_data\",\n  \"answer\": \"Unable to return specific articles without access to the saved articles database. The fixture indicates an AI memory article exists in context but does not provide article titles, metadata, or retrieval results.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Query the saved articles collection filtered by topic='AI memory'\",\n    \"Provide article metadata (titles, URLs, dates saved) from the actual memory system\",\n    \"Clarify whether 'Brain/Cognee chat' records contain article references\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Intent recognized: retrieve saved AI memory articles\",\n      \"Data gap: article records not included in input\",\n      \"Ambiguity preserved: open loop flagged for resolution\",\n      \"No superseded facts presented\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

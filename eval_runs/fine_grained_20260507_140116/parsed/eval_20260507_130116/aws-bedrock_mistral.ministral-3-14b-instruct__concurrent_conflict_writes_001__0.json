@@ -1,0 +1,82 @@
+{
+  "fixture_id": "concurrent_conflict_writes_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam's employment history includes Goldman Sachs (past/present) and Point72 (joined). No definitive resolution; retain both as distinct facts with context.",
+    "citations": [
+      "Concurrent writes: Sam works at Goldman. Sam joined Point72."
+    ],
+    "conflict_classification": "temporal_role_conflict",
+    "decision": "resolve_ambiguity",
+    "entity_resolution": {
+      "action": "merge_entities",
+      "entity_id": "Sam",
+      "reason": "Concurrent writes imply temporal or role-based distinction (e.g., past vs. current employment). Ambiguity preserved; no superseded facts committed."
+    },
+    "intent": "detect_concurrent_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman Sachs."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguity preserved; no facts superseded.",
+        "Conflict classified as temporal/role-based.",
+        "Repair options suggested for user action."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add timestamp/role qualifiers (e.g., 'Sam worked at Goldman Sachs until [date]'; 'Sam joined Point72 as [role] in [year]')",
+      "Flag for user clarification: 'Are these roles concurrent or sequential?'",
+      "Merge into a single card with disambiguation: 'Sam\u2019s employment: Goldman Sachs (status: ?), Point72 (joined: ?)'"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

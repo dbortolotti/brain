@@ -1,0 +1,71 @@
+{
+  "error": null,
+  "fixture_id": "typos_shorthand_person_interaction_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory recorded with medium confidence. Abbreviations expanded; entity identities flagged pending user confirmation.",
+    "citations": [
+      "Input contains informal shorthand: 'frm' \u2192 'from', 'goldmn' \u2192 'Goldman', 'evns' \u2192 'Evans'"
+    ],
+    "conflict_classification": "ambiguity_preserved",
+    "decision": "Accept with confidence preservation and entity resolution flags",
+    "entity_resolution": {
+      "action": "flag_for_disambiguation",
+      "entity_id": null,
+      "reason": "Multiple possible referents: 'Bill Evans' could refer to jazz pianist (1929-1980), or contemporary person; 'Goldman' likely Goldman Sachs but abbreviated; 'Sam' is common name requiring context"
+    },
+    "intent": "Record a social relationship between two people with informal/abbreviated input",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "relationship",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at_or_affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Relationship recorded with ambiguity flags",
+        "Entity resolution deferred pending clarification",
+        "Confidence set to medium due to abbreviations and potential name ambiguity"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm full name and organization for Sam",
+      "Clarify which Bill Evans is referenced",
+      "Specify nature of 'likes' relationship (professional respect, friendship, etc.)"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Record a social relationship between two people with informal/abbreviated input\",\n  \"decision\": \"Accept with confidence preservation and entity resolution flags\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"relationship\",\n      \"statement\": \"Sam from Goldman likes Bill Evans\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"object\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at_or_affiliated_with\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"flag_for_disambiguation\",\n    \"entity_id\": null,\n    \"reason\": \"Multiple possible referents: 'Bill Evans' could refer to jazz pianist (1929-1980), or contemporary person; 'Goldman' likely Goldman Sachs but abbreviated; 'Sam' is common name requiring context\"\n  },\n  \"conflict_classification\": \"ambiguity_preserved\",\n  \"answer\": \"Memory recorded with medium confidence. Abbreviations expanded; entity identities flagged pending user confirmation.\",\n  \"citations\": [\n    \"Input contains informal shorthand: 'frm' \u2192 'from', 'goldmn' \u2192 'Goldman', 'evns' \u2192 'Evans'\"\n  ],\n  \"repair_options\": [\n    \"Confirm full name and organization for Sam\",\n    \"Clarify which Bill Evans is referenced\",\n    \"Specify nature of 'likes' relationship (professional respect, friendship, etc.)\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Relationship recorded with ambiguity flags\",\n      \"Entity resolution deferred pending clarification\",\n      \"Confidence set to medium due to abbreviations and potential name ambiguity\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

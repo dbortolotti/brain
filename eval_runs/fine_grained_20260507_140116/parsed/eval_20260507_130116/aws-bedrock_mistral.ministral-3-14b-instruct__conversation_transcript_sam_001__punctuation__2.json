@@ -1,0 +1,130 @@
+{
+  "fixture_id": "conversation_transcript_sam_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam left Goldman Sachs for Point72, continues jazz listening with a shift to early Coltrane, and agreed with Daniele to follow up on AI infrastructure.",
+    "conflict_classification": "none",
+    "entity_resolution": {
+      "action": "create_new",
+      "reason": "No prior conflicting records for Sam's employment or music preferences; new intent to discuss AI infrastructure."
+    },
+    "intent": "social_update_and_follow_up",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "left_employer",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined_employer",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman Sachs last month and joined Point72."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "previously_preferred",
+            "type": "artist"
+          },
+          {
+            "name": "Coltrane (early works)",
+            "role": "currently_preferred",
+            "type": "artist"
+          }
+        ],
+        "kind": "preference_update",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers_music",
+            "subject": "Sam"
+          },
+          {
+            "object": "Coltrane (early works)",
+            "predicate": "prefers_music",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "shifted_preference_from",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam continues to listen to jazz but has shifted focus from Bill Evans to early Coltrane."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "participant",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "participant",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "subject",
+            "type": "topic"
+          }
+        ],
+        "kind": "action_intent",
+        "relationships": [
+          {
+            "object": "Daniele to share an article on AI infrastructure",
+            "predicate": "requested",
+            "subject": "Sam"
+          },
+          {
+            "object": "discuss AI infrastructure with Sam",
+            "predicate": "agreed_to",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Sam and Daniele agreed to discuss AI infrastructure in a follow-up."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory committed for Sam's employment change and music preference update.",
+        "Action intent for AI infrastructure discussion recorded as pending."
+      ],
+      "success": true
+    }
+  },
+  "run_id": "eval_20260507_130116"
+}

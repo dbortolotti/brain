@@ -1,0 +1,71 @@
+{
+  "error": null,
+  "fixture_id": "idempotent_retry_same_message_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Stored as an ambiguous low-confidence preference mention.",
+    "citations": [
+      "input: Same input delivered three times - Sam from Goldman mentioned that he likes Bill Evans"
+    ],
+    "conflict_classification": "none",
+    "decision": "store_with_low_confidence",
+    "entity_resolution": {
+      "action": "create_or_link_ambiguous_entity",
+      "entity_id": null,
+      "reason": "The message mentions 'Sam from Goldman' without enough information to resolve a unique durable identity."
+    },
+    "intent": "Record a possibly durable preference mention about Sam from Goldman liking Bill Evans.",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "mentioned individual",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation or context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "music preference",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "is_from_or_affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman reportedly likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Idempotent duplicate input detected; recorded once.",
+        "No contradiction present.",
+        "Ambiguous identity preserved without overcommitting."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If Sam is a specific person, provide a last name or role to resolve identity.",
+      "If Goldman refers to a company or another context, clarify the affiliation.",
+      "If this was about a different Bill Evans, specify which one."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Record a possibly durable preference mention about Sam from Goldman liking Bill Evans.\",\"decision\":\"store_with_low_confidence\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman reportedly likes Bill Evans.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"mentioned individual\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation or context\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"music preference\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"is_from_or_affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"create_or_link_ambiguous_entity\",\"entity_id\":null,\"reason\":\"The message mentions 'Sam from Goldman' without enough information to resolve a unique durable identity.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored as an ambiguous low-confidence preference mention.\",\"citations\":[\"input: Same input delivered three times - Sam from Goldman mentioned that he likes Bill Evans\"],\"repair_options\":[\"If Sam is a specific person, provide a last name or role to resolve identity.\",\"If Goldman refers to a company or another context, clarify the affiliation.\",\"If this was about a different Bill Evans, specify which one.\"],\"receipt\":{\"success\":true,\"details\":[\"Idempotent duplicate input detected; recorded once.\",\"No contradiction present.\",\"Ambiguous identity preserved without overcommitting.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

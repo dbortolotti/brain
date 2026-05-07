@@ -1,0 +1,64 @@
+{
+  "error": null,
+  "fixture_id": "personal_routine_morning_reading_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The user\u2019s morning routine involves reading technical papers before checking email, with no conflicting prior records.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "durable_memory_candidate",
+    "entity_resolution": {
+      "action": "new_entity_creation",
+      "entity_id": null,
+      "reason": "No prior context for 'technical papers' or 'morning reading routine' in durable memory."
+    },
+    "intent": "personal_routine_extraction",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "morning",
+            "role": "temporal_anchor",
+            "type": "time_of_day"
+          },
+          {
+            "name": "technical papers",
+            "role": "activity_object",
+            "type": "content_type"
+          },
+          {
+            "name": "checking email",
+            "role": "sequential_activity",
+            "type": "activity"
+          }
+        ],
+        "kind": "routine",
+        "relationships": [
+          {
+            "object": "reading technical papers in the morning",
+            "predicate": "prefers",
+            "subject": "user"
+          },
+          {
+            "object": "checking email",
+            "predicate": "occurs before",
+            "subject": "reading technical papers"
+          }
+        ],
+        "statement": "User prefers to read technical papers in the morning before checking email."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted routine with high confidence (no ambiguity in temporal/activity sequencing).",
+        "No superseded/deleted facts detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"personal_routine_extraction\",\n  \"decision\": \"durable_memory_candidate\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"routine\",\n      \"statement\": \"User prefers to read technical papers in the morning before checking email.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"morning\",\n          \"type\": \"time_of_day\",\n          \"role\": \"temporal_anchor\"\n        },\n        {\n          \"name\": \"technical papers\",\n          \"type\": \"content_type\",\n          \"role\": \"activity_object\"\n        },\n        {\n          \"name\": \"checking email\",\n          \"type\": \"activity\",\n          \"role\": \"sequential_activity\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"user\",\n          \"predicate\": \"prefers\",\n          \"object\": \"reading technical papers in the morning\"\n        },\n        {\n          \"subject\": \"reading technical papers\",\n          \"predicate\": \"occurs before\",\n          \"object\": \"checking email\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"new_entity_creation\",\n    \"entity_id\": null,\n    \"reason\": \"No prior context for 'technical papers' or 'morning reading routine' in durable memory.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"The user\u2019s morning routine involves reading technical papers before checking email, with no conflicting prior records.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Extracted routine with high confidence (no ambiguity in temporal/activity sequencing).\",\n      \"No superseded/deleted facts detected.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

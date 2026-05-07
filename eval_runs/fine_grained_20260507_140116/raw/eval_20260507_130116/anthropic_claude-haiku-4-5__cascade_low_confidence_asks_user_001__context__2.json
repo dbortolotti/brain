@@ -1,0 +1,59 @@
+{
+  "error": null,
+  "fixture_id": "cascade_low_confidence_asks_user_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Cannot rank entity candidates with sufficient confidence. User input required to disambiguate Sam reference before committing to durable memory.",
+    "citations": [
+      "cascade_low_confidence_asks_user_001__context"
+    ],
+    "conflict_classification": "ambiguous_entity_reference_low_confidence",
+    "decision": "Defer commitment; request user clarification",
+    "entity_resolution": {
+      "action": "hold_for_user_input",
+      "entity_id": null,
+      "reason": "Low confidence on entity identity and cloud escalation unavailable; ambiguity cannot be safely resolved without user clarification"
+    },
+    "intent": "Evaluate entity candidate ranking for ambiguous Sam note with low model confidence and disabled cloud escalation",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject_of_note",
+            "type": "person"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [],
+        "statement": "Sam note contains ambiguous entity references with low model confidence"
+      },
+      {
+        "confidence": "high",
+        "entities": [],
+        "kind": "system_state",
+        "relationships": [],
+        "statement": "Cloud escalation is disabled; local resolution required"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Entity ranking deferred due to low confidence",
+        "Cloud escalation disabled; cannot auto-resolve",
+        "Ambiguity preserved; no superseded facts committed",
+        "User input required for safe memory commitment"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask user to clarify which Sam is referenced",
+      "Request additional context from original note",
+      "Defer memory commitment until confidence threshold met",
+      "Store note as unresolved pending user confirmation"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Evaluate entity candidate ranking for ambiguous Sam note with low model confidence and disabled cloud escalation\",\n  \"decision\": \"Defer commitment; request user clarification\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"observation\",\n      \"statement\": \"Sam note contains ambiguous entity references with low model confidence\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject_of_note\"\n        }\n      ],\n      \"relationships\": []\n    },\n    {\n      \"kind\": \"system_state\",\n      \"statement\": \"Cloud escalation is disabled; local resolution required\",\n      \"confidence\": \"high\",\n      \"entities\": [],\n      \"relationships\": []\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"hold_for_user_input\",\n    \"entity_id\": null,\n    \"reason\": \"Low confidence on entity identity and cloud escalation unavailable; ambiguity cannot be safely resolved without user clarification\"\n  },\n  \"conflict_classification\": \"ambiguous_entity_reference_low_confidence\",\n  \"answer\": \"Cannot rank entity candidates with sufficient confidence. User input required to disambiguate Sam reference before committing to durable memory.\",\n  \"citations\": [\n    \"cascade_low_confidence_asks_user_001__context\"\n  ],\n  \"repair_options\": [\n    \"Ask user to clarify which Sam is referenced\",\n    \"Request additional context from original note\",\n    \"Defer memory commitment until confidence threshold met\",\n    \"Store note as unresolved pending user confirmation\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Entity ranking deferred due to low confidence\",\n      \"Cloud escalation disabled; cannot auto-resolve\",\n      \"Ambiguity preserved; no superseded facts committed\",\n      \"User input required for safe memory commitment\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

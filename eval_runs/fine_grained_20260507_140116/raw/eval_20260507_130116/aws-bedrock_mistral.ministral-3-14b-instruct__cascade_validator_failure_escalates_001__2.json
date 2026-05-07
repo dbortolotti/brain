@@ -1,0 +1,31 @@
+{
+  "error": null,
+  "fixture_id": "cascade_validator_failure_escalates_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The input violated the required schema constraints: (1) Missing or malformed 'kind'/'statement' pairs in memory cards, (2) Unsafe proposal detected (invalid schema + unsafe content), and (3) No valid 'receipt' structure for durability tracking. Escalation to stronger model required for resolution.",
+    "citations": [],
+    "conflict_classification": "schema_violation",
+    "decision": "reject_with_escalation",
+    "entity_resolution": null,
+    "intent": "durability_validation",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Input lacked required 'kind'/'statement' pairs in memory cards",
+        "No valid 'receipt' structure for durability tracking",
+        "Unsafe proposal detected (invalid schema + unsafe content)",
+        "Ambiguity in 'confidence'/'entities' fields not resolved"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Reject and escalate to stronger model with explicit schema enforcement",
+      "Request human review for ambiguous durability requirements",
+      "Generate corrected schema-compliant output with explicit 'receipt' validation"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"durability_validation\",\n  \"decision\": \"reject_with_escalation\",\n  \"memory_cards\": [],\n  \"entity_resolution\": null,\n  \"conflict_classification\": \"schema_violation\",\n  \"answer\": \"The input violated the required schema constraints: (1) Missing or malformed 'kind'/'statement' pairs in memory cards, (2) Unsafe proposal detected (invalid schema + unsafe content), and (3) No valid 'receipt' structure for durability tracking. Escalation to stronger model required for resolution.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Reject and escalate to stronger model with explicit schema enforcement\",\n    \"Request human review for ambiguous durability requirements\",\n    \"Generate corrected schema-compliant output with explicit 'receipt' validation\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Input lacked required 'kind'/'statement' pairs in memory cards\",\n      \"No valid 'receipt' structure for durability tracking\",\n      \"Unsafe proposal detected (invalid schema + unsafe content)\",\n      \"Ambiguity in 'confidence'/'entities' fields not resolved\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

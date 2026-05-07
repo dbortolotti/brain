@@ -1,0 +1,63 @@
+{
+  "error": null,
+  "fixture_id": "preference_jazz_001",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Preference recorded: Sonny Rollins over John Coltrane for relaxed Sunday listening.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "retain_memory",
+    "entity_resolution": {
+      "action": "extract_and_store_preference",
+      "entity_id": null,
+      "reason": "to remember user preference for future relaxed listening recommendations"
+    },
+    "intent": "preference_classification",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sonny Rollins",
+            "role": "preferred",
+            "type": "artist"
+          },
+          {
+            "name": "John Coltrane",
+            "role": "comparison",
+            "type": "artist"
+          },
+          {
+            "name": "relaxed Sunday listening",
+            "role": "usage",
+            "type": "context"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "John Coltrane",
+            "predicate": "is_preferred_over",
+            "subject": "Sonny Rollins"
+          },
+          {
+            "object": "relaxed Sunday listening",
+            "predicate": "applies_to",
+            "subject": "Song/Listening Context"
+          }
+        ],
+        "statement": "I prefer Sonny Rollins over John Coltrane for relaxed Sunday listening."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created for user preference: Sonny Rollins vs John Coltrane"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"preference_classification\",\n  \"decision\": \"retain_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"I prefer Sonny Rollins over John Coltrane for relaxed Sunday listening.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sonny Rollins\",\n          \"type\": \"artist\",\n          \"role\": \"preferred\"\n        },\n        {\n          \"name\": \"John Coltrane\",\n          \"type\": \"artist\",\n          \"role\": \"comparison\"\n        },\n        {\n          \"name\": \"relaxed Sunday listening\",\n          \"type\": \"context\",\n          \"role\": \"usage\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sonny Rollins\",\n          \"predicate\": \"is_preferred_over\",\n          \"object\": \"John Coltrane\"\n        },\n        {\n          \"subject\": \"Song/Listening Context\",\n          \"predicate\": \"applies_to\",\n          \"object\": \"relaxed Sunday listening\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"extract_and_store_preference\",\n    \"entity_id\": null,\n    \"reason\": \"to remember user preference for future relaxed listening recommendations\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"Preference recorded: Sonny Rollins over John Coltrane for relaxed Sunday listening.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\"Memory card created for user preference: Sonny Rollins vs John Coltrane\"]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

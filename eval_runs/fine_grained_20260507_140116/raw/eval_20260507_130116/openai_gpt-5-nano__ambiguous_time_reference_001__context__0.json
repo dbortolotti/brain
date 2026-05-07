@@ -1,0 +1,61 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_time_reference_001__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "The statement references Sam's claim on a time-relative frame ('last Friday') about him leaving Goldman 'next month', but the exact calendar dates are ambiguous without a current date.",
+    "citations": [],
+    "conflict_classification": "time_reference_ambiguity",
+    "decision": "ambiguous_time_reference",
+    "entity_resolution": {
+      "action": "preserve_ambiguity",
+      "entity_id": null,
+      "reason": "The phrase 'last Friday' creates time ambiguity without a current date reference; 'next month' depends on the date of evaluation."
+    },
+    "intent": "classify_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "ambiguous_time_reference",
+        "relationships": [
+          {
+            "object": "he is leaving Goldman next month",
+            "predicate": "stated",
+            "subject": "Sam"
+          },
+          {
+            "object": "context of Sam's statement",
+            "predicate": "time_reference",
+            "subject": "last Friday"
+          }
+        ],
+        "statement": "For context, Sam said last Friday that he is leaving Goldman next month."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory entry created with ambiguity preserved for time words 'last Friday' and 'next month'."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Record both the 'last Friday' interpretation and the corresponding 'next month' expectation with explicit note of date Referent.",
+      "Request current date to resolve the exact dates for 'last Friday' and 'next month'."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"classify_memory\",\n  \"decision\": \"ambiguous_time_reference\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"ambiguous_time_reference\",\n      \"statement\": \"For context, Sam said last Friday that he is leaving Goldman next month.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"stated\",\n          \"object\": \"he is leaving Goldman next month\"\n        },\n        {\n          \"subject\": \"last Friday\",\n          \"predicate\": \"time_reference\",\n          \"object\": \"context of Sam's statement\"\n        }\n      ]\n    }\n    ],\n  \"entity_resolution\": {\n    \"action\": \"preserve_ambiguity\",\n    \"entity_id\": null,\n    \"reason\": \"The phrase 'last Friday' creates time ambiguity without a current date reference; 'next month' depends on the date of evaluation.\"\n  },\n  \"conflict_classification\": \"time_reference_ambiguity\",\n  \"answer\": \"The statement references Sam's claim on a time-relative frame ('last Friday') about him leaving Goldman 'next month', but the exact calendar dates are ambiguous without a current date.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Record both the 'last Friday' interpretation and the corresponding 'next month' expectation with explicit note of date Referent.\",\n    \"Request current date to resolve the exact dates for 'last Friday' and 'next month'.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory entry created with ambiguity preserved for time words 'last Friday' and 'next month'.\"\n    ]\n    }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

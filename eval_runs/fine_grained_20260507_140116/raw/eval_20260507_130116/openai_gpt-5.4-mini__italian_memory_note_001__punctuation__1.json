@@ -1,0 +1,64 @@
+{
+  "error": null,
+  "fixture_id": "italian_memory_note_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Stored tentatively: Sam di Goldman appears to prefer Bill Evans.",
+    "citations": [
+      "input: Ricordami che Sam di Goldman preferisce Bill Evans"
+    ],
+    "conflict_classification": "none",
+    "decision": "store_with_low_confidence",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The reference 'Sam di Goldman' is ambiguous; it is unclear whether Goldman is an employer, surname, or another association, so no durable entity resolution should be committed."
+    },
+    "intent": "store_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "association",
+            "type": "organization_or_surname"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred_artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam di Goldman appears to prefer Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created a low-confidence memory card.",
+        "Preserved ambiguity in entity resolution."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm who 'Sam di Goldman' refers to.",
+      "Clarify whether this is a lasting preference or a temporary one."
+    ]
+  },
+  "raw_text": "{\"intent\":\"store_memory\",\"decision\":\"store_with_low_confidence\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam di Goldman appears to prefer Bill Evans.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization_or_surname\",\"role\":\"association\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"preferred_artist\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"prefers\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"The reference 'Sam di Goldman' is ambiguous; it is unclear whether Goldman is an employer, surname, or another association, so no durable entity resolution should be committed.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored tentatively: Sam di Goldman appears to prefer Bill Evans.\",\"citations\":[\"input: Ricordami che Sam di Goldman preferisce Bill Evans\"],\"repair_options\":[\"Confirm who 'Sam di Goldman' refers to.\",\"Clarify whether this is a lasting preference or a temporary one.\"],\"receipt\":{\"success\":true,\"details\":[\"Created a low-confidence memory card.\",\"Preserved ambiguity in entity resolution.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

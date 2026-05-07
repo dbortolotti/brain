@@ -1,0 +1,59 @@
+{
+  "error": null,
+  "fixture_id": "entity_ambiguous_sam_two_people__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory recorded with ambiguous Sam reference. Requires clarification: Is this Sam from Goldman or Sam from Point72?",
+    "citations": [],
+    "conflict_classification": "unresolved_ambiguity",
+    "decision": "Create ambiguous memory card without forcing resolution",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Ambiguous reference to Sam; two candidates exist (Sam from Goldman, Sam from Point72). Insufficient context to determine which Sam. Preserving ambiguity rather than guessing."
+    },
+    "intent": "Disambiguate which Sam likes early Coltrane and store preference",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "music"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes early Coltrane"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preference statement stored with ambiguous entity reference",
+        "Entity resolution deferred pending clarification",
+        "No superseded facts presented as current"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify: 'Sam from Goldman likes early Coltrane'",
+      "Clarify: 'Sam from Point72 likes early Coltrane'",
+      "Provide additional context to disambiguate which Sam"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Disambiguate which Sam likes early Coltrane and store preference\",\n  \"decision\": \"Create ambiguous memory card without forcing resolution\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam likes early Coltrane\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"early Coltrane\",\n          \"type\": \"music\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"early Coltrane\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguous reference to Sam; two candidates exist (Sam from Goldman, Sam from Point72). Insufficient context to determine which Sam. Preserving ambiguity rather than guessing.\"\n  },\n  \"conflict_classification\": \"unresolved_ambiguity\",\n  \"answer\": \"Memory recorded with ambiguous Sam reference. Requires clarification: Is this Sam from Goldman or Sam from Point72?\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Clarify: 'Sam from Goldman likes early Coltrane'\",\n    \"Clarify: 'Sam from Point72 likes early Coltrane'\",\n    \"Provide additional context to disambiguate which Sam\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Preference statement stored with ambiguous entity reference\",\n      \"Entity resolution deferred pending clarification\",\n      \"No superseded facts presented as current\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,55 @@
+{
+  "fixture_id": "slack_rewrite_modal_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory rewritten to reflect preference without assuming context. Original ambiguity retained.",
+    "citations": [],
+    "conflict_classification": "ambiguous_supersession",
+    "decision": "supersede_ambiguous",
+    "entity_resolution": {
+      "action": "resolve_ambiguity",
+      "entity_id": null,
+      "reason": "Original statement lacked specificity ('the other one'). Rewrite preserves ambiguity while clarifying the preference relationship."
+    },
+    "intent": "rewrite_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "user",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "unspecified_alternative",
+            "role": "object",
+            "type": "object"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "unspecified_alternative",
+            "predicate": "prefers",
+            "subject": "user"
+          }
+        ],
+        "statement": "The user prefers an unspecified alternative (context: 'the other one')"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Original memory superseded with clarified but ambiguous statement.",
+        "No superseded facts presented as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add context to 'the other one' (e.g., 'the other option in the modal')",
+      "Delete the preference if no longer relevant",
+      "Merge with existing preference data if applicable"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

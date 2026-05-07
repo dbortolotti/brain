@@ -1,0 +1,94 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_sam_001",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Ambiguity persists: cannot determine which Sam is being referred to (Goldman vs Point72) regarding the statement about liking Bill Evans.",
+    "citations": [],
+    "conflict_classification": "ambiguous_identity_across_contexts",
+    "decision": "ambiguous_merge_disambiguation",
+    "entity_resolution": {
+      "action": "no_final_merge",
+      "entity_id": null,
+      "reason": "Insufficient information to confirm whether 'Sam' in different contexts refers to the same individual; new statement about liking Bill Evans does not resolve identity across Goldman and Point72 samet entities"
+    },
+    "intent": "memory_classification",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unknown",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "musician",
+            "type": "person"
+          }
+        ],
+        "kind": "ambiguous_entity",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam mentioned that he likes Bill Evans."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unknown",
+            "type": "person"
+          },
+          {
+            "name": "Sam from Goldman",
+            "role": "association",
+            "type": "person"
+          }
+        ],
+        "kind": "entity_merge_candidate",
+        "relationships": [],
+        "statement": "Sam from Goldman"
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unknown",
+            "type": "person"
+          },
+          {
+            "name": "Sam from Point72",
+            "role": "association",
+            "type": "person"
+          }
+        ],
+        "kind": "entity_merge_candidate",
+        "relationships": [],
+        "statement": "Sam from Point72"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed input into memory cards with provisional relationships.",
+        "No durable identity merge performed due to ambiguity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask clarifying question about which Sam is being referred to (Goldman or Point72).",
+      "Store as two separate memory entries with disambiguated context if more clues arise.",
+      "Wait for additional data to link Sam to a unique identity before consolidating."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"memory_classification\",\n  \"decision\": \"ambiguous_merge_disambiguation\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"ambiguous_entity\",\n      \"statement\": \"Sam mentioned that he likes Bill Evans.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"unknown\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"musician\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n    ,\n    {\n      \"kind\": \"entity_merge_candidate\",\n      \"statement\": \"Sam from Goldman\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"unknown\"\n        }\n        ,\n        {\n          \"name\": \"Sam from Goldman\",\n          \"type\": \"person\",\n          \"role\": \"association\"\n        }\n      ],\n      \"relationships\": []\n    }\n    ,\n    {\n      \"kind\": \"entity_merge_candidate\",\n      \"statement\": \"Sam from Point72\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"unknown\"\n        },\n        {\n          \"name\": \"Sam from Point72\",\n          \"type\": \"person\",\n          \"role\": \"association\"\n        }\n      ],\n      \"relationships\": []\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_final_merge\",\n    \"entity_id\": null,\n    \"reason\": \"Insufficient information to confirm whether 'Sam' in different contexts refers to the same individual; new statement about liking Bill Evans does not resolve identity across Goldman and Point72 samet entities\"\n  },\n  \"conflict_classification\": \"ambiguous_identity_across_contexts\",\n  \"answer\": \"Ambiguity persists: cannot determine which Sam is being referred to (Goldman vs Point72) regarding the statement about liking Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Ask clarifying question about which Sam is being referred to (Goldman or Point72).\",\n    \"Store as two separate memory entries with disambiguated context if more clues arise.\",\n    \"Wait for additional data to link Sam to a unique identity before consolidating.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Parsed input into memory cards with provisional relationships.\",\n      \"No durable identity merge performed due to ambiguity.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

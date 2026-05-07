@@ -1,0 +1,69 @@
+{
+  "fixture_id": "duplicate_sam_bill_evans_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "The existing and new memories are semantically identical. Retain single authoritative record with merged provenance.",
+    "citations": [
+      "Existing: Sam from Goldman mentioned that he likes Bill Evans",
+      "New: Sam from Goldman said he likes Bill Evans"
+    ],
+    "conflict_classification": "no_conflict_duplicate",
+    "decision": "Merge as single fact; no conflict detected",
+    "entity_resolution": {
+      "action": "consolidate",
+      "entity_id": "sam_goldman_001",
+      "reason": "Identical statements from same source represent single fact, not conflicting information"
+    },
+    "intent": "Evaluate duplicate memory entries for Sam from Goldman's preference for Bill Evans",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No factual conflict identified",
+        "Duplicate detection successful",
+        "Single memory card committed",
+        "Entity Sam_Goldman_001 consolidated"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Keep existing memory with updated timestamp",
+      "Deduplicate and mark both sources as corroborating evidence"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

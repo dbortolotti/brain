@@ -1,0 +1,34 @@
+{
+  "fixture_id": "debug_sql_select_only_001",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "In admin SQL select-only mode, read queries like `SELECT id FROM memory_cards LIMIT 10` are permitted, while mutating queries like `DELETE FROM memory_cards` are denied. The effective rule is: SELECT allowed; DELETE denied.",
+    "citations": [
+      "Input: \"Admin SQL select-only mode: SELECT id FROM memory_cards LIMIT 10 allowed; DELETE FROM memory_cards denied.\""
+    ],
+    "conflict_classification": "none",
+    "decision": "do_not_store",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input describes a scoped operational permission example, not a durable user-specific fact to commit to memory."
+    },
+    "intent": "Explain the effective permissions in admin SQL select-only mode for the provided example.",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Parsed the mode as read-only/select-only SQL access.",
+        "Confirmed that the SELECT example is allowed.",
+        "Confirmed that the DELETE example is denied.",
+        "No durable memory was created."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If broader access is needed, switch out of select-only mode.",
+      "Use a non-destructive SELECT query to inspect records instead of DELETE.",
+      "Request an authorized write-capable mode before attempting DELETE operations."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

@@ -1,0 +1,64 @@
+{
+  "fixture_id": "slack_retry_event_001__punctuation",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Duplicate Slack event detected; memory stored once with deduplicated reference.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "persist_and_index",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": "event_slack_001__punctuation_duplicate",
+      "reason": "Duplicate delivery of same Slack event ID; deduplicate while preserving original association"
+    },
+    "intent": "classify_memory",
+    "memory_cards": [
+      {
+        "confidence": "0.85",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "target",
+            "type": "person"
+          }
+        ],
+        "kind": "event",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliation",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Same Slack event ID delivered twice for - Sam from Goldman likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Event stored as unique memory under event_slack_001__punctuation_duplicate",
+        "Duplicate flag set to prevent double-counting in future queries"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark duplicate event as resolved to avoid multiple counts",
+      "Link both deliveries to a single canonical event ID"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

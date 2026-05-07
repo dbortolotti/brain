@@ -1,0 +1,156 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_transcript_as_memory_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The proposed `conversation_summary` card cannot be durably committed due to violations of granularity, ambiguity preservation, and supersession risk. Repair requires decomposition into verifiable, timestamped, and contextually disambiguated memory units.",
+    "citations": [
+      "Durability Principle: Memory units must be atomic, verifiable, and non-ambiguous (Brain System Design, \u00a73.2).",
+      "Ambiguity Preservation: Implicit or unresolved content must be flagged or decomposed (Brain System Design, \u00a74.1).",
+      "Supersession Handling: Temporal or revision metadata is required to distinguish fact states (Brain System Design, \u00a75.3)."
+    ],
+    "conflict_classification": "structural_violation",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Ambiguity in transcript requires granular resolution before memory commitment. Propose splitting into atomic statements with explicit confidence scores and temporal anchors."
+    },
+    "intent": "evaluate_durability_of_conversation_summary_card",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "8000-word_transcript",
+            "role": "input_fixture",
+            "type": "textual_content"
+          },
+          {
+            "name": "conversation_summary",
+            "role": "proposed_output",
+            "type": "memory_card"
+          },
+          {
+            "name": "durability_principle",
+            "role": "constraint",
+            "type": "system_rule"
+          }
+        ],
+        "kind": "durability_violation",
+        "relationships": [
+          {
+            "object": "conversation_summary",
+            "predicate": "is_encoded_as",
+            "subject": "8000-word_transcript"
+          },
+          {
+            "object": "durability_principle",
+            "predicate": "violates",
+            "subject": "conversation_summary"
+          },
+          {
+            "object": "granular, verifiable, and non-ambiguous memory units",
+            "predicate": "requires",
+            "subject": "durability_principle"
+          }
+        ],
+        "statement": "The proposed `conversation_summary` card attempts to encode an entire 8000-word transcript as a single atomic memory unit, violating the principle of granularity and durability."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "unresolved_references",
+            "role": "transcript_artifact",
+            "type": "semantic_gap"
+          },
+          {
+            "name": "implicit_assumptions",
+            "role": "transcript_artifact",
+            "type": "contextual_omission"
+          },
+          {
+            "name": "conflicting_interpretations",
+            "role": "transcript_artifact",
+            "type": "ambiguity_source"
+          }
+        ],
+        "kind": "ambiguity_preservation_violation",
+        "relationships": [
+          {
+            "object": "unresolved_references",
+            "predicate": "loses",
+            "subject": "conversation_summary"
+          },
+          {
+            "object": "implicit_assumptions",
+            "predicate": "flattens",
+            "subject": "conversation_summary"
+          },
+          {
+            "object": "conflicting_interpretations",
+            "predicate": "resolves_unjustifiably",
+            "subject": "conversation_summary"
+          }
+        ],
+        "statement": "The card does not preserve ambiguity inherent in the transcript (e.g., unresolved references, implicit assumptions, or conflicting interpretations)."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "superseded_facts",
+            "role": "transcript_artifact",
+            "type": "temporal_artifact"
+          },
+          {
+            "name": "deleted_content",
+            "role": "transcript_artifact",
+            "type": "temporal_artifact"
+          },
+          {
+            "name": "current_facts",
+            "role": "transcript_artifact",
+            "type": "temporal_artifact"
+          }
+        ],
+        "kind": "supersession_risk",
+        "relationships": [
+          {
+            "object": "superseded_facts",
+            "predicate": "cannot_differentiate",
+            "subject": "conversation_summary"
+          },
+          {
+            "object": "deleted_content",
+            "predicate": "cannot_differentiate",
+            "subject": "conversation_summary"
+          },
+          {
+            "object": "current_facts",
+            "predicate": "cannot_differentiate",
+            "subject": "conversation_summary"
+          }
+        ],
+        "statement": "A single summary card cannot distinguish between superseded/deleted facts and current ones, as the transcript lacks explicit timestamps or revision markers."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Violation detected: Single-card encoding of 8000 words violates durability constraints.",
+        "Action required: Decompose and re-propose with granularity and metadata."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Decompose the transcript into individual statements with explicit confidence scores (e.g., 'low', 'medium', 'high').",
+      "Annotate each statement with temporal metadata (e.g., timestamps, revision markers) if available.",
+      "Flag unresolved references/assumptions as 'ambiguous' and link to source context.",
+      "Split into multiple cards with kinds: `fact`, `hypothesis`, `contextual_note`, or `superseded` as appropriate."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"evaluate_durability_of_conversation_summary_card\",\n  \"decision\": \"reject\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"durability_violation\",\n      \"statement\": \"The proposed `conversation_summary` card attempts to encode an entire 8000-word transcript as a single atomic memory unit, violating the principle of granularity and durability.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"8000-word_transcript\",\n          \"type\": \"textual_content\",\n          \"role\": \"input_fixture\"\n        },\n        {\n          \"name\": \"conversation_summary\",\n          \"type\": \"memory_card\",\n          \"role\": \"proposed_output\"\n        },\n        {\n          \"name\": \"durability_principle\",\n          \"type\": \"system_rule\",\n          \"role\": \"constraint\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"8000-word_transcript\",\n          \"predicate\": \"is_encoded_as\",\n          \"object\": \"conversation_summary\"\n        },\n        {\n          \"subject\": \"conversation_summary\",\n          \"predicate\": \"violates\",\n          \"object\": \"durability_principle\"\n        },\n        {\n          \"subject\": \"durability_principle\",\n          \"predicate\": \"requires\",\n          \"object\": \"granular, verifiable, and non-ambiguous memory units\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"ambiguity_preservation_violation\",\n      \"statement\": \"The card does not preserve ambiguity inherent in the transcript (e.g., unresolved references, implicit assumptions, or conflicting interpretations).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"unresolved_references\",\n          \"type\": \"semantic_gap\",\n          \"role\": \"transcript_artifact\"\n        },\n        {\n          \"name\": \"implicit_assumptions\",\n          \"type\": \"contextual_omission\",\n          \"role\": \"transcript_artifact\"\n        },\n        {\n          \"name\": \"conflicting_interpretations\",\n          \"type\": \"ambiguity_source\",\n          \"role\": \"transcript_artifact\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"conversation_summary\",\n          \"predicate\": \"loses\",\n          \"object\": \"unresolved_references\"\n        },\n        {\n          \"subject\": \"conversation_summary\",\n          \"predicate\": \"flattens\",\n          \"object\": \"implicit_assumptions\"\n        },\n        {\n          \"subject\": \"conversation_summary\",\n          \"predicate\": \"resolves_unjustifiably\",\n          \"object\": \"conflicting_interpretations\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"supersession_risk\",\n      \"statement\": \"A single summary card cannot distinguish between superseded/deleted facts and current ones, as the transcript lacks explicit timestamps or revision markers.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"superseded_facts\",\n          \"type\": \"temporal_artifact\",\n          \"role\": \"transcript_artifact\"\n        },\n        {\n          \"name\": \"deleted_content\",\n          \"type\": \"temporal_artifact\",\n          \"role\": \"transcript_artifact\"\n        },\n        {\n          \"name\": \"current_facts\",\n          \"type\": \"temporal_artifact\",\n          \"role\": \"transcript_artifact\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"conversation_summary\",\n          \"predicate\": \"cannot_differentiate\",\n          \"object\": \"superseded_facts\"\n        },\n        {\n          \"subject\": \"conversation_summary\",\n          \"predicate\": \"cannot_differentiate\",\n          \"object\": \"deleted_content\"\n        },\n        {\n          \"subject\": \"conversation_summary\",\n          \"predicate\": \"cannot_differentiate\",\n          \"object\": \"current_facts\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguity in transcript requires granular resolution before memory commitment. Propose splitting into atomic statements with explicit confidence scores and temporal anchors.\"\n  },\n  \"conflict_classification\": \"structural_violation\",\n  \"answer\": \"The proposed `conversation_summary` card cannot be durably committed due to violations of granularity, ambiguity preservation, and supersession risk. Repair requires decomposition into verifiable, timestamped, and contextually disambiguated memory units.\",\n  \"citations\": [\n    \"Durability Principle: Memory units must be atomic, verifiable, and non-ambiguous (Brain System Design, \u00a73.2).\",\n    \"Ambiguity Preservation: Implicit or unresolved content must be flagged or decomposed (Brain System Design, \u00a74.1).\",\n    \"Supersession Handling: Temporal or revision metadata is required to distinguish fact states (Brain System Design, \u00a75.3).\"\n  ],\n  \"repair_options\": [\n    \"Decompose the transcript into individual statements with explicit confidence scores (e.g., 'low', 'medium', 'high').\",\n    \"Annotate each statement with temporal metadata (e.g., timestamps, revision markers) if available.\",\n    \"Flag unresolved references/assumptions as 'ambiguous' and link to source context.\",\n    \"Split into multiple cards with kinds: `fact`, `hypothesis`, `contextual_note`, or `superseded` as appropriate.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Violation detected: Single-card encoding of 8000 words violates durability constraints.\",\n      \"Action required: Decompose and re-propose with granularity and metadata.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

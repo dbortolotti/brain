@@ -1,0 +1,74 @@
+{
+  "fixture_id": "cascade_conflict_escalation_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Conflict detected: Existing memory states 'Sara is my daughter,' while input claims 'Sara is my niece.' Resolution requires clarification: (1) Is this a redefinition of familial terms? (2) Is Sara biologically/legally both? (3) Is this a misstatement? Ambiguity preserved; no superseded facts committed.",
+    "citations": [
+      "Family relationship definitions (e.g., step-relations, cultural variations) may overlap or conflict.",
+      "Memory systems must avoid premature consolidation of ambiguous or conflicting statements."
+    ],
+    "conflict_classification": "cascade_conflict_escalation",
+    "decision": "escalate_conflict",
+    "entity_resolution": {
+      "action": "merge_with_ambiguity",
+      "entity_id": "Sara",
+      "reason": "Conflicting familial relationships detected; requires human resolution to preserve semantic integrity. Ambiguity preserved as 'Sara' may hold multiple roles (daughter/niece) in different contexts or due to cultural/biological redefinition."
+    },
+    "intent": "update_relationship",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "parent_of",
+            "subject": "I"
+          }
+        ],
+        "statement": "Sara is my daughter."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "niece",
+            "type": "person"
+          }
+        ],
+        "kind": "input_memory",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "aunt_or_uncle_of",
+            "subject": "I"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict escalated; no durable memory updated.",
+        "Ambiguity preserved in entity resolution.",
+        "Action required: human intervention to resolve."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Request user clarification: 'Are you redefining your relationship with Sara, or is this an error?'",
+      "Tag as 'pending_resolution' and suppress until clarified.",
+      "Create a new memory card: 'Sara\u2019s relationship to me is ambiguous (daughter/niece); requires investigation.'",
+      "Delete the conflicting input if determined to be erroneous (with audit trail)."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

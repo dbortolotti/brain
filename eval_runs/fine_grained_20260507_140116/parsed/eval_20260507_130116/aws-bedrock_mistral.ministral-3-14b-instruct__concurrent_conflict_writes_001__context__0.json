@@ -1,0 +1,81 @@
+{
+  "fixture_id": "concurrent_conflict_writes_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam holds concurrent roles: employed by Goldman Sachs and affiliated with Point72. No superseded facts; ambiguity retained.",
+    "citations": [
+      "Concurrent writes: Sam works at Goldman. Sam joined Point72."
+    ],
+    "conflict_classification": "temporal_or_role_ambiguity",
+    "decision": "resolve_ambiguity",
+    "entity_resolution": {
+      "action": "merge_entities",
+      "entity_id": "Sam",
+      "reason": "Concurrent writes imply Sam holds both roles (employer and affiliation) at different times or contexts. Ambiguity preserved; no deletion of either fact."
+    },
+    "intent": "detect_concurrent_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman Sachs."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory preserved: Both facts committed without deletion.",
+        "Ambiguity explicitly noted in entity resolution."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add temporal context (e.g., 'Sam joined Point72 in [year] while remaining at Goldman Sachs').",
+      "Clarify role distinction (e.g., 'Sam works at Goldman Sachs (employer) and is affiliated with Point72 (consultant/partner)').",
+      "Flag for user resolution if roles are mutually exclusive."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

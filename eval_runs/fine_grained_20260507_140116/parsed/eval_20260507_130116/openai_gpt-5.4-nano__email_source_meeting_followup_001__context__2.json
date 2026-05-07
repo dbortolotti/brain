@@ -1,0 +1,74 @@
+{
+  "fixture_id": "email_source_meeting_followup_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Captured that sam@example.com says he joined Point72 last month, and that he requested an AI infra article.",
+    "citations": [
+      "From: sam@example.com Subject: Follow up. Great seeing you. Yes, I joined Point72 last month. Please send the AI infra article."
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_relevant_memory_with_low_to_medium_confidence",
+    "entity_resolution": {
+      "action": "no_explicit_entity_id_lookup",
+      "entity_id": null,
+      "reason": "Insufficient information to map entities to stable internal IDs."
+    },
+    "intent": "Handle meeting follow-up email and capture relevant personal memory and action request",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "sam@example.com",
+            "role": "sender",
+            "type": "email"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "personal_update",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "sam@example.com"
+          }
+        ],
+        "statement": "Sam reports that he joined Point72 last month."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "AI infra article",
+            "role": "requested_item",
+            "type": "document_request"
+          }
+        ],
+        "kind": "action_request",
+        "relationships": [
+          {
+            "object": "sam@example.com",
+            "predicate": "requested_by",
+            "subject": "AI infra article"
+          }
+        ],
+        "statement": "Sender asks to send an 'AI infra' article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted one personal update and one action request from the email body."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for the exact AI infra article link or title if needed to fulfill the request.",
+      "Confirm the date/timeframe of 'last month' if you store precise employment start dates."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

@@ -1,0 +1,70 @@
+{
+  "fixture_id": "typos_shorthand_person_interaction_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory card created with normalized statement. Recommend clarification on: (1) full name/identity of Sam, (2) specific Goldman entity, (3) full name/identity of Bill Evans, (4) nature of 'likes' relationship (professional respect, personal preference, romantic interest, etc.)",
+    "citations": [
+      "Input contains multiple abbreviations and informal notation"
+    ],
+    "conflict_classification": "ambiguity_unresolved",
+    "decision": "Create memory cards with preserved ambiguity due to shorthand notation",
+    "entity_resolution": {
+      "action": "defer_full_resolution",
+      "entity_id": null,
+      "reason": "Shorthand notation ('frm', 'evns') and ambiguous 'likes' predicate require clarification. 'Goldman' could be Goldman Sachs or other entity. 'Bill Evans' could refer to multiple individuals."
+    },
+    "intent": "Extract and normalize person interaction from informal/abbreviated input",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "person_interaction",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at_or_affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted 3 entities (Sam, Goldman, Bill Evans)",
+        "Normalized 2 relationships with medium confidence",
+        "Preserved ambiguity markers for future resolution",
+        "No superseded facts detected"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide full names for all persons mentioned",
+      "Clarify organizational affiliation",
+      "Specify the nature/context of the 'likes' relationship",
+      "Confirm identity disambiguation if multiple Bill Evans exist in knowledge base"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

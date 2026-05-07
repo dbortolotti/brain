@@ -1,0 +1,87 @@
+{
+  "fixture_id": "project_state_brain_slack_agent_001",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "Committed project-state memory that Slack should be the primary guardrailed memory ingestion interface for Brain, while Telegram can come later.",
+    "citations": [
+      "Brain project state: Slack should be the primary guardrailed memory ingestion interface; Telegram can come later."
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_attach_to_existing",
+      "entity_id": null,
+      "reason": "The input names Brain, Slack, and Telegram, but no existing entity identifiers are provided."
+    },
+    "intent": "extract_project_state_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "Slack",
+            "role": "primary interface",
+            "type": "product"
+          },
+          {
+            "name": "guardrailed memory ingestion interface",
+            "role": "interface purpose",
+            "type": "concept"
+          }
+        ],
+        "kind": "project_decision",
+        "relationships": [
+          {
+            "object": "Slack",
+            "predicate": "should_use_as_primary_guardrailed_memory_ingestion_interface",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "For the Brain project, Slack should be the primary guardrailed memory ingestion interface."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "Telegram",
+            "role": "deferred interface option",
+            "type": "product"
+          },
+          {
+            "name": "memory ingestion interface",
+            "role": "interface purpose",
+            "type": "concept"
+          }
+        ],
+        "kind": "project_priority",
+        "relationships": [
+          {
+            "object": "Telegram",
+            "predicate": "can_defer_memory_ingestion_interface_option",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "For the Brain project, Telegram can come later as a memory ingestion interface option."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted 2 atomic memory cards.",
+        "Preserved modal language: Slack 'should be' primary; Telegram 'can come later'."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

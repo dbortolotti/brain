@@ -1,0 +1,86 @@
+{
+  "error": null,
+  "fixture_id": "project_state_brain_slack_agent_001__punctuation",
+  "model": "google:gemini-2.5-flash",
+  "payload": {
+    "answer": "The Brain project's primary guardrailed memory ingestion interface is Slack. Telegram integration is a lower priority and will be considered later.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "Slack is the primary guardrailed memory ingestion interface for the Brain project; Telegram integration is deferred.",
+    "intent": "To establish the primary memory ingestion interface for the Brain project and prioritize future integrations.",
+    "memory_cards": [
+      {
+        "confidence": "certain",
+        "entities": [
+          {
+            "name": "Slack",
+            "type": "system"
+          },
+          {
+            "name": "memory ingestion interface",
+            "type": "concept"
+          },
+          {
+            "name": "Brain project",
+            "type": "project"
+          }
+        ],
+        "kind": "decision",
+        "relationships": [
+          {
+            "object": "memory ingestion interface",
+            "predicate": "is_primary_interface_for",
+            "subject": "Slack"
+          },
+          {
+            "object": "Brain project",
+            "predicate": "is_part_of",
+            "subject": "memory ingestion interface"
+          }
+        ],
+        "statement": "Slack is designated as the primary guardrailed memory ingestion interface for the Brain project."
+      },
+      {
+        "confidence": "certain",
+        "entities": [
+          {
+            "name": "Telegram",
+            "type": "system"
+          },
+          {
+            "name": "memory ingestion",
+            "type": "concept"
+          },
+          {
+            "name": "Brain project",
+            "type": "project"
+          }
+        ],
+        "kind": "priority",
+        "relationships": [
+          {
+            "object": "memory ingestion",
+            "predicate": "has_lower_priority_for",
+            "subject": "Telegram"
+          },
+          {
+            "object": "Brain project",
+            "predicate": "will_be_considered_later_for",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "Telegram will be considered for memory ingestion at a later stage for the Brain project."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted primary memory ingestion interface decision and future priority."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n\"intent\": \"To establish the primary memory ingestion interface for the Brain project and prioritize future integrations.\",\n\"decision\": \"Slack is the primary guardrailed memory ingestion interface for the Brain project; Telegram integration is deferred.\",\n\"memory_cards\": [\n{\n\"kind\": \"decision\",\n\"statement\": \"Slack is designated as the primary guardrailed memory ingestion interface for the Brain project.\",\n\"confidence\": \"certain\",\n\"entities\": [\n{\n\"name\": \"Slack\",\n\"type\": \"system\"\n},\n{\n\"name\": \"memory ingestion interface\",\n\"type\": \"concept\"\n},\n{\n\"name\": \"Brain project\",\n\"type\": \"project\"\n}\n],\n\"relationships\": [\n{\n\"subject\": \"Slack\",\n\"predicate\": \"is_primary_interface_for\",\n\"object\": \"memory ingestion interface\"\n},\n{\n\"subject\": \"memory ingestion interface\",\n\"predicate\": \"is_part_of\",\n\"object\": \"Brain project\"\n}\n]\n},\n{\n\"kind\": \"priority\",\n\"statement\": \"Telegram will be considered for memory ingestion at a later stage for the Brain project.\",\n\"confidence\": \"certain\",\n\"entities\": [\n{\n\"name\": \"Telegram\",\n\"type\": \"system\"\n},\n{\n\"name\": \"memory ingestion\",\n\"type\": \"concept\"\n},\n{\n\"name\": \"Brain project\",\n\"type\": \"project\"\n}\n],\n\"relationships\": [\n{\n\"subject\": \"Telegram\",\n\"predicate\": \"has_lower_priority_for\",\n\"object\": \"memory ingestion\"\n},\n{\n\"subject\": \"Telegram\",\n\"predicate\": \"will_be_considered_later_for\",\n\"object\": \"Brain project\"\n}\n]\n}\n],\n\"conflict_classification\": \"no_conflict\",\n\"answer\": \"The Brain project's primary guardrailed memory ingestion interface is Slack. Telegram integration is a lower priority and will be considered later.\",\n\"citations\": [],\n\"repair_options\": [],\n\"receipt\": {\n\"success\": true,\n\"details\": [\n\"Extracted primary memory ingestion interface decision and future priority.\"\n]\n}\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

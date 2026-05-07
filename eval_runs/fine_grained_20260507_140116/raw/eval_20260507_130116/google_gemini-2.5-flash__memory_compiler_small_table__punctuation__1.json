@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "fixture_id": "memory_compiler_small_table__punctuation",
+  "model": "google:gemini-2.5-flash",
+  "payload": {
+    "answer": "Sam prefers Bill Evans. Daniele prefers knowledge graphs.",
+    "decision": "Successfully extracted preferences for Sam and Daniele.",
+    "intent": "Extract preferences from the provided table.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "Person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "Musician"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam prefers Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "subject",
+            "type": "Person"
+          },
+          {
+            "name": "Knowledge graphs",
+            "role": "object",
+            "type": "Concept"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Knowledge graphs",
+            "predicate": "prefers",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Daniele prefers knowledge graphs."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted 2 preferences from the input table."
+      ],
+      "success": true
+    }
+  },
+  "raw_text": "{\n  \"intent\": \"Extract preferences from the provided table.\",\n  \"decision\": \"Successfully extracted preferences for Sam and Daniele.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam prefers Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"Person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"Musician\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"prefers\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Daniele prefers knowledge graphs.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"Person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Knowledge graphs\",\n          \"type\": \"Concept\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Daniele\",\n          \"predicate\": \"prefers\",\n          \"object\": \"Knowledge graphs\"\n        }\n      ]\n    }\n  ],\n  \"answer\": \"Sam prefers Bill Evans. Daniele prefers knowledge graphs.\",\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Extracted 2 preferences from the input table.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

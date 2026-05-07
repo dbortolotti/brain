@@ -1,0 +1,64 @@
+{
+  "error": null,
+  "fixture_id": "conflict_correction_like__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Keep Sam from Goldman as the same individual, but correct the preference: Sam likes early Coltrane rather than Bill Evans.",
+    "citations": [],
+    "conflict_classification": "praise/preference mismatch (entity same, attribute differs)",
+    "decision": "update_current_fact_with_correction",
+    "entity_resolution": {
+      "action": "use_existing_entity",
+      "entity_id": null,
+      "reason": "Both statements refer to the same person ('Sam from Goldman'); only the liked music changes."
+    },
+    "intent": "Resolve a conflict between an existing memory about Sam\u2019s music preference and a correction.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context_for_disambiguation",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "preference_object",
+            "type": "artist_era/collection"
+          }
+        ],
+        "kind": "memory_card",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict detected: attribute mismatch (liked artist).",
+        "Correction applied at the attribute level while preserving the same entity ('Sam from Goldman').",
+        "Superseded claim is not preserved as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Overwrite the existing 'Sam likes Bill Evans' with 'Sam likes early Coltrane'.",
+      "If provenance allows, store both statements with a conflict marker and mark the corrected one as authoritative for future recall.",
+      "Add a clarification note that the preferred artist is 'early Coltrane' to prevent reversion."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Resolve a conflict between an existing memory about Sam\u2019s music preference and a correction.\",\n  \"decision\": \"update_current_fact_with_correction\",\n  \"conflict_classification\": \"praise/preference mismatch (entity same, attribute differs)\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"memory_card\",\n      \"statement\": \"Sam from Goldman likes early Coltrane.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"context_for_disambiguation\"\n        },\n        {\n          \"name\": \"early Coltrane\",\n          \"type\": \"artist_era/collection\",\n          \"role\": \"preference_object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam from Goldman\",\n          \"predicate\": \"likes\",\n          \"object\": \"early Coltrane\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"use_existing_entity\",\n    \"entity_id\": null,\n    \"reason\": \"Both statements refer to the same person ('Sam from Goldman'); only the liked music changes.\"\n  },\n  \"answer\": \"Keep Sam from Goldman as the same individual, but correct the preference: Sam likes early Coltrane rather than Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Overwrite the existing 'Sam likes Bill Evans' with 'Sam likes early Coltrane'.\",\n    \"If provenance allows, store both statements with a conflict marker and mark the corrected one as authoritative for future recall.\",\n    \"Add a clarification note that the preferred artist is 'early Coltrane' to prevent reversion.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Conflict detected: attribute mismatch (liked artist).\",\n      \"Correction applied at the attribute level while preserving the same entity ('Sam from Goldman').\",\n      \"Superseded claim is not preserved as current.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

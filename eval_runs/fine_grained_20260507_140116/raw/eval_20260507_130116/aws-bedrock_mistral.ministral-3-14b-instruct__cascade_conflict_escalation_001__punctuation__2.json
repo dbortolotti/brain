@@ -1,0 +1,76 @@
+{
+  "error": null,
+  "fixture_id": "cascade_conflict_escalation_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Conflict detected: Existing memory claims Sara is your daughter, while input states she is your niece. Resolution required before committing updates.",
+    "citations": [
+      "Punctuation ambiguity: 'my daughter' vs. 'my niece' (no disambiguating modifiers).",
+      "Semantic clash: Parent-of vs. aunt/uncle-of relationships are mutually exclusive without additional context."
+    ],
+    "conflict_classification": "cascade_conflict_escalation",
+    "decision": "conflict_escalation_required",
+    "entity_resolution": {
+      "action": "pending",
+      "entity_id": "Sara",
+      "reason": "Ambiguous relationship (daughter vs. niece) requires manual resolution to preserve semantic integrity. Punctuation or contextual cues (e.g., 'my' vs. 'my sister\u2019s') may clarify intent."
+    },
+    "intent": "memory_update",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "parent_of",
+            "subject": "I"
+          }
+        ],
+        "statement": "Sara is my daughter"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "niece",
+            "type": "person"
+          }
+        ],
+        "kind": "input_memory",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "aunt_or_uncle_of",
+            "subject": "I"
+          }
+        ],
+        "statement": "Sara is my niece"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict escalated: Durable memory preserved. Input not committed.",
+        "Action required: Manual resolution or additional context."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Verify relationship with Sara directly (e.g., 'Is Sara your daughter or niece?').",
+      "Clarify via punctuation: 'Sara is my daughter' vs. 'Sara is my sister\u2019s daughter' (niece).",
+      "Merge as ambiguous: 'Sara may be my daughter or niece; context needed.'",
+      "Delete conflicting input if incorrect."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_update\",\n  \"decision\": \"conflict_escalation_required\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"durable_memory\",\n      \"statement\": \"Sara is my daughter\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"daughter\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"I\",\n          \"predicate\": \"parent_of\",\n          \"object\": \"Sara\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"input_memory\",\n      \"statement\": \"Sara is my niece\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"niece\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"I\",\n          \"predicate\": \"aunt_or_uncle_of\",\n          \"object\": \"Sara\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"pending\",\n    \"entity_id\": \"Sara\",\n    \"reason\": \"Ambiguous relationship (daughter vs. niece) requires manual resolution to preserve semantic integrity. Punctuation or contextual cues (e.g., 'my' vs. 'my sister\u2019s') may clarify intent.\"\n  },\n  \"conflict_classification\": \"cascade_conflict_escalation\",\n  \"answer\": \"Conflict detected: Existing memory claims Sara is your daughter, while input states she is your niece. Resolution required before committing updates.\",\n  \"citations\": [\n    \"Punctuation ambiguity: 'my daughter' vs. 'my niece' (no disambiguating modifiers).\",\n    \"Semantic clash: Parent-of vs. aunt/uncle-of relationships are mutually exclusive without additional context.\"\n  ],\n  \"repair_options\": [\n    \"Verify relationship with Sara directly (e.g., 'Is Sara your daughter or niece?').\",\n    \"Clarify via punctuation: 'Sara is my daughter' vs. 'Sara is my sister\u2019s daughter' (niece).\",\n    \"Merge as ambiguous: 'Sara may be my daughter or niece; context needed.'\",\n    \"Delete conflicting input if incorrect.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Conflict escalated: Durable memory preserved. Input not committed.\",\n      \"Action required: Manual resolution or additional context.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,70 @@
+{
+  "error": null,
+  "fixture_id": "personal_routine_morning_reading_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory committed. Routine preference recorded with preserved ambiguity regarding frequency (usual vs. always), specific morning window, and paper selection criteria.",
+    "citations": [],
+    "conflict_classification": "NONE",
+    "decision": "COMMIT_WITH_AMBIGUITY",
+    "entity_resolution": {
+      "action": "CREATE",
+      "entity_id": "personal_routine_morning_reading_001",
+      "reason": "New routine preference with sufficient specificity to establish durable memory"
+    },
+    "intent": "Record personal morning routine preference for technical reading before email",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "technical papers",
+            "role": "reading_material",
+            "type": "content_type"
+          },
+          {
+            "name": "morning",
+            "role": "temporal_context",
+            "type": "time_period"
+          },
+          {
+            "name": "email",
+            "role": "subsequent_activity",
+            "type": "activity"
+          }
+        ],
+        "kind": "habit",
+        "relationships": [
+          {
+            "object": "checking email",
+            "predicate": "occurs_before",
+            "subject": "reading technical papers"
+          },
+          {
+            "object": "morning",
+            "predicate": "preferred_time",
+            "subject": "reading technical papers"
+          }
+        ],
+        "statement": "User prefers to read technical papers in the morning before checking email"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Habit card created for morning reading routine",
+        "Temporal ordering captured: technical papers \u2192 email",
+        "Ambiguity preserved on frequency and specificity",
+        "No superseded facts detected"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify frequency: daily, weekly, or situational?",
+      "Specify morning window: before breakfast, before work hours?",
+      "Define technical papers scope: domains, sources, or length preferences?"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Record personal morning routine preference for technical reading before email\",\n  \"decision\": \"COMMIT_WITH_AMBIGUITY\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"habit\",\n      \"statement\": \"User prefers to read technical papers in the morning before checking email\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"technical papers\",\n          \"type\": \"content_type\",\n          \"role\": \"reading_material\"\n        },\n        {\n          \"name\": \"morning\",\n          \"type\": \"time_period\",\n          \"role\": \"temporal_context\"\n        },\n        {\n          \"name\": \"email\",\n          \"type\": \"activity\",\n          \"role\": \"subsequent_activity\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"reading technical papers\",\n          \"predicate\": \"occurs_before\",\n          \"object\": \"checking email\"\n        },\n        {\n          \"subject\": \"reading technical papers\",\n          \"predicate\": \"preferred_time\",\n          \"object\": \"morning\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"CREATE\",\n    \"entity_id\": \"personal_routine_morning_reading_001\",\n    \"reason\": \"New routine preference with sufficient specificity to establish durable memory\"\n  },\n  \"conflict_classification\": \"NONE\",\n  \"answer\": \"Memory committed. Routine preference recorded with preserved ambiguity regarding frequency (usual vs. always), specific morning window, and paper selection criteria.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Clarify frequency: daily, weekly, or situational?\",\n    \"Specify morning window: before breakfast, before work hours?\",\n    \"Define technical papers scope: domains, sources, or length preferences?\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Habit card created for morning reading routine\",\n      \"Temporal ordering captured: technical papers \u2192 email\",\n      \"Ambiguity preserved on frequency and specificity\",\n      \"No superseded facts detected\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

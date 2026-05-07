@@ -1,0 +1,60 @@
+{
+  "error": null,
+  "fixture_id": "additive_sam_preferences_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "There is no conflict: Sam from Goldman\u2019s added liking for Sonny Rollins is consistent with the existing memory that Sam also likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "No conflict; add the new preference as additional non-contradictory information.",
+    "entity_resolution": {
+      "action": "link",
+      "entity_id": null,
+      "reason": "Context matches existing memory entity 'Sam from Goldman'; no alternate Sam is indicated."
+    },
+    "intent": "Explain conflict status and update memory for Sam\u2019s music preferences.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "person",
+            "type": "person"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "musician",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          }
+        ],
+        "kind": "preference_fact",
+        "relationships": [
+          {
+            "object": "Sonny Rollins",
+            "predicate": "likes",
+            "subject": "Sam (Goldman)"
+          }
+        ],
+        "statement": "Sam from Goldman likes Sonny Rollins."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Existing preference (Bill Evans) retained; new preference (Sonny Rollins) added as an additional liking."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If future inputs suggest different identities for 'Sam', disambiguate by adding a distinguishing attribute (e.g., location, role, or full name)."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Explain conflict status and update memory for Sam\u2019s music preferences.\",\n  \"decision\": \"No conflict; add the new preference as additional non-contradictory information.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference_fact\",\n      \"statement\": \"Sam from Goldman likes Sonny Rollins.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"person\"\n        },\n        {\n          \"name\": \"Sonny Rollins\",\n          \"type\": \"person\",\n          \"role\": \"musician\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam (Goldman)\",\n          \"predicate\": \"likes\",\n          \"object\": \"Sonny Rollins\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"link\",\n    \"entity_id\": null,\n    \"reason\": \"Context matches existing memory entity 'Sam from Goldman'; no alternate Sam is indicated.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"There is no conflict: Sam from Goldman\u2019s added liking for Sonny Rollins is consistent with the existing memory that Sam also likes Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If future inputs suggest different identities for 'Sam', disambiguate by adding a distinguishing attribute (e.g., location, role, or full name).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Existing preference (Bill Evans) retained; new preference (Sonny Rollins) added as an additional liking.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

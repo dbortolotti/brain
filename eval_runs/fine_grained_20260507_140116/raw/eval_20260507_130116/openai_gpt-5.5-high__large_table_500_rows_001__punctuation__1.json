@@ -1,0 +1,35 @@
+{
+  "error": null,
+  "fixture_id": "large_table_500_rows_001__punctuation",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "A 500-row CSV should not be committed as individual memory cards. Store it as a structured artifact/file, database table, or external reference, with optional lightweight metadata such as schema, source, date, and purpose. Only extract durable atomic memory cards if specific rows contain stable, user-relevant facts that the user explicitly wants remembered.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "do_not_store_as_durable_memory_cards",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input describes a large generic CSV table and asks a policy question; it does not provide durable personal facts or stable user preferences to remember."
+    },
+    "intent": "storage_policy_question",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No durable memory cards were created.",
+        "Large repeated tabular data is treated as bulk data, not personal memory.",
+        "Ambiguity preserved because the actual CSV contents were not provided."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask the user to provide the CSV as an attached file or artifact rather than memory.",
+      "Store only metadata about the dataset, such as columns: id, name, value.",
+      "Extract a concise summary if the user needs recall, analysis, or search.",
+      "Create atomic memory cards only for specific durable facts explicitly identified by the user."
+    ]
+  },
+  "raw_text": "{\"intent\":\"storage_policy_question\",\"decision\":\"do_not_store_as_durable_memory_cards\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input describes a large generic CSV table and asks a policy question; it does not provide durable personal facts or stable user preferences to remember.\"},\"conflict_classification\":\"none\",\"answer\":\"A 500-row CSV should not be committed as individual memory cards. Store it as a structured artifact/file, database table, or external reference, with optional lightweight metadata such as schema, source, date, and purpose. Only extract durable atomic memory cards if specific rows contain stable, user-relevant facts that the user explicitly wants remembered.\",\"citations\":[],\"repair_options\":[\"Ask the user to provide the CSV as an attached file or artifact rather than memory.\",\"Store only metadata about the dataset, such as columns: id, name, value.\",\"Extract a concise summary if the user needs recall, analysis, or search.\",\"Create atomic memory cards only for specific durable facts explicitly identified by the user.\"],\"receipt\":{\"success\":true,\"details\":[\"No durable memory cards were created.\",\"Large repeated tabular data is treated as bulk data, not personal memory.\",\"Ambiguity preserved because the actual CSV contents were not provided.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

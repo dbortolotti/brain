@@ -1,0 +1,58 @@
+{
+  "fixture_id": "debug_inspect_entity_sam_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Entity 'Sam from Goldman' resolved. One memory card retrieved. No superseded or deleted facts presented. Ambiguity preserved regarding full name, role specifics, and tenure.",
+    "citations": [
+      "memory_card:person_profile:sam_goldman_001"
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "Execute entity lookup with ambiguity preservation; return all non-deleted memory cards linked to this entity without collapsing or inferring superseded facts",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": "sam_goldman_001",
+      "reason": "Query matched person entity 'Sam' with organizational context 'Goldman'; resolved to primary entity record"
+    },
+    "intent": "Inspect and retrieve all memory cards associated with the entity 'Sam from Goldman'",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "type": "organization"
+          }
+        ],
+        "kind": "person_profile",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman Sachs"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Entity lookup completed",
+        "1 memory card retrieved",
+        "No conflicts detected",
+        "Ambiguity preserved in entity identity"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Disambiguate: Request full name or employee ID",
+      "Enrich: Add role, department, or contact information",
+      "Verify: Confirm current employment status"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

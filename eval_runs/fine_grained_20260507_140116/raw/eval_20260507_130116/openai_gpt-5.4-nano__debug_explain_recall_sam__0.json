@@ -1,0 +1,107 @@
+{
+  "error": null,
+  "fixture_id": "debug_explain_recall_sam",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "recall returned mem_new for Sam from Goldman because it was identified as the newer/superseding memory for the same Sam+Goldman context. mem_old was filtered out since it was marked as superseded by mem_new.",
+    "citations": [],
+    "conflict_classification": "Supersession/recency conflict (same entity-context pair represented by multiple memory cards).",
+    "decision": "Keep mem_new; filter out mem_old because it is superseded by the newer, higher-priority record for the same entity/attribute set (Sam + Goldman).",
+    "entity_resolution": {
+      "action": "match_and_prioritize_newer_record",
+      "entity_id": null,
+      "reason": "Both mem_new and mem_old resolve to the same intended referent (Sam associated with Goldman). The system applied a supersession rule, preferring the newer record and excluding the older one."
+    },
+    "intent": "Explain conflict resolution in recall results for Sam from Goldman, where mem_new is returned and mem_old is filtered as superseded.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "target",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          },
+          {
+            "name": "mem_new",
+            "role": "candidate_kept",
+            "type": "memory"
+          }
+        ],
+        "kind": "recall_result",
+        "relationships": [
+          {
+            "object": "Sam",
+            "predicate": "refers_to",
+            "subject": "mem_new"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "in_context_of",
+            "subject": "mem_new"
+          }
+        ],
+        "statement": "recall returned mem_new for Sam from Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "target",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          },
+          {
+            "name": "mem_old",
+            "role": "candidate_filtered",
+            "type": "memory"
+          }
+        ],
+        "kind": "filtered_memory",
+        "relationships": [
+          {
+            "object": "Sam",
+            "predicate": "refers_to",
+            "subject": "mem_old"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "in_context_of",
+            "subject": "mem_old"
+          },
+          {
+            "object": "mem_old",
+            "predicate": "supersedes",
+            "subject": "mem_new"
+          }
+        ],
+        "statement": "recall filtered mem_old because it was superseded."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Applied supersession rule for overlapping memory claims about the same entity/context (Sam + Goldman).",
+        "Kept the higher-priority record (mem_new) and filtered the older one (mem_old) as superseded."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If mem_old should not be considered superseded, update tagging/versioning or disable supersession for that specific memory source.",
+      "If both memories are valid, revise mem_new or mem_old so they do not overlap in the conflict key (e.g., separate by different attributes/time scopes).",
+      "Ensure entity-linking rules correctly treat mem_old as distinct (e.g., disambiguate Sam identities or differentiate Goldman-related attributes)."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Explain conflict resolution in recall results for Sam from Goldman, where mem_new is returned and mem_old is filtered as superseded.\",\n  \"decision\": \"Keep mem_new; filter out mem_old because it is superseded by the newer, higher-priority record for the same entity/attribute set (Sam + Goldman).\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"recall_result\",\n      \"statement\": \"recall returned mem_new for Sam from Goldman.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"target\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"context\"\n        },\n        {\n          \"name\": \"mem_new\",\n          \"type\": \"memory\",\n          \"role\": \"candidate_kept\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"mem_new\",\n          \"predicate\": \"refers_to\",\n          \"object\": \"Sam\"\n        },\n        {\n          \"subject\": \"mem_new\",\n          \"predicate\": \"in_context_of\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"filtered_memory\",\n      \"statement\": \"recall filtered mem_old because it was superseded.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"target\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"context\"\n        },\n        {\n          \"name\": \"mem_old\",\n          \"type\": \"memory\",\n          \"role\": \"candidate_filtered\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"mem_old\",\n          \"predicate\": \"refers_to\",\n          \"object\": \"Sam\"\n        },\n        {\n          \"subject\": \"mem_old\",\n          \"predicate\": \"in_context_of\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"mem_new\",\n          \"predicate\": \"supersedes\",\n          \"object\": \"mem_old\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"match_and_prioritize_newer_record\",\n    \"entity_id\": null,\n    \"reason\": \"Both mem_new and mem_old resolve to the same intended referent (Sam associated with Goldman). The system applied a supersession rule, preferring the newer record and excluding the older one.\"\n  },\n  \"conflict_classification\": \"Supersession/recency conflict (same entity-context pair represented by multiple memory cards).\",\n  \"answer\": \"recall returned mem_new for Sam from Goldman because it was identified as the newer/superseding memory for the same Sam+Goldman context. mem_old was filtered out since it was marked as superseded by mem_new.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If mem_old should not be considered superseded, update tagging/versioning or disable supersession for that specific memory source.\",\n    \"If both memories are valid, revise mem_new or mem_old so they do not overlap in the conflict key (e.g., separate by different attributes/time scopes).\",\n    \"Ensure entity-linking rules correctly treat mem_old as distinct (e.g., disambiguate Sam identities or differentiate Goldman-related attributes).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Applied supersession rule for overlapping memory claims about the same entity/context (Sam + Goldman).\",\n      \"Kept the higher-priority record (mem_new) and filtered the older one (mem_old) as superseded.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

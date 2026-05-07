@@ -1,0 +1,60 @@
+{
+  "error": null,
+  "fixture_id": "entity_ambiguous_sam_two_people__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Cannot commit preference to specific Sam without clarification. Memory preserved pending disambiguation.",
+    "citations": [],
+    "conflict_classification": "ambiguous_referent",
+    "decision": "Preserve ambiguity; create unattached memory card pending disambiguation",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Two existing Sam entities (Goldman, Point72); insufficient context to determine which Sam or if new Sam entirely"
+    },
+    "intent": "Disambiguate which Sam likes early Coltrane and store preference",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "music"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes early Coltrane"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preference statement captured with high confidence",
+        "Entity reference marked ambiguous",
+        "Memory card stored unlinked pending resolution",
+        "No superseded facts presented"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify: 'Which Sam\u2014the one from Goldman or Point72?'",
+      "Provide additional context: 'Sam from [organization] likes early Coltrane'",
+      "Confirm if this is a third Sam entity"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Disambiguate which Sam likes early Coltrane and store preference\",\n  \"decision\": \"Preserve ambiguity; create unattached memory card pending disambiguation\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam likes early Coltrane\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"early Coltrane\",\n          \"type\": \"music\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"early Coltrane\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Two existing Sam entities (Goldman, Point72); insufficient context to determine which Sam or if new Sam entirely\"\n  },\n  \"conflict_classification\": \"ambiguous_referent\",\n  \"answer\": \"Cannot commit preference to specific Sam without clarification. Memory preserved pending disambiguation.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Clarify: 'Which Sam\u2014the one from Goldman or Point72?'\",\n    \"Provide additional context: 'Sam from [organization] likes early Coltrane'\",\n    \"Confirm if this is a third Sam entity\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Preference statement captured with high confidence\",\n      \"Entity reference marked ambiguous\",\n      \"Memory card stored unlinked pending resolution\",\n      \"No superseded facts presented\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

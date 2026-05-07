@@ -1,0 +1,61 @@
+{
+  "fixture_id": "debug_sql_select_only_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Context noted: select-only access is allowed for memory_cards, while DELETE is denied. This should not be treated as durable user memory.",
+    "citations": [
+      "Input: \"Admin SQL select-only mode: SELECT id FROM memory_cards LIMIT 10 allowed; DELETE FROM memory_cards denied.\""
+    ],
+    "conflict_classification": "none",
+    "decision": "Do not commit as durable memory; this is a transient capability/context note and may be environment-specific.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No stable user-facing entity to resolve; this is operational context only."
+    },
+    "intent": "Explain the provided admin SQL access context and determine whether it should be committed as durable memory.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Admin SQL",
+            "role": "environment",
+            "type": "system"
+          },
+          {
+            "name": "memory_cards",
+            "role": "database table",
+            "type": "table"
+          }
+        ],
+        "kind": "context",
+        "relationships": [
+          {
+            "object": "SELECT id FROM memory_cards LIMIT 10",
+            "predicate": "allows",
+            "subject": "Admin SQL"
+          },
+          {
+            "object": "DELETE FROM memory_cards",
+            "predicate": "denies",
+            "subject": "Admin SQL"
+          }
+        ],
+        "statement": "Admin SQL is in select-only mode: SELECT id FROM memory_cards LIMIT 10 is allowed, and DELETE FROM memory_cards is denied."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed select-only constraint.",
+        "No durable memory committed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If this is meant to be durable policy, store it as an operational constraint rather than a user preference.",
+      "If the environment changes, re-evaluate before relying on it."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

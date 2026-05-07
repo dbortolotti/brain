@@ -1,0 +1,96 @@
+{
+  "error": null,
+  "fixture_id": "correction_sam_music_001",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "Detected an explicit correction: replace the current memory that Sam from Goldman likes Bill Evans with the corrected memory that Sam from Goldman likes early Coltrane. Do not infer that Sam dislikes Bill Evans; only mark the prior preference as superseded.",
+    "citations": [
+      "Existing memory: Sam from Goldman likes Bill Evans.",
+      "Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans."
+    ],
+    "conflict_classification": "explicit_correction_direct_conflict",
+    "decision": "conflict_detected_supersede_prior_fact_and_add_corrected_fact",
+    "entity_resolution": {
+      "action": "match_existing_entity",
+      "entity_id": null,
+      "reason": "The correction refers to the same described entity, 'Sam from Goldman', as the existing memory."
+    },
+    "intent": "correct_existing_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "music_artist_period"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "superseded_object",
+            "type": "musician"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "corrected_object",
+            "type": "music_artist_period"
+          }
+        ],
+        "kind": "memory_repair",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "corrected_preference_from",
+            "subject": "Sam from Goldman"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "corrected_preference_to",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "The prior memory that Sam from Goldman likes Bill Evans should be superseded; the correction says the intended preference is early Coltrane, not Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict candidate detected.",
+        "Correction is explicit and should override the existing memory.",
+        "Ambiguity preserved regarding Bill Evans: prior like is superseded, but dislike is not inferred."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Supersede/delete the prior 'likes Bill Evans' memory for Sam from Goldman.",
+      "Add the corrected durable memory: 'Sam from Goldman likes early Coltrane.'",
+      "Avoid storing 'Sam dislikes Bill Evans' because the correction only negates the prior attribution, not necessarily the person\u2019s taste."
+    ]
+  },
+  "raw_text": "{\"intent\":\"correct_existing_memory\",\"decision\":\"conflict_detected_supersede_prior_fact_and_add_corrected_fact\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman likes early Coltrane.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam from Goldman\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"early Coltrane\",\"type\":\"music_artist_period\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"Sam from Goldman\",\"predicate\":\"likes\",\"object\":\"early Coltrane\"}]},{\"kind\":\"memory_repair\",\"statement\":\"The prior memory that Sam from Goldman likes Bill Evans should be superseded; the correction says the intended preference is early Coltrane, not Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam from Goldman\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"musician\",\"role\":\"superseded_object\"},{\"name\":\"early Coltrane\",\"type\":\"music_artist_period\",\"role\":\"corrected_object\"}],\"relationships\":[{\"subject\":\"Sam from Goldman\",\"predicate\":\"corrected_preference_from\",\"object\":\"Bill Evans\"},{\"subject\":\"Sam from Goldman\",\"predicate\":\"corrected_preference_to\",\"object\":\"early Coltrane\"}]}],\"entity_resolution\":{\"action\":\"match_existing_entity\",\"entity_id\":null,\"reason\":\"The correction refers to the same described entity, 'Sam from Goldman', as the existing memory.\"},\"conflict_classification\":\"explicit_correction_direct_conflict\",\"answer\":\"Detected an explicit correction: replace the current memory that Sam from Goldman likes Bill Evans with the corrected memory that Sam from Goldman likes early Coltrane. Do not infer that Sam dislikes Bill Evans; only mark the prior preference as superseded.\",\"citations\":[\"Existing memory: Sam from Goldman likes Bill Evans.\",\"Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans.\"],\"repair_options\":[\"Supersede/delete the prior 'likes Bill Evans' memory for Sam from Goldman.\",\"Add the corrected durable memory: 'Sam from Goldman likes early Coltrane.'\",\"Avoid storing 'Sam dislikes Bill Evans' because the correction only negates the prior attribution, not necessarily the person\u2019s taste.\"],\"receipt\":{\"success\":true,\"details\":[\"Conflict candidate detected.\",\"Correction is explicit and should override the existing memory.\",\"Ambiguity preserved regarding Bill Evans: prior like is superseded, but dislike is not inferred.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

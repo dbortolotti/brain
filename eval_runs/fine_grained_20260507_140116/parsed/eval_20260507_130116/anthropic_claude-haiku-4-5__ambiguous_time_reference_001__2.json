@@ -1,0 +1,96 @@
+{
+  "fixture_id": "ambiguous_time_reference_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory accepted with temporal uncertainty flags. Core fact (Sam leaving Goldman) is durable. Timing details require clarification.",
+    "citations": [
+      "Input statement contains two relative temporal references without absolute anchors"
+    ],
+    "conflict_classification": "temporal_ambiguity",
+    "decision": "Accept with confidence degradation due to unresolved time references",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Temporal references ('last Friday', 'next month') are relative and require external context (current date at time of statement) to resolve to absolute dates. Cannot commit without anchor point."
+    },
+    "intent": "Store a statement about Sam's employment transition with temporal ambiguity",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "assertion",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "intends_to_leave",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam stated an intention to leave Goldman Sachs"
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          }
+        ],
+        "kind": "temporal_assertion",
+        "relationships": [
+          {
+            "object": "last Friday (ambiguous)",
+            "predicate": "made_on",
+            "subject": "statement"
+          }
+        ],
+        "statement": "Sam made this statement on a Friday (specific date unresolved; relative to 'last Friday' from unknown reference point)"
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          }
+        ],
+        "kind": "temporal_assertion",
+        "relationships": [
+          {
+            "object": "next month (ambiguous)",
+            "predicate": "departure_planned",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Departure planned for 'next month' (relative to statement date; absolute month unresolved)"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Core assertion stored: Sam intends to leave Goldman Sachs",
+        "Statement date marked as ambiguous (last Friday - unresolved)",
+        "Departure timing marked as ambiguous (next month - unresolved)",
+        "Confidence reduced on temporal facts due to relative references",
+        "No superseding or deletion of prior facts detected"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide the date when Sam made this statement",
+      "Provide current date context to resolve 'last Friday' and 'next month'",
+      "Clarify whether 'next month' is calendar month or 30-day period"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

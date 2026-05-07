@@ -1,0 +1,66 @@
+{
+  "fixture_id": "slack_retry_event_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The event 'Sam from Goldman Sachs likes Bill Evans' was already processed. No new memory committed.",
+    "citations": [],
+    "conflict_classification": "duplicate_event",
+    "decision": "duplicate_event_detection",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "slack_retry_event_001__context",
+      "reason": "Duplicate event ID detected; existing memory preserved to avoid supersession."
+    },
+    "intent": "entity_mention_extraction",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object_of_affection",
+            "type": "person"
+          }
+        ],
+        "kind": "event",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "works_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman Sachs expressed a liking for Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Duplicate event ID detected: slack_retry_event_001__context.",
+        "No new memory cards committed to preserve durability.",
+        "Ambiguity preserved by retaining original timestamp/context."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ignore duplicate event (current action).",
+      "Merge with existing memory (requires explicit confirmation).",
+      "Flag for manual review (if ambiguity persists)."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

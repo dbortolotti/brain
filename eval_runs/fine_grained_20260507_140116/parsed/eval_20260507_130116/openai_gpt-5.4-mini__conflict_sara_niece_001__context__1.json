@@ -1,0 +1,59 @@
+{
+  "fixture_id": "conflict_sara_niece_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "No durable conflict is established. 'Sara is my niece' may fit the existing memory if the speaker is Sara's aunt/uncle, but the speaker is unspecified, so keep it tentative.",
+    "citations": [
+      "Existing high-confidence memory: Sara is Daniele's daughter and Nur's twin.",
+      "New: Sara is my niece."
+    ],
+    "conflict_classification": "context-dependent / potentially compatible",
+    "decision": "Do not overwrite the existing memory. The new statement 'Sara is my niece' can be compatible with 'Sara is Daniele's daughter and Nur's twin' if the speaker is Sara's aunt/uncle, but the speaker identity is unspecified. Treat the new relation as tentative and context-dependent rather than durable.",
+    "entity_resolution": {
+      "action": "keep_separate",
+      "entity_id": null,
+      "reason": "The new statement is compatible with the existing high-confidence facts, but it depends on who 'my' refers to. There is not enough context to resolve the speaker or update Sara's family relations durably."
+    },
+    "intent": "Assess whether the new statement conflicts with existing high-confidence memory and decide whether to commit it.",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "speaker",
+            "role": "possible aunt/uncle of Sara",
+            "type": "person"
+          }
+        ],
+        "kind": "tentative_relation",
+        "relationships": [
+          {
+            "object": "speaker",
+            "predicate": "may_be_niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara may be the speaker's niece, but the speaker identity/context is unspecified, so this is not yet durable memory."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Existing facts preserved.",
+        "New statement not promoted to durable memory due to ambiguity.",
+        "No contradiction detected with current high-confidence memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask who 'my' refers to before committing the relation.",
+      "Store as a tentative, speaker-dependent relation without changing Sara's core family facts.",
+      "If later confirmed, add the speaker's relation to Sara rather than altering the existing daughter/twin memory."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

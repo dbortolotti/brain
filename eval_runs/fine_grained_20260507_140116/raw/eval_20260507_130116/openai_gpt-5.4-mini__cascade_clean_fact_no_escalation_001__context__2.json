@@ -1,0 +1,67 @@
+{
+  "error": null,
+  "fixture_id": "cascade_clean_fact_no_escalation_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Store as a durable family fact: the user has twin daughters named Nur and Sara.",
+    "citations": [
+      "Input: \"Nur and Sara are my twin daughters.\""
+    ],
+    "conflict_classification": "none",
+    "decision": "accept",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "Two named people are mentioned as the user's twin daughters; no conflicting identities are provided."
+    },
+    "intent": "Evaluate whether to store a durable memory about the user's family relationship.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "is twin of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Nur",
+            "predicate": "has daughter",
+            "subject": "user"
+          },
+          {
+            "object": "Sara",
+            "predicate": "has daughter",
+            "subject": "user"
+          }
+        ],
+        "statement": "The user has twin daughters named Nur and Sara."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created one high-confidence memory card.",
+        "No conflict detected.",
+        "No superseding or deleted facts involved."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"Evaluate whether to store a durable memory about the user's family relationship.\",\"decision\":\"accept\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"The user has twin daughters named Nur and Sara.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Nur\",\"type\":\"person\",\"role\":\"daughter\"},{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"daughter\"}],\"relationships\":[{\"subject\":\"Nur\",\"predicate\":\"is twin of\",\"object\":\"Sara\"},{\"subject\":\"user\",\"predicate\":\"has daughter\",\"object\":\"Nur\"},{\"subject\":\"user\",\"predicate\":\"has daughter\",\"object\":\"Sara\"}]}],\"entity_resolution\":{\"action\":\"create\",\"entity_id\":null,\"reason\":\"Two named people are mentioned as the user's twin daughters; no conflicting identities are provided.\"},\"conflict_classification\":\"none\",\"answer\":\"Store as a durable family fact: the user has twin daughters named Nur and Sara.\",\"citations\":[\"Input: \\\"Nur and Sara are my twin daughters.\\\"\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Created one high-confidence memory card.\",\"No conflict detected.\",\"No superseding or deleted facts involved.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

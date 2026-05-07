@@ -1,0 +1,9 @@
+{
+  "error": "Expecting ',' delimiter: line 18 column 5 (char 739)",
+  "fixture_id": "debug_sql_select_only_001__context",
+  "model": "openai:gpt-5-nano",
+  "payload": null,
+  "raw_text": "{\n  \"intent\": \"query_memory\",\n  \"decision\": \"provide_select_results\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"memory_card\",\n      \"statement\": \"Memory access is in admin SQL select-only mode: SELECT id FROM memory_cards LIMIT 10 allowed; DELETE FROM memory_cards denied.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"memory_cards\", \"type\": \"table\", \"role\": \"target\"},\n        {\"name\": \"SELECT id FROM memory_cards LIMIT 10\", \"type\": \"SQL\", \"role\": \"query\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"memory_cards\", \"predicate\": \"allows\", \"object\": \"SELECT id FROM memory_cards LIMIT 10\"},\n        {\"subject\": \"memory_cards\", \"predicate\": \"denies\", \"object\": \"DELETE FROM memory_cards\"}\n      ]\n    }\n    // Note: Additional memory cards would be listed here if present; current fixture only defines admin mode constraints.\n  ],\n  \"entity_resolution\": {\n    \"action\": \"maintain_current_view\",\n    \"entity_id\": null,\n    \"reason\": \"Constraints specify read-only access for SELECT; DELETE is denied and should not be materialized as current state.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"In admin SQL select-only mode, you may query memory_cards with SELECT id FROM memory_cards LIMIT 10. DELETE FROM memory_cards is denied.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\"Access mode validated: read-only for SELECT; write/delete operations blocked.\"]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "schema_fail"
+}

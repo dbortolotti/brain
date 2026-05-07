@@ -1,0 +1,96 @@
+{
+  "error": null,
+  "fixture_id": "debug_explain_recall_sam__punctuation",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "Recall returned mem_new because it is the current record for Sam from Goldman. mem_old was filtered out because it has a superseded relationship pointing to mem_new, so it is treated as no longer current and should not be presented as an active fact.",
+    "citations": [
+      "mem_new",
+      "mem_old"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "Recall preferred the newer memory card for Sam at Goldman and excluded the older one because the older card was marked superseded by the newer update.",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": "Sam",
+      "reason": "The query targets Sam, and recall resolved the request to the memory cluster containing Sam's Goldman-related records."
+    },
+    "intent": "debug_explain_recall",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "object",
+            "type": "organization"
+          },
+          {
+            "name": "mem_new",
+            "role": "selected_record",
+            "type": "memory"
+          }
+        ],
+        "kind": "resolved_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "mem_new",
+            "predicate": "superseded_by",
+            "subject": "mem_old"
+          }
+        ],
+        "statement": "Sam is associated with Goldman in the current memory state via mem_new."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "mem_old",
+            "role": "filtered_record",
+            "type": "memory"
+          },
+          {
+            "name": "mem_new",
+            "role": "superseding_record",
+            "type": "memory"
+          }
+        ],
+        "kind": "filtered_fact",
+        "relationships": [
+          {
+            "object": "mem_new",
+            "predicate": "superseded_by",
+            "subject": "mem_old"
+          }
+        ],
+        "statement": "mem_old was not returned because it is superseded and therefore not current."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Identified the selected record as mem_new.",
+        "Identified mem_old as superseded.",
+        "Explained exclusion of superseded memory from recall results."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Verify that mem_old explicitly links to mem_new with a superseded marker.",
+      "Ensure recall ranking prefers current, non-superseded records over older superseded ones.",
+      "If both records appear, tighten filtering so superseded memories are excluded from default recall."
+    ]
+  },
+  "raw_text": "{\"intent\":\"debug_explain_recall\",\"decision\":\"Recall preferred the newer memory card for Sam at Goldman and excluded the older one because the older card was marked superseded by the newer update.\",\"memory_cards\":[{\"kind\":\"resolved_fact\",\"statement\":\"Sam is associated with Goldman in the current memory state via mem_new.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"object\"},{\"name\":\"mem_new\",\"type\":\"memory\",\"role\":\"selected_record\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"associated_with\",\"object\":\"Goldman\"},{\"subject\":\"mem_old\",\"predicate\":\"superseded_by\",\"object\":\"mem_new\"}]},{\"kind\":\"filtered_fact\",\"statement\":\"mem_old was not returned because it is superseded and therefore not current.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"mem_old\",\"type\":\"memory\",\"role\":\"filtered_record\"},{\"name\":\"mem_new\",\"type\":\"memory\",\"role\":\"superseding_record\"}],\"relationships\":[{\"subject\":\"mem_old\",\"predicate\":\"superseded_by\",\"object\":\"mem_new\"}]}],\"entity_resolution\":{\"action\":\"resolved\",\"entity_id\":\"Sam\",\"reason\":\"The query targets Sam, and recall resolved the request to the memory cluster containing Sam's Goldman-related records.\"},\"conflict_classification\":\"supersession\",\"answer\":\"Recall returned mem_new because it is the current record for Sam from Goldman. mem_old was filtered out because it has a superseded relationship pointing to mem_new, so it is treated as no longer current and should not be presented as an active fact.\",\"citations\":[\"mem_new\",\"mem_old\"],\"repair_options\":[\"Verify that mem_old explicitly links to mem_new with a superseded marker.\",\"Ensure recall ranking prefers current, non-superseded records over older superseded ones.\",\"If both records appear, tighten filtering so superseded memories are excluded from default recall.\"],\"receipt\":{\"success\":true,\"details\":[\"Identified the selected record as mem_new.\",\"Identified mem_old as superseded.\",\"Explained exclusion of superseded memory from recall results.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

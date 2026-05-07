@@ -1,0 +1,175 @@
+{
+  "fixture_id": "large_table_500_rows_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Store each CSV row as an atomic memory card with explicit 'id', 'name', and 'value' fields. Preserve all original punctuation/formatting in 'value' unless resolved via entity resolution. Exclude superseded/deleted records from active retrieval by default.",
+    "citations": [
+      "Fixture ID: large_table_500_rows_001__punctuation (input context)",
+      "Policy: Preserve ambiguity unless resolved (role constraint)"
+    ],
+    "conflict_classification": "structural_ambiguity",
+    "decision": "store_as_atomic_memory_cards_with_relationships",
+    "entity_resolution": {
+      "action": "defer_to_user",
+      "reason": "Ambiguity in punctuation/formatting (e.g., 'value' = 'hello!' vs 'hello') requires human judgment to resolve. Default to preserving original form unless explicitly corrected."
+    },
+    "intent": "policy_decision",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV_table",
+            "role": "source",
+            "type": "data_structure"
+          },
+          {
+            "name": "id",
+            "role": "identifier",
+            "type": "field"
+          },
+          {
+            "name": "name",
+            "role": "descriptor",
+            "type": "field"
+          },
+          {
+            "name": "value",
+            "role": "content",
+            "type": "field"
+          }
+        ],
+        "kind": "policy_rule",
+        "relationships": [
+          {
+            "object": "id,name,value triplet",
+            "predicate": "contains",
+            "subject": "CSV_table"
+          },
+          {
+            "object": "atomic_record",
+            "predicate": "represents",
+            "subject": "id,name,value triplet"
+          }
+        ],
+        "statement": "CSV tables with repeated 'id,name,value' triplets should be decomposed into atomic memory cards representing individual records, preserving all original fields."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "row",
+            "role": "unit_of_storage",
+            "type": "data_record"
+          },
+          {
+            "name": "id",
+            "role": "primary_key",
+            "type": "field"
+          },
+          {
+            "name": "name",
+            "role": "metadata",
+            "type": "field"
+          },
+          {
+            "name": "value",
+            "role": "payload",
+            "type": "field"
+          }
+        ],
+        "kind": "storage_policy",
+        "relationships": [
+          {
+            "object": "memory_card",
+            "predicate": "maps_to",
+            "subject": "row"
+          },
+          {
+            "object": "original_field_structure",
+            "predicate": "preserves",
+            "subject": "memory_card"
+          }
+        ],
+        "statement": "Each row in the CSV must be stored as a separate memory card with explicit 'id', 'name', and 'value' fields to maintain referential integrity."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "value_field",
+            "role": "potential_ambiguity_source",
+            "type": "field"
+          },
+          {
+            "name": "punctuation",
+            "role": "unresolved_variant",
+            "type": "textual_feature"
+          }
+        ],
+        "kind": "ambiguity_preservation",
+        "relationships": [
+          {
+            "object": "unresolved_ambiguity",
+            "predicate": "may_contain",
+            "subject": "value_field"
+          },
+          {
+            "object": "original_formatting",
+            "predicate": "documents",
+            "subject": "memory_card"
+          }
+        ],
+        "statement": "Ambiguity in 'value' fields (e.g., punctuation, formatting) must be retained verbatim unless explicitly resolved via entity resolution."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "status_field",
+            "role": "durability_indicator",
+            "type": "metadata"
+          },
+          {
+            "name": "active",
+            "role": "default_state",
+            "type": "status_value"
+          },
+          {
+            "name": "superseded",
+            "role": "archival_state",
+            "type": "status_value"
+          }
+        ],
+        "kind": "durability_constraint",
+        "relationships": [
+          {
+            "object": "status_field",
+            "predicate": "includes",
+            "subject": "memory_card"
+          },
+          {
+            "object": "retrieval_visibility",
+            "predicate": "controls",
+            "subject": "status_field"
+          }
+        ],
+        "statement": "Superseded or deleted records must be marked as such in a separate 'status' field and excluded from active retrieval unless explicitly requested."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory cards generated for atomic row decomposition.",
+        "Ambiguity in 'value' fields flagged for resolution.",
+        "Durability constraints applied via 'status' field."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add 'status' field to memory cards to track durability (e.g., 'active', 'superseded').",
+      "Implement entity resolution workflow for ambiguous 'value' fields.",
+      "Validate 'id' uniqueness across all memory cards."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

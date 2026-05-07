@@ -1,0 +1,137 @@
+{
+  "fixture_id": "cost_latency_token_accounting_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Required eval accounting fields are: (1) token_counts (input/output), (2) provider_id and model_id, (3) estimated_price, (4) latency_p50, latency_p90, latency_p95. These enable cost attribution, model comparison, and performance SLA monitoring.",
+    "citations": [
+      "fixture: cost_latency_token_accounting_001__context"
+    ],
+    "conflict_classification": "none",
+    "decision": "Document five core accounting dimensions with definitions and measurement scope",
+    "entity_resolution": {
+      "action": "document",
+      "entity_id": "cost_latency_token_accounting_001",
+      "reason": "Five distinct accounting fields required for complete eval cost and performance tracking"
+    },
+    "intent": "Explain required evaluation accounting fields for cost and latency tracking in Brain memory system",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "token_counts",
+            "role": "primary_accounting_unit",
+            "type": "metric"
+          }
+        ],
+        "kind": "accounting_field",
+        "relationships": [
+          {
+            "object": "input_tokens",
+            "predicate": "comprises",
+            "subject": "token_counts"
+          },
+          {
+            "object": "output_tokens",
+            "predicate": "comprises",
+            "subject": "token_counts"
+          }
+        ],
+        "statement": "Token counts measure input and output tokens consumed per API call, tracked separately for prompt and completion tokens"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "provider_id",
+            "role": "service_attribution",
+            "type": "identifier"
+          },
+          {
+            "name": "model_id",
+            "role": "model_attribution",
+            "type": "identifier"
+          }
+        ],
+        "kind": "accounting_field",
+        "relationships": [
+          {
+            "object": "model_id",
+            "predicate": "selects",
+            "subject": "provider_id"
+          }
+        ],
+        "statement": "Provider and model IDs identify the service provider and specific model variant used for each evaluation call"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "estimated_price",
+            "role": "cost_calculation",
+            "type": "metric"
+          }
+        ],
+        "kind": "accounting_field",
+        "relationships": [
+          {
+            "object": "token_counts",
+            "predicate": "derived_from",
+            "subject": "estimated_price"
+          },
+          {
+            "object": "provider_id",
+            "predicate": "derived_from",
+            "subject": "estimated_price"
+          }
+        ],
+        "statement": "Estimated price calculates cost per call based on token counts and provider pricing rates"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "latency_p50",
+            "role": "median_latency",
+            "type": "metric"
+          },
+          {
+            "name": "latency_p90",
+            "role": "tail_latency",
+            "type": "metric"
+          },
+          {
+            "name": "latency_p95",
+            "role": "tail_latency",
+            "type": "metric"
+          }
+        ],
+        "kind": "accounting_field",
+        "relationships": [
+          {
+            "object": "latency_p90",
+            "predicate": "precedes",
+            "subject": "latency_p50"
+          },
+          {
+            "object": "latency_p95",
+            "predicate": "precedes",
+            "subject": "latency_p90"
+          }
+        ],
+        "statement": "Latency percentiles (p50, p90, p95) measure response time distribution: p50 is median, p90 and p95 capture tail latency"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Documented 5 core accounting fields",
+        "Mapped relationships between token counts and pricing",
+        "Clarified latency percentile hierarchy",
+        "No conflicts or ambiguities detected"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

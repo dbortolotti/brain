@@ -1,0 +1,81 @@
+{
+  "error": null,
+  "fixture_id": "memory_compiler_small_table__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Extracted preferences for Sam (Bill Evans) and Daniele (knowledge graphs) with high confidence. Ambiguity noted for 'Bill Evans'.",
+    "citations": [],
+    "conflict_classification": "none",
+    "entity_resolution": {
+      "action": "resolve_ambiguity",
+      "entity_id": null,
+      "reason": "Bill Evans is ambiguous (could refer to a person, jazz musician, or other entities). Contextual disambiguation required."
+    },
+    "intent": "entity_mention_extraction",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_object",
+            "type": "entity"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam prefers Bill Evans (likely a jazz pianist or related entity) as their preference."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "knowledge graphs",
+            "role": "preference_object",
+            "type": "concept"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "knowledge graphs",
+            "predicate": "prefers",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Daniele prefers knowledge graphs as their preference."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted 2 preference records.",
+        "Ambiguity flagged for 'Bill Evans'.",
+        "No conflicts detected."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Disambiguate 'Bill Evans' via follow-up query (e.g., 'Is Bill Evans a person or jazz musician?').",
+      "Flag 'Bill Evans' for manual review if context is unavailable."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"entity_mention_extraction\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam prefers Bill Evans (likely a jazz pianist or related entity) as their preference.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"entity\",\n          \"role\": \"preference_object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"prefers\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Daniele prefers knowledge graphs as their preference.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"knowledge graphs\",\n          \"type\": \"concept\",\n          \"role\": \"preference_object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Daniele\",\n          \"predicate\": \"prefers\",\n          \"object\": \"knowledge graphs\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolve_ambiguity\",\n    \"entity_id\": null,\n    \"reason\": \"Bill Evans is ambiguous (could refer to a person, jazz musician, or other entities). Contextual disambiguation required.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Extracted preferences for Sam (Bill Evans) and Daniele (knowledge graphs) with high confidence. Ambiguity noted for 'Bill Evans'.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Disambiguate 'Bill Evans' via follow-up query (e.g., 'Is Bill Evans a person or jazz musician?').\",\n    \"Flag 'Bill Evans' for manual review if context is unavailable.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Extracted 2 preference records.\",\n      \"Ambiguity flagged for 'Bill Evans'.\",\n      \"No conflicts detected.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

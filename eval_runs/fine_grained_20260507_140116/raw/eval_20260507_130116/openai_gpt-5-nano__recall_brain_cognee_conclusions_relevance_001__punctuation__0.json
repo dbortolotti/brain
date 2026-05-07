@@ -1,0 +1,126 @@
+{
+  "error": null,
+  "fixture_id": "recall_brain_cognee_conclusions_relevance_001__punctuation",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Brain is the primary memory system; Cognee provides rebuildable projections. The user\u2019s query concerns what was concluded about Brain and Cognee, which is that Brain is the memory system and Cognee provides rebuildable projections, with intake, family facts, and Sam preferences shaping how data is interpreted. If you want a specific phrasing or a collapsed single-sentence conclusion, I can provide that.",
+    "citations": [
+      "Brain as memory system (source-of-truth).",
+      "Cognee as rebuildable projection provider.",
+      "Slack intake, family facts, and Sam preferences as constraints."
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "synthesize user query into a concise conclusion extraction",
+    "entity_resolution": {
+      "action": "confirm_concepts",
+      "entity_id": null,
+      "reason": "terminology alignment across sources; no conflicting entities detected for Brain and Cognee in the query context"
+    },
+    "intent": "recall_conclusions",
+    "memory_cards": [
+      {
+        "confidence": "moderate",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "primary_memory",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "projection_source",
+            "type": "system"
+          },
+          {
+            "name": "Slack",
+            "role": "intake_source",
+            "type": "tool"
+          },
+          {
+            "name": "family facts",
+            "role": "fact_source",
+            "type": "data"
+          },
+          {
+            "name": "Sam",
+            "role": "user",
+            "type": "person"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "rebuildable projection",
+            "predicate": "provides",
+            "subject": "Cognee"
+          },
+          {
+            "object": "source-of-truth memory system",
+            "predicate": "is",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "Brain is the primary memory system; Cognee provides rebuildable projections; Slack strict intake; family facts; Sam preferences are considered in selections."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "memory_system",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "projection_source",
+            "type": "system"
+          },
+          {
+            "name": "Slack",
+            "role": "intake",
+            "type": "tool"
+          },
+          {
+            "name": "family facts",
+            "role": "fact_source",
+            "type": "data"
+          },
+          {
+            "name": "Sam",
+            "role": "preference_holder",
+            "type": "person"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "memory_system",
+            "predicate": "is",
+            "subject": "Brain"
+          },
+          {
+            "object": "rebuildable projections",
+            "predicate": "provides",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "The user asked what was concluded about Brain and Cognee; the conclusions are that Brain is the memory system and Cognee provides rebuildable projections, with constraints from Slack intake, family facts, and Sam preferences considered in decisions."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed query intent to recall conclusions about Brain and Cognee.",
+        "Generated memory_cards with entities and relationships.",
+        "Provided answer synthesis and options for refinement."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide a single-sentence conclusion: 'Brain is the memory system; Cognee provides rebuildable projections; this conclusion respects Slack intake, family facts, and Sam preferences.'",
+      "Isolate Brain and Cognee conclusions into separate bullet points for clarity."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"recall_conclusions\",\n  \"decision\": \"synthesize user query into a concise conclusion extraction\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"conclusion\",\n      \"statement\": \"Brain is the primary memory system; Cognee provides rebuildable projections; Slack strict intake; family facts; Sam preferences are considered in selections.\",\n      \"confidence\": \"moderate\",\n      \"entities\": [\n        {\"name\": \"Brain\", \"type\": \"system\", \"role\": \"primary_memory\"},\n        {\"name\": \"Cognee\", \"type\": \"system\", \"role\": \"projection_source\"},\n        {\"name\": \"Slack\", \"type\": \"tool\", \"role\": \"intake_source\"},\n        {\"name\": \"family facts\", \"type\": \"data\", \"role\": \"fact_source\"},\n        {\"name\": \"Sam\", \"type\": \"person\", \"role\": \"user\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Cognee\", \"predicate\": \"provides\", \"object\": \"rebuildable projection\"},\n        {\"subject\": \"Brain\", \"predicate\": \"is\", \"object\": \"source-of-truth memory system\"}\n      ]\n    }\n    ,\n    {\n      \"kind\": \"conclusion\",\n      \"statement\": \"The user asked what was concluded about Brain and Cognee; the conclusions are that Brain is the memory system and Cognee provides rebuildable projections, with constraints from Slack intake, family facts, and Sam preferences considered in decisions.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\"name\": \"Brain\", \"type\": \"system\", \"role\": \"memory_system\"},\n        {\"name\": \"Cognee\", \"type\": \"system\", \"role\": \"projection_source\"},\n        {\"name\": \"Slack\", \"type\": \"tool\", \"role\": \"intake\"},\n        {\"name\": \"family facts\", \"type\": \"data\", \"role\": \"fact_source\"},\n        {\"name\": \"Sam\", \"type\": \"person\", \"role\": \"preference_holder\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Brain\", \"predicate\": \"is\", \"object\": \"memory_system\"},\n        {\"subject\": \"Cognee\", \"predicate\": \"provides\", \"object\": \"rebuildable projections\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"confirm_concepts\",\n    \"entity_id\": null,\n    \"reason\": \"terminology alignment across sources; no conflicting entities detected for Brain and Cognee in the query context\"\n  },\n  \"conflict_classification\": \"none_detected\",\n  \"answer\": \"Brain is the primary memory system; Cognee provides rebuildable projections. The user\u2019s query concerns what was concluded about Brain and Cognee, which is that Brain is the memory system and Cognee provides rebuildable projections, with intake, family facts, and Sam preferences shaping how data is interpreted. If you want a specific phrasing or a collapsed single-sentence conclusion, I can provide that.\",\n  \"citations\": [\n    \"Brain as memory system (source-of-truth).\",\n    \"Cognee as rebuildable projection provider.\",\n    \"Slack intake, family facts, and Sam preferences as constraints.\"\n  ],\n  \"repair_options\": [\n    \"Provide a single-sentence conclusion: 'Brain is the memory system; Cognee provides rebuildable projections; this conclusion respects Slack intake, family facts, and Sam preferences.'\",\n    \"Isolate Brain and Cognee conclusions into separate bullet points for clarity.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Parsed query intent to recall conclusions about Brain and Cognee.\",\n      \"Generated memory_cards with entities and relationships.\",\n      \"Provided answer synthesis and options for refinement.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

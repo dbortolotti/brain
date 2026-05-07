@@ -1,0 +1,64 @@
+{
+  "fixture_id": "cascade_conflict_escalation_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "I found a conflict: Sara is already stored as your daughter, but the new input says Sara is your niece. I\u2019m preserving the ambiguity rather than replacing the existing memory.",
+    "citations": [
+      "Existing: Sara is my daughter",
+      "Input: Sara is my niece"
+    ],
+    "conflict_classification": "direct contradiction",
+    "decision": "Detected a direct relationship conflict for Sara; do not overwrite the existing memory. Preserve ambiguity until clarified.",
+    "entity_resolution": {
+      "action": "ambiguous",
+      "entity_id": "Sara",
+      "reason": "The input appears to refer to the same Sara, but the relationship to the user conflicts with existing memory. No stable merge is justified without clarification."
+    },
+    "intent": "conflict_explainer",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "user",
+            "role": "owner",
+            "type": "person"
+          }
+        ],
+        "kind": "conflict",
+        "relationships": [
+          {
+            "object": "user",
+            "predicate": "is daughter of",
+            "subject": "Sara"
+          },
+          {
+            "object": "user",
+            "predicate": "is niece of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is described as both the user's daughter and the user's niece; these relationship claims conflict and should not both be committed as current."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict detected between existing and new relationship claims.",
+        "No durable overwrite committed.",
+        "Ambiguity preserved for later clarification."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm whether Sara is your daughter or your niece.",
+      "If there are two different people named Sara, specify which one each statement refers to.",
+      "Provide a corrected relationship so the memory can be updated safely."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

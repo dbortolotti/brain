@@ -1,0 +1,33 @@
+{
+  "fixture_id": "debug_inspect_memory_001__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Inspection requested for memory mem_123, but no memory contents were provided in the input fixture. No durable memory should be committed or modified. If available, return the stored record for mem_123 exactly as currently persisted, including any status indicating deletion or supersession rather than restating old facts as current.",
+    "citations": [
+      "mem_123"
+    ],
+    "conflict_classification": "not_applicable",
+    "decision": "read_only_no_mutation",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": "mem_123",
+      "reason": "The request is to inspect an existing memory by ID for context, not to resolve or create an entity."
+    },
+    "intent": "inspect_memory",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Handled as a read-only inspection request.",
+        "No memory write, merge, or deletion action taken.",
+        "No factual content available in the fixture to display for mem_123."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Fetch the persisted contents of mem_123 from storage and display them verbatim.",
+      "If mem_123 does not exist, return a not_found result.",
+      "If mem_123 is deleted or superseded, return its status and replacement/reference metadata instead of presenting its prior contents as current."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

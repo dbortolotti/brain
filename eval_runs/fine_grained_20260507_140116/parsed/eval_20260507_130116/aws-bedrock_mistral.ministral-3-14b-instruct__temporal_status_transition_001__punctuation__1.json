@@ -1,0 +1,89 @@
+{
+  "fixture_id": "temporal_status_transition_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The original 'Brain Slack agent' (status=open) is superseded by the 'Brain Slack agent MVP' (status=implemented). The system retains both facts but marks the former as superseded while preserving the variant relationship. No deleted facts are presented as current.",
+    "citations": [
+      "Temporal status transition rule: 'implemented' supersedes 'planned' for the same subject unless variant relationship exists.",
+      "Ambiguity preservation protocol: Original intent must be citable even when superseded."
+    ],
+    "conflict_classification": "temporal_supersession_with_variant_preservation",
+    "decision": "supersede_with_ambiguity_preservation",
+    "entity_resolution": {
+      "action": "merge_with_ambiguity",
+      "entity_id": "Brain Slack agent",
+      "reason": "Temporal transition from 'planned' to 'implemented' (MVP) requires preserving original intent while acknowledging supersession. Ambiguity retained in variant relationship."
+    },
+    "intent": "temporal_status_transition",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Brain Slack agent",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "open",
+            "role": "predicate",
+            "type": "status"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "open",
+            "predicate": "has_status",
+            "subject": "Brain Slack agent"
+          }
+        ],
+        "statement": "The Brain Slack agent is planned (status=open) [superseded by temporal transition]"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain Slack agent MVP",
+            "role": "subject",
+            "type": "project_variant"
+          },
+          {
+            "name": "implemented",
+            "role": "predicate",
+            "type": "status"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "implemented",
+            "predicate": "has_status",
+            "subject": "Brain Slack agent MVP"
+          },
+          {
+            "object": "Brain Slack agent MVP",
+            "predicate": "has_variant",
+            "subject": "Brain Slack agent"
+          }
+        ],
+        "statement": "The Brain Slack agent MVP is now implemented (status=implemented) [current]"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded fact retained with [superseded] tag.",
+        "New fact marked as [current] with high confidence.",
+        "Variant relationship established between entities.",
+        "Ambiguity preserved in entity resolution."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Explicitly mark 'Brain Slack agent' as 'deprecated' in metadata while keeping it citable.",
+      "Create a temporal transition log entry linking the two states.",
+      "Add a 'scope' field to distinguish between 'planned' (general) and 'implemented' (MVP) contexts."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

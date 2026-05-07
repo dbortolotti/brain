@@ -1,0 +1,56 @@
+{
+  "error": null,
+  "fixture_id": "article_url_fetch_failure_001__context",
+  "model": "groq:llama-3.3-70b-versatile",
+  "payload": {
+    "answer": "article fetch failed with 404 error",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "fetch failure",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "no entity to resolve"
+    },
+    "intent": "extract atomic card",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "subject",
+            "type": "article"
+          },
+          {
+            "name": "memory architecture",
+            "role": "context",
+            "type": "topic"
+          }
+        ],
+        "kind": "article",
+        "relationships": [
+          {
+            "object": "memory architecture",
+            "predicate": "is useful for",
+            "subject": "https://example.com/missing"
+          }
+        ],
+        "statement": "https://example.com/missing is a useful article for memory architecture"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "404 network error"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "retry fetch",
+      "check article url"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"extract atomic card\",\n   \"decision\": \"fetch failure\",\n   \"memory_cards\": [\n       {\n           \"kind\": \"article\",\n           \"statement\": \"https://example.com/missing is a useful article for memory architecture\",\n           \"confidence\": \"low\",\n           \"entities\": [\n               {\n                   \"name\": \"https://example.com/missing\",\n                   \"type\": \"article\",\n                   \"role\": \"subject\"\n               },\n               {\n                   \"name\": \"memory architecture\",\n                   \"type\": \"topic\",\n                   \"role\": \"context\"\n               }\n           ],\n           \"relationships\": [\n               {\n                   \"subject\": \"https://example.com/missing\",\n                   \"predicate\": \"is useful for\",\n                   \"object\": \"memory architecture\"\n               }\n           ]\n       }\n   ],\n   \"entity_resolution\": {\n       \"action\": \"none\",\n       \"entity_id\": null,\n       \"reason\": \"no entity to resolve\"\n   },\n   \"conflict_classification\": \"none\",\n   \"answer\": \"article fetch failed with 404 error\",\n   \"citations\": [],\n   \"repair_options\": [\n       \"retry fetch\",\n       \"check article url\"\n   ],\n   \"receipt\": {\n       \"success\": false,\n       \"details\": [\n           \"404 network error\"\n       ]\n   }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

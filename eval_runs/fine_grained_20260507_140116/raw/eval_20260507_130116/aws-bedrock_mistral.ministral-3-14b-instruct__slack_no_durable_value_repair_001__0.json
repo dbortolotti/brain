@@ -1,0 +1,58 @@
+{
+  "error": null,
+  "fixture_id": "slack_no_durable_value_repair_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory rejected due to unresolved temporal ambiguity. Clarify the date/time (e.g., '2023-11-15') before committing.",
+    "citations": [],
+    "conflict_classification": "temporal_ambiguity",
+    "decision": "durable_memory_rejected",
+    "entity_resolution": {
+      "action": "ambiguity_preserved",
+      "entity_id": null,
+      "reason": "Temporal reference 'today' lacks specificity (e.g., date, timezone). Durable memory requires unambiguous context to avoid superseding/deleting future updates."
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "today",
+            "role": "reference_time",
+            "type": "temporal"
+          },
+          {
+            "name": "cloudy",
+            "role": "state",
+            "type": "weather_condition"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "cloudy",
+            "predicate": "has_weather",
+            "subject": "today"
+          }
+        ],
+        "statement": "Today's weather is cloudy."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory requires unambiguous temporal context to prevent superseding.",
+        "Ambiguity in 'today' could conflict with future updates (e.g., tomorrow\u2019s weather)."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Specify a date: 'Brain, remember the weather on 2023-11-15 was cloudy.'",
+      "Use a relative anchor: 'Brain, remember yesterday\u2019s weather was cloudy.'",
+      "Mark as ephemeral: 'Brain, note today\u2019s weather is cloudy (no durable storage).'"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_ingestion\",\n  \"decision\": \"durable_memory_rejected\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Today's weather is cloudy.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"today\",\n          \"type\": \"temporal\",\n          \"role\": \"reference_time\"\n        },\n        {\n          \"name\": \"cloudy\",\n          \"type\": \"weather_condition\",\n          \"role\": \"state\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"today\",\n          \"predicate\": \"has_weather\",\n          \"object\": \"cloudy\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"ambiguity_preserved\",\n    \"entity_id\": null,\n    \"reason\": \"Temporal reference 'today' lacks specificity (e.g., date, timezone). Durable memory requires unambiguous context to avoid superseding/deleting future updates.\"\n  },\n  \"conflict_classification\": \"temporal_ambiguity\",\n  \"answer\": \"Memory rejected due to unresolved temporal ambiguity. Clarify the date/time (e.g., '2023-11-15') before committing.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Specify a date: 'Brain, remember the weather on 2023-11-15 was cloudy.'\",\n    \"Use a relative anchor: 'Brain, remember yesterday\u2019s weather was cloudy.'\",\n    \"Mark as ephemeral: 'Brain, note today\u2019s weather is cloudy (no durable storage).'\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Durable memory requires unambiguous temporal context to prevent superseding.\",\n      \"Ambiguity in 'today' could conflict with future updates (e.g., tomorrow\u2019s weather).\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

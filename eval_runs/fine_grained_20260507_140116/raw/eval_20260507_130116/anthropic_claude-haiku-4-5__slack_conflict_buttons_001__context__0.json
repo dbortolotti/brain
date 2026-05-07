@@ -1,0 +1,89 @@
+{
+  "error": null,
+  "fixture_id": "slack_conflict_buttons_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Update accepted. Sam's current employer is Point72. Previous employment at Goldman is archived as superseded.",
+    "citations": [
+      "User explicit statement: 'Sam left Goldman and joined Point72'"
+    ],
+    "conflict_classification": "temporal_supersession",
+    "decision": "Accept update with supersession",
+    "entity_resolution": {
+      "action": "merge_and_update",
+      "entity_id": "Sam",
+      "reason": "Same entity with updated employment status; prior fact superseded by explicit correction"
+    },
+    "intent": "Update Sam's employment status from Goldman to Point72",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact_superseded",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact_current",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded fact marked as historical",
+        "Current fact committed to durable memory",
+        "Entity Sam unified with updated employment relationship"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retain both facts with temporal markers if employment history is relevant",
+      "Archive Goldman employment with end_date marker"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Update Sam's employment status from Goldman to Point72\",\n  \"decision\": \"Accept update with supersession\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact_superseded\",\n      \"statement\": \"Sam works at Goldman\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact_current\",\n      \"statement\": \"Sam left Goldman and joined Point72\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"left\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge_and_update\",\n    \"entity_id\": \"Sam\",\n    \"reason\": \"Same entity with updated employment status; prior fact superseded by explicit correction\"\n  },\n  \"conflict_classification\": \"temporal_supersession\",\n  \"answer\": \"Update accepted. Sam's current employer is Point72. Previous employment at Goldman is archived as superseded.\",\n  \"citations\": [\n    \"User explicit statement: 'Sam left Goldman and joined Point72'\"\n  ],\n  \"repair_options\": [\n    \"Retain both facts with temporal markers if employment history is relevant\",\n    \"Archive Goldman employment with end_date marker\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Superseded fact marked as historical\",\n      \"Current fact committed to durable memory\",\n      \"Entity Sam unified with updated employment relationship\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

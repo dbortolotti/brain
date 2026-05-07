@@ -1,0 +1,117 @@
+{
+  "fixture_id": "numeric_table_exactness_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Extracted two atomic observations from the table: PPO-001 (Reward 12, Sharpe 45, baseline) and PPO-002 (Reward 18, Sharpe 51, entropy tuned).",
+    "citations": [
+      "numeric_table_exactness_001__punctuation"
+    ],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Run identifiers and metric names are taken directly from the table without needing cross-reference to existing entities."
+    },
+    "intent": "extract atomic memory cards from a numeric table",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "run",
+            "type": "run_id"
+          },
+          {
+            "name": "Reward",
+            "role": "metric",
+            "type": "metric"
+          },
+          {
+            "name": "Sharpe",
+            "role": "metric",
+            "type": "metric"
+          },
+          {
+            "name": "baseline",
+            "role": "notes",
+            "type": "note"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "12",
+            "predicate": "has_reward",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "45",
+            "predicate": "has_sharpe",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "baseline",
+            "predicate": "has_notes",
+            "subject": "PPO-001"
+          }
+        ],
+        "statement": "For Run PPO-001, Reward is 12, Sharpe is 45, and Notes are 'baseline'."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "run",
+            "type": "run_id"
+          },
+          {
+            "name": "Reward",
+            "role": "metric",
+            "type": "metric"
+          },
+          {
+            "name": "Sharpe",
+            "role": "metric",
+            "type": "metric"
+          },
+          {
+            "name": "entropy tuned",
+            "role": "notes",
+            "type": "note"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "18",
+            "predicate": "has_reward",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "51",
+            "predicate": "has_sharpe",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "entropy tuned",
+            "predicate": "has_notes",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "For Run PPO-002, Reward is 18, Sharpe is 51, and Notes are 'entropy tuned'."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed table rows for PPO-001 and PPO-002.",
+        "Converted numeric strings with leading zeros (e.g., 012 -> 12) to their integer values as written."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

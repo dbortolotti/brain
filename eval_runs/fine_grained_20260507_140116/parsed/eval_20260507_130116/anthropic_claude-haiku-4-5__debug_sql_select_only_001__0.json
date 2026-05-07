@@ -1,0 +1,84 @@
+{
+  "fixture_id": "debug_sql_select_only_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "SELECT id FROM memory_cards LIMIT 10 is valid and executable. DELETE FROM memory_cards is rejected due to select-only mode enforcement.",
+    "citations": [
+      "Fixture constraint: Admin SQL select-only mode",
+      "Permission model: SELECT allowed, DELETE denied"
+    ],
+    "conflict_classification": "permission_violation_prevented",
+    "decision": "ALLOW SELECT; DENY DELETE",
+    "entity_resolution": {
+      "action": "enforce_permission_boundary",
+      "entity_id": "debug_sql_select_only_001",
+      "reason": "Fixture specifies select-only mode; DELETE operations violate access control policy"
+    },
+    "intent": "Validate SQL select-only mode enforcement and debug permission boundaries",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Admin SQL interface",
+            "role": "query_executor",
+            "type": "system_component"
+          },
+          {
+            "name": "debug_sql_select_only_001",
+            "role": "test_context",
+            "type": "fixture"
+          }
+        ],
+        "kind": "system_constraint",
+        "relationships": [
+          {
+            "object": "select-only",
+            "predicate": "operates_in_mode",
+            "subject": "Admin SQL interface"
+          }
+        ],
+        "statement": "Admin SQL interface operates in select-only mode for fixture debug_sql_select_only_001"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "memory_cards",
+            "role": "data_store",
+            "type": "table"
+          }
+        ],
+        "kind": "permission_rule",
+        "relationships": [
+          {
+            "object": "allowed",
+            "predicate": "permission_status",
+            "subject": "SELECT"
+          },
+          {
+            "object": "denied",
+            "predicate": "permission_status",
+            "subject": "DELETE"
+          }
+        ],
+        "statement": "SELECT queries against memory_cards table are permitted; DELETE operations are denied"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Permission boundary enforced",
+        "SELECT query validated",
+        "DELETE query rejected",
+        "No durable memory mutations occurred"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Escalate to unrestricted admin mode if deletion is required",
+      "Use alternative memory mutation APIs with full audit trail",
+      "Review fixture intent to confirm select-only is appropriate"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

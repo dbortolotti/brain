@@ -1,0 +1,60 @@
+{
+  "fixture_id": "debug_explain_recall_sam",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "The recall returns mem_new for Sam Goldman because mem_old has been superseded by mem_new. Superseding means mem_new contains the updated facts and is considered the current, valid memory, while mem_old is retained for historical trace but not used for current recall.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "Recall produced mem_new for Sam from Goldman and filtered mem_old because mem_old was superseded by mem_new and therefore not considered current.",
+    "entity_resolution": {
+      "action": "resolve_for_recall",
+      "entity_id": "Sam Goldman (Goldman, Sam)",
+      "reason": "mem_new supersedes mem_old; only mem_new is current for recall."
+    },
+    "intent": "explain_recall_decision",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam Goldman",
+            "role": "entity",
+            "type": "person"
+          },
+          {
+            "name": "mem_new",
+            "role": "current_memory",
+            "type": "memory"
+          }
+        ],
+        "kind": "memory_card",
+        "relationships": [
+          {
+            "object": "mem_new",
+            "predicate": "has_latest_memory",
+            "subject": "Sam Goldman"
+          },
+          {
+            "object": "mem_new",
+            "predicate": "superseded_by",
+            "subject": "mem_old"
+          }
+        ],
+        "statement": "Sam Goldman exists in memory with a current associated memory entry mem_new indicating latest information."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recall processed with supersession rule applied.",
+        "Current memory for Sam Goldman is mem_new."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Preserve both mem_old and mem_new for traceability, marking mem_new as current.",
+      "Flag mem_old as superseded with reference to mem_new to prevent future confusion.",
+      "Include a note in memory log explaining why mem_old was superseded."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

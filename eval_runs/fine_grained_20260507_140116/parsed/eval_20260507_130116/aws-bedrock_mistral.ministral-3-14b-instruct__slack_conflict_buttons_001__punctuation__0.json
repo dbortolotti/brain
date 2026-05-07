@@ -1,0 +1,92 @@
+{
+  "fixture_id": "slack_conflict_buttons_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam no longer works at Goldman Sachs; current record reflects employment at Point72. Original fact retained as historical context but marked as superseded.",
+    "citations": [
+      "User input: 'Sam left Goldman and joined Point72' (implicit temporal precedence)"
+    ],
+    "conflict_classification": "temporal_supersession",
+    "decision": "resolve_conflict",
+    "entity_resolution": {
+      "action": "supersede",
+      "entity_id": "Sam",
+      "reason": "New employment fact supersedes prior 'works at' relationship with Goldman Sachs. Ambiguity preserved: no explicit departure date or confirmation of tenure."
+    },
+    "intent": "memory_update",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman Sachs."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman Sachs and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded 'works at' relationship with Goldman Sachs.",
+        "Added 'left' and 'joined' relationships with temporal inference.",
+        "Confidence adjusted: high for new fact, low for superseded (contextual)."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add explicit departure date from Goldman Sachs (if known).",
+      "Verify tenure duration at Goldman Sachs (if critical).",
+      "Flag as unresolved if no confirmation of Point72 employment."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

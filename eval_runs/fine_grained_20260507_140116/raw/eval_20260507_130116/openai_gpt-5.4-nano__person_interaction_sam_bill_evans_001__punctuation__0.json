@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "person_interaction_sam_bill_evans_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Stored as a preference with medium confidence due to partial identity.",
+    "citations": [],
+    "conflict_classification": "no_conflict_detected",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_ambiguous_entity",
+      "entity_id": null,
+      "reason": "Sam is identified only as 'Sam from Goldman' with no unique identifier; resolve as an ambiguous person record."
+    },
+    "intent": "store_personal_preference",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_target",
+            "type": "musician"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_context",
+            "type": "organization"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam (from Goldman)"
+          }
+        ],
+        "statement": "Sam (from Goldman) mentioned that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed a preference memory based on the provided statement.",
+        "Marked identity as ambiguous and kept affiliation context ('from Goldman')."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If Sam\u2019s identity is clarified later (full name or unique ID), update the entity resolution for the stored preference.",
+      "If the context indicates a different person named Sam, revise the linkage accordingly."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"store_personal_preference\",\n  \"decision\": \"commit\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam (from Goldman) mentioned that he likes Bill Evans.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"musician\",\n          \"role\": \"preference_target\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation_context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam (from Goldman)\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_ambiguous_entity\",\n    \"entity_id\": null,\n    \"reason\": \"Sam is identified only as 'Sam from Goldman' with no unique identifier; resolve as an ambiguous person record.\"\n  },\n  \"conflict_classification\": \"no_conflict_detected\",\n  \"answer\": \"Stored as a preference with medium confidence due to partial identity.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If Sam\u2019s identity is clarified later (full name or unique ID), update the entity resolution for the stored preference.\",\n    \"If the context indicates a different person named Sam, revise the linkage accordingly.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Committed a preference memory based on the provided statement.\",\n      \"Marked identity as ambiguous and kept affiliation context ('from Goldman').\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,120 @@
+{
+  "error": null,
+  "fixture_id": "long_markdown_chat_summary_001__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Current architectural stance: Brain DB is the single source of truth; Cognee is a rebuildable semantic projection; Slack is the strict memory intake agent. Open questions remain about Telegram integration and the cheapest model that saturates performance; those require further benchmarking and cost analysis.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Brain DB is the source of truth; Cognee is a rebuildable semantic projection; Slack is the strict memory intake agent. Telegram addition is uncertain; need cost-performance analysis to choose model.",
+    "entity_resolution": {
+      "action": "preserve_current_state_without_elimination",
+      "entity_id": null,
+      "reason": "No concrete conflicting entities identified; maintain existing roles and definitions while leaving open questions for future decision."
+    },
+    "intent": "evaluate_brain_memory_system",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system"
+          }
+        ],
+        "kind": "assertion",
+        "relationships": [
+          {
+            "object": "source_of_truth",
+            "predicate": "is",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB should be the source of truth."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "semantic_projection",
+            "type": "system_component"
+          }
+        ],
+        "kind": "assertion",
+        "relationships": [
+          {
+            "object": "rebuildable_semantic_projection",
+            "predicate": "is",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee should be a rebuildable semantic projection."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "memory_intake_agent",
+            "type": "system_component"
+          }
+        ],
+        "kind": "assertion",
+        "relationships": [
+          {
+            "object": "strict_memory_intake_agent",
+            "predicate": "is",
+            "subject": "Slack"
+          }
+        ],
+        "statement": "Slack should be a strict memory intake agent."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Telegram",
+            "role": "potential_future_integration",
+            "type": "communication_platform"
+          },
+          {
+            "name": "model_cost_efficiency",
+            "role": "saturation_performance",
+            "type": "metric"
+          }
+        ],
+        "kind": "question",
+        "relationships": [
+          {
+            "object": "integration_later",
+            "predicate": "potentially",
+            "subject": "Telegram"
+          },
+          {
+            "object": "model_performance_saturation",
+            "predicate": "relates_to",
+            "subject": "model_cost_efficiency"
+          }
+        ],
+        "statement": "Open questions: Should Telegram be added later? Which model is cheapest while saturating performance?"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory map created for core components.",
+        "Open questions captured for follow-up decisions."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Benchmark model pricing vs. performance to identify cheapest saturating option.",
+      "Prototype Telegram integration in a controlled environment to evaluate value and latency.",
+      "Document versioned schemas for Brain DB, Cognee, and Slack to ensure durable memory semantics."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"evaluate_brain_memory_system\",\n  \"decision\": \"Brain DB is the source of truth; Cognee is a rebuildable semantic projection; Slack is the strict memory intake agent. Telegram addition is uncertain; need cost-performance analysis to choose model.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"assertion\",\n      \"statement\": \"Brain DB should be the source of truth.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Brain DB\", \"type\": \"system\", \"role\": \"source_of_truth\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Brain DB\", \"predicate\": \"is\", \"object\": \"source_of_truth\"}\n      ]\n    },\n    {\n      \"kind\": \"assertion\",\n      \"statement\": \"Cognee should be a rebuildable semantic projection.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Cognee\", \"type\": \"system_component\", \"role\": \"semantic_projection\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Cognee\", \"predicate\": \"is\", \"object\": \"rebuildable_semantic_projection\"}\n      ]\n    },\n    {\n      \"kind\": \"assertion\",\n      \"statement\": \"Slack should be a strict memory intake agent.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Slack\", \"type\": \"system_component\", \"role\": \"memory_intake_agent\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Slack\", \"predicate\": \"is\", \"object\": \"strict_memory_intake_agent\"}\n      ]\n    },\n    {\n      \"kind\": \"question\",\n      \"statement\": \"Open questions: Should Telegram be added later? Which model is cheapest while saturating performance?\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\"name\": \"Telegram\", \"type\": \"communication_platform\", \"role\": \"potential_future_integration\"},\n        {\"name\": \"model_cost_efficiency\", \"type\": \"metric\", \"role\": \"saturation_performance\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Telegram\", \"predicate\": \"potentially\", \"object\": \"integration_later\"},\n        {\"subject\": \"model_cost_efficiency\", \"predicate\": \"relates_to\", \"object\": \"model_performance_saturation\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"preserve_current_state_without_elimination\",\n    \"entity_id\": null,\n    \"reason\": \"No concrete conflicting entities identified; maintain existing roles and definitions while leaving open questions for future decision.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Current architectural stance: Brain DB is the single source of truth; Cognee is a rebuildable semantic projection; Slack is the strict memory intake agent. Open questions remain about Telegram integration and the cheapest model that saturates performance; those require further benchmarking and cost analysis.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Benchmark model pricing vs. performance to identify cheapest saturating option.\",\n    \"Prototype Telegram integration in a controlled environment to evaluate value and latency.\",\n    \"Document versioned schemas for Brain DB, Cognee, and Slack to ensure durable memory semantics.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory map created for core components.\",\n      \"Open questions captured for follow-up decisions.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

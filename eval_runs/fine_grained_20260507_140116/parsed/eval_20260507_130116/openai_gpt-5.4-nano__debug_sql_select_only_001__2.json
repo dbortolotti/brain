@@ -1,0 +1,29 @@
+{
+  "fixture_id": "debug_sql_select_only_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "SELECT queries are permitted (e.g., `SELECT id FROM memory_cards LIMIT 10`), while DELETE operations on memory_cards are denied.",
+    "citations": [],
+    "conflict_classification": "SQL capability conflict (select-only allowed, delete denied)",
+    "decision": "ALLOW_SELECT_DENY_DELETE",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No persistent memory artifacts were provided or extracted; only a policy constraint was given."
+    },
+    "intent": "Enforce Brain personal memory system policy in admin SQL select-only mode.",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Admin policy indicates select-only access to memory_cards.",
+        "DELETE from memory_cards is explicitly denied."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Use SELECT-only queries to inspect memory_cards (e.g., SELECT with LIMIT).",
+      "If modifications are required, route through an allowed write/update mechanism rather than DELETE."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

@@ -1,0 +1,83 @@
+{
+  "error": null,
+  "fixture_id": "cascade_conflict_escalation_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "You have two conflicting statements about Sara: one says she is your daughter, the other says she is your niece. These roles generally cannot both be true for the same person in the same context. I can\u2019t safely choose one without clarification.",
+    "citations": [],
+    "conflict_classification": "Contradictory family relationship roles (daughter vs niece) for the same person.",
+    "decision": "Do not commit a durable single relationship; record as conflicting/ambiguous until the user clarifies.",
+    "entity_resolution": {
+      "action": "no_commit",
+      "entity_id": null,
+      "reason": "Both inputs refer to the same named person ('Sara') but assert incompatible relationship roles ('daughter' vs 'niece'). Without clarification, committing a single durable relationship would risk storing an incorrect fact."
+    },
+    "intent": "Explain and resolve a conflict between two user-provided identity/relationship statements about the same person (Sara).",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "me",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship_claim",
+        "relationships": [
+          {
+            "object": "Sara (daughter)",
+            "predicate": "has_child_role",
+            "subject": "me"
+          }
+        ],
+        "statement": "Sara is my daughter."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "me",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship_claim",
+        "relationships": [
+          {
+            "object": "Sara (niece)",
+            "predicate": "has_relative_role",
+            "subject": "me"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected a conflict between 'Sara is my daughter' and 'Sara is my niece' for the same named person.",
+        "Chose not to commit a durable single relationship."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm which relationship is correct (daughter or niece) for the current context.",
+      "If both are true in different contexts, specify the context (e.g., adoption vs step/biological, or different legal vs social relationship).",
+      "Provide additional details (e.g., whose sibling she is, whether she was adopted).",
+      "If one statement is a mistake, tell me which one to retract or mark as incorrect."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Explain and resolve a conflict between two user-provided identity/relationship statements about the same person (Sara).\",\n  \"decision\": \"Do not commit a durable single relationship; record as conflicting/ambiguous until the user clarifies.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"relationship_claim\",\n      \"statement\": \"Sara is my daughter.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"me\",\n          \"type\": \"person\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"me\",\n          \"predicate\": \"has_child_role\",\n          \"object\": \"Sara (daughter)\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"relationship_claim\",\n      \"statement\": \"Sara is my niece.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"me\",\n          \"type\": \"person\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"me\",\n          \"predicate\": \"has_relative_role\",\n          \"object\": \"Sara (niece)\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_commit\",\n    \"entity_id\": null,\n    \"reason\": \"Both inputs refer to the same named person ('Sara') but assert incompatible relationship roles ('daughter' vs 'niece'). Without clarification, committing a single durable relationship would risk storing an incorrect fact.\"\n  },\n  \"conflict_classification\": \"Contradictory family relationship roles (daughter vs niece) for the same person.\",\n  \"answer\": \"You have two conflicting statements about Sara: one says she is your daughter, the other says she is your niece. These roles generally cannot both be true for the same person in the same context. I can\u2019t safely choose one without clarification.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Confirm which relationship is correct (daughter or niece) for the current context.\",\n    \"If both are true in different contexts, specify the context (e.g., adoption vs step/biological, or different legal vs social relationship).\",\n    \"Provide additional details (e.g., whose sibling she is, whether she was adopted).\",\n    \"If one statement is a mistake, tell me which one to retract or mark as incorrect.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Detected a conflict between 'Sara is my daughter' and 'Sara is my niece' for the same named person.\",\n      \"Chose not to commit a durable single relationship.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

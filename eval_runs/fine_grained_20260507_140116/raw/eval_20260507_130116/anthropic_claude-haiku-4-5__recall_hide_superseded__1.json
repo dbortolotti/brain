@@ -1,0 +1,60 @@
+{
+  "error": null,
+  "fixture_id": "recall_hide_superseded",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Sam works at Point72",
+    "citations": [
+      "mem_new"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "Present current fact only; suppress superseded fact",
+    "entity_resolution": {
+      "action": "retain_current",
+      "entity_id": "mem_new",
+      "reason": "mem_new supersedes mem_old; Goldman employment is no longer current"
+    },
+    "intent": "Retrieve current employment information for Sam, resolving superseded facts",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "current_fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "currently_employed_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Current fact committed",
+        "Superseded fact excluded from answer",
+        "Ambiguity preserved: no assumptions about transition timing"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm transition date from Goldman to Point72 if temporal precision needed",
+      "Archive mem_old with explicit supersession link for audit trail"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Retrieve current employment information for Sam, resolving superseded facts\",\n  \"decision\": \"Present current fact only; suppress superseded fact\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"current_fact\",\n      \"statement\": \"Sam joined Point72\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"employee\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"currently_employed_at\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"retain_current\",\n    \"entity_id\": \"mem_new\",\n    \"reason\": \"mem_new supersedes mem_old; Goldman employment is no longer current\"\n  },\n  \"conflict_classification\": \"supersession\",\n  \"answer\": \"Sam works at Point72\",\n  \"citations\": [\n    \"mem_new\"\n  ],\n  \"repair_options\": [\n    \"Confirm transition date from Goldman to Point72 if temporal precision needed\",\n    \"Archive mem_old with explicit supersession link for audit trail\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Current fact committed\",\n      \"Superseded fact excluded from answer\",\n      \"Ambiguity preserved: no assumptions about transition timing\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,64 @@
+{
+  "fixture_id": "italian_memory_note_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Memorizzato in modo provvisorio.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "'Sam of Goldman' is ambiguous; no unique entity identifier can be established from the note alone."
+    },
+    "intent": "Remember that Sam of Goldman prefers Bill Evans.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "preference-holder",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "association context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred entity",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam associated with Goldman prefers Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured a preference note with medium confidence.",
+        "Kept entity resolution unresolved due ambiguity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you meant a specific Sam, provide a fuller identifier (for example, full name or role at Goldman).",
+      "If this preference is temporary or outdated, clarify the current preference before storing as durable memory."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

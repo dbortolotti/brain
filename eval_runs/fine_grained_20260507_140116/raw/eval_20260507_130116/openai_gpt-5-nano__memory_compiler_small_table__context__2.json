@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "fixture_id": "memory_compiler_small_table__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Context preserved: Sam prefers Bill Evans; Daniele prefers Knowledge graphs.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit_memory_snapshot",
+    "entity_resolution": {
+      "action": "record",
+      "entity_id": null,
+      "reason": "captured_from_fixture_context"
+    },
+    "intent": "record_context_from_fixture",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "preference_holder",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred_entity",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "preference_holder",
+            "type": "person"
+          },
+          {
+            "name": "Knowledge graphs",
+            "role": "preferred_entity",
+            "type": "concept"
+          }
+        ],
+        "kind": "context",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          },
+          {
+            "object": "Knowledge graphs",
+            "predicate": "prefers",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "From fixture: Sam prefers Bill Evans; Daniele prefers Knowledge graphs."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Context entry committed without changes",
+        "No conflicts detected"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"record_context_from_fixture\",\n  \"decision\": \"commit_memory_snapshot\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"context\",\n      \"statement\": \"From fixture: Sam prefers Bill Evans; Daniele prefers Knowledge graphs.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"preference_holder\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"preferred_entity\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"preference_holder\"\n        },\n        {\n          \"name\": \"Knowledge graphs\",\n          \"type\": \"concept\",\n          \"role\": \"preferred_entity\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"prefers\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Daniele\",\n          \"predicate\": \"prefers\",\n          \"object\": \"Knowledge graphs\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"record\",\n    \"entity_id\": null,\n    \"reason\": \"captured_from_fixture_context\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Context preserved: Sam prefers Bill Evans; Daniele prefers Knowledge graphs.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\"Context entry committed without changes\", \"No conflicts detected\"]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,111 @@
+{
+  "fixture_id": "cost_latency_token_accounting_001",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Required accounting fields for evaluation: token counts (total tokens consumed), provider ID and model ID (to identify the source of tokens), estimated price (cost predicted from usage), and latency statistics (p50, p90, p95) describing response-time distribution. Relationships may include how token counts influence price and how latency metrics map to user-perceived performance. Do not assume exact pricing formula or provider specifics beyond stated IDs; if details are missing, retain as unknown/ambiguous.",
+    "citations": [],
+    "conflict_classification": "ambiguous_specification",
+    "decision": "provide a concise explanation of required accounting fields for evaluation: token counts, provider/model IDs, estimated price, and latency metrics (p50, p90, p95). preserve ambiguity where appropriate and avoid presenting superseded/deleted facts as current.",
+    "entity_resolution": {
+      "action": "note_persistent_fields",
+      "entity_id": null,
+      "reason": "fields are foundational and may be updated; unresolved specifics (e.g., exact price calculation formula) should remain ambiguous until defined in contract/spec"
+    },
+    "intent": "explain_eval_accounting_fields",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "token_counts",
+            "role": "quantitative_input",
+            "type": "metric"
+          },
+          {
+            "name": "provider_id",
+            "role": "provenance",
+            "type": "identifier"
+          },
+          {
+            "name": "model_id",
+            "role": "provenance",
+            "type": "identifier"
+          },
+          {
+            "name": "estimated_price",
+            "role": "cost",
+            "type": "currency"
+          },
+          {
+            "name": "latency_p50",
+            "role": "performance",
+            "type": "latency_metric"
+          },
+          {
+            "name": "latency_p90",
+            "role": "performance",
+            "type": "latency_metric"
+          },
+          {
+            "name": "latency_p95",
+            "role": "performance",
+            "type": "latency_metric"
+          }
+        ],
+        "kind": "definition",
+        "relationships": [
+          {
+            "object": "usage_event",
+            "predicate": "tracked_by",
+            "subject": "token_counts"
+          },
+          {
+            "object": "provider",
+            "predicate": "identifies",
+            "subject": "provider_id"
+          },
+          {
+            "object": "model",
+            "predicate": "identifies",
+            "subject": "model_id"
+          },
+          {
+            "object": "token_counts",
+            "predicate": "depends_on",
+            "subject": "estimated_price"
+          },
+          {
+            "object": "response_time_distribution",
+            "predicate": "summarizes",
+            "subject": "latency_p50"
+          },
+          {
+            "object": "response_time_distribution",
+            "predicate": "summarizes",
+            "subject": "latency_p90"
+          },
+          {
+            "object": "response_time_distribution",
+            "predicate": "summarizes",
+            "subject": "latency_p95"
+          }
+        ],
+        "statement": "Evaluation accounting fields are needed to quantify cost, provenance, and performance of resource usage: token counts, provider/model identifiers, estimated price, and latency distribution (p50, p90, p95)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Accounting field definitions established",
+        "Ambiguities preserved where definitions are not yet provided"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add precise schema definitions for token counting (per-call vs cumulative).",
+      "Specify how estimated_price is calculated (pricing model, currency, unit).",
+      "Define how latency metrics are measured (end-to-end vs backend, warm/cold starts).",
+      "List allowed provider_id/model_id formats and validation rules."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

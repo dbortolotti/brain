@@ -1,0 +1,85 @@
+{
+  "fixture_id": "contradiction_sam_children_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Cannot commit either statement as current truth. Direct contradiction detected: existing memory states two children; new input states zero children. This represents either: (1) a factual error in one source, (2) a change in circumstances (e.g., custody loss, death), or (3) disambiguation needed (different Sam from Goldman). Recommend human review with source timestamps.",
+    "citations": [
+      "Existing: Sam from Goldman has two children",
+      "New: Sam from Goldman has no children"
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "Preserve both statements as conflicting facts pending clarification",
+    "entity_resolution": {
+      "action": "flag_ambiguity",
+      "entity_id": "sam_goldman_001",
+      "reason": "Same entity identifier (Sam from Goldman) with contradictory child count; requires source verification or temporal context"
+    },
+    "intent": "Resolve direct contradiction between existing and new information about Sam's children",
+    "memory_cards": [
+      {
+        "confidence": "unknown",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          }
+        ],
+        "kind": "superseded_fact",
+        "relationships": [
+          {
+            "object": "two",
+            "predicate": "has_children",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman has two children"
+      },
+      {
+        "confidence": "unknown",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          }
+        ],
+        "kind": "conflicting_fact",
+        "relationships": [
+          {
+            "object": "zero",
+            "predicate": "has_children",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman has no children"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict detected and classified as direct contradiction",
+        "Both statements preserved without superseding either",
+        "Ambiguity preserved pending clarification",
+        "Entity flagged for manual review"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request source and timestamp for new information to establish temporal ordering",
+      "Verify entity identity: confirm this is the same Sam from Goldman",
+      "Clarify context: did circumstances change (e.g., custody, relocation)?",
+      "Mark both as disputed and require explicit user confirmation of ground truth"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

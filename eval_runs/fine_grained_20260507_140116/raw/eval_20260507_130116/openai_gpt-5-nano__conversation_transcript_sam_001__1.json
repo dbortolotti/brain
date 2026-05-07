@@ -1,0 +1,97 @@
+{
+  "error": null,
+  "fixture_id": "conversation_transcript_sam_001",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Noted: Sam is at Point72 after leaving Goldman Sachs; currently listening to Bill Evans and increasingly to early Coltrane. Plan to catch up about AI infrastructure and share the requested article.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "preserve_memory_of_current_job_and_interest_in_ai_infra; propose_follow_up_catch_up_and_article_share",
+    "entity_resolution": {
+      "action": "link_entities",
+      "entity_id": null,
+      "reason": "Insufficient additional identifiers to assign persistent IDs beyond their names; entities are resolved at the name level with potential ambiguity (e.g., multiple 'Coltrane' references)."
+    },
+    "intent": "update_memories_and_schedule_meeting",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "former_employer",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "current_employer",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman Sachs last month and joined Point72."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Bill Evans",
+            "role": "musical_interest",
+            "type": "artist"
+          },
+          {
+            "name": "Coltrane",
+            "role": "musical_interest",
+            "type": "artist"
+          }
+        ],
+        "kind": "interest",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "music_interest",
+            "subject": "Sam"
+          },
+          {
+            "object": "Coltrane",
+            "predicate": "music_interest",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam remains listening to Bill Evans, recently more early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memories updated with employment and musical interests.",
+        "No conflicting facts detected."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Create memory entry for employment transition with timestamp.",
+      "Add note to schedule a catch-up discussion about AI infra.",
+      "Attach the article link once provided."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"update_memories_and_schedule_meeting\",\n  \"decision\": \"preserve_memory_of_current_job_and_interest_in_ai_infra; propose_follow_up_catch_up_and_article_share\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"employment\",\n      \"statement\": \"Sam left Goldman Sachs last month and joined Point72.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Sam\", \"type\": \"person\", \"role\": \"subject\"},\n        {\"name\": \"Goldman Sachs\", \"type\": \"organization\", \"role\": \"former_employer\"},\n        {\"name\": \"Point72\", \"type\": \"organization\", \"role\": \"current_employer\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sam\", \"predicate\": \"former_employer\", \"object\": \"Goldman Sachs\"},\n        {\"subject\": \"Sam\", \"predicate\": \"current_employer\", \"object\": \"Point72\"}\n      ]\n    },\n    {\n      \"kind\": \"interest\",\n      \"statement\": \"Sam remains listening to Bill Evans, recently more early Coltrane.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\"name\": \"Bill Evans\", \"type\": \"artist\", \"role\": \"musical_interest\"},\n        {\"name\": \"Coltrane\", \"type\": \"artist\", \"role\": \"musical_interest\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sam\", \"predicate\": \"music_interest\", \"object\": \"Bill Evans\"},\n        {\"subject\": \"Sam\", \"predicate\": \"music_interest\", \"object\": \"Coltrane\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"link_entities\",\n    \"entity_id\": null,\n    \"reason\": \"Insufficient additional identifiers to assign persistent IDs beyond their names; entities are resolved at the name level with potential ambiguity (e.g., multiple 'Coltrane' references).\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Noted: Sam is at Point72 after leaving Goldman Sachs; currently listening to Bill Evans and increasingly to early Coltrane. Plan to catch up about AI infrastructure and share the requested article.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Create memory entry for employment transition with timestamp.\",\n    \"Add note to schedule a catch-up discussion about AI infra.\",\n    \"Attach the article link once provided.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memories updated with employment and musical interests.\",\n      \"No conflicting facts detected.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,91 @@
+{
+  "fixture_id": "small_table_preferences_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Extracted two preference statements: Sam likes Bill Evans; Anna likes Barolo.",
+    "citations": [
+      "Dinner 2026-05-05",
+      "Lunch 2026-05-01"
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_match",
+      "entity_id": null,
+      "reason": "No existing entity IDs were provided; names and firm affiliations are available for disambiguation during storage."
+    },
+    "intent": "Extract personal memory cards from the provided preference table.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "person",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "firm"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference",
+            "type": "preference_item"
+          }
+        ],
+        "kind": "personal_preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (Goldman) likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Anna",
+            "role": "person",
+            "type": "person"
+          },
+          {
+            "name": "JPM",
+            "role": "affiliation",
+            "type": "firm"
+          },
+          {
+            "name": "Barolo",
+            "role": "preference",
+            "type": "preference_item"
+          }
+        ],
+        "kind": "personal_preference",
+        "relationships": [
+          {
+            "object": "Barolo",
+            "predicate": "likes",
+            "subject": "Anna"
+          }
+        ],
+        "statement": "Anna (JPM) likes Barolo."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Mapped each row to a personal_preference memory card.",
+        "Preserved the like/preference relation as stated."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If entity resolution requires stricter IDs, store with normalized names and firm affiliations as separate fields.",
+      "If 'Bill Evans' needs clarification (person vs. recording), add a preference-item subtype during storage."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

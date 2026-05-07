@@ -1,0 +1,128 @@
+{
+  "fixture_id": "recall_profile_sam_001__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Sam is a person associated with Goldman, with known interest in AI infrastructure and an expressed affinity for Bill Evans. Open loop actions request sending Sam an article about AI infrastructure. Current knowledge base contains: Sam \u2192 employer: Goldman; interests: AI infrastructure; likes: Bill Evans. No conflicting records found. If you want a deeper profile, specify domains (career role, tenure, publications) or specify whether to exclude speculative inferences.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "provide_complete_summary_with_locations_and uncertainties preserved",
+    "entity_resolution": {
+      "action": "aggregate_known_facts",
+      "entity_id": null,
+      "reason": "Sam is associated with Goldman and has stated interests; no conflicting conflicting records detected in fixture context."
+    },
+    "intent": "recall_profile",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "interest_source",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "interest",
+            "type": "topic"
+          }
+        ],
+        "kind": "person",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "employed_by",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "AI infrastructure",
+            "predicate": "interested_in",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans, is associated with Goldman, is interested in AI infrastructure."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "recipient",
+            "type": "person"
+          },
+          {
+            "name": "AI infra",
+            "role": "article_topic",
+            "type": "topic"
+          }
+        ],
+        "kind": "context",
+        "relationships": [
+          {
+            "object": "article_about_AI_infrastructure",
+            "predicate": "to_receive",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Open loop: send Sam article about AI infra."
+      },
+      {
+        "confidence": "moderate",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "timeline",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "employer",
+            "subject": "Sam"
+          },
+          {
+            "object": "AI infrastructure",
+            "predicate": "interest",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Query: Tell me everything about Sam from Goldman."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory cards created for Sam from Goldman context.",
+        "Open loop noted to send article about AI infrastructure to Sam."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm whether to fetch additional public data about Sam's role at Goldman if available.",
+      "Proceed to dispatch an article on AI infrastructure to Sam.",
+      "Flag any new conflicting information for review."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

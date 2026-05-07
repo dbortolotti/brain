@@ -1,0 +1,66 @@
+{
+  "error": null,
+  "fixture_id": "additive_sam_preferences_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "No conflict detected. Sam from Goldman's preferences for Bill Evans and Sonny Rollins are additive and non-contradictory. The system will merge references to 'Sam from Goldman' for consistency.",
+    "citations": [
+      "additive_sam_preferences_001__punctuation"
+    ],
+    "conflict_classification": "none",
+    "decision": "no_conflict",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "sam_goldman",
+      "reason": "Consolidating references to 'Sam from Goldman' as a single entity to avoid ambiguity in future memory retrieval."
+    },
+    "intent": "detect_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred_entity",
+            "type": "musician"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "preferred_entity",
+            "type": "musician"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam from Goldman"
+          },
+          {
+            "object": "Sonny Rollins",
+            "predicate": "prefers",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman has a preference for jazz musicians, specifically Bill Evans and Sonny Rollins."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Merged entity references for 'Sam from Goldman' under ID 'sam_goldman'.",
+        "Confirmed no logical or semantic conflict between preferences for Bill Evans and Sonny Rollins."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"detect_conflict\",\n  \"decision\": \"no_conflict\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam from Goldman has a preference for jazz musicians, specifically Bill Evans and Sonny Rollins.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam from Goldman\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"musician\",\n          \"role\": \"preferred_entity\"\n        },\n        {\n          \"name\": \"Sonny Rollins\",\n          \"type\": \"musician\",\n          \"role\": \"preferred_entity\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam from Goldman\",\n          \"predicate\": \"prefers\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam from Goldman\",\n          \"predicate\": \"prefers\",\n          \"object\": \"Sonny Rollins\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge\",\n    \"entity_id\": \"sam_goldman\",\n    \"reason\": \"Consolidating references to 'Sam from Goldman' as a single entity to avoid ambiguity in future memory retrieval.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"No conflict detected. Sam from Goldman's preferences for Bill Evans and Sonny Rollins are additive and non-contradictory. The system will merge references to 'Sam from Goldman' for consistency.\",\n  \"citations\": [\n    \"additive_sam_preferences_001__punctuation\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Merged entity references for 'Sam from Goldman' under ID 'sam_goldman'.\",\n      \"Confirmed no logical or semantic conflict between preferences for Bill Evans and Sonny Rollins.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

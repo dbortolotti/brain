@@ -1,0 +1,81 @@
+{
+  "fixture_id": "concurrent_conflict_writes_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Conflict detected: the input contains two concurrent employment claims for Sam\u2014one at Goldman and one at Point72. Without dates or additional context, neither should be treated as the current durable fact.",
+    "citations": [
+      "Concurrent writes - Sam works at Goldman Sam joined Point72"
+    ],
+    "conflict_classification": "concurrent_contradictory_facts_employment",
+    "decision": "Do not overwrite either statement as a durable current fact; preserve both as conflicting claims pending disambiguation or timestamps.",
+    "entity_resolution": {
+      "action": "needs_disambiguation",
+      "entity_id": null,
+      "reason": "The same person name appears in two concurrent employment claims, but the temporal order and whether they refer to the same Sam are unclear."
+    },
+    "intent": "Explain a concurrent-write conflict about Sam\u2019s employment and avoid committing a misleading current fact.",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer-claimed",
+            "type": "organization"
+          }
+        ],
+        "kind": "conflict",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "One write says Sam works at Goldman."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer-claimed",
+            "type": "organization"
+          }
+        ],
+        "kind": "conflict",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Another write says Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected a contradiction between two concurrent employment statements.",
+        "No durable current employment fact committed due to ambiguity."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask for dates or chronology to determine which employment is current.",
+      "Store both as time-bounded claims if timestamps become available.",
+      "Confirm whether both mentions refer to the same Sam."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

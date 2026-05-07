@@ -1,0 +1,58 @@
+{
+  "error": null,
+  "fixture_id": "slack_ambiguous_entity_buttons_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Not committing durable memory because 'Sam' is ambiguous between existing candidates; the 'likes Bill Evans' fact cannot be reliably attributed.",
+    "citations": [],
+    "conflict_classification": "ambiguous_entity_reference",
+    "decision": "do_not_commit",
+    "entity_resolution": {
+      "action": "request_clarification",
+      "entity_id": null,
+      "reason": "The context indicates multiple distinct people named Sam (Sam from Goldman; Sam from Point72). The statement 'Sam likes Bill Evans' is not specific enough to attach to the correct entity."
+    },
+    "intent": "Evaluate whether to commit durable memory from an ambiguous context entity reference",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "ambiguous",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_by",
+            "type": "person"
+          }
+        ],
+        "kind": "person-unknown-alignment",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "The referenced person named Sam likes Bill Evans, but which Sam is unclear (e.g., Sam from Goldman vs Sam from Point72)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected prior ambiguity: multiple 'Sam' entities present in context.",
+        "Attribution for 'likes Bill Evans' is not reliable without resolving which Sam is referenced."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm whether the Sam in this message is the one from Goldman or the one from Point72.",
+      "Provide an additional identifier (e.g., last name, team, role, or another unique attribute) for the intended Sam.",
+      "If the user intends both Sams, explicitly state 'Both Sam from Goldman and Sam from Point72 like Bill Evans.'"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Evaluate whether to commit durable memory from an ambiguous context entity reference\",\n  \"decision\": \"do_not_commit\",\n  \"conflict_classification\": \"ambiguous_entity_reference\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"person-unknown-alignment\",\n      \"statement\": \"The referenced person named Sam likes Bill Evans, but which Sam is unclear (e.g., Sam from Goldman vs Sam from Point72).\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"ambiguous\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"liked_by\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"request_clarification\",\n    \"entity_id\": null,\n    \"reason\": \"The context indicates multiple distinct people named Sam (Sam from Goldman; Sam from Point72). The statement 'Sam likes Bill Evans' is not specific enough to attach to the correct entity.\"\n  },\n  \"answer\": \"Not committing durable memory because 'Sam' is ambiguous between existing candidates; the 'likes Bill Evans' fact cannot be reliably attributed.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Confirm whether the Sam in this message is the one from Goldman or the one from Point72.\",\n    \"Provide an additional identifier (e.g., last name, team, role, or another unique attribute) for the intended Sam.\",\n    \"If the user intends both Sams, explicitly state 'Both Sam from Goldman and Sam from Point72 like Bill Evans.'\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Detected prior ambiguity: multiple 'Sam' entities present in context.\",\n      \"Attribution for 'likes Bill Evans' is not reliable without resolving which Sam is referenced.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,58 @@
+{
+  "error": null,
+  "fixture_id": "slack_no_durable_value_repair_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory rejected for durability: temporal reference 'today' is not anchored to a specific date. Use explicit dates (e.g., '2023-11-15') for durable storage.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "durable_memory_rejected",
+    "entity_resolution": {
+      "action": "ambiguity_preserved",
+      "entity_id": null,
+      "reason": "Temporal reference 'today' lacks explicit anchoring to a calendar date; cannot commit as durable memory without risk of obsolescence."
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "today",
+            "role": "reference_time",
+            "type": "temporal"
+          },
+          {
+            "name": "cloudy",
+            "role": "state",
+            "type": "weather_condition"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "cloudy",
+            "predicate": "has_weather",
+            "subject": "today"
+          }
+        ],
+        "statement": "Today's weather is cloudy."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory rejected due to unanchored temporal reference.",
+        "Suggested repairs provided in 'repair_options'."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Rephrase with a specific date: 'The weather on [YYYY-MM-DD] was cloudy.'",
+      "Use a relative anchor: 'The weather yesterday was cloudy.'",
+      "Tag as ephemeral: 'Today\u2019s weather (ephemeral): cloudy.'"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_ingestion\",\n  \"decision\": \"durable_memory_rejected\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Today's weather is cloudy.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"today\",\n          \"type\": \"temporal\",\n          \"role\": \"reference_time\"\n        },\n        {\n          \"name\": \"cloudy\",\n          \"type\": \"weather_condition\",\n          \"role\": \"state\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"today\",\n          \"predicate\": \"has_weather\",\n          \"object\": \"cloudy\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"ambiguity_preserved\",\n    \"entity_id\": null,\n    \"reason\": \"Temporal reference 'today' lacks explicit anchoring to a calendar date; cannot commit as durable memory without risk of obsolescence.\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"Memory rejected for durability: temporal reference 'today' is not anchored to a specific date. Use explicit dates (e.g., '2023-11-15') for durable storage.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Rephrase with a specific date: 'The weather on [YYYY-MM-DD] was cloudy.'\",\n    \"Use a relative anchor: 'The weather yesterday was cloudy.'\",\n    \"Tag as ephemeral: 'Today\u2019s weather (ephemeral): cloudy.'\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Durable memory rejected due to unanchored temporal reference.\",\n      \"Suggested repairs provided in 'repair_options'.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

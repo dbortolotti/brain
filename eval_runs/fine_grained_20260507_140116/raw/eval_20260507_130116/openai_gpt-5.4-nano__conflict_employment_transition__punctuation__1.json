@@ -1,0 +1,102 @@
+{
+  "error": null,
+  "fixture_id": "conflict_employment_transition__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Treat the Goldman statement as outdated and record a transition: Sam left Goldman and joined Point72. Because the existing fact uses present tense ('works'), safest durable memory is to store Goldman as historical and Point72 as new/current based on the 'joined' phrasing, while noting uncertainty about the exact effective date if not provided.",
+    "citations": [],
+    "conflict_classification": "employment_transition_conflict",
+    "decision": "keep existing fact as historical and add a new historical/current-inferred employment status indicating transition from Goldman to Point72",
+    "entity_resolution": {
+      "action": "confirm_same_individual",
+      "entity_id": null,
+      "reason": "No identifier beyond the name 'Sam' is provided; ensure the updates refer to the same person before asserting current employment."
+    },
+    "intent": "resolve employment timeline conflict for Sam between Goldman and Point72",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "company"
+          },
+          {
+            "name": "Point72",
+            "role": "new_employer",
+            "type": "company"
+          }
+        ],
+        "kind": "conflict_context",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "has_employment_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "has_employment_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Current record says Sam works at Goldman, but a new record says Sam left Goldman and joined Point72. These are in tension unless interpreted as a job transition."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "previous_employer",
+            "type": "company"
+          },
+          {
+            "name": "Point72",
+            "role": "current_or_new_employer",
+            "type": "company"
+          }
+        ],
+        "kind": "proposed_repair",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "previously_worked_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Reconcile by changing the Goldman employment to historical (e.g., Sam previously worked at Goldman) and adding that Sam left Goldman and joined Point72 (current employment inferred from the 'joined' wording)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict detected between present-tense employment at Goldman and new claim of leaving Goldman for Point72.",
+        "Proposed repair preserves existing information as historical rather than deleting it."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Update Goldman fact to 'previously worked at Goldman' (retain as historical).",
+      "Add 'Sam left Goldman and joined Point72' and mark Point72 as current with an 'effective date unknown' caveat if the date is not given.",
+      "If person identity is uncertain, store both employments as 'worked/possibly worked' until verified."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"resolve employment timeline conflict for Sam between Goldman and Point72\",\n  \"decision\": \"keep existing fact as historical and add a new historical/current-inferred employment status indicating transition from Goldman to Point72\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"conflict_context\",\n      \"statement\": \"Current record says Sam works at Goldman, but a new record says Sam left Goldman and joined Point72. These are in tension unless interpreted as a job transition.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"company\",\n          \"role\": \"employer\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"company\",\n          \"role\": \"new_employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has_employment_at\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has_employment_at\",\n          \"object\": \"Point72\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"proposed_repair\",\n      \"statement\": \"Reconcile by changing the Goldman employment to historical (e.g., Sam previously worked at Goldman) and adding that Sam left Goldman and joined Point72 (current employment inferred from the 'joined' wording).\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"company\",\n          \"role\": \"previous_employer\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"company\",\n          \"role\": \"current_or_new_employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"previously_worked_at\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"confirm_same_individual\",\n    \"entity_id\": null,\n    \"reason\": \"No identifier beyond the name 'Sam' is provided; ensure the updates refer to the same person before asserting current employment.\"\n  },\n  \"conflict_classification\": \"employment_transition_conflict\",\n  \"answer\": \"Treat the Goldman statement as outdated and record a transition: Sam left Goldman and joined Point72. Because the existing fact uses present tense ('works'), safest durable memory is to store Goldman as historical and Point72 as new/current based on the 'joined' phrasing, while noting uncertainty about the exact effective date if not provided.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Update Goldman fact to 'previously worked at Goldman' (retain as historical).\",\n    \"Add 'Sam left Goldman and joined Point72' and mark Point72 as current with an 'effective date unknown' caveat if the date is not given.\",\n    \"If person identity is uncertain, store both employments as 'worked/possibly worked' until verified.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Conflict detected between present-tense employment at Goldman and new claim of leaving Goldman for Point72.\",\n      \"Proposed repair preserves existing information as historical rather than deleting it.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

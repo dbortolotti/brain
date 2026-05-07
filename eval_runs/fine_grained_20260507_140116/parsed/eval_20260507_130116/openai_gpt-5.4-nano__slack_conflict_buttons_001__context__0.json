@@ -1,0 +1,65 @@
+{
+  "fixture_id": "slack_conflict_buttons_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Do not commit the new employment change because it conflicts with existing durable memory (Sam works at Goldman).",
+    "citations": [],
+    "conflict_classification": "direct_conflict_employment_status",
+    "decision": "do_not_commit_new_memory_due_to_conflict",
+    "entity_resolution": {
+      "action": "verify_or_wait",
+      "entity_id": null,
+      "reason": "Existing durable memory indicates Sam works at Goldman; the new statement asserts Sam left Goldman, which conflicts. Without a resolution source/timestamp, committing would supersede current facts."
+    },
+    "intent": "durability_filter",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "new_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "previous_employer",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "new_employer",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected direct conflict with existing statement: 'Sam works at Goldman.'",
+        "Chose not to commit the conflicting superseding detail."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for confirmation or a date/source for when Sam left Goldman and joined Point72.",
+      "If there is evidence that replaces the 'works at Goldman' fact, update the existing memory with a timestamped correction.",
+      "Store as non-durable or temporary/session memory until conflict is resolved."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

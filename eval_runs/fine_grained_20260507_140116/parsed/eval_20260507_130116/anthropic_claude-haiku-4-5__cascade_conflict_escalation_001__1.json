@@ -1,0 +1,74 @@
+{
+  "fixture_id": "cascade_conflict_escalation_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Conflict detected: Sara cannot simultaneously be both daughter and niece in standard kinship models. The existing claim (daughter) is retained as primary. The new input (niece) is flagged as contradictory and requires clarification before integration.",
+    "citations": [
+      "Existing: Sara is my daughter",
+      "Input: Sara is my niece"
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "Preserve both claims as conflicting facts pending clarification",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": "Sara",
+      "reason": "Same entity name with mutually exclusive kinship predicates; cannot resolve without additional context"
+    },
+    "intent": "Resolve conflicting kinship claims about Sara's relationship to the user",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "existing_fact",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "has_child",
+            "subject": "user"
+          }
+        ],
+        "statement": "Sara is my daughter"
+      },
+      {
+        "confidence": "unverified",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "niece",
+            "type": "person"
+          }
+        ],
+        "kind": "conflicting_input",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "has_niece",
+            "subject": "user"
+          }
+        ],
+        "statement": "Sara is my niece"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict preserved without overwriting existing memory",
+        "New input marked as unverified due to contradiction",
+        "User intervention required to resolve kinship claim"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Clarify: Is Sara your biological/legal daughter or your niece?",
+      "Clarify: Could Sara be your daughter AND your niece through a complex family structure (e.g., you adopted your sibling's child)?",
+      "Retract: Confirm which relationship statement should be deleted",
+      "Contextualize: Provide additional family relationship details to resolve ambiguity"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

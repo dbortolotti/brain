@@ -1,0 +1,68 @@
+{
+  "error": null,
+  "fixture_id": "slack_conflict_buttons_001",
+  "model": "groq:llama-3.1-8b-instant",
+  "payload": {
+    "answer": "Sam works at Point72.",
+    "citations": [],
+    "conflict_classification": "update",
+    "decision": "update_memory",
+    "entity_resolution": {
+      "action": "update",
+      "entity_id": "Sam",
+      "reason": "conflicting information"
+    },
+    "intent": "resolve_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "company"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "company"
+          },
+          {
+            "name": "Point72",
+            "role": "current employer",
+            "type": "company"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"resolve_conflict\",\n   \"decision\": \"update_memory\",\n   \"memory_cards\": [\n      {\n         \"kind\": \"fact\",\n         \"statement\": \"Sam works at Goldman.\",\n         \"confidence\": \"high\",\n         \"entities\": [\n            {\n               \"name\": \"Sam\",\n               \"type\": \"person\",\n               \"role\": \"employee\"\n            },\n            {\n               \"name\": \"Goldman\",\n               \"type\": \"company\",\n               \"role\": \"employer\"\n            }\n         ],\n         \"relationships\": []\n      },\n      {\n         \"kind\": \"fact\",\n         \"statement\": \"Sam left Goldman and joined Point72.\",\n         \"confidence\": \"high\",\n         \"entities\": [\n            {\n               \"name\": \"Sam\",\n               \"type\": \"person\",\n               \"role\": \"employee\"\n            },\n            {\n               \"name\": \"Goldman\",\n               \"type\": \"company\",\n               \"role\": \"former employer\"\n            },\n            {\n               \"name\": \"Point72\",\n               \"type\": \"company\",\n               \"role\": \"current employer\"\n            }\n         ],\n         \"relationships\": []\n      }\n   ],\n   \"entity_resolution\": {\n      \"action\": \"update\",\n      \"entity_id\": \"Sam\",\n      \"reason\": \"conflicting information\"\n   },\n   \"conflict_classification\": \"update\",\n   \"answer\": \"Sam works at Point72.\",\n   \"citations\": [],\n   \"repair_options\": [],\n   \"receipt\": {\n      \"success\": true,\n      \"details\": []\n   }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

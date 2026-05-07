@@ -1,0 +1,36 @@
+{
+  "error": null,
+  "fixture_id": "debug_inspect_memory_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Requested inspection of memory mem_123. No memory contents were provided in the fixture, so no current facts can be reported.",
+    "citations": [
+      "mem_123"
+    ],
+    "conflict_classification": "not_applicable",
+    "decision": "debug_inspection_requested",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input is a debug inspection command for memory ID mem_123, not a request to create or update durable memory."
+    },
+    "intent": "inspect_memory",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Parsed command: /brain inspect memory mem_123",
+        "No durable memory was committed.",
+        "No memory payload was available to inspect."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide the stored contents and metadata for mem_123 to inspect it.",
+      "If mem_123 is missing, report it as not found.",
+      "If mem_123 is deleted or superseded, return its status without presenting it as current."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"inspect_memory\",\n  \"decision\": \"debug_inspection_requested\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"The input is a debug inspection command for memory ID mem_123, not a request to create or update durable memory.\"\n  },\n  \"conflict_classification\": \"not_applicable\",\n  \"answer\": \"Requested inspection of memory mem_123. No memory contents were provided in the fixture, so no current facts can be reported.\",\n  \"citations\": [\n    \"mem_123\"\n  ],\n  \"repair_options\": [\n    \"Provide the stored contents and metadata for mem_123 to inspect it.\",\n    \"If mem_123 is missing, report it as not found.\",\n    \"If mem_123 is deleted or superseded, return its status without presenting it as current.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Parsed command: /brain inspect memory mem_123\",\n      \"No durable memory was committed.\",\n      \"No memory payload was available to inspect.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,66 @@
+{
+  "error": null,
+  "fixture_id": "cascade_low_confidence_asks_user_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "User intervention required to resolve ambiguity in 'Sam' reference. Clarify with punctuation or context (e.g., 'Sam,' or 'Sam:').",
+    "conflict_classification": "ambiguity_in_entity_reference",
+    "decision": "escalate_to_user",
+    "entity_resolution": {
+      "action": "user_intervention_required",
+      "reason": "Ambiguous reference to 'Sam' cannot be resolved automatically due to low confidence and disabled escalation. Punctuation or context may clarify (e.g., 'Sam,' vs. 'Sam' as a standalone name)."
+    },
+    "intent": "resolve_ambiguity",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "ambiguous_reference",
+            "type": "person"
+          },
+          {
+            "name": "Cloud escalation",
+            "role": "disabled",
+            "type": "system_action"
+          },
+          {
+            "name": "model confidence",
+            "role": "low",
+            "type": "metric"
+          }
+        ],
+        "kind": "note",
+        "relationships": [
+          {
+            "object": "ambiguous_note",
+            "predicate": "disabled_for",
+            "subject": "Cloud escalation"
+          },
+          {
+            "object": "Sam_note",
+            "predicate": "low_for",
+            "subject": "model confidence"
+          }
+        ],
+        "statement": "Cloud escalation disabled and model confidence low for ambiguous Sam note"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Cloud escalation disabled\u2014no automatic resolution attempted.",
+        "Low-confidence note preserved in memory for potential future clarification."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask user: 'Is 'Sam' a standalone name or part of a larger phrase? (e.g., 'Sam,' or 'Sam:')'",
+      "Suggest context: 'Could you provide additional context around 'Sam' to disambiguate?'",
+      "Log as unresolved: 'Note marked as ambiguous; no action taken.'"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"resolve_ambiguity\",\n  \"decision\": \"escalate_to_user\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"note\",\n      \"statement\": \"Cloud escalation disabled and model confidence low for ambiguous Sam note\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"ambiguous_reference\"\n        },\n        {\n          \"name\": \"Cloud escalation\",\n          \"type\": \"system_action\",\n          \"role\": \"disabled\"\n        },\n        {\n          \"name\": \"model confidence\",\n          \"type\": \"metric\",\n          \"role\": \"low\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cloud escalation\",\n          \"predicate\": \"disabled_for\",\n          \"object\": \"ambiguous_note\"\n        },\n        {\n          \"subject\": \"model confidence\",\n          \"predicate\": \"low_for\",\n          \"object\": \"Sam_note\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"user_intervention_required\",\n    \"reason\": \"Ambiguous reference to 'Sam' cannot be resolved automatically due to low confidence and disabled escalation. Punctuation or context may clarify (e.g., 'Sam,' vs. 'Sam' as a standalone name).\"\n  },\n  \"conflict_classification\": \"ambiguity_in_entity_reference\",\n  \"answer\": \"User intervention required to resolve ambiguity in 'Sam' reference. Clarify with punctuation or context (e.g., 'Sam,' or 'Sam:').\",\n  \"repair_options\": [\n    \"Ask user: 'Is 'Sam' a standalone name or part of a larger phrase? (e.g., 'Sam,' or 'Sam:')'\",\n    \"Suggest context: 'Could you provide additional context around 'Sam' to disambiguate?'\",\n    \"Log as unresolved: 'Note marked as ambiguous; no action taken.'\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Cloud escalation disabled\u2014no automatic resolution attempted.\",\n      \"Low-confidence note preserved in memory for potential future clarification.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

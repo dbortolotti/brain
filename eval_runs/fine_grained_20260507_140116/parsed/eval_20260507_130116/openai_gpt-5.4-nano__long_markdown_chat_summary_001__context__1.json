@@ -1,0 +1,120 @@
+{
+  "fixture_id": "long_markdown_chat_summary_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Captured architectural intent: Brain DB as source of truth, Cognee as rebuildable semantic projection, Slack as strict memory intake agent; recorded Telegram addition and model cost/performance as open questions.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "No explicit decisions recorded beyond stated architectural intent and open questions; only capture role assignments and open questions as provisional.",
+    "entity_resolution": {
+      "action": "no_change",
+      "entity_id": null,
+      "reason": "The summary does not provide identifiers beyond component names; preserve as textual entity names."
+    },
+    "intent": "Extract durable memory cards from the provided chat summary context for Brain evaluation.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "memory_source",
+            "type": "system_component"
+          }
+        ],
+        "kind": "architecture_principle",
+        "relationships": [
+          {
+            "object": "system_memory",
+            "predicate": "is_source_of_truth_for",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB is intended to be the source of truth for the system."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "semantic_projection",
+            "type": "system_component"
+          },
+          {
+            "name": "Brain DB",
+            "role": "memory_source",
+            "type": "system_component"
+          }
+        ],
+        "kind": "architecture_principle",
+        "relationships": [
+          {
+            "object": "Brain DB",
+            "predicate": "is_rebuildable_projection_from",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee is intended to be a rebuildable semantic projection derived from Brain DB."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "memory_intake_agent",
+            "type": "integration"
+          }
+        ],
+        "kind": "architecture_principle",
+        "relationships": [
+          {
+            "object": "strict_memory_intake_agent",
+            "predicate": "functions_as",
+            "subject": "Slack"
+          }
+        ],
+        "statement": "Slack is intended to be a strict memory intake agent."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Telegram",
+            "role": "candidate_channel",
+            "type": "integration"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [],
+        "statement": "Whether Telegram should be added later is an open question."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "model_selection",
+            "role": "optimization_target",
+            "type": "decision_topic"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [],
+        "statement": "Which model is cheapest while saturating performance is an open question."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Only statements present in the provided context were converted into memory cards.",
+        "Open questions were preserved as open questions without choosing answers."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add explicit definitions for 'strict' memory intake behavior for Slack (e.g., validation rules, deduping, timestamps).",
+      "Document the rebuild procedure/trigger semantics for Cognee from Brain DB (e.g., batch vs real-time, consistency guarantees).",
+      "Record evaluation criteria for the 'cheapest model while saturating performance' open question (latency, cost, quality metrics, throughput).",
+      "If Telegram is later added, capture scope (read-only vs write), mapping to intake policy, and initial rollout conditions."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

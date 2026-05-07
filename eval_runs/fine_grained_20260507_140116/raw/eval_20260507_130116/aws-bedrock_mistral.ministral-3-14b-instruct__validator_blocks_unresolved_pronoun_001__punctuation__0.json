@@ -1,0 +1,33 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_unresolved_pronoun_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Reject memory card due to unresolved pronoun ('the other one') and missing contextual referent. Requires explicit disambiguation (e.g., 'the other [X]') or deletion of the statement.",
+    "conflict_classification": "unresolvable_ambiguity",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "unresolved",
+      "entity_id": null,
+      "reason": "Ambiguous pronoun 'the other one' lacks referent. No prior context or entities exist to resolve it. Punctuation (missing comma after 'other') does not clarify scope."
+    },
+    "intent": "durability_filter",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Pronoun 'the other one' has no antecedent in memory or input.",
+        "Punctuation error (missing comma) exacerbates ambiguity.",
+        "Violates durability principle: unresolved references cannot be durably stored."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Delete the memory card",
+      "Replace with: 'He prefers the other [explicit referent, e.g., 'option', 'device', 'book']'",
+      "Add prior context to resolve 'the other one' (e.g., 'Between A and B, he prefers B')"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"durability_filter\",\n  \"decision\": \"reject\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"unresolved\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguous pronoun 'the other one' lacks referent. No prior context or entities exist to resolve it. Punctuation (missing comma after 'other') does not clarify scope.\"\n  },\n  \"conflict_classification\": \"unresolvable_ambiguity\",\n  \"answer\": \"Reject memory card due to unresolved pronoun ('the other one') and missing contextual referent. Requires explicit disambiguation (e.g., 'the other [X]') or deletion of the statement.\",\n  \"repair_options\": [\n    \"Delete the memory card\",\n    \"Replace with: 'He prefers the other [explicit referent, e.g., 'option', 'device', 'book']'\",\n    \"Add prior context to resolve 'the other one' (e.g., 'Between A and B, he prefers B')\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Pronoun 'the other one' has no antecedent in memory or input.\",\n      \"Punctuation error (missing comma) exacerbates ambiguity.\",\n      \"Violates durability principle: unresolved references cannot be durably stored.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

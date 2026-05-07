@@ -1,0 +1,54 @@
+{
+  "fixture_id": "entity_alias_sam_goldman__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Sam G (Sam from Goldman) likes Bill Evans.",
+    "citations": [
+      "input: \"Sam G likes Bill Evans.\"",
+      "context: existing entity aliases include \"Sam G\" and \"Goldman Sam\""
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "link_to_existing",
+      "entity_id": "Sam from Goldman",
+      "reason": "The new alias 'Sam G' matches the existing entity aliases for Sam from Goldman ('Sam G', 'Goldman Sam')."
+    },
+    "intent": "record_preference",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam G",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred_artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam G"
+          }
+        ],
+        "statement": "Sam G likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Resolved 'Sam G' to existing entity 'Sam from Goldman'.",
+        "Recorded preference with medium confidence."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

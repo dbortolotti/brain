@@ -1,0 +1,259 @@
+{
+  "error": null,
+  "fixture_id": "large_table_500_rows_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Store each (id,name,value) triplet as an atomic memory card with explicit relationships, preserving ambiguity unless resolved. Commit only durable records (marked by metadata/timestamp) to long-term memory, and ensure superseded records remain citable for auditability. Transient/deleted records must be excluded.",
+    "citations": [
+      "Policy: Preserve data integrity and auditability in memory storage.",
+      "Constraint: Avoid implicit type inference for ambiguous attributes.",
+      "Rule: Explicit metadata determines durability."
+    ],
+    "conflict_classification": "version_conflict",
+    "decision": "store_as_atomic_facts_with_relationships",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Ambiguity in (name,value) pairs requires human-in-the-loop resolution or higher-confidence metadata."
+    },
+    "intent": "policy_evaluation",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV_table",
+            "role": "input",
+            "type": "data_structure"
+          },
+          {
+            "name": "id",
+            "role": "primary_key",
+            "type": "identifier"
+          },
+          {
+            "name": "name",
+            "role": "descriptive",
+            "type": "attribute"
+          },
+          {
+            "name": "value",
+            "role": "variable",
+            "type": "attribute"
+          }
+        ],
+        "kind": "policy_rule",
+        "relationships": [
+          {
+            "object": "record",
+            "predicate": "contains",
+            "subject": "CSV_table"
+          },
+          {
+            "object": "id",
+            "predicate": "has",
+            "subject": "record"
+          },
+          {
+            "object": "name",
+            "predicate": "has",
+            "subject": "record"
+          },
+          {
+            "object": "value",
+            "predicate": "has",
+            "subject": "record"
+          },
+          {
+            "object": "atomic_fact",
+            "predicate": "is_instance_of",
+            "subject": "record"
+          }
+        ],
+        "statement": "A CSV table with 500 rows containing repeated (id,name,value) triplets should be decomposed into atomic memory cards representing individual records and their relationships."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "atomic_fact",
+            "role": "output",
+            "type": "memory_card"
+          },
+          {
+            "name": "data_integrity",
+            "role": "requirement",
+            "type": "constraint"
+          },
+          {
+            "name": "flexible_querying",
+            "role": "benefit",
+            "type": "capability"
+          }
+        ],
+        "kind": "storage_policy",
+        "relationships": [
+          {
+            "object": "record",
+            "predicate": "represents",
+            "subject": "atomic_fact"
+          },
+          {
+            "object": "data_integrity",
+            "predicate": "preserves",
+            "subject": "atomic_fact"
+          },
+          {
+            "object": "flexible_querying",
+            "predicate": "enables",
+            "subject": "atomic_fact"
+          }
+        ],
+        "statement": "Each (id,name,value) triplet should be stored as a separate memory card with explicit relationships to preserve data integrity and enable flexible querying."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "name",
+            "role": "potentially_ambiguous",
+            "type": "attribute"
+          },
+          {
+            "name": "value",
+            "role": "context_dependent",
+            "type": "attribute"
+          },
+          {
+            "name": "higher-confidence_source",
+            "role": "resolver",
+            "type": "entity"
+          }
+        ],
+        "kind": "ambiguity_preservation",
+        "relationships": [
+          {
+            "object": "value_type",
+            "predicate": "may_imply",
+            "subject": "name"
+          },
+          {
+            "object": "context",
+            "predicate": "depends_on",
+            "subject": "value"
+          },
+          {
+            "object": "ambiguity",
+            "predicate": "can_resolve",
+            "subject": "higher-confidence_source"
+          }
+        ],
+        "statement": "Ambiguity in (name,value) pairs should be retained by storing them as-is without implicit type inference, unless explicitly resolved by a higher-confidence source."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "durable_memory",
+            "role": "target",
+            "type": "storage_layer"
+          },
+          {
+            "name": "transient_record",
+            "role": "exclusion_criteria",
+            "type": "record_state"
+          },
+          {
+            "name": "deleted_record",
+            "role": "exclusion_criteria",
+            "type": "record_state"
+          },
+          {
+            "name": "metadata",
+            "role": "commitment_indicator",
+            "type": "attribute"
+          }
+        ],
+        "kind": "durability_policy",
+        "relationships": [
+          {
+            "object": "durability",
+            "predicate": "indicates",
+            "subject": "metadata"
+          },
+          {
+            "object": "durable_memory",
+            "predicate": "must_not_be_stored_in",
+            "subject": "transient_record"
+          },
+          {
+            "object": "durable_memory",
+            "predicate": "must_be_excluded_from",
+            "subject": "deleted_record"
+          }
+        ],
+        "statement": "Only explicitly marked records (e.g., via metadata or timestamp) should be committed to durable memory; transient or deleted records must be excluded."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "id",
+            "role": "version_key",
+            "type": "identifier"
+          },
+          {
+            "name": "new_version",
+            "role": "current",
+            "type": "record_state"
+          },
+          {
+            "name": "old_version",
+            "role": "superseded",
+            "type": "record_state"
+          },
+          {
+            "name": "auditability",
+            "role": "constraint",
+            "type": "requirement"
+          }
+        ],
+        "kind": "supersession_policy",
+        "relationships": [
+          {
+            "object": "old_version",
+            "predicate": "supersedes",
+            "subject": "new_version"
+          },
+          {
+            "object": "auditability",
+            "predicate": "remains_citable_for",
+            "subject": "old_version"
+          },
+          {
+            "object": "deletion_of_old_version",
+            "predicate": "allows",
+            "subject": "explicit_purge"
+          }
+        ],
+        "statement": "If a record with the same `id` is updated, the new version should supersede the old one, but the old version must remain citable for auditability unless explicitly purged."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Policy decomposed into atomic rules.",
+        "Ambiguity preservation enforced.",
+        "Durability and supersession constraints applied."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add metadata column to mark records for durability.",
+      "Implement versioning for `id`-based updates with citable history.",
+      "Flag ambiguous (name,value) pairs for manual review."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"policy_evaluation\",\n  \"decision\": \"store_as_atomic_facts_with_relationships\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"policy_rule\",\n      \"statement\": \"A CSV table with 500 rows containing repeated (id,name,value) triplets should be decomposed into atomic memory cards representing individual records and their relationships.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"CSV_table\",\n          \"type\": \"data_structure\",\n          \"role\": \"input\"\n        },\n        {\n          \"name\": \"id\",\n          \"type\": \"identifier\",\n          \"role\": \"primary_key\"\n        },\n        {\n          \"name\": \"name\",\n          \"type\": \"attribute\",\n          \"role\": \"descriptive\"\n        },\n        {\n          \"name\": \"value\",\n          \"type\": \"attribute\",\n          \"role\": \"variable\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"CSV_table\",\n          \"predicate\": \"contains\",\n          \"object\": \"record\"\n        },\n        {\n          \"subject\": \"record\",\n          \"predicate\": \"has\",\n          \"object\": \"id\"\n        },\n        {\n          \"subject\": \"record\",\n          \"predicate\": \"has\",\n          \"object\": \"name\"\n        },\n        {\n          \"subject\": \"record\",\n          \"predicate\": \"has\",\n          \"object\": \"value\"\n        },\n        {\n          \"subject\": \"record\",\n          \"predicate\": \"is_instance_of\",\n          \"object\": \"atomic_fact\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"storage_policy\",\n      \"statement\": \"Each (id,name,value) triplet should be stored as a separate memory card with explicit relationships to preserve data integrity and enable flexible querying.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"atomic_fact\",\n          \"type\": \"memory_card\",\n          \"role\": \"output\"\n        },\n        {\n          \"name\": \"data_integrity\",\n          \"type\": \"constraint\",\n          \"role\": \"requirement\"\n        },\n        {\n          \"name\": \"flexible_querying\",\n          \"type\": \"capability\",\n          \"role\": \"benefit\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"atomic_fact\",\n          \"predicate\": \"represents\",\n          \"object\": \"record\"\n        },\n        {\n          \"subject\": \"atomic_fact\",\n          \"predicate\": \"preserves\",\n          \"object\": \"data_integrity\"\n        },\n        {\n          \"subject\": \"atomic_fact\",\n          \"predicate\": \"enables\",\n          \"object\": \"flexible_querying\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"ambiguity_preservation\",\n      \"statement\": \"Ambiguity in (name,value) pairs should be retained by storing them as-is without implicit type inference, unless explicitly resolved by a higher-confidence source.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"name\",\n          \"type\": \"attribute\",\n          \"role\": \"potentially_ambiguous\"\n        },\n        {\n          \"name\": \"value\",\n          \"type\": \"attribute\",\n          \"role\": \"context_dependent\"\n        },\n        {\n          \"name\": \"higher-confidence_source\",\n          \"type\": \"entity\",\n          \"role\": \"resolver\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"name\",\n          \"predicate\": \"may_imply\",\n          \"object\": \"value_type\"\n        },\n        {\n          \"subject\": \"value\",\n          \"predicate\": \"depends_on\",\n          \"object\": \"context\"\n        },\n        {\n          \"subject\": \"higher-confidence_source\",\n          \"predicate\": \"can_resolve\",\n          \"object\": \"ambiguity\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"durability_policy\",\n      \"statement\": \"Only explicitly marked records (e.g., via metadata or timestamp) should be committed to durable memory; transient or deleted records must be excluded.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"durable_memory\",\n          \"type\": \"storage_layer\",\n          \"role\": \"target\"\n        },\n        {\n          \"name\": \"transient_record\",\n          \"type\": \"record_state\",\n          \"role\": \"exclusion_criteria\"\n        },\n        {\n          \"name\": \"deleted_record\",\n          \"type\": \"record_state\",\n          \"role\": \"exclusion_criteria\"\n        },\n        {\n          \"name\": \"metadata\",\n          \"type\": \"attribute\",\n          \"role\": \"commitment_indicator\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"metadata\",\n          \"predicate\": \"indicates\",\n          \"object\": \"durability\"\n        },\n        {\n          \"subject\": \"transient_record\",\n          \"predicate\": \"must_not_be_stored_in\",\n          \"object\": \"durable_memory\"\n        },\n        {\n          \"subject\": \"deleted_record\",\n          \"predicate\": \"must_be_excluded_from\",\n          \"object\": \"durable_memory\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"supersession_policy\",\n      \"statement\": \"If a record with the same `id` is updated, the new version should supersede the old one, but the old version must remain citable for auditability unless explicitly purged.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"id\",\n          \"type\": \"identifier\",\n          \"role\": \"version_key\"\n        },\n        {\n          \"name\": \"new_version\",\n          \"type\": \"record_state\",\n          \"role\": \"current\"\n        },\n        {\n          \"name\": \"old_version\",\n          \"type\": \"record_state\",\n          \"role\": \"superseded\"\n        },\n        {\n          \"name\": \"auditability\",\n          \"type\": \"requirement\",\n          \"role\": \"constraint\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"new_version\",\n          \"predicate\": \"supersedes\",\n          \"object\": \"old_version\"\n        },\n        {\n          \"subject\": \"old_version\",\n          \"predicate\": \"remains_citable_for\",\n          \"object\": \"auditability\"\n        },\n        {\n          \"subject\": \"explicit_purge\",\n          \"predicate\": \"allows\",\n          \"object\": \"deletion_of_old_version\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguity in (name,value) pairs requires human-in-the-loop resolution or higher-confidence metadata.\"\n  },\n  \"conflict_classification\": \"version_conflict\",\n  \"answer\": \"Store each (id,name,value) triplet as an atomic memory card with explicit relationships, preserving ambiguity unless resolved. Commit only durable records (marked by metadata/timestamp) to long-term memory, and ensure superseded records remain citable for auditability. Transient/deleted records must be excluded.\",\n  \"citations\": [\n    \"Policy: Preserve data integrity and auditability in memory storage.\",\n    \"Constraint: Avoid implicit type inference for ambiguous attributes.\",\n    \"Rule: Explicit metadata determines durability.\"\n  ],\n  \"repair_options\": [\n    \"Add metadata column to mark records for durability.\",\n    \"Implement versioning for `id`-based updates with citable history.\",\n    \"Flag ambiguous (name,value) pairs for manual review.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Policy decomposed into atomic rules.\",\n      \"Ambiguity preservation enforced.\",\n      \"Durability and supersession constraints applied.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

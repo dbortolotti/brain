@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "duplicate_sam_bill_evans_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "The two existing memory entries are duplicates expressing the same fact: Sam from Goldman likes Bill Evans. Keep a single consolidated memory and remove/avoid storing the redundant variant.",
+    "citations": [],
+    "conflict_classification": "duplicate_same_fact",
+    "decision": "deduplicate_keep_one",
+    "entity_resolution": {
+      "action": "map_to_existing_same_entity",
+      "entity_id": null,
+      "reason": "Both memory statements refer to the same person (Sam from Goldman) and the same preference (likes Bill Evans). The content is duplicated with only minor phrasing/punctuation variation."
+    },
+    "intent": "Explain and resolve a potential duplicate/conflict in existing memory about Sam\u2019s music preference.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "artist",
+            "type": "musician"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          }
+        ],
+        "kind": "memory",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman said he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected identical semantic content across two entries.",
+        "No true contradiction found; only duplication."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Store only one consolidated card: 'Sam from Goldman said he likes Bill Evans.'",
+      "If tracking provenance, keep both source snippets as metadata but ensure only one active fact card remains."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Explain and resolve a potential duplicate/conflict in existing memory about Sam\u2019s music preference.\",\n  \"decision\": \"deduplicate_keep_one\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"memory\",\n      \"statement\": \"Sam from Goldman said he likes Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"musician\",\n          \"role\": \"artist\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"map_to_existing_same_entity\",\n    \"entity_id\": null,\n    \"reason\": \"Both memory statements refer to the same person (Sam from Goldman) and the same preference (likes Bill Evans). The content is duplicated with only minor phrasing/punctuation variation.\"\n  },\n  \"conflict_classification\": \"duplicate_same_fact\",\n  \"answer\": \"The two existing memory entries are duplicates expressing the same fact: Sam from Goldman likes Bill Evans. Keep a single consolidated memory and remove/avoid storing the redundant variant.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Store only one consolidated card: 'Sam from Goldman said he likes Bill Evans.'\",\n    \"If tracking provenance, keep both source snippets as metadata but ensure only one active fact card remains.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Detected identical semantic content across two entries.\",\n      \"No true contradiction found; only duplication.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,70 @@
+{
+  "error": null,
+  "fixture_id": "debug_explain_recall_sam",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Recall returned mem_new for Sam from Goldman because it is the most recent (active) version of that information. The earlier mem_old entry for Sam was filtered out because it was marked as superseded by the newer memory, so only the updated claim was used.",
+    "citations": [],
+    "conflict_classification": "Version conflict / supersession conflict (newer memory overrides older memory for the same entity and claim).",
+    "decision": "Prefer mem_new (Sam at Goldman) over mem_old because mem_old is superseded by a more recent/updated record.",
+    "entity_resolution": {
+      "action": "match_and_compare_versions",
+      "entity_id": null,
+      "reason": "Sam in mem_new and mem_old is treated as the same entity; the system then compares versions and keeps the newer record while discarding the superseded one."
+    },
+    "intent": "Explain why recall returned the newer memory for Sam from Goldman and excluded the older one because the older one was superseded.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "target entity",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer/affiliation (as stated in the memory)",
+            "type": "organization"
+          }
+        ],
+        "kind": "mem_new",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "is_associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Recall selected the newer memory for Sam associated with Goldman, returning it as the active result."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "target entity",
+            "type": "person"
+          }
+        ],
+        "kind": "mem_old",
+        "relationships": [],
+        "statement": "Recall filtered out the older memory for Sam because it was superseded by a newer update."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Selected mem_new as the preferred result due to newer/active status.",
+        "Filtered mem_old because it was identified as superseded."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If both memories should be retained, add a disambiguation note so they are treated as complementary facts rather than superseding versions.",
+      "If mem_old was incorrectly marked superseded, update the memory metadata/timestamps or supersession rules for that entry."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Explain why recall returned the newer memory for Sam from Goldman and excluded the older one because the older one was superseded.\",\n  \"decision\": \"Prefer mem_new (Sam at Goldman) over mem_old because mem_old is superseded by a more recent/updated record.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"mem_new\",\n      \"statement\": \"Recall selected the newer memory for Sam associated with Goldman, returning it as the active result.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"target entity\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer/affiliation (as stated in the memory)\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"is_associated_with\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"mem_old\",\n      \"statement\": \"Recall filtered out the older memory for Sam because it was superseded by a newer update.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"target entity\"\n        }\n      ],\n      \"relationships\": []\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"match_and_compare_versions\",\n    \"entity_id\": null,\n    \"reason\": \"Sam in mem_new and mem_old is treated as the same entity; the system then compares versions and keeps the newer record while discarding the superseded one.\"\n  },\n  \"conflict_classification\": \"Version conflict / supersession conflict (newer memory overrides older memory for the same entity and claim).\",\n  \"answer\": \"Recall returned mem_new for Sam from Goldman because it is the most recent (active) version of that information. The earlier mem_old entry for Sam was filtered out because it was marked as superseded by the newer memory, so only the updated claim was used.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If both memories should be retained, add a disambiguation note so they are treated as complementary facts rather than superseding versions.\",\n    \"If mem_old was incorrectly marked superseded, update the memory metadata/timestamps or supersession rules for that entry.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Selected mem_new as the preferred result due to newer/active status.\",\n      \"Filtered mem_old because it was identified as superseded.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

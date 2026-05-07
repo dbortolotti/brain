@@ -1,0 +1,67 @@
+{
+  "error": null,
+  "fixture_id": "memory_compiler_small_table",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Stored two memory cards: Sam prefers Bill Evans and Daniele prefers Knowledge graphs.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_memory_without_overwriting_existing_entries",
+    "entity_resolution": {
+      "action": "no_change",
+      "entity_id": null,
+      "reason": "no existing entities were matched against; both entries are new and preserve ambiguity"
+    },
+    "intent": "memory_compilation",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "memory",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam prefers Bill Evans"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "memory",
+        "relationships": [
+          {
+            "object": "Knowledge graphs",
+            "predicate": "prefers",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Daniele prefers Knowledge graphs"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory cards stored without deleting or superseding any existing data."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"memory_compilation\",\n  \"decision\": \"store_memory_without_overwriting_existing_entries\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"memory\",\n      \"statement\": \"Sam prefers Bill Evans\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Sam\", \"type\": \"person\", \"role\": \"subject\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sam\", \"predicate\": \"prefers\", \"object\": \"Bill Evans\"}\n      ]\n    },\n    {\n      \"kind\": \"memory\",\n      \"statement\": \"Daniele prefers Knowledge graphs\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Daniele\", \"type\": \"person\", \"role\": \"subject\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Daniele\", \"predicate\": \"prefers\", \"object\": \"Knowledge graphs\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_change\",\n    \"entity_id\": null,\n    \"reason\": \"no existing entities were matched against; both entries are new and preserve ambiguity\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Stored two memory cards: Sam prefers Bill Evans and Daniele prefers Knowledge graphs.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\"Memory cards stored without deleting or superseding any existing data.\"]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

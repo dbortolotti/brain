@@ -1,0 +1,83 @@
+{
+  "fixture_id": "slack_conflict_buttons_001",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "There is a temporal conflict: one memory says Sam currently works at Goldman, while another says Sam left Goldman and joined Point72. To avoid erasing history, store both as separate temporal statements and plan to resolve with timestamps or versioning.",
+    "citations": [],
+    "conflict_classification": "temporal_overlap_conflict",
+    "decision": "resolve_conflict_and_update_memory",
+    "entity_resolution": {
+      "action": "preserve_and_merge",
+      "entity_id": null,
+      "reason": "Existing memory states Sam works at Goldman; conflicting memory states Sam left Goldman and joined Point72. To maintain consistency, preserve both statements as separate temporal entries with a clear resolution path (update over time)."
+    },
+    "intent": "memory_conflict_resolution",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unknown",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "new_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict detected between current employer vs. recent change.",
+        "Memory entries preserved with explicit relationships."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add timestamps to each memory entry to indicate when the event occurred and when it was recorded.",
+      "Mark the Goldman statement as historical if Sam is now at Point72, or update the Goldman entry to reflect past status.",
+      "Create a timeline view combining both entries with events: 'Sam worked at Goldman (past)', 'Sam left Goldman and joined Point72 (past or present)'."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

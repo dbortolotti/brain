@@ -1,0 +1,36 @@
+{
+  "error": null,
+  "fixture_id": "debug_inspect_memory_001__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Inspection request recognized for memory mem_123. This is a read/debug action for context, not a durable memory write or update.",
+    "citations": [
+      "mem_123"
+    ],
+    "conflict_classification": "none",
+    "decision": "do_not_commit_memory; treat the input as a request to inspect existing memory context for mem_123",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": "mem_123",
+      "reason": "The input references a specific memory identifier for inspection rather than introducing a new entity or fact."
+    },
+    "intent": "inspect_memory",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Parsed '/brain inspect memory mem_123' as an inspection command.",
+        "No new memory cards were created.",
+        "No existing memory was modified or superseded."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If mem_123 cannot be found, return a not_found inspection result.",
+      "If more detail is needed, include the stored statement, provenance, timestamps, and status flags for mem_123.",
+      "If the intent was to update or delete mem_123 instead, issue an explicit write, patch, or delete command."
+    ]
+  },
+  "raw_text": "{\"intent\":\"inspect_memory\",\"decision\":\"do_not_commit_memory; treat the input as a request to inspect existing memory context for mem_123\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":\"mem_123\",\"reason\":\"The input references a specific memory identifier for inspection rather than introducing a new entity or fact.\"},\"conflict_classification\":\"none\",\"answer\":\"Inspection request recognized for memory mem_123. This is a read/debug action for context, not a durable memory write or update.\",\"citations\":[\"mem_123\"],\"repair_options\":[\"If mem_123 cannot be found, return a not_found inspection result.\",\"If more detail is needed, include the stored statement, provenance, timestamps, and status flags for mem_123.\",\"If the intent was to update or delete mem_123 instead, issue an explicit write, patch, or delete command.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed '/brain inspect memory mem_123' as an inspection command.\",\"No new memory cards were created.\",\"No existing memory was modified or superseded.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

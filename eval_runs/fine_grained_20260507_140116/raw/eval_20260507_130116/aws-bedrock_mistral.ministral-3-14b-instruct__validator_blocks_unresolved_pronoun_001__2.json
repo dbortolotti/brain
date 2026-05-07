@@ -1,0 +1,34 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_unresolved_pronoun_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory proposal rejected due to ambiguous pronoun reference ('He').",
+    "citations": [],
+    "conflict_classification": "unresolved_reference",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "flag",
+      "entity_id": null,
+      "reason": "Unresolved pronoun 'He' lacks referential clarity. No antecedent or context provided to determine subject of preference. Violates durability_filter requirement for unambiguous, durable memory."
+    },
+    "intent": "resolve_ambiguity",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Pronoun 'He' has no clear referent in the statement.",
+        "Durable memory requires unambiguous subject identification.",
+        "Proposal violates fixture ID validator_blocks_unresolved_pronoun_001 constraints."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Specify antecedent (e.g., 'John prefers the other one.')",
+      "Replace pronoun with explicit subject (e.g., 'The user prefers the other option.')",
+      "Provide context to disambiguate (e.g., 'Between the two, he prefers the second one.')"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"resolve_ambiguity\",\n  \"decision\": \"reject\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"flag\",\n    \"entity_id\": null,\n    \"reason\": \"Unresolved pronoun 'He' lacks referential clarity. No antecedent or context provided to determine subject of preference. Violates durability_filter requirement for unambiguous, durable memory.\"\n  },\n  \"conflict_classification\": \"unresolved_reference\",\n  \"answer\": \"Memory proposal rejected due to ambiguous pronoun reference ('He').\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Specify antecedent (e.g., 'John prefers the other one.')\",\n    \"Replace pronoun with explicit subject (e.g., 'The user prefers the other option.')\",\n    \"Provide context to disambiguate (e.g., 'Between the two, he prefers the second one.')\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Pronoun 'He' has no clear referent in the statement.\",\n      \"Durable memory requires unambiguous subject identification.\",\n      \"Proposal violates fixture ID validator_blocks_unresolved_pronoun_001 constraints.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

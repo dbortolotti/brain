@@ -1,0 +1,93 @@
+{
+  "error": null,
+  "fixture_id": "supersession_sam_job_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "There is a conflict: one memory says Sam currently works at Goldman New, while another says Sam left Goldman and joined Point72. The second statement implies Goldman is not current (at least not without additional context). To repair, reinterpret the Goldman statement as historical (e.g., 'previously worked at Goldman') and treat Point72 as Sam's current/most recent employer, unless dates show otherwise.",
+    "citations": [],
+    "conflict_classification": "Temporal supersession / conflicting current employment status",
+    "decision": "Mark the 'Sam works at Goldman New' statement as superseded/possibly historical and treat 'Sam left Goldman and joined Point72' as the current/most recent employment state, while preserving ambiguity about exact dates.",
+    "entity_resolution": {
+      "action": "link_or_align_entities",
+      "entity_id": null,
+      "reason": "Assume 'Goldman New' is referring to 'Goldman' but the exact match is not guaranteed; keep wording careful about names while resolving the employment conflict."
+    },
+    "intent": "Explain and resolve a conflict between two stored employment facts about Sam.",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman New",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_current_state_conflict",
+        "relationships": [
+          {
+            "object": "Goldman New",
+            "predicate": "employed_by",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman New."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "new_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_change",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left_employer",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined_employer",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected direct contradiction in current employment status for the same person.",
+        "Applied temporal-supersession reasoning: 'left/joined' indicates a change that likely supersedes 'works at'."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Rewrite 'Sam works at Goldman New' to 'Sam previously worked at Goldman New' (or 'formerly at Goldman') and optionally add an unknown end date.",
+      "Keep only the employment-change statement ('left Goldman and joined Point72') as current, and downgrade/remove the Goldman-current phrasing.",
+      "Store both facts with explicit time qualifiers (e.g., 'At time X, Sam worked at Goldman New; later Sam joined Point72') if a timestamp can be obtained.",
+      "If 'Goldman New' might not be the same as 'Goldman', clarify entity identity and avoid assuming they refer to the same organization."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Explain and resolve a conflict between two stored employment facts about Sam.\",\n  \"decision\": \"Mark the 'Sam works at Goldman New' statement as superseded/possibly historical and treat 'Sam left Goldman and joined Point72' as the current/most recent employment state, while preserving ambiguity about exact dates.\",\n  \"conflict_classification\": \"Temporal supersession / conflicting current employment status\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"employment_current_state_conflict\",\n      \"statement\": \"Sam works at Goldman New.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"employee\"\n        },\n        {\n          \"name\": \"Goldman New\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"employed_by\",\n          \"object\": \"Goldman New\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"employment_change\",\n      \"statement\": \"Sam left Goldman and joined Point72.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"employee\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"former_employer\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"new_employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"left_employer\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined_employer\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"link_or_align_entities\",\n    \"entity_id\": null,\n    \"reason\": \"Assume 'Goldman New' is referring to 'Goldman' but the exact match is not guaranteed; keep wording careful about names while resolving the employment conflict.\"\n  },\n  \"answer\": \"There is a conflict: one memory says Sam currently works at Goldman New, while another says Sam left Goldman and joined Point72. The second statement implies Goldman is not current (at least not without additional context). To repair, reinterpret the Goldman statement as historical (e.g., 'previously worked at Goldman') and treat Point72 as Sam's current/most recent employer, unless dates show otherwise.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Rewrite 'Sam works at Goldman New' to 'Sam previously worked at Goldman New' (or 'formerly at Goldman') and optionally add an unknown end date.\",\n    \"Keep only the employment-change statement ('left Goldman and joined Point72') as current, and downgrade/remove the Goldman-current phrasing.\",\n    \"Store both facts with explicit time qualifiers (e.g., 'At time X, Sam worked at Goldman New; later Sam joined Point72') if a timestamp can be obtained.\",\n    \"If 'Goldman New' might not be the same as 'Goldman', clarify entity identity and avoid assuming they refer to the same organization.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Detected direct contradiction in current employment status for the same person.\",\n      \"Applied temporal-supersession reasoning: 'left/joined' indicates a change that likely supersedes 'works at'.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

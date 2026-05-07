@@ -1,0 +1,63 @@
+{
+  "fixture_id": "idempotent_retry_same_message_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Committed one durable memory: Sam from Goldman likes Bill Evans, based on a mention with medium confidence.",
+    "citations": [
+      "input: Same input delivered three times: Sam from Goldman mentioned that he likes Bill Evans."
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "no_change",
+      "entity_id": null,
+      "reason": "The input does not provide enough information to uniquely identify Sam or link him to an existing entity with confidence."
+    },
+    "intent": "durability_filter",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference_mention",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman mentioned that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Duplicate deliveries detected; processed idempotently.",
+        "One memory card created; no supersession or deletion involved."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

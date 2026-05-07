@@ -1,0 +1,82 @@
+{
+  "error": null,
+  "fixture_id": "contradiction_sam_children_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Existing memory says Sam (Goldman) has two children, but the new input says Sam (Goldman) has no children. These cannot both be true, so the new claim should not replace the existing fact without additional evidence.",
+    "citations": [],
+    "conflict_classification": "Direct numerical/boolean contradiction (two children vs no children).",
+    "decision": "Do not overwrite existing memory; record the new information as conflicting/ambiguous rather than committing it as current.",
+    "entity_resolution": {
+      "action": "confirm_or_keep_uncertain",
+      "entity_id": null,
+      "reason": "Both statements refer to 'Sam from Goldman' but no canonical entity ID is provided; treat as same-referenced subject with unresolved origin."
+    },
+    "intent": "Explain and resolve a contradiction in existing vs new memory about Sam from Goldman\u2019s children.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          }
+        ],
+        "kind": "existing_fact",
+        "relationships": [
+          {
+            "object": "two",
+            "predicate": "has_children",
+            "subject": "Sam (Goldman)"
+          }
+        ],
+        "statement": "Sam from Goldman has two children."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          }
+        ],
+        "kind": "new_claim_conflicting",
+        "relationships": [
+          {
+            "object": "none",
+            "predicate": "has_children",
+            "subject": "Sam (Goldman)"
+          }
+        ],
+        "statement": "Sam from Goldman has no children."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected contradiction between 'two children' and 'no children' for the same described entity.",
+        "Chose not to commit the new claim as current; kept existing fact and flagged the new claim as conflicting."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Collect a source/date for each claim and store provenance, then prefer the more reliable or more recent one.",
+      "Ask a clarifying question to disambiguate which Sam (if multiple people) the facts refer to.",
+      "Store both statements as conflicting with a resolution status (e.g., 'children_count_conflict') until verified."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Explain and resolve a contradiction in existing vs new memory about Sam from Goldman\u2019s children.\",\n  \"decision\": \"Do not overwrite existing memory; record the new information as conflicting/ambiguous rather than committing it as current.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"existing_fact\",\n      \"statement\": \"Sam from Goldman has two children.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam (Goldman)\",\n          \"predicate\": \"has_children\",\n          \"object\": \"two\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"new_claim_conflicting\",\n      \"statement\": \"Sam from Goldman has no children.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam (Goldman)\",\n          \"predicate\": \"has_children\",\n          \"object\": \"none\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"confirm_or_keep_uncertain\",\n    \"entity_id\": null,\n    \"reason\": \"Both statements refer to 'Sam from Goldman' but no canonical entity ID is provided; treat as same-referenced subject with unresolved origin.\"\n  },\n  \"conflict_classification\": \"Direct numerical/boolean contradiction (two children vs no children).\",\n  \"answer\": \"Existing memory says Sam (Goldman) has two children, but the new input says Sam (Goldman) has no children. These cannot both be true, so the new claim should not replace the existing fact without additional evidence.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Collect a source/date for each claim and store provenance, then prefer the more reliable or more recent one.\",\n    \"Ask a clarifying question to disambiguate which Sam (if multiple people) the facts refer to.\",\n    \"Store both statements as conflicting with a resolution status (e.g., 'children_count_conflict') until verified.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Detected contradiction between 'two children' and 'no children' for the same described entity.\",\n      \"Chose not to commit the new claim as current; kept existing fact and flagged the new claim as conflicting.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

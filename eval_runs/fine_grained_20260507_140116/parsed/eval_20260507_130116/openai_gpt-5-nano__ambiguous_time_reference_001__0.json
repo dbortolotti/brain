@@ -1,0 +1,55 @@
+{
+  "fixture_id": "ambiguous_time_reference_001",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "The statement contains an ambiguous temporal reference: 'last Friday' and 'next month' cannot be unambiguously resolved without a reference date.",
+    "citations": [],
+    "conflict_classification": "temporal_ambiguity",
+    "decision": "ambiguous_time_reference",
+    "entity_resolution": {
+      "action": "defer_due_to_ambiguous_time_reference",
+      "entity_id": null,
+      "reason": "The phrase 'last Friday' and 'next month' create temporal ambiguity without a reference date. It is unclear which Friday and which month are intended."
+    },
+    "intent": "classify_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "statement",
+        "relationships": [
+          {
+            "object": "he is leaving Goldman next month",
+            "predicate": "stated",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said last Friday that he is leaving Goldman next month."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory created with ambiguous temporal reference preserved",
+        "No final temporal resolution committed"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide an explicit reference date (e.g., 'as of 2026-05-07, Sam said last Friday...')",
+      "Clarify the intended month for 'next month' or replace with exact dates (e.g., 'next month on 2026-06-15')",
+      "Record both possible interpretations if a date is unavailable"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

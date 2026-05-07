@@ -1,0 +1,59 @@
+{
+  "fixture_id": "ambiguous_sam_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory recorded with ambiguous Sam reference. Recommend collecting disambiguating context (e.g., conversation source, date, or explicit name mention) to resolve which Sam entity owns this preference.",
+    "citations": [
+      "Existing entities: Sam from Goldman; Sam from Point72",
+      "New message: Sam mentioned that he likes Bill Evans"
+    ],
+    "conflict_classification": "unresolved_entity_ambiguity",
+    "decision": "Create unresolved memory card; defer entity merge until additional context",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Ambiguous which Sam (Goldman or Point72) expressed preference. Insufficient context to merge or select. Preference statement is durable but Sam identity remains unresolved."
+    },
+    "intent": "Disambiguate which Sam likes Bill Evans and record preference without resolving identity conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preference fact committed: Sam likes Bill Evans",
+        "Entity ambiguity preserved; no false merge performed",
+        "Resolution deferred pending additional context"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask which Sam (Goldman or Point72) made this statement",
+      "Tag memory with conversation metadata to enable retroactive disambiguation",
+      "Collect additional preferences or context from each Sam to build differentiation signals"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

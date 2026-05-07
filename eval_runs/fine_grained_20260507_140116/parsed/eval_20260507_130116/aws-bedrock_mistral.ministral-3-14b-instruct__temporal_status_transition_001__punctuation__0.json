@@ -1,0 +1,108 @@
+{
+  "fixture_id": "temporal_status_transition_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The Brain Slack agent's status transitioned from 'planned (open)' to 'implemented (MVP)'. The 'open' status is now obsolete, and the MVP's implementation is the current state. No further action required beyond archiving the superseded status.",
+    "citations": [
+      "New: The Brain Slack agent MVP is now implemented",
+      "Existing: The Brain Slack agent is planned, status=open"
+    ],
+    "conflict_classification": "temporal_status_supersession",
+    "decision": "resolve_conflict",
+    "entity_resolution": {
+      "action": "archive",
+      "entity_id": "temporal_status_transition_001__punctuation",
+      "reason": "Original 'open' status is superseded by the implemented MVP; ambiguity preserved in memory cards."
+    },
+    "intent": "status_update",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain Slack agent",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "planned",
+            "role": "previous_state",
+            "type": "status"
+          },
+          {
+            "name": "open",
+            "role": "previous_value",
+            "type": "status_value"
+          },
+          {
+            "name": "MVP",
+            "role": "new_state",
+            "type": "project_version"
+          },
+          {
+            "name": "implemented",
+            "role": "current_state",
+            "type": "status"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "open",
+            "predicate": "was_planned_as",
+            "subject": "Brain Slack agent"
+          },
+          {
+            "object": "MVP (implemented)",
+            "predicate": "now_exists_as",
+            "subject": "Brain Slack agent"
+          },
+          {
+            "object": "implemented",
+            "predicate": "superseded_by",
+            "subject": "open"
+          }
+        ],
+        "statement": "The Brain Slack agent is planned (status=open) and now superseded by the implemented MVP."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "open",
+            "role": "obsolete",
+            "type": "status_value"
+          },
+          {
+            "name": "implemented",
+            "role": "current",
+            "type": "status"
+          }
+        ],
+        "kind": "inference",
+        "relationships": [
+          {
+            "object": "implemented",
+            "predicate": "replaced_by",
+            "subject": "open"
+          }
+        ],
+        "statement": "The original 'open' status is no longer current; the MVP's implementation is the authoritative state."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded status ('open') archived in memory cards.",
+        "Current state ('implemented') retained as authoritative.",
+        "Ambiguity preserved via explicit relationships."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Delete the 'open' status entry entirely (aggressive).",
+      "Retain 'open' as a historical state with a 'superseded' flag (conservative).",
+      "Merge into a single 'status_history' card (balanced)."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

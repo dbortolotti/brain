@@ -1,0 +1,63 @@
+{
+  "error": null,
+  "fixture_id": "debug_sql_select_only_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Select-only mode is in effect: SELECT is allowed and DELETE is denied.",
+    "citations": [
+      "For context, Admin SQL select-only mode: SELECT id FROM memory_cards LIMIT 10 allowed; DELETE FROM memory_cards denied."
+    ],
+    "conflict_classification": "none",
+    "decision": "Record the context as a non-conflicting system constraint: SELECT queries are allowed; DELETE queries are denied.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No ambiguous entity reference requiring resolution."
+    },
+    "intent": "Explain admin SQL permissions in select-only mode",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Admin SQL",
+            "role": "executor",
+            "type": "system"
+          },
+          {
+            "name": "memory_cards",
+            "role": "data store",
+            "type": "table"
+          }
+        ],
+        "kind": "context",
+        "relationships": [
+          {
+            "object": "SELECT id FROM memory_cards LIMIT 10",
+            "predicate": "allows",
+            "subject": "Admin SQL"
+          },
+          {
+            "object": "DELETE FROM memory_cards",
+            "predicate": "denies",
+            "subject": "Admin SQL"
+          }
+        ],
+        "statement": "Admin SQL is operating in select-only mode: SELECT id FROM memory_cards LIMIT 10 is allowed, while DELETE FROM memory_cards is denied."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed select-only permission context.",
+        "No durable memory conflict detected."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "No repair needed; the constraint is already unambiguous."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Explain admin SQL permissions in select-only mode\",\"decision\":\"Record the context as a non-conflicting system constraint: SELECT queries are allowed; DELETE queries are denied.\",\"memory_cards\":[{\"kind\":\"context\",\"statement\":\"Admin SQL is operating in select-only mode: SELECT id FROM memory_cards LIMIT 10 is allowed, while DELETE FROM memory_cards is denied.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Admin SQL\",\"type\":\"system\",\"role\":\"executor\"},{\"name\":\"memory_cards\",\"type\":\"table\",\"role\":\"data store\"}],\"relationships\":[{\"subject\":\"Admin SQL\",\"predicate\":\"allows\",\"object\":\"SELECT id FROM memory_cards LIMIT 10\"},{\"subject\":\"Admin SQL\",\"predicate\":\"denies\",\"object\":\"DELETE FROM memory_cards\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No ambiguous entity reference requiring resolution.\"},\"conflict_classification\":\"none\",\"answer\":\"Select-only mode is in effect: SELECT is allowed and DELETE is denied.\",\"citations\":[\"For context, Admin SQL select-only mode: SELECT id FROM memory_cards LIMIT 10 allowed; DELETE FROM memory_cards denied.\"],\"repair_options\":[\"No repair needed; the constraint is already unambiguous.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed select-only permission context.\",\"No durable memory conflict detected.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,61 @@
+{
+  "error": null,
+  "fixture_id": "debug_sql_select_only_001__context",
+  "model": "groq:llama-3.1-8b-instant",
+  "payload": {
+    "answer": "SELECT id FROM memory_cards LIMIT 10",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "SELECT",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": null,
+      "reason": "no conflict"
+    },
+    "intent": "intent_router",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "memory_cards",
+            "role": "subject",
+            "type": "table"
+          },
+          {
+            "name": "id",
+            "role": "object",
+            "type": "column"
+          },
+          {
+            "name": "10",
+            "role": "object",
+            "type": "integer"
+          }
+        ],
+        "kind": "sql",
+        "relationships": [
+          {
+            "object": "id",
+            "predicate": "SELECT",
+            "subject": "memory_cards"
+          },
+          {
+            "object": "10",
+            "predicate": "LIMIT",
+            "subject": "memory_cards"
+          }
+        ],
+        "statement": "SELECT id FROM memory_cards LIMIT 10"
+      }
+    ],
+    "receipt": {
+      "details": [],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"intent_router\",\n   \"decision\": \"SELECT\",\n   \"memory_cards\": [\n      {\n         \"kind\": \"sql\",\n         \"statement\": \"SELECT id FROM memory_cards LIMIT 10\",\n         \"confidence\": \"high\",\n         \"entities\": [\n            {\n               \"name\": \"memory_cards\",\n               \"type\": \"table\",\n               \"role\": \"subject\"\n            },\n            {\n               \"name\": \"id\",\n               \"type\": \"column\",\n               \"role\": \"object\"\n            },\n            {\n               \"name\": \"10\",\n               \"type\": \"integer\",\n               \"role\": \"object\"\n            }\n         ],\n         \"relationships\": [\n            {\n               \"subject\": \"memory_cards\",\n               \"predicate\": \"SELECT\",\n               \"object\": \"id\"\n            },\n            {\n               \"subject\": \"memory_cards\",\n               \"predicate\": \"LIMIT\",\n               \"object\": \"10\"\n            }\n         ]\n      }\n   ],\n   \"entity_resolution\": {\n      \"action\": \"resolve\",\n      \"entity_id\": null,\n      \"reason\": \"no conflict\"\n   },\n   \"conflict_classification\": \"none\",\n   \"answer\": \"SELECT id FROM memory_cards LIMIT 10\",\n   \"citations\": [],\n   \"repair_options\": [],\n   \"receipt\": {\n      \"success\": true,\n      \"details\": []\n   }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

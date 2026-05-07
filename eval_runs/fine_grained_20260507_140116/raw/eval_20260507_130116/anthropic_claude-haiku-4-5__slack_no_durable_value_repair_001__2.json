@@ -1,0 +1,64 @@
+{
+  "error": null,
+  "fixture_id": "slack_no_durable_value_repair_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Weather observations are ephemeral and should not be committed to durable memory. This statement has no lasting relevance beyond the current day.",
+    "citations": [],
+    "conflict_classification": "no_durable_value",
+    "decision": "reject_durable_commitment",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Weather observations lack durable value; temporal scope (today) is transient and will become stale"
+    },
+    "intent": "store_ephemeral_observation",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "today",
+            "role": "time_scope",
+            "type": "temporal_reference"
+          },
+          {
+            "name": "weather",
+            "role": "subject",
+            "type": "domain"
+          },
+          {
+            "name": "cloudy",
+            "role": "observation",
+            "type": "weather_condition"
+          }
+        ],
+        "kind": "ephemeral_weather_observation",
+        "relationships": [
+          {
+            "object": "cloudy",
+            "predicate": "has_condition",
+            "subject": "today's_weather"
+          }
+        ],
+        "statement": "Today's weather is cloudy."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Rejected durable memory commitment",
+        "Reason: Ephemeral temporal scope and low informational durability",
+        "Recommendation: Use transient storage or provide context linking to durable facts"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Commit only if weather pattern is part of a larger context (e.g., planning, health impact)",
+      "Store as temporary cache with automatic expiration",
+      "Request clarification on why this weather observation matters for future recall"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"store_ephemeral_observation\",\n  \"decision\": \"reject_durable_commitment\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"ephemeral_weather_observation\",\n      \"statement\": \"Today's weather is cloudy.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"today\",\n          \"type\": \"temporal_reference\",\n          \"role\": \"time_scope\"\n        },\n        {\n          \"name\": \"weather\",\n          \"type\": \"domain\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"cloudy\",\n          \"type\": \"weather_condition\",\n          \"role\": \"observation\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"today's_weather\",\n          \"predicate\": \"has_condition\",\n          \"object\": \"cloudy\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Weather observations lack durable value; temporal scope (today) is transient and will become stale\"\n  },\n  \"conflict_classification\": \"no_durable_value\",\n  \"answer\": \"Weather observations are ephemeral and should not be committed to durable memory. This statement has no lasting relevance beyond the current day.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Commit only if weather pattern is part of a larger context (e.g., planning, health impact)\",\n    \"Store as temporary cache with automatic expiration\",\n    \"Request clarification on why this weather observation matters for future recall\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Rejected durable memory commitment\",\n      \"Reason: Ephemeral temporal scope and low informational durability\",\n      \"Recommendation: Use transient storage or provide context linking to durable facts\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

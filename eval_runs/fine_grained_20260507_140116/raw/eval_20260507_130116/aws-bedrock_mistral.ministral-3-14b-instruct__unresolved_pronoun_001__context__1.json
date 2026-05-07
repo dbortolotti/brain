@@ -1,0 +1,52 @@
+{
+  "error": null,
+  "fixture_id": "unresolved_pronoun_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The pronoun references ('He' and 'the other one') cannot be resolved without additional context. No durable memory can be committed.",
+    "conflict_classification": "unresolved_anaphora",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Ambiguous antecedent for 'He' and 'the other one' lacks sufficient context for resolution. Requires disambiguation from prior discourse or explicit clarification."
+    },
+    "intent": "entity_mention_resolution",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "He",
+            "role": "subject",
+            "type": "pronoun"
+          },
+          {
+            "name": "the other one",
+            "role": "object",
+            "type": "pronoun"
+          }
+        ],
+        "kind": "unresolved_reference",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "He"
+          }
+        ],
+        "statement": "For context, He prefers the other one."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguous pronoun resolution detected.",
+        "No prior context or explicit referents provided for 'He' or 'the other one'.",
+        "Resolution deferred to avoid committing superseded/deleted facts."
+      ],
+      "success": false
+    }
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"entity_mention_resolution\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"unresolved_reference\",\n      \"statement\": \"For context, He prefers the other one.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"He\",\n          \"type\": \"pronoun\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"the other one\",\n          \"type\": \"pronoun\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"He\",\n          \"predicate\": \"prefers\",\n          \"object\": \"the other one\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguous antecedent for 'He' and 'the other one' lacks sufficient context for resolution. Requires disambiguation from prior discourse or explicit clarification.\"\n  },\n  \"conflict_classification\": \"unresolved_anaphora\",\n  \"answer\": \"The pronoun references ('He' and 'the other one') cannot be resolved without additional context. No durable memory can be committed.\",\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Ambiguous pronoun resolution detected.\",\n      \"No prior context or explicit referents provided for 'He' or 'the other one'.\",\n      \"Resolution deferred to avoid committing superseded/deleted facts.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

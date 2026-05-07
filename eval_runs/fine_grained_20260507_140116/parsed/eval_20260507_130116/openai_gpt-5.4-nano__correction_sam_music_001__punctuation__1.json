@@ -1,0 +1,59 @@
+{
+  "fixture_id": "correction_sam_music_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Got it: Sam from Goldman likes early Coltrane, not Bill Evans.",
+    "citations": [],
+    "conflict_classification": "Entity attribute preference contradiction (taste/music artist) due to correction/overwrite.",
+    "decision": "Store corrected preference: Sam from Goldman likes early Coltrane (not Bill Evans).",
+    "entity_resolution": {
+      "action": "update_and_replace_preference",
+      "entity_id": null,
+      "reason": "The input explicitly corrects the prior preference for Bill Evans to instead be early Coltrane for the same person context (Sam from Goldman)."
+    },
+    "intent": "Resolve a music-preference correction for Sam from Goldman and ensure durable memory reflects the corrected information only.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "target",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "preferred subject",
+            "type": "music_artist_era"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam (from Goldman)"
+          }
+        ],
+        "statement": "Sam (from Goldman) likes early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory updated to the corrected preference only.",
+        "Superseded preference (Bill Evans) is not stored as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If there are multiple Sams at Goldman, disambiguate using additional identifiers (e.g., department, location, or other known traits).",
+      "Record whether the preference is for a specific early Coltrane period/release set to reduce future ambiguity."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

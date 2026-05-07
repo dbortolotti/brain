@@ -1,0 +1,27 @@
+{
+  "fixture_id": "no_durable_value_weather_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Do not store the statement 'Today's weather is cloudy' as durable memory.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "no_durable_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Weather conditions are time-dependent and the provided statement is explicitly for 'today', so it should not be stored durably."
+    },
+    "intent": "durability_filter",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected time-bound context ('today') with no indication it should be persisted beyond the current day."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If the user later asks to remember a long-term preference or location-based climate pattern, extract and store that preference/pattern instead of today's weather."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

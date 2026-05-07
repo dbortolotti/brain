@@ -1,0 +1,109 @@
+{
+  "fixture_id": "memory_compiler_article_atomic__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Durable source evidence should be stored on small, traceable atomic memory cards; semantic indexing can aid recall, but lifecycle and conflict state must be maintained by the application database.",
+    "citations": [
+      "For context: durable source evidence is needed for AI memory systems.",
+      "Atomic memory cards should be small and traceable.",
+      "A semantic index can improve recall, but the application database must own lifecycle and conflict state."
+    ],
+    "conflict_classification": "lifecycle_ownership_conflict_potential",
+    "decision": "persist_and_catalog_with_context",
+    "entity_resolution": {
+      "action": "associate",
+      "entity_id": null,
+      "reason": "Context indicates memory cards, semantic index, and lifecycle ownership are related but no single canonical ID exists yet."
+    },
+    "intent": "evaluate_memory_compiler_article_atomic",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Atomic memory cards",
+            "role": "subject",
+            "type": "concept"
+          },
+          {
+            "name": "durable source evidence",
+            "role": "object",
+            "type": "concept"
+          },
+          {
+            "name": "AI memory systems",
+            "role": "context",
+            "type": "system"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "small",
+            "predicate": "have_property",
+            "subject": "Atomic memory cards"
+          },
+          {
+            "object": "traceable",
+            "predicate": "have_property",
+            "subject": "Atomic memory cards"
+          },
+          {
+            "object": "durable_source_evidence",
+            "predicate": "support",
+            "subject": "Atomic memory cards"
+          }
+        ],
+        "statement": "Atomic memory cards should be small and traceable for durable source evidence in AI memory systems."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "semantic index",
+            "role": "subject",
+            "type": "concept"
+          },
+          {
+            "name": "recall",
+            "role": "object",
+            "type": "concept"
+          },
+          {
+            "name": "application database",
+            "role": "owner",
+            "type": "system"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "recall",
+            "predicate": "improves",
+            "subject": "semantic index"
+          },
+          {
+            "object": "lifecycle_and_conflict_state",
+            "predicate": "owns",
+            "subject": "application database"
+          }
+        ],
+        "statement": "A semantic index can improve recall, but the application database must own lifecycle and conflict state."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Processed input context and generated memory cards with relationships.",
+        "Maintained ambiguity where appropriate; no facts superseded."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Define a lifecycle ownership policy in the application database and attach it to memory cards.",
+      "Establish traceability metadata on atomic memory cards to link to citations.",
+      "Create a conflict-state tracking mechanism in the app database to resolve divergent recall states.",
+      "Store semantic index metadata separately with clear references to memory card IDs."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

@@ -1,0 +1,46 @@
+{
+  "error": null,
+  "fixture_id": "temporal_status_transition_001",
+  "model": "google:gemini-2.5-flash-lite",
+  "payload": {
+    "answer": "The existing project 'The Brain Slack agent' has a status of 'open'. The new information states 'The Brain Slack agent MVP is now implemented'. This indicates a potential status transition for the project or a related sub-project. Please clarify if the MVP implementation supersedes the open status of the main project or if it represents a new, more specific phase.",
+    "citations": [],
+    "conflict_classification": "temporal_status_transition",
+    "decision": "conflict detected",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The new information refers to 'The Brain Slack agent MVP', which is a more specific version of the existing 'The Brain Slack agent'. The existing entity's status is 'open', and the new information implies a transition to a 'implemented' status. This requires careful handling to avoid overwriting or creating duplicate entities."
+    },
+    "intent": "update_entity_status",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain Slack agent MVP",
+            "role": "project",
+            "type": "project"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [],
+        "statement": "The Brain Slack agent MVP is now implemented."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict detected: Temporal status transition for 'The Brain Slack agent'."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Update the status of 'The Brain Slack agent' to 'implemented'.",
+      "Create a new entity for 'The Brain Slack agent MVP' with status 'implemented' and link it to 'The Brain Slack agent'.",
+      "Mark 'The Brain Slack agent' as superseded by 'The Brain Slack agent MVP'."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"update_entity_status\",\n  \"decision\": \"conflict detected\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"The Brain Slack agent MVP is now implemented.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain Slack agent MVP\",\n          \"type\": \"project\",\n          \"role\": \"project\"\n        }\n      ],\n      \"relationships\": []\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"The new information refers to 'The Brain Slack agent MVP', which is a more specific version of the existing 'The Brain Slack agent'. The existing entity's status is 'open', and the new information implies a transition to a 'implemented' status. This requires careful handling to avoid overwriting or creating duplicate entities.\"\n  },\n  \"conflict_classification\": \"temporal_status_transition\",\n  \"answer\": \"The existing project 'The Brain Slack agent' has a status of 'open'. The new information states 'The Brain Slack agent MVP is now implemented'. This indicates a potential status transition for the project or a related sub-project. Please clarify if the MVP implementation supersedes the open status of the main project or if it represents a new, more specific phase.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Update the status of 'The Brain Slack agent' to 'implemented'.\",\n    \"Create a new entity for 'The Brain Slack agent MVP' with status 'implemented' and link it to 'The Brain Slack agent'.\",\n    \"Mark 'The Brain Slack agent' as superseded by 'The Brain Slack agent MVP'.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Conflict detected: Temporal status transition for 'The Brain Slack agent'.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

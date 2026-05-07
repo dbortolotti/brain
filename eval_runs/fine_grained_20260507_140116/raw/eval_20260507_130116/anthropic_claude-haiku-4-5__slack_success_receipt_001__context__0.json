@@ -1,0 +1,68 @@
+{
+  "error": null,
+  "fixture_id": "slack_success_receipt_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory committed: Sam from Goldman likes Bill Evans",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_link",
+      "entity_id": null,
+      "reason": "Sam and Bill Evans require disambiguation on subsequent encounters; Goldman provides organizational context but Sam identity may need verification"
+    },
+    "intent": "Store a preference relationship between a person and a musician",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preference relationship stored",
+        "Entities indexed for future retrieval",
+        "Ambiguity preserved: Sam identity and Bill Evans context noted for clarification"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify Sam's full name or identifier if multiple Sams exist at Goldman",
+      "Confirm Bill Evans reference (musician, person, or other entity)"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Store a preference relationship between a person and a musician\",\n  \"decision\": \"commit\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam from Goldman likes Bill Evans\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"context\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"affiliated_with\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_or_link\",\n    \"entity_id\": null,\n    \"reason\": \"Sam and Bill Evans require disambiguation on subsequent encounters; Goldman provides organizational context but Sam identity may need verification\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Memory committed: Sam from Goldman likes Bill Evans\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Clarify Sam's full name or identifier if multiple Sams exist at Goldman\",\n    \"Confirm Bill Evans reference (musician, person, or other entity)\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Preference relationship stored\",\n      \"Entities indexed for future retrieval\",\n      \"Ambiguity preserved: Sam identity and Bill Evans context noted for clarification\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

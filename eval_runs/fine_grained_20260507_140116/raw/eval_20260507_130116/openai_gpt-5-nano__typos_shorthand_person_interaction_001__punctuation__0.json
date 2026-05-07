@@ -1,0 +1,114 @@
+{
+  "error": null,
+  "fixture_id": "typos_shorthand_person_interaction_001__punctuation",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "The input sentence is ambiguous due to likely typos in names; no durable memory can be established about specific individuals without clarification.",
+    "citations": [],
+    "conflict_classification": "ambiguous_identity_no_asserted_entities",
+    "decision": "ambiguous_probability",
+    "entity_resolution": {
+      "action": "defer_resolution",
+      "entity_id": null,
+      "reason": "Input contains probable typos and lacks context to confirm exact names."
+    },
+    "intent": "classify_memory_input",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "goldmn",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "bill evns",
+            "role": "object_of_liking",
+            "type": "person"
+          }
+        ],
+        "kind": "statement",
+        "relationships": [
+          {
+            "object": "goldmn",
+            "predicate": "from",
+            "subject": "sam"
+          },
+          {
+            "object": "bill evns",
+            "predicate": "likes",
+            "subject": "sam"
+          },
+          {
+            "object": "sam",
+            "predicate": "associated_with",
+            "subject": "goldmn"
+          }
+        ],
+        "required": [
+          "kind",
+          "statement"
+        ],
+        "statement": "sam frm goldmn likes bill evns apparently"
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "goldmn",
+            "role": "unclear",
+            "type": "name_variant"
+          },
+          {
+            "name": "evns",
+            "role": "unclear",
+            "type": "name_variant"
+          },
+          {
+            "name": "sam",
+            "role": "unclear",
+            "type": "person"
+          }
+        ],
+        "kind": "confidence_note",
+        "relationships": [
+          {
+            "object": "goldman",
+            "predicate": "typo_suggestion",
+            "subject": "sam"
+          },
+          {
+            "object": "evans",
+            "predicate": "typo_suggestion",
+            "subject": "evns"
+          }
+        ],
+        "required": [
+          "kind",
+          "statement"
+        ],
+        "statement": "typo: 'goldmn' likely 'goldman' or 'goldman' could be a surname or organization; 'evns' likely 'evans'; 'sam' could be shorthand for Samuel; 'frm' indicates 'from'; 'apparently' signals uncertainty."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed input with basic entity placeholders.",
+        "Marked as low confidence due to typos and lack of context."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request clarification on names: confirm 'sam' (Samuel), 'goldmn' (Goldman?), 'bill evns' (Bill Evans or Evans?), and relationship semantics.",
+      "If preserving ambiguity, store as uncertain associations with high uncertainty flags and no definitive linking."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"classify_memory_input\",\n  \"decision\": \"ambiguous_probability\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"statement\",\n      \"statement\": \"sam frm goldmn likes bill evns apparently\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\"name\": \"sam\", \"type\": \"person\", \"role\": \"subject\"},\n        {\"name\": \"goldmn\", \"type\": \"organization\", \"role\": \"affiliation\"},\n        {\"name\": \"bill evns\", \"type\": \"person\", \"role\": \"object_of_liking\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"sam\", \"predicate\": \"from\", \"object\": \"goldmn\"},\n        {\"subject\": \"sam\", \"predicate\": \"likes\", \"object\": \"bill evns\"},\n        {\"subject\": \"goldmn\", \"predicate\": \"associated_with\", \"object\": \"sam\"}\n      ]\n      ,\n      \"required\": [\"kind\",\"statement\"]\n    }\n    ,\n    {\n      \"kind\": \"confidence_note\",\n      \"statement\": \"typo: 'goldmn' likely 'goldman' or 'goldman' could be a surname or organization; 'evns' likely 'evans'; 'sam' could be shorthand for Samuel; 'frm' indicates 'from'; 'apparently' signals uncertainty.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\"name\": \"goldmn\", \"type\": \"name_variant\", \"role\": \"unclear\"},\n        {\"name\": \"evns\", \"type\": \"name_variant\", \"role\": \"unclear\"},\n        {\"name\": \"sam\", \"type\": \"person\", \"role\": \"unclear\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"sam\", \"predicate\": \"typo_suggestion\", \"object\": \"goldman\"},\n        {\"subject\": \"evns\", \"predicate\": \"typo_suggestion\", \"object\": \"evans\"}\n      ]\n      ,\n      \"required\": [\"kind\",\"statement\"]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer_resolution\",\n    \"entity_id\": null,\n    \"reason\": \"Input contains probable typos and lacks context to confirm exact names.\"\n  },\n  \"conflict_classification\": \"ambiguous_identity_no_asserted_entities\",\n  \"answer\": \"The input sentence is ambiguous due to likely typos in names; no durable memory can be established about specific individuals without clarification.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Request clarification on names: confirm 'sam' (Samuel), 'goldmn' (Goldman?), 'bill evns' (Bill Evans or Evans?), and relationship semantics.\",\n    \"If preserving ambiguity, store as uncertain associations with high uncertainty flags and no definitive linking.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Parsed input with basic entity placeholders.\",\n      \"Marked as low confidence due to typos and lack of context.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

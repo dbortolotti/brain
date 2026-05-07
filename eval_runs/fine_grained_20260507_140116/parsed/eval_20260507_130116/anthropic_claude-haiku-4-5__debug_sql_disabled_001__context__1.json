@@ -1,0 +1,53 @@
+{
+  "fixture_id": "debug_sql_disabled_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Cannot execute admin SQL query. BRAIN_DEBUG_SQL_ENABLED=false prevents direct database access. Enable debug mode or use standard memory retrieval APIs.",
+    "citations": [
+      "System configuration: BRAIN_DEBUG_SQL_ENABLED=false"
+    ],
+    "conflict_classification": "access_denied",
+    "decision": "Query blocked - SQL debug mode disabled",
+    "entity_resolution": {
+      "action": "deny",
+      "entity_id": null,
+      "reason": "Debug SQL mode is disabled by configuration"
+    },
+    "intent": "Debug SQL query execution with BRAIN_DEBUG_SQL_ENABLED=false",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "BRAIN_DEBUG_SQL_ENABLED",
+            "role": "access_control",
+            "type": "system_flag"
+          }
+        ],
+        "kind": "system_constraint",
+        "relationships": [
+          {
+            "object": "admin_sql_queries",
+            "predicate": "controls_access_to",
+            "subject": "BRAIN_DEBUG_SQL_ENABLED"
+          }
+        ],
+        "statement": "BRAIN_DEBUG_SQL_ENABLED is set to false, preventing direct SQL query execution"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "SQL debug mode is disabled",
+        "Query execution blocked at access control layer",
+        "No memory cards retrieved"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Set BRAIN_DEBUG_SQL_ENABLED=true to enable debug SQL access",
+      "Use standard memory card retrieval methods instead",
+      "Contact system administrator to enable debug mode"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

@@ -1,0 +1,92 @@
+{
+  "error": null,
+  "fixture_id": "conflict_employment_transition",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "There is a direct conflict between the existing claim that Sam works at Goldman and the new claim that Sam left Goldman to join Point72. Until the effective dates are known, the memory system should keep both statements and flag that current employment cannot be confidently asserted.",
+    "citations": [],
+    "conflict_classification": "employment_transition_conflict",
+    "decision": "Store both facts without overwriting the existing current employment claim; mark the conflict as an employment transition and require resolution/verification.",
+    "entity_resolution": {
+      "action": "no_change",
+      "entity_id": null,
+      "reason": "Sam and the organizations appear consistent in the input; conflict is temporal/state, not entity identity."
+    },
+    "intent": "Explain conflict in employment history and decide how to update memory.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer_A",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "employer_B",
+            "type": "organization"
+          }
+        ],
+        "kind": "conflict_note",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam's employment status conflicts: existing record says Sam works at Goldman, while new information says Sam left Goldman and joined Point72."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "temporal_attribution_request",
+        "relationships": [
+          {
+            "object": "Goldman_and_Point72",
+            "predicate": "employment_transition_between",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Need a timestamp or confirmation on when Sam left Goldman and when Sam started at Point72 to determine current employer."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Did not overwrite the existing current employment fact.",
+        "Logged a conflict note and requested temporal resolution."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for/ingest the start date at Point72 and the end date at Goldman (or an approval timestamp) to set the current employer.",
+      "If the new fact is authoritative and date-stamped, update 'current employer' to Point72 and mark Goldman employment as ended (without deleting historical context).",
+      "If dates are unavailable, store the transition as a non-current/uncertain update and keep the existing 'works at Goldman' claim marked as potentially outdated."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Explain conflict in employment history and decide how to update memory.\",\n  \"decision\": \"Store both facts without overwriting the existing current employment claim; mark the conflict as an employment transition and require resolution/verification.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"conflict_note\",\n      \"statement\": \"Sam's employment status conflicts: existing record says Sam works at Goldman, while new information says Sam left Goldman and joined Point72.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer_A\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer_B\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"left\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"temporal_attribution_request\",\n      \"statement\": \"Need a timestamp or confirmation on when Sam left Goldman and when Sam started at Point72 to determine current employer.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"employment_transition_between\",\n          \"object\": \"Goldman_and_Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_change\",\n    \"entity_id\": null,\n    \"reason\": \"Sam and the organizations appear consistent in the input; conflict is temporal/state, not entity identity.\"\n  },\n  \"conflict_classification\": \"employment_transition_conflict\",\n  \"answer\": \"There is a direct conflict between the existing claim that Sam works at Goldman and the new claim that Sam left Goldman to join Point72. Until the effective dates are known, the memory system should keep both statements and flag that current employment cannot be confidently asserted.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Ask for/ingest the start date at Point72 and the end date at Goldman (or an approval timestamp) to set the current employer.\",\n    \"If the new fact is authoritative and date-stamped, update 'current employer' to Point72 and mark Goldman employment as ended (without deleting historical context).\",\n    \"If dates are unavailable, store the transition as a non-current/uncertain update and keep the existing 'works at Goldman' claim marked as potentially outdated.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Did not overwrite the existing current employment fact.\",\n      \"Logged a conflict note and requested temporal resolution.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

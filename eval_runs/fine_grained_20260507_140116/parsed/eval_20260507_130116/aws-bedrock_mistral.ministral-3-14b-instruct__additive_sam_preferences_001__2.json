@@ -1,0 +1,65 @@
+{
+  "fixture_id": "additive_sam_preferences_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory update committed. Sam's preference for Sonny Rollins is now durably stored alongside existing preference for Bill Evans. No conflicts detected.",
+    "citations": [
+      "additive_sam_preferences_001",
+      "existing_memory: Sam from Goldman likes Bill Evans."
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_with_ambiguity_preservation",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "sam_goldman_001",
+      "reason": "Existing entity 'Sam from Goldman' resolved to 'Sam' with 'Goldman' as affiliation. New preference added without superseding prior facts."
+    },
+    "intent": "additive_memory_update",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "object_of_preference",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Sonny Rollins",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Sonny Rollins."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "New preference for Sonny Rollins added to Sam's memory card.",
+        "Ambiguity preserved: No deletion or supersession of prior preferences.",
+        "Entity resolution applied: 'Sam from Goldman' \u2192 'Sam' (affiliation: Goldman)."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

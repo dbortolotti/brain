@@ -1,0 +1,107 @@
+{
+  "error": null,
+  "fixture_id": "temporal_status_transition_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "The prior state was \u201cplanned/open.\u201d The new information says the MVP is implemented, so the effective status should move from open to implemented (at least for the MVP). Keep the original planning/open fact as historical context, but treat the implementation as the latest state.",
+    "citations": [],
+    "conflict_classification": "status_transition_open_to_implemented",
+    "decision": "Update status: the previously planned \u201copen\u201d state is superseded by the new fact that the MVP has been implemented (status transitioned to implemented). Do not delete the plan; record the implementation as the latest status.",
+    "entity_resolution": {
+      "action": "link_and_update",
+      "entity_id": null,
+      "reason": "Both statements refer to the same project item (\u201cBrain Slack agent\u201d); the new input adds a concrete milestone completion (MVP implemented) that changes the effective status."
+    },
+    "intent": "Explain and resolve the status transition conflict for the \u201cBrain Slack agent\u201d project item.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain Slack agent",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "open",
+            "role": "object",
+            "type": "status"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "open",
+            "predicate": "status",
+            "subject": "Brain Slack agent"
+          }
+        ],
+        "statement": "The Brain Slack agent was planned with status set to open."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain Slack agent MVP",
+            "role": "subject",
+            "type": "milestone"
+          },
+          {
+            "name": "implemented",
+            "role": "object",
+            "type": "status"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "implemented",
+            "predicate": "is",
+            "subject": "Brain Slack agent MVP"
+          }
+        ],
+        "statement": "The Brain Slack agent MVP has been implemented."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain Slack agent",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "implemented",
+            "role": "object",
+            "type": "status"
+          }
+        ],
+        "kind": "inference",
+        "relationships": [
+          {
+            "object": "implemented (at least MVP)",
+            "predicate": "latest_status",
+            "subject": "Brain Slack agent"
+          }
+        ],
+        "statement": "Because the MVP is implemented, the overall status can be treated as transitioned away from the earlier 'open/planned' state (latest known status: implemented at least for the MVP)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected a status transition conflict (open -> implemented).",
+        "Committed the new milestone fact with high confidence.",
+        "Added an inference to capture effective latest status while preserving the earlier plan as non-deleted context."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Update the stored status field from 'open' to 'implemented (MVP)' while preserving the earlier plan as historical.",
+      "Add an explicit separate field for \u201cMVP status\u201d = implemented, leaving the overall project status unchanged until confirmed.",
+      "Record a status timeline (planned/open -> MVP implemented) to avoid ambiguity about whether the entire project is fully complete."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Explain and resolve the status transition conflict for the \u201cBrain Slack agent\u201d project item.\",\n  \"decision\": \"Update status: the previously planned \u201copen\u201d state is superseded by the new fact that the MVP has been implemented (status transitioned to implemented). Do not delete the plan; record the implementation as the latest status.\",\n  \"conflict_classification\": \"status_transition_open_to_implemented\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"The Brain Slack agent was planned with status set to open.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Brain Slack agent\",\n          \"type\": \"project\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"open\",\n          \"type\": \"status\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain Slack agent\",\n          \"predicate\": \"status\",\n          \"object\": \"open\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"The Brain Slack agent MVP has been implemented.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain Slack agent MVP\",\n          \"type\": \"milestone\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"implemented\",\n          \"type\": \"status\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain Slack agent MVP\",\n          \"predicate\": \"is\",\n          \"object\": \"implemented\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"inference\",\n      \"statement\": \"Because the MVP is implemented, the overall status can be treated as transitioned away from the earlier 'open/planned' state (latest known status: implemented at least for the MVP).\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Brain Slack agent\",\n          \"type\": \"project\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"implemented\",\n          \"type\": \"status\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain Slack agent\",\n          \"predicate\": \"latest_status\",\n          \"object\": \"implemented (at least MVP)\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"link_and_update\",\n    \"entity_id\": null,\n    \"reason\": \"Both statements refer to the same project item (\u201cBrain Slack agent\u201d); the new input adds a concrete milestone completion (MVP implemented) that changes the effective status.\"\n  },\n  \"answer\": \"The prior state was \u201cplanned/open.\u201d The new information says the MVP is implemented, so the effective status should move from open to implemented (at least for the MVP). Keep the original planning/open fact as historical context, but treat the implementation as the latest state.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Update the stored status field from 'open' to 'implemented (MVP)' while preserving the earlier plan as historical.\",\n    \"Add an explicit separate field for \u201cMVP status\u201d = implemented, leaving the overall project status unchanged until confirmed.\",\n    \"Record a status timeline (planned/open -> MVP implemented) to avoid ambiguity about whether the entire project is fully complete.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Detected a status transition conflict (open -> implemented).\",\n      \"Committed the new milestone fact with high confidence.\",\n      \"Added an inference to capture effective latest status while preserving the earlier plan as non-deleted context.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

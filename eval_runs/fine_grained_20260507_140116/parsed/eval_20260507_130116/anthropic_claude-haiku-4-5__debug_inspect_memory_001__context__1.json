@@ -1,0 +1,60 @@
+{
+  "fixture_id": "debug_inspect_memory_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory inspection request received. mem_123 cannot be inspected without retrieval from persistent storage. Provide memory card content or confirm mem_123 exists in the system before proceeding with debug analysis.",
+    "citations": [
+      "Input: /brain inspect memory mem_123",
+      "Fixture: debug_inspect_memory_001__context"
+    ],
+    "conflict_classification": "no_conflict_detected",
+    "decision": "Return memory card inspection with full provenance, entity resolution, and conflict analysis",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "mem_123 is a reference identifier; actual memory card content not provided in input. Cannot resolve without retrieval from storage."
+    },
+    "intent": "Inspect and debug memory card mem_123 to understand its structure, confidence, and relationships",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "mem_123",
+            "role": "subject_of_inspection",
+            "type": "memory_card_id"
+          },
+          {
+            "name": "debug_inspect_memory_001__context",
+            "role": "test_context",
+            "type": "fixture_id"
+          }
+        ],
+        "kind": "inspection_result",
+        "relationships": [
+          {
+            "object": "debug_inspect_memory_001__context",
+            "predicate": "is_requested_by",
+            "subject": "mem_123"
+          }
+        ],
+        "statement": "Memory card mem_123 requested for debug inspection via /brain inspect memory command"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Request parsed successfully",
+        "Intent identified: memory inspection",
+        "Missing data: actual memory card content for mem_123",
+        "Action required: retrieve or provide memory card before analysis"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Retrieve mem_123 from memory storage and re-submit with full card content",
+      "Verify mem_123 identifier is correct and exists in system",
+      "Provide memory card JSON directly for inspection"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

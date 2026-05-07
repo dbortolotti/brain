@@ -1,0 +1,68 @@
+{
+  "fixture_id": "correction_sam_music_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Sam from Goldman\u2019s preference is corrected from Bill Evans to early Coltrane. Do not keep Bill Evans as the current value.",
+    "citations": [
+      "Existing memory: Sam from Goldman likes Bill Evans.",
+      "Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans."
+    ],
+    "conflict_classification": "direct_correction",
+    "decision": "Update the remembered preference to early Coltrane and treat Bill Evans as superseded.",
+    "entity_resolution": {
+      "action": "retain_existing_entity",
+      "entity_id": null,
+      "reason": "The correction refers to the same Sam from Goldman; only the music preference changes."
+    },
+    "intent": "Resolve a factual correction about Sam from Goldman\u2019s music preference.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "preference",
+            "type": "music"
+          }
+        ],
+        "kind": "correction",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "from",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Resolved as a direct contradiction.",
+        "Committed only the corrected preference.",
+        "Avoided preserving the superseded preference as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace the current music preference with early Coltrane.",
+      "Mark Bill Evans as superseded/incorrect for this memory."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

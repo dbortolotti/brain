@@ -1,0 +1,58 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_high_confidence_overwrite_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The proposed memory update ('Sara is Daniele's niece') conflicts with the high-confidence existing fact ('Sara is Daniele's daughter'). The existing fact is retained as durable memory.",
+    "citations": [],
+    "conflict_classification": "direct_contradiction",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "preserve_existing",
+      "entity_id": null,
+      "reason": "The proposed relationship (niece) directly contradicts the high-confidence existing relationship (daughter). No evidence supports the overwrite, and ambiguity is not resolved in favor of the new claim."
+    },
+    "intent": "memory_update",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_daughter_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Update rejected due to direct contradiction with high-confidence memory.",
+        "No superseded facts were introduced; existing memory remains intact."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Verify the relationship with Sara or Daniele directly.",
+      "Clarify whether 'niece' was intended as a metaphor or alternative description (e.g., step-niece, cultural distinction).",
+      "Flag for human review if ambiguity persists."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_update\",\n  \"decision\": \"reject\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is Daniele's daughter.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"daughter\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"parent\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is_daughter_of\",\n          \"object\": \"Daniele\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"preserve_existing\",\n    \"entity_id\": null,\n    \"reason\": \"The proposed relationship (niece) directly contradicts the high-confidence existing relationship (daughter). No evidence supports the overwrite, and ambiguity is not resolved in favor of the new claim.\"\n  },\n  \"conflict_classification\": \"direct_contradiction\",\n  \"answer\": \"The proposed memory update ('Sara is Daniele's niece') conflicts with the high-confidence existing fact ('Sara is Daniele's daughter'). The existing fact is retained as durable memory.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Verify the relationship with Sara or Daniele directly.\",\n    \"Clarify whether 'niece' was intended as a metaphor or alternative description (e.g., step-niece, cultural distinction).\",\n    \"Flag for human review if ambiguity persists.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Update rejected due to direct contradiction with high-confidence memory.\",\n      \"No superseded facts were introduced; existing memory remains intact.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

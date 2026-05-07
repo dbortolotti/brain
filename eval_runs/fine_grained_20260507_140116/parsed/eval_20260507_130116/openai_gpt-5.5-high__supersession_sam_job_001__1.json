@@ -1,0 +1,93 @@
+{
+  "fixture_id": "supersession_sam_job_001",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "The existing memory that Sam works at Goldman should be treated as superseded. Current memory should reflect that Sam left Goldman and joined Point72.",
+    "citations": [
+      "Existing memory: Sam works at Goldman.",
+      "New: Sam left Goldman and joined Point72."
+    ],
+    "conflict_classification": "supersession",
+    "decision": "supersede_existing_memory",
+    "entity_resolution": {
+      "action": "reuse_existing_entity",
+      "entity_id": null,
+      "reason": "The new statement appears to refer to the same Sam as the existing memory and directly updates Sam's employment status."
+    },
+    "intent": "update_employment_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "new_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_update",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_current",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected a temporal employment update.",
+        "Classified the conflict as supersession rather than simultaneous contradiction.",
+        "Avoided presenting the Goldman employment as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark 'Sam works at Goldman' as superseded or historical, not current.",
+      "Add 'Sam left Goldman and joined Point72.'",
+      "Use 'Sam works at Point72' as the current employment memory."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

@@ -1,0 +1,71 @@
+{
+  "fixture_id": "pdf_ocr_noisy_source_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Extracted two durable facts with medium confidence from noisy OCR text.",
+    "citations": [
+      "Brain DB remalns source of trvth.",
+      "Cognee shou1d be rebuildable projection."
+    ],
+    "conflict_classification": "none",
+    "decision": "create",
+    "entity_resolution": {
+      "action": "create_or_mention",
+      "entity_id": null,
+      "reason": "The OCR text is noisy but clearly references Brain DB and Cognee; no existing entity mapping is provided."
+    },
+    "intent": "atomic_card_extractor",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source of truth",
+            "type": "system"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "remains",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB remains the source of truth."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "projection",
+            "type": "system"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "rebuildable projection",
+            "predicate": "should be",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee should be a rebuildable projection."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed noisy OCR source.",
+        "Committed two atomic memory cards with preserved ambiguity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If later evidence clarifies OCR errors, normalize spelling of 'remalns' to 'remains' and 'shou1d' to 'should'.",
+      "If 'Cognee' is a product or subsystem alias, link it to the canonical entity once confirmed."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

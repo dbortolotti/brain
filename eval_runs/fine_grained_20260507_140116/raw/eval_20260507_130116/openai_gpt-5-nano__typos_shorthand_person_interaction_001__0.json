@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "fixture_id": "typos_shorthand_person_interaction_001",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "The input expresses an alleged liking from a person (sam) from or about goldmn toward bill evns, but the wording contains typos and lacks explicit confirmation. Ambiguity about identities and the strength of the statement remains; no durable conclusion is drawn.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "ambiguous_relationship_suggestion",
+    "entity_resolution": {
+      "action": "tentative_normalization",
+      "entity_id": null,
+      "reason": "typo_shorthand phrases (goldmn, evns) require disambiguation; no confidence to finalize identities"
+    },
+    "intent": "classify_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "goldmn",
+            "role": "affiliation_or_origin",
+            "type": "organization_or_location"
+          },
+          {
+            "name": "bill evns",
+            "role": "object_of_affection",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "bill evns",
+            "predicate": "affinity_tavored_with",
+            "subject": "sam"
+          },
+          {
+            "object": "goldmn",
+            "predicate": "originates_from",
+            "subject": "sam"
+          }
+        ],
+        "statement": "sam frm goldmn likes bill evns apparently"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Processed input into a memory_card with tentative entities and relationships.",
+        "Identified typos and ambiguity; no irreversible updates made."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify who 'sam' and 'bill evns' refer to (full names or IDs).",
+      "Clarify what 'goldmn' represents (person, place, or organization).",
+      "Confirm intent: does 'likes' indicate romantic, friendship, or casual preference?",
+      "Provide a corrected, normalized statement (e.g., 'Sam from Goldenman likes Bill Evans.') if identities are resolved."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"classify_memory\",\n  \"decision\": \"ambiguous_relationship_suggestion\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"sam frm goldmn likes bill evns apparently\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"goldmn\",\n          \"type\": \"organization_or_location\",\n          \"role\": \"affiliation_or_origin\"\n        },\n        {\n          \"name\": \"bill evns\",\n          \"type\": \"person\",\n          \"role\": \"object_of_affection\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"sam\",\n          \"predicate\": \"affinity_tavored_with\",\n          \"object\": \"bill evns\"\n        },\n        {\n          \"subject\": \"sam\",\n          \"predicate\": \"originates_from\",\n          \"object\": \"goldmn\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"tentative_normalization\",\n    \"entity_id\": null,\n    \"reason\": \"typo_shorthand phrases (goldmn, evns) require disambiguation; no confidence to finalize identities\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"The input expresses an alleged liking from a person (sam) from or about goldmn toward bill evns, but the wording contains typos and lacks explicit confirmation. Ambiguity about identities and the strength of the statement remains; no durable conclusion is drawn.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Clarify who 'sam' and 'bill evns' refer to (full names or IDs).\",\n    \"Clarify what 'goldmn' represents (person, place, or organization).\",\n    \"Confirm intent: does 'likes' indicate romantic, friendship, or casual preference?\",\n    \"Provide a corrected, normalized statement (e.g., 'Sam from Goldenman likes Bill Evans.') if identities are resolved.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Processed input into a memory_card with tentative entities and relationships.\",\n      \"Identified typos and ambiguity; no irreversible updates made.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

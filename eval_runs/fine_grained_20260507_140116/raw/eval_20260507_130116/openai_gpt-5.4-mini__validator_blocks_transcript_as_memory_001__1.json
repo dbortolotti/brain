@@ -1,0 +1,36 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_transcript_as_memory_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Rejected: do not store an entire transcript as one durable memory card.",
+    "citations": [
+      "Fixture ID: validator_blocks_transcript_as_memory_001",
+      "Input: LLM proposal: one conversation_summary card containing an entire 8000 word transcript."
+    ],
+    "conflict_classification": "oversized_transcript_summary",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The proposed memory is an entire 8000-word transcript compressed into a single conversation_summary card, which is too broad and not durable enough for committed memory."
+    },
+    "intent": "durability_filter",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No durable memory committed.",
+        "Proposal blocked because it attempts to store an entire transcript as a single summary card."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Extract only stable, high-signal facts or preferences into small, atomic memory cards.",
+      "Split the transcript into separate durable statements with clear entities and relationships.",
+      "Omit ephemeral dialogue, repetition, and unresolved details from memory."
+    ]
+  },
+  "raw_text": "{\"intent\":\"durability_filter\",\"decision\":\"reject\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The proposed memory is an entire 8000-word transcript compressed into a single conversation_summary card, which is too broad and not durable enough for committed memory.\"},\"conflict_classification\":\"oversized_transcript_summary\",\"answer\":\"Rejected: do not store an entire transcript as one durable memory card.\",\"citations\":[\"Fixture ID: validator_blocks_transcript_as_memory_001\",\"Input: LLM proposal: one conversation_summary card containing an entire 8000 word transcript.\"],\"repair_options\":[\"Extract only stable, high-signal facts or preferences into small, atomic memory cards.\",\"Split the transcript into separate durable statements with clear entities and relationships.\",\"Omit ephemeral dialogue, repetition, and unresolved details from memory.\"],\"receipt\":{\"success\":false,\"details\":[\"No durable memory committed.\",\"Proposal blocked because it attempts to store an entire transcript as a single summary card.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

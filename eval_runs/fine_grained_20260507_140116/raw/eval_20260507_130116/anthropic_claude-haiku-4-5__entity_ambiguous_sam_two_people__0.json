@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "entity_ambiguous_sam_two_people",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory recorded with ambiguous Sam reference. Requires clarification: Is this Sam from Goldman or Sam from Point72?",
+    "citations": [
+      "Existing entities: Sam from Goldman (person), Sam from Point72 (person)"
+    ],
+    "conflict_classification": "unresolved_ambiguity",
+    "decision": "Create ambiguous memory card; defer entity resolution",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Two existing Sam entities (Goldman, Point72) with no disambiguating context in message. Cannot commit to either without additional information."
+    },
+    "intent": "Store preference fact about Sam with unresolved entity ambiguity",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "music"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes early Coltrane"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preference fact stored with ambiguous entity reference",
+        "Entity resolution deferred pending disambiguation",
+        "Memory is durable but unlinked to specific Sam entity",
+        "User should clarify identity to enable full entity linking"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide full name or organizational context",
+      "Reference recent conversation context mentioning which Sam",
+      "Ask user to disambiguate: 'Which Sam likes early Coltrane?'"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Store preference fact about Sam with unresolved entity ambiguity\",\n  \"decision\": \"Create ambiguous memory card; defer entity resolution\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam likes early Coltrane\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"early Coltrane\",\n          \"type\": \"music\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"early Coltrane\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Two existing Sam entities (Goldman, Point72) with no disambiguating context in message. Cannot commit to either without additional information.\"\n  },\n  \"conflict_classification\": \"unresolved_ambiguity\",\n  \"answer\": \"Memory recorded with ambiguous Sam reference. Requires clarification: Is this Sam from Goldman or Sam from Point72?\",\n  \"citations\": [\n    \"Existing entities: Sam from Goldman (person), Sam from Point72 (person)\"\n  ],\n  \"repair_options\": [\n    \"Provide full name or organizational context\",\n    \"Reference recent conversation context mentioning which Sam\",\n    \"Ask user to disambiguate: 'Which Sam likes early Coltrane?'\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Preference fact stored with ambiguous entity reference\",\n      \"Entity resolution deferred pending disambiguation\",\n      \"Memory is durable but unlinked to specific Sam entity\",\n      \"User should clarify identity to enable full entity linking\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

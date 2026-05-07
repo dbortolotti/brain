@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "fixture_id": "conflict_employment_transition",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "The new fact supersedes the existing current fact that Sam works at Goldman. Goldman should no longer be treated as Sam's current employer; preserve it only as a former employer, and record that Sam joined Point72.",
+    "citations": [
+      "Existing current fact: Sam works at Goldman.",
+      "New fact: Sam left Goldman and joined Point72."
+    ],
+    "conflict_classification": "temporal_supersession",
+    "decision": "supersede_existing_current_fact",
+    "entity_resolution": {
+      "action": "link_to_existing_entity",
+      "entity_id": null,
+      "reason": "The new fact refers to the same named person, Sam, as the existing current employment fact."
+    },
+    "intent": "detect_conflict_candidate",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "new_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_transition",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected an employment transition.",
+        "Classified the conflict as temporal supersession rather than a simultaneous-employment ambiguity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark the Goldman employment fact as no longer current.",
+      "Record Goldman as Sam's former employer.",
+      "Record that Sam joined Point72.",
+      "Do not present Sam as currently working at Goldman."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"detect_conflict_candidate\",\n  \"decision\": \"supersede_existing_current_fact\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"employment_transition\",\n      \"statement\": \"Sam left Goldman and joined Point72.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"former_employer\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"new_employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"left\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"link_to_existing_entity\",\n    \"entity_id\": null,\n    \"reason\": \"The new fact refers to the same named person, Sam, as the existing current employment fact.\"\n  },\n  \"conflict_classification\": \"temporal_supersession\",\n  \"answer\": \"The new fact supersedes the existing current fact that Sam works at Goldman. Goldman should no longer be treated as Sam's current employer; preserve it only as a former employer, and record that Sam joined Point72.\",\n  \"citations\": [\n    \"Existing current fact: Sam works at Goldman.\",\n    \"New fact: Sam left Goldman and joined Point72.\"\n  ],\n  \"repair_options\": [\n    \"Mark the Goldman employment fact as no longer current.\",\n    \"Record Goldman as Sam's former employer.\",\n    \"Record that Sam joined Point72.\",\n    \"Do not present Sam as currently working at Goldman.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Detected an employment transition.\",\n      \"Classified the conflict as temporal supersession rather than a simultaneous-employment ambiguity.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

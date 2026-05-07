@@ -1,0 +1,82 @@
+{
+  "error": null,
+  "fixture_id": "cost_latency_token_accounting_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "The required eval accounting fields are usually:\n- Token counts: prompt, completion, and/or total tokens\n- Provider/model IDs: the inference provider and specific model used\n- Estimated price: a cost estimate derived from token usage and pricing\n- Latency percentiles: p50, p90, and p95 to summarize response time distribution\n\nIf you want, I can also format these as a compact schema or example record.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "No durable memory commit; this is a one-off explanation request with no stable personal fact to store.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The request asks for an explanation, not identification of a durable entity."
+    },
+    "intent": "Explain the required evaluation accounting fields: token counts, provider/model IDs, estimated price, and latency percentiles (p50, p90, p95).",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "token counts",
+            "role": "accounting field",
+            "type": "metric"
+          },
+          {
+            "name": "provider/model IDs",
+            "role": "accounting field",
+            "type": "identifier"
+          },
+          {
+            "name": "estimated price",
+            "role": "accounting field",
+            "type": "metric"
+          },
+          {
+            "name": "latency p50 p90 p95",
+            "role": "accounting field",
+            "type": "metric"
+          }
+        ],
+        "kind": "ephemeral_explanation",
+        "relationships": [
+          {
+            "object": "token counts",
+            "predicate": "includes",
+            "subject": "eval accounting"
+          },
+          {
+            "object": "provider/model IDs",
+            "predicate": "includes",
+            "subject": "eval accounting"
+          },
+          {
+            "object": "estimated price",
+            "predicate": "includes",
+            "subject": "eval accounting"
+          },
+          {
+            "object": "latency p50 p90 p95",
+            "predicate": "includes",
+            "subject": "eval accounting"
+          }
+        ],
+        "statement": "Required eval accounting fields typically include token counts, provider/model identifiers, estimated price, and latency summaries at p50, p90, and p95."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Explained required accounting fields.",
+        "No durable memory stored."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you need a schema, I can turn this into required/optional JSON fields.",
+      "If you need implementation guidance, I can show how to compute token counts, cost, and latency percentiles."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Explain the required evaluation accounting fields: token counts, provider/model IDs, estimated price, and latency percentiles (p50, p90, p95).\",\"decision\":\"No durable memory commit; this is a one-off explanation request with no stable personal fact to store.\",\"memory_cards\":[{\"kind\":\"ephemeral_explanation\",\"statement\":\"Required eval accounting fields typically include token counts, provider/model identifiers, estimated price, and latency summaries at p50, p90, and p95.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"token counts\",\"type\":\"metric\",\"role\":\"accounting field\"},{\"name\":\"provider/model IDs\",\"type\":\"identifier\",\"role\":\"accounting field\"},{\"name\":\"estimated price\",\"type\":\"metric\",\"role\":\"accounting field\"},{\"name\":\"latency p50 p90 p95\",\"type\":\"metric\",\"role\":\"accounting field\"}],\"relationships\":[{\"subject\":\"eval accounting\",\"predicate\":\"includes\",\"object\":\"token counts\"},{\"subject\":\"eval accounting\",\"predicate\":\"includes\",\"object\":\"provider/model IDs\"},{\"subject\":\"eval accounting\",\"predicate\":\"includes\",\"object\":\"estimated price\"},{\"subject\":\"eval accounting\",\"predicate\":\"includes\",\"object\":\"latency p50 p90 p95\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The request asks for an explanation, not identification of a durable entity.\"},\"conflict_classification\":\"none\",\"answer\":\"The required eval accounting fields are usually:\\n- Token counts: prompt, completion, and/or total tokens\\n- Provider/model IDs: the inference provider and specific model used\\n- Estimated price: a cost estimate derived from token usage and pricing\\n- Latency percentiles: p50, p90, and p95 to summarize response time distribution\\n\\nIf you want, I can also format these as a compact schema or example record.\",\"citations\":[],\"repair_options\":[\"If you need a schema, I can turn this into required/optional JSON fields.\",\"If you need implementation guidance, I can show how to compute token counts, cost, and latency percentiles.\"],\"receipt\":{\"success\":true,\"details\":[\"Explained required accounting fields.\",\"No durable memory stored.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

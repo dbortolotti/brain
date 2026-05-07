@@ -1,0 +1,80 @@
+{
+  "fixture_id": "small_table_preferences_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Extracted 2 preference statements: Sam likes Bill Evans; Anna likes Barolo, each with the provided date source.",
+    "citations": [
+      "Dinner 2026-05-05",
+      "Lunch 2026-05-01"
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "no_merge",
+      "entity_id": null,
+      "reason": "Only names and a preferred item are provided; no explicit IDs or disambiguation needed."
+    },
+    "intent": "Extract atomic memory cards from the provided table of personal preferences.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred_item",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans (source: Dinner 2026-05-05)."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Anna",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Barolo",
+            "role": "preferred_item",
+            "type": "food_or_drink"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Barolo",
+            "predicate": "likes",
+            "subject": "Anna"
+          }
+        ],
+        "statement": "Anna likes Barolo (source: Lunch 2026-05-01)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed 2 rows and converted each preference into a separate atomic card."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If there are multiple people with the same name, add additional identifiers to disambiguate (e.g., full name, contact).",
+      "If 'Bill Evans' refers to a specific recording/era or 'Barolo' refers to a specific producer/vintage, capture that detail."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

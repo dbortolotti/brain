@@ -1,0 +1,103 @@
+{
+  "fixture_id": "conflict_employment_transition",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam's employment record has been updated: **terminated at Goldman Sachs** and **active at Point72**. The prior fact ('Sam works at Goldman') is now superseded and archived.",
+    "citations": [
+      "New fact: 'Sam left Goldman and joined Point72' (explicit transition)",
+      "Implicit temporal logic: 'left' implies termination; 'joined' implies new role"
+    ],
+    "conflict_classification": "employment_transition",
+    "decision": "resolve_conflict",
+    "entity_resolution": {
+      "action": "merge_and_replace",
+      "entity_id": "Sam",
+      "reason": "New employment supersedes prior role at Goldman Sachs. No ambiguity in transition."
+    },
+    "intent": "update_employment_status",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "terminated",
+            "predicate": "employment_status",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman Sachs",
+            "predicate": "employer",
+            "subject": "Sam"
+          },
+          {
+            "object": "unspecified (context-dependent)",
+            "predicate": "employment_end_date",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam no longer works at Goldman Sachs (terminated employment)."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "active",
+            "predicate": "employment_status",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "employer",
+            "subject": "Sam"
+          },
+          {
+            "object": "unspecified (context-dependent)",
+            "predicate": "employment_start_date",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72 as an employee (new employment)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Deleted: 'Sam works at Goldman' (current state)",
+        "Added: Two new memory cards (termination + new role)",
+        "Entity resolution applied: Goldman Sachs \u2192 Point72 (employer)"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Archive superseded fact with timestamp: 'Sam worked at Goldman Sachs [20XX\u2013YYYY]'",
+      "Add contextual note: 'Employment transition verified via [source if available]'",
+      "Flag for follow-up: 'Confirm exact transition dates if critical'"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

@@ -1,0 +1,79 @@
+{
+  "fixture_id": "slack_conflict_buttons_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Sam's employment record updated: Goldman (historical) \u2192 Point72 (current)",
+    "citations": [
+      "Input: /brain remember Sam left Goldman and joined Point72"
+    ],
+    "conflict_classification": "temporal_supersession",
+    "decision": "Accept update and supersede prior fact",
+    "entity_resolution": {
+      "action": "merge_and_update",
+      "entity_id": "sam_person_001",
+      "reason": "Temporal employment transition detected; supersede stale fact with current employment status"
+    },
+    "intent": "Update Sam's employment status from Goldman to Point72",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_current",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "currently_employed_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Point72"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_historical",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "previously_employed_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam previously worked at Goldman"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded: Sam works at Goldman",
+        "Committed: Sam works at Point72",
+        "Preserved: Historical employment at Goldman"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retain both facts with explicit temporal markers if employment dates needed",
+      "Archive Goldman employment with departure timestamp"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

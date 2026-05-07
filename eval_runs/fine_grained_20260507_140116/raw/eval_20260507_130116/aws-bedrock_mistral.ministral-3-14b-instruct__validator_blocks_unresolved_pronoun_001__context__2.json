@@ -1,0 +1,36 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_unresolved_pronoun_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The proposed memory card cannot be committed due to an unresolved pronoun ('He'). Clarify the referent before submission.",
+    "citations": [
+      "durability_filter: preserve ambiguity \u2192 reject ambiguous statements",
+      "durability_filter: strict on committing durable memory \u2192 no superseded/deleted facts as current"
+    ],
+    "conflict_classification": "unresolved_reference",
+    "decision": "reject_due_to_unresolved_pronoun",
+    "entity_resolution": {
+      "action": "flag_for_revision",
+      "entity_id": null,
+      "reason": "The pronoun 'He' lacks a clear referent in the provided context. Without explicit resolution (e.g., 'He' = 'User', 'He' = 'Brain', or another named entity), the statement cannot be durably committed to memory. Ambiguity violates the durability_filter's strictness on preserving ambiguity-free facts."
+    },
+    "intent": "resolve_ambiguity",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Memory card rejected: Unresolved pronoun 'He' in statement.",
+        "Action required: Resolve ambiguity before resubmission."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Explicitly define the referent (e.g., 'User prefers the other one.')",
+      "Replace the pronoun with a named entity (e.g., 'Alex prefers the other one.')",
+      "Delete the statement if the referent is irrelevant or unknown"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"resolve_ambiguity\",\n  \"decision\": \"reject_due_to_unresolved_pronoun\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"flag_for_revision\",\n    \"entity_id\": null,\n    \"reason\": \"The pronoun 'He' lacks a clear referent in the provided context. Without explicit resolution (e.g., 'He' = 'User', 'He' = 'Brain', or another named entity), the statement cannot be durably committed to memory. Ambiguity violates the durability_filter's strictness on preserving ambiguity-free facts.\"\n  },\n  \"conflict_classification\": \"unresolved_reference\",\n  \"answer\": \"The proposed memory card cannot be committed due to an unresolved pronoun ('He'). Clarify the referent before submission.\",\n  \"citations\": [\n    \"durability_filter: preserve ambiguity \u2192 reject ambiguous statements\",\n    \"durability_filter: strict on committing durable memory \u2192 no superseded/deleted facts as current\"\n  ],\n  \"repair_options\": [\n    \"Explicitly define the referent (e.g., 'User prefers the other one.')\",\n    \"Replace the pronoun with a named entity (e.g., 'Alex prefers the other one.')\",\n    \"Delete the statement if the referent is irrelevant or unknown\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Memory card rejected: Unresolved pronoun 'He' in statement.\",\n      \"Action required: Resolve ambiguity before resubmission.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,130 @@
+{
+  "error": null,
+  "fixture_id": "article_url_ai_memory_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Graph memory systems must preserve relationships between entities, incorporate provenance tracking for trust, and define update semantics to maintain historical context. These design choices are critical for knowledge graph memory systems.",
+    "citations": [
+      "https://examplecom/ai-memory"
+    ],
+    "conflict_classification": "none",
+    "decision": "preserve_relationships_with_provenance",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": null,
+      "reason": "No existing entities match the described graph memory system requirements."
+    },
+    "intent": "design_knowledge_graph_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Graph memory",
+            "role": "enabler_of_relationship_preservation",
+            "type": "memory_system"
+          },
+          {
+            "name": "Agents",
+            "role": "user_of_memory_system",
+            "type": "system_entity"
+          },
+          {
+            "name": "Relationships",
+            "role": "preserved_entity",
+            "type": "knowledge_connection"
+          }
+        ],
+        "kind": "concept",
+        "relationships": [
+          {
+            "object": "agents_to_preserve_relationships",
+            "predicate": "enables",
+            "subject": "Graph memory"
+          },
+          {
+            "object": "preserved_in_graph_memory",
+            "predicate": "are",
+            "subject": "Relationships"
+          }
+        ],
+        "statement": "Graph memory systems enable agents to preserve relationships between knowledge entities, not just isolated facts."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Provenance",
+            "role": "trust_enabler",
+            "type": "metadata"
+          },
+          {
+            "name": "Graph memory systems",
+            "role": "system_requiring_provenance",
+            "type": "memory_system"
+          }
+        ],
+        "kind": "requirement",
+        "relationships": [
+          {
+            "object": "graph_memory_systems",
+            "predicate": "is_required_by",
+            "subject": "Provenance"
+          },
+          {
+            "object": "trust_and_traceability",
+            "predicate": "enables",
+            "subject": "Provenance"
+          }
+        ],
+        "statement": "Provenance tracking is essential for graph memory systems to maintain trust and traceability of stored knowledge."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Update semantics",
+            "role": "modification_guideline",
+            "type": "system_rule"
+          },
+          {
+            "name": "Graph memory systems",
+            "role": "system_requiring_update_rules",
+            "type": "memory_system"
+          },
+          {
+            "name": "Historical context",
+            "role": "preservation_requirement",
+            "type": "knowledge_attribute"
+          }
+        ],
+        "kind": "requirement",
+        "relationships": [
+          {
+            "object": "graph_memory_systems",
+            "predicate": "must_be_defined_in",
+            "subject": "Update semantics"
+          },
+          {
+            "object": "historical_context",
+            "predicate": "prevents_loss_of",
+            "subject": "Update semantics"
+          }
+        ],
+        "statement": "Update semantics must be explicitly defined in graph memory systems to handle modifications without losing historical context."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted core requirements for graph memory design: relationship preservation, provenance, and update semantics.",
+        "No conflicts detected with existing memory cards.",
+        "All statements marked as high confidence due to direct source alignment."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"design_knowledge_graph_memory\",\n  \"decision\": \"preserve_relationships_with_provenance\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"concept\",\n      \"statement\": \"Graph memory systems enable agents to preserve relationships between knowledge entities, not just isolated facts.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Graph memory\",\n          \"type\": \"memory_system\",\n          \"role\": \"enabler_of_relationship_preservation\"\n        },\n        {\n          \"name\": \"Agents\",\n          \"type\": \"system_entity\",\n          \"role\": \"user_of_memory_system\"\n        },\n        {\n          \"name\": \"Relationships\",\n          \"type\": \"knowledge_connection\",\n          \"role\": \"preserved_entity\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Graph memory\",\n          \"predicate\": \"enables\",\n          \"object\": \"agents_to_preserve_relationships\"\n        },\n        {\n          \"subject\": \"Relationships\",\n          \"predicate\": \"are\",\n          \"object\": \"preserved_in_graph_memory\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"requirement\",\n      \"statement\": \"Provenance tracking is essential for graph memory systems to maintain trust and traceability of stored knowledge.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Provenance\",\n          \"type\": \"metadata\",\n          \"role\": \"trust_enabler\"\n        },\n        {\n          \"name\": \"Graph memory systems\",\n          \"type\": \"memory_system\",\n          \"role\": \"system_requiring_provenance\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Provenance\",\n          \"predicate\": \"is_required_by\",\n          \"object\": \"graph_memory_systems\"\n        },\n        {\n          \"subject\": \"Provenance\",\n          \"predicate\": \"enables\",\n          \"object\": \"trust_and_traceability\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"requirement\",\n      \"statement\": \"Update semantics must be explicitly defined in graph memory systems to handle modifications without losing historical context.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Update semantics\",\n          \"type\": \"system_rule\",\n          \"role\": \"modification_guideline\"\n        },\n        {\n          \"name\": \"Graph memory systems\",\n          \"type\": \"memory_system\",\n          \"role\": \"system_requiring_update_rules\"\n        },\n        {\n          \"name\": \"Historical context\",\n          \"type\": \"knowledge_attribute\",\n          \"role\": \"preservation_requirement\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Update semantics\",\n          \"predicate\": \"must_be_defined_in\",\n          \"object\": \"graph_memory_systems\"\n        },\n        {\n          \"subject\": \"Update semantics\",\n          \"predicate\": \"prevents_loss_of\",\n          \"object\": \"historical_context\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_new\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entities match the described graph memory system requirements.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Graph memory systems must preserve relationships between entities, incorporate provenance tracking for trust, and define update semantics to maintain historical context. These design choices are critical for knowledge graph memory systems.\",\n  \"citations\": [\n    \"https://examplecom/ai-memory\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Extracted core requirements for graph memory design: relationship preservation, provenance, and update semantics.\",\n      \"No conflicts detected with existing memory cards.\",\n      \"All statements marked as high confidence due to direct source alignment.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

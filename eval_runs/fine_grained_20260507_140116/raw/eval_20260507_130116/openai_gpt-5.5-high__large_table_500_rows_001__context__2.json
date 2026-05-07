@@ -1,0 +1,35 @@
+{
+  "error": null,
+  "fixture_id": "large_table_500_rows_001__context",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "A 500-row CSV table should not be stored as hundreds of durable atomic memory cards. Store it as a structured artifact, attachment, or external table with metadata such as filename/source, schema columns, row count, and a short summary. Only extract atomic memory cards for durable, user-relevant facts explicitly supported by the table and likely useful later.",
+    "citations": [
+      "User input: CSV table with 500 rows, columns id/name/value repeated many times; policy question asks how it should be stored."
+    ],
+    "conflict_classification": "none",
+    "decision": "do_not_commit_as_atomic_memory_cards",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input describes a large repeated CSV table as context and asks a storage-policy question; it does not provide durable personal facts suitable for atomic memory."
+    },
+    "intent": "storage_policy_question",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No durable atomic memory cards were committed.",
+        "Recommended artifact/table storage with metadata rather than per-row memory storage."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If the table has long-term user relevance, store the raw CSV as an artifact and create one summary memory card pointing to it.",
+      "If only specific durable facts are needed, extract only those facts with row-level provenance.",
+      "If the rows are duplicates or repeated boilerplate, deduplicate before storage."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"storage_policy_question\",\n  \"decision\": \"do_not_commit_as_atomic_memory_cards\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"The input describes a large repeated CSV table as context and asks a storage-policy question; it does not provide durable personal facts suitable for atomic memory.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"A 500-row CSV table should not be stored as hundreds of durable atomic memory cards. Store it as a structured artifact, attachment, or external table with metadata such as filename/source, schema columns, row count, and a short summary. Only extract atomic memory cards for durable, user-relevant facts explicitly supported by the table and likely useful later.\",\n  \"citations\": [\n    \"User input: CSV table with 500 rows, columns id/name/value repeated many times; policy question asks how it should be stored.\"\n  ],\n  \"repair_options\": [\n    \"If the table has long-term user relevance, store the raw CSV as an artifact and create one summary memory card pointing to it.\",\n    \"If only specific durable facts are needed, extract only those facts with row-level provenance.\",\n    \"If the rows are duplicates or repeated boilerplate, deduplicate before storage.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"No durable atomic memory cards were committed.\",\n      \"Recommended artifact/table storage with metadata rather than per-row memory storage.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,108 @@
+{
+  "error": null,
+  "fixture_id": "article_url_fetch_failure_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Ingestion of the article at https://example.com/missing was aborted due to a 404 network error. No content was processed or stored in memory.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "abort_ingestion_due_to_failure",
+    "entity_resolution": {
+      "action": "no_resolution_needed",
+      "entity_id": null,
+      "reason": "No entities require resolution; failure is self-documenting."
+    },
+    "intent": "memory_ingestion_attempt",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "target_resource",
+            "type": "URL"
+          },
+          {
+            "name": "404",
+            "role": "error_indicator",
+            "type": "HTTP_status_code"
+          },
+          {
+            "name": "network_error",
+            "role": "failure_reason",
+            "type": "error_type"
+          }
+        ],
+        "kind": "system_event",
+        "relationships": [
+          {
+            "object": "https://example.com/missing",
+            "predicate": "attempted_to_fetch",
+            "subject": "system"
+          },
+          {
+            "object": "404",
+            "predicate": "received",
+            "subject": "system"
+          },
+          {
+            "object": "network_error",
+            "predicate": "caused_by",
+            "subject": "404"
+          },
+          {
+            "object": "https://example.com/missing",
+            "predicate": "aborted_ingestion_of",
+            "subject": "system"
+          }
+        ],
+        "statement": "Failed to fetch article at URL: https://example.com/missing (HTTP 404: Network error)."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "article_ingestion",
+            "role": "aborted_action",
+            "type": "process"
+          },
+          {
+            "name": "unrecoverable_fetch_failure",
+            "role": "termination_reason",
+            "type": "failure_condition"
+          }
+        ],
+        "kind": "metadata",
+        "relationships": [
+          {
+            "object": "unrecoverable_fetch_failure",
+            "predicate": "classified_failure_as",
+            "subject": "system"
+          },
+          {
+            "object": "https://example.com/missing",
+            "predicate": "prevented_ingestion_of",
+            "subject": "unrecoverable_fetch_failure"
+          }
+        ],
+        "statement": "Article ingestion aborted due to unrecoverable fetch failure. No content was extracted or stored."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "HTTP 404 error encountered during fetch attempt.",
+        "No content extracted; memory state unchanged.",
+        "Action: Aborted ingestion per system policy for unrecoverable failures."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Verify URL correctness and retry fetch.",
+      "Check network connectivity or proxy settings.",
+      "Confirm article exists at the provided URL (e.g., via manual inspection)."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_ingestion_attempt\",\n  \"decision\": \"abort_ingestion_due_to_failure\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"system_event\",\n      \"statement\": \"Failed to fetch article at URL: https://example.com/missing (HTTP 404: Network error).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"https://example.com/missing\",\n          \"type\": \"URL\",\n          \"role\": \"target_resource\"\n        },\n        {\n          \"name\": \"404\",\n          \"type\": \"HTTP_status_code\",\n          \"role\": \"error_indicator\"\n        },\n        {\n          \"name\": \"network_error\",\n          \"type\": \"error_type\",\n          \"role\": \"failure_reason\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"system\",\n          \"predicate\": \"attempted_to_fetch\",\n          \"object\": \"https://example.com/missing\"\n        },\n        {\n          \"subject\": \"system\",\n          \"predicate\": \"received\",\n          \"object\": \"404\"\n        },\n        {\n          \"subject\": \"404\",\n          \"predicate\": \"caused_by\",\n          \"object\": \"network_error\"\n        },\n        {\n          \"subject\": \"system\",\n          \"predicate\": \"aborted_ingestion_of\",\n          \"object\": \"https://example.com/missing\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"metadata\",\n      \"statement\": \"Article ingestion aborted due to unrecoverable fetch failure. No content was extracted or stored.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"article_ingestion\",\n          \"type\": \"process\",\n          \"role\": \"aborted_action\"\n        },\n        {\n          \"name\": \"unrecoverable_fetch_failure\",\n          \"type\": \"failure_condition\",\n          \"role\": \"termination_reason\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"system\",\n          \"predicate\": \"classified_failure_as\",\n          \"object\": \"unrecoverable_fetch_failure\"\n        },\n        {\n          \"subject\": \"unrecoverable_fetch_failure\",\n          \"predicate\": \"prevented_ingestion_of\",\n          \"object\": \"https://example.com/missing\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_resolution_needed\",\n    \"entity_id\": null,\n    \"reason\": \"No entities require resolution; failure is self-documenting.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Ingestion of the article at https://example.com/missing was aborted due to a 404 network error. No content was processed or stored in memory.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Verify URL correctness and retry fetch.\",\n    \"Check network connectivity or proxy settings.\",\n    \"Confirm article exists at the provided URL (e.g., via manual inspection).\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"HTTP 404 error encountered during fetch attempt.\",\n      \"No content extracted; memory state unchanged.\",\n      \"Action: Aborted ingestion per system policy for unrecoverable failures.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

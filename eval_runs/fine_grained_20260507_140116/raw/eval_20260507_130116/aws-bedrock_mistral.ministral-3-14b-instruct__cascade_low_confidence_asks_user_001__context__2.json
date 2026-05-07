@@ -1,0 +1,70 @@
+{
+  "error": null,
+  "fixture_id": "cascade_low_confidence_asks_user_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "User intervention required to resolve ambiguity in the 'Sam note'. Cloud escalation is disabled due to low confidence. Proceeding would risk committing superseded or incorrect memory.",
+    "citations": [
+      "Fixture ID: cascade_low_confidence_asks_user_001__context"
+    ],
+    "conflict_classification": "ambiguity_conflict",
+    "decision": "escalate_to_user",
+    "entity_resolution": {
+      "action": "user_intervention_required",
+      "entity_id": null,
+      "reason": "Ambiguity in 'Sam note' cannot be resolved programmatically without risk of misclassification. User clarification needed to preserve memory integrity."
+    },
+    "intent": "resolve_ambiguity",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Cloud escalation",
+            "role": "disabled",
+            "type": "system_action"
+          },
+          {
+            "name": "Sam note",
+            "role": "ambiguous",
+            "type": "memory_entry"
+          },
+          {
+            "name": "model confidence",
+            "role": "low",
+            "type": "metric"
+          }
+        ],
+        "kind": "note",
+        "relationships": [
+          {
+            "object": "low model confidence",
+            "predicate": "disabled_by",
+            "subject": "Cloud escalation"
+          },
+          {
+            "object": "Sam note",
+            "predicate": "applies_to",
+            "subject": "model confidence"
+          }
+        ],
+        "statement": "Cloud escalation disabled due to low model confidence in ambiguous Sam note."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Automated resolution aborted due to ambiguity.",
+        "Escalation to user interface pending."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Prompt user to clarify 'Sam note' context (e.g., 'Which Sam? Which note?').",
+      "Temporarily suppress ambiguous 'Sam' references until resolved.",
+      "Log event for review by memory curator."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"resolve_ambiguity\",\n  \"decision\": \"escalate_to_user\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"note\",\n      \"statement\": \"Cloud escalation disabled due to low model confidence in ambiguous Sam note.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Cloud escalation\",\n          \"type\": \"system_action\",\n          \"role\": \"disabled\"\n        },\n        {\n          \"name\": \"Sam note\",\n          \"type\": \"memory_entry\",\n          \"role\": \"ambiguous\"\n        },\n        {\n          \"name\": \"model confidence\",\n          \"type\": \"metric\",\n          \"role\": \"low\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cloud escalation\",\n          \"predicate\": \"disabled_by\",\n          \"object\": \"low model confidence\"\n        },\n        {\n          \"subject\": \"model confidence\",\n          \"predicate\": \"applies_to\",\n          \"object\": \"Sam note\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"user_intervention_required\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguity in 'Sam note' cannot be resolved programmatically without risk of misclassification. User clarification needed to preserve memory integrity.\"\n  },\n  \"conflict_classification\": \"ambiguity_conflict\",\n  \"answer\": \"User intervention required to resolve ambiguity in the 'Sam note'. Cloud escalation is disabled due to low confidence. Proceeding would risk committing superseded or incorrect memory.\",\n  \"citations\": [\n    \"Fixture ID: cascade_low_confidence_asks_user_001__context\"\n  ],\n  \"repair_options\": [\n    \"Prompt user to clarify 'Sam note' context (e.g., 'Which Sam? Which note?').\",\n    \"Temporarily suppress ambiguous 'Sam' references until resolved.\",\n    \"Log event for review by memory curator.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Automated resolution aborted due to ambiguity.\",\n      \"Escalation to user interface pending.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

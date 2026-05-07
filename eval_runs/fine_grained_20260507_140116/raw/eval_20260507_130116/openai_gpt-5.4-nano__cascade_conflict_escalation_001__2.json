@@ -1,0 +1,83 @@
+{
+  "error": null,
+  "fixture_id": "cascade_conflict_escalation_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "These two statements conflict: if Sara is your daughter, she is not your niece. I would keep both as conflicting relationship claims and ask which relationship is correct (or whether the statements refer to different people named Sara).",
+    "citations": [],
+    "conflict_classification": "Direct relationship conflict (same subject, different kinship relations: daughter vs niece).",
+    "decision": "Do not overwrite existing durable memory; store both relationship claims as conflicting/ambiguous unless clarification is provided.",
+    "entity_resolution": {
+      "action": "no_merge_or_overwrite",
+      "entity_id": null,
+      "reason": "Both inputs refer to the same named subject 'Sara' but with mutually inconsistent kinship roles (daughter vs niece). Keep as separate, conflicting claims pending clarification."
+    },
+    "intent": "conflict_explainer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "me",
+            "role": "context",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship_claim",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "is-parent-of",
+            "subject": "me"
+          }
+        ],
+        "statement": "Sara is my daughter."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "me",
+            "role": "context",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship_claim_conflict",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "is-uncle-aunt-of",
+            "subject": "me"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Flagged conflicting kinship relations for the same subject name 'Sara'.",
+        "Chose not to overwrite existing durable memory; preserved both claims as ambiguous/conflicting."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm whether Sara is your daughter, your niece, or a different person with the same name.",
+      "If Sara is your niece, identify whose sister/brother she is (e.g., 'Sara is the daughter of my sibling X').",
+      "If Sara is your daughter, confirm the parent-child link (e.g., 'Sara is my biological/adopted daughter').",
+      "Provide contextual metadata (approximate dates/age or location) to disambiguate which Sara the statements refer to."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"conflict_explainer\",\n  \"decision\": \"Do not overwrite existing durable memory; store both relationship claims as conflicting/ambiguous unless clarification is provided.\",\n  \"conflict_classification\": \"Direct relationship conflict (same subject, different kinship relations: daughter vs niece).\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"relationship_claim\",\n      \"statement\": \"Sara is my daughter.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"me\",\n          \"type\": \"person\",\n          \"role\": \"context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"me\",\n          \"predicate\": \"is-parent-of\",\n          \"object\": \"Sara\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"relationship_claim_conflict\",\n      \"statement\": \"Sara is my niece.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"me\",\n          \"type\": \"person\",\n          \"role\": \"context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"me\",\n          \"predicate\": \"is-uncle-aunt-of\",\n          \"object\": \"Sara\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_merge_or_overwrite\",\n    \"entity_id\": null,\n    \"reason\": \"Both inputs refer to the same named subject 'Sara' but with mutually inconsistent kinship roles (daughter vs niece). Keep as separate, conflicting claims pending clarification.\"\n  },\n  \"answer\": \"These two statements conflict: if Sara is your daughter, she is not your niece. I would keep both as conflicting relationship claims and ask which relationship is correct (or whether the statements refer to different people named Sara).\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Confirm whether Sara is your daughter, your niece, or a different person with the same name.\",\n    \"If Sara is your niece, identify whose sister/brother she is (e.g., 'Sara is the daughter of my sibling X').\",\n    \"If Sara is your daughter, confirm the parent-child link (e.g., 'Sara is my biological/adopted daughter').\",\n    \"Provide contextual metadata (approximate dates/age or location) to disambiguate which Sara the statements refer to.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Flagged conflicting kinship relations for the same subject name 'Sara'.\",\n      \"Chose not to overwrite existing durable memory; preserved both claims as ambiguous/conflicting.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

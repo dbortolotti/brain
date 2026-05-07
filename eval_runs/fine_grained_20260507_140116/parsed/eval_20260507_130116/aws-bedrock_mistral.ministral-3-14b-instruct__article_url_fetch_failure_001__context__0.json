@@ -1,0 +1,95 @@
+{
+  "fixture_id": "article_url_fetch_failure_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Article fetch aborted due to 404 error. No memory committed. Ambiguity preserved regarding potential downstream impact.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "abort_due_to_failure",
+    "entity_resolution": {
+      "action": "no_resolution_needed",
+      "entity_id": null,
+      "reason": "No entities require resolution; failure is self-contained."
+    },
+    "intent": "memory_ingestion_attempt",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "target_resource",
+            "type": "URL"
+          },
+          {
+            "name": "404 network error",
+            "role": "failure_reason",
+            "type": "error_code"
+          }
+        ],
+        "kind": "system_event",
+        "relationships": [
+          {
+            "object": "https://example.com/missing",
+            "predicate": "attempted_to_fetch",
+            "subject": "memory_system"
+          },
+          {
+            "object": "404 network error",
+            "predicate": "resulted_in",
+            "subject": "fetch_attempt"
+          },
+          {
+            "object": "non_recoverable_failure",
+            "predicate": "classified_as",
+            "subject": "system"
+          }
+        ],
+        "statement": "Failed to fetch article at URL 'https://example.com/missing' due to 404 network error."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "memory_architecture_evaluation",
+            "role": "purpose",
+            "type": "context"
+          },
+          {
+            "name": "durable_memory",
+            "role": "exclusion",
+            "type": "memory_type"
+          }
+        ],
+        "kind": "metadata",
+        "relationships": [
+          {
+            "object": "memory_architecture_evaluation",
+            "predicate": "documented_for",
+            "subject": "fetch_failure"
+          },
+          {
+            "object": "ambiguity_of_failure_origin",
+            "predicate": "preserved",
+            "subject": "system"
+          }
+        ],
+        "statement": "Article fetch failure recorded for memory architecture evaluation. No durable memory committed."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Fetch attempt failed with HTTP 404.",
+        "No durable memory created or modified.",
+        "Ambiguity regarding article content preserved."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Retry fetch with corrected URL if available.",
+      "Verify network connectivity for future attempts.",
+      "Log failure for system diagnostics."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

@@ -1,0 +1,58 @@
+{
+  "error": null,
+  "fixture_id": "slack_no_durable_value_repair_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "No durable memory committed. Context preserved for potential future resolution.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "no_durable_memory_commit",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Ambiguous temporal reference ('Today') without explicit date anchoring; no durable memory commitment due to lack of contextual permanence."
+    },
+    "intent": "entity_mention_extraction",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Today",
+            "role": "reference_point",
+            "type": "temporal_entity"
+          },
+          {
+            "name": "cloudy",
+            "role": "observation",
+            "type": "weather_condition"
+          }
+        ],
+        "kind": "contextual_observation",
+        "relationships": [
+          {
+            "object": "cloudy",
+            "predicate": "has_weather_condition",
+            "subject": "Today"
+          }
+        ],
+        "statement": "Today's weather is cloudy."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted entities and relationships from input without committing to durable memory.",
+        "Ambiguity in temporal reference ('Today') preserved for user resolution."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Anchor 'Today' to a specific date (e.g., '2023-11-15') for durable storage.",
+      "Clarify temporal scope (e.g., 'Today in [location]') to resolve ambiguity.",
+      "Reject as transient context if no permanence is required."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"entity_mention_extraction\",\n  \"decision\": \"no_durable_memory_commit\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"contextual_observation\",\n      \"statement\": \"Today's weather is cloudy.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Today\",\n          \"type\": \"temporal_entity\",\n          \"role\": \"reference_point\"\n        },\n        {\n          \"name\": \"cloudy\",\n          \"type\": \"weather_condition\",\n          \"role\": \"observation\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Today\",\n          \"predicate\": \"has_weather_condition\",\n          \"object\": \"cloudy\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguous temporal reference ('Today') without explicit date anchoring; no durable memory commitment due to lack of contextual permanence.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"No durable memory committed. Context preserved for potential future resolution.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Anchor 'Today' to a specific date (e.g., '2023-11-15') for durable storage.\",\n    \"Clarify temporal scope (e.g., 'Today in [location]') to resolve ambiguity.\",\n    \"Reject as transient context if no permanence is required.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Extracted entities and relationships from input without committing to durable memory.\",\n      \"Ambiguity in temporal reference ('Today') preserved for user resolution.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

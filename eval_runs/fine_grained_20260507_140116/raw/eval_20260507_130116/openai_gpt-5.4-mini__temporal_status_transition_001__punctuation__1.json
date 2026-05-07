@@ -1,0 +1,65 @@
+{
+  "error": null,
+  "fixture_id": "temporal_status_transition_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Update the Brain Slack agent\u2019s status to implemented. The prior planned/open state is superseded and should be retained only as history, not current state.",
+    "citations": [
+      "Existing project state: The Brain Slack agent is planned, status=open",
+      "New: The Brain Slack agent MVP is now implemented"
+    ],
+    "conflict_classification": "temporal_status_transition",
+    "decision": "Commit the newer status as current: the Brain Slack agent MVP is implemented. Treat the earlier planned/open state as superseded and do not present it as current.",
+    "entity_resolution": {
+      "action": "reuse_existing_entity",
+      "entity_id": null,
+      "reason": "The input refers to the same entity, the Brain Slack agent; only its status changed over time."
+    },
+    "intent": "Resolve a temporal status transition for the Brain Slack agent from planned/open to implemented.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain Slack agent",
+            "role": "subject",
+            "type": "project_component"
+          },
+          {
+            "name": "Brain",
+            "role": "parent project",
+            "type": "project"
+          }
+        ],
+        "kind": "status_update",
+        "relationships": [
+          {
+            "object": "implemented",
+            "predicate": "status",
+            "subject": "Brain Slack agent"
+          },
+          {
+            "object": "planned/open",
+            "predicate": "was_previously",
+            "subject": "Brain Slack agent"
+          }
+        ],
+        "statement": "The Brain Slack agent MVP is now implemented; this supersedes the earlier planned/open state."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Resolved a direct temporal conflict by preferring the newer state.",
+        "Avoided treating the earlier open/planned status as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Set current status to implemented and preserve planned/open as historical context only.",
+      "If the system supports timelines, record a status transition from planned/open to implemented with the implementation timestamp if available."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Resolve a temporal status transition for the Brain Slack agent from planned/open to implemented.\",\"decision\":\"Commit the newer status as current: the Brain Slack agent MVP is implemented. Treat the earlier planned/open state as superseded and do not present it as current.\",\"memory_cards\":[{\"kind\":\"status_update\",\"statement\":\"The Brain Slack agent MVP is now implemented; this supersedes the earlier planned/open state.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Brain Slack agent\",\"type\":\"project_component\",\"role\":\"subject\"},{\"name\":\"Brain\",\"type\":\"project\",\"role\":\"parent project\"}],\"relationships\":[{\"subject\":\"Brain Slack agent\",\"predicate\":\"status\",\"object\":\"implemented\"},{\"subject\":\"Brain Slack agent\",\"predicate\":\"was_previously\",\"object\":\"planned/open\"}]}],\"entity_resolution\":{\"action\":\"reuse_existing_entity\",\"entity_id\":null,\"reason\":\"The input refers to the same entity, the Brain Slack agent; only its status changed over time.\"},\"conflict_classification\":\"temporal_status_transition\",\"answer\":\"Update the Brain Slack agent\u2019s status to implemented. The prior planned/open state is superseded and should be retained only as history, not current state.\",\"citations\":[\"Existing project state: The Brain Slack agent is planned, status=open\",\"New: The Brain Slack agent MVP is now implemented\"],\"repair_options\":[\"Set current status to implemented and preserve planned/open as historical context only.\",\"If the system supports timelines, record a status transition from planned/open to implemented with the implementation timestamp if available.\"],\"receipt\":{\"success\":true,\"details\":[\"Resolved a direct temporal conflict by preferring the newer state.\",\"Avoided treating the earlier open/planned status as current.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

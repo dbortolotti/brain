@@ -1,0 +1,58 @@
+{
+  "error": null,
+  "fixture_id": "italian_memory_note_001__punctuation",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Note stored: Sam of Goldman prefers Bill Evans.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "keep_precise_note",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "New memory note capturing a stated preference without a unique identifier"
+    },
+    "intent": "store_memory",
+    "memory_cards": [
+      {
+        "confidence": "0.70",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_target",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "association",
+            "type": "organization"
+          }
+        ],
+        "kind": "memory_note",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam of Goldman prefers Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory note created for Sam's preference toward Bill Evans"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"store_memory\",\n  \"decision\": \"keep_precise_note\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"memory_note\",\n      \"statement\": \"Sam of Goldman prefers Bill Evans\",\n      \"confidence\": \"0.70\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"preference_target\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"association\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"prefers\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_or_update\",\n    \"entity_id\": null,\n    \"reason\": \"New memory note capturing a stated preference without a unique identifier\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Note stored: Sam of Goldman prefers Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory note created for Sam's preference toward Bill Evans\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

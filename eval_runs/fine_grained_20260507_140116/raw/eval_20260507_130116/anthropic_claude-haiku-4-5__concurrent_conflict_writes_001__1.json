@@ -1,0 +1,86 @@
+{
+  "error": null,
+  "fixture_id": "concurrent_conflict_writes_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Two conflicting employment states recorded. Sam's current employer is ambiguous: either Goldman Sachs (ongoing) or Point72 (recent join). Requires user input to establish timeline or confirm transition.",
+    "citations": [
+      "Input statement 1: Sam works at Goldman",
+      "Input statement 2: Sam joined Point72"
+    ],
+    "conflict_classification": "temporal_employment_conflict",
+    "decision": "Preserve both facts with temporal ambiguity; flag for user clarification",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Concurrent writes indicate possible employment transition; temporal ordering unknown. Cannot merge without timestamp or explicit supersession signal."
+    },
+    "intent": "Resolve concurrent conflicting employment facts for Sam",
+    "memory_cards": [
+      {
+        "confidence": "unresolved",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_current",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "employed_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman Sachs"
+      },
+      {
+        "confidence": "unresolved",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_transition",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict detected: two incompatible employment states",
+        "Both facts preserved without deletion",
+        "Ambiguity preserved; no fact presented as current without confirmation",
+        "Awaiting user clarification to establish durable memory"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm: Sam transitioned from Goldman to Point72 (add transition date)",
+      "Confirm: Sam currently works at Point72 (supersede Goldman fact)",
+      "Confirm: Sam works at both organizations (concurrent roles)",
+      "Reject one statement as erroneous"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Resolve concurrent conflicting employment facts for Sam\",\n  \"decision\": \"Preserve both facts with temporal ambiguity; flag for user clarification\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"employment_current\",\n      \"statement\": \"Sam works at Goldman Sachs\",\n      \"confidence\": \"unresolved\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"employed_at\",\n          \"object\": \"Goldman Sachs\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"employment_transition\",\n      \"statement\": \"Sam joined Point72\",\n      \"confidence\": \"unresolved\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Concurrent writes indicate possible employment transition; temporal ordering unknown. Cannot merge without timestamp or explicit supersession signal.\"\n  },\n  \"conflict_classification\": \"temporal_employment_conflict\",\n  \"answer\": \"Two conflicting employment states recorded. Sam's current employer is ambiguous: either Goldman Sachs (ongoing) or Point72 (recent join). Requires user input to establish timeline or confirm transition.\",\n  \"citations\": [\n    \"Input statement 1: Sam works at Goldman\",\n    \"Input statement 2: Sam joined Point72\"\n  ],\n  \"repair_options\": [\n    \"Confirm: Sam transitioned from Goldman to Point72 (add transition date)\",\n    \"Confirm: Sam currently works at Point72 (supersede Goldman fact)\",\n    \"Confirm: Sam works at both organizations (concurrent roles)\",\n    \"Reject one statement as erroneous\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Conflict detected: two incompatible employment states\",\n      \"Both facts preserved without deletion\",\n      \"Ambiguity preserved; no fact presented as current without confirmation\",\n      \"Awaiting user clarification to establish durable memory\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

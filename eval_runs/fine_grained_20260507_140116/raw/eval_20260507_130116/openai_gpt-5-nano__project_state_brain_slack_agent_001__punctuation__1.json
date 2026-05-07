@@ -1,0 +1,91 @@
+{
+  "error": null,
+  "fixture_id": "project_state_brain_slack_agent_001__punctuation",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Slack will be the primary guardrailed ingestion interface for Brain memory; Telegram integration will be added in a later phase.",
+    "citations": [],
+    "conflict_classification": "no_active_conflicts",
+    "decision": "Slack should remain the primary guardrailed memory ingestion interface; Telegram integration deferred.",
+    "entity_resolution": {
+      "action": "establish_primary_ingestion_interface",
+      "entity_id": null,
+      "reason": "Current project state specifies Slack as guardrailed ingestion entrypoint; Telegram to be introduced later."
+    },
+    "intent": "set_primary_ingestion_interface",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "ingestion_interface",
+            "type": "platform"
+          },
+          {
+            "name": "Telegram",
+            "role": "future_integration",
+            "type": "platform"
+          },
+          {
+            "name": "memory_ingestion",
+            "role": "gateway",
+            "type": "concept"
+          }
+        ],
+        "kind": "policy",
+        "relationships": [
+          {
+            "object": "memory_ingestion",
+            "predicate": "is_primary_for",
+            "subject": "Slack"
+          },
+          {
+            "object": "memory_ingestion",
+            "predicate": "planned_future_integration",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "Slack is designated as the primary memory ingestion gateway for Brain; Telegram integration is postponed to a future phase."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Telegram",
+            "role": "future_scope",
+            "type": "platform"
+          },
+          {
+            "name": "timeline",
+            "role": "planning",
+            "type": "concept"
+          }
+        ],
+        "kind": "planning",
+        "relationships": [
+          {
+            "object": "uncertain_timeline",
+            "predicate": "has",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "Preserve ambiguity about rollout timeline for Telegram; no commitment to a fixed date."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Primary ingestion interface set to Slack.",
+        "Telegram integration deferred."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Document timeline expectations for Telegram separately and with an explicit placeholder date.",
+      "Set up a monitoring flag to track Telegram readiness without exposing timelines publicly."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"set_primary_ingestion_interface\",\n  \"decision\": \"Slack should remain the primary guardrailed memory ingestion interface; Telegram integration deferred.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"policy\",\n      \"statement\": \"Slack is designated as the primary memory ingestion gateway for Brain; Telegram integration is postponed to a future phase.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Slack\", \"type\": \"platform\", \"role\": \"ingestion_interface\"},\n        {\"name\": \"Telegram\", \"type\": \"platform\", \"role\": \"future_integration\"},\n        {\"name\": \"memory_ingestion\", \"type\": \"concept\", \"role\": \"gateway\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Slack\", \"predicate\": \"is_primary_for\", \"object\": \"memory_ingestion\"},\n        {\"subject\": \"Telegram\", \"predicate\": \"planned_future_integration\", \"object\": \"memory_ingestion\"}\n      ]\n    }\n    ,\n    {\n      \"kind\": \"planning\",\n      \"statement\": \"Preserve ambiguity about rollout timeline for Telegram; no commitment to a fixed date.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\"name\": \"Telegram\", \"type\": \"platform\", \"role\": \"future_scope\"},\n        {\"name\": \"timeline\", \"type\": \"concept\", \"role\": \"planning\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Telegram\", \"predicate\": \"has\", \"object\": \"uncertain_timeline\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"establish_primary_ingestion_interface\",\n    \"entity_id\": null,\n    \"reason\": \"Current project state specifies Slack as guardrailed ingestion entrypoint; Telegram to be introduced later.\"\n  },\n  \"conflict_classification\": \"no_active_conflicts\",\n  \"answer\": \"Slack will be the primary guardrailed ingestion interface for Brain memory; Telegram integration will be added in a later phase.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Document timeline expectations for Telegram separately and with an explicit placeholder date.\",\n    \"Set up a monitoring flag to track Telegram readiness without exposing timelines publicly.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Primary ingestion interface set to Slack.\",\n      \"Telegram integration deferred.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,56 @@
+{
+  "fixture_id": "ambiguous_place_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory committed to ambiguous_place_001 with low-confidence entity binding. Recommend future notes specify 'Brutto restaurant, London' or 'Brutto article' to resolve scope.",
+    "citations": [
+      "Existing: Brutto restaurant in London",
+      "Existing: Brutto article alias",
+      "New note: subjective evaluation"
+    ],
+    "conflict_classification": "entity_scope_ambiguity",
+    "decision": "Link new note to existing Brutto restaurant entity; preserve ambiguity about which Brutto (restaurant vs article alias)",
+    "entity_resolution": {
+      "action": "link_with_ambiguity",
+      "entity_id": "ambiguous_place_001",
+      "reason": "New note most likely refers to Brutto restaurant (contextually more evaluable than article alias), but article alias remains possible. Insufficient context to disambiguate definitively."
+    },
+    "intent": "Disambiguate Brutto entity and commit subjective experience memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brutto",
+            "role": "subject_of_evaluation",
+            "type": "place_or_concept"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "quality",
+            "predicate": "exceeded_expectations",
+            "subject": "Brutto"
+          }
+        ],
+        "statement": "Brutto exceeded expectations in quality"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created for subjective observation",
+        "Entity linked to ambiguous_place_001 pending disambiguation",
+        "Ambiguity preserved; no superseding of existing facts",
+        "Confidence marked as high for observation, low for entity binding"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify: 'Brutto restaurant in London was better than expected'",
+      "Clarify: 'Brutto [article/concept] was better than expected'",
+      "Split into separate entities if future notes confirm distinct Brutto references"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

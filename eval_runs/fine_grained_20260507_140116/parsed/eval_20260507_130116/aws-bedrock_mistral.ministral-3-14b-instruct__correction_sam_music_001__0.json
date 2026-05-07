@@ -1,0 +1,68 @@
+{
+  "fixture_id": "correction_sam_music_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The durable memory for Sam from Goldman has been corrected: they prefer early Coltrane, not Bill Evans. The superseded fact is archived but no longer active.",
+    "citations": [
+      "User-provided correction: 'Sam from Goldman actually likes early Coltrane, not Bill Evans.'"
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "supersede_and_replace",
+    "entity_resolution": {
+      "action": "update",
+      "entity_id": "correction_sam_music_001",
+      "reason": "Correction replaces prior conflicting preference with verified alternative."
+    },
+    "intent": "correction",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "preferred_entity",
+            "type": "musical_artist"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "superseded_entity",
+            "type": "musical_artist"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "prefers",
+            "subject": "Sam from Goldman"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "does_not_prefer",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman prefers early Coltrane over Bill Evans as a jazz pianist."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded memory for 'Sam from Goldman likes Bill Evans' is now inactive.",
+        "New memory for 'Sam from Goldman prefers early Coltrane' is active.",
+        "Ambiguity preserved: No assumptions made about broader musical tastes."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Archive superseded memory with timestamp.",
+      "Flag prior memory as 'corrected' in metadata.",
+      "No further action required\u2014correction is self-contained."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

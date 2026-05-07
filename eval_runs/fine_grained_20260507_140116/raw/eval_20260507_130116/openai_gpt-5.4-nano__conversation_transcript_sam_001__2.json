@@ -1,0 +1,141 @@
+{
+  "error": null,
+  "fixture_id": "conversation_transcript_sam_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Extracted three memory candidates: Sam\u2019s move from Goldman to Point72, a change in jazz listening toward early Coltrane while still listening to Bill Evans, and a planned catch-up about AI infrastructure with a request to send an article.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_with_low_confidence",
+    "entity_resolution": {
+      "action": "create_or_match",
+      "entity_id": null,
+      "reason": "No existing entity IDs provided; entities are extracted as-is from the transcript."
+    },
+    "intent": "Extract personal memory updates from conversation",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "company"
+          },
+          {
+            "name": "Point72",
+            "role": "current employer",
+            "type": "company"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "joined Point72; left Goldman last month",
+            "predicate": "employment_history",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman last month and joined Point72."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "ongoing listening",
+            "type": "musician"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "lately increased listening",
+            "type": "musician_style"
+          },
+          {
+            "name": "Coltrane",
+            "role": "implied artist",
+            "type": "musician"
+          }
+        ],
+        "kind": "music_preference",
+        "relationships": [
+          {
+            "object": "Bill Evans (still)",
+            "predicate": "listens_to",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "lately_prioritizes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is still listening to Bill Evans, but lately more early Coltrane."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "AI infra",
+            "role": "discussion subject",
+            "type": "topic"
+          },
+          {
+            "name": "article",
+            "role": "to be sent",
+            "type": "resource"
+          }
+        ],
+        "kind": "work_topic_contact",
+        "relationships": [
+          {
+            "object": "article about AI infrastructure (requested by Sam)",
+            "predicate": "will_send",
+            "subject": "Daniele"
+          },
+          {
+            "object": "AI infrastructure",
+            "predicate": "planned_catch_up_about",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Daniele and Sam planned to catch up about AI infrastructure, and Sam asked Daniele to send an article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed employment update (Goldman -> Point72).",
+        "Parsed music preference update (Bill Evans still; early Coltrane lately).",
+        "Parsed coordination about AI infrastructure and an article request."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If Brain has a user profile/entity list, link Sam/Daniele to existing entity IDs for higher precision.",
+      "If the system distinguishes durable vs. ephemeral memory, treat music preference and \u201csend me that article\u201d as short-term unless confirmed later."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Extract personal memory updates from conversation\",\n  \"decision\": \"store_with_low_confidence\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"employment\",\n      \"statement\": \"Sam left Goldman last month and joined Point72.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"company\",\n          \"role\": \"former employer\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"company\",\n          \"role\": \"current employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"employment_history\",\n          \"object\": \"joined Point72; left Goldman last month\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"music_preference\",\n      \"statement\": \"Sam is still listening to Bill Evans, but lately more early Coltrane.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"musician\",\n          \"role\": \"ongoing listening\"\n        },\n        {\n          \"name\": \"early Coltrane\",\n          \"type\": \"musician_style\",\n          \"role\": \"lately increased listening\"\n        },\n        {\n          \"name\": \"Coltrane\",\n          \"type\": \"musician\",\n          \"role\": \"implied artist\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"listens_to\",\n          \"object\": \"Bill Evans (still)\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"lately_prioritizes\",\n          \"object\": \"early Coltrane\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"work_topic_contact\",\n      \"statement\": \"Daniele and Sam planned to catch up about AI infrastructure, and Sam asked Daniele to send an article.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"AI infra\",\n          \"type\": \"topic\",\n          \"role\": \"discussion subject\"\n        },\n        {\n          \"name\": \"article\",\n          \"type\": \"resource\",\n          \"role\": \"to be sent\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Daniele\",\n          \"predicate\": \"will_send\",\n          \"object\": \"article about AI infrastructure (requested by Sam)\"\n        },\n        {\n          \"subject\": \"Daniele\",\n          \"predicate\": \"planned_catch_up_about\",\n          \"object\": \"AI infrastructure\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_or_match\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entity IDs provided; entities are extracted as-is from the transcript.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Extracted three memory candidates: Sam\u2019s move from Goldman to Point72, a change in jazz listening toward early Coltrane while still listening to Bill Evans, and a planned catch-up about AI infrastructure with a request to send an article.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If Brain has a user profile/entity list, link Sam/Daniele to existing entity IDs for higher precision.\",\n    \"If the system distinguishes durable vs. ephemeral memory, treat music preference and \u201csend me that article\u201d as short-term unless confirmed later.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Parsed employment update (Goldman -> Point72).\",\n      \"Parsed music preference update (Bill Evans still; early Coltrane lately).\",\n      \"Parsed coordination about AI infrastructure and an article request.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

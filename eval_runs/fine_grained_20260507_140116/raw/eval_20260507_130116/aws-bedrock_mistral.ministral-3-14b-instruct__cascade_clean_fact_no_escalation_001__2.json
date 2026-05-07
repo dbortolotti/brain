@@ -1,0 +1,70 @@
+{
+  "error": null,
+  "fixture_id": "cascade_clean_fact_no_escalation_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Durable memory committed: Nur and Sara are confirmed as twin daughters of the speaker. No conflicts detected.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "proceed_with_ambiguity",
+    "entity_resolution": {
+      "action": "new_entity_creation",
+      "entity_id": null,
+      "reason": "No prior context for 'Nur' or 'Sara'; assuming new entities with implied familial relationship."
+    },
+    "intent": "durable_memory_ingestion",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "twin_daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "twin_daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "is_twin_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "speaker",
+            "predicate": "is_daughter_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "speaker",
+            "predicate": "is_daughter_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Nur and Sara are my twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Entities 'Nur' and 'Sara' added to durable memory with 'twin_daughter' role.",
+        "Reciprocal twin relationship established.",
+        "Parental relationship to speaker confirmed."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"durable_memory_ingestion\",\n  \"decision\": \"proceed_with_ambiguity\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Nur and Sara are my twin daughters.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Nur\",\n          \"type\": \"person\",\n          \"role\": \"twin_daughter\"\n        },\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"twin_daughter\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Nur\",\n          \"predicate\": \"is_twin_of\",\n          \"object\": \"Sara\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is_twin_of\",\n          \"object\": \"Nur\"\n        },\n        {\n          \"subject\": \"Nur\",\n          \"predicate\": \"is_daughter_of\",\n          \"object\": \"speaker\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is_daughter_of\",\n          \"object\": \"speaker\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"new_entity_creation\",\n    \"entity_id\": null,\n    \"reason\": \"No prior context for 'Nur' or 'Sara'; assuming new entities with implied familial relationship.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Durable memory committed: Nur and Sara are confirmed as twin daughters of the speaker. No conflicts detected.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Entities 'Nur' and 'Sara' added to durable memory with 'twin_daughter' role.\",\n      \"Reciprocal twin relationship established.\",\n      \"Parental relationship to speaker confirmed.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

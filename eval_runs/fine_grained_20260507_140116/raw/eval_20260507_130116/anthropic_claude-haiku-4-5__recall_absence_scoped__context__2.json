@@ -1,0 +1,56 @@
+{
+  "error": null,
+  "fixture_id": "recall_absence_scoped__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Unknown. No current travel preferences for Sara are recorded in the system. The question cannot be answered from available memory.",
+    "citations": [
+      "Retrieved facts contain no current travel preferences for Sara"
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "Cannot affirm preference; absence of data prevents conclusion",
+    "entity_resolution": {
+      "action": "maintain",
+      "entity_id": "sara",
+      "reason": "Entity identified but preference data absent from system"
+    },
+    "intent": "Determine whether Sara has a documented preference for morning flights",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "absence_record",
+        "relationships": [
+          {
+            "object": "flight_time_preference",
+            "predicate": "has_no_documented",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "No current travel preferences documented for Sara regarding flight timing"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Query processed without asserting absent information as negative fact",
+        "Ambiguity preserved regarding Sara's actual preferences",
+        "No superseded or deleted facts presented"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Directly ask Sara about her flight time preferences",
+      "Infer from historical booking patterns if available",
+      "Record preference once Sara provides explicit statement"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Determine whether Sara has a documented preference for morning flights\",\n  \"decision\": \"Cannot affirm preference; absence of data prevents conclusion\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"absence_record\",\n      \"statement\": \"No current travel preferences documented for Sara regarding flight timing\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"has_no_documented\",\n          \"object\": \"flight_time_preference\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"maintain\",\n    \"entity_id\": \"sara\",\n    \"reason\": \"Entity identified but preference data absent from system\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"Unknown. No current travel preferences for Sara are recorded in the system. The question cannot be answered from available memory.\",\n  \"citations\": [\n    \"Retrieved facts contain no current travel preferences for Sara\"\n  ],\n  \"repair_options\": [\n    \"Directly ask Sara about her flight time preferences\",\n    \"Infer from historical booking patterns if available\",\n    \"Record preference once Sara provides explicit statement\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Query processed without asserting absent information as negative fact\",\n      \"Ambiguity preserved regarding Sara's actual preferences\",\n      \"No superseded or deleted facts presented\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

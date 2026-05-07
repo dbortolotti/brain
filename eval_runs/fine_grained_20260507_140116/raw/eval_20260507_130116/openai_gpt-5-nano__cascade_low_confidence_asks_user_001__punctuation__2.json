@@ -1,0 +1,68 @@
+{
+  "error": null,
+  "fixture_id": "cascade_low_confidence_asks_user_001__punctuation",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "The Sam note remains ambiguous. Cloud escalation is currently disabled. I need a clarification to resolve the ambiguity before updating memory or taking further action.",
+    "citations": [],
+    "conflict_classification": "ambiguous_context_with_low_confidence",
+    "decision": "defer_to_user_for_clarification_due_to_low_confidence_and ambiguity; preserve existing memory with non-destructive adjustments; do not escalate cloud escalation",
+    "entity_resolution": {
+      "action": "preserve_and_prompt",
+      "entity_id": null,
+      "reason": "Insufficient details to resolve ambiguity about the Sam note and cloud escalation context; avoid altering user memory until clarified."
+    },
+    "intent": "update_memory_and_prompt_for_clarification",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Cloud escalation",
+            "role": "condition",
+            "type": "concept"
+          },
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "note",
+            "role": "document",
+            "type": "artifact"
+          }
+        ],
+        "kind": "note",
+        "relationships": [
+          {
+            "object": "disabled",
+            "predicate": "is",
+            "subject": "Cloud escalation"
+          },
+          {
+            "object": "low for ambiguous Sam note",
+            "predicate": "confidence",
+            "subject": "model"
+          }
+        ],
+        "statement": "Cloud escalation is disabled and model confidence is low for the ambiguous Sam note."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored as low-confidence note with ambiguity preserved.",
+        "No changes to cloud escalation status beyond existing statement."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide concrete clarification about Sam note (who, what, why), and whether cloud escalation should be re-enabled.",
+      "Offer explicit preference on how to handle ambiguous items in memory (e.g., tag as 'unclear' and request user input).",
+      "If appropriate, temporarily suspend any action until user confirms intended outcome."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"update_memory_and_prompt_for_clarification\",\n  \"decision\": \"defer_to_user_for_clarification_due_to_low_confidence_and ambiguity; preserve existing memory with non-destructive adjustments; do not escalate cloud escalation\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"note\",\n      \"statement\": \"Cloud escalation is disabled and model confidence is low for the ambiguous Sam note.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Cloud escalation\",\n          \"type\": \"concept\",\n          \"role\": \"condition\"\n        },\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"note\",\n          \"type\": \"artifact\",\n          \"role\": \"document\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cloud escalation\",\n          \"predicate\": \"is\",\n          \"object\": \"disabled\"\n        },\n        {\n          \"subject\": \"model\",\n          \"predicate\": \"confidence\",\n          \"object\": \"low for ambiguous Sam note\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"preserve_and_prompt\",\n    \"entity_id\": null,\n    \"reason\": \"Insufficient details to resolve ambiguity about the Sam note and cloud escalation context; avoid altering user memory until clarified.\"\n  },\n  \"conflict_classification\": \"ambiguous_context_with_low_confidence\",\n  \"answer\": \"The Sam note remains ambiguous. Cloud escalation is currently disabled. I need a clarification to resolve the ambiguity before updating memory or taking further action.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Provide concrete clarification about Sam note (who, what, why), and whether cloud escalation should be re-enabled.\",\n    \"Offer explicit preference on how to handle ambiguous items in memory (e.g., tag as 'unclear' and request user input).\",\n    \"If appropriate, temporarily suspend any action until user confirms intended outcome.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Stored as low-confidence note with ambiguity preserved.\",\n      \"No changes to cloud escalation status beyond existing statement.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

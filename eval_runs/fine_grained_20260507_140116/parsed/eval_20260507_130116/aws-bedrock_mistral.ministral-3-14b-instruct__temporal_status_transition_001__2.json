@@ -1,0 +1,70 @@
+{
+  "fixture_id": "temporal_status_transition_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The Brain Slack agent's status is now **implemented (MVP)**. The prior 'open' status is superseded and archived. No conflicts detected.",
+    "citations": [
+      "New input: 'The Brain Slack agent MVP is now implemented.'",
+      "Existing state: 'The Brain Slack agent is planned, status=open.'"
+    ],
+    "conflict_classification": "status_ambiguity_resolved",
+    "decision": "promote_from_planned_to_implemented",
+    "entity_resolution": {
+      "action": "merge_and_supersede",
+      "entity_id": "project_status_Brain_Slack_agent",
+      "reason": "New implementation status (MVP) supersedes prior 'open' status; no conflicting interpretations exist."
+    },
+    "intent": "update_project_status",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain Slack agent",
+            "role": "primary_subject",
+            "type": "project"
+          },
+          {
+            "name": "MVP",
+            "role": "current_status",
+            "type": "milestone"
+          },
+          {
+            "name": "open",
+            "role": "superseded_status",
+            "type": "status"
+          }
+        ],
+        "kind": "project_status_update",
+        "relationships": [
+          {
+            "object": "open",
+            "predicate": "status_transitioned_from",
+            "subject": "Brain Slack agent"
+          },
+          {
+            "object": "implemented",
+            "predicate": "status_transitioned_to",
+            "subject": "Brain Slack agent"
+          },
+          {
+            "object": "Brain Slack agent",
+            "predicate": "is_current_status_of",
+            "subject": "MVP"
+          }
+        ],
+        "statement": "The Brain Slack agent MVP is now implemented (previously planned/open)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded memory card (status=open) flagged for archival.",
+        "New status (implemented) committed with high confidence.",
+        "No conflicting entities or relationships detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

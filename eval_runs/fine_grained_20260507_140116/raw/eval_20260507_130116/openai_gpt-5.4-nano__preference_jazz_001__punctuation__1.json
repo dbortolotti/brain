@@ -1,0 +1,65 @@
+{
+  "error": null,
+  "fixture_id": "preference_jazz_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Storing the user's preference for Sonny Rollins over John Coltrane for relaxed Sunday listening.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_select",
+      "entity_id": null,
+      "reason": "No existing entity IDs were provided; creating new resolved entities is appropriate."
+    },
+    "intent": "durable_memory_preference_capture",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sonny Rollins",
+            "role": "preferred artist",
+            "type": "person"
+          },
+          {
+            "name": "John Coltrane",
+            "role": "less preferred artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Sonny Rollins",
+            "predicate": "prefers",
+            "subject": "User"
+          },
+          {
+            "object": "John Coltrane",
+            "predicate": "over",
+            "subject": "User"
+          },
+          {
+            "object": "relaxed Sunday listening",
+            "predicate": "applies to",
+            "subject": "Preference context"
+          }
+        ],
+        "statement": "User prefers Sonny Rollins over John Coltrane for relaxed Sunday listening."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preference captured as a durable user preference with context (relaxed Sunday listening)."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If the user later clarifies a different context (e.g., different mood or day), update the preference scope accordingly."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"durable_memory_preference_capture\",\n  \"decision\": \"commit\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"User prefers Sonny Rollins over John Coltrane for relaxed Sunday listening.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sonny Rollins\",\n          \"type\": \"person\",\n          \"role\": \"preferred artist\"\n        },\n        {\n          \"name\": \"John Coltrane\",\n          \"type\": \"person\",\n          \"role\": \"less preferred artist\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"User\",\n          \"predicate\": \"prefers\",\n          \"object\": \"Sonny Rollins\"\n        },\n        {\n          \"subject\": \"User\",\n          \"predicate\": \"over\",\n          \"object\": \"John Coltrane\"\n        },\n        {\n          \"subject\": \"Preference context\",\n          \"predicate\": \"applies to\",\n          \"object\": \"relaxed Sunday listening\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_or_select\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entity IDs were provided; creating new resolved entities is appropriate.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Storing the user's preference for Sonny Rollins over John Coltrane for relaxed Sunday listening.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If the user later clarifies a different context (e.g., different mood or day), update the preference scope accordingly.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Preference captured as a durable user preference with context (relaxed Sunday listening).\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

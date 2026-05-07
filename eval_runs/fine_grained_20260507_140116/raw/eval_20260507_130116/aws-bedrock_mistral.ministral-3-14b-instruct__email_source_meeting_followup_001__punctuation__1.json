@@ -1,0 +1,123 @@
+{
+  "error": null,
+  "fixture_id": "email_source_meeting_followup_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam joined Point72 last month and requested an AI infrastructure article. The email suggests a positive follow-up dynamic but lacks explicit next steps.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "extract_and_store_memory_cards",
+    "entity_resolution": {
+      "action": "create_or_link",
+      "entity_id": null,
+      "reason": "No prior context for Sam or Point72; new entities inferred from email."
+    },
+    "intent": "follow_up_request",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "individual",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          },
+          {
+            "name": "last month",
+            "role": "temporal_anchor",
+            "type": "time"
+          }
+        ],
+        "kind": "event",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          },
+          {
+            "object": "employee",
+            "predicate": "has_employment_status",
+            "subject": "Sam"
+          },
+          {
+            "object": "Sam",
+            "predicate": "has_employee",
+            "subject": "Point72"
+          }
+        ],
+        "statement": "Sam joined Point72 last month."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "requester",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure article",
+            "role": "requested_resource",
+            "type": "document"
+          }
+        ],
+        "kind": "request",
+        "relationships": [
+          {
+            "object": "AI infrastructure article",
+            "predicate": "requested",
+            "subject": "Sam"
+          },
+          {
+            "object": "Sam",
+            "predicate": "is_requested_by",
+            "subject": "AI infrastructure article"
+          }
+        ],
+        "statement": "Sam requested the AI infrastructure article."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "communicator",
+            "type": "person"
+          },
+          {
+            "name": "follow-up meeting",
+            "role": "discussed_topic",
+            "type": "event"
+          }
+        ],
+        "kind": "communication",
+        "relationships": [
+          {
+            "object": "follow-up meeting",
+            "predicate": "expressed_interest_in",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam expressed enthusiasm for a follow-up meeting."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted 3 memory cards: 1 event, 1 request, 1 communication.",
+        "No conflicts detected; all statements are durable and unambiguous.",
+        "Entity resolution: New entities created (Sam, Point72, AI infrastructure article)."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"follow_up_request\",\n  \"decision\": \"extract_and_store_memory_cards\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"event\",\n      \"statement\": \"Sam joined Point72 last month.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"individual\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        },\n        {\n          \"name\": \"last month\",\n          \"type\": \"time\",\n          \"role\": \"temporal_anchor\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has_employment_status\",\n          \"object\": \"employee\"\n        },\n        {\n          \"subject\": \"Point72\",\n          \"predicate\": \"has_employee\",\n          \"object\": \"Sam\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"request\",\n      \"statement\": \"Sam requested the AI infrastructure article.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"requester\"\n        },\n        {\n          \"name\": \"AI infrastructure article\",\n          \"type\": \"document\",\n          \"role\": \"requested_resource\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"requested\",\n          \"object\": \"AI infrastructure article\"\n        },\n        {\n          \"subject\": \"AI infrastructure article\",\n          \"predicate\": \"is_requested_by\",\n          \"object\": \"Sam\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"communication\",\n      \"statement\": \"Sam expressed enthusiasm for a follow-up meeting.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"communicator\"\n        },\n        {\n          \"name\": \"follow-up meeting\",\n          \"type\": \"event\",\n          \"role\": \"discussed_topic\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"expressed_interest_in\",\n          \"object\": \"follow-up meeting\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_or_link\",\n    \"entity_id\": null,\n    \"reason\": \"No prior context for Sam or Point72; new entities inferred from email.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Sam joined Point72 last month and requested an AI infrastructure article. The email suggests a positive follow-up dynamic but lacks explicit next steps.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Extracted 3 memory cards: 1 event, 1 request, 1 communication.\",\n      \"No conflicts detected; all statements are durable and unambiguous.\",\n      \"Entity resolution: New entities created (Sam, Point72, AI infrastructure article).\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

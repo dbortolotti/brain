@@ -1,0 +1,80 @@
+{
+  "fixture_id": "conflict_employment_transition__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The new fact supersedes the existing fact. Sam\u2019s employment record is now updated to reflect the transition from Goldman Sachs to Point72 Ventures. No further conflict resolution is needed.",
+    "citations": [
+      "New fact: 'Sam left Goldman and joined Point72' (source: input)",
+      "Existing fact: 'Sam works at Goldman' (source: durable memory, now superseded)"
+    ],
+    "conflict_classification": "employment_transition_conflict",
+    "decision": "resolve_conflict_with_employment_transition",
+    "entity_resolution": {
+      "action": "merge_employment_records",
+      "entity_id": "employment_history__sam",
+      "reason": "Consolidate employment transitions into a single timeline with explicit termination and new hire dates (if available)."
+    },
+    "intent": "update_durable_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72 Ventures",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "left_employment_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72 Ventures",
+            "predicate": "joined_employment_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam no longer works at Goldman Sachs. The most recent employment record indicates Sam left Goldman Sachs and joined Point72 Ventures."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "contextual_note",
+        "statement": "The prior fact 'Sam works at Goldman' is superseded by this transition. No further action is required to delete the superseded fact\u2014it will be implicitly invalidated by the new durable memory."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory updated to reflect employment transition.",
+        "Superseded fact marked as invalid (no explicit deletion needed).",
+        "Entity resolution triggered for employment history consolidation."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "None required\u2014superseded fact is automatically invalidated by the new durable memory.",
+      "If additional context (e.g., dates) is needed, prompt for clarification."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

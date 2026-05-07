@@ -1,0 +1,46 @@
+{
+  "fixture_id": "article_url_fetch_failure_001",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Unable to retrieve article at https://example.com/missing due to 404 network error. Memory should record fetch failure for potential future retrieval attempts.",
+    "citations": [
+      "https://example.com/missing (fetch failed: 404)"
+    ],
+    "conflict_classification": "none",
+    "decision": "preserve_ambiguous_memory_and_do_not_default_to_presenting_superseded_facts; store as failed_fetch_event with potential fallback to alternative sources",
+    "entity_resolution": {
+      "action": "no_resolution",
+      "entity_id": null,
+      "reason": "fetch failed (404 network error); no usable content retrieved to resolve identity"
+    },
+    "intent": "record_article_fetch_failure",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "target",
+            "type": "url"
+          }
+        ],
+        "kind": "article_url",
+        "relationships": [],
+        "statement": "https://example.com/missing"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recorded fetch failure for article_url_fetch_failure_001",
+        "Stored as memory_card with low confidence due to missing content"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "retry fetch with backoff",
+      "use cached/alternative sources for similar topic",
+      "store placeholder with metadata indicating retrieval failure"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

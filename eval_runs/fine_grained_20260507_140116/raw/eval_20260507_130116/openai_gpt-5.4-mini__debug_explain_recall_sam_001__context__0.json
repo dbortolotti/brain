@@ -1,0 +1,58 @@
+{
+  "error": null,
+  "fixture_id": "debug_explain_recall_sam_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "I don\u2019t have enough reliable memory to say anything specific about Sam from Goldman.",
+    "citations": [],
+    "conflict_classification": "insufficient_information",
+    "decision": "Insufficient reliable memory to answer; do not infer or fabricate details.",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The recall prompt does not provide enough evidence to uniquely identify which Sam or which Goldman-affiliated context is intended."
+    },
+    "intent": "Recall all remembered information about a person named Sam associated with Goldman.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject of recall query",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "association context",
+            "type": "organization"
+          }
+        ],
+        "kind": "query",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "User requested: \"Tell me everything about Sam from Goldman\" in debug recall context."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No durable factual memory about Sam was available in the provided context.",
+        "Avoided committing ambiguous or unsupported details."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide a fuller identifier for Sam (last name, role, timeframe, or team).",
+      "Specify which Goldman entity you mean if there are multiple possibilities.",
+      "Share a prior note or context to anchor the recall."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Recall all remembered information about a person named Sam associated with Goldman.\",\"decision\":\"Insufficient reliable memory to answer; do not infer or fabricate details.\",\"memory_cards\":[{\"kind\":\"query\",\"statement\":\"User requested: \\\"Tell me everything about Sam from Goldman\\\" in debug recall context.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject of recall query\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"association context\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"associated_with\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"The recall prompt does not provide enough evidence to uniquely identify which Sam or which Goldman-affiliated context is intended.\"},\"conflict_classification\":\"insufficient_information\",\"answer\":\"I don\u2019t have enough reliable memory to say anything specific about Sam from Goldman.\",\"citations\":[],\"repair_options\":[\"Provide a fuller identifier for Sam (last name, role, timeframe, or team).\",\"Specify which Goldman entity you mean if there are multiple possibilities.\",\"Share a prior note or context to anchor the recall.\"],\"receipt\":{\"success\":false,\"details\":[\"No durable factual memory about Sam was available in the provided context.\",\"Avoided committing ambiguous or unsupported details.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

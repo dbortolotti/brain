@@ -1,0 +1,97 @@
+{
+  "error": null,
+  "fixture_id": "correction_sam_music_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "The existing memory stating Sam from Goldman likes Bill Evans has been corrected. Current durable memory: Sam from Goldman likes early Coltrane. The prior preference is preserved as superseded context but not presented as current fact.",
+    "citations": [
+      "Correction input: Sam from Goldman actually likes early Coltrane, not Bill Evans"
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "Supersede existing preference; mark Bill Evans fact as corrected",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "sam_goldman_001",
+      "reason": "Same person; preference attribute corrected via explicit contradiction"
+    },
+    "intent": "Resolve conflicting music preference information for Sam from Goldman",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "preference",
+            "type": "music"
+          }
+        ],
+        "kind": "correction",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane"
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference",
+            "type": "musician"
+          }
+        ],
+        "kind": "superseded",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict identified: direct contradiction on music preference",
+        "Superseded fact archived: Bill Evans preference",
+        "Current fact committed: early Coltrane preference",
+        "Entity Sam from Goldman unified under single ID",
+        "Ambiguity preserved: no source metadata on correction timestamp"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Accept correction and mark Bill Evans preference as outdated",
+      "Request timestamp or source evidence for both claims",
+      "Preserve both preferences if Sam enjoys both artists"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Resolve conflicting music preference information for Sam from Goldman\",\n  \"decision\": \"Supersede existing preference; mark Bill Evans fact as corrected\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"correction\",\n      \"statement\": \"Sam from Goldman likes early Coltrane\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"early Coltrane\",\n          \"type\": \"music\",\n          \"role\": \"preference\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"early Coltrane\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"superseded\",\n      \"statement\": \"Sam from Goldman likes Bill Evans\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"musician\",\n          \"role\": \"preference\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge\",\n    \"entity_id\": \"sam_goldman_001\",\n    \"reason\": \"Same person; preference attribute corrected via explicit contradiction\"\n  },\n  \"conflict_classification\": \"direct_contradiction\",\n  \"answer\": \"The existing memory stating Sam from Goldman likes Bill Evans has been corrected. Current durable memory: Sam from Goldman likes early Coltrane. The prior preference is preserved as superseded context but not presented as current fact.\",\n  \"citations\": [\n    \"Correction input: Sam from Goldman actually likes early Coltrane, not Bill Evans\"\n  ],\n  \"repair_options\": [\n    \"Accept correction and mark Bill Evans preference as outdated\",\n    \"Request timestamp or source evidence for both claims\",\n    \"Preserve both preferences if Sam enjoys both artists\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Conflict identified: direct contradiction on music preference\",\n      \"Superseded fact archived: Bill Evans preference\",\n      \"Current fact committed: early Coltrane preference\",\n      \"Entity Sam from Goldman unified under single ID\",\n      \"Ambiguity preserved: no source metadata on correction timestamp\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

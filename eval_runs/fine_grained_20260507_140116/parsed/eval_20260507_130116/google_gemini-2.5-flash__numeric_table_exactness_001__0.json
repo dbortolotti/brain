@@ -1,0 +1,154 @@
+{
+  "fixture_id": "numeric_table_exactness_001",
+  "model": "google:gemini-2.5-flash",
+  "payload": {
+    "answer": "PPO-002, which was entropy tuned, achieved a reward of 0.18 and a Sharpe ratio of 0.51. This is an improvement over the baseline PPO-001, which had a reward of 0.12 and a Sharpe ratio of 0.45.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "Compare the performance metrics of PPO-001 and PPO-002 to identify improvements.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No entity resolution required as all entities are distinct and clearly defined within the context."
+    },
+    "intent": "Evaluate the performance of different PPO runs based on reward and Sharpe ratio.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "subject",
+            "type": "Run"
+          },
+          {
+            "name": "0.12",
+            "role": "value",
+            "type": "Reward"
+          },
+          {
+            "name": "0.45",
+            "role": "value",
+            "type": "Sharpe"
+          },
+          {
+            "name": "baseline",
+            "role": "description",
+            "type": "Note"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "0.12",
+            "predicate": "has_reward",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "0.45",
+            "predicate": "has_sharpe",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "baseline",
+            "predicate": "is_described_as",
+            "subject": "PPO-001"
+          }
+        ],
+        "statement": "PPO-001 is a baseline run with a reward of 0.12 and a Sharpe ratio of 0.45."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "subject",
+            "type": "Run"
+          },
+          {
+            "name": "0.18",
+            "role": "value",
+            "type": "Reward"
+          },
+          {
+            "name": "0.51",
+            "role": "value",
+            "type": "Sharpe"
+          },
+          {
+            "name": "entropy tuned",
+            "role": "description",
+            "type": "Note"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "0.18",
+            "predicate": "has_reward",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "0.51",
+            "predicate": "has_sharpe",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "entropy tuned",
+            "predicate": "is_described_as",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "PPO-002 is an entropy-tuned run with a reward of 0.18 and a Sharpe ratio of 0.51."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "subject",
+            "type": "Run"
+          },
+          {
+            "name": "PPO-001",
+            "role": "object",
+            "type": "Run"
+          },
+          {
+            "name": "reward",
+            "role": "attribute",
+            "type": "Metric"
+          },
+          {
+            "name": "Sharpe ratio",
+            "role": "attribute",
+            "type": "Metric"
+          }
+        ],
+        "kind": "comparison",
+        "relationships": [
+          {
+            "object": "PPO-001",
+            "predicate": "has_higher_reward_than",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "PPO-001",
+            "predicate": "has_higher_sharpe_than",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "PPO-002 achieved a higher reward (0.18) and Sharpe ratio (0.51) compared to PPO-001 (reward 0.12, Sharpe 0.45)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted factual data for PPO-001 and PPO-002.",
+        "Identified the comparative performance of the two runs."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

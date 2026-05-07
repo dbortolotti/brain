@@ -1,0 +1,104 @@
+{
+  "fixture_id": "duplicate_sam_bill_evans_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The two statements refer to the same preference (Sam from Goldman liking Bill Evans) but differ in punctuation/qualifier usage. Merge as one durable memory with preserved ambiguity: **'Sam from Goldman likes Bill Evans [New]'** (brackets indicate optional stylistic/era descriptor).",
+    "citations": [
+      "Original statement 1: 'Bill Evans New' (punctuation suggests 'New' as descriptor)",
+      "Original statement 2: 'Bill Evans' (no descriptor, but context implies same artist)"
+    ],
+    "conflict_classification": "punctuation_ambiguity_in_reference",
+    "decision": "merge_with_ambiguity_preservation",
+    "entity_resolution": {
+      "action": "merge_entities_with_ambiguity",
+      "entity_id": "Bill_Evans_001",
+      "reason": "Punctuation ambiguity ('New' as separate descriptor vs. omitted). Original intent likely refers to the same artist (Bill Evans) with optional stylistic/era qualifier. Preserve both forms to avoid loss of nuance."
+    },
+    "intent": "detect_and_resolve_duplicate_memory_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "source",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "qualifier": "New",
+            "role": "preference",
+            "type": "artist"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "Bill Evans (New)",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman mentioned that he likes Bill Evans (New)."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "source",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference",
+            "type": "artist"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman said he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Merged entities while preserving ambiguity in descriptor.",
+        "Superseded no facts; retained all original information.",
+        "Added qualifier handling for future similar cases."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retain both versions as separate memories with cross-references.",
+      "Merge with explicit note: 'Bill Evans (possibly referring to 'New' era)'",
+      "Query Sam for clarification on intended meaning of 'New'."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

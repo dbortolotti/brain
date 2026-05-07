@@ -1,0 +1,70 @@
+{
+  "error": null,
+  "fixture_id": "slack_retry_event_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The event 'Sam from Goldman Sachs likes Bill Evans' was delivered twice with the same ID. Only the first occurrence is retained in memory.",
+    "citations": [
+      "Slack event ID: [REDACTED] (duplicate)"
+    ],
+    "conflict_classification": "duplicate_event",
+    "decision": "suppress_duplicate",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "sam_goldman_001",
+      "reason": "Duplicate event ID detected; preserving latest timestamp and context."
+    },
+    "intent": "event_duplication_detection",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object_of_affection",
+            "type": "person"
+          }
+        ],
+        "kind": "event",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman Sachs",
+            "predicate": "is_affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman Sachs expressed a liking for Bill Evans (jazz pianist/composer)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Duplicate event suppressed.",
+        "Memory preserved with highest-confidence entities/relationships."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ignore future duplicates of this event ID.",
+      "Log duplicate events for audit purposes.",
+      "Notify user of potential data integrity issues."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"event_duplication_detection\",\n  \"decision\": \"suppress_duplicate\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"event\",\n      \"statement\": \"Sam from Goldman Sachs expressed a liking for Bill Evans (jazz pianist/composer).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"object_of_affection\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"is_affiliated_with\",\n          \"object\": \"Goldman Sachs\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge\",\n    \"entity_id\": \"sam_goldman_001\",\n    \"reason\": \"Duplicate event ID detected; preserving latest timestamp and context.\"\n  },\n  \"conflict_classification\": \"duplicate_event\",\n  \"answer\": \"The event 'Sam from Goldman Sachs likes Bill Evans' was delivered twice with the same ID. Only the first occurrence is retained in memory.\",\n  \"citations\": [\n    \"Slack event ID: [REDACTED] (duplicate)\"\n  ],\n  \"repair_options\": [\n    \"Ignore future duplicates of this event ID.\",\n    \"Log duplicate events for audit purposes.\",\n    \"Notify user of potential data integrity issues.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Duplicate event suppressed.\",\n      \"Memory preserved with highest-confidence entities/relationships.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

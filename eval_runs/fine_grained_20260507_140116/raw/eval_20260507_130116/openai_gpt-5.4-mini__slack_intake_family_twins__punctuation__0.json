@@ -1,0 +1,71 @@
+{
+  "error": null,
+  "fixture_id": "slack_intake_family_twins__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Accepted as durable family memory: the user has twin daughters named Nur and Sara.",
+    "citations": [
+      "Nur and Sara are my twin daughters"
+    ],
+    "conflict_classification": "none",
+    "decision": "accept",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "Two previously unmentioned people are introduced as the user's twin daughters; no conflicting identity information is present."
+    },
+    "intent": "entity_candidate_ranker",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "is twin of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is twin of",
+            "subject": "Sara"
+          },
+          {
+            "object": "user",
+            "predicate": "is daughter of",
+            "subject": "Nur"
+          },
+          {
+            "object": "user",
+            "predicate": "is daughter of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "The user has twin daughters named Nur and Sara."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured two child entities and their twin/daughter relationship to the user.",
+        "No ambiguity requiring deferral beyond the names and relation provided."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"entity_candidate_ranker\",\"decision\":\"accept\",\"memory_cards\":[{\"kind\":\"relationship\",\"statement\":\"The user has twin daughters named Nur and Sara.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Nur\",\"type\":\"person\",\"role\":\"daughter\"},{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"daughter\"}],\"relationships\":[{\"subject\":\"Nur\",\"predicate\":\"is twin of\",\"object\":\"Sara\"},{\"subject\":\"Sara\",\"predicate\":\"is twin of\",\"object\":\"Nur\"},{\"subject\":\"Nur\",\"predicate\":\"is daughter of\",\"object\":\"user\"},{\"subject\":\"Sara\",\"predicate\":\"is daughter of\",\"object\":\"user\"}]}],\"entity_resolution\":{\"action\":\"create\",\"entity_id\":null,\"reason\":\"Two previously unmentioned people are introduced as the user's twin daughters; no conflicting identity information is present.\"},\"conflict_classification\":\"none\",\"answer\":\"Accepted as durable family memory: the user has twin daughters named Nur and Sara.\",\"citations\":[\"Nur and Sara are my twin daughters\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Captured two child entities and their twin/daughter relationship to the user.\",\"No ambiguity requiring deferral beyond the names and relation provided.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

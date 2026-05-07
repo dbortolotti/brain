@@ -1,0 +1,88 @@
+{
+  "fixture_id": "conflict_sara_niece_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "The existing memory says Sara is Daniele's daughter and Nur's twin. The new claim that Sara is your niece can be consistent with that information, but it requires knowing how you relate to Daniele (e.g., whether Daniele is your sibling or the sibling of one of your parents). Since that context isn\u2019t provided, treat 'my niece' as low-confidence/ambiguous rather than as a confirmed fact.",
+    "citations": [],
+    "conflict_classification": "No direct contradiction; the new claim is underdetermined because 'my niece' depends on the speaker's relationship to Sara's parents.",
+    "decision": "Store the new claim as ambiguous/low-confidence because it depends on the speaker's family context; do not mark it as a contradiction to the existing parent/twin relationships.",
+    "entity_resolution": {
+      "action": "link_to_existing_entity",
+      "entity_id": "Sara",
+      "reason": "Both statements refer to the same person name 'Sara'; the new claim adds a relationship to the speaker rather than changing Sara's identity."
+    },
+    "intent": "Explain and reconcile a possible relationship conflict between existing and new memory about Sara.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "twin",
+            "type": "person"
+          }
+        ],
+        "kind": "high_confidence_existing",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is daughter of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is twin of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "me",
+            "role": "speaker",
+            "type": "person"
+          }
+        ],
+        "kind": "new_ambiguous",
+        "relationships": [
+          {
+            "object": "me",
+            "predicate": "is niece of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Kept the existing high-confidence parent/twin relationships unchanged.",
+        "Added the niece claim as low-confidence due to missing speaker-to-family linkage."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm which side makes Sara your niece (e.g., is Daniele your sibling, or is Nur your sibling, or is it through another parent?).",
+      "Ask whether you mean 'niece' as the child of your sibling or the child of your spouse\u2019s sibling."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

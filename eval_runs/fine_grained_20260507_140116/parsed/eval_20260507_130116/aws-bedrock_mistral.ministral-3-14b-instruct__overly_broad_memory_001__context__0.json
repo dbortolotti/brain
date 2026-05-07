@@ -1,0 +1,69 @@
+{
+  "fixture_id": "overly_broad_memory_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory commitment rejected due to unresolved ambiguity and potential for superseded facts. Specify: (1) scope (e.g., 'AI since 2020'), (2) granularity (e.g., 'only foundational models'), or (3) durability criteria (e.g., 'peer-reviewed sources only').",
+    "citations": [
+      "Durability Principle: 'Ambiguity in memory intent must be resolved before commitment to avoid superseded or contradictory facts.' (Brain System Design, \u00a74.2.1)",
+      "Granularity Constraint: 'Overly broad statements risk including non-durable knowledge (e.g., transient trends).' (Memory Integrity Protocol, \u00a73.5)"
+    ],
+    "conflict_classification": "ambiguity_conflict",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "nullify",
+      "entity_id": "overly_broad_memory_001__context",
+      "reason": "Lack of explicit constraints on durability (e.g., temporal validity, source reliability, or granularity) makes this memory unsafe for commitment."
+    },
+    "intent": "durability_filter:preserve_ambiguity_and_avoid_superseded_facts",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "AI",
+            "role": "target_domain",
+            "type": "concept"
+          },
+          {
+            "name": "durability",
+            "role": "filter_criterion",
+            "type": "constraint"
+          },
+          {
+            "name": "ambiguity",
+            "role": "decision_factor",
+            "type": "risk"
+          }
+        ],
+        "kind": "durability_warning",
+        "relationships": [
+          {
+            "object": "durability_principle:preserve_ambiguity",
+            "predicate": "violates",
+            "subject": "overly_broad_memory_001__context"
+          },
+          {
+            "object": "superseded_facts",
+            "predicate": "encompasses",
+            "subject": "AI"
+          }
+        ],
+        "statement": "The instruction 'Remember everything about AI' is overly broad and lacks specificity regarding scope, granularity, or temporal boundaries. Ambiguity in intent risks committing superseded, contradictory, or non-durable facts (e.g., rapidly evolving subfields like LLMs, hardware advancements, or ethical debates)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Input rejected for violating durability constraints.",
+        "Suggested repairs provided in `repair_options`.",
+        "Resubmit with explicit scope/granularity/durability parameters."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Narrow scope: 'Remember only the 7 key AI paradigms (e.g., symbolic, connectionist) with citations post-2000.'",
+      "Add temporal bounds: 'Retain AI facts from 2015\u20132023, excluding speculative future projections.'",
+      "Specify durability criteria: 'Commit only AI facts from peer-reviewed papers or consensus reports.'"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

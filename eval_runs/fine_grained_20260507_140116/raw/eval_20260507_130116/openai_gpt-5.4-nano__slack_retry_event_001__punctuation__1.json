@@ -1,0 +1,61 @@
+{
+  "error": null,
+  "fixture_id": "slack_retry_event_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Duplicates detected; commit the single consolidated memory about Sam (from Goldman) liking Bill Evans.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit_once",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No stable IDs provided; keep as surface-name entities."
+    },
+    "intent": "Evaluate whether to commit durable memory from a duplicate Slack event",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference/interest",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (from Goldman) likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Input indicates the same Slack event ID delivered twice; deduplicated to one durable memory card."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If the Slack payload includes explicit user/account IDs, re-link 'Sam' and 'Bill Evans' to those identifiers.",
+      "If 'Sam' could refer to multiple people in your context, ask for clarification or store without affiliation until disambiguated."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Evaluate whether to commit durable memory from a duplicate Slack event\",\n  \"decision\": \"commit_once\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference/interest\",\n      \"statement\": \"Sam (from Goldman) likes Bill Evans.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No stable IDs provided; keep as surface-name entities.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Duplicates detected; commit the single consolidated memory about Sam (from Goldman) liking Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If the Slack payload includes explicit user/account IDs, re-link 'Sam' and 'Bill Evans' to those identifiers.\",\n    \"If 'Sam' could refer to multiple people in your context, ask for clarification or store without affiliation until disambiguated.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Input indicates the same Slack event ID delivered twice; deduplicated to one durable memory card.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

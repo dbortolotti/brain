@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "debug_sql_disabled_001",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "SQL execution disabled in debug mode; memory cards could not be retrieved. Please enable BRAIN_DEBUG_SQL_ENABLED to run SQL-backed retrieval.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "no_sql_execution",
+    "entity_resolution": {
+      "action": "no_change",
+      "entity_id": null,
+      "reason": "SQL is disabled for debug; no memory cards were executed or read."
+    },
+    "intent": "diagnose_and_query_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "BRAIN_DEBUG_SQL_ENABLED",
+            "role": "flag",
+            "type": "setting"
+          },
+          {
+            "name": "debug_mode",
+            "role": "environment",
+            "type": "state"
+          }
+        ],
+        "kind": "memory_card",
+        "relationships": [
+          {
+            "object": "false",
+            "predicate": "equals",
+            "subject": "BRAIN_DEBUG_SQL_ENABLED"
+          },
+          {
+            "object": "BRAIN_DEBUG_SQL_ENABLED=false",
+            "predicate": "has_setting",
+            "subject": "Brain memory system"
+          }
+        ],
+        "statement": "Brain memory system is configured with BRAIN_DEBUG_SQL_ENABLED=false, so SQL queries are not executed in debug mode."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Requested operation acknowledged.",
+        "SQL execution was disabled per current configuration."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Set BRAIN_DEBUG_SQL_ENABLED=true to allow SQL queries in debug mode.",
+      "Provide explicit memory_card identifiers to fetch specific memory entries without SQL."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"diagnose_and_query_memory\",\n  \"decision\": \"no_sql_execution\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"memory_card\",\n      \"statement\": \"Brain memory system is configured with BRAIN_DEBUG_SQL_ENABLED=false, so SQL queries are not executed in debug mode.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"BRAIN_DEBUG_SQL_ENABLED\",\n          \"type\": \"setting\",\n          \"role\": \"flag\"\n        }\n        ,\n        {\n          \"name\": \"debug_mode\",\n          \"type\": \"state\",\n          \"role\": \"environment\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"BRAIN_DEBUG_SQL_ENABLED\",\n          \"predicate\": \"equals\",\n          \"object\": \"false\"\n        },\n        {\n          \"subject\": \"Brain memory system\",\n          \"predicate\": \"has_setting\",\n          \"object\": \"BRAIN_DEBUG_SQL_ENABLED=false\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_change\",\n    \"entity_id\": null,\n    \"reason\": \"SQL is disabled for debug; no memory cards were executed or read.\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"SQL execution disabled in debug mode; memory cards could not be retrieved. Please enable BRAIN_DEBUG_SQL_ENABLED to run SQL-backed retrieval.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Set BRAIN_DEBUG_SQL_ENABLED=true to allow SQL queries in debug mode.\",\n    \"Provide explicit memory_card identifiers to fetch specific memory entries without SQL.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Requested operation acknowledged.\",\n      \"SQL execution was disabled per current configuration.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

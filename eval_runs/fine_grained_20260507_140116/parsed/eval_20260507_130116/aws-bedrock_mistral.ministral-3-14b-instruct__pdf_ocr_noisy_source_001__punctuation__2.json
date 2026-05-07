@@ -1,0 +1,128 @@
+{
+  "fixture_id": "pdf_ocr_noisy_source_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The extracted memory cards reflect the core principles of Brain as a durable, rebuildable truth source while enforcing constraints on ambiguity and fact validity. No conflicts detected.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "proceed_with_extraction",
+    "entity_resolution": {
+      "action": "resolve_ambiguity",
+      "entity_id": null,
+      "reason": "OCR noise in source ('remalns', 'trvth', 'Cognee') requires contextual interpretation without altering core intent."
+    },
+    "intent": "extract_atomic_memory_cards",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "personal_memory_system",
+            "type": "system"
+          },
+          {
+            "name": "durable source of truth",
+            "role": "desired_attribute",
+            "type": "property"
+          },
+          {
+            "name": "rebuildable",
+            "role": "desired_attribute",
+            "type": "property"
+          }
+        ],
+        "kind": "conceptual",
+        "relationships": [
+          {
+            "object": "a durable source of truth",
+            "predicate": "should_be",
+            "subject": "Brain"
+          },
+          {
+            "object": "rebuildable",
+            "predicate": "should_be",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "A personal memory system (Brain) should serve as a durable, rebuildable source of truth."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "cognitive projections",
+            "role": "memory_reconstruction",
+            "type": "process"
+          },
+          {
+            "name": "ambiguity",
+            "role": "preservation_requirement",
+            "type": "property"
+          },
+          {
+            "name": "false precision",
+            "role": "avoidance_target",
+            "type": "risk"
+          }
+        ],
+        "kind": "interpretation",
+        "relationships": [
+          {
+            "object": "ambiguity",
+            "predicate": "must_preserve",
+            "subject": "cognitive projections"
+          },
+          {
+            "object": "false precision",
+            "predicate": "prevents",
+            "subject": "preserving_ambiguity"
+          }
+        ],
+        "statement": "Cognitive projections (e.g., memory reconstruction) must preserve ambiguity to avoid false precision."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "superseded facts",
+            "role": "invalid_state",
+            "type": "fact_state"
+          },
+          {
+            "name": "deleted facts",
+            "role": "invalid_state",
+            "type": "fact_state"
+          },
+          {
+            "name": "current",
+            "role": "exclusion_criterion",
+            "type": "temporal_state"
+          }
+        ],
+        "kind": "constraint",
+        "relationships": [
+          {
+            "object": "presented_as_current",
+            "predicate": "must_not_be",
+            "subject": "superseded_or_deleted_facts"
+          }
+        ],
+        "statement": "Superseded or deleted facts must never be presented as current in the system."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted 3 atomic memory cards with high/medium confidence.",
+        "Resolved OCR noise via contextual inference.",
+        "No superseded facts detected in current extraction."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify 'Cognee' as 'cognitive' in entity resolution if context permits.",
+      "Flag OCR artifacts ('remalns', 'trvth') for manual review in source material."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

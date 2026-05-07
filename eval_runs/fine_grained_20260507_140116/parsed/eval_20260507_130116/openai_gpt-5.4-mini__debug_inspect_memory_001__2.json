@@ -1,0 +1,53 @@
+{
+  "fixture_id": "debug_inspect_memory_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "I cannot inspect or summarize mem_123 because no memory payload or metadata was provided in the input.",
+    "citations": [
+      "/brain inspect memory mem_123"
+    ],
+    "conflict_classification": "insufficient_information",
+    "decision": "No durable memory content could be verified from the provided input; treat the requested memory as unresolved/unknown rather than asserting facts.",
+    "entity_resolution": {
+      "action": "no_resolution",
+      "entity_id": null,
+      "reason": "The referenced memory identifier mem_123 cannot be mapped to any verified entity or memory content from the input alone."
+    },
+    "intent": "Inspect memory entry mem_123",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "mem_123",
+            "role": "target",
+            "type": "memory_id"
+          }
+        ],
+        "kind": "unknown",
+        "relationships": [
+          {
+            "object": "unresolved",
+            "predicate": "has_status",
+            "subject": "mem_123"
+          }
+        ],
+        "statement": "The contents of memory mem_123 are not available in the provided context."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Requested inspection of mem_123.",
+        "No inspectable memory content was included.",
+        "Returned an unresolved/unknown status without committing facts."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide the memory record or export for mem_123.",
+      "If the memory should exist, confirm the correct identifier and retry.",
+      "Share the relevant snapshot so I can classify conflicts and summarize content."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

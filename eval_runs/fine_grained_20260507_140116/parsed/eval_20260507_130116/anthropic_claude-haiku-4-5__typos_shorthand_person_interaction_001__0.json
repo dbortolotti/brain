@@ -1,0 +1,70 @@
+{
+  "fixture_id": "typos_shorthand_person_interaction_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory card created with medium confidence pending entity disambiguation",
+    "citations": [
+      "Input contains shorthand: 'frm'\u2192'from', 'goldmn'\u2192'Goldman'",
+      "Names are abbreviated and may match multiple entities"
+    ],
+    "conflict_classification": "ambiguous_entity_reference",
+    "decision": "Accept with entity resolution required",
+    "entity_resolution": {
+      "action": "defer_resolution",
+      "entity_id": null,
+      "reason": "Abbreviated names 'Sam' and 'Bill Evans' require disambiguation. 'goldmn' likely expands to 'Goldman' (company) but multiple Sams and Bill Evans entities may exist in system. Shorthand 'frm' interpreted as 'from' but confidence is medium."
+    },
+    "intent": "Record a social preference relationship between two people with abbreviated names and company affiliation",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "relationship",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card recorded with ambiguity flags",
+        "Entity resolution deferred pending user confirmation",
+        "Relationship stored as provisional pending disambiguation"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide full name for Sam (e.g., 'Sam Smith')",
+      "Confirm Goldman entity (full legal name or context)",
+      "Clarify relationship type beyond 'likes' if needed",
+      "Provide timestamps or additional context for relationship"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

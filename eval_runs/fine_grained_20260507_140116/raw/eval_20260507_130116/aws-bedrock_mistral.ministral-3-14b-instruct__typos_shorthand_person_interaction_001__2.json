@@ -1,0 +1,97 @@
+{
+  "error": null,
+  "fixture_id": "typos_shorthand_person_interaction_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Input contains ambiguous entity mentions ('sam frm goldmn' and 'bill evns') requiring clarification. No actionable memory created.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "proceed_with_ambiguous_resolution",
+    "entity_resolution": {
+      "action": "flag_for_human_review",
+      "entity_id": null,
+      "reason": "Ambiguous shorthand ('frm', 'evns') and potential homonyms ('Bill Evans' vs. other 'Bill Evans'). No durable memory committed."
+    },
+    "intent": "entity_mention_extraction",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "frm goldmn",
+            "role": "potential_affiliation",
+            "type": "unknown"
+          },
+          {
+            "name": "bill evns",
+            "role": "potential_person",
+            "type": "unknown"
+          }
+        ],
+        "kind": "entity_mention",
+        "relationships": [
+          {
+            "object": "bill evns",
+            "predicate": "likes",
+            "subject": "sam"
+          },
+          {
+            "object": "frm goldmn",
+            "predicate": "has_affiliation_with",
+            "subject": "sam"
+          }
+        ],
+        "statement": "Unresolved shorthand/typos in input: 'sam frm goldmn' and 'bill evns'"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Goldman Sachs",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "potential_object_of_liking",
+            "type": "person"
+          }
+        ],
+        "kind": "interpretation_hypothesis",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "is_associated_with",
+            "subject": "sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "sam"
+          }
+        ],
+        "statement": "Possible interpretations: 'sam from Goldman Sachs' and 'Bill Evans' (jazz musician/composer)"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No durable memory committed due to ambiguity.",
+        "Entity mentions flagged for resolution."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Request clarification: 'Did you mean Goldman Sachs and Bill Evans?'",
+      "Suggest alternative interpretations: 'Are you referring to Bill Evans (musician) or another Bill Evans?'",
+      "Propose full names: 'Could you specify 'from' and 'evns'?'"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"entity_mention_extraction\",\n  \"decision\": \"proceed_with_ambiguous_resolution\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"entity_mention\",\n      \"statement\": \"Unresolved shorthand/typos in input: 'sam frm goldmn' and 'bill evns'\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"frm goldmn\",\n          \"type\": \"unknown\",\n          \"role\": \"potential_affiliation\"\n        },\n        {\n          \"name\": \"bill evns\",\n          \"type\": \"unknown\",\n          \"role\": \"potential_person\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"bill evns\"\n        },\n        {\n          \"subject\": \"sam\",\n          \"predicate\": \"has_affiliation_with\",\n          \"object\": \"frm goldmn\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"interpretation_hypothesis\",\n      \"statement\": \"Possible interpretations: 'sam from Goldman Sachs' and 'Bill Evans' (jazz musician/composer)\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"potential_object_of_liking\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"sam\",\n          \"predicate\": \"is_associated_with\",\n          \"object\": \"Goldman Sachs\"\n        },\n        {\n          \"subject\": \"sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"flag_for_human_review\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguous shorthand ('frm', 'evns') and potential homonyms ('Bill Evans' vs. other 'Bill Evans'). No durable memory committed.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Input contains ambiguous entity mentions ('sam frm goldmn' and 'bill evns') requiring clarification. No actionable memory created.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Request clarification: 'Did you mean Goldman Sachs and Bill Evans?'\",\n    \"Suggest alternative interpretations: 'Are you referring to Bill Evans (musician) or another Bill Evans?'\",\n    \"Propose full names: 'Could you specify 'from' and 'evns'?'\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"No durable memory committed due to ambiguity.\",\n      \"Entity mentions flagged for resolution.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

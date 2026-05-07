@@ -1,0 +1,106 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "No conflict. The new assertion (Sara is my niece) is consistent with existing memory. If Sara is Daniele's daughter, then Sara is the niece of Daniele's sibling(s). The speaker's claim that Sara is their niece implies the speaker is Daniele's sibling, which does not contradict the existing facts\u2014it adds relational context from the speaker's perspective.",
+    "citations": [
+      "Existing: Sara is Daniele's daughter (high confidence)",
+      "Existing: Sara is Nur's twin (high confidence)",
+      "New: Sara is my niece (medium confidence, perspective-dependent)"
+    ],
+    "conflict_classification": "COMPATIBLE_PERSPECTIVE_SHIFT",
+    "decision": "ACCEPT_WITH_CLARIFICATION",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "Sara",
+      "reason": "All statements refer to the same individual Sara; new assertion establishes kinship relationship between Sara and speaker without contradicting existing genealogical facts"
+    },
+    "intent": "Evaluate consistency between existing memory (Sara is Daniele's daughter and Nur's twin) and new assertion (Sara is my niece)",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_child_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Nur's twin"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sara",
+            "type": "person"
+          },
+          {
+            "name": "speaker",
+            "role": "observer",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "speaker",
+            "predicate": "is_niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is the speaker's niece"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "New assertion accepted without modification",
+        "No superseded facts identified",
+        "Genealogical consistency maintained",
+        "Ambiguity preserved regarding speaker's exact sibling relationship to Daniele"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retain all three facts as complementary; they describe the same person from different relational perspectives",
+      "Optionally add: Speaker is Daniele's sibling (inferred from niece relationship)"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Evaluate consistency between existing memory (Sara is Daniele's daughter and Nur's twin) and new assertion (Sara is my niece)\",\n  \"decision\": \"ACCEPT_WITH_CLARIFICATION\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is Daniele's daughter\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Sara\", \"type\": \"person\"},\n        {\"name\": \"Daniele\", \"type\": \"person\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sara\", \"predicate\": \"is_child_of\", \"object\": \"Daniele\"}\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is Nur's twin\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Sara\", \"type\": \"person\"},\n        {\"name\": \"Nur\", \"type\": \"person\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sara\", \"predicate\": \"is_twin_of\", \"object\": \"Nur\"}\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is the speaker's niece\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\"name\": \"Sara\", \"type\": \"person\"},\n        {\"name\": \"speaker\", \"type\": \"person\", \"role\": \"observer\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sara\", \"predicate\": \"is_niece_of\", \"object\": \"speaker\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge\",\n    \"entity_id\": \"Sara\",\n    \"reason\": \"All statements refer to the same individual Sara; new assertion establishes kinship relationship between Sara and speaker without contradicting existing genealogical facts\"\n  },\n  \"conflict_classification\": \"COMPATIBLE_PERSPECTIVE_SHIFT\",\n  \"answer\": \"No conflict. The new assertion (Sara is my niece) is consistent with existing memory. If Sara is Daniele's daughter, then Sara is the niece of Daniele's sibling(s). The speaker's claim that Sara is their niece implies the speaker is Daniele's sibling, which does not contradict the existing facts\u2014it adds relational context from the speaker's perspective.\",\n  \"citations\": [\n    \"Existing: Sara is Daniele's daughter (high confidence)\",\n    \"Existing: Sara is Nur's twin (high confidence)\",\n    \"New: Sara is my niece (medium confidence, perspective-dependent)\"\n  ],\n  \"repair_options\": [\n    \"Retain all three facts as complementary; they describe the same person from different relational perspectives\",\n    \"Optionally add: Speaker is Daniele's sibling (inferred from niece relationship)\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"New assertion accepted without modification\",\n      \"No superseded facts identified\",\n      \"Genealogical consistency maintained\",\n      \"Ambiguity preserved regarding speaker's exact sibling relationship to Daniele\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

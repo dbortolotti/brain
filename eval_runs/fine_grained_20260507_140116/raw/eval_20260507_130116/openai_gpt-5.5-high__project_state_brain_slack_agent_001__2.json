@@ -1,0 +1,80 @@
+{
+  "error": null,
+  "fixture_id": "project_state_brain_slack_agent_001",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "Captured project state: Slack is the preferred primary guardrailed ingestion interface for Brain, and Telegram is deferred.",
+    "citations": [
+      "Brain project state: Slack should be the primary guardrailed memory ingestion interface; Telegram can come later."
+    ],
+    "conflict_classification": "none",
+    "decision": "For the Brain project, Slack should be prioritized as the primary guardrailed memory ingestion interface, while Telegram is deferred for later consideration.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No ambiguous entity resolution was required; Brain, Slack, and Telegram are named directly."
+    },
+    "intent": "extract_project_state_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "Slack",
+            "role": "primary memory ingestion interface",
+            "type": "platform"
+          }
+        ],
+        "kind": "project_decision",
+        "relationships": [
+          {
+            "object": "Slack",
+            "predicate": "should_use_primary_ingestion_interface",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "For the Brain project, Slack should be the primary guardrailed memory ingestion interface."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "Telegram",
+            "role": "deferred memory ingestion interface",
+            "type": "platform"
+          }
+        ],
+        "kind": "project_priority",
+        "relationships": [
+          {
+            "object": "Telegram",
+            "predicate": "deferred_ingestion_interface",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "For the Brain project, Telegram can come later as a memory ingestion interface."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created a project decision memory card for Slack as the primary guardrailed ingestion interface.",
+        "Created a project priority memory card deferring Telegram until later."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"extract_project_state_memory\",\n  \"decision\": \"For the Brain project, Slack should be prioritized as the primary guardrailed memory ingestion interface, while Telegram is deferred for later consideration.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"project_decision\",\n      \"statement\": \"For the Brain project, Slack should be the primary guardrailed memory ingestion interface.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain\",\n          \"type\": \"project\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Slack\",\n          \"type\": \"platform\",\n          \"role\": \"primary memory ingestion interface\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain\",\n          \"predicate\": \"should_use_primary_ingestion_interface\",\n          \"object\": \"Slack\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"project_priority\",\n      \"statement\": \"For the Brain project, Telegram can come later as a memory ingestion interface.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain\",\n          \"type\": \"project\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Telegram\",\n          \"type\": \"platform\",\n          \"role\": \"deferred memory ingestion interface\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain\",\n          \"predicate\": \"deferred_ingestion_interface\",\n          \"object\": \"Telegram\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No ambiguous entity resolution was required; Brain, Slack, and Telegram are named directly.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Captured project state: Slack is the preferred primary guardrailed ingestion interface for Brain, and Telegram is deferred.\",\n  \"citations\": [\n    \"Brain project state: Slack should be the primary guardrailed memory ingestion interface; Telegram can come later.\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Created a project decision memory card for Slack as the primary guardrailed ingestion interface.\",\n      \"Created a project priority memory card deferring Telegram until later.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

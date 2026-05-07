@@ -1,0 +1,74 @@
+{
+  "error": null,
+  "fixture_id": "article_url_fetch_failure_001",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Stored: article URL is unavailable (404). Memory architecture note: handling of missing/failing fetch results should be robust and traceable.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "preserve_and_note_failure",
+    "entity_resolution": {
+      "action": "record_failed_fetch_result",
+      "entity_id": null,
+      "reason": "Mock fetch result indicates 404 network error for article_url_fetch_failure_001"
+    },
+    "intent": "store_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "target",
+            "type": "url"
+          },
+          {
+            "name": "missing",
+            "role": "article_title_fragment",
+            "type": "identifier"
+          },
+          {
+            "name": "memory architecture",
+            "role": "associated_topic",
+            "type": "topic"
+          },
+          {
+            "name": "memory system",
+            "role": "related_concept",
+            "type": "concept"
+          },
+          {
+            "name": "404 network error",
+            "role": "failure_descriptor",
+            "type": "error_condition"
+          }
+        ],
+        "kind": "article_reference",
+        "relationships": [
+          {
+            "object": "memory_architecture",
+            "predicate": "is_related_to",
+            "subject": "https://example.com/missing"
+          },
+          {
+            "object": "404_network_error",
+            "predicate": "encounters",
+            "subject": "https://example.com/missing"
+          }
+        ],
+        "statement": "https://example.com/missing"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created for article_url_fetch_failure_001",
+        "Fetched result marked as 404; no content stored"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"store_memory\",\n  \"decision\": \"preserve_and_note_failure\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"article_reference\",\n      \"statement\": \"https://example.com/missing\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"https://example.com/missing\",\n          \"type\": \"url\",\n          \"role\": \"target\"\n        }\n        ,\n        {\n          \"name\": \"missing\",\n          \"type\": \"identifier\",\n          \"role\": \"article_title_fragment\"\n        }\n        ,\n        {\n          \"name\": \"memory architecture\",\n          \"type\": \"topic\",\n          \"role\": \"associated_topic\"\n        }\n        ,\n        {\n          \"name\": \"memory system\",\n          \"type\": \"concept\",\n          \"role\": \"related_concept\"\n        }\n        ,\n        {\n          \"name\": \"404 network error\",\n          \"type\": \"error_condition\",\n          \"role\": \"failure_descriptor\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"https://example.com/missing\",\n          \"predicate\": \"is_related_to\",\n          \"object\": \"memory_architecture\"\n        },\n        {\n          \"subject\": \"https://example.com/missing\",\n          \"predicate\": \"encounters\",\n          \"object\": \"404_network_error\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"record_failed_fetch_result\",\n    \"entity_id\": null,\n    \"reason\": \"Mock fetch result indicates 404 network error for article_url_fetch_failure_001\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Stored: article URL is unavailable (404). Memory architecture note: handling of missing/failing fetch results should be robust and traceable.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card created for article_url_fetch_failure_001\",\n      \"Fetched result marked as 404; no content stored\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

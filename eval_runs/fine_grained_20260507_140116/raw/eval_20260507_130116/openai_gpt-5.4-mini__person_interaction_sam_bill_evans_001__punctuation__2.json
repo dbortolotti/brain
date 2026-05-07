@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "fixture_id": "person_interaction_sam_bill_evans_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Sam from Goldman likes Bill Evans.",
+    "citations": [
+      "Input: \"Sam from Goldman mentioned that he likes Bill Evans\""
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "store_candidate",
+    "entity_resolution": {
+      "action": "propose_candidate",
+      "entity_id": null,
+      "reason": "The subject is only identified as 'Sam from Goldman', which is not enough to confidently resolve to a specific durable identity."
+    },
+    "intent": "Extract and rank a candidate memory about a person's stated preference.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker/subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object of liking",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman said he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured a low-to-medium confidence preference statement.",
+        "Kept the subject identity ambiguous due to limited context."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If available, add Sam's full name or a stronger identifier to resolve the person entity.",
+      "If available, clarify whether Bill Evans refers to the jazz pianist or another Bill Evans."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Extract and rank a candidate memory about a person's stated preference.\",\"decision\":\"store_candidate\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman said he likes Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"speaker/subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"object of liking\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"propose_candidate\",\"entity_id\":null,\"reason\":\"The subject is only identified as 'Sam from Goldman', which is not enough to confidently resolve to a specific durable identity.\"},\"conflict_classification\":\"no_conflict\",\"answer\":\"Sam from Goldman likes Bill Evans.\",\"citations\":[\"Input: \\\"Sam from Goldman mentioned that he likes Bill Evans\\\"\"],\"repair_options\":[\"If available, add Sam's full name or a stronger identifier to resolve the person entity.\",\"If available, clarify whether Bill Evans refers to the jazz pianist or another Bill Evans.\"],\"receipt\":{\"success\":true,\"details\":[\"Captured a low-to-medium confidence preference statement.\",\"Kept the subject identity ambiguous due to limited context.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

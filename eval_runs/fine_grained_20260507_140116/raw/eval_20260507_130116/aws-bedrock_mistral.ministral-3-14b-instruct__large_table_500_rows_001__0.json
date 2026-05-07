@@ -1,0 +1,184 @@
+{
+  "error": null,
+  "fixture_id": "large_table_500_rows_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Store each (id, name, value) triplet as a separate memory card with explicit relationships. Handle duplicates via timestamped resolution or aggregation. Preserve ambiguity with flags and avoid superseded facts.",
+    "citations": [
+      "Policy: Durable Memory Preservation (v2.1)",
+      "Rule: Atomic Granularity for Repeated Triplets"
+    ],
+    "conflict_classification": "data_granularity_conflict",
+    "decision": "store_as_atomic_memory_cards_with_relationships",
+    "entity_resolution": {
+      "action": "create_new_entity",
+      "entity_id": null,
+      "reason": "No pre-existing entity matches the (id, name, value) triplet structure in durable memory. Requires atomic extraction."
+    },
+    "intent": "policy_evaluation",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV_table",
+            "role": "input",
+            "type": "data_structure"
+          },
+          {
+            "name": "id",
+            "role": "primary_key",
+            "type": "identifier"
+          },
+          {
+            "name": "name",
+            "role": "descriptor",
+            "type": "attribute"
+          },
+          {
+            "name": "value",
+            "role": "payload",
+            "type": "attribute"
+          }
+        ],
+        "kind": "policy_rule",
+        "relationships": [
+          {
+            "object": "memory_card",
+            "predicate": "contains",
+            "subject": "CSV_table"
+          },
+          {
+            "object": "id",
+            "predicate": "has_unique",
+            "subject": "memory_card"
+          },
+          {
+            "object": "name",
+            "predicate": "associates",
+            "subject": "memory_card"
+          },
+          {
+            "object": "value",
+            "predicate": "stores",
+            "subject": "memory_card"
+          }
+        ],
+        "statement": "For a CSV table with 500 rows containing repeated (id, name, value) triplets, store each unique (id, name, value) combination as a separate memory card to preserve granularity and avoid ambiguity."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "duplicate_triplets",
+            "role": "edge_case",
+            "type": "data_anomaly"
+          },
+          {
+            "name": "timestamp",
+            "role": "resolution_criteria",
+            "type": "metadata"
+          },
+          {
+            "name": "aggregation",
+            "role": "conflict_resolution",
+            "type": "data_processing"
+          }
+        ],
+        "kind": "policy_rule",
+        "relationships": [
+          {
+            "object": "timestamped_entry",
+            "predicate": "resolved_by",
+            "subject": "duplicate_triplets"
+          },
+          {
+            "object": "aggregation_metadata",
+            "predicate": "may_contain",
+            "subject": "memory_card"
+          }
+        ],
+        "statement": "If duplicate (id, name, value) triplets exist, retain only the most recent timestamped entry (if available) or merge into a single card with aggregated metadata (e.g., 'count: 3') to avoid redundancy."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "superseded_fact",
+            "role": "invalid",
+            "type": "data_state"
+          },
+          {
+            "name": "status_tag",
+            "role": "durability_control",
+            "type": "metadata"
+          },
+          {
+            "name": "replaced_by",
+            "role": "temporal_link",
+            "type": "relationship"
+          }
+        ],
+        "kind": "policy_rule",
+        "relationships": [
+          {
+            "object": "superseded",
+            "predicate": "has_status",
+            "subject": "memory_card"
+          },
+          {
+            "object": "current_card",
+            "predicate": "replaced_by",
+            "subject": "superseded_card"
+          }
+        ],
+        "statement": "Never store superseded or deleted facts as current. Mark superseded cards with a 'status: superseded' tag and a 'replaced_by' relationship to the newer card."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "one_to_many_relationship",
+            "role": "uncertainty",
+            "type": "data_ambiguity"
+          },
+          {
+            "name": "disambiguation_needed",
+            "role": "flag",
+            "type": "metadata"
+          }
+        ],
+        "kind": "policy_rule",
+        "relationships": [
+          {
+            "object": "one_to_many",
+            "predicate": "has_relationship_type",
+            "subject": "memory_card"
+          },
+          {
+            "object": "disambiguation",
+            "predicate": "requires",
+            "subject": "ambiguous_card"
+          }
+        ],
+        "statement": "Preserve ambiguity in relationships where (id, name) pairs map to multiple values. Represent as a 'one-to-many' relationship with a 'disambiguation_needed' flag."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Policy applied to 500-row CSV input.",
+        "Ambiguity preserved for one-to-many relationships.",
+        "No superseded facts committed as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Merge duplicate cards into a single card with aggregated metadata if no timestamp exists.",
+      "Add a 'disambiguation_required' tag to cards with conflicting (id, name) \u2192 value mappings.",
+      "Archive superseded cards with a 'status: superseded' tag and link to the replacement."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"policy_evaluation\",\n  \"decision\": \"store_as_atomic_memory_cards_with_relationships\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"policy_rule\",\n      \"statement\": \"For a CSV table with 500 rows containing repeated (id, name, value) triplets, store each unique (id, name, value) combination as a separate memory card to preserve granularity and avoid ambiguity.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"CSV_table\",\n          \"type\": \"data_structure\",\n          \"role\": \"input\"\n        },\n        {\n          \"name\": \"id\",\n          \"type\": \"identifier\",\n          \"role\": \"primary_key\"\n        },\n        {\n          \"name\": \"name\",\n          \"type\": \"attribute\",\n          \"role\": \"descriptor\"\n        },\n        {\n          \"name\": \"value\",\n          \"type\": \"attribute\",\n          \"role\": \"payload\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"CSV_table\",\n          \"predicate\": \"contains\",\n          \"object\": \"memory_card\"\n        },\n        {\n          \"subject\": \"memory_card\",\n          \"predicate\": \"has_unique\",\n          \"object\": \"id\"\n        },\n        {\n          \"subject\": \"memory_card\",\n          \"predicate\": \"associates\",\n          \"object\": \"name\"\n        },\n        {\n          \"subject\": \"memory_card\",\n          \"predicate\": \"stores\",\n          \"object\": \"value\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"policy_rule\",\n      \"statement\": \"If duplicate (id, name, value) triplets exist, retain only the most recent timestamped entry (if available) or merge into a single card with aggregated metadata (e.g., 'count: 3') to avoid redundancy.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"duplicate_triplets\",\n          \"type\": \"data_anomaly\",\n          \"role\": \"edge_case\"\n        },\n        {\n          \"name\": \"timestamp\",\n          \"type\": \"metadata\",\n          \"role\": \"resolution_criteria\"\n        },\n        {\n          \"name\": \"aggregation\",\n          \"type\": \"data_processing\",\n          \"role\": \"conflict_resolution\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"duplicate_triplets\",\n          \"predicate\": \"resolved_by\",\n          \"object\": \"timestamped_entry\"\n        },\n        {\n          \"subject\": \"memory_card\",\n          \"predicate\": \"may_contain\",\n          \"object\": \"aggregation_metadata\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"policy_rule\",\n      \"statement\": \"Never store superseded or deleted facts as current. Mark superseded cards with a 'status: superseded' tag and a 'replaced_by' relationship to the newer card.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"superseded_fact\",\n          \"type\": \"data_state\",\n          \"role\": \"invalid\"\n        },\n        {\n          \"name\": \"status_tag\",\n          \"type\": \"metadata\",\n          \"role\": \"durability_control\"\n        },\n        {\n          \"name\": \"replaced_by\",\n          \"type\": \"relationship\",\n          \"role\": \"temporal_link\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"memory_card\",\n          \"predicate\": \"has_status\",\n          \"object\": \"superseded\"\n        },\n        {\n          \"subject\": \"superseded_card\",\n          \"predicate\": \"replaced_by\",\n          \"object\": \"current_card\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"policy_rule\",\n      \"statement\": \"Preserve ambiguity in relationships where (id, name) pairs map to multiple values. Represent as a 'one-to-many' relationship with a 'disambiguation_needed' flag.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"one_to_many_relationship\",\n          \"type\": \"data_ambiguity\",\n          \"role\": \"uncertainty\"\n        },\n        {\n          \"name\": \"disambiguation_needed\",\n          \"type\": \"metadata\",\n          \"role\": \"flag\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"memory_card\",\n          \"predicate\": \"has_relationship_type\",\n          \"object\": \"one_to_many\"\n        },\n        {\n          \"subject\": \"ambiguous_card\",\n          \"predicate\": \"requires\",\n          \"object\": \"disambiguation\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_new_entity\",\n    \"entity_id\": null,\n    \"reason\": \"No pre-existing entity matches the (id, name, value) triplet structure in durable memory. Requires atomic extraction.\"\n  },\n  \"conflict_classification\": \"data_granularity_conflict\",\n  \"answer\": \"Store each (id, name, value) triplet as a separate memory card with explicit relationships. Handle duplicates via timestamped resolution or aggregation. Preserve ambiguity with flags and avoid superseded facts.\",\n  \"citations\": [\n    \"Policy: Durable Memory Preservation (v2.1)\",\n    \"Rule: Atomic Granularity for Repeated Triplets\"\n  ],\n  \"repair_options\": [\n    \"Merge duplicate cards into a single card with aggregated metadata if no timestamp exists.\",\n    \"Add a 'disambiguation_required' tag to cards with conflicting (id, name) \u2192 value mappings.\",\n    \"Archive superseded cards with a 'status: superseded' tag and link to the replacement.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Policy applied to 500-row CSV input.\",\n      \"Ambiguity preserved for one-to-many relationships.\",\n      \"No superseded facts committed as current.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

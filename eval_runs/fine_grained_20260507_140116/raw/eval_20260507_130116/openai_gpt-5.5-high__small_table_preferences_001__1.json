@@ -1,0 +1,111 @@
+{
+  "error": null,
+  "fixture_id": "small_table_preferences_001",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "",
+    "citations": [
+      "Dinner 2026-05-05",
+      "Lunch 2026-05-01"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "No prior entity context is provided; names and firms should not be merged with existing entities without additional identifiers."
+    },
+    "intent": "extract_atomic_memory_cards",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "firm"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_item",
+            "type": "person_or_artist"
+          },
+          {
+            "name": "Dinner 2026-05-05",
+            "role": "source",
+            "type": "source_event"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam, associated with Goldman, likes Bill Evans. Source: Dinner on 2026-05-05."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Anna",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "JPM",
+            "role": "affiliation",
+            "type": "firm"
+          },
+          {
+            "name": "Barolo",
+            "role": "liked_item",
+            "type": "wine"
+          },
+          {
+            "name": "Lunch 2026-05-01",
+            "role": "source",
+            "type": "source_event"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "JPM",
+            "predicate": "associated_with",
+            "subject": "Anna"
+          },
+          {
+            "object": "Barolo",
+            "predicate": "likes",
+            "subject": "Anna"
+          }
+        ],
+        "statement": "Anna, associated with JPM, likes Barolo. Source: Lunch on 2026-05-01."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted 2 atomic preference memory cards from the table.",
+        "No conflicts or superseded/deleted facts indicated."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"extract_atomic_memory_cards\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam, associated with Goldman, likes Bill Evans. Source: Dinner on 2026-05-05.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"firm\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person_or_artist\",\"role\":\"liked_item\"},{\"name\":\"Dinner 2026-05-05\",\"type\":\"source_event\",\"role\":\"source\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"associated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]},{\"kind\":\"preference\",\"statement\":\"Anna, associated with JPM, likes Barolo. Source: Lunch on 2026-05-01.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Anna\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"JPM\",\"type\":\"firm\",\"role\":\"affiliation\"},{\"name\":\"Barolo\",\"type\":\"wine\",\"role\":\"liked_item\"},{\"name\":\"Lunch 2026-05-01\",\"type\":\"source_event\",\"role\":\"source\"}],\"relationships\":[{\"subject\":\"Anna\",\"predicate\":\"associated_with\",\"object\":\"JPM\"},{\"subject\":\"Anna\",\"predicate\":\"likes\",\"object\":\"Barolo\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"No prior entity context is provided; names and firms should not be merged with existing entities without additional identifiers.\"},\"conflict_classification\":\"none\",\"answer\":\"\",\"citations\":[\"Dinner 2026-05-05\",\"Lunch 2026-05-01\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Extracted 2 atomic preference memory cards from the table.\",\"No conflicts or superseded/deleted facts indicated.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

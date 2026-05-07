@@ -1,0 +1,207 @@
+{
+  "fixture_id": "large_table_500_rows_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Store each CSV row as a separate atomic memory card with explicit relationships to its 'id', 'name', and 'value' fields. Preserve all original punctuation/formatting unless resolved via entity resolution. Mark memory cards as durable only for confirmed current rows, excluding superseded/deleted entries.",
+    "citations": [
+      "Policy: Preserve ambiguity unless explicitly resolved",
+      "Policy: Atomic decomposition for granularity",
+      "Policy: Durability requires current-row confirmation"
+    ],
+    "conflict_classification": "structural_ambiguity",
+    "decision": "store_as_atomic_memory_cards_with_relationships",
+    "entity_resolution": {
+      "action": "defer_to_policy",
+      "entity_id": null,
+      "reason": "Ambiguity in punctuation/formatting requires explicit policy rules for resolution. Default behavior is to preserve original values unless overridden."
+    },
+    "intent": "policy_evaluation",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV_table",
+            "role": "input_format",
+            "type": "data_structure"
+          },
+          {
+            "name": "id",
+            "role": "primary_key",
+            "type": "identifier"
+          },
+          {
+            "name": "name",
+            "role": "descriptive_field",
+            "type": "attribute"
+          },
+          {
+            "name": "value",
+            "role": "variable_field",
+            "type": "attribute"
+          }
+        ],
+        "kind": "policy_rule",
+        "relationships": [
+          {
+            "object": "id",
+            "predicate": "contains",
+            "subject": "CSV_table"
+          },
+          {
+            "object": "name",
+            "predicate": "contains",
+            "subject": "CSV_table"
+          },
+          {
+            "object": "value",
+            "predicate": "contains",
+            "subject": "CSV_table"
+          },
+          {
+            "object": "name_value_pair",
+            "predicate": "uniquely_identifies",
+            "subject": "id"
+          },
+          {
+            "object": "atomic_memory_card",
+            "predicate": "links_to",
+            "subject": "name_value_pair"
+          }
+        ],
+        "statement": "CSV tables with repeated 'id', 'name', 'value' columns should be decomposed into atomic memory cards to preserve granularity and avoid ambiguity in relationships."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "row",
+            "role": "source_unit",
+            "type": "data_record"
+          },
+          {
+            "name": "atomic_memory_card",
+            "role": "storage_format",
+            "type": "memory_unit"
+          },
+          {
+            "name": "relationship",
+            "role": "structural_integrity",
+            "type": "logical_link"
+          }
+        ],
+        "kind": "storage_policy",
+        "relationships": [
+          {
+            "object": "atomic_memory_card",
+            "predicate": "maps_to",
+            "subject": "row"
+          },
+          {
+            "object": "original_row_context",
+            "predicate": "preserves",
+            "subject": "atomic_memory_card"
+          },
+          {
+            "object": "superseded_deleted_facts",
+            "predicate": "excludes",
+            "subject": "atomic_memory_card"
+          }
+        ],
+        "statement": "Each row in the CSV should be stored as a separate memory card with explicit relationships to its constituent fields (id, name, value) to enable precise querying and avoid conflation of distinct records."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "field_value",
+            "role": "raw_input",
+            "type": "data_content"
+          },
+          {
+            "name": "punctuation",
+            "role": "potential_ambiguity",
+            "type": "textual_artifact"
+          },
+          {
+            "name": "entity_resolution",
+            "role": "explicit_override",
+            "type": "process"
+          }
+        ],
+        "kind": "ambiguity_preservation",
+        "relationships": [
+          {
+            "object": "punctuation",
+            "predicate": "contains",
+            "subject": "field_value"
+          },
+          {
+            "object": "original_field_value",
+            "predicate": "documents",
+            "subject": "atomic_memory_card"
+          },
+          {
+            "object": "specific_field_value",
+            "predicate": "applies_to",
+            "subject": "entity_resolution"
+          }
+        ],
+        "statement": "Ambiguity in field values (e.g., punctuation, formatting) should be retained as-is in memory cards unless explicitly resolved via entity resolution. Do not normalize or alter original data unless required by policy."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "durability_status",
+            "role": "storage_attribute",
+            "type": "metadata"
+          },
+          {
+            "name": "superseded_row",
+            "role": "excluded_state",
+            "type": "data_record"
+          },
+          {
+            "name": "current_row",
+            "role": "active_state",
+            "type": "data_record"
+          }
+        ],
+        "kind": "durability_constraint",
+        "relationships": [
+          {
+            "object": "durability_status",
+            "predicate": "inherits",
+            "subject": "atomic_memory_card"
+          },
+          {
+            "object": "durable_memory_card",
+            "predicate": "generates",
+            "subject": "current_row"
+          },
+          {
+            "object": "durable_memory_card_creation",
+            "predicate": "prevents",
+            "subject": "superseded_row"
+          }
+        ],
+        "statement": "Memory cards must be marked as 'durable' only if the corresponding CSV row is confirmed as current and not superseded. Deleted or obsolete rows should be flagged and excluded from active memory."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory cards generated with explicit relationships.",
+        "Ambiguity preserved in field values.",
+        "Durability constraints applied per policy."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Implement a pre-processing step to flag ambiguous punctuation for manual review.",
+      "Add a 'source_metadata' field to memory cards to track CSV row provenance.",
+      "Create a separate 'resolution_log' for entity resolution actions."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

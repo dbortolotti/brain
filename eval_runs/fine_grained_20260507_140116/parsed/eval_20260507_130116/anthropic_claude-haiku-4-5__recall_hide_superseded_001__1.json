@@ -1,0 +1,55 @@
+{
+  "fixture_id": "recall_hide_superseded_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Sam works at Point72",
+    "citations": [
+      "current_memory: Sam joined Point72"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "Return current memory only; exclude superseded fact",
+    "entity_resolution": {
+      "action": "retain_current",
+      "entity_id": "sam_employment_point72",
+      "reason": "Superseded memory (Goldman) explicitly marked as obsolete; current memory (Point72) is authoritative"
+    },
+    "intent": "Retrieve current employment information for Sam",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded fact (Goldman) excluded from response",
+        "Current fact (Point72) returned as authoritative",
+        "No ambiguity preserved in this case; clear supersession detected"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If Goldman employment is still relevant, mark as historical role with date range",
+      "Confirm Point72 employment date to establish timeline"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

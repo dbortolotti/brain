@@ -1,0 +1,89 @@
+{
+  "error": null,
+  "fixture_id": "article_url_fetch_failure_001__punctuation",
+  "model": "google:gemini-2.5-flash",
+  "payload": {
+    "answer": "The system attempted to remember an article from 'https -//examplecom/missing' but failed to fetch its content due to a '404 network error'. The article was noted as useful for memory architecture.",
+    "citations": [
+      "Remember this article - https -//examplecom/missing why - useful for memory architecture Mock fetch result - 404 network error"
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "Failed to fetch the article content due to a network error.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No existing entities to resolve; this is a new observation and intent."
+    },
+    "intent": "Remember an article for its relevance to memory architecture.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https -//examplecom/missing",
+            "role": "target_article_url",
+            "type": "URL"
+          },
+          {
+            "name": "memory architecture",
+            "role": "reason_for_interest",
+            "type": "concept"
+          }
+        ],
+        "kind": "intent",
+        "relationships": [
+          {
+            "object": "article at 'https -//examplecom/missing'",
+            "predicate": "intends to remember",
+            "subject": "user"
+          },
+          {
+            "object": "memory architecture",
+            "predicate": "is useful for",
+            "subject": "article at 'https -//examplecom/missing'"
+          }
+        ],
+        "statement": "The user expressed an intent to remember an article located at 'https -//examplecom/missing' because it is considered useful for memory architecture."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https -//examplecom/missing",
+            "role": "failed_fetch_url",
+            "type": "URL"
+          },
+          {
+            "name": "404 network error",
+            "role": "fetch_failure_reason",
+            "type": "error"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "404 network error",
+            "predicate": "resulted in",
+            "subject": "fetch attempt for 'https -//examplecom/missing'"
+          }
+        ],
+        "statement": "An attempt to fetch the article from 'https -//examplecom/missing' resulted in a '404 network error'."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Article fetch failed with 404 network error for 'https -//examplecom/missing'."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Retry fetching the article from 'https -//examplecom/missing'.",
+      "Verify the URL 'https -//examplecom/missing' for correctness.",
+      "Mark the article as currently unavailable.",
+      "Search for alternative sources for 'memory architecture' related content."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Remember an article for its relevance to memory architecture.\",\n  \"decision\": \"Failed to fetch the article content due to a network error.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"intent\",\n      \"statement\": \"The user expressed an intent to remember an article located at 'https -//examplecom/missing' because it is considered useful for memory architecture.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"https -//examplecom/missing\",\n          \"type\": \"URL\",\n          \"role\": \"target_article_url\"\n        },\n        {\n          \"name\": \"memory architecture\",\n          \"type\": \"concept\",\n          \"role\": \"reason_for_interest\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"user\",\n          \"predicate\": \"intends to remember\",\n          \"object\": \"article at 'https -//examplecom/missing'\"\n        },\n        {\n          \"subject\": \"article at 'https -//examplecom/missing'\",\n          \"predicate\": \"is useful for\",\n          \"object\": \"memory architecture\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"observation\",\n      \"statement\": \"An attempt to fetch the article from 'https -//examplecom/missing' resulted in a '404 network error'.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"https -//examplecom/missing\",\n          \"type\": \"URL\",\n          \"role\": \"failed_fetch_url\"\n        },\n        {\n          \"name\": \"404 network error\",\n          \"type\": \"error\",\n          \"role\": \"fetch_failure_reason\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"fetch attempt for 'https -//examplecom/missing'\",\n          \"predicate\": \"resulted in\",\n          \"object\": \"404 network error\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entities to resolve; this is a new observation and intent.\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"The system attempted to remember an article from 'https -//examplecom/missing' but failed to fetch its content due to a '404 network error'. The article was noted as useful for memory architecture.\",\n  \"citations\": [\n    \"Remember this article - https -//examplecom/missing why - useful for memory architecture Mock fetch result - 404 network error\"\n  ],\n  \"repair_options\": [\n    \"Retry fetching the article from 'https -//examplecom/missing'.\",\n    \"Verify the URL 'https -//examplecom/missing' for correctness.\",\n    \"Mark the article as currently unavailable.\",\n    \"Search for alternative sources for 'memory architecture' related content.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Article fetch failed with 404 network error for 'https -//examplecom/missing'.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

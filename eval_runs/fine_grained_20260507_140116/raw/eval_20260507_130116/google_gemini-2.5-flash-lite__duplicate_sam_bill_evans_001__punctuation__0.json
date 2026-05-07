@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "duplicate_sam_bill_evans_001__punctuation",
+  "model": "google:gemini-2.5-flash-lite",
+  "payload": {
+    "answer": "The two statements about Sam liking Bill Evans are duplicates. I have merged them into one memory.",
+    "citations": [],
+    "conflict_classification": "duplicate_statement",
+    "decision": "merge",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": null,
+      "reason": "The two statements are semantically identical, differing only in punctuation. Merging them into a single, canonical statement."
+    },
+    "intent": "resolve_duplicate_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "PERSON"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "ORGANIZATION"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "subject",
+            "type": "MUSICIAN"
+          }
+        ],
+        "kind": "statement",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman said he likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Merged duplicate memory cards."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "merge",
+      "discard_new",
+      "discard_old"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"resolve_duplicate_memory\",\n  \"decision\": \"merge\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"statement\",\n      \"statement\": \"Sam from Goldman said he likes Bill Evans\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"PERSON\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"ORGANIZATION\",\n          \"role\": \"employer\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"MUSICIAN\",\n          \"role\": \"subject\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge\",\n    \"entity_id\": null,\n    \"reason\": \"The two statements are semantically identical, differing only in punctuation. Merging them into a single, canonical statement.\"\n  },\n  \"conflict_classification\": \"duplicate_statement\",\n  \"answer\": \"The two statements about Sam liking Bill Evans are duplicates. I have merged them into one memory.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"merge\",\n    \"discard_new\",\n    \"discard_old\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Merged duplicate memory cards.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

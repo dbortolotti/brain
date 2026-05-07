@@ -1,0 +1,79 @@
+{
+  "error": null,
+  "fixture_id": "contradiction_sam_children_001",
+  "model": "google:gemini-2.5-flash-lite",
+  "payload": {
+    "answer": "The memory contains a contradiction regarding Sam from Goldman's children.",
+    "citations": [],
+    "conflict_classification": "Direct contradiction on the number of children.",
+    "decision": "Contradiction detected.",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": null,
+      "reason": "The entity 'Sam from Goldman' is referenced in both conflicting statements, indicating a direct contradiction."
+    },
+    "intent": "Detecting contradictions in memory.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "PERSON"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "ORGANIZATION"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "child 1",
+            "predicate": "has child",
+            "subject": "Sam from Goldman"
+          },
+          {
+            "object": "child 2",
+            "predicate": "has child",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman has two children."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "PERSON"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "ORGANIZATION"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [],
+        "statement": "Sam from Goldman has no children."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict detected between two facts about Sam from Goldman's children."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Update the memory to reflect the correct number of children for Sam from Goldman.",
+      "Ask for clarification on the number of children Sam from Goldman has."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Detecting contradictions in memory.\",\n  \"decision\": \"Contradiction detected.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam from Goldman has two children.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"PERSON\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"ORGANIZATION\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam from Goldman\",\n          \"predicate\": \"has child\",\n          \"object\": \"child 1\"\n        },\n        {\n          \"subject\": \"Sam from Goldman\",\n          \"predicate\": \"has child\",\n          \"object\": \"child 2\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam from Goldman has no children.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"PERSON\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"ORGANIZATION\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": []\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge\",\n    \"entity_id\": null,\n    \"reason\": \"The entity 'Sam from Goldman' is referenced in both conflicting statements, indicating a direct contradiction.\"\n  },\n  \"conflict_classification\": \"Direct contradiction on the number of children.\",\n  \"answer\": \"The memory contains a contradiction regarding Sam from Goldman's children.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Update the memory to reflect the correct number of children for Sam from Goldman.\",\n    \"Ask for clarification on the number of children Sam from Goldman has.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Conflict detected between two facts about Sam from Goldman's children.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

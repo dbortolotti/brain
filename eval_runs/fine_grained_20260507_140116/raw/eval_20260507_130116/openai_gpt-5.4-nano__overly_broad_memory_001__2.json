@@ -1,0 +1,53 @@
+{
+  "error": null,
+  "fixture_id": "overly_broad_memory_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "additionalProperties": {},
+    "answer": "Cannot store the request as durable memory because it is overly broad ('everything about AI').",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "NO_DURABLE_MEMORY",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No specific, stable, or uniquely identifiable facts were provided to store; the request is a broad instruction."
+    },
+    "intent": "Handle user request to remember broadly stated information",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "AI",
+            "role": "topic",
+            "type": "domain"
+          }
+        ],
+        "kind": "general_rule_not_storable",
+        "relationships": [
+          {
+            "object": "Remember everything about AI",
+            "predicate": "requests",
+            "subject": "User request"
+          }
+        ],
+        "statement": "The user requests: 'Remember everything about AI.' This is overly broad and not suitable for durable storage as a specific, retrievable memory."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Classified as overly broad; no durable memory committed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask the user to specify concrete preferences or facts (e.g., favorite AI topics, specific tools/models, personal goals).",
+      "Store a narrower instruction such as 'Remember my interest in AI topics' rather than 'everything about AI'.",
+      "Provide a list of specific items the user wants remembered (names, dates, decisions, or recurring preferences)."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Handle user request to remember broadly stated information\",\n  \"decision\": \"NO_DURABLE_MEMORY\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"general_rule_not_storable\",\n      \"statement\": \"The user requests: 'Remember everything about AI.' This is overly broad and not suitable for durable storage as a specific, retrievable memory.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"AI\",\n          \"type\": \"domain\",\n          \"role\": \"topic\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"User request\",\n          \"predicate\": \"requests\",\n          \"object\": \"Remember everything about AI\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No specific, stable, or uniquely identifiable facts were provided to store; the request is a broad instruction.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Cannot store the request as durable memory because it is overly broad ('everything about AI').\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Ask the user to specify concrete preferences or facts (e.g., favorite AI topics, specific tools/models, personal goals).\",\n    \"Store a narrower instruction such as 'Remember my interest in AI topics' rather than 'everything about AI'.\",\n    \"Provide a list of specific items the user wants remembered (names, dates, decisions, or recurring preferences).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Classified as overly broad; no durable memory committed.\"\n    ]\n  },\n  \"additionalProperties\": {}\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

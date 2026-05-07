@@ -1,0 +1,60 @@
+{
+  "fixture_id": "slack_no_durable_value_repair_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Not stored durably because the statement is transient (today's weather).",
+    "citations": [],
+    "conflict": null,
+    "conflict_classification": "none",
+    "decision": "do_not_store_durable_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The content is time-sensitive (weather for today) and is not suitable for durable long-term storage."
+    },
+    "intent": "store_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "weather",
+            "role": "topic",
+            "type": "phenomenon"
+          },
+          {
+            "name": "today",
+            "role": "temporal_context",
+            "type": "time_reference"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "cloudy",
+            "predicate": "is",
+            "subject": "weather"
+          },
+          {
+            "object": "today",
+            "predicate": "applies_to",
+            "subject": "cloudy"
+          }
+        ],
+        "statement": "Today's weather is cloudy"
+      }
+    ],
+    "notes": "Fixture indicates no durable value repair; punctuation present in fixture id only, not in the user-provided statement.",
+    "receipt": {
+      "details": [
+        "Rejected for durability due to high likelihood of becoming outdated immediately."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Store only durable context (e.g., user's general location) and skip time-specific weather.",
+      "If the user intended a historical log, clarify the date/location to make it suitable for durable storage."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

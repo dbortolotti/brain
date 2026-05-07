@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "unresolved_pronoun_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Statement cannot be durably committed without disambiguation of 'He' and 'the other one'",
+    "citations": [
+      "Pronoun 'He' is unbound",
+      "Noun phrase 'the other one' requires prior mention of alternatives"
+    ],
+    "conflict_classification": "unresolved_anaphora",
+    "decision": "defer_with_ambiguity",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Pronoun 'He' lacks antecedent; 'the other one' lacks referent context. Cannot resolve without prior discourse or external context."
+    },
+    "intent": "Store preference statement with unresolved pronouns",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "He",
+            "role": "subject",
+            "type": "pronoun"
+          },
+          {
+            "name": "the other one",
+            "role": "object_of_preference",
+            "type": "unresolved_reference"
+          }
+        ],
+        "kind": "preference_statement",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "He"
+          }
+        ],
+        "statement": "An unidentified person prefers 'the other one' over an unidentified alternative"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Input contains critical anaphoric ambiguity",
+        "No durable memory card created pending disambiguation",
+        "Ambiguity preserved; no superseded facts presented"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide antecedent for 'He' (e.g., 'John prefers...')",
+      "Specify what 'the other one' refers to (e.g., 'the other option', 'the other person')",
+      "Supply prior context establishing the comparison set"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Store preference statement with unresolved pronouns\",\n  \"decision\": \"defer_with_ambiguity\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference_statement\",\n      \"statement\": \"An unidentified person prefers 'the other one' over an unidentified alternative\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"He\",\n          \"type\": \"pronoun\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"the other one\",\n          \"type\": \"unresolved_reference\",\n          \"role\": \"object_of_preference\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"He\",\n          \"predicate\": \"prefers\",\n          \"object\": \"the other one\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Pronoun 'He' lacks antecedent; 'the other one' lacks referent context. Cannot resolve without prior discourse or external context.\"\n  },\n  \"conflict_classification\": \"unresolved_anaphora\",\n  \"answer\": \"Statement cannot be durably committed without disambiguation of 'He' and 'the other one'\",\n  \"citations\": [\n    \"Pronoun 'He' is unbound\",\n    \"Noun phrase 'the other one' requires prior mention of alternatives\"\n  ],\n  \"repair_options\": [\n    \"Provide antecedent for 'He' (e.g., 'John prefers...')\",\n    \"Specify what 'the other one' refers to (e.g., 'the other option', 'the other person')\",\n    \"Supply prior context establishing the comparison set\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Input contains critical anaphoric ambiguity\",\n      \"No durable memory card created pending disambiguation\",\n      \"Ambiguity preserved; no superseded facts presented\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

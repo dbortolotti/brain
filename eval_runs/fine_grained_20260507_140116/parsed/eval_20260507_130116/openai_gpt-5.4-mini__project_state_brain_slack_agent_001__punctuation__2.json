@@ -1,0 +1,64 @@
+{
+  "fixture_id": "project_state_brain_slack_agent_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Recorded as current project state: Slack is primary; Telegram may come later.",
+    "citations": [
+      "project state input: \"Slack should be the primary guardrailed memory ingestion interface; Telegram can come later\""
+    ],
+    "conflict_classification": "none",
+    "decision": "Slack should be the primary guardrailed memory ingestion interface for Brain; Telegram may be added later.",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "The statement describes project-state preferences without a prior entity identifier in the input."
+    },
+    "intent": "Extract a durable project-state memory from the provided statement.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "system",
+            "type": "project"
+          },
+          {
+            "name": "Slack",
+            "role": "primary ingestion interface",
+            "type": "platform"
+          },
+          {
+            "name": "Telegram",
+            "role": "future option",
+            "type": "platform"
+          }
+        ],
+        "kind": "project_state",
+        "relationships": [
+          {
+            "object": "Slack",
+            "predicate": "uses as primary guardrailed memory ingestion interface",
+            "subject": "Brain"
+          },
+          {
+            "object": "Telegram",
+            "predicate": "may add later",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "Slack is the primary guardrailed memory ingestion interface for Brain, and Telegram can be considered later."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted one durable project-state memory card.",
+        "No conflict detected.",
+        "No superseded or deleted facts were introduced."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

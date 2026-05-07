@@ -1,0 +1,71 @@
+{
+  "error": null,
+  "fixture_id": "correction_sam_music_001__punctuation",
+  "model": "google:gemini-2.5-flash-lite",
+  "payload": {
+    "answer": "Sam from Goldman actually likes early Coltrane, not Bill Evans.",
+    "citations": [],
+    "conflict_classification": "factual_correction",
+    "decision": "accept",
+    "entity_resolution": {
+      "action": "update",
+      "entity_id": null,
+      "reason": "The correction clarifies Sam's musical preference, updating the existing memory."
+    },
+    "intent": "correction",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "liker",
+            "type": "PERSON"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "ORGANIZATION"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "liked_music",
+            "type": "MUSICIAN"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "disliked_music",
+            "type": "MUSICIAN"
+          }
+        ],
+        "kind": "correction",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "dislikes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman actually likes early Coltrane, not Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory updated: Sam from Goldman likes early Coltrane, not Bill Evans."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "update_memory",
+      "add_new_memory"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"correction\",\n  \"decision\": \"accept\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"correction\",\n      \"statement\": \"Sam from Goldman actually likes early Coltrane, not Bill Evans\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"PERSON\",\n          \"role\": \"liker\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"ORGANIZATION\",\n          \"role\": \"employer\"\n        },\n        {\n          \"name\": \"early Coltrane\",\n          \"type\": \"MUSICIAN\",\n          \"role\": \"liked_music\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"MUSICIAN\",\n          \"role\": \"disliked_music\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"early Coltrane\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"dislikes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"update\",\n    \"entity_id\": null,\n    \"reason\": \"The correction clarifies Sam's musical preference, updating the existing memory.\"\n  },\n  \"conflict_classification\": \"factual_correction\",\n  \"answer\": \"Sam from Goldman actually likes early Coltrane, not Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"update_memory\",\n    \"add_new_memory\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory updated: Sam from Goldman likes early Coltrane, not Bill Evans.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,67 @@
+{
+  "fixture_id": "idempotent_retry_same_message_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Stored once with low confidence; repeated deliveries deduplicated.",
+    "citations": [
+      "Input: 'Same input delivered three times - Sam from Goldman mentioned that he likes Bill Evans'"
+    ],
+    "conflict_classification": "none",
+    "decision": "store_once",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": null,
+      "reason": "The input is a repeated message, so it should not create duplicate memories; the referent 'Sam from Goldman' is not uniquely identified enough for a stable canonical entity ID."
+    },
+    "intent": "Deduplicate repeated input and assess whether to retain a single durable memory about Sam from Goldman liking Bill Evans.",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked entity",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Processed repeated input as a single memory candidate.",
+        "No superseding or conflicting fact detected.",
+        "No duplicate memories committed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If 'Sam' is a specific known person, provide a fuller identifier to improve entity resolution.",
+      "If the preference was meant as a one-time mention rather than a stable preference, mark it as ephemeral instead of durable."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

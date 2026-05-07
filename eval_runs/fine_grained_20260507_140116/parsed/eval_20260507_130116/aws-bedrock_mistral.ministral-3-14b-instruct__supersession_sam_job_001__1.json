@@ -1,0 +1,69 @@
+{
+  "fixture_id": "supersession_sam_job_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam\u2019s Goldman Sachs employment record has been superseded by the new Point72 Ventures record. The system retains only the current affiliation while explicitly marking the prior state as terminated.",
+    "citations": [
+      "New input: 'Sam left Goldman and joined Point72'",
+      "Existing memory: 'Sam works at Goldman' (now invalidated)"
+    ],
+    "conflict_classification": "direct_supersession",
+    "decision": "supersede_existing_memory",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "sam_job_001",
+      "reason": "New employment record supersedes prior Goldman Sachs affiliation. Ambiguity preserved by retaining 'no longer works at' phrasing."
+    },
+    "intent": "update_durable_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72 Ventures",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "left_employment_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72 Ventures",
+            "predicate": "joined_employment_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam no longer works at Goldman Sachs. Sam left Goldman Sachs and joined Point72 Ventures."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded memory card marked as 'obsolete' in metadata",
+        "New card timestamped with current context",
+        "Entity resolution applied to 'Sam' with role updates"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Delete all Goldman Sachs references (aggressive)",
+      "Tag Goldman record as 'historical' (conservative)",
+      "Merge into single timeline card (current approach)"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

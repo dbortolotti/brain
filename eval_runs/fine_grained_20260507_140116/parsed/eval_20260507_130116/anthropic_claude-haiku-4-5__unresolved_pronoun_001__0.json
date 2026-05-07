@@ -1,0 +1,56 @@
+{
+  "fixture_id": "unresolved_pronoun_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Cannot commit this statement to durable memory without disambiguation of pronouns.",
+    "citations": [],
+    "conflict_classification": "unresolved_anaphora",
+    "decision": "defer_commitment",
+    "entity_resolution": {
+      "action": "cannot_resolve",
+      "entity_id": null,
+      "reason": "Pronouns 'He' and 'the other one' lack sufficient context for durable commitment. Antecedents are ambiguous without prior conversation state."
+    },
+    "intent": "Store preference statement with unresolved pronouns",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "He",
+            "role": "subject",
+            "type": "pronoun"
+          },
+          {
+            "name": "the other one",
+            "role": "object",
+            "type": "pronoun"
+          }
+        ],
+        "kind": "unresolved_statement",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "He"
+          }
+        ],
+        "statement": "He prefers the other one."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Statement recorded as unresolved",
+        "Awaiting pronoun disambiguation",
+        "No durable memory committed"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide antecedent: 'John prefers the red one.'",
+      "Clarify context: 'He prefers the other option (specify which).'",
+      "Request explicit names: 'Who is He? What is the other one?'"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

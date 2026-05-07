@@ -1,0 +1,93 @@
+{
+  "error": null,
+  "fixture_id": "pdf_ocr_noisy_source_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The input describes two core principles for Brain's memory system: (1) it must act as a *durable, verifiable source of truth* while preserving ambiguity in uncertain facts, and (2) cognitive reconstruction should be *rebuildable* (not static). However, OCR errors prevent precise extraction of technical terms (e.g., 'truth', 'cognitive'). No superseded/deleted facts are implied\u2014only foundational design goals.",
+    "citations": [],
+    "conflict_classification": "semantic_ambiguity_due_to_noise",
+    "decision": "ambiguous_with_uncertainty",
+    "entity_resolution": {
+      "action": "flag_for_review",
+      "entity_id": null,
+      "reason": "OCR noise obscures critical terms ('remalns', 'trvth', 'Cognee'). Original intent likely relates to *memory durability* and *cognitive rebuildability*, but exact phrasing is indeterminate."
+    },
+    "intent": "evaluate_system_capability",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "memory_store",
+            "type": "system_component"
+          },
+          {
+            "name": "truth",
+            "role": "foundational_principle",
+            "type": "concept"
+          }
+        ],
+        "kind": "system_principle",
+        "relationships": [
+          {
+            "object": "preserve_ambiguity_in_uncertain_facts",
+            "predicate": "IS_REQUIRED_TO",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "present_superseded_or_deleted_facts_as_current",
+            "predicate": "MUST_NOT",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "The Brain DB must serve as a *durable* and *verifiable* source of truth for cognitive reconstruction."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "cognitive reconstruction",
+            "role": "system_function",
+            "type": "process"
+          },
+          {
+            "name": "rebuildable projection",
+            "role": "design_philosophy",
+            "type": "metaphor"
+          }
+        ],
+        "kind": "system_goal",
+        "relationships": [
+          {
+            "object": "durable_memory_structure",
+            "predicate": "DEPENDS_ON",
+            "subject": "cognitive reconstruction"
+          },
+          {
+            "object": "temporal_flexibility_in_memory_access",
+            "predicate": "IMPLIES",
+            "subject": "rebuildable projection"
+          }
+        ],
+        "statement": "Cognitive reconstruction should be a *rebuildable* projection of memory, not a static archive."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "OCR noise prevents definitive extraction of key terms.",
+        "Memory cards generated with high/medium confidence but flagged for review.",
+        "No superseded/deleted facts detected\u2014only ambiguous design principles."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Request human review of OCR output to resolve 'remalns/trvth/Cognee' ambiguities.",
+      "Assume 'truth' refers to *grounded factuality* and 'cognitive' to *memory reconstruction* based on context.",
+      "Clarify with source: Is 'rebuildable projection' a literal system feature or a design metaphor?"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"evaluate_system_capability\",\n  \"decision\": \"ambiguous_with_uncertainty\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"system_principle\",\n      \"statement\": \"The Brain DB must serve as a *durable* and *verifiable* source of truth for cognitive reconstruction.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"system_component\",\n          \"role\": \"memory_store\"\n        },\n        {\n          \"name\": \"truth\",\n          \"type\": \"concept\",\n          \"role\": \"foundational_principle\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"IS_REQUIRED_TO\",\n          \"object\": \"preserve_ambiguity_in_uncertain_facts\"\n        },\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"MUST_NOT\",\n          \"object\": \"present_superseded_or_deleted_facts_as_current\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"system_goal\",\n      \"statement\": \"Cognitive reconstruction should be a *rebuildable* projection of memory, not a static archive.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"cognitive reconstruction\",\n          \"type\": \"process\",\n          \"role\": \"system_function\"\n        },\n        {\n          \"name\": \"rebuildable projection\",\n          \"type\": \"metaphor\",\n          \"role\": \"design_philosophy\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"cognitive reconstruction\",\n          \"predicate\": \"DEPENDS_ON\",\n          \"object\": \"durable_memory_structure\"\n        },\n        {\n          \"subject\": \"rebuildable projection\",\n          \"predicate\": \"IMPLIES\",\n          \"object\": \"temporal_flexibility_in_memory_access\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"flag_for_review\",\n    \"entity_id\": null,\n    \"reason\": \"OCR noise obscures critical terms ('remalns', 'trvth', 'Cognee'). Original intent likely relates to *memory durability* and *cognitive rebuildability*, but exact phrasing is indeterminate.\"\n  },\n  \"conflict_classification\": \"semantic_ambiguity_due_to_noise\",\n  \"answer\": \"The input describes two core principles for Brain's memory system: (1) it must act as a *durable, verifiable source of truth* while preserving ambiguity in uncertain facts, and (2) cognitive reconstruction should be *rebuildable* (not static). However, OCR errors prevent precise extraction of technical terms (e.g., 'truth', 'cognitive'). No superseded/deleted facts are implied\u2014only foundational design goals.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Request human review of OCR output to resolve 'remalns/trvth/Cognee' ambiguities.\",\n    \"Assume 'truth' refers to *grounded factuality* and 'cognitive' to *memory reconstruction* based on context.\",\n    \"Clarify with source: Is 'rebuildable projection' a literal system feature or a design metaphor?\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"OCR noise prevents definitive extraction of key terms.\",\n      \"Memory cards generated with high/medium confidence but flagged for review.\",\n      \"No superseded/deleted facts detected\u2014only ambiguous design principles.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

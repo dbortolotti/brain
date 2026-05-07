@@ -1,0 +1,213 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_large_table_atomization_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Proceed with durable commit of the 5 memory cards above, adhering to strict atomization rules. Remaining 495 cards require individual validation per the schema constraints.",
+    "citations": [
+      "Fixture ID: validator_blocks_large_table_atomization_001",
+      "Schema: durability_filter_role_specification_v1.2"
+    ],
+    "conflict_classification": "none",
+    "decision": "proceed_with_durable_commit",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Ambiguity in 'large_table_atomization' scope requires context from upstream systems (e.g., table schema, business rules)."
+    },
+    "intent": "atomize_and_validate_memory_cards",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "personal_memory_system",
+            "type": "system"
+          },
+          {
+            "name": "atomization",
+            "role": "data_transformation",
+            "type": "process"
+          },
+          {
+            "name": "CSV rows",
+            "role": "input_source",
+            "type": "data_format"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "atomization_of_large_tables",
+            "predicate": "supports",
+            "subject": "Brain"
+          },
+          {
+            "object": "CSV_rows_into_memory_cards",
+            "predicate": "converts",
+            "subject": "atomization"
+          }
+        ],
+        "statement": "Brain's memory system supports atomization of large tables (e.g., CSV rows) into discrete memory cards for evaluation."
+      },
+      {
+        "confidence": "absolute",
+        "entities": [
+          {
+            "name": "JSON",
+            "role": "output_requirement",
+            "type": "format"
+          },
+          {
+            "name": "response",
+            "role": "system_behavior",
+            "type": "output"
+          }
+        ],
+        "kind": "constraint",
+        "relationships": [
+          {
+            "object": "single_JSON_object",
+            "predicate": "must_contain",
+            "subject": "response"
+          },
+          {
+            "object": "Markdown_wrapping",
+            "predicate": "must_not_contain",
+            "subject": "response"
+          }
+        ],
+        "statement": "Only one JSON object per response is permitted; no Markdown wrapping or additional metadata."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "durable_memory",
+            "role": "storage_category",
+            "type": "memory_type"
+          },
+          {
+            "name": "ambiguity",
+            "role": "preservation_requirement",
+            "type": "data_property"
+          }
+        ],
+        "kind": "validation_rule",
+        "relationships": [
+          {
+            "object": "ambiguity_by_default",
+            "predicate": "preserves",
+            "subject": "durable_memory"
+          },
+          {
+            "object": "ambiguity_explicitly",
+            "predicate": "resolves",
+            "subject": "system"
+          }
+        ],
+        "statement": "Durable memory commits must preserve ambiguity unless explicitly resolved by the system."
+      },
+      {
+        "confidence": "absolute",
+        "entities": [
+          {
+            "name": "superseded_facts",
+            "role": "invalid_state",
+            "type": "fact_state"
+          },
+          {
+            "name": "deleted_facts",
+            "role": "invalid_state",
+            "type": "fact_state"
+          },
+          {
+            "name": "current",
+            "role": "validity_criterion",
+            "type": "temporal_state"
+          }
+        ],
+        "kind": "validation_rule",
+        "relationships": [
+          {
+            "object": "superseded_or_deleted_facts",
+            "predicate": "exclude",
+            "subject": "memory_cards"
+          },
+          {
+            "object": "valid_fact_state",
+            "predicate": "requires",
+            "subject": "current"
+          }
+        ],
+        "statement": "Superseded or deleted facts must never be presented as current in memory cards."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "500_memory_cards",
+            "role": "input_scale",
+            "type": "data_volume"
+          },
+          {
+            "name": "CSV_row",
+            "role": "source_mapping",
+            "type": "data_unit"
+          },
+          {
+            "name": "durability",
+            "role": "commit_requirement",
+            "type": "evaluation_criterion"
+          },
+          {
+            "name": "ambiguity",
+            "role": "preservation_requirement",
+            "type": "evaluation_criterion"
+          },
+          {
+            "name": "validity",
+            "role": "commit_requirement",
+            "type": "evaluation_criterion"
+          }
+        ],
+        "kind": "process_step",
+        "relationships": [
+          {
+            "object": "CSV_rows",
+            "predicate": "derived_from",
+            "subject": "memory_cards"
+          },
+          {
+            "object": "durability_and_validity",
+            "predicate": "requires",
+            "subject": "commit"
+          },
+          {
+            "object": "unless_resolved",
+            "predicate": "must_be_preserved",
+            "subject": "ambiguity"
+          }
+        ],
+        "statement": "For 500 memory cards (one per CSV row), evaluate each for durability, ambiguity, and validity before commit."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "5/500 cards committed to durable memory (sample set).",
+        "Ambiguity preserved in all statements.",
+        "No superseded/deleted facts detected in sample."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Reject all cards lacking explicit ambiguity resolution.",
+      "Flag cards with unresolved entity relationships for manual review.",
+      "Batch-validate remaining 495 cards in parallel streams (100/card)."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"atomize_and_validate_memory_cards\",\n  \"decision\": \"proceed_with_durable_commit\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Brain's memory system supports atomization of large tables (e.g., CSV rows) into discrete memory cards for evaluation.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain\",\n          \"type\": \"system\",\n          \"role\": \"personal_memory_system\"\n        },\n        {\n          \"name\": \"atomization\",\n          \"type\": \"process\",\n          \"role\": \"data_transformation\"\n        },\n        {\n          \"name\": \"CSV rows\",\n          \"type\": \"data_format\",\n          \"role\": \"input_source\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain\",\n          \"predicate\": \"supports\",\n          \"object\": \"atomization_of_large_tables\"\n        },\n        {\n          \"subject\": \"atomization\",\n          \"predicate\": \"converts\",\n          \"object\": \"CSV_rows_into_memory_cards\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"constraint\",\n      \"statement\": \"Only one JSON object per response is permitted; no Markdown wrapping or additional metadata.\",\n      \"confidence\": \"absolute\",\n      \"entities\": [\n        {\n          \"name\": \"JSON\",\n          \"type\": \"format\",\n          \"role\": \"output_requirement\"\n        },\n        {\n          \"name\": \"response\",\n          \"type\": \"output\",\n          \"role\": \"system_behavior\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"response\",\n          \"predicate\": \"must_contain\",\n          \"object\": \"single_JSON_object\"\n        },\n        {\n          \"subject\": \"response\",\n          \"predicate\": \"must_not_contain\",\n          \"object\": \"Markdown_wrapping\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"validation_rule\",\n      \"statement\": \"Durable memory commits must preserve ambiguity unless explicitly resolved by the system.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"durable_memory\",\n          \"type\": \"memory_type\",\n          \"role\": \"storage_category\"\n        },\n        {\n          \"name\": \"ambiguity\",\n          \"type\": \"data_property\",\n          \"role\": \"preservation_requirement\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"durable_memory\",\n          \"predicate\": \"preserves\",\n          \"object\": \"ambiguity_by_default\"\n        },\n        {\n          \"subject\": \"system\",\n          \"predicate\": \"resolves\",\n          \"object\": \"ambiguity_explicitly\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"validation_rule\",\n      \"statement\": \"Superseded or deleted facts must never be presented as current in memory cards.\",\n      \"confidence\": \"absolute\",\n      \"entities\": [\n        {\n          \"name\": \"superseded_facts\",\n          \"type\": \"fact_state\",\n          \"role\": \"invalid_state\"\n        },\n        {\n          \"name\": \"deleted_facts\",\n          \"type\": \"fact_state\",\n          \"role\": \"invalid_state\"\n        },\n        {\n          \"name\": \"current\",\n          \"type\": \"temporal_state\",\n          \"role\": \"validity_criterion\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"memory_cards\",\n          \"predicate\": \"exclude\",\n          \"object\": \"superseded_or_deleted_facts\"\n        },\n        {\n          \"subject\": \"current\",\n          \"predicate\": \"requires\",\n          \"object\": \"valid_fact_state\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"process_step\",\n      \"statement\": \"For 500 memory cards (one per CSV row), evaluate each for durability, ambiguity, and validity before commit.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"500_memory_cards\",\n          \"type\": \"data_volume\",\n          \"role\": \"input_scale\"\n        },\n        {\n          \"name\": \"CSV_row\",\n          \"type\": \"data_unit\",\n          \"role\": \"source_mapping\"\n        },\n        {\n          \"name\": \"durability\",\n          \"type\": \"evaluation_criterion\",\n          \"role\": \"commit_requirement\"\n        },\n        {\n          \"name\": \"ambiguity\",\n          \"type\": \"evaluation_criterion\",\n          \"role\": \"preservation_requirement\"\n        },\n        {\n          \"name\": \"validity\",\n          \"type\": \"evaluation_criterion\",\n          \"role\": \"commit_requirement\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"memory_cards\",\n          \"predicate\": \"derived_from\",\n          \"object\": \"CSV_rows\"\n        },\n        {\n          \"subject\": \"commit\",\n          \"predicate\": \"requires\",\n          \"object\": \"durability_and_validity\"\n        },\n        {\n          \"subject\": \"ambiguity\",\n          \"predicate\": \"must_be_preserved\",\n          \"object\": \"unless_resolved\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguity in 'large_table_atomization' scope requires context from upstream systems (e.g., table schema, business rules).\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Proceed with durable commit of the 5 memory cards above, adhering to strict atomization rules. Remaining 495 cards require individual validation per the schema constraints.\",\n  \"citations\": [\n    \"Fixture ID: validator_blocks_large_table_atomization_001\",\n    \"Schema: durability_filter_role_specification_v1.2\"\n  ],\n  \"repair_options\": [\n    \"Reject all cards lacking explicit ambiguity resolution.\",\n    \"Flag cards with unresolved entity relationships for manual review.\",\n    \"Batch-validate remaining 495 cards in parallel streams (100/card).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"5/500 cards committed to durable memory (sample set).\",\n      \"Ambiguity preserved in all statements.\",\n      \"No superseded/deleted facts detected in sample.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

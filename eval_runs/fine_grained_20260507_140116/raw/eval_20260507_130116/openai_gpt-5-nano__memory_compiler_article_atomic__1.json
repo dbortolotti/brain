@@ -1,0 +1,141 @@
+{
+  "error": null,
+  "fixture_id": "memory_compiler_article_atomic",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Preserve both the need for durable source evidence and the design guidance that, while semantic indexing can aid recall, lifecycle ownership and conflict state must reside with the application database; atomic memory cards should be small and traceable.",
+    "citations": [],
+    "conflict_classification": "ambiguous_dependency_on_ownership_and_lifecycle",
+    "decision": "retain_memory_with_didelity",
+    "entity_resolution": {
+      "action": "preserve_original_context",
+      "entity_id": null,
+      "reason": "statements describe design considerations; no single definitive entity to link without broader context"
+    },
+    "intent": "evaluate_memory_compiler_article_atomic",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "AI memory systems",
+            "role": "subject",
+            "type": "system"
+          },
+          {
+            "name": "source evidence",
+            "role": "object",
+            "type": "concept"
+          }
+        ],
+        "kind": "assertion",
+        "relationships": [
+          {
+            "object": "durable source evidence",
+            "predicate": "requires",
+            "subject": "AI memory systems"
+          }
+        ],
+        "statement": "AI memory systems need durable source evidence."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Atomic memory cards",
+            "role": "subject",
+            "type": "technology"
+          },
+          {
+            "name": "small",
+            "role": "attribute",
+            "type": "property"
+          },
+          {
+            "name": "traceable",
+            "role": "attribute",
+            "type": "property"
+          }
+        ],
+        "kind": "assertion",
+        "relationships": [
+          {
+            "object": "small",
+            "predicate": "have_property",
+            "subject": "Atomic memory cards"
+          },
+          {
+            "object": "traceable",
+            "predicate": "have_property",
+            "subject": "Atomic memory cards"
+          }
+        ],
+        "statement": "Atomic memory cards should be small and traceable."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "semantic index",
+            "role": "subject",
+            "type": "tool"
+          },
+          {
+            "name": "recall",
+            "role": "object",
+            "type": "process"
+          },
+          {
+            "name": "application database",
+            "role": "subject",
+            "type": "system"
+          },
+          {
+            "name": "lifecycle",
+            "role": "attribute",
+            "type": "concept"
+          },
+          {
+            "name": "conflict state",
+            "role": "attribute",
+            "type": "concept"
+          }
+        ],
+        "kind": "assertion",
+        "relationships": [
+          {
+            "object": "recall",
+            "predicate": "can_improve",
+            "subject": "semantic index"
+          },
+          {
+            "object": "lifecycle",
+            "predicate": "owns",
+            "subject": "application database"
+          },
+          {
+            "object": "conflict state",
+            "predicate": "owns",
+            "subject": "application database"
+          }
+        ],
+        "statement": "A semantic index can improve recall, but the application database must own lifecycle and conflict state."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory statements captured with provisional resolution.",
+        "No superseded facts detected; ambiguity preserved."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add citation lines linking sources about durable evidence and semantic indexing best practices.",
+      "Clarify ownership model: map lifecycle and conflict state ownership to a specific database component.",
+      "Define metrics for 'durable source evidence' in memory cards (e.g., tamper-evidence, versioning)."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"evaluate_memory_compiler_article_atomic\",\n  \"decision\": \"retain_memory_with_didelity\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"assertion\",\n      \"statement\": \"AI memory systems need durable source evidence.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"AI memory systems\", \"type\": \"system\", \"role\": \"subject\"},\n        {\"name\": \"source evidence\", \"type\": \"concept\", \"role\": \"object\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"AI memory systems\", \"predicate\": \"requires\", \"object\": \"durable source evidence\"}\n      ]\n      },\n      {\n      \"kind\": \"assertion\",\n      \"statement\": \"Atomic memory cards should be small and traceable.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Atomic memory cards\", \"type\": \"technology\", \"role\": \"subject\"},\n        {\"name\": \"small\", \"type\": \"property\", \"role\": \"attribute\"},\n        {\"name\": \"traceable\", \"type\": \"property\", \"role\": \"attribute\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Atomic memory cards\", \"predicate\": \"have_property\", \"object\": \"small\"},\n        {\"subject\": \"Atomic memory cards\", \"predicate\": \"have_property\", \"object\": \"traceable\"}\n      ]\n      },\n      {\n      \"kind\": \"assertion\",\n      \"statement\": \"A semantic index can improve recall, but the application database must own lifecycle and conflict state.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\"name\": \"semantic index\", \"type\": \"tool\", \"role\": \"subject\"},\n        {\"name\": \"recall\", \"type\": \"process\", \"role\": \"object\"},\n        {\"name\": \"application database\", \"type\": \"system\", \"role\": \"subject\"},\n        {\"name\": \"lifecycle\", \"type\": \"concept\", \"role\": \"attribute\"},\n        {\"name\": \"conflict state\", \"type\": \"concept\", \"role\": \"attribute\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"semantic index\", \"predicate\": \"can_improve\", \"object\": \"recall\"},\n        {\"subject\": \"application database\", \"predicate\": \"owns\", \"object\": \"lifecycle\"},\n        {\"subject\": \"application database\", \"predicate\": \"owns\", \"object\": \"conflict state\"}\n      ]\n      }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"preserve_original_context\",\n    \"entity_id\": null,\n    \"reason\": \"statements describe design considerations; no single definitive entity to link without broader context\"\n  },\n  \"conflict_classification\": \"ambiguous_dependency_on_ownership_and_lifecycle\",\n  \"answer\": \"Preserve both the need for durable source evidence and the design guidance that, while semantic indexing can aid recall, lifecycle ownership and conflict state must reside with the application database; atomic memory cards should be small and traceable.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Add citation lines linking sources about durable evidence and semantic indexing best practices.\",\n    \"Clarify ownership model: map lifecycle and conflict state ownership to a specific database component.\",\n    \"Define metrics for 'durable source evidence' in memory cards (e.g., tamper-evidence, versioning).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\"Memory statements captured with provisional resolution.\", \"No superseded facts detected; ambiguity preserved.\"]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

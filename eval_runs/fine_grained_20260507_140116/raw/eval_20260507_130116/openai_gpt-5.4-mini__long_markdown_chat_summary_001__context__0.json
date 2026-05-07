@@ -1,0 +1,113 @@
+{
+  "error": null,
+  "fixture_id": "long_markdown_chat_summary_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Brain DB is the source of truth; Cognee is a rebuildable semantic projection; Slack is a strict memory intake agent. Telegram addition and cheapest high-performing model choice remain open.",
+    "citations": [
+      "Chat Summary: Brain Architecture"
+    ],
+    "conflict_classification": "none",
+    "decision": "Brain DB is the source of truth; Cognee is intended to be a rebuildable semantic projection; Slack is intended to be a strict memory intake agent. Whether Telegram should be added later and which model is cheapest while saturating performance remain open questions.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No prior entity mapping was provided, and the summary does not require resolving aliases or merging entities."
+    },
+    "intent": "Extract durable architectural memory cards from the chat summary, preserving unresolved questions as open items rather than decisions.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source of truth",
+            "type": "system"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [],
+        "statement": "Brain DB should be the source of truth for memory."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "semantic projection",
+            "type": "system"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Brain DB",
+            "predicate": "is_rebuildable_projection_of",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee should be a rebuildable semantic projection rather than the source of truth."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "memory intake agent",
+            "type": "system"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "strict memory intake agent",
+            "predicate": "acts_as",
+            "subject": "Slack"
+          }
+        ],
+        "statement": "Slack should act as a strict memory intake agent."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Telegram",
+            "role": "candidate input channel",
+            "type": "system"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [],
+        "statement": "Whether Telegram should be added later is unresolved."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "model selection",
+            "role": "open optimization question",
+            "type": "decision area"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [],
+        "statement": "Which model is cheapest while still saturating performance is unresolved."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted 3 durable architectural facts.",
+        "Preserved 2 unresolved questions as open items.",
+        "No conflicts detected."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If Telegram is later decided on, add it as a separate intake/source channel with explicit role and precedence rules.",
+      "If model benchmarking data is available, store the cheapest model that meets the performance threshold as a durable decision."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Extract durable architectural memory cards from the chat summary, preserving unresolved questions as open items rather than decisions.\",\"decision\":\"Brain DB is the source of truth; Cognee is intended to be a rebuildable semantic projection; Slack is intended to be a strict memory intake agent. Whether Telegram should be added later and which model is cheapest while saturating performance remain open questions.\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Brain DB should be the source of truth for memory.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Brain DB\",\"type\":\"system\",\"role\":\"source of truth\"}],\"relationships\":[]},{\"kind\":\"fact\",\"statement\":\"Cognee should be a rebuildable semantic projection rather than the source of truth.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Cognee\",\"type\":\"system\",\"role\":\"semantic projection\"}],\"relationships\":[{\"subject\":\"Cognee\",\"predicate\":\"is_rebuildable_projection_of\",\"object\":\"Brain DB\"}]},{\"kind\":\"fact\",\"statement\":\"Slack should act as a strict memory intake agent.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Slack\",\"type\":\"system\",\"role\":\"memory intake agent\"}],\"relationships\":[{\"subject\":\"Slack\",\"predicate\":\"acts_as\",\"object\":\"strict memory intake agent\"}]},{\"kind\":\"open_question\",\"statement\":\"Whether Telegram should be added later is unresolved.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Telegram\",\"type\":\"system\",\"role\":\"candidate input channel\"}],\"relationships\":[]},{\"kind\":\"open_question\",\"statement\":\"Which model is cheapest while still saturating performance is unresolved.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"model selection\",\"type\":\"decision area\",\"role\":\"open optimization question\"}],\"relationships\":[]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No prior entity mapping was provided, and the summary does not require resolving aliases or merging entities.\"},\"conflict_classification\":\"none\",\"answer\":\"Brain DB is the source of truth; Cognee is a rebuildable semantic projection; Slack is a strict memory intake agent. Telegram addition and cheapest high-performing model choice remain open.\",\"citations\":[\"Chat Summary: Brain Architecture\"],\"repair_options\":[\"If Telegram is later decided on, add it as a separate intake/source channel with explicit role and precedence rules.\",\"If model benchmarking data is available, store the cheapest model that meets the performance threshold as a durable decision.\"],\"receipt\":{\"success\":true,\"details\":[\"Extracted 3 durable architectural facts.\",\"Preserved 2 unresolved questions as open items.\",\"No conflicts detected.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

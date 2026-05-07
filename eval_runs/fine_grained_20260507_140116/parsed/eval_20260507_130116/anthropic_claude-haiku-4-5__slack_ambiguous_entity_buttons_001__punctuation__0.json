@@ -1,0 +1,59 @@
+{
+  "fixture_id": "slack_ambiguous_entity_buttons_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory statement recorded with unresolved entity reference. Clarification needed: Does this preference apply to Sam from Goldman, Sam from Point72, or both?",
+    "citations": [
+      "Existing entities: Sam from Goldman; Sam from Point72",
+      "Input statement: Sam likes Bill Evans"
+    ],
+    "conflict_classification": "entity_ambiguity",
+    "decision": "Defer commitment; request clarification on Sam identity",
+    "entity_resolution": {
+      "action": "hold",
+      "entity_id": null,
+      "reason": "Two distinct Sams exist in context (Goldman, Point72). Preference statement is durable but Sam identity is ambiguous. Cannot commit without disambiguation."
+    },
+    "intent": "Store preference fact about Sam while resolving ambiguous entity reference",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preference fact accepted as durable",
+        "Entity reference ambiguous - requires user clarification",
+        "Memory held pending disambiguation"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Specify: 'Sam from Goldman likes Bill Evans'",
+      "Specify: 'Sam from Point72 likes Bill Evans'",
+      "Confirm: 'Both Sams like Bill Evans'"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

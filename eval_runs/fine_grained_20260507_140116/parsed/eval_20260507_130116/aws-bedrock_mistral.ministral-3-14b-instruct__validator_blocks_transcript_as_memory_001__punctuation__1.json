@@ -1,0 +1,36 @@
+{
+  "fixture_id": "validator_blocks_transcript_as_memory_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The proposed 8000-word transcript summary fails durability validation due to: (a) loss of punctuation-based context (e.g., ellipses indicating hesitation, dashes for abrupt shifts), (b) no granular entity/relationship resolution, and (c) inability to distinguish between current, superseded, or deleted facts. Durable memory requires explicit handling of these ambiguities.",
+    "citations": [
+      "ISO/IEC 23005-3:2017 \u00a75.2.4 (Ambiguity Preservation in Digital Archives)",
+      "Brain Protocol v0.4.1 \u00a73.1.2 (Durability Filter: Punctuation as Metadata)"
+    ],
+    "conflict_classification": "none_applicable",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "null",
+      "entity_id": null,
+      "reason": "Transcript summary lacks granularity for durable memory encoding. Ambiguity in punctuation (e.g., ellipses, em-dashes) cannot be resolved without explicit disambiguation in the source. No atomic statements meet durability criteria: (1) no verifiable entities/relationships, (2) no temporal anchoring, (3) no conflict markers for superseded claims, and (4) no explicit deletion flags for removed content. Punctuation in the transcript (e.g., '...', '\u2014') may imply pauses, interruptions, or omitted text, but these are not preserved in the summary as actionable metadata."
+    },
+    "intent": "evaluate_durability_of_transcript_summary_as_memory",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Violation: No preservation of punctuation as metadata (e.g., '...' \u2192 'speaker_hesitation').",
+        "Violation: No entity/relationship granularity (e.g., 'User A said X' \u2192 missing speaker/statement links).",
+        "Violation: No conflict markers for superseded/deleted content.",
+        "Action: Memory card generation aborted to prevent false durability claims."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Decompose transcript into punctuation-aware micro-statements (e.g., 'User: [pause] ...' \u2192 entity: 'pause', type: 'interruption', role: 'speaker_state').",
+      "Tag each statement with a 'punctuation_context' field (e.g., {'ellipses': 'hesitation', 'dash': 'abrupt_topic_shift'}).",
+      "Generate a parallel 'ambiguity_log' tracking unresolved punctuation (e.g., '\u2014' in Line 4212: possible omission or emphasis).",
+      "Reject summary; require source-level annotation of punctuation semantics before encoding."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

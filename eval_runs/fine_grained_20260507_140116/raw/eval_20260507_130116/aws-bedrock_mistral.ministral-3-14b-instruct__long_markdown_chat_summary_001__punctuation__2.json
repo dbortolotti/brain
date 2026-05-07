@@ -1,0 +1,145 @@
+{
+  "error": null,
+  "fixture_id": "long_markdown_chat_summary_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The proposed Brain architecture defines Brain DB as the source of truth, Cognee as a semantic projection layer, and Slack as the primary intake agent. Open questions include evaluating Telegram as an intake channel and selecting a cost-effective model that meets performance needs.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "propose_memory_system_design_and_open_questions",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Ambiguity in 'Telegram' and 'model' requires further context or stakeholder input."
+    },
+    "intent": "system_architecture_evaluation",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "database"
+          }
+        ],
+        "kind": "system_role",
+        "relationships": [
+          {
+            "object": "authoritative_memory_store",
+            "predicate": "serves_as",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB is the authoritative source of truth for all durable memory storage."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "rebuildable_interface",
+            "type": "semantic_projection"
+          },
+          {
+            "name": "Brain DB",
+            "role": "source",
+            "type": "database"
+          }
+        ],
+        "kind": "system_role",
+        "relationships": [
+          {
+            "object": "Brain DB",
+            "predicate": "projects_from",
+            "subject": "Cognee"
+          },
+          {
+            "object": "query_flexibility",
+            "predicate": "is_designed_for",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee is a rebuildable semantic projection of Brain DB, designed for query flexibility and interpretability."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "memory_intake_agent",
+            "type": "communication_platform"
+          }
+        ],
+        "kind": "system_role",
+        "relationships": [
+          {
+            "object": "user_inputs",
+            "predicate": "validates",
+            "subject": "Slack"
+          },
+          {
+            "object": "memory_candidates",
+            "predicate": "ingests",
+            "subject": "Slack"
+          }
+        ],
+        "statement": "Slack is a strict memory intake agent, responsible for ingesting and validating user inputs before durable storage."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Telegram",
+            "role": "potential_intake_agent",
+            "type": "communication_platform"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [
+          {
+            "object": "memory_intake_channel",
+            "predicate": "may_be_added_as",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "Telegram should be considered as an additional memory intake channel, pending evaluation of integration complexity and user adoption."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "model_selection",
+            "role": "unsolved_problem",
+            "type": "system_design"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [
+          {
+            "object": "cost-performance_tradeoffs",
+            "predicate": "requires_evaluation_of",
+            "subject": "model_selection"
+          }
+        ],
+        "statement": "The cheapest model that saturates performance for Brain's requirements is unresolved; cost-performance tradeoffs must be evaluated."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted 5 memory cards (4 system roles + 1 open question).",
+        "Flagged 2 unresolved entities for stakeholder input.",
+        "No conflicts detected in current design."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify Telegram's role (e.g., intake agent, backup channel) with stakeholders.",
+      "Benchmark model options (e.g., open-source vs. proprietary) against performance metrics.",
+      "Define 'saturating performance' quantitatively (e.g., latency, throughput)."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"system_architecture_evaluation\",\n  \"decision\": \"propose_memory_system_design_and_open_questions\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"system_role\",\n      \"statement\": \"Brain DB is the authoritative source of truth for all durable memory storage.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"database\",\n          \"role\": \"source_of_truth\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"serves_as\",\n          \"object\": \"authoritative_memory_store\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"system_role\",\n      \"statement\": \"Cognee is a rebuildable semantic projection of Brain DB, designed for query flexibility and interpretability.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"semantic_projection\",\n          \"role\": \"rebuildable_interface\"\n        },\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"database\",\n          \"role\": \"source\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"projects_from\",\n          \"object\": \"Brain DB\"\n        },\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"is_designed_for\",\n          \"object\": \"query_flexibility\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"system_role\",\n      \"statement\": \"Slack is a strict memory intake agent, responsible for ingesting and validating user inputs before durable storage.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Slack\",\n          \"type\": \"communication_platform\",\n          \"role\": \"memory_intake_agent\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Slack\",\n          \"predicate\": \"validates\",\n          \"object\": \"user_inputs\"\n        },\n        {\n          \"subject\": \"Slack\",\n          \"predicate\": \"ingests\",\n          \"object\": \"memory_candidates\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"open_question\",\n      \"statement\": \"Telegram should be considered as an additional memory intake channel, pending evaluation of integration complexity and user adoption.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Telegram\",\n          \"type\": \"communication_platform\",\n          \"role\": \"potential_intake_agent\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Telegram\",\n          \"predicate\": \"may_be_added_as\",\n          \"object\": \"memory_intake_channel\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"open_question\",\n      \"statement\": \"The cheapest model that saturates performance for Brain's requirements is unresolved; cost-performance tradeoffs must be evaluated.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"model_selection\",\n          \"type\": \"system_design\",\n          \"role\": \"unsolved_problem\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"model_selection\",\n          \"predicate\": \"requires_evaluation_of\",\n          \"object\": \"cost-performance_tradeoffs\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguity in 'Telegram' and 'model' requires further context or stakeholder input.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"The proposed Brain architecture defines Brain DB as the source of truth, Cognee as a semantic projection layer, and Slack as the primary intake agent. Open questions include evaluating Telegram as an intake channel and selecting a cost-effective model that meets performance needs.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Clarify Telegram's role (e.g., intake agent, backup channel) with stakeholders.\",\n    \"Benchmark model options (e.g., open-source vs. proprietary) against performance metrics.\",\n    \"Define 'saturating performance' quantitatively (e.g., latency, throughput).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Extracted 5 memory cards (4 system roles + 1 open question).\",\n      \"Flagged 2 unresolved entities for stakeholder input.\",\n      \"No conflicts detected in current design.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

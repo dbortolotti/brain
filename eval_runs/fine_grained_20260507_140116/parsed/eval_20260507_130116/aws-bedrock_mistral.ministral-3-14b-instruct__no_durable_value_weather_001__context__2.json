@@ -1,0 +1,59 @@
+{
+  "fixture_id": "no_durable_value_weather_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Understood as contextual weather reference (cloudy today), but not committed to durable memory due to ambiguity and lack of source validation.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "no_durable_commitment",
+    "entity_resolution": {
+      "action": "defer_durable_storage",
+      "reason": "Lack of verifiable source, temporal ambiguity ('today' unanchored to calendar), and no explicit intent to retain as memory. Contextual only."
+    },
+    "intent": "contextual_understanding",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "cloudy",
+            "role": "current_state",
+            "type": "weather_condition"
+          },
+          {
+            "name": "today",
+            "role": "time_anchor",
+            "type": "temporal_reference"
+          }
+        ],
+        "kind": "contextual_evidence",
+        "relationships": [
+          {
+            "object": "cloudy",
+            "predicate": "is_currently",
+            "subject": "weather"
+          },
+          {
+            "object": "temporal_ambiguity (no date/time specified)",
+            "predicate": "implies",
+            "subject": "user_input"
+          }
+        ],
+        "statement": "Today's weather is cloudy (source: user input, no verifiable durability)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Context preserved in short-term buffer for immediate use.",
+        "No durable memory created per durability_filter role constraints."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Anchor 'today' to a specific date (e.g., '2023-11-15') for potential future durability.",
+      "Request source verification (e.g., 'Is this from a weather API?') before committing.",
+      "Explicitly mark as 'ephemeral context' if user confirms no retention intent."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

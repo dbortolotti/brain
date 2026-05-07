@@ -1,0 +1,34 @@
+{
+  "fixture_id": "debug_sql_disabled_001__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "SQL debug output is unavailable because BRAIN_DEBUG_SQL_ENABLED=false. The command `/brain admin sql SELECT * FROM memory_cards` should not return query results or SQL execution details while that flag is disabled.",
+    "citations": [
+      "Input explicitly states `BRAIN_DEBUG_SQL_ENABLED=false`.",
+      "Requested command: `/brain admin sql SELECT * FROM memory_cards`."
+    ],
+    "conflict_classification": "none",
+    "decision": "do_not_execute_or_commit",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input is a request for SQL debugging context, not a durable user fact or entity update."
+    },
+    "intent": "explain_sql_debug_unavailable",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Interpreted the request as a debug explanation.",
+        "Did not execute SQL.",
+        "Did not create or modify any memory cards."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Enable SQL debug mode by setting BRAIN_DEBUG_SQL_ENABLED=true, then rerun the command.",
+      "Use non-SQL diagnostic or admin interfaces that are permitted when SQL debug is disabled.",
+      "If you only need memory contents, query through supported memory inspection APIs instead of raw SQL debug."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

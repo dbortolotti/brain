@@ -1,0 +1,76 @@
+{
+  "fixture_id": "ambiguous_time_reference_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam\u2019s statement about leaving Goldman Sachs is time-ambiguous. No durable memory committed due to unresolved references.",
+    "citations": [
+      "Temporal ambiguity in 'last Friday' and 'next month' (no absolute dates provided).",
+      "No superseded/deleted facts present; only ambiguous intent captured."
+    ],
+    "conflict_classification": "temporal_ambiguity",
+    "entity_resolution": {
+      "action": "defer",
+      "reason": "Ambiguous temporal references ('last Friday' and 'next month') prevent precise entity resolution. Requires contextual grounding (e.g., current date) or clarification from Sam."
+    },
+    "intent": "entity_mention_extraction",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "object",
+            "type": "organization"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "expressed_intent_to_leave",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam expressed intent to leave Goldman Sachs in an unspecified future timeframe (potentially next month, but ambiguous due to 'last Friday' reference)."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "last Friday",
+            "role": "temporal_anchor",
+            "type": "time_reference"
+          },
+          {
+            "name": "next month",
+            "role": "future_event",
+            "type": "time_reference"
+          }
+        ],
+        "kind": "temporal_ambiguity",
+        "relationships": [
+          {
+            "object": "next month",
+            "predicate": "anchors_relative_time",
+            "subject": "last Friday"
+          }
+        ],
+        "statement": "'Last Friday' is a relative time reference that cannot be resolved to a specific date without additional context. 'Next month' is similarly ambiguous without knowing the current date."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguous time references prevent durable memory commitment.",
+        "Entity extraction limited to core actors (Sam, Goldman Sachs).",
+        "Temporal resolution deferred pending context."
+      ],
+      "success": false
+    }
+  },
+  "run_id": "eval_20260507_130116"
+}

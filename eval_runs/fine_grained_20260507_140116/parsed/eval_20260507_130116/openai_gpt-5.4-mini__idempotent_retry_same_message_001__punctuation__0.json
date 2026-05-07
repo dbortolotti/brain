@@ -1,0 +1,68 @@
+{
+  "fixture_id": "idempotent_retry_same_message_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Stored as an ambiguous low-confidence preference mention.",
+    "citations": [
+      "input: Same input delivered three times - Sam from Goldman mentioned that he likes Bill Evans"
+    ],
+    "conflict_classification": "none",
+    "decision": "store_with_low_confidence",
+    "entity_resolution": {
+      "action": "create_or_link_ambiguous_entity",
+      "entity_id": null,
+      "reason": "The message mentions 'Sam from Goldman' without enough information to resolve a unique durable identity."
+    },
+    "intent": "Record a possibly durable preference mention about Sam from Goldman liking Bill Evans.",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "mentioned individual",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation or context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "music preference",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "is_from_or_affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman reportedly likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Idempotent duplicate input detected; recorded once.",
+        "No contradiction present.",
+        "Ambiguous identity preserved without overcommitting."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If Sam is a specific person, provide a last name or role to resolve identity.",
+      "If Goldman refers to a company or another context, clarify the affiliation.",
+      "If this was about a different Bill Evans, specify which one."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

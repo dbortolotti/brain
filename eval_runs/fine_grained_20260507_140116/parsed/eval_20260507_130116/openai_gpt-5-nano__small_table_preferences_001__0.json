@@ -1,0 +1,88 @@
+{
+  "fixture_id": "small_table_preferences_001",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Preferences recorded: Sam (Goldman) likes Bill Evans; Anna (JPM) likes Barolo.",
+    "citations": [
+      "Dinner 2026-05-05",
+      "Lunch 2026-05-01"
+    ],
+    "conflict_classification": "none",
+    "decision": "store_and_confirm_preferences_from_fixture",
+    "entity_resolution": {
+      "action": "preserve_invariant",
+      "entity_id": null,
+      "reason": "Initial fixture provides distinct person-firm-preference associations; no cross-entity conflicts detected."
+    },
+    "intent": "evaluate_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "Person"
+          },
+          {
+            "name": "Goldman",
+            "role": "organization",
+            "type": "Firm"
+          }
+        ],
+        "kind": "statement",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliation",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "preference",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam at Goldman says: Likes Bill Evans (source: Dinner 2026-05-05)."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Anna",
+            "role": "subject",
+            "type": "Person"
+          },
+          {
+            "name": "JPM",
+            "role": "organization",
+            "type": "Firm"
+          }
+        ],
+        "kind": "statement",
+        "relationships": [
+          {
+            "object": "JPM",
+            "predicate": "affiliation",
+            "subject": "Anna"
+          },
+          {
+            "object": "Barolo",
+            "predicate": "preference",
+            "subject": "Anna"
+          }
+        ],
+        "statement": "Anna at JPM says: Likes Barolo (source: Lunch 2026-05-01)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "All entries from fixture preserved as durable memory.",
+        "No superseded data detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

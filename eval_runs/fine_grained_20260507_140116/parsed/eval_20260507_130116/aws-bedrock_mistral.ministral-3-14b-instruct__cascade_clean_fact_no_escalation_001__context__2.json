@@ -1,0 +1,66 @@
+{
+  "fixture_id": "cascade_clean_fact_no_escalation_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Extracted entities: **Nur** (person, twin_daughter) and **Sara** (person, twin_daughter). Relationships: twins and daughters of the speaker. No conflicts detected.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "extract_and_resolve_entities",
+    "entity_resolution": {
+      "action": "create_new_entities",
+      "reason": "No prior context of 'Nur' or 'Sara' exists in durable memory; new entities required."
+    },
+    "intent": "entity_mention_extraction",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "twin_daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "twin_daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "is_twin_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "speaker",
+            "predicate": "is_daughter_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "speaker",
+            "predicate": "is_daughter_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Nur and Sara are my twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Entities 'Nur' and 'Sara' added to working memory with role 'twin_daughter'.",
+        "Relationships 'is_twin_of' and 'is_daughter_of' established.",
+        "No superseded/deleted facts detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

@@ -1,0 +1,68 @@
+{
+  "fixture_id": "cost_latency_token_accounting_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Required evaluation accounting fields for cost/latency reporting typically include: (1) token counts for input/prompt tokens, output/completion tokens, and total tokens; (2) provider ID and model ID (or equivalent identifiers); (3) estimated price (ideally with currency and whether it\u2019s per-token or total, plus any calculation basis); and (4) latency statistics at least at p50, p90, and p95 (with units such as milliseconds).",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "no_durable_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No persistent entities were provided that warrant durable memory; this is a general explanation request."
+    },
+    "intent": "Explain required evaluation accounting fields for context: token counts, provider/model IDs, estimated price, and latency percentiles (p50/p90/p95).",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "token accounting",
+            "role": "category",
+            "type": "concept"
+          },
+          {
+            "name": "provider/model identifiers",
+            "role": "category",
+            "type": "concept"
+          },
+          {
+            "name": "estimated price",
+            "role": "category",
+            "type": "concept"
+          },
+          {
+            "name": "latency percentiles",
+            "role": "category",
+            "type": "concept"
+          }
+        ],
+        "kind": "guideline",
+        "relationships": [
+          {
+            "object": "input tokens, output tokens, total tokens",
+            "predicate": "includes",
+            "subject": "token accounting"
+          },
+          {
+            "object": "p50, p90, p95",
+            "predicate": "covers",
+            "subject": "latency percentiles"
+          }
+        ],
+        "statement": "When evaluating an LLM-based system\u2019s cost/latency performance, include accounting fields for: prompt/input tokens, output/completion tokens, total tokens, provider ID, model ID, estimated price (and currency/unit), and latency percentiles such as p50, p90, and p95."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Returned only non-deletion guidance suitable for evaluation accounting; no conflicting or superseded facts were asserted."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If your fixture expects a specific schema, provide the exact field names and data types so the mapping can be precise.",
+      "If pricing is required, specify whether to report prompt/output token rates separately or only a combined total."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

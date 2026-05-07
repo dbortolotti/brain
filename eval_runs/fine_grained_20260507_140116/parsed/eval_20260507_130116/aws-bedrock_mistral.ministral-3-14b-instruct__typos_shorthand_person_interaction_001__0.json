@@ -1,0 +1,94 @@
+{
+  "fixture_id": "typos_shorthand_person_interaction_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Input contains ambiguous shorthand/typos ('sam frm goldmn' and 'bill evns'). Resolution requires additional context or user input.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "proceed_with_ambiguous_resolution",
+    "entity_resolution": {
+      "action": "defer_resolution",
+      "entity_id": null,
+      "reason": "Ambiguity in shorthand/typos ('frm goldmn' and 'bill evns') prevents definitive resolution. Requires user clarification or context."
+    },
+    "intent": "entity_mention_extraction",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "frm goldmn",
+            "role": "potential_person",
+            "type": "unresolved_shorthand"
+          },
+          {
+            "name": "bill evns",
+            "role": "potential_person",
+            "type": "unresolved_shorthand"
+          }
+        ],
+        "kind": "entity_mention",
+        "relationships": [
+          {
+            "object": "bill evns",
+            "predicate": "likes",
+            "subject": "sam"
+          },
+          {
+            "object": "frm goldmn",
+            "predicate": "interaction_with",
+            "subject": "sam"
+          }
+        ],
+        "statement": "Unresolved shorthand/typos in input: 'sam frm goldmn' and 'bill evns'"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Goldman Sachs",
+            "role": "hypothesis",
+            "type": "institution"
+          },
+          {
+            "name": "Goldman",
+            "role": "hypothesis",
+            "type": "surname"
+          }
+        ],
+        "kind": "interpretation_hypothesis",
+        "statement": "Possible interpretations for 'frm goldmn': Goldman Sachs (institution), Goldman (surname), or typo for 'from Goldman'"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Bill Evans",
+            "role": "hypothesis",
+            "type": "person"
+          }
+        ],
+        "kind": "interpretation_hypothesis",
+        "statement": "Possible interpretations for 'bill evns': Bill Evans (musician), Bill Evans (person), or typo for 'Bill Evans'"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguous shorthand/typos detected. No durable memory committed.",
+        "Resolution deferred pending user input."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Clarify 'frm goldmn' (e.g., is it Goldman Sachs, a surname, or typo?)",
+      "Clarify 'bill evns' (e.g., is it Bill Evans or another person?)",
+      "Provide full names or context for disambiguation"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

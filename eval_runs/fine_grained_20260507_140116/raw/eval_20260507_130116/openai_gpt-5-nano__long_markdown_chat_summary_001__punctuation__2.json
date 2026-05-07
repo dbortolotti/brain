@@ -1,0 +1,137 @@
+{
+  "error": null,
+  "fixture_id": "long_markdown_chat_summary_001__punctuation",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Stored summary with current intentions and open questions preserved. Telegram addition and model-cost-performance evaluation remain open questions for future resolution.",
+    "citations": [],
+    "conflict_classification": "ambiguous_dependencies_and_future_planning",
+    "decision": "store_memory_cards representing the chat summary, preserve ambiguity, and mark questions for future clarification; DO NOT overwrite earlier statements with later updates; treat Telegram as a potential future addition and evaluate cost-performance tradeoffs when new data arrives.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Ambiguity present; no conflicting entity data resolved yet."
+    },
+    "intent": "record_and_route_summary",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system"
+          },
+          {
+            "name": "source_of_truth",
+            "role": "descriptor",
+            "type": "concept"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Brain system",
+            "predicate": "is_source_of_truth_for",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB should be the source of truth"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "semantic_projection",
+            "type": "system"
+          },
+          {
+            "name": "rebuildable_semantic_projection",
+            "role": "descriptor",
+            "type": "concept"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "rebuildable_semantic_projection",
+            "predicate": "is",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee should be a rebuildable semantic projection"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "memory_agent",
+            "type": "system"
+          },
+          {
+            "name": "strict_memory_intake",
+            "role": "descriptor",
+            "type": "concept"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "strict_memory_intake",
+            "predicate": "implements",
+            "subject": "Slack"
+          }
+        ],
+        "statement": "Slack should be a strict memory intake agent"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Telegram",
+            "role": "possible_integration",
+            "type": "platform"
+          }
+        ],
+        "kind": "question",
+        "relationships": [],
+        "statement": "Open questions - Should Telegram be added later?"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "model",
+            "role": "resource",
+            "type": "system"
+          },
+          {
+            "name": "cost_performance",
+            "role": "objective",
+            "type": "concept"
+          }
+        ],
+        "kind": "question",
+        "relationships": [],
+        "statement": "Which model is cheapest while saturating performance?"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory cards created from chat summary.",
+        "Ambiguities preserved as open questions."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add explicit entity IDs for Brain DB, Cognee, Slack in a canonical registry.",
+      "Attach pending decision flags to questions about Telegram integration and cost-per-performance optimization.",
+      "Log any future evidence about Telegram feasibility and model pricing to update memory cards."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"record_and_route_summary\",\n  \"decision\": \"store_memory_cards representing the chat summary, preserve ambiguity, and mark questions for future clarification; DO NOT overwrite earlier statements with later updates; treat Telegram as a potential future addition and evaluate cost-performance tradeoffs when new data arrives.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Brain DB should be the source of truth\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"system\",\n          \"role\": \"source_of_truth\"\n        }\n        ,\n        {\n          \"name\": \"source_of_truth\",\n          \"type\": \"concept\",\n          \"role\": \"descriptor\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"is_source_of_truth_for\",\n          \"object\": \"Brain system\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Cognee should be a rebuildable semantic projection\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"system\",\n          \"role\": \"semantic_projection\"\n        }\n        ,\n        {\n          \"name\": \"rebuildable_semantic_projection\",\n          \"type\": \"concept\",\n          \"role\": \"descriptor\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"is\",\n          \"object\": \"rebuildable_semantic_projection\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Slack should be a strict memory intake agent\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Slack\",\n          \"type\": \"system\",\n          \"role\": \"memory_agent\"\n        }\n        ,\n        {\n          \"name\": \"strict_memory_intake\",\n          \"type\": \"concept\",\n          \"role\": \"descriptor\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Slack\",\n          \"predicate\": \"implements\",\n          \"object\": \"strict_memory_intake\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"question\",\n      \"statement\": \"Open questions - Should Telegram be added later?\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Telegram\",\n          \"type\": \"platform\",\n          \"role\": \"possible_integration\"\n        }\n      ],\n      \"relationships\": []\n    },\n    {\n      \"kind\": \"question\",\n      \"statement\": \"Which model is cheapest while saturating performance?\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"model\",\n          \"type\": \"system\",\n          \"role\": \"resource\"\n        },\n        {\n          \"name\": \"cost_performance\",\n          \"type\": \"concept\",\n          \"role\": \"objective\"\n        }\n      ],\n      \"relationships\": []\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguity present; no conflicting entity data resolved yet.\"\n  },\n  \"conflict_classification\": \"ambiguous_dependencies_and_future_planning\",\n  \"answer\": \"Stored summary with current intentions and open questions preserved. Telegram addition and model-cost-performance evaluation remain open questions for future resolution.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Add explicit entity IDs for Brain DB, Cognee, Slack in a canonical registry.\",\n    \"Attach pending decision flags to questions about Telegram integration and cost-per-performance optimization.\",\n    \"Log any future evidence about Telegram feasibility and model pricing to update memory cards.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory cards created from chat summary.\",\n      \"Ambiguities preserved as open questions.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

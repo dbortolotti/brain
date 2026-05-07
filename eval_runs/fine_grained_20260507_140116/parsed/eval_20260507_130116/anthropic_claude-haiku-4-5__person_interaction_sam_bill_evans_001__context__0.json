@@ -1,0 +1,84 @@
+{
+  "fixture_id": "person_interaction_sam_bill_evans_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Successfully extracted and ranked entity candidates: Sam (Goldman context) and Bill Evans (subject of preference relationship). Relationship 'likes' recorded with high confidence.",
+    "citations": [
+      "Input statement: 'Sam from Goldman mentioned that he likes Bill Evans'"
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "Create durable memory cards for identified entities and their relationship",
+    "entity_resolution": {
+      "action": "candidate_identified",
+      "entity_id": null,
+      "reason": "Two primary entities identified (Sam, Bill Evans) with insufficient context to resolve to existing entity records; recommend disambiguation on next interaction"
+    },
+    "intent": "Extract and rank entity candidates from a personal interaction context",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee or contact at Goldman",
+            "type": "person"
+          }
+        ],
+        "kind": "entity",
+        "relationships": [],
+        "statement": "Sam works at or is associated with Goldman"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Bill Evans",
+            "role": "subject of Sam's preference",
+            "type": "person"
+          }
+        ],
+        "kind": "entity",
+        "relationships": [],
+        "statement": "Bill Evans is a person known to Sam"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Entity candidate 'Sam' extracted with Goldman affiliation",
+        "Entity candidate 'Bill Evans' extracted",
+        "Relationship 'Sam likes Bill Evans' recorded",
+        "No conflicts or superseded facts detected",
+        "Memory cards committed with appropriate confidence levels"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify Sam's full name and Goldman division/role",
+      "Confirm Bill Evans identity (full name, organization, relationship type)",
+      "Establish temporal context for when this preference was expressed"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

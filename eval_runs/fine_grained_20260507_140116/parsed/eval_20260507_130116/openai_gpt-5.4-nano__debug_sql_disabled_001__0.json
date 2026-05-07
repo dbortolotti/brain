@@ -1,0 +1,30 @@
+{
+  "fixture_id": "debug_sql_disabled_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Because BRAIN_DEBUG_SQL_ENABLED=false, the 'admin sql SELECT ...' request should not execute or return memory cards via debug SQL. The system should treat it as a blocked operation due to configuration/feature-flag constraints rather than as a valid memory retrieval.",
+    "citations": [],
+    "conflict_classification": "Configuration conflict: debug SQL execution requested but feature flag disabled.",
+    "decision": "SQL query execution is blocked/ignored because BRAIN_DEBUG_SQL_ENABLED=false.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The request targets a debug/admin SQL pathway rather than a concrete memory entity. No persistent memory changes or entity resolution are warranted."
+    },
+    "intent": "Explain conflict arising from attempting to run a SQL query when debug SQL is disabled.",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No durable memory updates performed.",
+        "No memory cards were retrieved because debug SQL is disabled."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Enable BRAIN_DEBUG_SQL_ENABLED=true (if appropriate and authorized) and retry the admin SQL command.",
+      "Use the standard (non-debug) memory retrieval interface instead of 'admin sql'.",
+      "Verify the feature-flag source of truth (environment variable/config) and ensure it is applied to the running instance."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

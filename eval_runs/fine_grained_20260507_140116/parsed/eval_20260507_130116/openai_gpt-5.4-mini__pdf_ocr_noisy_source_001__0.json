@@ -1,0 +1,65 @@
+{
+  "fixture_id": "pdf_ocr_noisy_source_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Brain DB remains the source of truth; Cognee should be a rebuildable projection.",
+    "citations": [
+      "OCR noisy source: \"Brain DB remalns source of trvth. Cognee shou1d be rebuildable projection.\""
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "Store as tentative preference/architecture note; do not over-interpret terminology.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The OCR text does not provide enough context to resolve whether 'Cognee' refers to a specific system component beyond the literal mention."
+    },
+    "intent": "Extract durable atomic memory from noisy OCR text with ambiguity preserved.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source of truth",
+            "type": "system"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [],
+        "statement": "Brain DB remains the source of truth."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "projection",
+            "type": "system"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "rebuildable projection",
+            "predicate": "should be",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee should be a rebuildable projection."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted 2 atomic preference cards.",
+        "Preserved OCR ambiguity around 'Cognee'.",
+        "No superseded facts introduced."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify whether 'Cognee' is a named system, module, or external project.",
+      "Confirm whether this is an architectural principle or a temporary implementation note."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

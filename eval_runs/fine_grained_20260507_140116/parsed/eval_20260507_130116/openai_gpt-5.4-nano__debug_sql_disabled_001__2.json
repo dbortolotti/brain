@@ -1,0 +1,30 @@
+{
+  "fixture_id": "debug_sql_disabled_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "The request is an admin SQL query against memory_cards, but BRAIN_DEBUG_SQL_ENABLED=false indicates debug SQL behavior is disabled. Therefore, the system should not run the query or return its results; instead it should deny/ignore the debug SQL execution according to the configuration.",
+    "citations": [],
+    "conflict_classification": "Configuration/permission gating conflict: admin SQL request conflicts with debug SQL being disabled.",
+    "decision": "Do not execute/emit debug SQL results; treat as blocked/disabled due to configuration.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No durable memory facts can be inferred from the provided input beyond the presence of an admin SQL request and a configuration flag disabling debug SQL."
+    },
+    "intent": "Explain conflict/behavior regarding an attempted admin SQL query when BRAIN_DEBUG_SQL_ENABLED=false.",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected debug SQL disabled flag (BRAIN_DEBUG_SQL_ENABLED=false).",
+        "Classified as a gating/permission conflict; no memory_cards were produced."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Set BRAIN_DEBUG_SQL_ENABLED=true and retry if permitted.",
+      "Use a supported non-debug query/API path for memory access rather than admin SQL.",
+      "Verify required permissions/roles for admin SQL execution separate from the debug flag."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

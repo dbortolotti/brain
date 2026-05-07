@@ -1,0 +1,121 @@
+{
+  "error": null,
+  "fixture_id": "large_table_500_rows_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Store as a structured dataset with columns (id, name, value) in a queryable format (relational/columnar). Use indexes on id or (id,name) as appropriate. Do not deduplicate by default because repeated rows may carry meaning; deduplicate/aggregate only after repetition semantics are confirmed.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Store as a structured dataset in a relational/columnar form with normalized columns (id, name, value), using deduplication or aggregation rules only if repetition semantics are clarified; otherwise preserve raw rows and optionally add an index on (id, name) for query efficiency.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The only explicit entity is the fixture ID provided; no stable external entity identifiers were supplied."
+    },
+    "intent": "Decide how to store a CSV table (~500 rows) with repeated records (id,name,value) and determine suitable durable memory/storage representation.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "large_table_500_rows_001",
+            "role": "dataset_id",
+            "type": "fixture"
+          },
+          {
+            "name": "id",
+            "role": "field",
+            "type": "column"
+          },
+          {
+            "name": "name",
+            "role": "field",
+            "type": "column"
+          },
+          {
+            "name": "value",
+            "role": "field",
+            "type": "column"
+          }
+        ],
+        "kind": "dataset_characterization",
+        "relationships": [
+          {
+            "object": "id,name,value",
+            "predicate": "has_columns",
+            "subject": "large_table_500_rows_001"
+          }
+        ],
+        "statement": "Fixture large_table_500_rows_001 is a CSV table with approximately 500 rows containing columns id, name, and value, with records repeated many times."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "relational_or_columnar_store",
+            "role": "recommended_destination",
+            "type": "storage_option"
+          },
+          {
+            "name": "id",
+            "role": "index_candidate",
+            "type": "column"
+          },
+          {
+            "name": "name",
+            "role": "index_candidate",
+            "type": "column"
+          }
+        ],
+        "kind": "storage_recommendation",
+        "relationships": [
+          {
+            "object": "large_table_500_rows_001",
+            "predicate": "targets_dataset",
+            "subject": "storage_recommendation"
+          }
+        ],
+        "statement": "Represent the table as structured columns (id, name, value) in a queryable storage format (e.g., relational table or columnar store); add an index (e.g., on id or (id,name)) to support common lookups."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "repeated_rows",
+            "role": "constraint",
+            "type": "data_property"
+          },
+          {
+            "name": "deduplication_or_aggregation",
+            "role": "conditional_action",
+            "type": "transformation_option"
+          }
+        ],
+        "kind": "ambiguity_preservation",
+        "relationships": [
+          {
+            "object": "repeated_rows",
+            "predicate": "has_property",
+            "subject": "large_table_500_rows_001"
+          }
+        ],
+        "statement": "Because the CSV includes many repeated rows, the decision should preserve raw rows unless the intended semantics of repetition (e.g., duplicates vs. event counts) are clarified; only then consider deduplication or aggregation."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted dataset characteristics (columns, repetition) from the prompt.",
+        "Provided conditional storage guidance while preserving ambiguity about repetition semantics."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify whether repeated (id,name,value) rows represent true duplicates or meaningful repeated events/counts; then choose deduplication vs. aggregation.",
+      "If queries are primarily analytics, consider columnar storage; if lookups/updates are frequent, consider a normalized relational schema with appropriate keys and indexes.",
+      "If size grows beyond the 500-row fixture, evaluate partitioning strategy (e.g., by id or date if available)."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Decide how to store a CSV table (~500 rows) with repeated records (id,name,value) and determine suitable durable memory/storage representation.\",\n  \"decision\": \"Store as a structured dataset in a relational/columnar form with normalized columns (id, name, value), using deduplication or aggregation rules only if repetition semantics are clarified; otherwise preserve raw rows and optionally add an index on (id, name) for query efficiency.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"dataset_characterization\",\n      \"statement\": \"Fixture large_table_500_rows_001 is a CSV table with approximately 500 rows containing columns id, name, and value, with records repeated many times.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"large_table_500_rows_001\",\n          \"type\": \"fixture\",\n          \"role\": \"dataset_id\"\n        },\n        {\n          \"name\": \"id\",\n          \"type\": \"column\",\n          \"role\": \"field\"\n        },\n        {\n          \"name\": \"name\",\n          \"type\": \"column\",\n          \"role\": \"field\"\n        },\n        {\n          \"name\": \"value\",\n          \"type\": \"column\",\n          \"role\": \"field\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"large_table_500_rows_001\",\n          \"predicate\": \"has_columns\",\n          \"object\": \"id,name,value\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"storage_recommendation\",\n      \"statement\": \"Represent the table as structured columns (id, name, value) in a queryable storage format (e.g., relational table or columnar store); add an index (e.g., on id or (id,name)) to support common lookups.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"relational_or_columnar_store\",\n          \"type\": \"storage_option\",\n          \"role\": \"recommended_destination\"\n        },\n        {\n          \"name\": \"id\",\n          \"type\": \"column\",\n          \"role\": \"index_candidate\"\n        },\n        {\n          \"name\": \"name\",\n          \"type\": \"column\",\n          \"role\": \"index_candidate\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"storage_recommendation\",\n          \"predicate\": \"targets_dataset\",\n          \"object\": \"large_table_500_rows_001\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"ambiguity_preservation\",\n      \"statement\": \"Because the CSV includes many repeated rows, the decision should preserve raw rows unless the intended semantics of repetition (e.g., duplicates vs. event counts) are clarified; only then consider deduplication or aggregation.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"repeated_rows\",\n          \"type\": \"data_property\",\n          \"role\": \"constraint\"\n        },\n        {\n          \"name\": \"deduplication_or_aggregation\",\n          \"type\": \"transformation_option\",\n          \"role\": \"conditional_action\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"large_table_500_rows_001\",\n          \"predicate\": \"has_property\",\n          \"object\": \"repeated_rows\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"The only explicit entity is the fixture ID provided; no stable external entity identifiers were supplied.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Store as a structured dataset with columns (id, name, value) in a queryable format (relational/columnar). Use indexes on id or (id,name) as appropriate. Do not deduplicate by default because repeated rows may carry meaning; deduplicate/aggregate only after repetition semantics are confirmed.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Clarify whether repeated (id,name,value) rows represent true duplicates or meaningful repeated events/counts; then choose deduplication vs. aggregation.\",\n    \"If queries are primarily analytics, consider columnar storage; if lookups/updates are frequent, consider a normalized relational schema with appropriate keys and indexes.\",\n    \"If size grows beyond the 500-row fixture, evaluate partitioning strategy (e.g., by id or date if available).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Extracted dataset characteristics (columns, repetition) from the prompt.\",\n      \"Provided conditional storage guidance while preserving ambiguity about repetition semantics.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

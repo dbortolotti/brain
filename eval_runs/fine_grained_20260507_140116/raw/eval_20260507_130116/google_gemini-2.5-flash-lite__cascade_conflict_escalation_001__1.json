@@ -1,0 +1,54 @@
+{
+  "error": null,
+  "fixture_id": "cascade_conflict_escalation_001",
+  "model": "google:gemini-2.5-flash-lite",
+  "payload": {
+    "answer": "I have conflicting information about Sara's relationship to you. Previously, you stated Sara is your daughter, but now you are saying Sara is your niece. Which is correct?",
+    "citations": [],
+    "conflict_classification": "direct_conflict",
+    "decision": "conflict",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": null,
+      "reason": "The input statement 'Sara is my niece' conflicts with the existing memory 'Sara is my daughter'. Both statements refer to the same entity 'Sara' but assert different familial relationships to 'me'."
+    },
+    "intent": "update_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "type": "PERSON"
+          },
+          {
+            "name": "me",
+            "type": "PERSON"
+          }
+        ],
+        "kind": "statement",
+        "relationships": [
+          {
+            "object": "me",
+            "predicate": "is_niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Failed to update memory due to conflicting information."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Sara is my daughter.",
+      "Sara is my niece."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"update_memory\",\n  \"decision\": \"conflict\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"statement\",\n      \"statement\": \"Sara is my niece.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"PERSON\"\n        },\n        {\n          \"name\": \"me\",\n          \"type\": \"PERSON\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is_niece_of\",\n          \"object\": \"me\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolve\",\n    \"entity_id\": null,\n    \"reason\": \"The input statement 'Sara is my niece' conflicts with the existing memory 'Sara is my daughter'. Both statements refer to the same entity 'Sara' but assert different familial relationships to 'me'.\"\n  },\n  \"conflict_classification\": \"direct_conflict\",\n  \"answer\": \"I have conflicting information about Sara's relationship to you. Previously, you stated Sara is your daughter, but now you are saying Sara is your niece. Which is correct?\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Sara is my daughter.\",\n    \"Sara is my niece.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Failed to update memory due to conflicting information.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

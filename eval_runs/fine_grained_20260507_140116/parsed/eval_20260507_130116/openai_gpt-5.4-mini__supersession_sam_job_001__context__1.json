@@ -1,0 +1,98 @@
+{
+  "fixture_id": "supersession_sam_job_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Sam no longer works at Goldman; the newer information says Sam left Goldman and joined Point72, so Point72 should be treated as current and Goldman as former.",
+    "citations": [
+      "Existing memory: Sam works at Goldman.",
+      "New: Sam left Goldman and joined Point72."
+    ],
+    "conflict_classification": "supersession",
+    "decision": "Supersede the prior memory that Sam works at Goldman. Record the new fact that Sam left Goldman and joined Point72 as the current state, while retaining Goldman only as a former employer.",
+    "entity_resolution": {
+      "action": "no_merge",
+      "entity_id": null,
+      "reason": "No new entity needs resolution; the conflict is about Sam's employment history, not identity."
+    },
+    "intent": "Resolve a job-history conflict by treating the older employer as superseded and preserving the updated current employer with temporal ambiguity noted.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "supersession",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "formerly worked at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam previously worked at Goldman, but that employment is superseded by a later update indicating Sam left Goldman and joined Point72."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "current employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "current_fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is currently at Point72, based on the newer update."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected direct contradiction on current employer.",
+        "Applied supersession in favor of newer statement.",
+        "Avoided presenting Goldman as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace the current employer memory with Point72.",
+      "Optionally retain Goldman only as a former employer with temporal qualification.",
+      "If timing matters, mark the move as occurring sometime after the Goldman employment record."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

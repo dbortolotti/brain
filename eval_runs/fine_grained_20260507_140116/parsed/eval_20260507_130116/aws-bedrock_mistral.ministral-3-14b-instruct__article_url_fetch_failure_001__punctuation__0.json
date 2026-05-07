@@ -1,0 +1,71 @@
+{
+  "fixture_id": "article_url_fetch_failure_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Article ingestion aborted due to 404 error and URL formatting issues. No durable memory created.",
+    "citations": [],
+    "conflict_classification": "none_applicable",
+    "decision": "abort_due_to_failure",
+    "entity_resolution": {
+      "action": "flag_for_review",
+      "entity_id": null,
+      "reason": "URL format ambiguity prevents automated processing; requires manual validation before retry."
+    },
+    "intent": "memory_ingestion_attempt",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https -//examplecom/missing",
+            "role": "target_resource",
+            "type": "url"
+          },
+          {
+            "name": "404 network error",
+            "role": "failure_reason",
+            "type": "error_code"
+          },
+          {
+            "name": "punctuation/format ambiguity",
+            "role": "data_quality_flag",
+            "type": "metadata_issue"
+          }
+        ],
+        "kind": "system_event",
+        "relationships": [
+          {
+            "object": "fetch_failure",
+            "predicate": "resulted_in",
+            "subject": "memory_ingestion_attempt"
+          },
+          {
+            "object": "invalid_url_format",
+            "predicate": "caused_by",
+            "subject": "fetch_failure"
+          },
+          {
+            "object": "punctuation_ambiguity",
+            "predicate": "evidenced_by",
+            "subject": "invalid_url_format"
+          }
+        ],
+        "statement": "Failed to fetch article at URL 'https -//examplecom/missing' due to 404 network error (punctuation/format ambiguity in URL)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "URL parsing failed: 'https -//examplecom/missing' (missing '://' and domain ambiguity).",
+        "HTTP 404 error received during fetch attempt.",
+        "No content extracted; no memory cards generated."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Correct URL punctuation (e.g., 'https://example.com/missing') and retry fetch.",
+      "Verify article existence via alternative sources.",
+      "Mark as 'unreliable source' if intentional ambiguity exists."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

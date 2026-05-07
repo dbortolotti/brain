@@ -1,0 +1,74 @@
+{
+  "fixture_id": "cascade_conflict_escalation_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Conflict detected: Sara cannot simultaneously be both your daughter and niece. Resolve ambiguity before committing to durable memory.",
+    "citations": [
+      "Family relationship hierarchy: parent-child vs. aunt/uncle-niece",
+      "Logical inconsistency: mutual exclusivity of roles"
+    ],
+    "conflict_classification": "cascade_conflict_escalation",
+    "decision": "escalate_conflict",
+    "entity_resolution": {
+      "action": "merge_entities",
+      "entity_id": "Sara",
+      "reason": "Ambiguous relationship claim requires clarification. Both 'daughter' and 'niece' roles are valid but mutually exclusive in this context."
+    },
+    "intent": "update_relationship",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "parent_of",
+            "subject": "I"
+          }
+        ],
+        "statement": "Sara is my daughter."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "niece",
+            "type": "person"
+          }
+        ],
+        "kind": "input_memory",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "aunt_or_uncle_of",
+            "subject": "I"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict escalated to human review due to irreconcilable relationship claims.",
+        "No durable memory update committed. Original 'daughter' statement preserved as-is."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Clarify: 'Is Sara your daughter or niece?'",
+      "Merge: 'Sara is my daughter (supersedes previous niece claim)'",
+      "Merge: 'Sara is my niece (supersedes previous daughter claim)'",
+      "Reject: 'No relationship exists with Sara'",
+      "Escalate: 'Request additional context to resolve'"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

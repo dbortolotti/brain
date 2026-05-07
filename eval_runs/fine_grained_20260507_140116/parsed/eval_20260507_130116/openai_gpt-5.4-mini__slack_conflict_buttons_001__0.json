@@ -1,0 +1,81 @@
+{
+  "fixture_id": "slack_conflict_buttons_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Store the new job as current and retain the Goldman fact only as historical.",
+    "citations": [
+      "Existing: Sam works at Goldman.",
+      "/brain remember Sam left Goldman and joined Point72."
+    ],
+    "conflict_classification": "temporal_replacement",
+    "decision": "accept_with_conflict",
+    "entity_resolution": {
+      "action": "merge_and_update",
+      "entity_id": null,
+      "reason": "The new instruction refers to the same person, Sam, and indicates a job change that supersedes the prior current-employer fact."
+    },
+    "intent": "update_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "current",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Point72."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "historical",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "previously_worked_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam previously worked at Goldman."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Resolved a temporal conflict in favor of the newer instruction.",
+        "Avoided presenting the superseded Goldman employment as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark Goldman as former employer and Point72 as current employer.",
+      "If needed, ask for confirmation before committing if Sam is ambiguous."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

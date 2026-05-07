@@ -1,0 +1,58 @@
+{
+  "fixture_id": "debug_explain_recall_sam_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "No definitive recall possible. The query is ambiguous. 'Sam' could refer to multiple individuals, and 'Goldman' could reference an organization (Goldman Sachs), a location, or a person's surname. Please clarify: (1) Sam's full name or identifier, (2) whether Goldman refers to an organization, location, or person, (3) the context of their association.",
+    "citations": [],
+    "conflict_classification": "unresolved_entity_reference",
+    "decision": "Attempt recall with entity resolution ambiguity flagged",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Multiple possible interpretations: Goldman Sachs (organization), Goldman (surname), or other Goldman entities. Sam identity not uniquely determined without additional context."
+    },
+    "intent": "Recall all stored information about a person named Sam associated with Goldman",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unknown",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "unknown",
+            "type": "organization_or_location"
+          }
+        ],
+        "kind": "entity_ambiguity",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Query references 'Sam from Goldman' without sufficient disambiguation"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Query processed without error",
+        "Entity resolution blocked due to ambiguity",
+        "No memory cards committed to durable storage",
+        "Recall attempted but inconclusive due to insufficient entity disambiguation"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide Sam's full name or unique identifier",
+      "Specify 'Goldman Sachs' if referring to the investment bank",
+      "Clarify the relationship context (colleague, client, contact, etc.)",
+      "Provide additional temporal or contextual details"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

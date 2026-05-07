@@ -1,0 +1,86 @@
+{
+  "error": null,
+  "fixture_id": "cascade_conflict_escalation_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Conflict detected: Sara cannot simultaneously be both a daughter and a niece. Escalate for resolution.",
+    "citations": [
+      "Existing durable memory: Sara is my daughter.",
+      "Input memory: Sara is my niece."
+    ],
+    "conflict_classification": "cascade_conflict_escalation",
+    "decision": "escalate_conflict",
+    "entity_resolution": {
+      "action": "merge_entities_with_ambiguity",
+      "entity_id": "Sara",
+      "reason": "Conflicting familial relationships detected; preserve ambiguity until resolution."
+    },
+    "intent": "update_relationship",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "has_relationship",
+            "subject": "I"
+          },
+          {
+            "object": "daughter",
+            "predicate": "is",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my daughter."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "niece",
+            "type": "person"
+          }
+        ],
+        "kind": "input_memory",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "has_relationship",
+            "subject": "I"
+          },
+          {
+            "object": "niece",
+            "predicate": "is",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict escalated; no automatic resolution applied to preserve memory integrity.",
+        "Ambiguity retained pending user clarification."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Verify identity of Sara (e.g., biological vs. adopted/step relationships).",
+      "Clarify familial structure (e.g., is 'niece' a misstatement or alternate context?).",
+      "Retain both relationships with contextual disambiguation (e.g., 'Sara is my daughter in [Context A] and niece in [Context B]').",
+      "Delete superseded memory (if one is confirmed incorrect)."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"update_relationship\",\n  \"decision\": \"escalate_conflict\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"durable_memory\",\n      \"statement\": \"Sara is my daughter.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"daughter\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"I\",\n          \"predicate\": \"has_relationship\",\n          \"object\": \"Sara\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is\",\n          \"object\": \"daughter\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"input_memory\",\n      \"statement\": \"Sara is my niece.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"niece\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"I\",\n          \"predicate\": \"has_relationship\",\n          \"object\": \"Sara\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is\",\n          \"object\": \"niece\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge_entities_with_ambiguity\",\n    \"entity_id\": \"Sara\",\n    \"reason\": \"Conflicting familial relationships detected; preserve ambiguity until resolution.\"\n  },\n  \"conflict_classification\": \"cascade_conflict_escalation\",\n  \"answer\": \"Conflict detected: Sara cannot simultaneously be both a daughter and a niece. Escalate for resolution.\",\n  \"citations\": [\n    \"Existing durable memory: Sara is my daughter.\",\n    \"Input memory: Sara is my niece.\"\n  ],\n  \"repair_options\": [\n    \"Verify identity of Sara (e.g., biological vs. adopted/step relationships).\",\n    \"Clarify familial structure (e.g., is 'niece' a misstatement or alternate context?).\",\n    \"Retain both relationships with contextual disambiguation (e.g., 'Sara is my daughter in [Context A] and niece in [Context B]').\",\n    \"Delete superseded memory (if one is confirmed incorrect).\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Conflict escalated; no automatic resolution applied to preserve memory integrity.\",\n      \"Ambiguity retained pending user clarification.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

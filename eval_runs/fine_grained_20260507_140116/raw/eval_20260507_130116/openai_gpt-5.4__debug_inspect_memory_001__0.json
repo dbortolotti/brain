@@ -1,0 +1,36 @@
+{
+  "error": null,
+  "fixture_id": "debug_inspect_memory_001",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "Inspection request recognized for memory id mem_123. No durable memory changes should be committed during inspection. Because no backing memory contents were provided in the fixture, the system can only explain that this command should retrieve and display the stored record, including current status and any supersession/deletion markers if present, without asserting unknown contents as current facts.",
+    "citations": [
+      "/brain inspect memory mem_123"
+    ],
+    "conflict_classification": "none",
+    "decision": "return_debug_explanation_only",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": "mem_123",
+      "reason": "The input is a debug inspect command targeting an existing memory identifier, not a request to create, update, merge, or delete memory/entities."
+    },
+    "intent": "inspect_memory",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Parsed command as an inspection request.",
+        "Applied strict no-write behavior for debug inspection.",
+        "Preserved ambiguity because the actual memory payload for mem_123 was not provided."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Load and return the stored contents for memory id mem_123.",
+      "If mem_123 is missing, return a not-found inspection result rather than inventing content.",
+      "If mem_123 is superseded or deleted, show that status and avoid presenting its old contents as current."
+    ]
+  },
+  "raw_text": "{\"intent\":\"inspect_memory\",\"decision\":\"return_debug_explanation_only\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":\"mem_123\",\"reason\":\"The input is a debug inspect command targeting an existing memory identifier, not a request to create, update, merge, or delete memory/entities.\"},\"conflict_classification\":\"none\",\"answer\":\"Inspection request recognized for memory id mem_123. No durable memory changes should be committed during inspection. Because no backing memory contents were provided in the fixture, the system can only explain that this command should retrieve and display the stored record, including current status and any supersession/deletion markers if present, without asserting unknown contents as current facts.\",\"citations\":[\"/brain inspect memory mem_123\"],\"repair_options\":[\"Load and return the stored contents for memory id mem_123.\",\"If mem_123 is missing, return a not-found inspection result rather than inventing content.\",\"If mem_123 is superseded or deleted, show that status and avoid presenting its old contents as current.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed command as an inspection request.\",\"Applied strict no-write behavior for debug inspection.\",\"Preserved ambiguity because the actual memory payload for mem_123 was not provided.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

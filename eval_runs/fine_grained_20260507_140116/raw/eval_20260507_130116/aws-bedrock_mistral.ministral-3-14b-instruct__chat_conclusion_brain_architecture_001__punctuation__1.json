@@ -1,0 +1,124 @@
+{
+  "error": null,
+  "fixture_id": "chat_conclusion_brain_architecture_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Brain\u2019s architecture enforces a strict separation: Cognee is a *rebuildable semantic projection* (dynamic, context-sensitive, and ephemeral), while Brain DB is the *immutable source of truth*. All durable changes must pass atomic validation to avoid superseding or deleting facts prematurely. Ambiguity is preserved in Cognee until resolved.",
+    "citations": [
+      "Chat conclusion: 'Brain should treat Cognee as a rebuildable semantic projection, while Brain DB remains the source of truth.'"
+    ],
+    "conflict_classification": "none",
+    "decision": "Cognee as a *rebuildable semantic projection* (ephemeral, dynamic, and context-sensitive) while Brain DB remains the *source of truth* (durable, authoritative, and immutable)",
+    "entity_resolution": {
+      "action": "no_resolution_required",
+      "reason": "Entities ('Cognee', 'Brain DB') are architecturally defined and unambiguous in this context."
+    },
+    "intent": "define_architectural_principles",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "semantic_projection",
+            "type": "system_component"
+          },
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system_component"
+          }
+        ],
+        "kind": "architectural_principle",
+        "relationships": [
+          {
+            "object": "rebuildable_semantic_projection",
+            "predicate": "is_a",
+            "subject": "Cognee"
+          },
+          {
+            "object": "Brain_DB",
+            "predicate": "depends_on",
+            "subject": "Cognee"
+          },
+          {
+            "object": "durable_source_of_truth",
+            "predicate": "is",
+            "subject": "Brain_DB"
+          }
+        ],
+        "statement": "Cognee is a *rebuildable semantic projection* of Brain DB, designed to be dynamically generated, context-aware, and ephemeral. It does not supersede or modify Brain DB."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "durable_store",
+            "type": "system_component"
+          },
+          {
+            "name": "atomic_validation",
+            "role": "commitment_mechanism",
+            "type": "process"
+          }
+        ],
+        "kind": "durability_rule",
+        "relationships": [
+          {
+            "object": "only_current_and_valid_facts",
+            "predicate": "preserves",
+            "subject": "Brain_DB"
+          },
+          {
+            "object": "atomic_validation_for_durable_changes",
+            "predicate": "requires",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain DB must *never* reflect superseded or deleted facts as current. All modifications to Cognee must be *tentative* and *context-bound* until explicitly committed to Brain DB via atomic validation."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "ambiguity",
+            "role": "preserved_state",
+            "type": "concept"
+          },
+          {
+            "name": "user/system_resolution",
+            "role": "disambiguation_mechanism",
+            "type": "process"
+          }
+        ],
+        "kind": "ambiguity_preservation",
+        "relationships": [
+          {
+            "object": "ambiguity_in_projections",
+            "predicate": "explicitly_preserves",
+            "subject": "Cognee"
+          },
+          {
+            "object": "user_or_system_intervention",
+            "predicate": "resolved_via",
+            "subject": "ambiguity"
+          }
+        ],
+        "statement": "Cognee must *preserve ambiguity* in semantic projections (e.g., unresolved entities, conflicting interpretations) until disambiguated via user/system resolution. Ambiguity is not an error but a *feature* of dynamic reasoning."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Architectural principles for Cognee/Brain DB separation successfully encoded.",
+        "Durability and ambiguity preservation rules applied.",
+        "No conflicts or unresolved entities detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"define_architectural_principles\",\n  \"decision\": \"Cognee as a *rebuildable semantic projection* (ephemeral, dynamic, and context-sensitive) while Brain DB remains the *source of truth* (durable, authoritative, and immutable)\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"architectural_principle\",\n      \"statement\": \"Cognee is a *rebuildable semantic projection* of Brain DB, designed to be dynamically generated, context-aware, and ephemeral. It does not supersede or modify Brain DB.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"system_component\",\n          \"role\": \"semantic_projection\"\n        },\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"system_component\",\n          \"role\": \"source_of_truth\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"is_a\",\n          \"object\": \"rebuildable_semantic_projection\"\n        },\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"depends_on\",\n          \"object\": \"Brain_DB\"\n        },\n        {\n          \"subject\": \"Brain_DB\",\n          \"predicate\": \"is\",\n          \"object\": \"durable_source_of_truth\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"durability_rule\",\n      \"statement\": \"Brain DB must *never* reflect superseded or deleted facts as current. All modifications to Cognee must be *tentative* and *context-bound* until explicitly committed to Brain DB via atomic validation.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"system_component\",\n          \"role\": \"durable_store\"\n        },\n        {\n          \"name\": \"atomic_validation\",\n          \"type\": \"process\",\n          \"role\": \"commitment_mechanism\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain_DB\",\n          \"predicate\": \"preserves\",\n          \"object\": \"only_current_and_valid_facts\"\n        },\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"requires\",\n          \"object\": \"atomic_validation_for_durable_changes\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"ambiguity_preservation\",\n      \"statement\": \"Cognee must *preserve ambiguity* in semantic projections (e.g., unresolved entities, conflicting interpretations) until disambiguated via user/system resolution. Ambiguity is not an error but a *feature* of dynamic reasoning.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"ambiguity\",\n          \"type\": \"concept\",\n          \"role\": \"preserved_state\"\n        },\n        {\n          \"name\": \"user/system_resolution\",\n          \"type\": \"process\",\n          \"role\": \"disambiguation_mechanism\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"explicitly_preserves\",\n          \"object\": \"ambiguity_in_projections\"\n        },\n        {\n          \"subject\": \"ambiguity\",\n          \"predicate\": \"resolved_via\",\n          \"object\": \"user_or_system_intervention\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_resolution_required\",\n    \"reason\": \"Entities ('Cognee', 'Brain DB') are architecturally defined and unambiguous in this context.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Brain\u2019s architecture enforces a strict separation: Cognee is a *rebuildable semantic projection* (dynamic, context-sensitive, and ephemeral), while Brain DB is the *immutable source of truth*. All durable changes must pass atomic validation to avoid superseding or deleting facts prematurely. Ambiguity is preserved in Cognee until resolved.\",\n  \"citations\": [\n    \"Chat conclusion: 'Brain should treat Cognee as a rebuildable semantic projection, while Brain DB remains the source of truth.'\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Architectural principles for Cognee/Brain DB separation successfully encoded.\",\n      \"Durability and ambiguity preservation rules applied.\",\n      \"No conflicts or unresolved entities detected.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

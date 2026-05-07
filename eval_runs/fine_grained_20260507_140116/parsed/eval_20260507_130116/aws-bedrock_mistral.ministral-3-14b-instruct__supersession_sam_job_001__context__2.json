@@ -1,0 +1,69 @@
+{
+  "fixture_id": "supersession_sam_job_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The memory 'Sam works at Goldman' is superseded by 'Sam left Goldman and joined Point72.' The new fact is committed as current, and the prior fact is flagged as outdated but retained for context.",
+    "citations": [
+      "New input: 'Sam left Goldman and joined Point72.'",
+      "Existing memory: 'Sam works at Goldman.' (now superseded)"
+    ],
+    "conflict_classification": "direct_supersession",
+    "decision": "supersede",
+    "entity_resolution": {
+      "action": "update",
+      "entity_id": "sam_job_001",
+      "reason": "New employment record supersedes the outdated Goldman Sachs record. Ambiguity preserved by marking the prior fact as superseded (not deleted)."
+    },
+    "intent": "supersession_detection",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "left_employment_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined_employment_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam no longer works at Goldman Sachs. This supersedes the previous record of Sam working at Goldman Sachs."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded memory marked as outdated (not deleted).",
+        "New employment record committed as current.",
+        "Ambiguity preserved; no false positives introduced."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Delete the Goldman Sachs record entirely (not recommended; preserves ambiguity).",
+      "Merge into a single record with temporal context (e.g., 'Sam worked at Goldman Sachs [20XX\u201320XX], now at Point72').",
+      "Tag the Goldman Sachs record as 'historical' without deletion."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

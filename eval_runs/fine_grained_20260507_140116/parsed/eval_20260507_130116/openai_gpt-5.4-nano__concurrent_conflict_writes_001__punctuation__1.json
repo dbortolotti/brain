@@ -1,0 +1,80 @@
+{
+  "fixture_id": "concurrent_conflict_writes_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "There isn\u2019t enough information to determine whether Sam\u2019s Goldman role and Sam\u2019s Point72 joining are compatible (e.g., sequential jobs, concurrent roles, or an outdated record). Treat both as separate, time-uncertain affiliation claims until dates or recency are clarified.",
+    "citations": [],
+    "conflict_classification": "Concurrent affiliation/employment conflict due to missing temporal information (multiple organizations claimed for the same person).",
+    "decision": "Do not commit a single definitive current employment/affiliation fact; store both affiliations as separate, time-uncertain claims pending clarification.",
+    "entity_resolution": {
+      "action": "merge_as_same_person_candidate",
+      "entity_id": null,
+      "reason": "Both statements refer to the same name string 'Sam' without additional disambiguation; treat as the same person candidate but do not assume which affiliation is current due to missing dates."
+    },
+    "intent": "Explain and classify potential conflict arising from concurrent affiliation writes about the same person (Sam).",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "affiliation_claim",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman (time period not specified)."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "affiliation_claim",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72 (join date/time period not specified)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Temporal ambiguity: both 'works at Goldman' and 'joined Point72' are asserted with no dates/recency.",
+        "Without timestamps, cannot safely commit a single current employment fact."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask for the dates: when did Sam start at Goldman and when did Sam join Point72?",
+      "Clarify whether Sam currently works at Goldman or Point72 (or both).",
+      "Use more precise employer names (e.g., Goldman Sachs vs 'Goldman') to avoid organization ambiguity.",
+      "If one statement is older, mark it as historical rather than current."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

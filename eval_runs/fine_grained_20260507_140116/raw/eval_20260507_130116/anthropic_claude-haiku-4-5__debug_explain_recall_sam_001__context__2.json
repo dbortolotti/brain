@@ -1,0 +1,54 @@
+{
+  "error": null,
+  "fixture_id": "debug_explain_recall_sam_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Cannot retrieve complete information. The query 'Sam from Goldman' is ambiguous. Please clarify: (1) Sam's full name or identifier, (2) which Goldman entity (Goldman Sachs, Goldman Sachs Asset Management, or other), (3) Sam's role or relationship context.",
+    "citations": [],
+    "conflict_classification": "ambiguous_entity_reference",
+    "decision": "Insufficient context to execute recall\u2014ambiguity in entity resolution",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Multiple possible interpretations: Sam could be employee/contact at Goldman Sachs, Goldman Sachs Asset Management, or unrelated entity named Goldman; insufficient prior context to disambiguate"
+    },
+    "intent": "Retrieve all stored information about a person named Sam associated with Goldman",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unknown",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "unknown",
+            "type": "organization_or_location"
+          }
+        ],
+        "kind": "unresolved_query",
+        "relationships": [],
+        "statement": "Query references 'Sam from Goldman' without sufficient disambiguation"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Entity resolution failed due to ambiguity",
+        "No durable memory committed",
+        "Recall operation halted pending disambiguation"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide Sam's full name or known aliases",
+      "Specify the Goldman organization or location",
+      "Provide additional context (e.g., department, project, date of interaction)",
+      "Query by alternative identifiers if available"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Retrieve all stored information about a person named Sam associated with Goldman\",\n  \"decision\": \"Insufficient context to execute recall\u2014ambiguity in entity resolution\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"unresolved_query\",\n      \"statement\": \"Query references 'Sam from Goldman' without sufficient disambiguation\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"unknown\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization_or_location\",\n          \"role\": \"unknown\"\n        }\n      ],\n      \"relationships\": []\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Multiple possible interpretations: Sam could be employee/contact at Goldman Sachs, Goldman Sachs Asset Management, or unrelated entity named Goldman; insufficient prior context to disambiguate\"\n  },\n  \"conflict_classification\": \"ambiguous_entity_reference\",\n  \"answer\": \"Cannot retrieve complete information. The query 'Sam from Goldman' is ambiguous. Please clarify: (1) Sam's full name or identifier, (2) which Goldman entity (Goldman Sachs, Goldman Sachs Asset Management, or other), (3) Sam's role or relationship context.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Provide Sam's full name or known aliases\",\n    \"Specify the Goldman organization or location\",\n    \"Provide additional context (e.g., department, project, date of interaction)\",\n    \"Query by alternative identifiers if available\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Entity resolution failed due to ambiguity\",\n      \"No durable memory committed\",\n      \"Recall operation halted pending disambiguation\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

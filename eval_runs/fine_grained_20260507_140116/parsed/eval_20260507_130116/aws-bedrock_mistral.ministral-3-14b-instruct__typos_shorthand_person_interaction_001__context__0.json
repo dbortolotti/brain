@@ -1,0 +1,72 @@
+{
+  "fixture_id": "typos_shorthand_person_interaction_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Extracted ambiguous entities: **Sam** (person) from **Goldmn** (likely Goldman Sachs or similar) interacts with **Bill Evans** (person) in an unclear manner ('likes'/'apparently'). Requires disambiguation for durable memory.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "extract_and_resolve_ambiguous_entities",
+    "entity_resolution": {
+      "action": "flag_for_disambiguation",
+      "entity_id": null,
+      "reason": "Ambiguity in 'Goldmn' (likely a typo for 'Goldman' but context unclear) and 'likes'/'apparently' (could imply admiration, shorthand for a relationship, or unclear intent). 'Bill Evans' may refer to the jazz musician or another person. No prior durable memory to resolve."
+    },
+    "intent": "entity_mention_extraction",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "confidence": "low",
+            "name": "Goldmn",
+            "role": "affiliation_or_context",
+            "type": "organization_or_location"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "entity_mention",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "interacts_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldmn (likely Goldman Sachs or similar)",
+            "predicate": "has_affiliation_or_context",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans (e.g., 'likes', 'apparently')",
+            "predicate": "exhibits_ambiguous_sentiment_or_action",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "A person named 'Sam' (potentially from 'Goldman' or 'Goldmn') interacts with 'Bill Evans' (likely a person, possibly a reference to the jazz musician or another individual). The interaction is described as 'likes' or 'apparently' liking, with ambiguity in intent (e.g., admiration, association, or shorthand for a relationship)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguous entities detected; no durable memory committed.",
+        "Entity resolution requires user clarification."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Clarify 'Goldmn' as Goldman Sachs or another entity.",
+      "Disambiguate 'Bill Evans' (e.g., jazz musician, other person).",
+      "Resolve 'likes'/'apparently' (e.g., admiration, shorthand for a relationship).",
+      "Request additional context for intent."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

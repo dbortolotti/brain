@@ -1,0 +1,96 @@
+{
+  "error": null,
+  "fixture_id": "correction_sam_music_001__punctuation",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "The new correction directly conflicts with the existing memory. Treat 'Sam from Goldman likes Bill Evans' as superseded, and store the corrected preference: Sam from Goldman likes early Coltrane. Do not infer that Sam dislikes Bill Evans; only that Bill Evans was not the correct preference in the prior memory.",
+    "citations": [
+      "Existing memory - Sam from Goldman likes Bill Evans",
+      "Correction - Sam from Goldman actually likes early Coltrane, not Bill Evans"
+    ],
+    "conflict_classification": "explicit_correction_contradicts_existing_memory",
+    "decision": "conflict_detected_accept_correction",
+    "entity_resolution": {
+      "action": "match_existing",
+      "entity_id": null,
+      "reason": "The correction uses the same descriptor, 'Sam from Goldman,' as the existing memory, so it should be treated as the same ambiguous person entity without inventing a more specific identity."
+    },
+    "intent": "correction",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "preferred_music",
+            "type": "music"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "superseded_object",
+            "type": "musician"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "corrected_object",
+            "type": "music"
+          }
+        ],
+        "kind": "supersession",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "corrected_preference",
+            "subject": "Sam from Goldman"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "supersedes_prior_preference_for",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Supersede the prior memory that Sam from Goldman likes Bill Evans; the correction states the intended preference is early Coltrane, not Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected explicit correction language: 'actually' and 'not Bill Evans'.",
+        "Identified the same subject in both statements: Sam from Goldman.",
+        "Generated corrected preference without treating the superseded Bill Evans claim as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Supersede/delete the existing memory that Sam from Goldman likes Bill Evans.",
+      "Commit the corrected memory that Sam from Goldman likes early Coltrane.",
+      "Preserve the entity label as 'Sam from Goldman' unless a more precise identity is later provided."
+    ]
+  },
+  "raw_text": "{\"intent\":\"correction\",\"decision\":\"conflict_detected_accept_correction\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman likes early Coltrane.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam from Goldman\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"early Coltrane\",\"type\":\"music\",\"role\":\"preferred_music\"}],\"relationships\":[{\"subject\":\"Sam from Goldman\",\"predicate\":\"likes\",\"object\":\"early Coltrane\"}]},{\"kind\":\"supersession\",\"statement\":\"Supersede the prior memory that Sam from Goldman likes Bill Evans; the correction states the intended preference is early Coltrane, not Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam from Goldman\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"musician\",\"role\":\"superseded_object\"},{\"name\":\"early Coltrane\",\"type\":\"music\",\"role\":\"corrected_object\"}],\"relationships\":[{\"subject\":\"Sam from Goldman\",\"predicate\":\"corrected_preference\",\"object\":\"early Coltrane\"},{\"subject\":\"Sam from Goldman\",\"predicate\":\"supersedes_prior_preference_for\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"match_existing\",\"entity_id\":null,\"reason\":\"The correction uses the same descriptor, 'Sam from Goldman,' as the existing memory, so it should be treated as the same ambiguous person entity without inventing a more specific identity.\"},\"conflict_classification\":\"explicit_correction_contradicts_existing_memory\",\"answer\":\"The new correction directly conflicts with the existing memory. Treat 'Sam from Goldman likes Bill Evans' as superseded, and store the corrected preference: Sam from Goldman likes early Coltrane. Do not infer that Sam dislikes Bill Evans; only that Bill Evans was not the correct preference in the prior memory.\",\"citations\":[\"Existing memory - Sam from Goldman likes Bill Evans\",\"Correction - Sam from Goldman actually likes early Coltrane, not Bill Evans\"],\"repair_options\":[\"Supersede/delete the existing memory that Sam from Goldman likes Bill Evans.\",\"Commit the corrected memory that Sam from Goldman likes early Coltrane.\",\"Preserve the entity label as 'Sam from Goldman' unless a more precise identity is later provided.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected explicit correction language: 'actually' and 'not Bill Evans'.\",\"Identified the same subject in both statements: Sam from Goldman.\",\"Generated corrected preference without treating the superseded Bill Evans claim as current.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

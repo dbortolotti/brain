@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "fixture_id": "conflict_correction_like__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam from Goldman's **current** preference is **early Coltrane**, but the system retains the **historical association** with Bill Evans as a **potentially valid** (but superseded) fact. No further action is required unless new evidence emerges.",
+    "citations": [
+      "Correction input: 'Sam from Goldman actually likes early Coltrane, not Bill Evans'",
+      "Original fact: 'Sam from Goldman likes Bill Evans'"
+    ],
+    "conflict_classification": "semantic_supersession_with_ambiguity",
+    "decision": "supersede_with_ambiguity_preservation",
+    "entity_resolution": {
+      "action": "merge_with_ambiguity_flag",
+      "entity_id": "sam_goldman_musical_preference",
+      "reason": "The original fact (Bill Evans) was superseded by a correction (early Coltrane), but the relationship to Bill Evans may persist in other contexts (e.g., historical exposure). Ambiguity is preserved to avoid overcorrection."
+    },
+    "intent": "conflict_resolution",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "preferred_entity",
+            "type": "musical_artist"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "superseded_entity",
+            "type": "musical_artist"
+          }
+        ],
+        "kind": "correction",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "prefers",
+            "subject": "Sam from Goldman"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "historically_associated_with",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman's musical preference is **ambiguous** between early Coltrane and Bill Evans, with a **correction** favoring early Coltrane as the primary association."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded fact marked as 'historical' with confidence 'low'",
+        "Primary preference updated to 'early Coltrane' with confidence 'high'",
+        "Ambiguity flag added to entity resolution"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Delete the Bill Evans association entirely (risk: data loss)",
+      "Flag both as competing preferences (risk: ambiguity overload)",
+      "Merge with a temporal qualifier (e.g., 'preferred early Coltrane post-2020')"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"conflict_resolution\",\n  \"decision\": \"supersede_with_ambiguity_preservation\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"correction\",\n      \"statement\": \"Sam from Goldman's musical preference is **ambiguous** between early Coltrane and Bill Evans, with a **correction** favoring early Coltrane as the primary association.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam from Goldman\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"early Coltrane\",\n          \"type\": \"musical_artist\",\n          \"role\": \"preferred_entity\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"musical_artist\",\n          \"role\": \"superseded_entity\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam from Goldman\",\n          \"predicate\": \"prefers\",\n          \"object\": \"early Coltrane\"\n        },\n        {\n          \"subject\": \"Sam from Goldman\",\n          \"predicate\": \"historically_associated_with\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge_with_ambiguity_flag\",\n    \"entity_id\": \"sam_goldman_musical_preference\",\n    \"reason\": \"The original fact (Bill Evans) was superseded by a correction (early Coltrane), but the relationship to Bill Evans may persist in other contexts (e.g., historical exposure). Ambiguity is preserved to avoid overcorrection.\"\n  },\n  \"conflict_classification\": \"semantic_supersession_with_ambiguity\",\n  \"answer\": \"Sam from Goldman's **current** preference is **early Coltrane**, but the system retains the **historical association** with Bill Evans as a **potentially valid** (but superseded) fact. No further action is required unless new evidence emerges.\",\n  \"citations\": [\n    \"Correction input: 'Sam from Goldman actually likes early Coltrane, not Bill Evans'\",\n    \"Original fact: 'Sam from Goldman likes Bill Evans'\"\n  ],\n  \"repair_options\": [\n    \"Delete the Bill Evans association entirely (risk: data loss)\",\n    \"Flag both as competing preferences (risk: ambiguity overload)\",\n    \"Merge with a temporal qualifier (e.g., 'preferred early Coltrane post-2020')\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Superseded fact marked as 'historical' with confidence 'low'\",\n      \"Primary preference updated to 'early Coltrane' with confidence 'high'\",\n      \"Ambiguity flag added to entity resolution\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

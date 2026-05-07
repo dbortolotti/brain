@@ -1,0 +1,89 @@
+{
+  "fixture_id": "mixed_language_open_question_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The query pertains to the **relationship between language and human intelligence**, a cross-disciplinary topic spanning linguistics, cognitive science, and neuroscience. Key subtopics may include:\n1. **Sapir-Whorf Hypothesis** (linguistic relativity)\n2. **Neurolinguistics** (brain mechanisms of language)\n3. **Cognitive Development** (e.g., Piaget, Vygotsky)\n4. **AI and Language** (e.g., large language models as testbeds for intelligence theories).\n\n*Ambiguity preserved*: The Italian phrasing ('intelligence umana') could imply either (a) human intelligence broadly or (b) a specific theoretical framework (e.g., 'intelligence' as a construct in Italian psychology).",
+    "citations": [
+      "Chomsky, N. (1957). *Syntactic Structures*. The MIT Press.",
+      "Pinker, S. (1994). *The Language Instinct*. William Morrow.",
+      "Lakoff, G. (1987). *Women, Fire, and Dangerous Things*. University of Chicago Press."
+    ],
+    "conflict_classification": "none",
+    "decision": "extract_entities_and_relationships",
+    "entity_resolution": {
+      "action": "disambiguate",
+      "entity_id": null,
+      "reason": "Input contains Italian terms ('linguaggio', 'intelligence umana') requiring translation/interpretation for accurate processing. No prior entity ID exists for this query."
+    },
+    "intent": "research_query",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "linguaggio",
+            "role": "subject",
+            "type": "concept"
+          },
+          {
+            "name": "intelligence umana",
+            "role": "object",
+            "type": "concept"
+          }
+        ],
+        "kind": "research_intent",
+        "relationships": [
+          {
+            "object": "intelligence umana",
+            "predicate": "relazione_con",
+            "subject": "linguaggio"
+          }
+        ],
+        "statement": "User seeks information on the relationship between language and human intelligence."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "linguaggio",
+            "role": "primary_term",
+            "type": "language_term"
+          },
+          {
+            "name": "intelligence umana",
+            "role": "secondary_term",
+            "type": "language_term"
+          }
+        ],
+        "kind": "language_ambiguity",
+        "relationships": [
+          {
+            "object": "language",
+            "predicate": "equivale_a",
+            "subject": "linguaggio"
+          },
+          {
+            "object": "human intelligence",
+            "predicate": "equivale_a",
+            "subject": "intelligence umana"
+          }
+        ],
+        "statement": "Input contains mixed-language query ('linguaggio' in Italian, 'intelligence umana' in Italian with French/Spanish-like phrasing)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted core entities: 'linguaggio' (language), 'intelligence umana' (human intelligence).",
+        "Flagged mixed-language input for potential translation/interpretation.",
+        "No superseded/deleted facts committed to memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify if 'intelligence umana' refers to (a) general human cognition or (b) a specific Italian-language theory.",
+      "Specify preferred language for results (Italian/English).",
+      "Narrow scope to a subtopic (e.g., neurolinguistics, AI, or developmental psychology)."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

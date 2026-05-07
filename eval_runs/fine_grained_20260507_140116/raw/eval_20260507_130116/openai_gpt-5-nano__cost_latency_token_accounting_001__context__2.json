@@ -1,0 +1,136 @@
+{
+  "error": null,
+  "fixture_id": "cost_latency_token_accounting_001__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Required evaluation accounting fields: token counts, provider/model IDs, estimated price, and latency metrics (p50, p90, p95). These fields enable cost estimation, provenance tracking, and performance assessment for memory operations.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "provide a concise, structured explanation of required evaluation accounting fields for Brain memory system, including token counts, provider/model IDs, estimated price, and latency metrics (p50, p90, p95).",
+    "entity_resolution": {
+      "action": "summarize_fields_for_eval_accounting",
+      "entity_id": null,
+      "reason": "To document the required accounting fields for evaluation without binding to a specific memory entry yet."
+    },
+    "intent": "explain_required_eval_accounting_fields",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "evaluation accounting",
+            "role": "domain",
+            "type": "concept"
+          },
+          {
+            "name": "memory system",
+            "role": "context",
+            "type": "system"
+          }
+        ],
+        "kind": "definition",
+        "relationships": [
+          {
+            "object": "token counts",
+            "predicate": "include",
+            "subject": "evaluation accounting fields"
+          },
+          {
+            "object": "provider/model IDs",
+            "predicate": "include",
+            "subject": "evaluation accounting fields"
+          },
+          {
+            "object": "estimated price",
+            "predicate": "include",
+            "subject": "evaluation accounting fields"
+          },
+          {
+            "object": "latency metrics (p50, p90, p95)",
+            "predicate": "include",
+            "subject": "evaluation accounting fields"
+          }
+        ],
+        "statement": "Evaluation accounting fields are the data elements used to estimate the cost, performance, and provenance of memory/storage operations. They should be captured prior to committing actionable memory entries to ensure traceability and cost awareness."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "token counts",
+            "role": "resource_usage",
+            "type": "metric"
+          }
+        ],
+        "kind": "definition",
+        "relationships": [],
+        "statement": "Token counts reflect how many tokens are consumed by a request, response, or operation, and are used to approximate cost and resource usage."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "provider ID",
+            "role": "provenance",
+            "type": "identifier"
+          },
+          {
+            "name": "model ID",
+            "role": "provenance",
+            "type": "identifier"
+          }
+        ],
+        "kind": "definition",
+        "relationships": [],
+        "statement": "Provider/model IDs identify the data sources and models involved in the operation for provenance, billing, and compatibility checks."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "estimated price",
+            "role": "pricing",
+            "type": "cost"
+          }
+        ],
+        "kind": "definition",
+        "relationships": [],
+        "statement": "Estimated price is an estimate of cost for the operation, derived from token usage, model pricing, and service level."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "latency p50",
+            "role": "performance",
+            "type": "statistic"
+          },
+          {
+            "name": "latency p90",
+            "role": "performance",
+            "type": "statistic"
+          },
+          {
+            "name": "latency p95",
+            "role": "performance",
+            "type": "statistic"
+          }
+        ],
+        "kind": "definition",
+        "relationships": [],
+        "statement": "Latency p50, p90, p95 are percentile measurements describing response times, where p50 is median, p90 is 90th percentile, and p95 is 95th percentile."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "initialized explanation of required eval accounting fields",
+        "no conflicts detected"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"explain_required_eval_accounting_fields\",\n  \"decision\": \"provide a concise, structured explanation of required evaluation accounting fields for Brain memory system, including token counts, provider/model IDs, estimated price, and latency metrics (p50, p90, p95).\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"definition\",\n      \"statement\": \"Evaluation accounting fields are the data elements used to estimate the cost, performance, and provenance of memory/storage operations. They should be captured prior to committing actionable memory entries to ensure traceability and cost awareness.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"evaluation accounting\", \"type\": \"concept\", \"role\": \"domain\"},\n        {\"name\": \"memory system\", \"type\": \"system\", \"role\": \"context\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"evaluation accounting fields\", \"predicate\": \"include\", \"object\": \"token counts\"},\n        {\"subject\": \"evaluation accounting fields\", \"predicate\": \"include\", \"object\": \"provider/model IDs\"},\n        {\"subject\": \"evaluation accounting fields\", \"predicate\": \"include\", \"object\": \"estimated price\"},\n        {\"subject\": \"evaluation accounting fields\", \"predicate\": \"include\", \"object\": \"latency metrics (p50, p90, p95)\"}\n      ]\n    },\n    {\n      \"kind\": \"definition\",\n      \"statement\": \"Token counts reflect how many tokens are consumed by a request, response, or operation, and are used to approximate cost and resource usage.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"token counts\", \"type\": \"metric\", \"role\": \"resource_usage\"}\n      ],\n      \"relationships\": []\n    },\n    {\n      \"kind\": \"definition\",\n      \"statement\": \"Provider/model IDs identify the data sources and models involved in the operation for provenance, billing, and compatibility checks.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"provider ID\", \"type\": \"identifier\", \"role\": \"provenance\"},\n        {\"name\": \"model ID\", \"type\": \"identifier\", \"role\": \"provenance\"}\n      ],\n      \"relationships\": []\n    },\n    {\n      \"kind\": \"definition\",\n      \"statement\": \"Estimated price is an estimate of cost for the operation, derived from token usage, model pricing, and service level.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"estimated price\", \"type\": \"cost\", \"role\": \"pricing\"}\n      ],\n      \"relationships\": []\n    },\n    {\n      \"kind\": \"definition\",\n      \"statement\": \"Latency p50, p90, p95 are percentile measurements describing response times, where p50 is median, p90 is 90th percentile, and p95 is 95th percentile.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"latency p50\", \"type\": \"statistic\", \"role\": \"performance\"},\n        {\"name\": \"latency p90\", \"type\": \"statistic\", \"role\": \"performance\"},\n        {\"name\": \"latency p95\", \"type\": \"statistic\", \"role\": \"performance\"}\n      ],\n      \"relationships\": []\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"summarize_fields_for_eval_accounting\",\n    \"entity_id\": null,\n    \"reason\": \"To document the required accounting fields for evaluation without binding to a specific memory entry yet.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Required evaluation accounting fields: token counts, provider/model IDs, estimated price, and latency metrics (p50, p90, p95). These fields enable cost estimation, provenance tracking, and performance assessment for memory operations.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\"initialized explanation of required eval accounting fields\", \"no conflicts detected\"]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

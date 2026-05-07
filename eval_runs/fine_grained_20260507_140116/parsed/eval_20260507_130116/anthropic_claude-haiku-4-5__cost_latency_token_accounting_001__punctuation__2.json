@@ -1,0 +1,158 @@
+{
+  "fixture_id": "cost_latency_token_accounting_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Required eval accounting fields: (1) Token counts: input_tokens, output_tokens, total_tokens; (2) Provider/model IDs: provider_id, model_id; (3) Cost: estimated_price (calculated from token counts \u00d7 provider rates); (4) Latency percentiles: p50, p90, p95 in milliseconds. Implementation details (latency scope, aggregation window) vary by provider.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Document core accounting fields as durable memory with high confidence; preserve ambiguity around provider-specific implementations",
+    "entity_resolution": {
+      "action": "create_accounting_schema",
+      "entity_id": "eval_accounting_fields_v1",
+      "reason": "Fixture requests standardized accounting field documentation for cost-latency-token evaluation"
+    },
+    "intent": "Explain required evaluation accounting fields for cost, latency, and token metrics in LLM provider integrations",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "input_tokens",
+            "role": "request_tokens",
+            "type": "metric"
+          },
+          {
+            "name": "output_tokens",
+            "role": "response_tokens",
+            "type": "metric"
+          },
+          {
+            "name": "total_tokens",
+            "role": "aggregate",
+            "type": "metric"
+          }
+        ],
+        "kind": "requirement",
+        "relationships": [
+          {
+            "object": "input_tokens + output_tokens",
+            "predicate": "equals",
+            "subject": "total_tokens"
+          }
+        ],
+        "statement": "Token accounting requires input_tokens, output_tokens, and total_tokens counts per request"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "provider_id",
+            "role": "service_provider",
+            "type": "identifier"
+          },
+          {
+            "name": "model_id",
+            "role": "model_variant",
+            "type": "identifier"
+          }
+        ],
+        "kind": "requirement",
+        "relationships": [
+          {
+            "object": "provider_id",
+            "predicate": "belongs_to",
+            "subject": "model_id"
+          }
+        ],
+        "statement": "Provider and model identification fields: provider_id (e.g., openai, anthropic, google) and model_id (e.g., gpt-4, claude-3-opus)"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "estimated_price",
+            "role": "cost",
+            "type": "metric"
+          },
+          {
+            "name": "input_rate",
+            "role": "pricing_unit",
+            "type": "parameter"
+          },
+          {
+            "name": "output_rate",
+            "role": "pricing_unit",
+            "type": "parameter"
+          }
+        ],
+        "kind": "requirement",
+        "relationships": [
+          {
+            "object": "input_tokens",
+            "predicate": "depends_on",
+            "subject": "estimated_price"
+          },
+          {
+            "object": "output_tokens",
+            "predicate": "depends_on",
+            "subject": "estimated_price"
+          }
+        ],
+        "statement": "Cost accounting requires estimated_price field, typically calculated as (input_tokens * input_rate + output_tokens * output_rate) in provider currency"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "latency_p50",
+            "role": "median_latency",
+            "type": "metric"
+          },
+          {
+            "name": "latency_p90",
+            "role": "tail_latency",
+            "type": "metric"
+          },
+          {
+            "name": "latency_p95",
+            "role": "tail_latency",
+            "type": "metric"
+          }
+        ],
+        "kind": "requirement",
+        "relationships": [
+          {
+            "object": "latency_p90",
+            "predicate": "less_than",
+            "subject": "latency_p50"
+          },
+          {
+            "object": "latency_p95",
+            "predicate": "less_than",
+            "subject": "latency_p90"
+          }
+        ],
+        "statement": "Latency percentiles required: p50 (median), p90 (90th percentile), p95 (95th percentile) in milliseconds"
+      },
+      {
+        "confidence": "medium",
+        "kind": "ambiguity",
+        "statement": "Latency measurement scope (time_to_first_token vs end_to_end) and aggregation window (per-request vs rolling) are provider-specific; preserve as implementation detail"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Documented 4 core memory cards: token accounting, provider/model IDs, cost calculation, latency percentiles",
+        "Preserved ambiguity on provider-specific implementation details",
+        "No conflicts detected with existing schema"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify latency measurement scope (TTFT vs E2E) per provider",
+      "Document rate card structure for cost calculation",
+      "Specify aggregation window for percentile computation"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

@@ -1,0 +1,30 @@
+{
+  "fixture_id": "validator_blocks_unresolved_pronoun_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The proposed memory card cannot be committed due to an unresolved pronoun ('He'). Clarification of the referent is required before durability.",
+    "citations": [],
+    "conflict_classification": "unresolved_reference",
+    "decision": "reject_due_to_unresolved_pronoun",
+    "entity_resolution": {
+      "action": "flag_for_revision",
+      "entity_id": null,
+      "reason": "The pronoun 'He' lacks a clear referent in the provided context. Without explicit resolution, the statement cannot be durably committed to memory as it risks misattribution or ambiguity."
+    },
+    "intent": "resolve_ambiguity",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Pronoun 'He' has no resolved referent in context.",
+        "Ambiguity violates durability requirements (Rule: Preserve ambiguity only if explicitly marked as unresolved)."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Explicitly name the subject (e.g., 'Alex prefers the other one.')",
+      "Replace the pronoun with a placeholder (e.g., '[User] prefers the other one.')",
+      "Delete the statement if the referent is irrelevant or unknown"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

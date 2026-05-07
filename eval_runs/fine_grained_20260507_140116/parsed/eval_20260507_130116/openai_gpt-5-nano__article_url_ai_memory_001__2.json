@@ -1,0 +1,76 @@
+{
+  "fixture_id": "article_url_ai_memory_001",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Article at https://example.com/ai-memory has been stored as memory with emphasis on provenance and update semantics for knowledge graph memory design.",
+    "citations": [
+      "https://example.com/ai-memory"
+    ],
+    "conflict_classification": "none",
+    "decision": "keep_and_associate",
+    "entity_resolution": {
+      "action": "preserve",
+      "entity_id": null,
+      "reason": "Mock fetched article indicates core concepts; no conflicting entities identified."
+    },
+    "intent": "store_article_for_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "ai-memory",
+            "role": "source",
+            "type": "url"
+          },
+          {
+            "name": "knowledge graph memory design",
+            "role": "theme",
+            "type": "topic"
+          },
+          {
+            "name": "provenance",
+            "role": "focus",
+            "type": "concept"
+          },
+          {
+            "name": "update semantics",
+            "role": "focus",
+            "type": "concept"
+          }
+        ],
+        "kind": "article",
+        "relationships": [
+          {
+            "object": "knowledge graph memory design",
+            "predicate": "contains",
+            "subject": "ai-memory"
+          },
+          {
+            "object": "provenance",
+            "predicate": "requires",
+            "subject": "knowledge graph memory design"
+          },
+          {
+            "object": "update semantics",
+            "predicate": "requires",
+            "subject": "knowledge graph memory design"
+          }
+        ],
+        "statement": "https://example.com/ai-memory"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created: article URL with key concepts.",
+        "Entities extracted and related as per schema."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If later conflicting provenance is found, create a variant with explicit provenance timestamp.",
+      "Add explicit update semantics versioning entry when updating memory card."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

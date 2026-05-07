@@ -1,0 +1,90 @@
+{
+  "fixture_id": "slack_conflict_buttons_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam no longer works at Goldman Sachs; current employer is Point72. Original fact is superseded but retained for context.",
+    "citations": [],
+    "conflict_classification": "temporal_supersession",
+    "decision": "resolve_conflict",
+    "entity_resolution": {
+      "action": "supersede",
+      "entity_id": "Sam",
+      "reason": "New employment information supersedes prior fact. Ambiguity preserved: 'left' implies termination, but exact timing/conditions are unspecified."
+    },
+    "intent": "memory_update",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman Sachs."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman Sachs and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded memory card marked as 'historical' with confidence=low.",
+        "New fact committed with confidence=high.",
+        "Ambiguity in 'left' preserved (no explicit termination date)."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Delete 'Sam works at Goldman Sachs' entirely (risk: data loss).",
+      "Retain as historical fact with timestamp (recommended).",
+      "Merge into a single statement: 'Sam previously worked at Goldman Sachs and now works at Point72.'"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

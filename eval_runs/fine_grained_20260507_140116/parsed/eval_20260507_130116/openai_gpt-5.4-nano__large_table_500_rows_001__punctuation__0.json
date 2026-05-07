@@ -1,0 +1,87 @@
+{
+  "fixture_id": "large_table_500_rows_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Use artifact-based storage with indexing and dedup/aggregation for repeated rows; keep a raw snapshot for exact formatting/punctuation and a normalized view (schema + rows) for retrieval and querying.",
+    "citations": [],
+    "conflict_classification": "insufficient_information",
+    "decision": "Store as an indexed dataset artifact (or reference) rather than duplicating every repeated row; preserve the schema (columns) and store row content in a retrieval-friendly form with dedup/aggregation when identical/repeated; keep punctuation/formatting fidelity in the raw source while maintaining a normalized view for querying.",
+    "entity_resolution": {
+      "action": "no_action",
+      "entity_id": null,
+      "reason": "No specific named entities from the CSV content are provided beyond generic column/table descriptors."
+    },
+    "intent": "Store and organize a large CSV table (500 rows, repeated structure) in Brain\u2019s memory system; decide an appropriate storage policy.",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "input",
+            "type": "dataset"
+          },
+          {
+            "name": "repeated rows",
+            "role": "property",
+            "type": "pattern"
+          }
+        ],
+        "kind": "storage_policy",
+        "relationships": [
+          {
+            "object": "repeated rows",
+            "predicate": "has_property",
+            "subject": "CSV table"
+          },
+          {
+            "object": "artifact storage with indexing/dedup",
+            "predicate": "recommends",
+            "subject": "storage_policy"
+          }
+        ],
+        "statement": "For large CSV inputs with repeated/duplicated rows, store the dataset as a single artifact with indexing/deduplication rather than creating separate memory entries for each repeated row; retain the original text/source fidelity separately for traceability."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "id",
+            "role": "field",
+            "type": "column"
+          },
+          {
+            "name": "name",
+            "role": "field",
+            "type": "column"
+          },
+          {
+            "name": "value",
+            "role": "field",
+            "type": "column"
+          }
+        ],
+        "kind": "data_modeling",
+        "relationships": [
+          {
+            "object": "(id, name, value)",
+            "predicate": "uses_schema",
+            "subject": "normalized representation"
+          }
+        ],
+        "statement": "Because the CSV appears to share columns like (id, name, value), store a normalized representation (schema + row records) for querying, while optionally keeping a raw snapshot for exact punctuation and formatting."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created low-confidence storage policy and data modeling cards based only on the fixture description."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you provide a sample of the actual CSV rows (including punctuation and any non-identical repeated patterns), I can propose a concrete dedup/aggregation rule (e.g., key by id, or by (name,value), etc.).",
+      "If you specify Brain\u2019s intended retrieval use-cases (search by id/name, analytics by value, etc.), I can recommend an explicit index strategy and whether to store full rows vs. derived facts."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

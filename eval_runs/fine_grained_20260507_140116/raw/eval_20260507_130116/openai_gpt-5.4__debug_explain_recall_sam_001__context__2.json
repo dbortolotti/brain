@@ -1,0 +1,34 @@
+{
+  "error": null,
+  "fixture_id": "debug_explain_recall_sam_001__context",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "No recallable facts can be safely returned from the provided context alone. The phrase 'Sam from Goldman' is ambiguous and there are no memory entries attached to this fixture to inspect, so returning 'everything' would risk fabricating or overstating stored memory.",
+    "citations": [],
+    "conflict_classification": "unknown",
+    "decision": "insufficient_context",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The request references a recall target ('Sam from Goldman') but no underlying memory records or prior stored facts are provided in the fixture context, so entity resolution and recall contents cannot be verified."
+    },
+    "intent": "debug_explain_recall",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Parsed this as a debug request to explain a recall operation, not to invent missing memory contents.",
+        "Found no durable memory facts in the provided fixture input.",
+        "Preserved ambiguity and avoided asserting any current facts without evidence."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide the underlying stored memory cards, notes, or recall index for 'Sam from Goldman'.",
+      "Clarify which Sam is intended if multiple people associated with Goldman may exist.",
+      "Run the actual Brain recall command against the memory store and include its retrieved evidence for explanation."
+    ]
+  },
+  "raw_text": "{\"intent\":\"debug_explain_recall\",\"decision\":\"insufficient_context\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"The request references a recall target ('Sam from Goldman') but no underlying memory records or prior stored facts are provided in the fixture context, so entity resolution and recall contents cannot be verified.\"},\"conflict_classification\":\"unknown\",\"answer\":\"No recallable facts can be safely returned from the provided context alone. The phrase 'Sam from Goldman' is ambiguous and there are no memory entries attached to this fixture to inspect, so returning 'everything' would risk fabricating or overstating stored memory.\",\"citations\":[],\"repair_options\":[\"Provide the underlying stored memory cards, notes, or recall index for 'Sam from Goldman'.\",\"Clarify which Sam is intended if multiple people associated with Goldman may exist.\",\"Run the actual Brain recall command against the memory store and include its retrieved evidence for explanation.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed this as a debug request to explain a recall operation, not to invent missing memory contents.\",\"Found no durable memory facts in the provided fixture input.\",\"Preserved ambiguity and avoided asserting any current facts without evidence.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

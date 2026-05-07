@@ -1,0 +1,63 @@
+{
+  "error": null,
+  "fixture_id": "person_interaction_sam_bill_evans_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Not committing as durable memory due to low confidence/identity ambiguity and limited value.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "do_not_store",
+    "entity_resolution": {
+      "action": "no_durable_link",
+      "entity_id": null,
+      "reason": "Insufficient certainty about identity resolution for 'Sam' and the permanence/importance of the preference; treat as transient context."
+    },
+    "intent": "Evaluate whether to commit a new durable memory fact about a user\u2019s stated preference.",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker/source (described)",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred/liked person",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context (employer/affiliation)",
+            "type": "organization"
+          }
+        ],
+        "kind": "preference_statement",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (from Goldman) mentioned that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed preference-like statement from provided context.",
+        "Chose not to commit to durable memory to preserve ambiguity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm which 'Sam' (full name/unique identifier) this refers to.",
+      "Clarify whether the preference is about Bill Evans specifically as a musician/jazz artist.",
+      "If this preference is consistently reaffirmed or is personally important, re-submit for durable storage."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Evaluate whether to commit a new durable memory fact about a user\u2019s stated preference.\",\n  \"decision\": \"do_not_store\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference_statement\",\n      \"statement\": \"Sam (from Goldman) mentioned that he likes Bill Evans.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"speaker/source (described)\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"preferred/liked person\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"context (employer/affiliation)\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_durable_link\",\n    \"entity_id\": null,\n    \"reason\": \"Insufficient certainty about identity resolution for 'Sam' and the permanence/importance of the preference; treat as transient context.\"\n  },\n  \"conflict_classification\": \"none_detected\",\n  \"answer\": \"Not committing as durable memory due to low confidence/identity ambiguity and limited value.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Confirm which 'Sam' (full name/unique identifier) this refers to.\",\n    \"Clarify whether the preference is about Bill Evans specifically as a musician/jazz artist.\",\n    \"If this preference is consistently reaffirmed or is personally important, re-submit for durable storage.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Parsed preference-like statement from provided context.\",\n      \"Chose not to commit to durable memory to preserve ambiguity.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

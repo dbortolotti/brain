@@ -1,0 +1,58 @@
+{
+  "error": null,
+  "fixture_id": "vague_memory_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "No durable memory exists for 'the thing from yesterday' due to ambiguity. Clarification required before committing to memory.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "ambiguous",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Insufficient specificity to resolve or commit to durable memory. Ambiguity preserved to avoid false positives."
+    },
+    "intent": "retrieve_durable_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "yesterday",
+            "role": "anchor",
+            "type": "temporal_reference"
+          },
+          {
+            "name": "thing",
+            "role": "placeholder",
+            "type": "unspecified_object"
+          }
+        ],
+        "kind": "vague_memory",
+        "relationships": [
+          {
+            "object": "memory_of_unspecified_event",
+            "predicate": "attempted_to_retrieve",
+            "subject": "user"
+          }
+        ],
+        "statement": "The unspecified 'thing' from yesterday remains unresolved due to lack of contextual specificity. No durable memory exists for an unambiguous reference."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguity detected in temporal reference ('yesterday') and object ('thing').",
+        "No superseded/deleted facts exist to contradict; memory remains uninitialized."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Request user to specify: 'What exactly was the thing from yesterday?'",
+      "Suggest: 'Was this a task, observation, or conversation? Provide details.'",
+      "Propose: 'If unresolved, mark as transient and discard after 24 hours.'"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"retrieve_durable_memory\",\n  \"decision\": \"ambiguous\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"vague_memory\",\n      \"statement\": \"The unspecified 'thing' from yesterday remains unresolved due to lack of contextual specificity. No durable memory exists for an unambiguous reference.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"yesterday\",\n          \"type\": \"temporal_reference\",\n          \"role\": \"anchor\"\n        },\n        {\n          \"name\": \"thing\",\n          \"type\": \"unspecified_object\",\n          \"role\": \"placeholder\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"user\",\n          \"predicate\": \"attempted_to_retrieve\",\n          \"object\": \"memory_of_unspecified_event\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Insufficient specificity to resolve or commit to durable memory. Ambiguity preserved to avoid false positives.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"No durable memory exists for 'the thing from yesterday' due to ambiguity. Clarification required before committing to memory.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Request user to specify: 'What exactly was the thing from yesterday?'\",\n    \"Suggest: 'Was this a task, observation, or conversation? Provide details.'\",\n    \"Propose: 'If unresolved, mark as transient and discard after 24 hours.'\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Ambiguity detected in temporal reference ('yesterday') and object ('thing').\",\n      \"No superseded/deleted facts exist to contradict; memory remains uninitialized.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

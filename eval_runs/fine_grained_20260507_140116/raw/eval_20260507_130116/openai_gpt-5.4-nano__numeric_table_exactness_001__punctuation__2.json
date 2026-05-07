@@ -1,0 +1,120 @@
+{
+  "error": null,
+  "fixture_id": "numeric_table_exactness_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Extracted two run-rows (PPO-001 and PPO-002) with Reward and Sharpe values preserved as zero-padded strings and associated notes.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "create_memory_cards_from_table_rows",
+    "entity_resolution": {
+      "action": "no_preexisting_entity_match",
+      "entity_id": null,
+      "reason": "Table provides run identifiers directly; no external entity IDs are provided for resolution."
+    },
+    "intent": "Extract structured memory cards from a numeric table with punctuation-preserved values",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "run_id",
+            "type": "run"
+          },
+          {
+            "name": "012",
+            "role": "reward",
+            "type": "numeric_value"
+          },
+          {
+            "name": "045",
+            "role": "sharpe",
+            "type": "numeric_value"
+          },
+          {
+            "name": "baseline",
+            "role": "notes",
+            "type": "string_value"
+          }
+        ],
+        "kind": "run_metrics_row",
+        "relationships": [
+          {
+            "object": "012",
+            "predicate": "reward",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "045",
+            "predicate": "sharpe",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "baseline",
+            "predicate": "notes",
+            "subject": "PPO-001"
+          }
+        ],
+        "statement": "Run PPO-001 has Reward=012, Sharpe=045, Notes=\"baseline\"."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "run_id",
+            "type": "run"
+          },
+          {
+            "name": "018",
+            "role": "reward",
+            "type": "numeric_value"
+          },
+          {
+            "name": "051",
+            "role": "sharpe",
+            "type": "numeric_value"
+          },
+          {
+            "name": "entropy tuned",
+            "role": "notes",
+            "type": "string_value"
+          }
+        ],
+        "kind": "run_metrics_row",
+        "relationships": [
+          {
+            "object": "018",
+            "predicate": "reward",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "051",
+            "predicate": "sharpe",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "entropy tuned",
+            "predicate": "notes",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "Run PPO-002 has Reward=018, Sharpe=051, Notes=\"entropy tuned\"."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed Run, Reward, Sharpe, Notes columns",
+        "Preserved punctuation and zero padding in Reward and Sharpe values"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If reward/sharpe are intended as numbers rather than zero-padded strings, strip leading zeros during downstream numeric conversion."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Extract structured memory cards from a numeric table with punctuation-preserved values\",\n  \"decision\": \"create_memory_cards_from_table_rows\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"run_metrics_row\",\n      \"statement\": \"Run PPO-001 has Reward=012, Sharpe=045, Notes=\\\"baseline\\\".\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"PPO-001\",\n          \"type\": \"run\",\n          \"role\": \"run_id\"\n        },\n        {\n          \"name\": \"012\",\n          \"type\": \"numeric_value\",\n          \"role\": \"reward\"\n        },\n        {\n          \"name\": \"045\",\n          \"type\": \"numeric_value\",\n          \"role\": \"sharpe\"\n        },\n        {\n          \"name\": \"baseline\",\n          \"type\": \"string_value\",\n          \"role\": \"notes\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"reward\",\n          \"object\": \"012\"\n        },\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"sharpe\",\n          \"object\": \"045\"\n        },\n        {\n          \"subject\": \"PPO-001\",\n          \"predicate\": \"notes\",\n          \"object\": \"baseline\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"run_metrics_row\",\n      \"statement\": \"Run PPO-002 has Reward=018, Sharpe=051, Notes=\\\"entropy tuned\\\".\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"PPO-002\",\n          \"type\": \"run\",\n          \"role\": \"run_id\"\n        },\n        {\n          \"name\": \"018\",\n          \"type\": \"numeric_value\",\n          \"role\": \"reward\"\n        },\n        {\n          \"name\": \"051\",\n          \"type\": \"numeric_value\",\n          \"role\": \"sharpe\"\n        },\n        {\n          \"name\": \"entropy tuned\",\n          \"type\": \"string_value\",\n          \"role\": \"notes\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"reward\",\n          \"object\": \"018\"\n        },\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"sharpe\",\n          \"object\": \"051\"\n        },\n        {\n          \"subject\": \"PPO-002\",\n          \"predicate\": \"notes\",\n          \"object\": \"entropy tuned\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_preexisting_entity_match\",\n    \"entity_id\": null,\n    \"reason\": \"Table provides run identifiers directly; no external entity IDs are provided for resolution.\"\n  },\n  \"conflict_classification\": \"none_detected\",\n  \"answer\": \"Extracted two run-rows (PPO-001 and PPO-002) with Reward and Sharpe values preserved as zero-padded strings and associated notes.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If reward/sharpe are intended as numbers rather than zero-padded strings, strip leading zeros during downstream numeric conversion.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Parsed Run, Reward, Sharpe, Notes columns\",\n      \"Preserved punctuation and zero padding in Reward and Sharpe values\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

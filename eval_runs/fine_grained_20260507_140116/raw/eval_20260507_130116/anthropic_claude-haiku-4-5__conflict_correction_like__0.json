@@ -1,0 +1,96 @@
+{
+  "error": null,
+  "fixture_id": "conflict_correction_like",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Correction accepted. Sam from Goldman's musical preference is early Coltrane, not Bill Evans. Previous fact marked as superseded.",
+    "citations": [
+      "Input correction statement"
+    ],
+    "conflict_classification": "preference_correction",
+    "decision": "Accept correction and update memory while preserving conflict history",
+    "entity_resolution": {
+      "action": "merge_with_correction",
+      "entity_id": "Sam_Goldman",
+      "reason": "Single individual with corrected preference; no duplicate entities"
+    },
+    "intent": "Correct preference attribution for Sam from Goldman",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "music"
+          }
+        ],
+        "kind": "current_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane"
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "music"
+          }
+        ],
+        "kind": "superseded_fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded fact archived",
+        "Current fact updated to early Coltrane preference",
+        "Entity Sam_Goldman unified",
+        "Conflict resolved via correction acceptance"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Accept correction as authoritative update",
+      "Flag for manual verification if source reliability differs",
+      "Preserve both facts with temporal markers if correction source is uncertain"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Correct preference attribution for Sam from Goldman\",\n  \"decision\": \"Accept correction and update memory while preserving conflict history\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"current_fact\",\n      \"statement\": \"Sam from Goldman likes early Coltrane\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"early Coltrane\",\n          \"type\": \"music\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"early Coltrane\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"superseded_fact\",\n      \"statement\": \"Sam from Goldman likes Bill Evans\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"music\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge_with_correction\",\n    \"entity_id\": \"Sam_Goldman\",\n    \"reason\": \"Single individual with corrected preference; no duplicate entities\"\n  },\n  \"conflict_classification\": \"preference_correction\",\n  \"answer\": \"Correction accepted. Sam from Goldman's musical preference is early Coltrane, not Bill Evans. Previous fact marked as superseded.\",\n  \"citations\": [\n    \"Input correction statement\"\n  ],\n  \"repair_options\": [\n    \"Accept correction as authoritative update\",\n    \"Flag for manual verification if source reliability differs\",\n    \"Preserve both facts with temporal markers if correction source is uncertain\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Superseded fact archived\",\n      \"Current fact updated to early Coltrane preference\",\n      \"Entity Sam_Goldman unified\",\n      \"Conflict resolved via correction acceptance\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

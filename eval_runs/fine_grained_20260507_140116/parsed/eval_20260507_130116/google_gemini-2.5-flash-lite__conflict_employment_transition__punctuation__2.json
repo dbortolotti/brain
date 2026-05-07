@@ -1,0 +1,89 @@
+{
+  "fixture_id": "conflict_employment_transition__punctuation",
+  "model": "google:gemini-2.5-flash-lite",
+  "payload": {
+    "answer": "Sam no longer works at Goldman; they have joined Point72.",
+    "citations": [],
+    "conflict_classification": "employment_transition",
+    "decision": "resolve",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": null,
+      "reason": "The new fact indicates a transition in employment, superseding the previous statement about working at Goldman."
+    },
+    "intent": "conflict_explainer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "PERSON"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "ORGANIZATION"
+          }
+        ],
+        "kind": "current",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "PERSON"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "ORGANIZATION"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "ORGANIZATION"
+          }
+        ],
+        "kind": "new",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Resolved employment conflict for Sam.",
+        "Updated employment status to reflect transition from Goldman to Point72."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Update Sam's employment to Point72 and mark Goldman as a former employer.",
+      "Add a new fact that Sam joined Point72.",
+      "Delete the fact that Sam works at Goldman."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

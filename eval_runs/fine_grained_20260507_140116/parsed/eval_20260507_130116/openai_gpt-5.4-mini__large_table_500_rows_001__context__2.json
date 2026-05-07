@@ -1,0 +1,78 @@
+{
+  "fixture_id": "large_table_500_rows_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Store only a concise summary or metadata about the table rather than all 500 repeated rows.",
+    "citations": [
+      "Input: \"For context, CSV table with 500 rows: id,name,value repeated many times. Policy question: how should it be stored?\""
+    ],
+    "conflict_classification": "none",
+    "decision": "Do not commit the full 500-row CSV table as durable memory; if needed, retain only a high-level summary or reference to the dataset, since the content is repetitive and low-specificity.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No stable personal entity or durable fact is identified; the input is only a repeated table and a storage policy question."
+    },
+    "intent": "Assess how to store a repeated CSV table in the personal memory system",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "input",
+            "type": "data"
+          },
+          {
+            "name": "id",
+            "role": "field",
+            "type": "column"
+          },
+          {
+            "name": "name",
+            "role": "field",
+            "type": "column"
+          },
+          {
+            "name": "value",
+            "role": "field",
+            "type": "column"
+          }
+        ],
+        "kind": "context",
+        "relationships": [
+          {
+            "object": "id",
+            "predicate": "has_column",
+            "subject": "CSV table"
+          },
+          {
+            "object": "name",
+            "predicate": "has_column",
+            "subject": "CSV table"
+          },
+          {
+            "object": "value",
+            "predicate": "has_column",
+            "subject": "CSV table"
+          }
+        ],
+        "statement": "A CSV table with 500 rows was provided, with columns id, name, and value repeated many times."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted the storage-policy intent.",
+        "Avoided committing the full dataset as durable memory.",
+        "Preserved ambiguity by using low confidence and high-level summary only."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If the table contains unique, user-relevant facts, store only those facts as separate cards.",
+      "If the table is needed for retrieval, store it as structured data or an external reference instead of natural-language memory.",
+      "If repetition is noise, discard the row-level details and keep only the schema and source context."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

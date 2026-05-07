@@ -1,0 +1,75 @@
+{
+  "error": null,
+  "fixture_id": "memory_compiler_small_table",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Extracted preferences: Sam \u2192 Bill Evans; Daniele \u2192 knowledge graphs. No conflicts detected.",
+    "conflict_classification": "none",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": null,
+      "reason": "No prior context for 'Bill Evans' or 'knowledge graphs' in durable memory; ambiguity preserved (e.g., Bill Evans could be a person, album, or other entity)."
+    },
+    "intent": "entity_mention_extraction",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_object",
+            "type": "entity"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam prefers Bill Evans (likely a jazz pianist or related entity) as their preference."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "knowledge graphs",
+            "role": "preference_object",
+            "type": "concept"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "knowledge graphs",
+            "predicate": "prefers",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Daniele prefers knowledge graphs as their preference."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory preserved for preferences without superseding prior facts.",
+        "Ambiguity in 'Bill Evans' retained (e.g., jazz pianist vs. other references)."
+      ],
+      "success": true
+    }
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"entity_mention_extraction\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam prefers Bill Evans (likely a jazz pianist or related entity) as their preference.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"entity\",\n          \"role\": \"preference_object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"prefers\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Daniele prefers knowledge graphs as their preference.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"knowledge graphs\",\n          \"type\": \"concept\",\n          \"role\": \"preference_object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Daniele\",\n          \"predicate\": \"prefers\",\n          \"object\": \"knowledge graphs\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_new\",\n    \"entity_id\": null,\n    \"reason\": \"No prior context for 'Bill Evans' or 'knowledge graphs' in durable memory; ambiguity preserved (e.g., Bill Evans could be a person, album, or other entity).\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Extracted preferences: Sam \u2192 Bill Evans; Daniele \u2192 knowledge graphs. No conflicts detected.\",\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Durable memory preserved for preferences without superseding prior facts.\",\n      \"Ambiguity in 'Bill Evans' retained (e.g., jazz pianist vs. other references).\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

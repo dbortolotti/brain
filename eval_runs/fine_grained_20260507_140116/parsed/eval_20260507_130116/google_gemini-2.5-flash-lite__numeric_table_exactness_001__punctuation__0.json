@@ -1,0 +1,104 @@
+{
+  "fixture_id": "numeric_table_exactness_001__punctuation",
+  "model": "google:gemini-2.5-flash-lite",
+  "payload": {
+    "answer": "The table shows that run PPO-001 had a reward of 012 and a Sharpe ratio of 045 with the note 'baseline'. Run PPO-002 had a reward of 018 and a Sharpe ratio of 051 with the note 'entropy tuned'.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "extract",
+    "entity_resolution": {
+      "action": "none",
+      "reason": "All entities were directly extracted from the provided table."
+    },
+    "intent": "extract_numeric_data",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "identifier",
+            "type": "run_id"
+          },
+          {
+            "name": "012",
+            "role": "value",
+            "type": "reward"
+          },
+          {
+            "name": "045",
+            "role": "value",
+            "type": "sharpe_ratio"
+          },
+          {
+            "name": "baseline",
+            "role": "description",
+            "type": "note"
+          },
+          {
+            "name": "PPO-002",
+            "role": "identifier",
+            "type": "run_id"
+          },
+          {
+            "name": "018",
+            "role": "value",
+            "type": "reward"
+          },
+          {
+            "name": "051",
+            "role": "value",
+            "type": "sharpe_ratio"
+          },
+          {
+            "name": "entropy tuned",
+            "role": "description",
+            "type": "note"
+          }
+        ],
+        "kind": "numeric_table",
+        "relationships": [
+          {
+            "object": "012",
+            "predicate": "has_reward",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "045",
+            "predicate": "has_sharpe_ratio",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "baseline",
+            "predicate": "has_note",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "018",
+            "predicate": "has_reward",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "051",
+            "predicate": "has_sharpe_ratio",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "entropy tuned",
+            "predicate": "has_note",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "The table shows the results of different runs, including Reward and Sharpe values, with associated Notes."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Successfully extracted numeric data from the table."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

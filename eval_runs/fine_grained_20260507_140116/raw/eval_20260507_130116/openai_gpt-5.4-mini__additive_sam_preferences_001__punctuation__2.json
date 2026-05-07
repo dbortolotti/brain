@@ -1,0 +1,105 @@
+{
+  "error": null,
+  "fixture_id": "additive_sam_preferences_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Add the new preference alongside the existing one: Sam from Goldman likes Bill Evans and also likes Sonny Rollins.",
+    "citations": [
+      "Existing memory: Sam from Goldman likes Bill Evans",
+      "New: Sam from Goldman also likes Sonny Rollins"
+    ],
+    "conflict_classification": "no_conflict_additive",
+    "decision": "additive_update",
+    "entity_resolution": {
+      "action": "maintain_existing_entity",
+      "entity_id": null,
+      "reason": "The new input adds an additional preference for the same Sam from Goldman; no evidence suggests a different Sam or any need to merge distinct entities."
+    },
+    "intent": "evaluate whether the new preference can be added without overwriting the existing one",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "preferred artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Sonny Rollins",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman also likes Sonny Rollins."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preserved existing preference",
+        "Added new preference without superseding prior memory",
+        "No conflict detected"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Keep both preferences as current facts for Sam from Goldman",
+      "If later evidence shows different Sam identities, split the entity then"
+    ]
+  },
+  "raw_text": "{\"intent\":\"evaluate whether the new preference can be added without overwriting the existing one\",\"decision\":\"additive_update\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman likes Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"preferred artist\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"},{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"}]},{\"kind\":\"preference\",\"statement\":\"Sam from Goldman also likes Sonny Rollins.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Sonny Rollins\",\"type\":\"person\",\"role\":\"preferred artist\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Sonny Rollins\"},{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"maintain_existing_entity\",\"entity_id\":null,\"reason\":\"The new input adds an additional preference for the same Sam from Goldman; no evidence suggests a different Sam or any need to merge distinct entities.\"},\"conflict_classification\":\"no_conflict_additive\",\"answer\":\"Add the new preference alongside the existing one: Sam from Goldman likes Bill Evans and also likes Sonny Rollins.\",\"citations\":[\"Existing memory: Sam from Goldman likes Bill Evans\",\"New: Sam from Goldman also likes Sonny Rollins\"],\"repair_options\":[\"Keep both preferences as current facts for Sam from Goldman\",\"If later evidence shows different Sam identities, split the entity then\"],\"receipt\":{\"success\":true,\"details\":[\"Preserved existing preference\",\"Added new preference without superseding prior memory\",\"No conflict detected\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

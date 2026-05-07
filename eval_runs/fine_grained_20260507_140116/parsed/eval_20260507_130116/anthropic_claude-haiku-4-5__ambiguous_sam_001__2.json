@@ -1,0 +1,60 @@
+{
+  "fixture_id": "ambiguous_sam_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory recorded with ambiguity preserved. Sam entity reference remains unresolved pending additional context (e.g., conversation source, timestamp, or explicit identification).",
+    "citations": [
+      "Input message does not specify which Sam entity",
+      "Two existing Sam entities create equal-probability ambiguity"
+    ],
+    "conflict_classification": "unresolved_ambiguity",
+    "decision": "Create unattached memory card; defer entity resolution pending disambiguation",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Ambiguous which Sam (Goldman or Point72) made the statement. Insufficient context to disambiguate. Memory recorded without entity binding."
+    },
+    "intent": "Record preference statement about Bill Evans while preserving ambiguity about which Sam entity made the statement",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preference statement recorded",
+        "Entity resolution deferred",
+        "Ambiguity preserved in system state",
+        "No superseded facts presented"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide conversation source or metadata identifying the Sam",
+      "Ask user to explicitly confirm which Sam made the statement",
+      "Link memory to conversation thread that disambiguates speaker identity"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

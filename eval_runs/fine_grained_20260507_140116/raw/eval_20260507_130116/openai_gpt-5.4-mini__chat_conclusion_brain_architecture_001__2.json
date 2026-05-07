@@ -1,0 +1,86 @@
+{
+  "error": null,
+  "fixture_id": "chat_conclusion_brain_architecture_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Brain should treat Cognee as a rebuildable semantic projection, while Brain DB remains the source of truth.",
+    "citations": [
+      "Conclusion from our chat: Brain should treat Cognee as a rebuildable semantic projection, while Brain DB remains the source of truth."
+    ],
+    "conflict_classification": "none",
+    "decision": "Treat Cognee as a rebuildable semantic projection; treat Brain DB as the source of truth.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No entity disambiguation or merge was needed from the provided conclusion."
+    },
+    "intent": "Capture architectural conclusion about Brain, Cognee, and Brain DB",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "primary subject",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "semantic projection",
+            "type": "system"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Cognee as a rebuildable semantic projection",
+            "predicate": "should treat",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "Brain should treat Cognee as a rebuildable semantic projection."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source of truth",
+            "type": "system"
+          },
+          {
+            "name": "Brain",
+            "role": "primary subject",
+            "type": "system"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "is",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "Brain DB as source of truth",
+            "predicate": "should rely on",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "Brain DB remains the source of truth."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted one architectural conclusion.",
+        "Preserved source-of-truth hierarchy with Brain DB as durable reference.",
+        "Encoded Cognee as rebuildable rather than authoritative."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"Capture architectural conclusion about Brain, Cognee, and Brain DB\",\"decision\":\"Treat Cognee as a rebuildable semantic projection; treat Brain DB as the source of truth.\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Brain should treat Cognee as a rebuildable semantic projection.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Brain\",\"type\":\"system\",\"role\":\"primary subject\"},{\"name\":\"Cognee\",\"type\":\"system\",\"role\":\"semantic projection\"}],\"relationships\":[{\"subject\":\"Brain\",\"predicate\":\"should treat\",\"object\":\"Cognee as a rebuildable semantic projection\"}]},{\"kind\":\"fact\",\"statement\":\"Brain DB remains the source of truth.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Brain DB\",\"type\":\"system\",\"role\":\"source of truth\"},{\"name\":\"Brain\",\"type\":\"system\",\"role\":\"primary subject\"}],\"relationships\":[{\"subject\":\"Brain DB\",\"predicate\":\"is\",\"object\":\"source of truth\"},{\"subject\":\"Brain\",\"predicate\":\"should rely on\",\"object\":\"Brain DB as source of truth\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No entity disambiguation or merge was needed from the provided conclusion.\"},\"conflict_classification\":\"none\",\"answer\":\"Brain should treat Cognee as a rebuildable semantic projection, while Brain DB remains the source of truth.\",\"citations\":[\"Conclusion from our chat: Brain should treat Cognee as a rebuildable semantic projection, while Brain DB remains the source of truth.\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Extracted one architectural conclusion.\",\"Preserved source-of-truth hierarchy with Brain DB as durable reference.\",\"Encoded Cognee as rebuildable rather than authoritative.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

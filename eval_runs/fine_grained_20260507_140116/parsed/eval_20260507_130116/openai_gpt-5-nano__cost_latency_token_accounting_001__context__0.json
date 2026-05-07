@@ -1,0 +1,99 @@
+{
+  "fixture_id": "cost_latency_token_accounting_001__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "In Brain's eval accounting, record: token_counts (how many tokens/op data processed), provider_id (service provider), model_id (model/version used), estimated_price (cost for the operation), and latency percentiles (p50, p90, p95) to capture typical and tail latency. These fields enable cost attribution, performance assessment, and auditing of memory operations while preserving ambiguity about exact operational values unless explicitly computed.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "provide a concise explanation of required evaluation accounting fields for Brain memory system, including token counts, provider/model IDs, estimated price, and latency percentiles p50, p90, p95.",
+    "entity_resolution": {
+      "action": "no_change",
+      "entity_id": null,
+      "reason": "This entry is an explanatory schema for eval accounting fields and does not introduce a new persistent entity."
+    },
+    "intent": "explain_eval_accounting_fields",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "token_counts",
+            "role": "quantitative",
+            "type": "metric"
+          },
+          {
+            "name": "provider_id",
+            "role": "source",
+            "type": "identifier"
+          },
+          {
+            "name": "model_id",
+            "role": "model",
+            "type": "identifier"
+          },
+          {
+            "name": "estimated_price",
+            "role": "cost",
+            "type": "currency"
+          },
+          {
+            "name": "latency_p50",
+            "role": "performance",
+            "type": "latency"
+          },
+          {
+            "name": "latency_p90",
+            "role": "performance",
+            "type": "latency"
+          },
+          {
+            "name": "latency_p95",
+            "role": "performance",
+            "type": "latency"
+          }
+        ],
+        "kind": "explanation",
+        "relationships": [
+          {
+            "object": "bytes_consumed or tokens_used",
+            "predicate": "is_measured_by",
+            "subject": "token_counts"
+          },
+          {
+            "object": "service_provider",
+            "predicate": "identifies",
+            "subject": "provider_id"
+          },
+          {
+            "object": "specific_model_version",
+            "predicate": "identifies",
+            "subject": "model_id"
+          },
+          {
+            "object": "cost_for_operation",
+            "predicate": "represents",
+            "subject": "estimated_price"
+          },
+          {
+            "object": "observed_inference_latency_samples",
+            "predicate": "is_derived_from",
+            "subject": "latency_p50"
+          },
+          {
+            "object": "observed_inference_latency_samples",
+            "predicate": "is_derived_from",
+            "subject": "latency_p90"
+          },
+          {
+            "object": "observed_inference_latency_samples",
+            "predicate": "is_derived_from",
+            "subject": "latency_p95"
+          }
+        ],
+        "statement": "Required eval accounting fields help quantify and attribute resource usage, cost, and performance for each memory operation. Key fields include token counts, provider/model IDs, estimated price, and latency percentiles (p50, p90, p95)."
+      }
+    ],
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

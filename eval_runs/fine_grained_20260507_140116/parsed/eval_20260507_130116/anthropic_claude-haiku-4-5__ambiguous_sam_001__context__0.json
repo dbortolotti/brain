@@ -1,0 +1,59 @@
+{
+  "fixture_id": "ambiguous_sam_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory recorded with ambiguous Sam reference. Requires clarification: Is this Sam from Goldman or Sam from Point72?",
+    "citations": [
+      "Existing entities: Sam from Goldman; Sam from Point72",
+      "New message: Sam mentioned that he likes Bill Evans"
+    ],
+    "conflict_classification": "unresolved_entity_reference",
+    "decision": "Create ambiguous memory card; defer entity resolution",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Two existing Sams (Goldman, Point72) create ambiguity. Insufficient context to determine which Sam expressed preference. Preserve ambiguity rather than guess."
+    },
+    "intent": "Disambiguate which Sam likes Bill Evans and record preference fact",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preference fact recorded",
+        "Entity ambiguity flagged",
+        "Resolution deferred pending user input"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask user to clarify which Sam likes Bill Evans",
+      "Request additional context (e.g., conversation source, timestamp, relationship to speaker)",
+      "Link preference to both Sams with separate confidence scores pending disambiguation"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

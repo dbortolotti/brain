@@ -1,0 +1,64 @@
+{
+  "error": null,
+  "fixture_id": "typos_shorthand_person_interaction_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Uncertain shorthand mention: Sam from Goldman apparently likes Bill Evans.",
+    "citations": [
+      "input: sam frm goldmn likes bill evns apparently"
+    ],
+    "conflict_classification": "none",
+    "decision": "preserve_ambiguity",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The input is shorthand and ambiguous: 'frm goldmn' could indicate affiliation with Goldman, and 'bill evns' is likely Bill Evans but not fully certain. Not enough confidence for durable disambiguation."
+    },
+    "intent": "Capture a tentative interpersonal preference/association claim from a shorthand message.",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "possible_affiliation",
+            "type": "organization_or_surname_ambiguous"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object_of_liking",
+            "type": "person"
+          }
+        ],
+        "kind": "tentative_fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "A person referred to as Sam from Goldman apparently likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed shorthand into a tentative statement.",
+        "Avoided overcommitting on identity resolution."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If needed, clarify who 'Sam' is and whether 'Goldman' is an affiliation or surname.",
+      "Confirm whether 'bill evns' refers to the musician Bill Evans."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Capture a tentative interpersonal preference/association claim from a shorthand message.\",\"decision\":\"preserve_ambiguity\",\"memory_cards\":[{\"kind\":\"tentative_fact\",\"statement\":\"A person referred to as Sam from Goldman apparently likes Bill Evans.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization_or_surname_ambiguous\",\"role\":\"possible_affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"object_of_liking\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"The input is shorthand and ambiguous: 'frm goldmn' could indicate affiliation with Goldman, and 'bill evns' is likely Bill Evans but not fully certain. Not enough confidence for durable disambiguation.\"},\"conflict_classification\":\"none\",\"answer\":\"Uncertain shorthand mention: Sam from Goldman apparently likes Bill Evans.\",\"citations\":[\"input: sam frm goldmn likes bill evns apparently\"],\"repair_options\":[\"If needed, clarify who 'Sam' is and whether 'Goldman' is an affiliation or surname.\",\"Confirm whether 'bill evns' refers to the musician Bill Evans.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed shorthand into a tentative statement.\",\"Avoided overcommitting on identity resolution.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

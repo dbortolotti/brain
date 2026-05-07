@@ -1,0 +1,59 @@
+{
+  "fixture_id": "slack_rewrite_modal_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory rewritten with preserved ambiguity. The preference statement is durable but incomplete\u2014'the other one' lacks sufficient context for entity binding.",
+    "citations": [
+      "Input: 'He prefers the other one'"
+    ],
+    "conflict_classification": "ambiguous_referent",
+    "decision": "accept_rewrite_with_ambiguity",
+    "entity_resolution": {
+      "action": "defer_resolution",
+      "entity_id": null,
+      "reason": "Referent 'the other one' is ambiguous; requires clarification context not present in input"
+    },
+    "intent": "rewrite_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "user",
+            "role": "subject",
+            "type": "agent"
+          },
+          {
+            "name": "the other one",
+            "role": "object",
+            "type": "unknown_referent"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "user"
+          }
+        ],
+        "statement": "User prefers 'the other one' (referent unspecified)"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created with low confidence",
+        "Ambiguity preserved; no false disambiguation attempted",
+        "Entity resolution deferred pending clarification",
+        "Rewrite accepted; prior statement superseded"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify what 'the other one' refers to (e.g., product, option, person)",
+      "Provide comparative context (e.g., 'prefers X over Y')",
+      "Link to prior conversation context where referent was established"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

@@ -1,0 +1,56 @@
+{
+  "fixture_id": "recall_hide_superseded__context",
+  "model": "google:gemini-2.5-flash",
+  "payload": {
+    "answer": "Sam works at Point72.",
+    "citations": [
+      "mem_new"
+    ],
+    "conflict_classification": "superseded_fact_identified",
+    "decision": "Provide current employment based on non-superseded fact.",
+    "intent": "recall_fact",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "object",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "object",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded fact 'Sam works at Goldman' was correctly identified and ignored."
+      ],
+      "success": true
+    }
+  },
+  "run_id": "eval_20260507_130116"
+}

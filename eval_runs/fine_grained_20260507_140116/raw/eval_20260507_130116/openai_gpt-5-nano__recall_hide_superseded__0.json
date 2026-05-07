@@ -1,0 +1,86 @@
+{
+  "error": null,
+  "fixture_id": "recall_hide_superseded",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Sam works at Point72 now.",
+    "citations": [],
+    "conflict_classification": "supersession",
+    "decision": "update",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "Sam",
+      "reason": "mem_new supersedes mem_old for current employment"
+    },
+    "intent": "recall",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "mem_new",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72"
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "mem_old",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Updated memory state to reflect current employment: Sam -> Point72"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark mem_old as superseded",
+      "Promote mem_new to current employment record for Sam",
+      "If queried again, reference mem_new as the authoritative source"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"recall\",\n  \"decision\": \"update\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"mem_new\",\n      \"statement\": \"Sam left Goldman and joined Point72\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Sam\", \"type\": \"person\", \"role\": \"subject\"},\n        {\"name\": \"Goldman\", \"type\": \"organization\", \"role\": \"employer\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sam\", \"predicate\": \"left\", \"object\": \"Goldman\"},\n        {\"subject\": \"Sam\", \"predicate\": \"joined\", \"object\": \"Point72\"}\n      ]\n    },\n    {\n      \"kind\": \"mem_old\",\n      \"statement\": \"Sam works at Goldman\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\"name\": \"Sam\", \"type\": \"person\", \"role\": \"subject\"},\n        {\"name\": \"Goldman\", \"type\": \"organization\", \"role\": \"employer\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sam\", \"predicate\": \"works_at\", \"object\": \"Goldman\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge\",\n    \"entity_id\": \"Sam\",\n    \"reason\": \"mem_new supersedes mem_old for current employment\"\n  },\n  \"conflict_classification\": \"supersession\",\n  \"answer\": \"Sam works at Point72 now.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Mark mem_old as superseded\",\n    \"Promote mem_new to current employment record for Sam\",\n    \"If queried again, reference mem_new as the authoritative source\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Updated memory state to reflect current employment: Sam -> Point72\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

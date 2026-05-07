@@ -1,0 +1,71 @@
+{
+  "error": null,
+  "fixture_id": "personal_routine_morning_reading_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Candidate preference identified, but confidence is only medium and should remain non-committal.",
+    "citations": [
+      "I usually prefer to read technical papers in the morning before checking email"
+    ],
+    "conflict_classification": "none",
+    "decision": "defer",
+    "entity_resolution": {
+      "action": "create_candidate",
+      "entity_id": null,
+      "reason": "The input expresses a soft, habitual preference rather than a firmly durable fact; keep as a candidate without overcommitting."
+    },
+    "intent": "Evaluate whether the statement describes a durable personal routine/memory candidate.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "technical papers",
+            "role": "reading material",
+            "type": "content"
+          },
+          {
+            "name": "morning",
+            "role": "preferred timing",
+            "type": "time_of_day"
+          },
+          {
+            "name": "email",
+            "role": "activity checked later",
+            "type": "communication_channel"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "reading technical papers in the morning before checking email",
+            "predicate": "usually_prefers",
+            "subject": "person"
+          },
+          {
+            "object": "checking email",
+            "predicate": "occurs_before",
+            "subject": "reading technical papers"
+          }
+        ],
+        "statement": "The person usually prefers to read technical papers in the morning before checking email."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed a morning reading preference.",
+        "Preserved ambiguity due to 'usually prefer'.",
+        "No conflict detected."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Store as a tentative routine preference.",
+      "Lower confidence if the system requires only strongly durable memories.",
+      "Revisit if corroborated by additional similar statements."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Evaluate whether the statement describes a durable personal routine/memory candidate.\",\"decision\":\"defer\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"The person usually prefers to read technical papers in the morning before checking email.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"technical papers\",\"type\":\"content\",\"role\":\"reading material\"},{\"name\":\"morning\",\"type\":\"time_of_day\",\"role\":\"preferred timing\"},{\"name\":\"email\",\"type\":\"communication_channel\",\"role\":\"activity checked later\"}],\"relationships\":[{\"subject\":\"person\",\"predicate\":\"usually_prefers\",\"object\":\"reading technical papers in the morning before checking email\"},{\"subject\":\"reading technical papers\",\"predicate\":\"occurs_before\",\"object\":\"checking email\"}]}],\"entity_resolution\":{\"action\":\"create_candidate\",\"entity_id\":null,\"reason\":\"The input expresses a soft, habitual preference rather than a firmly durable fact; keep as a candidate without overcommitting.\"},\"conflict_classification\":\"none\",\"answer\":\"Candidate preference identified, but confidence is only medium and should remain non-committal.\",\"citations\":[\"I usually prefer to read technical papers in the morning before checking email\"],\"repair_options\":[\"Store as a tentative routine preference.\",\"Lower confidence if the system requires only strongly durable memories.\",\"Revisit if corroborated by additional similar statements.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed a morning reading preference.\",\"Preserved ambiguity due to 'usually prefer'.\",\"No conflict detected.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "fixture_id": "person_interaction_sam_bill_evans_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory card created capturing Sam's preference for Bill Evans with organizational context preserved. No superseded facts present.",
+    "citations": [
+      "Input statement: 'Sam from Goldman mentioned that he likes Bill Evans'"
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "Create durable memory cards for Sam's preference regarding Bill Evans",
+    "entity_resolution": {
+      "action": "candidate_identified",
+      "entity_id": null,
+      "reason": "Sam and Bill Evans are distinct persons; Goldman is organizational context. Ambiguity preserved: 'likes' may indicate professional respect, personal preference, or other valence without further clarification."
+    },
+    "intent": "Extract and rank entity candidates from a personal interaction statement",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Entity candidates ranked: Sam (primary), Bill Evans (secondary), Goldman (organizational context)",
+        "Preference relationship captured with confidence: high",
+        "Ambiguity preserved regarding relationship nature",
+        "No conflicting or superseded facts detected"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify nature of 'likes' (professional, personal, musical, etc.)",
+      "Confirm Bill Evans identity (musician, colleague, other)",
+      "Establish Sam's full name and Goldman division"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Extract and rank entity candidates from a personal interaction statement\",\n  \"decision\": \"Create durable memory cards for Sam's preference regarding Bill Evans\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam from Goldman likes Bill Evans\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"candidate_identified\",\n    \"entity_id\": null,\n    \"reason\": \"Sam and Bill Evans are distinct persons; Goldman is organizational context. Ambiguity preserved: 'likes' may indicate professional respect, personal preference, or other valence without further clarification.\"\n  },\n  \"conflict_classification\": \"none_detected\",\n  \"answer\": \"Memory card created capturing Sam's preference for Bill Evans with organizational context preserved. No superseded facts present.\",\n  \"citations\": [\n    \"Input statement: 'Sam from Goldman mentioned that he likes Bill Evans'\"\n  ],\n  \"repair_options\": [\n    \"Clarify nature of 'likes' (professional, personal, musical, etc.)\",\n    \"Confirm Bill Evans identity (musician, colleague, other)\",\n    \"Establish Sam's full name and Goldman division\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Entity candidates ranked: Sam (primary), Bill Evans (secondary), Goldman (organizational context)\",\n      \"Preference relationship captured with confidence: high\",\n      \"Ambiguity preserved regarding relationship nature\",\n      \"No conflicting or superseded facts detected\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

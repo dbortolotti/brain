@@ -1,0 +1,135 @@
+{
+  "fixture_id": "long_markdown_chat_summary_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Extracted three architecture commitments (Brain DB as source of truth; Cognee as rebuildable semantic projection; Slack as strict memory intake agent) and preserved two open questions (Telegram addition; cheapest saturating-performance model) without committing them as decisions.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "Commit: Brain DB is source of truth; Cognee is a rebuildable semantic projection; Slack is a strict memory intake agent. Do not commit unresolved open questions as decisions.",
+    "entity_resolution": {
+      "action": "map_or_create",
+      "entity_id": null,
+      "reason": "No entity IDs were provided in the input; create/resolution should be performed by the host system."
+    },
+    "intent": "Extract durable architecture commitments and open questions from the provided Brain chat summary.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system"
+          }
+        ],
+        "kind": "architecture_principle",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "is",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB should be the source of truth for the Brain memory system."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "semantic_projection",
+            "type": "system"
+          },
+          {
+            "name": "Brain DB",
+            "role": "source",
+            "type": "system"
+          }
+        ],
+        "kind": "architecture_principle",
+        "relationships": [
+          {
+            "object": "rebuildable semantic projection",
+            "predicate": "is",
+            "subject": "Cognee"
+          },
+          {
+            "object": "Brain DB",
+            "predicate": "derives_from",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee should be a rebuildable semantic projection of Brain DB data."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "memory_intake_agent",
+            "type": "channel_or_agent"
+          }
+        ],
+        "kind": "architecture_principle",
+        "relationships": [
+          {
+            "object": "strict memory intake agent",
+            "predicate": "should_be",
+            "subject": "Slack"
+          }
+        ],
+        "statement": "Slack should be a strict memory intake agent."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Telegram",
+            "role": "potential_intake_source",
+            "type": "channel_or_agent"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [
+          {
+            "object": "memory intake",
+            "predicate": "possible_addition_to",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "Open question: Should Telegram be added later as an additional memory intake source/agent?"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain system",
+            "role": "evaluation_target",
+            "type": "system"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [
+          {
+            "object": "best cost-performance at saturated performance",
+            "predicate": "needs_model_choice_for",
+            "subject": "Brain system"
+          }
+        ],
+        "statement": "Open question: Which model is cheapest while saturating performance for the Brain system?"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured durable statements as high-confidence architecture principles.",
+        "Preserved open questions as non-committed entries with medium confidence."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If the system requires entity IDs, re-run extraction with entity canonicalization to assign IDs to Brain DB, Cognee, Slack, and Telegram.",
+      "If open questions later receive answers, convert them into decision cards and mark the question cards as superseded at that time."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

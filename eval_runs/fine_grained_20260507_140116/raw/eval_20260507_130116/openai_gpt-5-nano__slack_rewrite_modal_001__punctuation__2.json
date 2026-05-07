@@ -1,0 +1,48 @@
+{
+  "error": null,
+  "fixture_id": "slack_rewrite_modal_001__punctuation",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Acknowledged. I will store the two distinct statements without conflating them. The directive to 'Rewrite memory' will be treated as a separate instruction pending user clarification.",
+    "citations": [],
+    "conflict_classification": "ambiguous_intent_due_to_contradictory directives",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "append",
+      "entity_id": null,
+      "reason": "Ambiguity between 'He prefers the other one' and 'User chooses Rewrite memory' requires retention as separate memory statements until clarified."
+    },
+    "intent": "memory_update",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [],
+        "kind": "memory_statement",
+        "relationships": [],
+        "statement": "He prefers the other one"
+      },
+      {
+        "confidence": "low",
+        "entities": [],
+        "kind": "memory_statement",
+        "relationships": [],
+        "statement": "User chooses Rewrite memory"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored two distinct memory statements preserving ambiguity.",
+        "No superseded facts; both are retained as current until clarified."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify which statement refers to preference versus action to rewrite memory.",
+      "If the user intended a single memory update, request explicit rewrite instruction and the target memory item.",
+      "Tag the statements with a timestamp and source context if available."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"memory_update\",\n  \"decision\": \"commit\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"memory_statement\",\n      \"statement\": \"He prefers the other one\",\n      \"confidence\": \"high\",\n      \"entities\": [],\n      \"relationships\": []\n    },\n    {\n      \"kind\": \"memory_statement\",\n      \"statement\": \"User chooses Rewrite memory\",\n      \"confidence\": \"low\",\n      \"entities\": [],\n      \"relationships\": []\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"append\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguity between 'He prefers the other one' and 'User chooses Rewrite memory' requires retention as separate memory statements until clarified.\"\n  },\n  \"conflict_classification\": \"ambiguous_intent_due_to_contradictory directives\",\n \"answer\": \"Acknowledged. I will store the two distinct statements without conflating them. The directive to 'Rewrite memory' will be treated as a separate instruction pending user clarification.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Clarify which statement refers to preference versus action to rewrite memory.\",\n    \"If the user intended a single memory update, request explicit rewrite instruction and the target memory item.\",\n    \"Tag the statements with a timestamp and source context if available.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Stored two distinct memory statements preserving ambiguity.\",\n      \"No superseded facts; both are retained as current until clarified.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

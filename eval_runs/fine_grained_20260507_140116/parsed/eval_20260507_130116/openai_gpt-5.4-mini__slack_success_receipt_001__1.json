@@ -1,0 +1,67 @@
+{
+  "fixture_id": "slack_success_receipt_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Stored as a low-confidence, hearsay-based preference tied to an ambiguously identified Sam from Goldman.",
+    "citations": [
+      "/brain remember Sam from Goldman mentioned that he likes Bill Evans."
+    ],
+    "conflict_classification": "none",
+    "decision": "store_weakly",
+    "entity_resolution": {
+      "action": "create_ambiguous_entity",
+      "entity_id": null,
+      "reason": "'Sam' is underspecified and 'from Goldman' only provides partial disambiguation; no stable identifier is available."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred_artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman reportedly likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured an ambiguous person entity: Sam from Goldman.",
+        "Stored the reported preference for Bill Evans with low confidence.",
+        "Preserved hearsay framing and ambiguity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want, provide Sam's full name or role at Goldman to disambiguate.",
+      "If this should be a direct preference rather than a mention, say so explicitly."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

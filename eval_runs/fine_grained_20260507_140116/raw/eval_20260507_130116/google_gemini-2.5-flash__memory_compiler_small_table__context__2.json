@@ -1,0 +1,79 @@
+{
+  "error": null,
+  "fixture_id": "memory_compiler_small_table__context",
+  "model": "google:gemini-2.5-flash",
+  "payload": {
+    "answer": "Sam prefers Bill Evans. Daniele prefers Knowledge graphs.",
+    "citations": [
+      "context table"
+    ],
+    "conflict_classification": null,
+    "decision": "Extracted two preference facts from the input table.",
+    "entity_resolution": {
+      "action": null,
+      "entity_id": null,
+      "reason": null
+    },
+    "intent": "Extract preferences from provided context table.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "Person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "Preference"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam prefers Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "subject",
+            "type": "Person"
+          },
+          {
+            "name": "Knowledge graphs",
+            "role": "object",
+            "type": "Preference"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Knowledge graphs",
+            "predicate": "prefers",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Daniele prefers Knowledge graphs."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Successfully extracted preferences from the context table."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"Extract preferences from provided context table.\",\n  \"decision\": \"Extracted two preference facts from the input table.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam prefers Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"Person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"Preference\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"prefers\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Daniele prefers Knowledge graphs.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"Person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Knowledge graphs\",\n          \"type\": \"Preference\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Daniele\",\n          \"predicate\": \"prefers\",\n          \"object\": \"Knowledge graphs\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": null,\n    \"entity_id\": null,\n    \"reason\": null\n  },\n  \"conflict_classification\": null,\n  \"answer\": \"Sam prefers Bill Evans. Daniele prefers Knowledge graphs.\",\n  \"citations\": [\n    \"context table\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Successfully extracted preferences from the context table.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

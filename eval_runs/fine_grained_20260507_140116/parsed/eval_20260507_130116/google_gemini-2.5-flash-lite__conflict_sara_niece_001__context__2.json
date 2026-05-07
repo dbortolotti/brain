@@ -1,0 +1,43 @@
+{
+  "fixture_id": "conflict_sara_niece_001__context",
+  "model": "google:gemini-2.5-flash-lite",
+  "payload": {
+    "answer": "The new memory that Sara is your niece conflicts with the existing memory that Sara is Daniele's daughter. These cannot both be true.",
+    "citations": [
+      "conflict_sara_niece_001__context"
+    ],
+    "conflict_classification": "direct_conflict",
+    "decision": "conflict_detected",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": null,
+      "reason": "The new memory states Sara is 'my niece', which conflicts with the existing memory that Sara is 'Daniele's daughter'. The relationship 'niece' implies a sibling relationship between the parent and the aunt/uncle, which is not directly stated but is implied by the term 'niece'. The existing memory establishes a direct parent-child relationship. These two statements cannot both be true simultaneously for the same individual 'Sara'."
+    },
+    "intent": "detect_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "kind": "fact",
+        "statement": "Sara is Daniele's daughter and Nur's twin."
+      },
+      {
+        "confidence": "new",
+        "kind": "fact",
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict detected between existing and new memories regarding Sara's relationship."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "The new memory is incorrect. Sara is Daniele's daughter.",
+      "The existing memory is incorrect. Sara is your niece.",
+      "The new memory is correct, but the existing memory is incomplete. Sara is Daniele's daughter, and Daniele is your sibling.",
+      "The new memory is correct, but the existing memory is incomplete. Sara is Daniele's daughter, and you are Daniele's sibling."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

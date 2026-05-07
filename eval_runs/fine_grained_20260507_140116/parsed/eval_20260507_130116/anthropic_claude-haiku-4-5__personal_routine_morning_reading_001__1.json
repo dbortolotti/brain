@@ -1,0 +1,89 @@
+{
+  "fixture_id": "personal_routine_morning_reading_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory committed: Morning routine preference (technical papers before email) recorded with high confidence.",
+    "citations": [
+      "Input statement: 'I usually prefer to read technical papers in the morning before checking email'"
+    ],
+    "conflict_classification": "none",
+    "decision": "Commit as durable preference memory with temporal and activity ordering",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": "personal_routine_morning_reading_001",
+      "reason": "New preference pattern for morning routine established with clear temporal and activity ordering"
+    },
+    "intent": "Capture user's preferred morning routine sequence and content preference",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "technical papers",
+            "role": "reading_material",
+            "type": "content_type"
+          },
+          {
+            "name": "morning",
+            "role": "temporal_context",
+            "type": "time_period"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "technical papers",
+            "predicate": "prefers_reading",
+            "subject": "user"
+          },
+          {
+            "object": "morning",
+            "predicate": "consumed_during",
+            "subject": "technical papers"
+          }
+        ],
+        "statement": "User prefers to read technical papers in the morning"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "email",
+            "role": "secondary_task",
+            "type": "activity"
+          },
+          {
+            "name": "reading",
+            "role": "primary_task",
+            "type": "activity"
+          }
+        ],
+        "kind": "routine_sequence",
+        "relationships": [
+          {
+            "object": "checking email",
+            "predicate": "precedes",
+            "subject": "reading technical papers"
+          }
+        ],
+        "statement": "User checks email after reading technical papers in the morning"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preference card created for morning technical paper reading",
+        "Routine sequence card created for activity ordering",
+        "Temporal context preserved (morning)",
+        "Activity precedence captured (reading before email)",
+        "Ambiguity preserved on frequency ('usually' not quantified)"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify frequency: Does 'usually' mean daily, most weekdays, or variable?",
+      "Specify paper domain: Are these papers in a particular technical field?",
+      "Confirm timing: How long before email checking typically occurs?"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

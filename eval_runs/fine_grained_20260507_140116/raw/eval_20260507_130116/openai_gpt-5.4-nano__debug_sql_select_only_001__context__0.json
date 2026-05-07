@@ -1,0 +1,33 @@
+{
+  "error": null,
+  "fixture_id": "debug_sql_select_only_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Under Admin SQL select-only mode, read-only queries are allowed (e.g., `SELECT id FROM memory_cards LIMIT 10`). Any write operation like `DELETE FROM memory_cards` is denied, so there is no conflict for the SELECT case but a policy conflict if a DELETE is attempted.",
+    "citations": [],
+    "conflict_classification": "Policy enforcement conflict: operation violates select-only restriction (DELETE denied).",
+    "decision": "No conflict for SELECT; conflict for DELETE (denied).",
+    "entity_resolution": {
+      "action": "no_change",
+      "entity_id": null,
+      "reason": "No new entities or memory facts were provided beyond the stated policy constraints."
+    },
+    "intent": "Explain a SQL policy conflict under Admin SQL select-only mode and determine whether the requested SQL operation is allowed.",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Confirmed select-only allowance for querying `memory_cards` (SELECT allowed).",
+        "Confirmed write denial for deleting from `memory_cards` (DELETE denied)."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Use a SELECT query only (e.g., `SELECT id FROM memory_cards LIMIT 10`).",
+      "If deletion is required, route the request to a mode/permission that allows write operations (not available in select-only mode).",
+      "For \u201cremoval\u201d behavior, implement it at the application layer without issuing SQL DELETE (if permitted by the system design)."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Explain a SQL policy conflict under Admin SQL select-only mode and determine whether the requested SQL operation is allowed.\",\n  \"decision\": \"No conflict for SELECT; conflict for DELETE (denied).\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"no_change\",\n    \"entity_id\": null,\n    \"reason\": \"No new entities or memory facts were provided beyond the stated policy constraints.\"\n  },\n  \"conflict_classification\": \"Policy enforcement conflict: operation violates select-only restriction (DELETE denied).\",\n  \"answer\": \"Under Admin SQL select-only mode, read-only queries are allowed (e.g., `SELECT id FROM memory_cards LIMIT 10`). Any write operation like `DELETE FROM memory_cards` is denied, so there is no conflict for the SELECT case but a policy conflict if a DELETE is attempted.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Use a SELECT query only (e.g., `SELECT id FROM memory_cards LIMIT 10`).\",\n    \"If deletion is required, route the request to a mode/permission that allows write operations (not available in select-only mode).\",\n    \"For \u201cremoval\u201d behavior, implement it at the application layer without issuing SQL DELETE (if permitted by the system design).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Confirmed select-only allowance for querying `memory_cards` (SELECT allowed).\",\n      \"Confirmed write denial for deleting from `memory_cards` (DELETE denied).\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

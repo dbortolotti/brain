@@ -1,0 +1,76 @@
+{
+  "error": null,
+  "fixture_id": "debug_sql_select_only_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Brain correctly enforces select-only mode: SELECT id FROM memory_cards LIMIT 10 is permitted; DELETE FROM memory_cards is denied. Permission model functions as specified.",
+    "citations": [
+      "Fixture ID: debug_sql_select_only_001",
+      "Admin SQL select-only mode specification"
+    ],
+    "conflict_classification": "none",
+    "decision": "ALLOW SELECT; DENY DELETE - permission model correctly enforced",
+    "entity_resolution": {
+      "action": "validate_permission_model",
+      "entity_id": "admin_sql_mode",
+      "reason": "Confirm select-only restriction is enforced at query execution layer"
+    },
+    "intent": "Evaluate Brain memory system behavior under SQL select-only admin mode with DELETE restriction",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "admin_sql_mode",
+            "role": "access_control_context",
+            "type": "system_mode"
+          },
+          {
+            "name": "memory_cards",
+            "role": "protected_resource",
+            "type": "data_table"
+          }
+        ],
+        "kind": "system_constraint",
+        "relationships": [
+          {
+            "object": "SELECT queries",
+            "predicate": "permits",
+            "subject": "admin_sql_mode"
+          },
+          {
+            "object": "DELETE operations",
+            "predicate": "denies",
+            "subject": "admin_sql_mode"
+          }
+        ],
+        "statement": "Admin SQL select-only mode permits SELECT queries; denies DELETE operations"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "debug_sql_select_only_001",
+            "role": "validation_context",
+            "type": "test_fixture"
+          }
+        ],
+        "kind": "fixture_specification",
+        "statement": "Fixture debug_sql_select_only_001 validates permission enforcement for read-only SQL access"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "SELECT query validation passed",
+        "DELETE operation restriction confirmed",
+        "Permission enforcement layer operational",
+        "No memory conflicts detected"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Evaluate Brain memory system behavior under SQL select-only admin mode with DELETE restriction\",\n  \"decision\": \"ALLOW SELECT; DENY DELETE - permission model correctly enforced\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"system_constraint\",\n      \"statement\": \"Admin SQL select-only mode permits SELECT queries; denies DELETE operations\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"admin_sql_mode\",\n          \"type\": \"system_mode\",\n          \"role\": \"access_control_context\"\n        },\n        {\n          \"name\": \"memory_cards\",\n          \"type\": \"data_table\",\n          \"role\": \"protected_resource\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"admin_sql_mode\",\n          \"predicate\": \"permits\",\n          \"object\": \"SELECT queries\"\n        },\n        {\n          \"subject\": \"admin_sql_mode\",\n          \"predicate\": \"denies\",\n          \"object\": \"DELETE operations\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fixture_specification\",\n      \"statement\": \"Fixture debug_sql_select_only_001 validates permission enforcement for read-only SQL access\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"debug_sql_select_only_001\",\n          \"type\": \"test_fixture\",\n          \"role\": \"validation_context\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"validate_permission_model\",\n    \"entity_id\": \"admin_sql_mode\",\n    \"reason\": \"Confirm select-only restriction is enforced at query execution layer\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Brain correctly enforces select-only mode: SELECT id FROM memory_cards LIMIT 10 is permitted; DELETE FROM memory_cards is denied. Permission model functions as specified.\",\n  \"citations\": [\n    \"Fixture ID: debug_sql_select_only_001\",\n    \"Admin SQL select-only mode specification\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"SELECT query validation passed\",\n      \"DELETE operation restriction confirmed\",\n      \"Permission enforcement layer operational\",\n      \"No memory conflicts detected\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

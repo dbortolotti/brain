@@ -1,0 +1,59 @@
+{
+  "fixture_id": "idempotent_retry_same_message_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "The repeated message indicates a consistent preference statement, so it can be stored, but with low confidence due to ambiguous identity and context.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "No stable identifiers for Sam or the relevant Goldman person were provided; retain names/affiliation as given."
+    },
+    "intent": "Evaluate whether to commit a memory fact from repeated input",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference target",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam (from Goldman)"
+          }
+        ],
+        "statement": "Sam (from Goldman) mentioned that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Idempotent retry detected; consolidated into a single memory candidate.",
+        "Stored preference statement with low confidence due to ambiguous identity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for Sam's full name/identifier to reduce ambiguity before upgrading confidence.",
+      "Confirm whether the 'likes Bill Evans' is a lasting preference or a one-off comment."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

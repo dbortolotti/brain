@@ -1,0 +1,118 @@
+{
+  "error": null,
+  "fixture_id": "numeric_table_exactness_001__punctuation",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Stored two fixture entries preserving original notes; no supersession detected.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_and_reconcile_fixture",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "two distinct fixture runs with separate metrics; no conflicting identity"
+    },
+    "intent": "record_fixture_evaluation",
+    "memory_cards": [
+      {
+        "confidence": "0.92",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "identifier",
+            "type": "run_id"
+          },
+          {
+            "name": "012",
+            "role": "value",
+            "type": "reward"
+          },
+          {
+            "name": "045",
+            "role": "value",
+            "type": "sharpe"
+          },
+          {
+            "name": "baseline",
+            "role": "descriptor",
+            "type": "note"
+          }
+        ],
+        "kind": "fixture_entry",
+        "relationships": [
+          {
+            "object": "012",
+            "predicate": "has_reward",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "045",
+            "predicate": "has_sharpe",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "baseline",
+            "predicate": "category",
+            "subject": "PPO-001"
+          }
+        ],
+        "statement": "PPO-001: Reward 012, Sharpe 045, baseline"
+      },
+      {
+        "confidence": "0.92",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "identifier",
+            "type": "run_id"
+          },
+          {
+            "name": "018",
+            "role": "value",
+            "type": "reward"
+          },
+          {
+            "name": "051",
+            "role": "value",
+            "type": "sharpe"
+          },
+          {
+            "name": "entropy tuned",
+            "role": "descriptor",
+            "type": "note"
+          }
+        ],
+        "kind": "fixture_entry",
+        "relationships": [
+          {
+            "object": "018",
+            "predicate": "has_reward",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "051",
+            "predicate": "has_sharpe",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "entropy_tuned",
+            "predicate": "category",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "PPO-002: Reward 018, Sharpe 051, entropy tuned"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Fixture PPO-001 recorded as baseline with reward 012 and Sharpe 045.",
+        "Fixture PPO-002 recorded as entropy tuned with reward 018 and Sharpe 051."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"record_fixture_evaluation\",\n  \"decision\": \"store_and_reconcile_fixture\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fixture_entry\",\n      \"statement\": \"PPO-001: Reward 012, Sharpe 045, baseline\",\n      \"confidence\": \"0.92\",\n      \"entities\": [\n        {\"name\": \"PPO-001\", \"type\": \"run_id\", \"role\": \"identifier\"},\n        {\"name\": \"012\", \"type\": \"reward\", \"role\": \"value\"},\n        {\"name\": \"045\", \"type\": \"sharpe\", \"role\": \"value\"},\n        {\"name\": \"baseline\", \"type\": \"note\", \"role\": \"descriptor\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"PPO-001\", \"predicate\": \"has_reward\", \"object\": \"012\"},\n        {\"subject\": \"PPO-001\", \"predicate\": \"has_sharpe\", \"object\": \"045\"},\n        {\"subject\": \"PPO-001\", \"predicate\": \"category\", \"object\": \"baseline\"}\n      ]\n    },\n    {\n      \"kind\": \"fixture_entry\",\n      \"statement\": \"PPO-002: Reward 018, Sharpe 051, entropy tuned\",\n      \"confidence\": \"0.92\",\n      \"entities\": [\n        {\"name\": \"PPO-002\", \"type\": \"run_id\", \"role\": \"identifier\"},\n        {\"name\": \"018\", \"type\": \"reward\", \"role\": \"value\"},\n        {\"name\": \"051\", \"type\": \"sharpe\", \"role\": \"value\"},\n        {\"name\": \"entropy tuned\", \"type\": \"note\", \"role\": \"descriptor\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"PPO-002\", \"predicate\": \"has_reward\", \"object\": \"018\"},\n        {\"subject\": \"PPO-002\", \"predicate\": \"has_sharpe\", \"object\": \"051\"},\n        {\"subject\": \"PPO-002\", \"predicate\": \"category\", \"object\": \"entropy_tuned\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"two distinct fixture runs with separate metrics; no conflicting identity\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Stored two fixture entries preserving original notes; no supersession detected.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\"Fixture PPO-001 recorded as baseline with reward 012 and Sharpe 045.\",\n      \"Fixture PPO-002 recorded as entropy tuned with reward 018 and Sharpe 051.\"]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

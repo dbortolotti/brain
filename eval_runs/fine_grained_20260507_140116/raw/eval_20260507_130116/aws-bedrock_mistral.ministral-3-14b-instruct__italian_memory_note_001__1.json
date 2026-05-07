@@ -1,0 +1,60 @@
+{
+  "error": null,
+  "fixture_id": "italian_memory_note_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memorizzato: Sam di Goldman preferisce Bill Evans come pianista jazz.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "durable_memory_capture",
+    "entity_resolution": {
+      "action": "new_entity_creation",
+      "entity_id": null,
+      "reason": "No prior mention of 'Sam di Goldman' or 'Bill Evans' in this context; preference is unambiguous."
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam di Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred_entity",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam di Goldman"
+          },
+          {
+            "object": "jazz_pianism",
+            "predicate": "has_preference_in",
+            "subject": "Sam di Goldman"
+          }
+        ],
+        "statement": "Sam di Goldman prefers Bill Evans as a jazz pianist."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created with high confidence.",
+        "Entities resolved without conflict.",
+        "No prior conflicting preferences detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_ingestion\",\n  \"decision\": \"durable_memory_capture\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam di Goldman prefers Bill Evans as a jazz pianist.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam di Goldman\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"preferred_entity\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam di Goldman\",\n          \"predicate\": \"prefers\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam di Goldman\",\n          \"predicate\": \"has_preference_in\",\n          \"object\": \"jazz_pianism\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"new_entity_creation\",\n    \"entity_id\": null,\n    \"reason\": \"No prior mention of 'Sam di Goldman' or 'Bill Evans' in this context; preference is unambiguous.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Memorizzato: Sam di Goldman preferisce Bill Evans come pianista jazz.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card created with high confidence.\",\n      \"Entities resolved without conflict.\",\n      \"No prior conflicting preferences detected.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,101 @@
+{
+  "error": null,
+  "fixture_id": "small_table_preferences_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Durable memory cards extracted and committed for Sam (Goldman Sachs) and Anna (JPMorgan) preferences, with no conflicts detected.",
+    "citations": [
+      "Dinner 2026-05-05 (Sam's preference for Bill Evans)",
+      "Lunch 2026-05-01 (Anna's preference for Barolo)"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_durable_memory",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": null,
+      "reason": "No existing entities match the extracted data; new entities required for durable memory."
+    },
+    "intent": "extract_atomic_memory_cards",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "affiliation",
+            "type": "firm"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "has_preference_for",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman Sachs",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (Goldman Sachs) has a preference for jazz pianist Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Anna",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "JPMorgan",
+            "role": "affiliation",
+            "type": "firm"
+          },
+          {
+            "name": "Barolo",
+            "role": "preference_object",
+            "type": "wine"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Barolo",
+            "predicate": "has_preference_for",
+            "subject": "Anna"
+          },
+          {
+            "object": "JPMorgan",
+            "predicate": "affiliated_with",
+            "subject": "Anna"
+          }
+        ],
+        "statement": "Anna (JPMorgan) has a preference for Barolo wine."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory cards committed with high confidence.",
+        "No superseded/deleted facts detected in input."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"extract_atomic_memory_cards\",\n  \"decision\": \"commit_durable_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam (Goldman Sachs) has a preference for jazz pianist Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"firm\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"preference_object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has_preference_for\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"affiliated_with\",\n          \"object\": \"Goldman Sachs\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Anna (JPMorgan) has a preference for Barolo wine.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Anna\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"JPMorgan\",\n          \"type\": \"firm\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Barolo\",\n          \"type\": \"wine\",\n          \"role\": \"preference_object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Anna\",\n          \"predicate\": \"has_preference_for\",\n          \"object\": \"Barolo\"\n        },\n        {\n          \"subject\": \"Anna\",\n          \"predicate\": \"affiliated_with\",\n          \"object\": \"JPMorgan\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_new\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entities match the extracted data; new entities required for durable memory.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Durable memory cards extracted and committed for Sam (Goldman Sachs) and Anna (JPMorgan) preferences, with no conflicts detected.\",\n  \"citations\": [\n    \"Dinner 2026-05-05 (Sam's preference for Bill Evans)\",\n    \"Lunch 2026-05-01 (Anna's preference for Barolo)\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory cards committed with high confidence.\",\n      \"No superseded/deleted facts detected in input.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

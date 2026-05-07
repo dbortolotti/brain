@@ -1,0 +1,51 @@
+{
+  "fixture_id": "pdf_ocr_noisy_source_001__punctuation",
+  "model": "groq:llama-3.3-70b-versatile",
+  "payload": {
+    "answer": "partial answer due to noise",
+    "citations": [
+      "pdf_ocr_noisy_source_001"
+    ],
+    "conflict_classification": "data_quality_issue",
+    "decision": "partial_extraction",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "new entity introduction"
+    },
+    "intent": "extract_memory_cards",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source",
+            "type": "database"
+          }
+        ],
+        "kind": "statement",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "is",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB remains source of truth"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "noise in input text",
+        "partial extraction only"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "manual_transcription",
+      "ocr_postprocessing"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

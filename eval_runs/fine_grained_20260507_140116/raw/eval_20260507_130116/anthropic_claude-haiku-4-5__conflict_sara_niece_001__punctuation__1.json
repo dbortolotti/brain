@@ -1,0 +1,102 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "No conflict. The new assertion 'Sara is my niece' is consistent with existing memory. This implies the speaker is Sara's aunt/uncle (sibling of Daniele). All facts coexist without contradiction.",
+    "citations": [
+      "Existing: Sara is Daniele's daughter",
+      "Existing: Sara is Nur's twin",
+      "New: Sara is my niece"
+    ],
+    "conflict_classification": "apparent_conflict_resolved",
+    "decision": "Merge as consistent\u2014both statements are compatible",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "sara_001",
+      "reason": "All three statements are logically consistent: Sara can be Daniele's daughter, Nur's twin, and the speaker's niece simultaneously (speaker is Daniele's sibling)"
+    },
+    "intent": "Resolve kinship relationship conflict between existing high-confidence memory and new assertion",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_child_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Nur's twin"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "type": "person"
+          },
+          {
+            "name": "speaker",
+            "role": "narrator",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "speaker",
+            "predicate": "is_niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is the speaker's niece"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Kinship chain validated: speaker \u2192 sibling of Daniele \u2192 makes speaker aunt/uncle to Sara",
+        "No superseded facts",
+        "All three memory cards retained at high confidence"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Resolve kinship relationship conflict between existing high-confidence memory and new assertion\",\n  \"decision\": \"Merge as consistent\u2014both statements are compatible\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is Daniele's daughter\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Sara\", \"type\": \"person\"},\n        {\"name\": \"Daniele\", \"type\": \"person\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sara\", \"predicate\": \"is_child_of\", \"object\": \"Daniele\"}\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is Nur's twin\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Sara\", \"type\": \"person\"},\n        {\"name\": \"Nur\", \"type\": \"person\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sara\", \"predicate\": \"is_twin_of\", \"object\": \"Nur\"}\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is the speaker's niece\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Sara\", \"type\": \"person\"},\n        {\"name\": \"speaker\", \"type\": \"person\", \"role\": \"narrator\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sara\", \"predicate\": \"is_niece_of\", \"object\": \"speaker\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge\",\n    \"entity_id\": \"sara_001\",\n    \"reason\": \"All three statements are logically consistent: Sara can be Daniele's daughter, Nur's twin, and the speaker's niece simultaneously (speaker is Daniele's sibling)\"\n  },\n  \"conflict_classification\": \"apparent_conflict_resolved\",\n  \"answer\": \"No conflict. The new assertion 'Sara is my niece' is consistent with existing memory. This implies the speaker is Sara's aunt/uncle (sibling of Daniele). All facts coexist without contradiction.\",\n  \"citations\": [\n    \"Existing: Sara is Daniele's daughter\",\n    \"Existing: Sara is Nur's twin\",\n    \"New: Sara is my niece\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Kinship chain validated: speaker \u2192 sibling of Daniele \u2192 makes speaker aunt/uncle to Sara\",\n      \"No superseded facts\",\n      \"All three memory cards retained at high confidence\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

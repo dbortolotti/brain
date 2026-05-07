@@ -1,0 +1,58 @@
+{
+  "error": null,
+  "fixture_id": "entity_alias_sam_goldman__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "New preference fact successfully attributed to Sam G (Sam from Goldman). No conflicts detected with existing aliases.",
+    "citations": [
+      "Existing entity aliases: Sam G, Goldman Sam",
+      "New statement: Sam G likes Bill Evans"
+    ],
+    "conflict_classification": "none",
+    "decision": "Accept and merge with existing entity",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "entity_alias_sam_goldman__context",
+      "reason": "Sam G is confirmed alias of existing entity Sam from Goldman"
+    },
+    "intent": "Link new preference fact to existing entity via alias resolution",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam G",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam G"
+          }
+        ],
+        "statement": "Sam G likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Entity Sam G resolved to entity_alias_sam_goldman__context",
+        "Preference relationship created: Sam G \u2192 likes \u2192 Bill Evans",
+        "No superseded facts detected"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Link new preference fact to existing entity via alias resolution\",\n  \"decision\": \"Accept and merge with existing entity\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam G likes Bill Evans\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam G\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam G\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge\",\n    \"entity_id\": \"entity_alias_sam_goldman__context\",\n    \"reason\": \"Sam G is confirmed alias of existing entity Sam from Goldman\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"New preference fact successfully attributed to Sam G (Sam from Goldman). No conflicts detected with existing aliases.\",\n  \"citations\": [\n    \"Existing entity aliases: Sam G, Goldman Sam\",\n    \"New statement: Sam G likes Bill Evans\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Entity Sam G resolved to entity_alias_sam_goldman__context\",\n      \"Preference relationship created: Sam G \u2192 likes \u2192 Bill Evans\",\n      \"No superseded facts detected\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

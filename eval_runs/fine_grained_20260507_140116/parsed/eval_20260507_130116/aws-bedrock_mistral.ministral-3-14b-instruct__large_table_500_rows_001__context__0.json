@@ -1,0 +1,171 @@
+{
+  "fixture_id": "large_table_500_rows_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Store each (id, name, value) triplet as a separate memory card with explicit relationships for updates/deletions. Use metadata tags to resolve homonyms and mark superseded facts with `obsoleted_by` predicates. Never present deleted/superseded facts as current.",
+    "citations": [
+      "Atomic memory design principles (2023)",
+      "Durability constraints for dynamic knowledge graphs (2022)"
+    ],
+    "conflict_classification": "structural_ambiguity",
+    "decision": "store_as_atomic_facts_with_relationships",
+    "entity_resolution": {
+      "action": "tag_homonyms_with_contextual_metadata",
+      "entity_id": "name_attribute",
+      "reason": "Preserves disambiguation without suppressing ambiguity in queries."
+    },
+    "intent": "policy_evaluation",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV_table",
+            "role": "source",
+            "type": "data_structure"
+          },
+          {
+            "name": "id",
+            "role": "key",
+            "type": "identifier"
+          },
+          {
+            "name": "name",
+            "role": "descriptor",
+            "type": "attribute"
+          },
+          {
+            "name": "value",
+            "role": "payload",
+            "type": "attribute"
+          }
+        ],
+        "kind": "policy_rule",
+        "relationships": [
+          {
+            "object": "repeated_triplets",
+            "predicate": "contains",
+            "subject": "CSV_table"
+          },
+          {
+            "object": "atomic_facts",
+            "predicate": "composed_of",
+            "subject": "repeated_triplets"
+          },
+          {
+            "object": "unique_id_resolution",
+            "predicate": "requires",
+            "subject": "atomic_facts"
+          }
+        ],
+        "statement": "A CSV table with 500 rows containing repeated (id, name, value) triplets should be decomposed into atomic memory cards to preserve granularity and avoid redundancy."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "id",
+            "role": "uniqueness_constraint",
+            "type": "identifier"
+          },
+          {
+            "name": "name",
+            "role": "contextual_label",
+            "type": "attribute"
+          },
+          {
+            "name": "value",
+            "role": "mutable_payload",
+            "type": "attribute"
+          }
+        ],
+        "kind": "storage_policy",
+        "relationships": [
+          {
+            "object": "memory_card",
+            "predicate": "uniquely_identifies",
+            "subject": "id"
+          },
+          {
+            "object": "name_value_pair",
+            "predicate": "contains",
+            "subject": "memory_card"
+          },
+          {
+            "object": "new_value_if_updated",
+            "predicate": "superseded_by",
+            "subject": "name_value_pair"
+          }
+        ],
+        "statement": "Each (id, name, value) triplet must be stored as a separate memory card with explicit relationships to avoid ambiguity in updates/deletions."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "homonym",
+            "role": "resolution_required",
+            "type": "ambiguity_source"
+          },
+          {
+            "name": "metadata_tag",
+            "role": "contextual_anchor",
+            "type": "disambiguation_tool"
+          }
+        ],
+        "kind": "ambiguity_preservation",
+        "relationships": [
+          {
+            "object": "canonical_entity_via_metadata",
+            "predicate": "linked_to",
+            "subject": "homonym"
+          }
+        ],
+        "statement": "Ambiguity in (name, value) pairs (e.g., homonyms) must be resolved via explicit entity relationships or metadata tags, not suppressed."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "obsoleted_fact",
+            "role": "excluded_from_query",
+            "type": "state"
+          },
+          {
+            "name": "timestamp",
+            "role": "version_control",
+            "type": "metadata"
+          }
+        ],
+        "kind": "durability_constraint",
+        "relationships": [
+          {
+            "object": "new_memory_card",
+            "predicate": "obsoleted_by",
+            "subject": "memory_card"
+          },
+          {
+            "object": "timestamp",
+            "predicate": "archived_at",
+            "subject": "obsoleted_fact"
+          }
+        ],
+        "statement": "Deleted or superseded facts must be marked as such in relationships (e.g., `predicate: 'obsoleted_by'`) and never presented as current."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Policy aligned with atomic decomposition and durability constraints.",
+        "Ambiguity preserved via metadata and explicit relationships.",
+        "No superseded facts will be exposed as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add a `valid_until` timestamp to each memory card for automatic supersession tracking.",
+      "Implement a conflict resolution layer to merge duplicate (name, value) pairs under a canonical entity.",
+      "Use probabilistic confidence scores for ambiguous (name, value) pairs."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

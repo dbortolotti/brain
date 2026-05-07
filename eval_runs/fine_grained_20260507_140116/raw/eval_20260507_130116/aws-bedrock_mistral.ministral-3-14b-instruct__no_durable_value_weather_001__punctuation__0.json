@@ -1,0 +1,32 @@
+{
+  "error": null,
+  "fixture_id": "no_durable_value_weather_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "No durable memory committed. Weather reports require explicit temporal/geospatial anchoring for retention.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "no_durable_value",
+    "entity_resolution": {
+      "action": "reject",
+      "reason": "Ambiguous temporal reference ('Today') lacks specificity for durable memory. Punctuation ('s) does not alter the lack of verifiable context (e.g., date, location, or source)."
+    },
+    "intent": "weather_report",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Input lacks durable memory criteria: no verifiable timestamp, location, or source.",
+        "Punctuation ('s) does not resolve ambiguity."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Specify date (e.g., 'Today, June 5, 2024')",
+      "Include location (e.g., 'Today in New York')",
+      "Add source (e.g., 'According to the National Weather Service')"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"weather_report\",\n  \"decision\": \"no_durable_value\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"reject\",\n    \"reason\": \"Ambiguous temporal reference ('Today') lacks specificity for durable memory. Punctuation ('s) does not alter the lack of verifiable context (e.g., date, location, or source).\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"No durable memory committed. Weather reports require explicit temporal/geospatial anchoring for retention.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Specify date (e.g., 'Today, June 5, 2024')\",\n    \"Include location (e.g., 'Today in New York')\",\n    \"Add source (e.g., 'According to the National Weather Service')\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Input lacks durable memory criteria: no verifiable timestamp, location, or source.\",\n      \"Punctuation ('s) does not resolve ambiguity.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

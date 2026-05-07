@@ -1,0 +1,135 @@
+{
+  "fixture_id": "conversation_transcript_sam_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Extracted employment update for Sam (Goldman -> Point72), a recent music listening emphasis (Bill Evans; more early Coltrane lately), and a task agreement to send an AI infrastructure article.",
+    "citations": [],
+    "conflict_classification": "no_conflict_detected",
+    "decision": "commit_selected",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No persistent entity IDs provided in the transcript."
+    },
+    "intent": "personal_memory_extraction",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_status",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman last month and joined Point72."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "artist",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "preference",
+            "type": "music_subgenre"
+          }
+        ],
+        "kind": "music_preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "has_been_listening_to",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "has_been_listening_more_to",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is listening to Bill Evans, and lately has been listening more to early Coltrane."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "responder",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "initiator",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "subject",
+            "type": "topic"
+          },
+          {
+            "name": "the article",
+            "role": "requested_item",
+            "type": "document"
+          }
+        ],
+        "kind": "task_request",
+        "relationships": [
+          {
+            "object": "AI infrastructure",
+            "predicate": "asked_about",
+            "subject": "Daniele"
+          },
+          {
+            "object": "the article",
+            "predicate": "agreed_to_send",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam agreed to send an article related to AI infrastructure."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Employment status updated from explicit statement.",
+        "Music preference captured from explicit statement with recent emphasis.",
+        "Task agreement captured as a likely follow-up request."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

@@ -1,0 +1,82 @@
+{
+  "error": null,
+  "fixture_id": "contradiction_sam_children_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "There is a direct contradiction about Sam (from Goldman): one source says he has two children, while the new input says he has no children. Do not update durable memory to either state without additional verification; mark as conflicting and request clarification on which claim is correct (and whether 'Sam from Goldman' uniquely identifies the same individual).",
+    "citations": [],
+    "conflict_classification": "Direct contradiction (same subject, same attribute with mutually exclusive values: has two children vs has no children)",
+    "decision": "flag_contradiction_do_not_commit_update",
+    "entity_resolution": {
+      "action": "assume_same_entity_missing_verification",
+      "entity_id": null,
+      "reason": "Both statements refer to 'Sam from Goldman' but no unique identifier is provided to confirm they describe the exact same person record."
+    },
+    "intent": "conflict_explainer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          }
+        ],
+        "kind": "existing_memory",
+        "relationships": [
+          {
+            "object": "two",
+            "predicate": "has number of children",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman has two children."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          }
+        ],
+        "kind": "new_input",
+        "relationships": [
+          {
+            "object": "zero",
+            "predicate": "has number of children",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman has no children."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict detected between existing memory ('two children') and new input ('no children').",
+        "No durable memory update committed due to mutually exclusive claims."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask the user for clarification: which number of children is correct for this specific Sam?",
+      "Request disambiguation if there are multiple 'Sam' individuals associated with Goldman.",
+      "Store both claims as conflicting candidates with provenance/recency (non-durable or explicitly marked conflicting) until resolved."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"conflict_explainer\",\n  \"decision\": \"flag_contradiction_do_not_commit_update\",\n  \"conflict_classification\": \"Direct contradiction (same subject, same attribute with mutually exclusive values: has two children vs has no children)\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"existing_memory\",\n      \"statement\": \"Sam from Goldman has two children.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has number of children\",\n          \"object\": \"two\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"new_input\",\n      \"statement\": \"Sam from Goldman has no children.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has number of children\",\n          \"object\": \"zero\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"assume_same_entity_missing_verification\",\n    \"entity_id\": null,\n    \"reason\": \"Both statements refer to 'Sam from Goldman' but no unique identifier is provided to confirm they describe the exact same person record.\"\n  },\n  \"answer\": \"There is a direct contradiction about Sam (from Goldman): one source says he has two children, while the new input says he has no children. Do not update durable memory to either state without additional verification; mark as conflicting and request clarification on which claim is correct (and whether 'Sam from Goldman' uniquely identifies the same individual).\",\n  \"repair_options\": [\n    \"Ask the user for clarification: which number of children is correct for this specific Sam?\",\n    \"Request disambiguation if there are multiple 'Sam' individuals associated with Goldman.\",\n    \"Store both claims as conflicting candidates with provenance/recency (non-durable or explicitly marked conflicting) until resolved.\"\n  ],\n  \"citations\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Conflict detected between existing memory ('two children') and new input ('no children').\",\n      \"No durable memory update committed due to mutually exclusive claims.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,70 @@
+{
+  "error": null,
+  "fixture_id": "typos_shorthand_person_interaction_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Stored tentatively with ambiguity preserved.",
+    "citations": [
+      "Input: \"For context, sam frm goldmn likes bill evns apparently\""
+    ],
+    "conflict_classification": "none",
+    "decision": "store_tentatively",
+    "entity_resolution": {
+      "action": "preserve_ambiguity",
+      "entity_id": null,
+      "reason": "The input is shorthand and may contain typos; 'frm' and 'goldmn' are not resolved with high confidence, so the memory should remain tentative."
+    },
+    "intent": "Extract a tentative personal preference statement from a shorthand/possibly typo-filled note.",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "liker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_or_source",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_person",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "It is tentatively noted that Sam, possibly from Goldman, likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "One tentative memory card created.",
+        "Ambiguous entities preserved without hard resolution."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm whether 'sam frm goldmn' refers to 'Sam from Goldman' or another person.",
+      "Confirm whether 'bill evns' refers to 'Bill Evans'.",
+      "Clarify whether this is a real preference or hearsay."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Extract a tentative personal preference statement from a shorthand/possibly typo-filled note.\",\"decision\":\"store_tentatively\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"It is tentatively noted that Sam, possibly from Goldman, likes Bill Evans.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"liker\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation_or_source\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked_person\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"},{\"subject\":\"Sam\",\"predicate\":\"associated_with\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"preserve_ambiguity\",\"entity_id\":null,\"reason\":\"The input is shorthand and may contain typos; 'frm' and 'goldmn' are not resolved with high confidence, so the memory should remain tentative.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored tentatively with ambiguity preserved.\",\"citations\":[\"Input: \\\"For context, sam frm goldmn likes bill evns apparently\\\"\"],\"repair_options\":[\"Confirm whether 'sam frm goldmn' refers to 'Sam from Goldman' or another person.\",\"Confirm whether 'bill evns' refers to 'Bill Evans'.\",\"Clarify whether this is a real preference or hearsay.\"],\"receipt\":{\"success\":true,\"details\":[\"One tentative memory card created.\",\"Ambiguous entities preserved without hard resolution.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

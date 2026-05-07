@@ -1,0 +1,78 @@
+{
+  "error": null,
+  "fixture_id": "email_source_meeting_followup_001__punctuation",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Acknowledged. I will send the AI infra article to sam@examplecom and note the Point72 join statement as context.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_email_followup_with_sender_and_action_to_send_article",
+    "entity_resolution": {
+      "action": "record_sender_and_request",
+      "entity_id": "sam@examplecom",
+      "reason": "identify origin and intent to follow up and fulfill article request"
+    },
+    "intent": "update_memory_and_prepare_response",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "sam@examplecom",
+            "role": "sender",
+            "type": "email_address"
+          },
+          {
+            "name": "Follow up",
+            "role": "email_subject",
+            "type": "subject"
+          },
+          {
+            "name": "Yes, I joined Point72 last month",
+            "role": "content",
+            "type": "note"
+          },
+          {
+            "name": "AI infra article",
+            "role": "request",
+            "type": "topic"
+          }
+        ],
+        "kind": "email",
+        "relationships": [
+          {
+            "object": "email_followup_request",
+            "predicate": "sent",
+            "subject": "sam@examplecom"
+          },
+          {
+            "object": "Point72_join_status",
+            "predicate": "mentions",
+            "subject": "email_followup_request"
+          },
+          {
+            "object": "AI_infra_article",
+            "predicate": "requests",
+            "subject": "email_followup_request"
+          }
+        ],
+        "statement": "From - sam@examplecom Subject - Follow up Great seeing you Yes, I joined Point72 last month Please send the AI infra article"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Email parsed: sender sam@examplecom, subject Follow up, content includes Point72 join note and article request",
+        "Action: prepare to send AI infra article"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Verify article availability and send to sam@examplecom",
+      "If article unavailable, propose alternative AI infrastructure article",
+      "Log follow-up note and confirm delivery"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"update_memory_and_prepare_response\",\n  \"decision\": \"store_email_followup_with_sender_and_action_to_send_article\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"email\",\n      \"statement\": \"From - sam@examplecom Subject - Follow up Great seeing you Yes, I joined Point72 last month Please send the AI infra article\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"sam@examplecom\",\n          \"type\": \"email_address\",\n          \"role\": \"sender\"\n        },\n        {\n          \"name\": \"Follow up\",\n          \"type\": \"subject\",\n          \"role\": \"email_subject\"\n        },\n        {\n          \"name\": \"Yes, I joined Point72 last month\",\n          \"type\": \"note\",\n          \"role\": \"content\"\n        },\n        {\n          \"name\": \"AI infra article\",\n          \"type\": \"topic\",\n          \"role\": \"request\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"sam@examplecom\",\n          \"predicate\": \"sent\",\n          \"object\": \"email_followup_request\"\n        },\n        {\n          \"subject\": \"email_followup_request\",\n          \"predicate\": \"mentions\",\n          \"object\": \"Point72_join_status\"\n        },\n        {\n          \"subject\": \"email_followup_request\",\n          \"predicate\": \"requests\",\n          \"object\": \"AI_infra_article\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"record_sender_and_request\",\n    \"entity_id\": \"sam@examplecom\",\n    \"reason\": \"identify origin and intent to follow up and fulfill article request\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Acknowledged. I will send the AI infra article to sam@examplecom and note the Point72 join statement as context.\",\n  \"citations\": [],\n \"repair_options\": [\n    \"Verify article availability and send to sam@examplecom\",\n    \"If article unavailable, propose alternative AI infrastructure article\",\n    \"Log follow-up note and confirm delivery\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Email parsed: sender sam@examplecom, subject Follow up, content includes Point72 join note and article request\",\n      \"Action: prepare to send AI infra article\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

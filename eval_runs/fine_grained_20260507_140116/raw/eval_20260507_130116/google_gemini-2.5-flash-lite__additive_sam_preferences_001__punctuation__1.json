@@ -1,0 +1,78 @@
+{
+  "error": null,
+  "fixture_id": "additive_sam_preferences_001__punctuation",
+  "model": "google:gemini-2.5-flash-lite",
+  "payload": {
+    "answer": "I have updated my memory to include that Sam from Goldman likes Bill Evans and Sonny Rollins.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "add_new_fact",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": null,
+      "reason": "New entities identified: Sam from Goldman, Bill Evans, Sonny Rollins."
+    },
+    "intent": "update_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "liker",
+            "type": "PERSON"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked",
+            "type": "MUSICIAN"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "liker",
+            "type": "PERSON"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "liked",
+            "type": "MUSICIAN"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Sonny Rollins",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman also likes Sonny Rollins"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Added fact: Sam from Goldman likes Bill Evans",
+        "Added fact: Sam from Goldman likes Sonny Rollins"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"update_memory\",\n  \"decision\": \"add_new_fact\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam from Goldman likes Bill Evans\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam from Goldman\",\n          \"type\": \"PERSON\",\n          \"role\": \"liker\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"MUSICIAN\",\n          \"role\": \"liked\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam from Goldman\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam from Goldman also likes Sonny Rollins\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam from Goldman\",\n          \"type\": \"PERSON\",\n          \"role\": \"liker\"\n        },\n        {\n          \"name\": \"Sonny Rollins\",\n          \"type\": \"MUSICIAN\",\n          \"role\": \"liked\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam from Goldman\",\n          \"predicate\": \"likes\",\n          \"object\": \"Sonny Rollins\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolve\",\n    \"entity_id\": null,\n    \"reason\": \"New entities identified: Sam from Goldman, Bill Evans, Sonny Rollins.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"I have updated my memory to include that Sam from Goldman likes Bill Evans and Sonny Rollins.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Added fact: Sam from Goldman likes Bill Evans\",\n      \"Added fact: Sam from Goldman likes Sonny Rollins\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,34 @@
+{
+  "fixture_id": "debug_sql_select_only_001__context",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Context noted: in Admin SQL select-only mode, SELECT queries such as `SELECT id FROM memory_cards LIMIT 10` are allowed, while DELETE queries such as `DELETE FROM memory_cards` are denied. Not committed as durable memory.",
+    "citations": [
+      "Admin SQL select-only mode",
+      "SELECT id FROM memory_cards LIMIT 10 allowed",
+      "DELETE FROM memory_cards denied"
+    ],
+    "conflict_classification": "none",
+    "decision": "do_not_commit",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input appears to be ephemeral debugging/test context about current SQL mode and example permissions, not durable user-specific memory."
+    },
+    "intent": "capture_context_about_admin_sql_permissions",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Parsed the input as contextual policy information.",
+        "Chose not to create memory cards because the information is operational/test context rather than durable personal memory.",
+        "Answer reflects allowed SELECT example and denied DELETE example without extending beyond the provided text."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If this SQL access policy is intended to be durable system configuration, restate it as a persistent rule to store.",
+      "If this was only session-specific context, keep it uncommitted as done here."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

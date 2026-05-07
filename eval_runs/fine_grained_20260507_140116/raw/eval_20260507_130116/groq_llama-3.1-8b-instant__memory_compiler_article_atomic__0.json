@@ -1,0 +1,139 @@
+{
+  "error": null,
+  "fixture_id": "memory_compiler_article_atomic",
+  "model": "groq:llama-3.1-8b-instant",
+  "payload": {
+    "answer": "AI memory systems require durable source evidence, atomic memory cards should be small and traceable, and the application database must own lifecycle and conflict state.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "atomic_memory_cards",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "no entity resolution required"
+    },
+    "intent": "memory_system_requirements",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "AI",
+            "role": "subject",
+            "type": "system"
+          },
+          {
+            "name": "memory systems",
+            "role": "object",
+            "type": "concept"
+          },
+          {
+            "name": "durable source evidence",
+            "role": "predicate",
+            "type": "requirement"
+          }
+        ],
+        "kind": "atomic",
+        "relationships": [
+          {
+            "object": "durable source evidence",
+            "predicate": "requires",
+            "subject": "AI"
+          }
+        ],
+        "statement": "AI memory systems need durable source evidence."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "atomic memory cards",
+            "role": "subject",
+            "type": "concept"
+          },
+          {
+            "name": "small",
+            "role": "predicate",
+            "type": "attribute"
+          },
+          {
+            "name": "traceable",
+            "role": "predicate",
+            "type": "attribute"
+          }
+        ],
+        "kind": "atomic",
+        "relationships": [
+          {
+            "object": "small",
+            "predicate": "should be",
+            "subject": "atomic memory cards"
+          },
+          {
+            "object": "traceable",
+            "predicate": "should be",
+            "subject": "atomic memory cards"
+          }
+        ],
+        "statement": "Atomic memory cards should be small and traceable."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "semantic index",
+            "role": "subject",
+            "type": "concept"
+          },
+          {
+            "name": "improve recall",
+            "role": "predicate",
+            "type": "predicate"
+          },
+          {
+            "name": "application database",
+            "role": "object",
+            "type": "system"
+          },
+          {
+            "name": "lifecycle",
+            "role": "predicate",
+            "type": "attribute"
+          },
+          {
+            "name": "conflict state",
+            "role": "predicate",
+            "type": "attribute"
+          }
+        ],
+        "kind": "atomic",
+        "relationships": [
+          {
+            "object": "recall",
+            "predicate": "can improve",
+            "subject": "semantic index"
+          },
+          {
+            "object": "lifecycle",
+            "predicate": "must own",
+            "subject": "application database"
+          },
+          {
+            "object": "conflict state",
+            "predicate": "must own",
+            "subject": "application database"
+          }
+        ],
+        "statement": "A semantic index can improve recall, but the application database must own lifecycle and conflict state."
+      }
+    ],
+    "receipt": {
+      "details": [],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"memory_system_requirements\",\n   \"decision\": \"atomic_memory_cards\",\n   \"memory_cards\": [\n      {\n         \"kind\": \"atomic\",\n         \"statement\": \"AI memory systems need durable source evidence.\",\n         \"confidence\": \"high\",\n         \"entities\": [\n            {\n               \"name\": \"AI\",\n               \"type\": \"system\",\n               \"role\": \"subject\"\n            },\n            {\n               \"name\": \"memory systems\",\n               \"type\": \"concept\",\n               \"role\": \"object\"\n            },\n            {\n               \"name\": \"durable source evidence\",\n               \"type\": \"requirement\",\n               \"role\": \"predicate\"\n            }\n         ],\n         \"relationships\": [\n            {\n               \"subject\": \"AI\",\n               \"predicate\": \"requires\",\n               \"object\": \"durable source evidence\"\n            }\n         ]\n      },\n      {\n         \"kind\": \"atomic\",\n         \"statement\": \"Atomic memory cards should be small and traceable.\",\n         \"confidence\": \"medium\",\n         \"entities\": [\n            {\n               \"name\": \"atomic memory cards\",\n               \"type\": \"concept\",\n               \"role\": \"subject\"\n            },\n            {\n               \"name\": \"small\",\n               \"type\": \"attribute\",\n               \"role\": \"predicate\"\n            },\n            {\n               \"name\": \"traceable\",\n               \"type\": \"attribute\",\n               \"role\": \"predicate\"\n            }\n         ],\n         \"relationships\": [\n            {\n               \"subject\": \"atomic memory cards\",\n               \"predicate\": \"should be\",\n               \"object\": \"small\"\n            },\n            {\n               \"subject\": \"atomic memory cards\",\n               \"predicate\": \"should be\",\n               \"object\": \"traceable\"\n            }\n         ]\n      },\n      {\n         \"kind\": \"atomic\",\n         \"statement\": \"A semantic index can improve recall, but the application database must own lifecycle and conflict state.\",\n         \"confidence\": \"low\",\n         \"entities\": [\n            {\n               \"name\": \"semantic index\",\n               \"type\": \"concept\",\n               \"role\": \"subject\"\n            },\n            {\n               \"name\": \"improve recall\",\n               \"type\": \"predicate\",\n               \"role\": \"predicate\"\n            },\n            {\n               \"name\": \"application database\",\n               \"type\": \"system\",\n               \"role\": \"object\"\n            },\n            {\n               \"name\": \"lifecycle\",\n               \"type\": \"attribute\",\n               \"role\": \"predicate\"\n            },\n            {\n               \"name\": \"conflict state\",\n               \"type\": \"attribute\",\n               \"role\": \"predicate\"\n            }\n         ],\n         \"relationships\": [\n            {\n               \"subject\": \"semantic index\",\n               \"predicate\": \"can improve\",\n               \"object\": \"recall\"\n            },\n            {\n               \"subject\": \"application database\",\n               \"predicate\": \"must own\",\n               \"object\": \"lifecycle\"\n            },\n            {\n               \"subject\": \"application database\",\n               \"predicate\": \"must own\",\n               \"object\": \"conflict state\"\n            }\n         ]\n      }\n   ],\n   \"entity_resolution\": {\n      \"action\": \"none\",\n      \"entity_id\": null,\n      \"reason\": \"no entity resolution required\"\n   },\n   \"conflict_classification\": \"none\",\n   \"answer\": \"AI memory systems require durable source evidence, atomic memory cards should be small and traceable, and the application database must own lifecycle and conflict state.\",\n   \"citations\": [],\n   \"repair_options\": [],\n   \"receipt\": {\n      \"success\": true,\n      \"details\": []\n   }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

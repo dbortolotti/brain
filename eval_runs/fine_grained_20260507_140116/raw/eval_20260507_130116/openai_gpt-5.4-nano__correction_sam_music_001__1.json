@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "correction_sam_music_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Update the memory to reflect the correction: Sam from Goldman likes early Coltrane, and the earlier claim that Sam likes Bill Evans should not be treated as current.",
+    "citations": [],
+    "conflict_classification": "direct contradiction (same subject, same preference context, different target artist)",
+    "decision": "update",
+    "entity_resolution": {
+      "action": "confirm_subject_variant",
+      "entity_id": null,
+      "reason": "The subject is specified as 'Sam from Goldman'; the correction changes the preferred artist rather than the person identity."
+    },
+    "intent": "Explain and resolve a conflict in personal taste memory for Sam (Goldman).",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "group/context",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "preference_target",
+            "type": "music_artist_or_era"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam (Goldman)"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane (not Bill Evans)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed only the corrected preference as the current fact.",
+        "Did not retain the superseded 'likes Bill Evans' statement as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace the existing preference card so the current preference is 'early Coltrane' for Sam from Goldman.",
+      "If there is uncertainty about the earlier claim, add a note that preferences were revised and the current best-known preference is early Coltrane."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Explain and resolve a conflict in personal taste memory for Sam (Goldman).\",\n  \"decision\": \"update\",\n  \"conflict_classification\": \"direct contradiction (same subject, same preference context, different target artist)\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam from Goldman likes early Coltrane (not Bill Evans).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"group/context\"\n        },\n        {\n          \"name\": \"early Coltrane\",\n          \"type\": \"music_artist_or_era\",\n          \"role\": \"preference_target\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam (Goldman)\",\n          \"predicate\": \"likes\",\n          \"object\": \"early Coltrane\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"confirm_subject_variant\",\n    \"entity_id\": null,\n    \"reason\": \"The subject is specified as 'Sam from Goldman'; the correction changes the preferred artist rather than the person identity.\"\n  },\n  \"answer\": \"Update the memory to reflect the correction: Sam from Goldman likes early Coltrane, and the earlier claim that Sam likes Bill Evans should not be treated as current.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Replace the existing preference card so the current preference is 'early Coltrane' for Sam from Goldman.\",\n    \"If there is uncertainty about the earlier claim, add a note that preferences were revised and the current best-known preference is early Coltrane.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Committed only the corrected preference as the current fact.\",\n      \"Did not retain the superseded 'likes Bill Evans' statement as current.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

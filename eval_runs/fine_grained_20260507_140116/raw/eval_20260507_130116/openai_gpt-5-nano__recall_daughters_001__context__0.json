@@ -1,0 +1,83 @@
+{
+  "error": null,
+  "fixture_id": "recall_daughters_001__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Your daughters are Nur and Sara.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "provide_daughters",
+    "entity_resolution": {
+      "action": "confirm_entities",
+      "entity_id": null,
+      "reason": "Daughters identified from provided context; no conflicting or ambiguous entities present."
+    },
+    "intent": "recall",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_child_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Daniele",
+            "predicate": "is_child_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Sara",
+            "predicate": "sibling_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Nur",
+            "predicate": "sibling_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Sara",
+            "predicate": "twin_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Nur",
+            "predicate": "twin_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Nur and Sara are Daniele's twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Answer generated from known context: Nur and Sara are Daniele's twin daughters."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"recall\",\n  \"decision\": \"provide_daughters\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Nur and Sara are Daniele's twin daughters.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Nur\", \"type\": \"person\", \"role\": \"daughter\"},\n        {\"name\": \"Sara\", \"type\": \"person\", \"role\": \"daughter\"},\n        {\"name\": \"Daniele\", \"type\": \"person\", \"role\": \"parent\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Nur\", \"predicate\": \"is_child_of\", \"object\": \"Daniele\"},\n        {\"subject\": \"Sara\", \"predicate\": \"is_child_of\", \"object\": \"Daniele\"},\n        {\"subject\": \"Nur\", \"predicate\": \"sibling_of\", \"object\": \"Sara\"},\n        {\"subject\": \"Sara\", \"predicate\": \"sibling_of\", \"object\": \"Nur\"},\n        {\"subject\": \"Nur\", \"predicate\": \"twin_of\", \"object\": \"Sara\"},\n        {\"subject\": \"Sara\", \"predicate\": \"twin_of\", \"object\": \"Nur\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"confirm_entities\",\n    \"entity_id\": null,\n    \"reason\": \"Daughters identified from provided context; no conflicting or ambiguous entities present.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Your daughters are Nur and Sara.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\"Answer generated from known context: Nur and Sara are Daniele's twin daughters.\"]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

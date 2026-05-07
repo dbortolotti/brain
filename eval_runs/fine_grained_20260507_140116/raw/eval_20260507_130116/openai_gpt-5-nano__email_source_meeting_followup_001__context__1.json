@@ -1,0 +1,83 @@
+{
+  "error": null,
+  "fixture_id": "email_source_meeting_followup_001__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Acknowledged. I will note that Sam joined Point72 last month and that they requested the AI infra article. Please confirm if you want me to draft or fetch that article.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "preserve_ambiguous_and_noncurrent_memory",
+    "entity_resolution": {
+      "action": "no_action",
+      "entity_id": null,
+      "reason": "No durable entity state to update beyond acknowledging the email content"
+    },
+    "intent": "email_followup",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "sam@example.com",
+            "role": "sender",
+            "type": "email_address"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          },
+          {
+            "name": "AI infra article",
+            "role": "requested_resource",
+            "type": "topic"
+          },
+          {
+            "name": "Follow up",
+            "role": "topic",
+            "type": "subject"
+          }
+        ],
+        "kind": "email",
+        "relationships": [
+          {
+            "object": "email",
+            "predicate": "sent",
+            "subject": "sam@example.com"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "sam@example.com"
+          },
+          {
+            "object": "AI infra article",
+            "predicate": "requested",
+            "subject": "sam@example.com"
+          }
+        ],
+        "required": [
+          "kind",
+          "statement"
+        ],
+        "statement": "From sam@example.com: Subject: Follow up. Great seeing you. Yes, I joined Point72 last month. Please send the AI infra article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Processed incoming email context",
+        "Extracted entities: sam@example.com, Point72, AI infra article",
+        "Marked action as follow-up request"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Store the email as a memory card with the note that the sender joined Point72 last month and the request for the AI infra article remains open.",
+      "If the AI infra article is found, attach it to a follow-up memory card with a timestamp.",
+      "Create a reminder to send the AI infra article to sam@example.com."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"email_followup\",\n  \"decision\": \"preserve_ambiguous_and_noncurrent_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"email\",\n      \"statement\": \"From sam@example.com: Subject: Follow up. Great seeing you. Yes, I joined Point72 last month. Please send the AI infra article.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"sam@example.com\", \"type\": \"email_address\", \"role\": \"sender\"},\n        {\"name\": \"Point72\", \"type\": \"organization\", \"role\": \"employer\"},\n        {\"name\": \"AI infra article\", \"type\": \"topic\", \"role\": \"requested_resource\"},\n        {\"name\": \"Follow up\", \"type\": \"subject\", \"role\": \"topic\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"sam@example.com\", \"predicate\": \"sent\", \"object\": \"email\"},\n        {\"subject\": \"sam@example.com\", \"predicate\": \"joined\", \"object\": \"Point72\"},\n        {\"subject\": \"sam@example.com\", \"predicate\": \"requested\", \"object\": \"AI infra article\"}\n      ]\n      ,\n      \"required\": [\"kind\",\"statement\"]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_action\",\n    \"entity_id\": null,\n    \"reason\": \"No durable entity state to update beyond acknowledging the email content\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Acknowledged. I will note that Sam joined Point72 last month and that they requested the AI infra article. Please confirm if you want me to draft or fetch that article.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Store the email as a memory card with the note that the sender joined Point72 last month and the request for the AI infra article remains open.\",\n    \"If the AI infra article is found, attach it to a follow-up memory card with a timestamp.\",\n    \"Create a reminder to send the AI infra article to sam@example.com.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Processed incoming email context\",\n      \"Extracted entities: sam@example.com, Point72, AI infra article\",\n      \"Marked action as follow-up request\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

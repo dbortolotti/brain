@@ -1,0 +1,128 @@
+{
+  "fixture_id": "pdf_ocr_noisy_source_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The Brain system must treat OCR-derived content as probabilistic, preserve all ambiguity, and enforce strict exclusion of superseded/deleted facts from current projections. Cognitive integrity depends on rebuildability, not static records.",
+    "citations": [],
+    "conflict_classification": "no_conflict_but_uncertainty",
+    "decision": "flag_ambiguity_and_preserve_uncertainty",
+    "entity_resolution": {
+      "action": "defer_resolution",
+      "reason": "OCR noise prevents definitive entity linking; ambiguity must be retained for cognitive integrity."
+    },
+    "intent": "evaluate_system_credibility_and_memory_integrity",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "memory_store",
+            "type": "system"
+          },
+          {
+            "name": "OCR",
+            "role": "data_extraction_method",
+            "type": "process"
+          }
+        ],
+        "kind": "system_metadata",
+        "relationships": [
+          {
+            "object": "authoritative_source_of_truth",
+            "predicate": "serves_as",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "noise_in_memory_content",
+            "predicate": "introduces",
+            "subject": "OCR"
+          }
+        ],
+        "statement": "The Brain DB is the authoritative source of truth for durable memory, but its OCR-derived content introduces noise and potential inaccuracies."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "cognitive_integrity",
+            "role": "system_goal",
+            "type": "concept"
+          },
+          {
+            "name": "memory_projections",
+            "role": "rebuildable_representation",
+            "type": "abstraction"
+          }
+        ],
+        "kind": "system_principle",
+        "relationships": [
+          {
+            "object": "rebuildable_memory_projections",
+            "predicate": "depends_on",
+            "subject": "cognitive_integrity"
+          },
+          {
+            "object": "static_or_superseded_records",
+            "predicate": "must_exclude",
+            "subject": "memory_projections"
+          }
+        ],
+        "statement": "Cognitive integrity requires memory to be rebuildable from projections, not static or superseded records."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "OCR_noise",
+            "role": "uncertainty_source",
+            "type": "artifact"
+          },
+          {
+            "name": "false_precision",
+            "role": "risk",
+            "type": "error"
+          },
+          {
+            "name": "superseded_facts",
+            "role": "excluded_content",
+            "type": "memory_state"
+          }
+        ],
+        "kind": "system_warning",
+        "relationships": [
+          {
+            "object": "preservation_of_ambiguity",
+            "predicate": "requires",
+            "subject": "OCR_noise"
+          },
+          {
+            "object": "ignoring_ambiguity",
+            "predicate": "arises_from",
+            "subject": "false_precision"
+          },
+          {
+            "object": "presenting_superseded_facts_as_current",
+            "predicate": "must_avoid",
+            "subject": "system"
+          }
+        ],
+        "statement": "Ambiguity in OCR-derived content must be preserved to avoid false precision; never present superseded/deleted facts as current."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Flagged OCR noise as a systemic uncertainty source.",
+        "Rejected static memory projections in favor of rebuildable representations.",
+        "Confirmed no superseded facts are currently exposed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Implement probabilistic confidence scoring for OCR-derived statements.",
+      "Add explicit 'ambiguity flags' to memory cards with low-confidence OCR content.",
+      "Enforce a 'tombstone' mechanism for superseded/deleted facts to prevent resurrection."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

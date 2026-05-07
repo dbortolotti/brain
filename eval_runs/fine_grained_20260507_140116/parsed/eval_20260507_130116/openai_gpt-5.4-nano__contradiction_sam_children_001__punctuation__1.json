@@ -1,0 +1,78 @@
+{
+  "fixture_id": "contradiction_sam_children_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "These two facts cannot both be true as written: 'two children' versus 'no children' for Sam (from Goldman). The existing memory should remain, and the new statement should be treated as conflicting until clarified.",
+    "citations": [],
+    "conflict_classification": "direct_contradiction_children_count",
+    "decision": "Do not commit the new statement to durable memory; treat it as a contradiction with the existing memory and request clarification or context.",
+    "entity_resolution": {
+      "action": "unknown_match_context",
+      "entity_id": null,
+      "reason": "Both statements refer to 'Sam from Goldman' but there is no explicit unique identifier; assumed to be the same person due to matching context, which creates a hard contradiction."
+    },
+    "intent": "Explain and handle a direct contradiction in Sam\u2019s children count within personal memory.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          }
+        ],
+        "kind": "memory",
+        "relationships": [
+          {
+            "object": "two children",
+            "predicate": "has",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (from Goldman) has two children."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          }
+        ],
+        "kind": "conflict_candidate",
+        "relationships": [
+          {
+            "object": "no children",
+            "predicate": "has",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (from Goldman) has no children."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "New statement was not committed because it directly contradicts the existing durable memory."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask for clarification: Is Sam\u2019s number of children 0 or 2?",
+      "Check for disambiguation: confirm whether 'Sam' refers to the same individual in both statements.",
+      "Add qualifying context if applicable (e.g., 'has two children with X' or 'has no children as of year Y')."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

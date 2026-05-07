@@ -1,0 +1,60 @@
+{
+  "fixture_id": "slack_conflict_buttons_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Not committing the new employment change due to conflict with existing durable memory.",
+    "citations": [],
+    "conflict_classification": "direct_conflict_on_employment_status",
+    "decision": "do_not_overwrite_existing_employment_fact",
+    "entity_resolution": {
+      "action": "no_update",
+      "entity_id": null,
+      "reason": "Existing durable fact asserts Sam works at Goldman; incoming info asserts the opposite. Without reliable disambiguation, do not replace or confirm either employment state."
+    },
+    "intent": "durability_filter",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer_1",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "employer_2",
+            "type": "organization"
+          }
+        ],
+        "kind": "conflict_note",
+        "relationships": [
+          {
+            "object": "Goldman vs Point72",
+            "predicate": "employment_conflict_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Employment status for Sam is in conflict: existing memory says Sam works at Goldman, while new input says Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected mismatch between existing durable memory (works at Goldman) and new input (left Goldman, joined Point72).",
+        "Created a conflict note with low confidence instead of overwriting current durable facts."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm Sam\u2019s employment via a trusted source (e.g., LinkedIn, HR announcement) and then update durable memory consistently.",
+      "Store an uncertainty-tagged statement (no definitive employer) until resolved.",
+      "If the existing 'Sam works at Goldman' fact is incorrect, explicitly delete/override it after verification."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

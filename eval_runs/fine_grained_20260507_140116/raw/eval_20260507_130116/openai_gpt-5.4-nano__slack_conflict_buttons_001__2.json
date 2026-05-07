@@ -1,0 +1,63 @@
+{
+  "error": null,
+  "fixture_id": "slack_conflict_buttons_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Do not overwrite the existing durable fact that Sam works at Goldman. Store the new information only as an uncertain historical transition (left Goldman, joined Point72) rather than as Sam's current employer.",
+    "citations": [],
+    "conflict_classification": "employment_status_conflict",
+    "decision": "do_not_overwrite; store as ambiguous historical/uncertain event instead of current employment",
+    "entity_resolution": {
+      "action": "no_change",
+      "entity_id": null,
+      "reason": "The incoming claim conflicts with an existing durable fact that Sam works at Goldman; without confirmation of timing/current status, avoid treating Point72 as the current employer."
+    },
+    "intent": "Evaluate whether new memory about Sam's employer can be durably stored given a conflicting existing memory.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "primary",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_transition_uncertain",
+        "relationships": [
+          {
+            "object": "Goldman_to_Point72",
+            "predicate": "has_employment_transition",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72 (timing/status unclear)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict detected between existing 'works at Goldman' and new 'joined Point72'.",
+        "Durable overwrite avoided; new info stored with uncertainty and not asserted as current employment."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you can confirm the effective date and current status, update the durable fact to reflect Point72 as current employer and archive the Goldman claim as historical.",
+      "Capture wording/timestamp from the source (e.g., 'as of March 2024') so the system can reconcile temporal validity.",
+      "Store both as time-stamped facts (e.g., 'worked at Goldman until <date>') instead of a single undated 'works at' statement."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Evaluate whether new memory about Sam's employer can be durably stored given a conflicting existing memory.\",\n  \"decision\": \"do_not_overwrite; store as ambiguous historical/uncertain event instead of current employment\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"employment_transition_uncertain\",\n      \"statement\": \"Sam left Goldman and joined Point72 (timing/status unclear).\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"primary\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has_employment_transition\",\n          \"object\": \"Goldman_to_Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_change\",\n    \"entity_id\": null,\n    \"reason\": \"The incoming claim conflicts with an existing durable fact that Sam works at Goldman; without confirmation of timing/current status, avoid treating Point72 as the current employer.\"\n  },\n  \"conflict_classification\": \"employment_status_conflict\",\n  \"answer\": \"Do not overwrite the existing durable fact that Sam works at Goldman. Store the new information only as an uncertain historical transition (left Goldman, joined Point72) rather than as Sam's current employer.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If you can confirm the effective date and current status, update the durable fact to reflect Point72 as current employer and archive the Goldman claim as historical.\",\n    \"Capture wording/timestamp from the source (e.g., 'as of March 2024') so the system can reconcile temporal validity.\",\n    \"Store both as time-stamped facts (e.g., 'worked at Goldman until <date>') instead of a single undated 'works at' statement.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Conflict detected between existing 'works at Goldman' and new 'joined Point72'.\",\n      \"Durable overwrite avoided; new info stored with uncertainty and not asserted as current employment.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,64 @@
+{
+  "error": null,
+  "fixture_id": "personal_routine_morning_reading_001__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Morning reading of technical papers before email check is recorded as a routine preference.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "preserve_ambiguous",
+      "entity_id": null,
+      "reason": "context describes habitual preference; no unique entity identifiers present beyond general concepts."
+    },
+    "intent": "record_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "morning",
+            "role": "time_anchor",
+            "type": "time_of_day"
+          },
+          {
+            "name": "technical papers",
+            "role": "subject",
+            "type": "content"
+          },
+          {
+            "name": "email",
+            "role": "exclusion_target",
+            "type": "content"
+          }
+        ],
+        "kind": "routine_preference",
+        "relationships": [
+          {
+            "object": "checking_email",
+            "predicate": "occurs_before",
+            "subject": "morning"
+          },
+          {
+            "object": "morning_reading",
+            "predicate": "is_preferred_for",
+            "subject": "technical_papers"
+          }
+        ],
+        "statement": "I usually prefer to read technical papers in the morning before checking email."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created for routine_preference regarding morning reading.",
+        "Ambiguities preserved; no conflicting entries detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"record_memory\",\n  \"decision\": \"commit\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"routine_preference\",\n      \"statement\": \"I usually prefer to read technical papers in the morning before checking email.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"morning\",\n          \"type\": \"time_of_day\",\n          \"role\": \"time_anchor\"\n        },\n        {\n          \"name\": \"technical papers\",\n          \"type\": \"content\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"email\",\n          \"type\": \"content\",\n          \"role\": \"exclusion_target\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"morning\",\n          \"predicate\": \"occurs_before\",\n          \"object\": \"checking_email\"\n        },\n        {\n          \"subject\": \"technical_papers\",\n          \"predicate\": \"is_preferred_for\",\n          \"object\": \"morning_reading\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"preserve_ambiguous\",\n    \"entity_id\": null,\n    \"reason\": \"context describes habitual preference; no unique entity identifiers present beyond general concepts.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Morning reading of technical papers before email check is recorded as a routine preference.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card created for routine_preference regarding morning reading.\",\n      \"Ambiguities preserved; no conflicting entries detected.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

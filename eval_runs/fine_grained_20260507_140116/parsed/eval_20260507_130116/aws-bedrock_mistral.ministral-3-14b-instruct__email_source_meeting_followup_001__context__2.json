@@ -1,0 +1,93 @@
+{
+  "fixture_id": "email_source_meeting_followup_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam joined Point72 in June 2024. The sender is instructed to provide the requested AI infrastructure article.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "pending",
+    "entity_resolution": {
+      "action": "create_or_link",
+      "entity_id": null,
+      "reason": "No existing entity matches 'AI infrastructure article'; requires new durable memory entry."
+    },
+    "intent": "request_action",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          },
+          {
+            "name": "June 2024",
+            "role": "timeframe",
+            "type": "time"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          },
+          {
+            "object": "June 2024",
+            "predicate": "has_employment_start_date",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72 last month (June 2024)."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "AI infrastructure article",
+            "role": "requested_item",
+            "type": "document"
+          },
+          {
+            "name": "sender",
+            "role": "responsible_party",
+            "type": "person"
+          }
+        ],
+        "kind": "request",
+        "relationships": [
+          {
+            "object": "AI infrastructure article",
+            "predicate": "requested",
+            "subject": "Sam"
+          },
+          {
+            "object": "providing AI infrastructure article",
+            "predicate": "is_responsible_for",
+            "subject": "sender"
+          }
+        ],
+        "statement": "Sam requested the AI infrastructure article from the sender."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No prior memory of Sam's employment at Point72 (requires durable storage).",
+        "Article request requires sender action (not system-generated)."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Verify if 'AI infrastructure article' is a known internal document (e.g., via search).",
+      "Confirm with Sam if the article is urgent or has a specific deadline."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

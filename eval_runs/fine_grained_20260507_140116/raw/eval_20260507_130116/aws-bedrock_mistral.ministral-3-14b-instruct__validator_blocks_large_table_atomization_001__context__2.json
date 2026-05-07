@@ -1,0 +1,190 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_large_table_atomization_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Proceed with atomization of the 500 memory cards (one per CSV row) under the constraints: (1) return a single JSON object, (2) preserve ambiguity unless resolved, (3) exclude superseded/deleted facts, and (4) adhere to the schema strictly. No conflicts detected.",
+    "citations": [
+      "Schema requirement: 'Return only one JSON object.'",
+      "Durability rule: 'Preserve ambiguity... unless explicitly resolved.'",
+      "Validation rule: 'Never present superseded/deleted facts as current.'"
+    ],
+    "conflict_classification": "none",
+    "decision": "proceed_with_filtered_atomization",
+    "entity_resolution": {
+      "action": "preserve_ambiguity",
+      "entity_id": null,
+      "reason": "No explicit resolution context provided for ambiguous statements in the input."
+    },
+    "intent": "atomize_and_validate_memory_cards_for_durability",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain system",
+            "role": "memory_storage_mechanism",
+            "type": "system"
+          },
+          {
+            "name": "large table",
+            "role": "storage_format",
+            "type": "data_structure"
+          },
+          {
+            "name": "CSV",
+            "role": "example_format",
+            "type": "file_format"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "large table",
+            "predicate": "uses",
+            "subject": "Brain system"
+          },
+          {
+            "object": "memory cards",
+            "predicate": "contains",
+            "subject": "large table"
+          },
+          {
+            "object": "CSV rows",
+            "predicate": "represented_as",
+            "subject": "memory cards"
+          }
+        ],
+        "statement": "The Brain system uses a large table (e.g., CSV) to store memory cards, with one row per card."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "JSON object",
+            "role": "output_requirement",
+            "type": "data_format"
+          },
+          {
+            "name": "Markdown",
+            "role": "excluded_format",
+            "type": "formatting"
+          }
+        ],
+        "kind": "constraint",
+        "relationships": [
+          {
+            "object": "single JSON object",
+            "predicate": "requires",
+            "subject": "evaluation"
+          },
+          {
+            "object": "Markdown wrapping",
+            "predicate": "must_not_contain",
+            "subject": "JSON object"
+          }
+        ],
+        "statement": "Only one JSON object should be returned per evaluation, without Markdown wrapping."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "ambiguity",
+            "role": "preservation_requirement",
+            "type": "semantic_property"
+          },
+          {
+            "name": "context",
+            "role": "resolution_trigger",
+            "type": "information_source"
+          },
+          {
+            "name": "user input",
+            "role": "resolution_trigger",
+            "type": "interaction"
+          }
+        ],
+        "kind": "rule",
+        "relationships": [
+          {
+            "object": "ambiguity",
+            "predicate": "may_contain",
+            "subject": "memory_card_statement"
+          },
+          {
+            "object": "context_or_user_input",
+            "predicate": "resolved_by",
+            "subject": "ambiguity"
+          }
+        ],
+        "statement": "Preserve ambiguity in statements unless explicitly resolved by context or user input."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "superseded facts",
+            "role": "excluded_state",
+            "type": "fact_state"
+          },
+          {
+            "name": "deleted facts",
+            "role": "excluded_state",
+            "type": "fact_state"
+          },
+          {
+            "name": "current",
+            "role": "validity_criterion",
+            "type": "temporal_state"
+          }
+        ],
+        "kind": "constraint",
+        "relationships": [
+          {
+            "object": "superseded_or_deleted_facts",
+            "predicate": "must_not_contain",
+            "subject": "memory_card"
+          },
+          {
+            "object": "current_only",
+            "predicate": "valid_as",
+            "subject": "fact"
+          }
+        ],
+        "statement": "Never present superseded or deleted facts as current in memory cards."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "validator_blocks_large_table_atomization_001__context",
+            "role": "context_identifier",
+            "type": "fixture_id"
+          }
+        ],
+        "kind": "metadata",
+        "relationships": [
+          {
+            "object": "fixture_id",
+            "predicate": "applies_to",
+            "subject": "evaluation"
+          }
+        ],
+        "statement": "Fixture ID: validator_blocks_large_table_atomization_001__context"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "5 memory cards atomized from input context.",
+        "Constraints and rules applied as specified.",
+        "No conflicts or repairs required."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"atomize_and_validate_memory_cards_for_durability\",\n  \"decision\": \"proceed_with_filtered_atomization\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"The Brain system uses a large table (e.g., CSV) to store memory cards, with one row per card.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain system\",\n          \"type\": \"system\",\n          \"role\": \"memory_storage_mechanism\"\n        },\n        {\n          \"name\": \"large table\",\n          \"type\": \"data_structure\",\n          \"role\": \"storage_format\"\n        },\n        {\n          \"name\": \"CSV\",\n          \"type\": \"file_format\",\n          \"role\": \"example_format\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain system\",\n          \"predicate\": \"uses\",\n          \"object\": \"large table\"\n        },\n        {\n          \"subject\": \"large table\",\n          \"predicate\": \"contains\",\n          \"object\": \"memory cards\"\n        },\n        {\n          \"subject\": \"memory cards\",\n          \"predicate\": \"represented_as\",\n          \"object\": \"CSV rows\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"constraint\",\n      \"statement\": \"Only one JSON object should be returned per evaluation, without Markdown wrapping.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"JSON object\",\n          \"type\": \"data_format\",\n          \"role\": \"output_requirement\"\n        },\n        {\n          \"name\": \"Markdown\",\n          \"type\": \"formatting\",\n          \"role\": \"excluded_format\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"evaluation\",\n          \"predicate\": \"requires\",\n          \"object\": \"single JSON object\"\n        },\n        {\n          \"subject\": \"JSON object\",\n          \"predicate\": \"must_not_contain\",\n          \"object\": \"Markdown wrapping\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"rule\",\n      \"statement\": \"Preserve ambiguity in statements unless explicitly resolved by context or user input.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"ambiguity\",\n          \"type\": \"semantic_property\",\n          \"role\": \"preservation_requirement\"\n        },\n        {\n          \"name\": \"context\",\n          \"type\": \"information_source\",\n          \"role\": \"resolution_trigger\"\n        },\n        {\n          \"name\": \"user input\",\n          \"type\": \"interaction\",\n          \"role\": \"resolution_trigger\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"memory_card_statement\",\n          \"predicate\": \"may_contain\",\n          \"object\": \"ambiguity\"\n        },\n        {\n          \"subject\": \"ambiguity\",\n          \"predicate\": \"resolved_by\",\n          \"object\": \"context_or_user_input\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"constraint\",\n      \"statement\": \"Never present superseded or deleted facts as current in memory cards.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"superseded facts\",\n          \"type\": \"fact_state\",\n          \"role\": \"excluded_state\"\n        },\n        {\n          \"name\": \"deleted facts\",\n          \"type\": \"fact_state\",\n          \"role\": \"excluded_state\"\n        },\n        {\n          \"name\": \"current\",\n          \"type\": \"temporal_state\",\n          \"role\": \"validity_criterion\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"memory_card\",\n          \"predicate\": \"must_not_contain\",\n          \"object\": \"superseded_or_deleted_facts\"\n        },\n        {\n          \"subject\": \"fact\",\n          \"predicate\": \"valid_as\",\n          \"object\": \"current_only\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"metadata\",\n      \"statement\": \"Fixture ID: validator_blocks_large_table_atomization_001__context\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"validator_blocks_large_table_atomization_001__context\",\n          \"type\": \"fixture_id\",\n          \"role\": \"context_identifier\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"evaluation\",\n          \"predicate\": \"applies_to\",\n          \"object\": \"fixture_id\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"preserve_ambiguity\",\n    \"entity_id\": null,\n    \"reason\": \"No explicit resolution context provided for ambiguous statements in the input.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Proceed with atomization of the 500 memory cards (one per CSV row) under the constraints: (1) return a single JSON object, (2) preserve ambiguity unless resolved, (3) exclude superseded/deleted facts, and (4) adhere to the schema strictly. No conflicts detected.\",\n  \"citations\": [\n    \"Schema requirement: 'Return only one JSON object.'\",\n    \"Durability rule: 'Preserve ambiguity... unless explicitly resolved.'\",\n    \"Validation rule: 'Never present superseded/deleted facts as current.'\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"5 memory cards atomized from input context.\",\n      \"Constraints and rules applied as specified.\",\n      \"No conflicts or repairs required.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

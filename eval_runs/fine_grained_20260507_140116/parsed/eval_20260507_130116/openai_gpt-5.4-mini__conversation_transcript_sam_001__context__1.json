@@ -1,0 +1,142 @@
+{
+  "fixture_id": "conversation_transcript_sam_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Committed three memory cards: Sam's job change to Point72 from Goldman last month, his current music listening preference, and the plan to catch up about AI infra plus the article request.",
+    "citations": [
+      "Sam: No, I left Goldman last month and joined Point72.",
+      "Sam: Yes, but lately more early Coltrane.",
+      "Sam: Definitely, send me that article."
+    ],
+    "conflict_classification": "none",
+    "decision": "Commit a small set of current, low-risk memory cards; preserve slight ambiguity where wording is conversational.",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "No prior entity mapping is provided; the transcript identifies Sam and Daniele directly, but no durable entity IDs can be resolved from context alone."
+    },
+    "intent": "Extract durable personal memory cards from a brief conversation.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "career_update",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left_employer",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined_employer",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said he left Goldman last month and joined Point72."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "music artist",
+            "type": "person"
+          },
+          {
+            "name": "Coltrane",
+            "role": "music artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "listens_to",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "has_recently_listened_more_to",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said he is still listening to Bill Evans, but lately more early Coltrane."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "AI infra",
+            "role": "discussion topic",
+            "type": "topic"
+          },
+          {
+            "name": "article",
+            "role": "requested item",
+            "type": "document"
+          }
+        ],
+        "kind": "plan",
+        "relationships": [
+          {
+            "object": "AI infra with Sam",
+            "predicate": "will_discuss",
+            "subject": "Daniele"
+          },
+          {
+            "object": "article to Sam",
+            "predicate": "will_send",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Daniele and Sam intend to catch up about AI infrastructure, and Sam asked Daniele to send him the article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted 3 memory cards.",
+        "No direct conflicts detected.",
+        "Preserved ambiguity in conversational preference language."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If a stricter policy is desired, downgrade the music preference to non-durable because it is a casual taste mention.",
+      "If article identity becomes known later, replace the generic 'article' card with the specific document reference."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

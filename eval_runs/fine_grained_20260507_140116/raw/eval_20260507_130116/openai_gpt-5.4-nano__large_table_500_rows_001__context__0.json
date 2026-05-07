@@ -1,0 +1,75 @@
+{
+  "error": null,
+  "fixture_id": "large_table_500_rows_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Store the table as structured tabular data with a normalized key-based index (e.g., id/name) and aggregated value(s), while retaining raw-row traceability (or row hashes) and tracking duplicates via counts/provenance because the meaning of repeated rows is not specified.",
+    "citations": [],
+    "conflict_classification": "No explicit conflict detected; guidance is conditional due to unspecified semantics of duplicates.",
+    "decision": "Store as a structured, queryable tabular representation with deduplication/aggregation rules; keep raw rows (or a hash-based index) for traceability while maintaining a normalized index on (id, name) \u2192 value(s) (and optionally occurrence counts).",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No specific external entities are provided beyond generic column names; no durable entity identity resolution is supported from the fixture."
+    },
+    "intent": "Decide how a 500-row CSV table with repeated id/name/value entries should be stored in a personal memory system.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "id",
+            "role": "key candidate",
+            "type": "column"
+          },
+          {
+            "name": "name",
+            "role": "key candidate",
+            "type": "column"
+          },
+          {
+            "name": "value",
+            "role": "fact payload",
+            "type": "column"
+          }
+        ],
+        "kind": "policy",
+        "relationships": [
+          {
+            "object": "normalized index + aggregated payload + raw traceability",
+            "predicate": "should use",
+            "subject": "ingestion"
+          }
+        ],
+        "statement": "When ingesting a large CSV table with repeated rows, prefer a normalized index keyed by stable identifiers (e.g., id and/or name) and store aggregated values (and/or occurrence counts), while preserving the raw/original rows (or row hashes) for audit and reconstruction."
+      },
+      {
+        "confidence": "medium",
+        "entities": [],
+        "kind": "policy",
+        "relationships": [
+          {
+            "object": "either identical facts or multiple observations",
+            "predicate": "may represent",
+            "subject": "duplicate rows"
+          }
+        ],
+        "statement": "Because the policy question does not specify whether duplicate rows represent identical facts or multiple observations, keep ambiguity by supporting both modes: (a) treat duplicates as the same fact (dedupe) and (b) retain a count/timeline/instance index for duplicates (provenance)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Provided conditional storage policy without asserting dataset-specific facts beyond the presence of repeated id/name/value columns."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If duplicates are known to be identical facts, enable strict deduplication and discard redundant rows after indexing.",
+      "If duplicates are observations over time/sources, add an instance/provenance table and aggregate only for performance while keeping per-instance records.",
+      "If id is unique and name/value vary, key primarily on id and store name/value history as arrays or event records."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Decide how a 500-row CSV table with repeated id/name/value entries should be stored in a personal memory system.\",\n  \"decision\": \"Store as a structured, queryable tabular representation with deduplication/aggregation rules; keep raw rows (or a hash-based index) for traceability while maintaining a normalized index on (id, name) \u2192 value(s) (and optionally occurrence counts).\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"policy\",\n      \"statement\": \"When ingesting a large CSV table with repeated rows, prefer a normalized index keyed by stable identifiers (e.g., id and/or name) and store aggregated values (and/or occurrence counts), while preserving the raw/original rows (or row hashes) for audit and reconstruction.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"id\",\n          \"type\": \"column\",\n          \"role\": \"key candidate\"\n        },\n        {\n          \"name\": \"name\",\n          \"type\": \"column\",\n          \"role\": \"key candidate\"\n        },\n        {\n          \"name\": \"value\",\n          \"type\": \"column\",\n          \"role\": \"fact payload\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"ingestion\",\n          \"predicate\": \"should use\",\n          \"object\": \"normalized index + aggregated payload + raw traceability\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"policy\",\n      \"statement\": \"Because the policy question does not specify whether duplicate rows represent identical facts or multiple observations, keep ambiguity by supporting both modes: (a) treat duplicates as the same fact (dedupe) and (b) retain a count/timeline/instance index for duplicates (provenance).\",\n      \"confidence\": \"medium\",\n      \"entities\": [],\n      \"relationships\": [\n        {\n          \"subject\": \"duplicate rows\",\n          \"predicate\": \"may represent\",\n          \"object\": \"either identical facts or multiple observations\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No specific external entities are provided beyond generic column names; no durable entity identity resolution is supported from the fixture.\"\n  },\n  \"conflict_classification\": \"No explicit conflict detected; guidance is conditional due to unspecified semantics of duplicates.\",\n  \"answer\": \"Store the table as structured tabular data with a normalized key-based index (e.g., id/name) and aggregated value(s), while retaining raw-row traceability (or row hashes) and tracking duplicates via counts/provenance because the meaning of repeated rows is not specified.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If duplicates are known to be identical facts, enable strict deduplication and discard redundant rows after indexing.\",\n    \"If duplicates are observations over time/sources, add an instance/provenance table and aggregate only for performance while keeping per-instance records.\",\n    \"If id is unique and name/value vary, key primarily on id and store name/value history as arrays or event records.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Provided conditional storage policy without asserting dataset-specific facts beyond the presence of repeated id/name/value columns.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

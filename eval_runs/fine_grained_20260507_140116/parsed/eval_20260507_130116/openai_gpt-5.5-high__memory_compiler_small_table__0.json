@@ -1,0 +1,78 @@
+{
+  "fixture_id": "memory_compiler_small_table",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "Extracted two preference memory cards from the table.",
+    "citations": [
+      "Sam | Bill Evans",
+      "Daniele | Knowledge graphs"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The input provides names but no stable identifiers; create or link entities only if matching context is available."
+    },
+    "intent": "extract_atomic_memory_cards",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "preference_holder",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred_item",
+            "type": "unknown"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam prefers Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "preference_holder",
+            "type": "person"
+          },
+          {
+            "name": "Knowledge graphs",
+            "role": "preferred_item",
+            "type": "topic"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Knowledge graphs",
+            "predicate": "prefers",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Daniele prefers knowledge graphs."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed preference: Sam prefers Bill Evans.",
+        "Committed preference: Daniele prefers knowledge graphs."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

@@ -1,0 +1,81 @@
+{
+  "error": null,
+  "fixture_id": "debug_sql_select_only_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "SELECT id FROM memory_cards LIMIT 10 is PERMITTED. DELETE FROM memory_cards is DENIED. Select-only mode is functioning correctly.",
+    "citations": [
+      "Input specification: 'SELECT id FROM memory_cards LIMIT 10 allowed'",
+      "Input specification: 'DELETE FROM memory_cards denied'"
+    ],
+    "conflict_classification": "none",
+    "decision": "ALLOW SELECT; DENY DELETE",
+    "entity_resolution": {
+      "action": "enforce_constraint",
+      "entity_id": "select-only_mode_v1",
+      "reason": "SQL operation classification against access control policy"
+    },
+    "intent": "Validate SQL select-only mode enforcement with punctuation in fixture name",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "select-only mode",
+            "role": "permission_model",
+            "type": "access_control"
+          },
+          {
+            "name": "Admin",
+            "role": "operator",
+            "type": "role"
+          }
+        ],
+        "kind": "system_constraint",
+        "relationships": [
+          {
+            "object": "select-only mode",
+            "predicate": "operates_in",
+            "subject": "Admin"
+          },
+          {
+            "object": "select-only mode",
+            "predicate": "is_allowed_by",
+            "subject": "SELECT"
+          },
+          {
+            "object": "select-only mode",
+            "predicate": "is_denied_by",
+            "subject": "DELETE"
+          }
+        ],
+        "statement": "Admin SQL select-only mode permits SELECT queries; denies DELETE, INSERT, UPDATE, DROP operations"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "debug_sql_select_only_001__punctuation",
+            "role": "validation_case",
+            "type": "test_fixture"
+          }
+        ],
+        "kind": "test_fixture",
+        "statement": "Fixture debug_sql_select_only_001__punctuation tests punctuation handling in select-only enforcement"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Select-only mode constraint validated",
+        "SELECT operation classification: ALLOWED",
+        "DELETE operation classification: DENIED",
+        "Fixture punctuation parsed correctly"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Validate SQL select-only mode enforcement with punctuation in fixture name\",\n  \"decision\": \"ALLOW SELECT; DENY DELETE\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"system_constraint\",\n      \"statement\": \"Admin SQL select-only mode permits SELECT queries; denies DELETE, INSERT, UPDATE, DROP operations\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"select-only mode\",\n          \"type\": \"access_control\",\n          \"role\": \"permission_model\"\n        },\n        {\n          \"name\": \"Admin\",\n          \"type\": \"role\",\n          \"role\": \"operator\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Admin\",\n          \"predicate\": \"operates_in\",\n          \"object\": \"select-only mode\"\n        },\n        {\n          \"subject\": \"SELECT\",\n          \"predicate\": \"is_allowed_by\",\n          \"object\": \"select-only mode\"\n        },\n        {\n          \"subject\": \"DELETE\",\n          \"predicate\": \"is_denied_by\",\n          \"object\": \"select-only mode\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"test_fixture\",\n      \"statement\": \"Fixture debug_sql_select_only_001__punctuation tests punctuation handling in select-only enforcement\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"debug_sql_select_only_001__punctuation\",\n          \"type\": \"test_fixture\",\n          \"role\": \"validation_case\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"enforce_constraint\",\n    \"entity_id\": \"select-only_mode_v1\",\n    \"reason\": \"SQL operation classification against access control policy\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"SELECT id FROM memory_cards LIMIT 10 is PERMITTED. DELETE FROM memory_cards is DENIED. Select-only mode is functioning correctly.\",\n  \"citations\": [\n    \"Input specification: 'SELECT id FROM memory_cards LIMIT 10 allowed'\",\n    \"Input specification: 'DELETE FROM memory_cards denied'\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Select-only mode constraint validated\",\n      \"SELECT operation classification: ALLOWED\",\n      \"DELETE operation classification: DENIED\",\n      \"Fixture punctuation parsed correctly\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

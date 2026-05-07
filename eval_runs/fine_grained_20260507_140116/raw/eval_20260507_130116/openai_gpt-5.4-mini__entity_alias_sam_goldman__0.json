@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "fixture_id": "entity_alias_sam_goldman",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Attach as a preference to the existing Sam from Goldman entity.",
+    "citations": [
+      "Existing entity: Sam from Goldman, aliases Sam G, Goldman Sam.",
+      "New message: Sam G likes Bill Evans."
+    ],
+    "conflict_classification": "none",
+    "decision": "accept",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "Sam from Goldman",
+      "reason": "The alias Sam G already matches the existing entity Sam from Goldman (aliases include Sam G, Goldman Sam), so the preference should attach to that entity."
+    },
+    "intent": "entity_candidate_ranker",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam G",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam G"
+          }
+        ],
+        "statement": "Sam G likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Resolved Sam G to the existing entity Sam from Goldman.",
+        "Stored a new preference memory: likes Bill Evans."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"entity_candidate_ranker\",\"decision\":\"accept\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam G likes Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam G\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked artist\"}],\"relationships\":[{\"subject\":\"Sam G\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"merge\",\"entity_id\":\"Sam from Goldman\",\"reason\":\"The alias Sam G already matches the existing entity Sam from Goldman (aliases include Sam G, Goldman Sam), so the preference should attach to that entity.\"},\"conflict_classification\":\"none\",\"answer\":\"Attach as a preference to the existing Sam from Goldman entity.\",\"citations\":[\"Existing entity: Sam from Goldman, aliases Sam G, Goldman Sam.\",\"New message: Sam G likes Bill Evans.\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Resolved Sam G to the existing entity Sam from Goldman.\",\"Stored a new preference memory: likes Bill Evans.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

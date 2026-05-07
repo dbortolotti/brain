@@ -1,0 +1,95 @@
+{
+  "error": null,
+  "fixture_id": "debug_explain_recall_sam__punctuation",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Recall returned mem_new for Sam from Goldman because it superseded mem_old. The older memory is marked superseded and kept for provenance, but not used as the current representation.",
+    "citations": [
+      "memory:Sam_Goldman_mem_new",
+      "memory:Sam_Goldman_mem_old"
+    ],
+    "conflict_classification": "none",
+    "decision": "recall_mem_new_sam_from_goldman_due_to_supersession_of_mem_old",
+    "entity_resolution": {
+      "action": "select_current_representation",
+      "entity_id": "sam_goldman_mem_current",
+      "reason": "The mem_old entry has been superseded by mem_new to reflect updated context or corrections from Goldman."
+    },
+    "intent": "explanation",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "source",
+            "type": "organization"
+          }
+        ],
+        "kind": "mem_new",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "memory_source",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "origin",
+            "subject": "memory_entry"
+          }
+        ],
+        "statement": "Sam's memory entry from Goldman has been recalled as the current representation."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "source",
+            "type": "organization"
+          }
+        ],
+        "kind": "mem_old",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "origin",
+            "subject": "mem_old"
+          },
+          {
+            "object": "superseded",
+            "predicate": "status",
+            "subject": "mem_old"
+          }
+        ],
+        "statement": "Previously stored memory about Sam from Goldman existed but has been superseded by the newer mem_new."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "mem_new selected as current for Sam from Goldman",
+        "mem_old retained but marked superseded"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "retain mem_old for historical provenance with status= superseded",
+      "log reason for supersession and link to mem_new as current",
+      "validate future recalls against latest source entries to prevent regression"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"explanation\",\n  \"decision\": \"recall_mem_new_sam_from_goldman_due_to_supersession_of_mem_old\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"mem_new\",\n      \"statement\": \"Sam's memory entry from Goldman has been recalled as the current representation.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Sam\", \"type\": \"person\", \"role\": \"subject\"},\n        {\"name\": \"Goldman\", \"type\": \"organization\", \"role\": \"source\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sam\", \"predicate\": \"memory_source\", \"object\": \"Goldman\"},\n        {\"subject\": \"memory_entry\", \"predicate\": \"origin\", \"object\": \"Goldman\"}\n      ]\n    },\n    {\n      \"kind\": \"mem_old\",\n      \"statement\": \"Previously stored memory about Sam from Goldman existed but has been superseded by the newer mem_new.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Sam\", \"type\": \"person\", \"role\": \"subject\"},\n        {\"name\": \"Goldman\", \"type\": \"organization\", \"role\": \"source\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"mem_old\", \"predicate\": \"origin\", \"object\": \"Goldman\"},\n        {\"subject\": \"mem_old\", \"predicate\": \"status\", \"object\": \"superseded\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"select_current_representation\",\n    \"entity_id\": \"sam_goldman_mem_current\",\n    \"reason\": \"The mem_old entry has been superseded by mem_new to reflect updated context or corrections from Goldman.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Recall returned mem_new for Sam from Goldman because it superseded mem_old. The older memory is marked superseded and kept for provenance, but not used as the current representation.\",\n  \"citations\": [\n    \"memory:Sam_Goldman_mem_new\",\n    \"memory:Sam_Goldman_mem_old\"\n  ],\n  \"repair_options\": [\n    \"retain mem_old for historical provenance with status= superseded\",\n    \"log reason for supersession and link to mem_new as current\",\n    \"validate future recalls against latest source entries to prevent regression\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"mem_new selected as current for Sam from Goldman\",\n      \"mem_old retained but marked superseded\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

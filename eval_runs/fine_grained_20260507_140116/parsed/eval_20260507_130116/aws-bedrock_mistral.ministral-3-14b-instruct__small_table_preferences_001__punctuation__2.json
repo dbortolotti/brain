@@ -1,0 +1,77 @@
+{
+  "fixture_id": "small_table_preferences_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Extracted two atomic preference cards: Sam's jazz preference (Bill Evans) and Anna's wine preference (Barolo).",
+    "citations": [
+      "Dinner 2026-05-05 (Sam's preference)",
+      "Lunch 2026-05-01 (Anna's preference)"
+    ],
+    "conflict_classification": "none",
+    "decision": "proceed_with_extraction",
+    "entity_resolution": {
+      "action": "create_new",
+      "reason": "No prior entity resolution for Sam/Anna or Bill Evans/Barolo in this context."
+    },
+    "intent": "extract_atomic_memory_cards",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_object",
+            "type": "artist"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (person) prefers jazz pianist Bill Evans (artist) as a musical taste."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Anna",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Barolo",
+            "role": "preference_object",
+            "type": "wine"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Barolo",
+            "predicate": "prefers",
+            "subject": "Anna"
+          }
+        ],
+        "statement": "Anna (person) prefers Barolo (wine) as a beverage choice."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted 2/2 records from input table.",
+        "No superseded/deleted facts detected.",
+        "Ambiguity preserved (e.g., 'likes' \u2192 'prefers' without inference)."
+      ],
+      "success": true
+    }
+  },
+  "run_id": "eval_20260507_130116"
+}

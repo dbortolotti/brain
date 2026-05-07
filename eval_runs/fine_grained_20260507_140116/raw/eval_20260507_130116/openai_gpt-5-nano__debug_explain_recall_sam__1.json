@@ -1,0 +1,94 @@
+{
+  "error": null,
+  "fixture_id": "debug_explain_recall_sam",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Recall returned mem_new for Sam from Goldman because it is the most recent, highest-confidence entry, while mem_old from Goldman was superseded and filtered out as outdated.",
+    "citations": [
+      "memory_factory:goldman_recency_policy",
+      "memory_versioning:supersession_rule"
+    ],
+    "conflict_classification": "no_conflict_after_resolution",
+    "decision": "Recall mem_new for Sam from Goldman; mem_old for Sam from Goldman was superseded and filtered out due to being older/versioned.",
+    "entity_resolution": {
+      "action": "select_current_and_supersede_older",
+      "entity_id": "sam_goldman_memory_current",
+      "reason": "mem_old was superseded by mem_new due to recency and higher confidence; only the latest authoritative memory remains active."
+    },
+    "intent": "explain_recall_decision",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "source",
+            "type": "organization"
+          }
+        ],
+        "kind": "mem_new",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "memory_entry",
+            "predicate": "provided",
+            "subject": "Goldman"
+          }
+        ],
+        "statement": "Sam's contact memory from Goldman was recalled as the most current and relevant entry."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "source",
+            "type": "organization"
+          }
+        ],
+        "kind": "mem_old",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "memory_entry_old",
+            "predicate": "provided",
+            "subject": "Goldman"
+          }
+        ],
+        "statement": "An older memory entry for Sam from Goldman exists but is superseded by mem_new and thus not considered current."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Mem_new retrieved as current",
+        "Mem_old marked superseded and not surfaced in recall"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Keep mem_old as archival_shadow with explicit superseded flag",
+      "Provide dual-entry recall with explicit timestamp and status (current vs superseded)"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"explain_recall_decision\",\n  \"decision\": \"Recall mem_new for Sam from Goldman; mem_old for Sam from Goldman was superseded and filtered out due to being older/versioned.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"mem_new\",\n      \"statement\": \"Sam's contact memory from Goldman was recalled as the most current and relevant entry.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Sam\", \"type\": \"person\", \"role\": \"subject\"},\n        {\"name\": \"Goldman\", \"type\": \"organization\", \"role\": \"source\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sam\", \"predicate\": \"associated_with\", \"object\": \"Goldman\"},\n        {\"subject\": \"Goldman\", \"predicate\": \"provided\", \"object\": \"memory_entry\"}\n      ]\n    },\n    {\n      \"kind\": \"mem_old\",\n      \"statement\": \"An older memory entry for Sam from Goldman exists but is superseded by mem_new and thus not considered current.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\"name\": \"Sam\", \"type\": \"person\", \"role\": \"subject\"},\n        {\"name\": \"Goldman\", \"type\": \"organization\", \"role\": \"source\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sam\", \"predicate\": \"associated_with\", \"object\": \"Goldman\"},\n        {\"subject\": \"Goldman\", \"predicate\": \"provided\", \"object\": \"memory_entry_old\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"select_current_and_supersede_older\",\n    \"entity_id\": \"sam_goldman_memory_current\",\n    \"reason\": \"mem_old was superseded by mem_new due to recency and higher confidence; only the latest authoritative memory remains active.\"\n  },\n  \"conflict_classification\": \"no_conflict_after_resolution\",\n  \"answer\": \"Recall returned mem_new for Sam from Goldman because it is the most recent, highest-confidence entry, while mem_old from Goldman was superseded and filtered out as outdated.\",\n  \"citations\": [\n    \"memory_factory:goldman_recency_policy\",\n    \"memory_versioning:supersession_rule\"\n  ],\n  \"repair_options\": [\n    \"Keep mem_old as archival_shadow with explicit superseded flag\",\n    \"Provide dual-entry recall with explicit timestamp and status (current vs superseded)\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Mem_new retrieved as current\",\n      \"Mem_old marked superseded and not surfaced in recall\"\n    ]\n    }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

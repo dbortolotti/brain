@@ -1,0 +1,38 @@
+{
+  "error": null,
+  "fixture_id": "large_table_500_rows_001__punctuation",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "A 500-row CSV table with repeated id,name,value rows should not be committed as durable memory cards. Store it as a file, document, dataset artifact, or temporary working context instead. If needed, Brain may store a concise metadata note or summary only when it is useful and explicitly requested, such as the dataset name, schema, row count, source, or purpose. Individual rows should not be converted into personal memory unless specific rows contain durable, user-relevant facts that the user asks to remember.",
+    "citations": [
+      "Input: CSV table with 500 rows - id,name,value repeated many times.",
+      "Policy question - how should it be stored?"
+    ],
+    "conflict_classification": "none",
+    "decision": "do_not_store_bulk_csv_rows_as_durable_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input describes a large tabular dataset, not a durable personal fact or preference suitable for atomic memory."
+    },
+    "intent": "storage_policy_question",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No durable memory cards were created.",
+        "Bulk tabular data is unsuitable for atomic personal memory storage.",
+        "Recommended storage mode is file/artifact or temporary context, not row-level memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Store the CSV as an attached file or external dataset rather than memory cards.",
+      "Create only a short dataset summary or metadata card if the user explicitly wants a durable reference.",
+      "Ask the user which specific facts, if any, should be remembered.",
+      "Use temporary context for analysis and discard after the session if no durable memory is requested."
+    ]
+  },
+  "raw_text": "{\"intent\":\"storage_policy_question\",\"decision\":\"do_not_store_bulk_csv_rows_as_durable_memory\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input describes a large tabular dataset, not a durable personal fact or preference suitable for atomic memory.\"},\"conflict_classification\":\"none\",\"answer\":\"A 500-row CSV table with repeated id,name,value rows should not be committed as durable memory cards. Store it as a file, document, dataset artifact, or temporary working context instead. If needed, Brain may store a concise metadata note or summary only when it is useful and explicitly requested, such as the dataset name, schema, row count, source, or purpose. Individual rows should not be converted into personal memory unless specific rows contain durable, user-relevant facts that the user asks to remember.\",\"citations\":[\"Input: CSV table with 500 rows - id,name,value repeated many times.\",\"Policy question - how should it be stored?\"],\"repair_options\":[\"Store the CSV as an attached file or external dataset rather than memory cards.\",\"Create only a short dataset summary or metadata card if the user explicitly wants a durable reference.\",\"Ask the user which specific facts, if any, should be remembered.\",\"Use temporary context for analysis and discard after the session if no durable memory is requested.\"],\"receipt\":{\"success\":true,\"details\":[\"No durable memory cards were created.\",\"Bulk tabular data is unsuitable for atomic personal memory storage.\",\"Recommended storage mode is file/artifact or temporary context, not row-level memory.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

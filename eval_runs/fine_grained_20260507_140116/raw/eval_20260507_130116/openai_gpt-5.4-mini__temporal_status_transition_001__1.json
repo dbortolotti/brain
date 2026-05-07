@@ -1,0 +1,61 @@
+{
+  "error": null,
+  "fixture_id": "temporal_status_transition_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "The current status is implemented; the earlier planned/open state is superseded.",
+    "citations": [
+      "Existing project state: The Brain Slack agent is planned, status=open.",
+      "New: The Brain Slack agent MVP is now implemented."
+    ],
+    "conflict_classification": "temporal_status_transition",
+    "decision": "Update the current memory to reflect that the Brain Slack agent MVP is implemented; treat the prior planned/open state as superseded rather than current.",
+    "entity_resolution": {
+      "action": "resolve_to_existing_entity",
+      "entity_id": null,
+      "reason": "The input refers to the same Brain Slack agent entity, but no stable entity identifier is provided. The status change should be merged into the existing project memory."
+    },
+    "intent": "Resolve a temporal status transition for the Brain Slack agent from planned/open to implemented.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain Slack agent",
+            "role": "subject",
+            "type": "project_component"
+          },
+          {
+            "name": "MVP",
+            "role": "qualifier",
+            "type": "release_stage"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "implemented",
+            "predicate": "status",
+            "subject": "Brain Slack agent MVP"
+          }
+        ],
+        "statement": "The Brain Slack agent MVP is implemented."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recognized a status transition.",
+        "Committed only the current implemented state as durable memory.",
+        "Did not preserve the superseded planned/open state as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace the project status with implemented.",
+      "Optionally retain a historical note that it was previously planned/open before implementation."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Resolve a temporal status transition for the Brain Slack agent from planned/open to implemented.\",\"decision\":\"Update the current memory to reflect that the Brain Slack agent MVP is implemented; treat the prior planned/open state as superseded rather than current.\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"The Brain Slack agent MVP is implemented.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Brain Slack agent\",\"type\":\"project_component\",\"role\":\"subject\"},{\"name\":\"MVP\",\"type\":\"release_stage\",\"role\":\"qualifier\"}],\"relationships\":[{\"subject\":\"Brain Slack agent MVP\",\"predicate\":\"status\",\"object\":\"implemented\"}]}],\"entity_resolution\":{\"action\":\"resolve_to_existing_entity\",\"entity_id\":null,\"reason\":\"The input refers to the same Brain Slack agent entity, but no stable entity identifier is provided. The status change should be merged into the existing project memory.\"},\"conflict_classification\":\"temporal_status_transition\",\"answer\":\"The current status is implemented; the earlier planned/open state is superseded.\",\"citations\":[\"Existing project state: The Brain Slack agent is planned, status=open.\",\"New: The Brain Slack agent MVP is now implemented.\"],\"repair_options\":[\"Replace the project status with implemented.\",\"Optionally retain a historical note that it was previously planned/open before implementation.\"],\"receipt\":{\"success\":true,\"details\":[\"Recognized a status transition.\",\"Committed only the current implemented state as durable memory.\",\"Did not preserve the superseded planned/open state as current.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

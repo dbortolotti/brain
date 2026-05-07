@@ -1,0 +1,147 @@
+{
+  "error": null,
+  "fixture_id": "memory_compiler_article_atomic",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "citations": [
+      "memory_compiler_article_atomic"
+    ],
+    "conflict_classification": "none",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": null,
+      "reason": "No pre-existing entities match the extracted concepts; new entities required for atomic memory principles."
+    },
+    "intent": "extract_atomic_memory_cards",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "AI memory systems",
+            "role": "subject",
+            "type": "system"
+          },
+          {
+            "name": "durable source evidence",
+            "role": "requirement",
+            "type": "concept"
+          }
+        ],
+        "kind": "principle",
+        "relationships": [
+          {
+            "object": "durable source evidence",
+            "predicate": "require",
+            "subject": "AI memory systems"
+          }
+        ],
+        "statement": "AI memory systems require durable source evidence to maintain factual integrity."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "atomic memory cards",
+            "role": "subject",
+            "type": "component"
+          },
+          {
+            "name": "small",
+            "role": "property",
+            "type": "attribute"
+          },
+          {
+            "name": "traceable",
+            "role": "property",
+            "type": "attribute"
+          },
+          {
+            "name": "individual source references",
+            "role": "requirement",
+            "type": "concept"
+          }
+        ],
+        "kind": "design_principle",
+        "relationships": [
+          {
+            "object": "small",
+            "predicate": "should_be",
+            "subject": "atomic memory cards"
+          },
+          {
+            "object": "traceable",
+            "predicate": "should_be",
+            "subject": "atomic memory cards"
+          },
+          {
+            "object": "individual source references",
+            "predicate": "must_link_to",
+            "subject": "atomic memory cards"
+          }
+        ],
+        "statement": "Atomic memory cards should be small and traceable to individual source references."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "semantic index",
+            "role": "subject",
+            "type": "component"
+          },
+          {
+            "name": "recall",
+            "role": "benefit",
+            "type": "concept"
+          },
+          {
+            "name": "application database",
+            "role": "owner",
+            "type": "system"
+          },
+          {
+            "name": "lifecycle",
+            "role": "responsibility",
+            "type": "concept"
+          },
+          {
+            "name": "conflict state",
+            "role": "responsibility",
+            "type": "concept"
+          }
+        ],
+        "kind": "design_principle",
+        "relationships": [
+          {
+            "object": "recall",
+            "predicate": "can_improve",
+            "subject": "semantic index"
+          },
+          {
+            "object": "lifecycle",
+            "predicate": "must_own",
+            "subject": "application database"
+          },
+          {
+            "object": "conflict state",
+            "predicate": "must_own",
+            "subject": "application database"
+          }
+        ],
+        "statement": "A semantic index can improve recall in memory systems, but the application database must own lifecycle and conflict state management."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted 3 atomic memory cards with high confidence.",
+        "No conflicts detected; all statements are original and unambiguous.",
+        "Entity resolution: New entities created for atomic memory principles."
+      ],
+      "success": true
+    }
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"extract_atomic_memory_cards\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"principle\",\n      \"statement\": \"AI memory systems require durable source evidence to maintain factual integrity.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"AI memory systems\",\n          \"type\": \"system\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"durable source evidence\",\n          \"type\": \"concept\",\n          \"role\": \"requirement\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"AI memory systems\",\n          \"predicate\": \"require\",\n          \"object\": \"durable source evidence\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"design_principle\",\n      \"statement\": \"Atomic memory cards should be small and traceable to individual source references.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"atomic memory cards\",\n          \"type\": \"component\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"small\",\n          \"type\": \"attribute\",\n          \"role\": \"property\"\n        },\n        {\n          \"name\": \"traceable\",\n          \"type\": \"attribute\",\n          \"role\": \"property\"\n        },\n        {\n          \"name\": \"individual source references\",\n          \"type\": \"concept\",\n          \"role\": \"requirement\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"atomic memory cards\",\n          \"predicate\": \"should_be\",\n          \"object\": \"small\"\n        },\n        {\n          \"subject\": \"atomic memory cards\",\n          \"predicate\": \"should_be\",\n          \"object\": \"traceable\"\n        },\n        {\n          \"subject\": \"atomic memory cards\",\n          \"predicate\": \"must_link_to\",\n          \"object\": \"individual source references\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"design_principle\",\n      \"statement\": \"A semantic index can improve recall in memory systems, but the application database must own lifecycle and conflict state management.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"semantic index\",\n          \"type\": \"component\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"recall\",\n          \"type\": \"concept\",\n          \"role\": \"benefit\"\n        },\n        {\n          \"name\": \"application database\",\n          \"type\": \"system\",\n          \"role\": \"owner\"\n        },\n        {\n          \"name\": \"lifecycle\",\n          \"type\": \"concept\",\n          \"role\": \"responsibility\"\n        },\n        {\n          \"name\": \"conflict state\",\n          \"type\": \"concept\",\n          \"role\": \"responsibility\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"semantic index\",\n          \"predicate\": \"can_improve\",\n          \"object\": \"recall\"\n        },\n        {\n          \"subject\": \"application database\",\n          \"predicate\": \"must_own\",\n          \"object\": \"lifecycle\"\n        },\n        {\n          \"subject\": \"application database\",\n          \"predicate\": \"must_own\",\n          \"object\": \"conflict state\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_new\",\n    \"entity_id\": null,\n    \"reason\": \"No pre-existing entities match the extracted concepts; new entities required for atomic memory principles.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"citations\": [\n    \"memory_compiler_article_atomic\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Extracted 3 atomic memory cards with high confidence.\",\n      \"No conflicts detected; all statements are original and unambiguous.\",\n      \"Entity resolution: New entities created for atomic memory principles.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

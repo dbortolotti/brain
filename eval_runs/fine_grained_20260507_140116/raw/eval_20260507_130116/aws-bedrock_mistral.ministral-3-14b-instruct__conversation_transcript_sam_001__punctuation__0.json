@@ -1,0 +1,153 @@
+{
+  "error": null,
+  "fixture_id": "conversation_transcript_sam_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam left Goldman Sachs last month to join Point72, continues listening to jazz (now favoring early Coltrane alongside Bill Evans), and requested an article on AI infrastructure from Daniele for further discussion.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit_durable_memory",
+    "entity_resolution": {
+      "action": "merge_or_create",
+      "entity_id": null,
+      "reason": "No existing entity IDs provided; new entities inferred from context."
+    },
+    "intent": "social_update_and_follow_up",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer_previous",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "employer_current",
+            "type": "organization"
+          }
+        ],
+        "kind": "professional_status",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "employed_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman Sachs",
+            "predicate": "previously_employed_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "last_month",
+            "predicate": "employment_change_date",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman Sachs last month and joined Point72."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred_artist_previous",
+            "type": "artist"
+          },
+          {
+            "name": "Coltrane (early)",
+            "role": "preferred_artist_current",
+            "type": "artist"
+          }
+        ],
+        "kind": "personal_interest_update",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "listens_to",
+            "subject": "Sam"
+          },
+          {
+            "object": "Coltrane (early)",
+            "predicate": "listens_to",
+            "subject": "Sam"
+          },
+          {
+            "object": "Coltrane (early)",
+            "predicate": "preference_shift_toward",
+            "subject": "Sam"
+          },
+          {
+            "object": "lately",
+            "predicate": "preference_shift_date",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam continues to listen to jazz, with a recent shift toward early Coltrane, though still appreciates Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "requester",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "recipient",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "subject_matter",
+            "type": "topic"
+          }
+        ],
+        "kind": "action_item",
+        "relationships": [
+          {
+            "object": "article on AI infrastructure",
+            "predicate": "requested",
+            "subject": "Sam"
+          },
+          {
+            "object": "sending the article",
+            "predicate": "responsible_for",
+            "subject": "Daniele"
+          },
+          {
+            "object": "AI infrastructure",
+            "predicate": "intends_to_discuss",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam requested Daniele to send an article about AI infrastructure for further discussion."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed durable memory for Sam's professional and personal updates.",
+        "Created action item for Daniele to send AI infrastructure article.",
+        "Preserved ambiguity in jazz preference shift (e.g., 'lately' without exact date)."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"social_update_and_follow_up\",\n  \"decision\": \"commit_durable_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"professional_status\",\n      \"statement\": \"Sam left Goldman Sachs last month and joined Point72.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"employer_previous\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer_current\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"employed_at\",\n          \"object\": \"Point72\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"previously_employed_at\",\n          \"object\": \"Goldman Sachs\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"employment_change_date\",\n          \"object\": \"last_month\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"personal_interest_update\",\n      \"statement\": \"Sam continues to listen to jazz, with a recent shift toward early Coltrane, though still appreciates Bill Evans.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"artist\",\n          \"role\": \"preferred_artist_previous\"\n        },\n        {\n          \"name\": \"Coltrane (early)\",\n          \"type\": \"artist\",\n          \"role\": \"preferred_artist_current\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"listens_to\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"listens_to\",\n          \"object\": \"Coltrane (early)\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"preference_shift_toward\",\n          \"object\": \"Coltrane (early)\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"preference_shift_date\",\n          \"object\": \"lately\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"action_item\",\n      \"statement\": \"Sam requested Daniele to send an article about AI infrastructure for further discussion.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"requester\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"recipient\"\n        },\n        {\n          \"name\": \"AI infrastructure\",\n          \"type\": \"topic\",\n          \"role\": \"subject_matter\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"requested\",\n          \"object\": \"article on AI infrastructure\"\n        },\n        {\n          \"subject\": \"Daniele\",\n          \"predicate\": \"responsible_for\",\n          \"object\": \"sending the article\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"intends_to_discuss\",\n          \"object\": \"AI infrastructure\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge_or_create\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entity IDs provided; new entities inferred from context.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Sam left Goldman Sachs last month to join Point72, continues listening to jazz (now favoring early Coltrane alongside Bill Evans), and requested an article on AI infrastructure from Daniele for further discussion.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Committed durable memory for Sam's professional and personal updates.\",\n      \"Created action item for Daniele to send AI infrastructure article.\",\n      \"Preserved ambiguity in jazz preference shift (e.g., 'lately' without exact date).\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

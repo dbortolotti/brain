@@ -1,0 +1,57 @@
+{
+  "fixture_id": "ambiguous_sam_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Ambiguous: the statement could apply to either Sam from Goldman or Sam from Point72, so no durable entity link is made.",
+    "citations": [
+      "New message: Sam mentioned that he likes Bill Evans",
+      "Existing entities - Sam from Goldman; Sam from Point72"
+    ],
+    "conflict_classification": "ambiguous_entity",
+    "decision": "defer",
+    "entity_resolution": {
+      "action": "ambiguous_no_link",
+      "entity_id": null,
+      "reason": "The message refers to 'Sam' without enough context to distinguish between the existing entities Sam from Goldman and Sam from Point72."
+    },
+    "intent": "entity_candidate_ranker",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "mentioned",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans, but the specific Sam is ambiguous between Sam from Goldman and Sam from Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recorded an ambiguous preference claim without binding it to a specific Sam.",
+        "Preserved entity ambiguity to avoid superseding either existing Sam entity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask which Sam is meant before linking this preference.",
+      "Wait for a future message that disambiguates which Sam likes Bill Evans."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

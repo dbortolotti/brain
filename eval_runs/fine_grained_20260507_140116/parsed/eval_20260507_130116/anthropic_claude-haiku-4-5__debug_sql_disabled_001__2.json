@@ -1,0 +1,34 @@
+{
+  "fixture_id": "debug_sql_disabled_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "SQL query execution is disabled. Direct database queries are not permitted when BRAIN_DEBUG_SQL_ENABLED is false. Use standard memory retrieval APIs instead.",
+    "citations": [
+      "Brain security policy: debug SQL requires explicit enablement",
+      "Fixture ID: debug_sql_disabled_001"
+    ],
+    "conflict_classification": "security_constraint_violation",
+    "decision": "Deny SQL query execution",
+    "entity_resolution": {
+      "action": "reject",
+      "entity_id": null,
+      "reason": "BRAIN_DEBUG_SQL_ENABLED=false prevents direct SQL access to memory system"
+    },
+    "intent": "Query memory cards with SQL debugging disabled",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "SQL debug mode is disabled",
+        "No memory cards retrieved",
+        "Query rejected at security boundary"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Enable BRAIN_DEBUG_SQL_ENABLED=true if authorized for debug operations",
+      "Use /brain query or /brain search commands for memory retrieval",
+      "Request memory cards through standard API endpoints"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

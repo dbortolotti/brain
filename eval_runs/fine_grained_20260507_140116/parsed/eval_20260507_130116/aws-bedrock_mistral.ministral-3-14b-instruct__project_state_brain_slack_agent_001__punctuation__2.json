@@ -1,0 +1,102 @@
+{
+  "fixture_id": "project_state_brain_slack_agent_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Slack is designated as the primary guardrailed memory ingestion interface for Brain, with Telegram integration deferred to a future implementation phase. All current memory ingestion must adhere to Slack\u2019s validation protocols.",
+    "citations": [
+      "Project state directive: 'Slack should be the primary guardrailed memory ingestion interface; Telegram can come later'"
+    ],
+    "conflict_classification": "scope_conflict",
+    "decision": "Slack as primary guardrailed memory ingestion interface for Brain; Telegram deferred to future implementation",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": "Telegram",
+      "reason": "Ambiguity in guardrail requirements and platform-specific constraints; requires dedicated evaluation phase."
+    },
+    "intent": "define_primary_ingestion_interface",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "primary_ingestion_interface",
+            "type": "platform"
+          },
+          {
+            "name": "Telegram",
+            "role": "future_ingestion_interface",
+            "type": "platform"
+          },
+          {
+            "name": "Brain",
+            "role": "memory_storage",
+            "type": "system"
+          }
+        ],
+        "kind": "system_design",
+        "relationships": [
+          {
+            "object": "memory_ingestion",
+            "predicate": "IS_PRIMARY_FOR",
+            "subject": "Slack"
+          },
+          {
+            "object": "future_implementation",
+            "predicate": "IS_DEFFERED_TO",
+            "subject": "Telegram"
+          },
+          {
+            "object": "guardrailed_validation",
+            "predicate": "REQUIRES",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "Slack must serve as the primary guardrailed interface for ingesting memory into Brain, with strict validation and access controls applied to all incoming data."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Telegram",
+            "role": "excluded_ingestion_source",
+            "type": "platform"
+          },
+          {
+            "name": "current_scope",
+            "role": "exclusion_context",
+            "type": "temporal_boundary"
+          }
+        ],
+        "kind": "constraint",
+        "relationships": [
+          {
+            "object": "current_memory_ingestion",
+            "predicate": "IS_EXCLUDED_FROM",
+            "subject": "Telegram"
+          },
+          {
+            "object": "Telegram_for_future",
+            "predicate": "RESERVES",
+            "subject": "current_scope"
+          }
+        ],
+        "statement": "Telegram integration for memory ingestion is explicitly excluded from current scope and reserved for later evaluation."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory cards committed with strict scope boundaries.",
+        "Telegram deferred without superseding current Slack-centric design.",
+        "Ambiguity preserved for future resolution."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Re-evaluate Telegram guardrail requirements before inclusion",
+      "Define explicit exclusion criteria for deferred platforms",
+      "Schedule dedicated phase for Telegram integration assessment"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

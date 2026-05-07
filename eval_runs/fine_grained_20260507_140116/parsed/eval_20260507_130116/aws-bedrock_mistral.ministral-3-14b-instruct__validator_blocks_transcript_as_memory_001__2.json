@@ -1,0 +1,35 @@
+{
+  "fixture_id": "validator_blocks_transcript_as_memory_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "A single 8000-word transcript cannot be durably committed as a single memory card due to: (1) lack of explicit segmentation into discrete statements, (2) unresolved speaker/role ambiguity, (3) potential superseded/deleted content, and (4) violation of the 'preserve ambiguity' constraint when no contextual boundaries exist. Durable memory requires atomic, timestamped, and role-attributed statements.",
+    "citations": [
+      "Schema requirement: 'preserve ambiguity' \u2192 Ambiguity in speaker roles/intent cannot be resolved without granular parsing.",
+      "Schema requirement: 'never present superseded/deleted facts' \u2192 No mechanism to distinguish active vs. inactive content in monolithic transcript.",
+      "Schema requirement: 'durable memory' \u2192 8000 words exceed atomicity thresholds for a single card (max ~250 words for context-preserving durability)."
+    ],
+    "conflict_classification": "irreconcilable_ambiguity",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "null",
+      "entity_id": null,
+      "reason": "No discrete, actionable entities or relationships can be extracted from an 8000-word transcript without granular, context-preserving segmentation. Ambiguity in intent, speaker roles, and temporal anchoring violates durability requirements."
+    },
+    "intent": "evaluate_durability_of_conversation_summary_card",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Input violates durability constraints: monolithic transcript lacks atomicity, temporal anchoring, and role attribution.",
+        "Ambiguity preservation impossible without segmentation; current form risks false precision.",
+        "No superseded/deleted content detection mechanism exists for unparsed transcripts."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Segment transcript into timestamped, role-attributed statements (\u2264250 words/card) with explicit speaker/intent resolution.",
+      "Flag as 'raw_transcript' with metadata for future granular processing, but do not commit as memory.",
+      "Request clarification on critical entities/relationships before attempting durability encoding."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

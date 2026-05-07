@@ -1,0 +1,58 @@
+{
+  "fixture_id": "ambiguous_sam_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Ambiguous Sam; no durable entity commitment.",
+    "citations": [
+      "Existing entities: Sam from Goldman",
+      "Existing entities: Sam from Point72",
+      "New message: Sam mentioned that he likes Bill Evans"
+    ],
+    "conflict_classification": "ambiguous_reference",
+    "decision": "defer",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The message refers to Sam, but both existing entities (Sam from Goldman and Sam from Point72) are plausible matches; the reference is ambiguous and should not be committed to a specific entity."
+    },
+    "intent": "rank entity candidate for ambiguous mention",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "mentioned speaker/subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "music artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected ambiguous reference to Sam.",
+        "Avoided assigning the preference to a specific existing entity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask which Sam is meant before linking the preference.",
+      "Store the preference only as an ambiguous mention until disambiguated."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

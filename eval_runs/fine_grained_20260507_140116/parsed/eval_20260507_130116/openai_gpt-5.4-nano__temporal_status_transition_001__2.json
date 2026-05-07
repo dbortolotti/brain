@@ -1,0 +1,64 @@
+{
+  "fixture_id": "temporal_status_transition_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "This is a state transition: the project was previously planned/open, but the MVP has now been implemented. That should update the current status to reflect MVP implementation, while avoiding an assumption that the entire planned agent is fully completed.",
+    "citations": [],
+    "conflict_classification": "temporal_status_transition",
+    "decision": "Update the current status to reflect that the MVP is now implemented, without assuming the full planned agent is complete.",
+    "entity_resolution": {
+      "action": "use_existing_entity",
+      "entity_id": "Brain_Slack_agent",
+      "reason": "Both inputs refer to the same project/workstream; the new information specifies the MVP implementation state."
+    },
+    "intent": "Explain and resolve the temporal/state conflict for the Brain Slack agent project status.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain Slack agent",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "MVP",
+            "role": "scope",
+            "type": "artifact"
+          },
+          {
+            "name": "project status",
+            "role": "attribute",
+            "type": "field"
+          }
+        ],
+        "kind": "system_state_transition",
+        "relationships": [
+          {
+            "object": "open",
+            "predicate": "had_previous_status",
+            "subject": "Brain Slack agent"
+          },
+          {
+            "object": "implemented",
+            "predicate": "is_now",
+            "subject": "Brain Slack agent MVP"
+          }
+        ],
+        "statement": "The Brain Slack agent was previously in a planned/open state, and the Brain Slack agent MVP is now implemented."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed a durable transition statement acknowledging the prior 'planned/open' state and the new 'MVP implemented' state.",
+        "Preserved ambiguity about whether the entire agent (beyond MVP) is complete."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Record two separate milestones: (1) MVP = implemented, (2) full agent plan remains open/unspecified until confirmed.",
+      "Explicitly set project status to 'MVP implemented' (or equivalent) instead of generic 'open' and keep 'open' reserved for remaining scope."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

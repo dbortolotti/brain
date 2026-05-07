@@ -1,0 +1,60 @@
+{
+  "error": null,
+  "fixture_id": "slack_ambiguous_entity_buttons_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Which Sam do you mean: Sam from Goldman or Sam from Point72?",
+    "citations": [
+      "Existing: Sam from Goldman; Sam from Point72.",
+      "/brain remember Sam likes Bill Evans."
+    ],
+    "conflict_classification": "entity_ambiguity",
+    "decision": "defer",
+    "entity_resolution": {
+      "action": "unresolved",
+      "entity_id": null,
+      "reason": "There are multiple existing entities named Sam (Sam from Goldman and Sam from Point72), so the reference cannot be safely linked to a single durable entity without clarification."
+    },
+    "intent": "store_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "ambiguous subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked entity",
+            "type": "person"
+          }
+        ],
+        "kind": "ambiguous_preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Someone named Sam is said to like Bill Evans, but the specific Sam is ambiguous because multiple Sams already exist in memory."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Not committed to durable memory due to ambiguous entity reference.",
+        "Current memory not updated to avoid misattribution."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Clarify which Sam should receive the preference.",
+      "If this applies to both Sams, state that explicitly before storing."
+    ]
+  },
+  "raw_text": "{\"intent\":\"store_memory\",\"decision\":\"defer\",\"memory_cards\":[{\"kind\":\"ambiguous_preference\",\"statement\":\"Someone named Sam is said to like Bill Evans, but the specific Sam is ambiguous because multiple Sams already exist in memory.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"ambiguous subject\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked entity\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"unresolved\",\"entity_id\":null,\"reason\":\"There are multiple existing entities named Sam (Sam from Goldman and Sam from Point72), so the reference cannot be safely linked to a single durable entity without clarification.\"},\"conflict_classification\":\"entity_ambiguity\",\"answer\":\"Which Sam do you mean: Sam from Goldman or Sam from Point72?\",\"citations\":[\"Existing: Sam from Goldman; Sam from Point72.\",\"/brain remember Sam likes Bill Evans.\"],\"repair_options\":[\"Clarify which Sam should receive the preference.\",\"If this applies to both Sams, state that explicitly before storing.\"],\"receipt\":{\"success\":false,\"details\":[\"Not committed to durable memory due to ambiguous entity reference.\",\"Current memory not updated to avoid misattribution.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

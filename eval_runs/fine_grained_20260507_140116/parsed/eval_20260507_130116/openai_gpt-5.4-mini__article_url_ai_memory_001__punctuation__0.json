@@ -1,0 +1,81 @@
+{
+  "fixture_id": "article_url_ai_memory_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Stored a cautious memory of the article\u2019s main point: graph memory helps preserve relationships, and provenance/update semantics are needed.",
+    "citations": [
+      "input: mock fetched article text"
+    ],
+    "conflict_classification": "none",
+    "decision": "Create a cautious source memory card for the article and its stated takeaway, preserving URL ambiguity.",
+    "entity_resolution": {
+      "action": "create_unresolved_source_note",
+      "entity_id": null,
+      "reason": "The URL is malformed/ambiguous in the input (\"https -//examplecom/ai-memory\"), so the source should not be normalized to a durable canonical entity."
+    },
+    "intent": "Remember an article about AI memory / knowledge graph memory design.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "article",
+            "role": "source",
+            "type": "document"
+          },
+          {
+            "name": "AI memory",
+            "role": "subject",
+            "type": "topic"
+          },
+          {
+            "name": "knowledge graph memory design",
+            "role": "subject",
+            "type": "topic"
+          }
+        ],
+        "kind": "source_note",
+        "relationships": [
+          {
+            "object": "AI memory",
+            "predicate": "about",
+            "subject": "article"
+          },
+          {
+            "object": "knowledge graph memory design",
+            "predicate": "mentions",
+            "subject": "article"
+          },
+          {
+            "object": "agents preserve relationships",
+            "predicate": "helps",
+            "subject": "graph memory"
+          },
+          {
+            "object": "graph memory",
+            "predicate": "is needed for",
+            "subject": "provenance"
+          },
+          {
+            "object": "graph memory",
+            "predicate": "is needed for",
+            "subject": "update semantics"
+          }
+        ],
+        "statement": "An article about AI memory and knowledge graph memory design was provided; it states that graph memory helps agents preserve relationships and that provenance plus update semantics are needed."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured article-level note with medium confidence.",
+        "Preserved URL ambiguity; no canonical source entity created."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want this linked to a canonical URL later, provide the corrected article URL.",
+      "If you want a shorter card, I can compress it to a single takeaway sentence."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

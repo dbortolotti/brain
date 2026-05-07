@@ -1,0 +1,34 @@
+{
+  "fixture_id": "debug_inspect_memory_001__context",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "Inspection request recognized for memory ID mem_123 in contextual/debug mode. No memory contents were provided in the input, so there is nothing to summarize or validate. This should be handled as a read-only lookup of the referenced memory record.",
+    "citations": [
+      "mem_123"
+    ],
+    "conflict_classification": "none",
+    "decision": "read_only_inspection",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": "mem_123",
+      "reason": "The user requested inspection of an existing memory by explicit memory ID; no entity disambiguation or memory mutation is required."
+    },
+    "intent": "inspect_memory",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Parsed command intent as inspect_memory.",
+        "Treated mem_123 as a direct memory identifier, not a natural-language fact.",
+        "Performed no durable write, update, merge, or deletion.",
+        "No current fact claims inferred because the memory contents were not included in the request."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If mem_123 exists, return its stored fields, provenance, timestamps, and current/superseded status.",
+      "If mem_123 does not exist, return a not_found result for that memory ID.",
+      "If inspection requires authorization or scope, verify access before revealing contents."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

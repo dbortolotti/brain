@@ -1,0 +1,90 @@
+{
+  "fixture_id": "additive_sam_preferences_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Both facts are compatible. Sam can like multiple musicians. Commit new preference as additional fact.",
+    "citations": [
+      "Existing memory: Sam from Goldman likes Bill Evans",
+      "New input: Sam from Goldman also likes Sonny Rollins"
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "Accept and commit both facts as complementary",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "sam_goldman_001",
+      "reason": "Same person (Sam from Goldman) referenced in both existing and new memory; preferences are additive and non-contradictory"
+    },
+    "intent": "Add new preference fact to existing memory without contradiction",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Sonny Rollins",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Sonny Rollins"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preference for Bill Evans retained",
+        "Preference for Sonny Rollins added",
+        "Entity Sam from Goldman unified under single identity",
+        "No superseded facts"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

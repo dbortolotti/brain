@@ -1,0 +1,56 @@
+{
+  "fixture_id": "ambiguous_sam_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Ambiguous: Sam could be either Sam from Goldman or Sam from Point72.",
+    "citations": [
+      "context"
+    ],
+    "conflict_classification": "identity_ambiguity",
+    "decision": "defer",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The message refers to 'Sam' without disambiguating whether it is Sam from Goldman or Sam from Point72, so a durable entity assignment would be speculative."
+    },
+    "intent": "entity_candidate_ranker",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "music preference object",
+            "type": "person"
+          }
+        ],
+        "kind": "ambiguous_preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "A Sam mentioned liking Bill Evans, but which existing Sam this refers to is unclear."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguous entity mention detected.",
+        "No durable entity commitment made."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for clarification about which Sam is meant.",
+      "Wait for a future message that distinguishes Sam from Goldman vs Sam from Point72."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

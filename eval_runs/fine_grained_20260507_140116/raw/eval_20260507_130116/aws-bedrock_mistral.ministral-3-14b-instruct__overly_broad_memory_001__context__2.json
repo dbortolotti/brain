@@ -1,0 +1,88 @@
+{
+  "error": null,
+  "fixture_id": "overly_broad_memory_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "No durable memory committed. Request rejected due to ambiguity and lack of explicit, non-superseded context.",
+    "citations": [],
+    "conflict_classification": "none_applicable",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "null",
+      "entity_id": null,
+      "reason": "No entities resolved due to rejected intent."
+    },
+    "intent": "durability_filter:preserve_ambiguity_and_avoid_superseded_facts",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "AI",
+            "role": "subject",
+            "type": "concept"
+          },
+          {
+            "name": "durable_memory",
+            "role": "constraint",
+            "type": "process"
+          }
+        ],
+        "kind": "system_rule",
+        "relationships": [
+          {
+            "object": "explicit, unambiguous context for durable memory",
+            "predicate": "requires",
+            "subject": "AI"
+          },
+          {
+            "object": "superseded or deleted facts",
+            "predicate": "must_avoid",
+            "subject": "durable_memory"
+          }
+        ],
+        "statement": "AI is an overly broad and ambiguous category. No durable memory may be committed without explicit, unambiguous, and non-superseded context."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "AI",
+            "role": "ambiguous_scope",
+            "type": "concept"
+          },
+          {
+            "name": "durable_memory",
+            "role": "blocked",
+            "type": "process"
+          }
+        ],
+        "kind": "system_warning",
+        "relationships": [
+          {
+            "object": "durable_memory_commitment",
+            "predicate": "prevents",
+            "subject": "ambiguous_scope"
+          }
+        ],
+        "statement": "Request to remember 'everything about AI' is inherently ambiguous and overly broad. No memory cards will be generated."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Request rejected: 'everything about AI' is not a valid scope for durable memory.",
+        "Ambiguity violates durability_filter constraints.",
+        "No memory cards generated."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Specify a narrow, unambiguous sub-topic of AI (e.g., 'transformer architectures in 2023').",
+      "Provide explicit constraints (e.g., 'only peer-reviewed papers post-2020').",
+      "Clarify temporal or source boundaries (e.g., 'only facts from arXiv preprints')."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"durability_filter:preserve_ambiguity_and_avoid_superseded_facts\",\n  \"decision\": \"reject\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"system_rule\",\n      \"statement\": \"AI is an overly broad and ambiguous category. No durable memory may be committed without explicit, unambiguous, and non-superseded context.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"AI\",\n          \"type\": \"concept\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"durable_memory\",\n          \"type\": \"process\",\n          \"role\": \"constraint\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"AI\",\n          \"predicate\": \"requires\",\n          \"object\": \"explicit, unambiguous context for durable memory\"\n        },\n        {\n          \"subject\": \"durable_memory\",\n          \"predicate\": \"must_avoid\",\n          \"object\": \"superseded or deleted facts\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"system_warning\",\n      \"statement\": \"Request to remember 'everything about AI' is inherently ambiguous and overly broad. No memory cards will be generated.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"AI\",\n          \"type\": \"concept\",\n          \"role\": \"ambiguous_scope\"\n        },\n        {\n          \"name\": \"durable_memory\",\n          \"type\": \"process\",\n          \"role\": \"blocked\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"ambiguous_scope\",\n          \"predicate\": \"prevents\",\n          \"object\": \"durable_memory_commitment\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"null\",\n    \"entity_id\": null,\n    \"reason\": \"No entities resolved due to rejected intent.\"\n  },\n  \"conflict_classification\": \"none_applicable\",\n  \"answer\": \"No durable memory committed. Request rejected due to ambiguity and lack of explicit, non-superseded context.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Specify a narrow, unambiguous sub-topic of AI (e.g., 'transformer architectures in 2023').\",\n    \"Provide explicit constraints (e.g., 'only peer-reviewed papers post-2020').\",\n    \"Clarify temporal or source boundaries (e.g., 'only facts from arXiv preprints').\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Request rejected: 'everything about AI' is not a valid scope for durable memory.\",\n      \"Ambiguity violates durability_filter constraints.\",\n      \"No memory cards generated.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "fixture_id": "debug_sql_disabled_001__punctuation",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "SQL-based memory query was not executed due to BRAIN_DEBUG_SQL_ENABLED=false; memory_cards snapshot returned reflects current, non-SQL-backed state.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "execute_and_return_memory_snapshot",
+    "entity_resolution": {
+      "action": "retain_or_update",
+      "entity_id": null,
+      "reason": "request specifies disabling SQL debug output; no new persistent entity created"
+    },
+    "intent": "evaluate_memory_system",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "BRAIN_DEBUG_SQL_ENABLED",
+            "role": "configuration",
+            "type": "flag"
+          },
+          {
+            "name": "debug",
+            "role": "context",
+            "type": "state"
+          },
+          {
+            "name": "SQL",
+            "role": "component",
+            "type": "technology"
+          }
+        ],
+        "kind": "memory_card",
+        "relationships": [
+          {
+            "object": "false",
+            "predicate": "is",
+            "subject": "BRAIN_DEBUG_SQL_ENABLED"
+          },
+          {
+            "object": "with BRAIN_DEBUG_SQL_ENABLED=false",
+            "predicate": "is configured",
+            "subject": "Brain memory system"
+          },
+          {
+            "object": "SQL disabled mode",
+            "predicate": "uses",
+            "subject": "operation"
+          }
+        ],
+        "statement": "Brain memory system is configured with BRAIN_DEBUG_SQL_ENABLED=false for this operation."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Query execution skipped: BRAIN_DEBUG_SQL_ENABLED=false",
+        "Returned in-memory snapshot of memory_cards state"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"evaluate_memory_system\",\n  \"decision\": \"execute_and_return_memory_snapshot\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"memory_card\",\n      \"statement\": \"Brain memory system is configured with BRAIN_DEBUG_SQL_ENABLED=false for this operation.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"BRAIN_DEBUG_SQL_ENABLED\",\n          \"type\": \"flag\",\n          \"role\": \"configuration\"\n        }\n        ,\n        {\n          \"name\": \"debug\",\n          \"type\": \"state\",\n          \"role\": \"context\"\n        }\n        ,\n        {\n          \"name\": \"SQL\",\n          \"type\": \"technology\",\n          \"role\": \"component\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"BRAIN_DEBUG_SQL_ENABLED\",\n          \"predicate\": \"is\",\n          \"object\": \"false\"\n        },\n        {\n          \"subject\": \"Brain memory system\",\n          \"predicate\": \"is configured\",\n          \"object\": \"with BRAIN_DEBUG_SQL_ENABLED=false\"\n        },\n        {\n          \"subject\": \"operation\",\n          \"predicate\": \"uses\",\n          \"object\": \"SQL disabled mode\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"retain_or_update\",\n    \"entity_id\": null,\n    \"reason\": \"request specifies disabling SQL debug output; no new persistent entity created\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"SQL-based memory query was not executed due to BRAIN_DEBUG_SQL_ENABLED=false; memory_cards snapshot returned reflects current, non-SQL-backed state.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Query execution skipped: BRAIN_DEBUG_SQL_ENABLED=false\",\n      \"Returned in-memory snapshot of memory_cards state\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

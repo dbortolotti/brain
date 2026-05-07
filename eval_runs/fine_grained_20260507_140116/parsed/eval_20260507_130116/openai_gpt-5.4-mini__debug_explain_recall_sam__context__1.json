@@ -1,0 +1,82 @@
+{
+  "fixture_id": "debug_explain_recall_sam__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Recall returned mem_new for Sam from Goldman because it is the newer, current memory, while mem_old was filtered out as superseded.",
+    "citations": [
+      "mem_new",
+      "mem_old"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "Recall returned mem_new because it is the most recent relevant memory about Sam from Goldman, and mem_old was excluded since it has been superseded by later information.",
+    "entity_resolution": {
+      "action": "resolve_as_same_entity_with_recency_preference",
+      "entity_id": null,
+      "reason": "Both memories refer to the same Sam in the Goldman context; the newer memory is preferred because the older one is marked superseded."
+    },
+    "intent": "Explain why recall selected the newer memory for Sam from Goldman and filtered the older one as superseded.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "association",
+            "type": "organization"
+          }
+        ],
+        "kind": "current",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is associated with Goldman in the newer recalled memory (mem_new)."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "association",
+            "type": "organization"
+          }
+        ],
+        "kind": "superseded",
+        "relationships": [
+          {
+            "object": "mem_new",
+            "predicate": "superseded_by",
+            "subject": "mem_old"
+          }
+        ],
+        "statement": "An older memory about Sam from Goldman (mem_old) exists but is no longer current because it was superseded by newer information."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Selected newest relevant memory.",
+        "Filtered older memory due to supersession.",
+        "No current conflict remains because only mem_new is treated as active."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Keep mem_new as the active memory and retain mem_old only as historical context.",
+      "If mem_old is incorrect rather than merely outdated, mark it explicitly deleted instead of superseded."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

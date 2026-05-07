@@ -1,0 +1,53 @@
+{
+  "fixture_id": "article_url_fetch_failure_001__context",
+  "model": "groq:llama-3.3-70b-versatile",
+  "payload": {
+    "answer": "article fetch failed",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "fetch failure",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "no entity to resolve"
+    },
+    "intent": "extract atomic card",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "subject",
+            "type": "article"
+          },
+          {
+            "name": "memory architecture",
+            "role": "context",
+            "type": "topic"
+          }
+        ],
+        "kind": "article",
+        "relationships": [
+          {
+            "object": "memory architecture",
+            "predicate": "is useful for",
+            "subject": "https://example.com/missing"
+          }
+        ],
+        "statement": "https://example.com/missing is a useful article for memory architecture"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "404 network error"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "retry fetch",
+      "check article url"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

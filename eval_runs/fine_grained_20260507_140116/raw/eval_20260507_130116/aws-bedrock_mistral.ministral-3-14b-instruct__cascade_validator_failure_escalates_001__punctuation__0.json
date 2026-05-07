@@ -1,0 +1,29 @@
+{
+  "error": null,
+  "fixture_id": "cascade_validator_failure_escalates_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The input violates the required schema by omitting critical fields (e.g., `kind`, `statement` in `memory_cards`) and presenting an unsafe proposal ('Cheap model output') that demands escalation. No durable memory can be committed without strict adherence to the schema.",
+    "citations": [],
+    "conflict_classification": "schema_violation",
+    "decision": "safe_reject",
+    "entity_resolution": null,
+    "intent": "durability_filter",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Input lacks required `memory_cards` with valid `kind`/`statement` pairs.",
+        "Unsafe proposal ('Cheap model output') detected\u2014escalation mandatory.",
+        "Ambiguity preserved; no superseded/deleted facts were introduced."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Escalate to a stronger model for schema-compliant evaluation.",
+      "Reject the input entirely due to unsafe/non-compliant content."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"durability_filter\",\n  \"decision\": \"safe_reject\",\n  \"memory_cards\": [],\n  \"entity_resolution\": null,\n  \"conflict_classification\": \"schema_violation\",\n  \"answer\": \"The input violates the required schema by omitting critical fields (e.g., `kind`, `statement` in `memory_cards`) and presenting an unsafe proposal ('Cheap model output') that demands escalation. No durable memory can be committed without strict adherence to the schema.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Escalate to a stronger model for schema-compliant evaluation.\",\n    \"Reject the input entirely due to unsafe/non-compliant content.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Input lacks required `memory_cards` with valid `kind`/`statement` pairs.\",\n      \"Unsafe proposal ('Cheap model output') detected\u2014escalation mandatory.\",\n      \"Ambiguity preserved; no superseded/deleted facts were introduced.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

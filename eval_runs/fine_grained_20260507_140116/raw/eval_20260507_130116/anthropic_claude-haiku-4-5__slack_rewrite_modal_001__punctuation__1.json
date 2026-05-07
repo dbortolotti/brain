@@ -1,0 +1,59 @@
+{
+  "error": null,
+  "fixture_id": "slack_rewrite_modal_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory rewritten with low confidence due to unresolved pronouns and indefinite references.",
+    "citations": [],
+    "conflict_classification": "ambiguous_referents",
+    "decision": "rewrite",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Referent 'He' and 'the other one' are ambiguous without context. Cannot resolve without additional information about which person and which items are being compared."
+    },
+    "intent": "store_preference",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "He",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "the other one",
+            "role": "object_of_preference",
+            "type": "object"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "He"
+          }
+        ],
+        "statement": "He prefers the other one."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preference statement stored",
+        "Ambiguity preserved in memory",
+        "Entity resolution deferred pending clarification"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify who 'He' refers to (full name or identifier)",
+      "Specify what 'the other one' refers to (name or description of the preferred item)",
+      "Provide context about what alternatives are being compared"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"store_preference\",\n  \"decision\": \"rewrite\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"He prefers the other one.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"He\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"the other one\",\n          \"type\": \"object\",\n          \"role\": \"object_of_preference\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"He\",\n          \"predicate\": \"prefers\",\n          \"object\": \"the other one\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Referent 'He' and 'the other one' are ambiguous without context. Cannot resolve without additional information about which person and which items are being compared.\"\n  },\n  \"conflict_classification\": \"ambiguous_referents\",\n  \"answer\": \"Memory rewritten with low confidence due to unresolved pronouns and indefinite references.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Clarify who 'He' refers to (full name or identifier)\",\n    \"Specify what 'the other one' refers to (name or description of the preferred item)\",\n    \"Provide context about what alternatives are being compared\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Preference statement stored\",\n      \"Ambiguity preserved in memory\",\n      \"Entity resolution deferred pending clarification\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

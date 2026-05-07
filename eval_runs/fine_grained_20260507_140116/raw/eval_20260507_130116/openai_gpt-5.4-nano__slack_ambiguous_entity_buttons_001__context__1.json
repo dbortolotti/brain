@@ -1,0 +1,32 @@
+{
+  "error": null,
+  "fixture_id": "slack_ambiguous_entity_buttons_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "I can\u2019t safely store 'Sam likes Bill Evans' because it\u2019s unclear which Sam you mean (Goldman vs Point72).",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "do_not_commit_due_to_ambiguity",
+    "entity_resolution": {
+      "action": "ambiguous_entity_unresolved",
+      "entity_id": null,
+      "reason": "Context contains two different people both named Sam (Goldman and Point72). The new statement 'Sam likes Bill Evans' does not specify which Sam."
+    },
+    "intent": "remember",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No durable memory written for 'Sam likes Bill Evans' due to unresolved entity identity."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Specify which Sam: 'Sam (Goldman) likes Bill Evans' or 'Sam (Point72) likes Bill Evans'.",
+      "Provide an additional disambiguating detail (e.g., role, location, or a unique identifier for the Sam you mean).",
+      "Confirm whether both Sams like Bill Evans; if so, I can store the preference for each."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"remember\",\n  \"decision\": \"do_not_commit_due_to_ambiguity\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"ambiguous_entity_unresolved\",\n    \"entity_id\": null,\n    \"reason\": \"Context contains two different people both named Sam (Goldman and Point72). The new statement 'Sam likes Bill Evans' does not specify which Sam.\"\n  },\n  \"conflict_classification\": \"none_detected\",\n  \"answer\": \"I can\u2019t safely store 'Sam likes Bill Evans' because it\u2019s unclear which Sam you mean (Goldman vs Point72).\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Specify which Sam: 'Sam (Goldman) likes Bill Evans' or 'Sam (Point72) likes Bill Evans'.\",\n    \"Provide an additional disambiguating detail (e.g., role, location, or a unique identifier for the Sam you mean).\",\n    \"Confirm whether both Sams like Bill Evans; if so, I can store the preference for each.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"No durable memory written for 'Sam likes Bill Evans' due to unresolved entity identity.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

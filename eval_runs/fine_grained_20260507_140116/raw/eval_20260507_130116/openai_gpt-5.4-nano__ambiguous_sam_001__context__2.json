@@ -1,0 +1,56 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_sam_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Not committing durable memory because the referenced 'Sam' cannot be uniquely identified.",
+    "citations": [],
+    "conflict_classification": "none_detected_due_to_ambiguity",
+    "decision": "no_commit_ambiguous_entity",
+    "entity_resolution": {
+      "action": "needs_disambiguation",
+      "entity_id": null,
+      "reason": "There are multiple existing entities named Sam (Goldman and Point72). The message does not specify which one mentioned liking Bill Evans."
+    },
+    "intent": "capture_personal_preference",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference_ambiguous",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said he likes Bill Evans (which Sam is unclear: could be Sam from Goldman or Sam from Point72)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created an ephemeral/low-confidence memory card marked as ambiguous with respect to Sam identity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask the user which Sam (Goldman or Point72) said he likes Bill Evans.",
+      "Use surrounding context to identify the correct Sam (e.g., workplace, additional identifiers, or timestamps)."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"capture_personal_preference\",\n  \"decision\": \"no_commit_ambiguous_entity\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference_ambiguous\",\n      \"statement\": \"Sam said he likes Bill Evans (which Sam is unclear: could be Sam from Goldman or Sam from Point72).\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"artist\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"needs_disambiguation\",\n    \"entity_id\": null,\n    \"reason\": \"There are multiple existing entities named Sam (Goldman and Point72). The message does not specify which one mentioned liking Bill Evans.\"\n  },\n  \"conflict_classification\": \"none_detected_due_to_ambiguity\",\n  \"answer\": \"Not committing durable memory because the referenced 'Sam' cannot be uniquely identified.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Ask the user which Sam (Goldman or Point72) said he likes Bill Evans.\",\n    \"Use surrounding context to identify the correct Sam (e.g., workplace, additional identifiers, or timestamps).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Created an ephemeral/low-confidence memory card marked as ambiguous with respect to Sam identity.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

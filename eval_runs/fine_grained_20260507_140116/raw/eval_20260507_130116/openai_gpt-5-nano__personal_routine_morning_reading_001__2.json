@@ -1,0 +1,67 @@
+{
+  "error": null,
+  "fixture_id": "personal_routine_morning_reading_001",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Recorded preference: reading technical papers in the morning before checking email.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "preserve_ambiguity_and_durability",
+    "entity_resolution": {
+      "action": "no_change",
+      "entity_id": null,
+      "reason": "the input asserts a stable routine preference without conflicting data"
+    },
+    "intent": "record_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "morning",
+            "role": "time_of_day",
+            "type": "time"
+          },
+          {
+            "name": "technical papers",
+            "role": "content_focus",
+            "type": "object"
+          },
+          {
+            "name": "email",
+            "role": "activity_to_avoid_before",
+            "type": "communication"
+          }
+        ],
+        "kind": "routine_preference",
+        "relationships": [
+          {
+            "object": "checking email",
+            "predicate": "precedes",
+            "subject": "morning"
+          },
+          {
+            "object": "morning reading priority",
+            "predicate": "domain",
+            "subject": "technical papers"
+          }
+        ],
+        "statement": "I usually prefer to read technical papers in the morning before checking email."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created for routine_preference with high confidence.",
+        "No conflicts detected."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If this routine changes, add a new memory_card with updated morning reading preference and timestamp.",
+      "Do not overwrite the existing morning_reading routine unless explicitly superseded by new statement."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"record_memory\",\n  \"decision\": \"preserve_ambiguity_and_durability\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"routine_preference\",\n      \"statement\": \"I usually prefer to read technical papers in the morning before checking email.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"morning\",\n          \"type\": \"time\",\n          \"role\": \"time_of_day\"\n        },\n        {\n          \"name\": \"technical papers\",\n          \"type\": \"object\",\n          \"role\": \"content_focus\"\n        },\n        {\n          \"name\": \"email\",\n          \"type\": \"communication\",\n          \"role\": \"activity_to_avoid_before\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"morning\",\n          \"predicate\": \"precedes\",\n          \"object\": \"checking email\"\n        },\n        {\n          \"subject\": \"technical papers\",\n          \"predicate\": \"domain\",\n          \"object\": \"morning reading priority\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_change\",\n    \"entity_id\": null,\n    \"reason\": \"the input asserts a stable routine preference without conflicting data\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Recorded preference: reading technical papers in the morning before checking email.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If this routine changes, add a new memory_card with updated morning reading preference and timestamp.\",\n    \"Do not overwrite the existing morning_reading routine unless explicitly superseded by new statement.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card created for routine_preference with high confidence.\",\n      \"No conflicts detected.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

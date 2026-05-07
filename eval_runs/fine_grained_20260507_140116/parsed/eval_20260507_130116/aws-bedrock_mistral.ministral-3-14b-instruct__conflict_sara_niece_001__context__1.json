@@ -1,0 +1,95 @@
+{
+  "fixture_id": "conflict_sara_niece_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Conflict detected: Sara cannot simultaneously be Daniele's daughter (existing) and your niece (new) unless you are Daniele/Nur (unlikely given 'twin' context) or a third-party aunt/uncle. Preserve existing memory as high-confidence; new memory requires clarification: *Is 'self' referring to Daniele/Nur? *Are Sara's parents not Daniele/Nur? *Is 'niece' a misstatement?",
+    "citations": [
+      "Existing memory: Sara's parentage (Daniele) and twin status (Nur) are explicitly stated with high confidence.",
+      "New memory: 'Niece' implies a sibling of the speaker is Sara's parent, but no explicit link to Daniele/Nur exists."
+    ],
+    "conflict_classification": "familial_role_ambiguity",
+    "decision": "flag_conflict",
+    "entity_resolution": {
+      "action": "merge_with_ambiguity",
+      "entity_id": "Sara",
+      "reason": "New memory introduces conflicting familial relationship (niece vs. daughter/twin). Existing memory lacks explicit 'self' reference, but 'niece' implies a sibling (Daniele/Nur) is the parent. Ambiguity persists: is 'self' Daniele/Nur, or a third party?"
+    },
+    "intent": "detect_and_resolve_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "twin",
+            "type": "person"
+          }
+        ],
+        "kind": "existing_memory",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_daughter_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "niece",
+            "type": "person"
+          },
+          {
+            "name": "self",
+            "role": "uncle_or_aunt",
+            "type": "person"
+          }
+        ],
+        "kind": "new_memory",
+        "relationships": [
+          {
+            "object": "self",
+            "predicate": "is_niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict flagged; no automatic memory update committed.",
+        "Ambiguity preserved in entity resolution.",
+        "User action required to resolve familial relationship."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Clarify: 'Are you Daniele or Nur?'",
+      "Clarify: 'Is Sara\u2019s parentage separate from Daniele/Nur?'",
+      "Clarify: 'Did you mean Sara is your daughter (not niece)?'",
+      "Merge as ambiguous: 'Sara is Daniele\u2019s daughter, Nur\u2019s twin, and possibly also your niece if you are their sibling.'",
+      "Reject new memory: 'Conflict with high-confidence existing memory; cannot commit.'"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

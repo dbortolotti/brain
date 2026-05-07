@@ -1,0 +1,66 @@
+{
+  "error": null,
+  "fixture_id": "person_interaction_sam_bill_evans_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam (affiliated with Goldman) likes Bill Evans.",
+    "citations": [
+      "person_interaction_sam_bill_evans_001__context"
+    ],
+    "conflict_classification": "none",
+    "decision": "extract_and_resolve",
+    "entity_resolution": {
+      "action": "create_or_link",
+      "entity_id": null,
+      "reason": "No prior explicit mention of Sam's affiliation with Goldman or his preference for Bill Evans in this context. Requires durable memory capture."
+    },
+    "intent": "entity_mention_extraction",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred_entity",
+            "type": "person"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (Goldman) expressed a preference for Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted entity mentions and relationships with high confidence.",
+        "No conflicts detected; memory card created for durable storage."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"entity_mention_extraction\",\n  \"decision\": \"extract_and_resolve\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"durable_memory\",\n      \"statement\": \"Sam (Goldman) expressed a preference for Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"preferred_entity\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"affiliated_with\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_or_link\",\n    \"entity_id\": null,\n    \"reason\": \"No prior explicit mention of Sam's affiliation with Goldman or his preference for Bill Evans in this context. Requires durable memory capture.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Sam (affiliated with Goldman) likes Bill Evans.\",\n  \"citations\": [\n    \"person_interaction_sam_bill_evans_001__context\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Extracted entity mentions and relationships with high confidence.\",\n      \"No conflicts detected; memory card created for durable storage.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

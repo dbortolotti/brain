@@ -1,0 +1,68 @@
+{
+  "error": null,
+  "fixture_id": "slack_success_receipt_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory committed: Sam from Goldman likes Bill Evans",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_link",
+      "entity_id": null,
+      "reason": "Sam requires disambiguation context (Goldman affiliation provided); Bill Evans likely refers to jazz pianist but preserved as stated without assumption"
+    },
+    "intent": "Store a preference relationship between Sam (from Goldman Sachs) and Bill Evans (musician/preference object)",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "contact",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preference relationship stored",
+        "Entity ambiguity preserved (Sam, Bill Evans)",
+        "Organizational context captured (Goldman)"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify which Bill Evans (jazz pianist, author, etc.)",
+      "Confirm Sam's full name and Goldman division for future disambiguation"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Store a preference relationship between Sam (from Goldman Sachs) and Bill Evans (musician/preference object)\",\n  \"decision\": \"commit\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam from Goldman likes Bill Evans\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"contact\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"preference_object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_or_link\",\n    \"entity_id\": null,\n    \"reason\": \"Sam requires disambiguation context (Goldman affiliation provided); Bill Evans likely refers to jazz pianist but preserved as stated without assumption\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Memory committed: Sam from Goldman likes Bill Evans\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Clarify which Bill Evans (jazz pianist, author, etc.)\",\n    \"Confirm Sam's full name and Goldman division for future disambiguation\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Preference relationship stored\",\n      \"Entity ambiguity preserved (Sam, Bill Evans)\",\n      \"Organizational context captured (Goldman)\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

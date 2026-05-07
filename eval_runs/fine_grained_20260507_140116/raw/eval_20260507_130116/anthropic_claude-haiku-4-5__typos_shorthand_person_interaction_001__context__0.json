@@ -1,0 +1,73 @@
+{
+  "error": null,
+  "fixture_id": "typos_shorthand_person_interaction_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory card created with normalized entities and preserved ambiguity markers",
+    "citations": [
+      "Input contains non-standard abbreviations requiring human verification"
+    ],
+    "conflict_classification": "no_conflict_detected",
+    "decision": "Create memory cards with preserved ambiguity due to shorthand notation",
+    "entity_resolution": {
+      "action": "defer_disambiguation",
+      "entity_id": null,
+      "reason": "Shorthand 'goldmn' and 'evns' require confirmation; 'Goldman' could be Goldman Sachs or other entities; 'Bill Evans' could refer to multiple individuals (musician, athlete, etc.); 'likes' semantics ambiguous (professional respect, personal preference, romantic interest)"
+    },
+    "intent": "Extract and normalize person interaction from informal/abbreviated input",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "person_interaction",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at_or_affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed 3 entities from informal input",
+        "Normalized abbreviations to standard forms",
+        "Flagged 4 disambiguation points",
+        "Relationship recorded with confidence: medium"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm full name of organization (Goldman Sachs?)",
+      "Confirm full name and identity of Bill Evans",
+      "Clarify nature of 'likes' relationship",
+      "Verify Sam's full name and role"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Extract and normalize person interaction from informal/abbreviated input\",\n  \"decision\": \"Create memory cards with preserved ambiguity due to shorthand notation\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"person_interaction\",\n      \"statement\": \"Sam from Goldman likes Bill Evans\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at_or_affiliated_with\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer_disambiguation\",\n    \"entity_id\": null,\n    \"reason\": \"Shorthand 'goldmn' and 'evns' require confirmation; 'Goldman' could be Goldman Sachs or other entities; 'Bill Evans' could refer to multiple individuals (musician, athlete, etc.); 'likes' semantics ambiguous (professional respect, personal preference, romantic interest)\"\n  },\n  \"conflict_classification\": \"no_conflict_detected\",\n  \"answer\": \"Memory card created with normalized entities and preserved ambiguity markers\",\n  \"citations\": [\n    \"Input contains non-standard abbreviations requiring human verification\"\n  ],\n  \"repair_options\": [\n    \"Confirm full name of organization (Goldman Sachs?)\",\n    \"Confirm full name and identity of Bill Evans\",\n    \"Clarify nature of 'likes' relationship\",\n    \"Verify Sam's full name and role\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Parsed 3 entities from informal input\",\n      \"Normalized abbreviations to standard forms\",\n      \"Flagged 4 disambiguation points\",\n      \"Relationship recorded with confidence: medium\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

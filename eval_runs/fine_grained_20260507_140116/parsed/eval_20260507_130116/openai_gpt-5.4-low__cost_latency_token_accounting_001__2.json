@@ -1,0 +1,31 @@
+{
+  "fixture_id": "cost_latency_token_accounting_001",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Required eval accounting fields should cover:\n- token_counts: include at minimum input/prompt tokens, output/completion tokens, and total tokens; if available, also cache-read, cache-write, reasoning, or tool-call tokens as separate subfields.\n- provider_model_ids: record the provider identifier and the exact model identifier/version used for the run so costs and performance can be attributed correctly.\n- estimated_price: include an estimated monetary cost for the run, ideally itemized by input and output token pricing and summed to a total; mark clearly as estimated if derived from public pricing rather than billed usage.\n- latency_metrics: report latency percentiles p50, p90, and p95, typically in milliseconds, computed over the evaluation runs for the same slice/cohort.\nA compact example shape is: {\"token_counts\":{\"input\":1234,\"output\":321,\"total\":1555},\"provider\":{\"id\":\"openai\"},\"model\":{\"id\":\"gpt-4.1\"},\"estimated_price\":{\"input_usd\":0.0012,\"output_usd\":0.0021,\"total_usd\":0.0033},\"latency_ms\":{\"p50\":420,\"p90\":910,\"p95\":1100}}.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "respond_only",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No durable personal memory should be created from a generic schema/explanation request."
+    },
+    "intent": "Explain the required evaluation accounting fields for cost, token, provider/model, and latency reporting.",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Returned an explanation of the required eval accounting fields.",
+        "Did not create memory because the request is generic and non-personal."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add explicit field names for token subtypes if your evaluator distinguishes prompt, completion, cached, reasoning, or tool tokens.",
+      "Specify units for latency, preferably milliseconds.",
+      "Store both provider ID and fully qualified model/version string to avoid ambiguity.",
+      "Mark price as estimated unless sourced from actual billing records."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

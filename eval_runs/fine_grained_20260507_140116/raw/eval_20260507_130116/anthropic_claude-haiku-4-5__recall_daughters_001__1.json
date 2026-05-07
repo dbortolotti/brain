@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "fixture_id": "recall_daughters_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Your daughters are Nur and Sara, who are twins.",
+    "citations": [
+      "Fact: Nur and Sara are Daniele's twin daughters"
+    ],
+    "conflict_classification": "none",
+    "decision": "Commit fact to durable memory and synthesize answer",
+    "entity_resolution": {
+      "action": "link",
+      "entity_id": "daniele_primary",
+      "reason": "Established primary entity for Daniele with family relationships"
+    },
+    "intent": "Retrieve information about Daniele's daughters",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_twin_daughter_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Daniele",
+            "predicate": "is_twin_daughter_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Sara",
+            "predicate": "is_twin_sibling_of",
+            "subject": "Nur"
+          }
+        ],
+        "statement": "Nur and Sara are Daniele's twin daughters"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card committed for twin relationship",
+        "Entity resolution completed for Daniele",
+        "Query answered from stored fact"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Retrieve information about Daniele's daughters\",\n  \"decision\": \"Commit fact to durable memory and synthesize answer\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"relationship\",\n      \"statement\": \"Nur and Sara are Daniele's twin daughters\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"parent\"\n        },\n        {\n          \"name\": \"Nur\",\n          \"type\": \"person\",\n          \"role\": \"daughter\"\n        },\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"daughter\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Nur\",\n          \"predicate\": \"is_twin_daughter_of\",\n          \"object\": \"Daniele\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is_twin_daughter_of\",\n          \"object\": \"Daniele\"\n        },\n        {\n          \"subject\": \"Nur\",\n          \"predicate\": \"is_twin_sibling_of\",\n          \"object\": \"Sara\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"link\",\n    \"entity_id\": \"daniele_primary\",\n    \"reason\": \"Established primary entity for Daniele with family relationships\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Your daughters are Nur and Sara, who are twins.\",\n  \"citations\": [\n    \"Fact: Nur and Sara are Daniele's twin daughters\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card committed for twin relationship\",\n      \"Entity resolution completed for Daniele\",\n      \"Query answered from stored fact\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

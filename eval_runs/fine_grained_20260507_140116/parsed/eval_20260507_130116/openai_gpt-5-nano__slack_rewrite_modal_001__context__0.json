@@ -1,0 +1,59 @@
+{
+  "fixture_id": "slack_rewrite_modal_001__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Memory captured: 'He prefers the other one.' (requires clarification of what 'the other one' refers to in future, given the rewrite decision).",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_memory_with_disambiguation",
+    "entity_resolution": {
+      "action": "store_with_disambiguation",
+      "entity_id": null,
+      "reason": "Ambiguity: 'the other one' is a referent; needs clarification in relation to the Rewrite memory action."
+    },
+    "intent": "memory_classification",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "He",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "the other one",
+            "role": "preference_target",
+            "type": "entity"
+          }
+        ],
+        "kind": "memory",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "He"
+          },
+          {
+            "object": "Rewrite memory",
+            "predicate": "reference",
+            "subject": "he"
+          }
+        ],
+        "statement": "He prefers the other one."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "memory_card_created: memory with ambiguous referent preserved for clarification",
+        "no conflicting memory overwritten"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add explicit referent (e.g., 'the other one' refers to [specific option] or [context item]).",
+      "In future rewrites, record both original and rewritten memory to preserve history."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

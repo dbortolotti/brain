@@ -1,0 +1,74 @@
+{
+  "fixture_id": "supersession_sam_job_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The new memory ('Sam left Goldman and joined Point72') supersedes the existing memory ('Sam works at Goldman'). The prior fact is now invalidated and should be marked as obsolete.",
+    "citations": [
+      "Temporal precedence rule: Most recent, unambiguous fact overrides prior conflicting facts.",
+      "Entity resolution: 'Sam' and 'Goldman Sachs' are unambiguously linked in both memories, but the employment status is mutually exclusive."
+    ],
+    "conflict_classification": "direct_supersession",
+    "decision": "supersede",
+    "entity_resolution": {
+      "action": "update",
+      "entity_id": "sam_employment_status",
+      "reason": "New employment record conflicts with and invalidates prior record. Ambiguity resolved by temporal precedence (most recent fact takes precedence)."
+    },
+    "intent": "supersession_detection",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "left_employment_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined_employment_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Sam's employment at Point72",
+            "predicate": "superseded_by",
+            "subject": "Sam's employment at Goldman Sachs"
+          }
+        ],
+        "statement": "Sam no longer works at Goldman Sachs. This supersedes the previous memory that Sam worked at Goldman Sachs."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Supersession detected between conflicting employment records.",
+        "Entity resolution applied to 'Sam' and 'Goldman Sachs'.",
+        "No superseded facts will be presented as current in future outputs."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Delete the superseded memory ('Sam works at Goldman') and retain only the new memory.",
+      "Archive the superseded memory with a timestamp and 'obsolete' flag, preserving audit history.",
+      "Merge into a single memory with conditional logic: 'Sam worked at Goldman Sachs until [date], then joined Point72.'"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

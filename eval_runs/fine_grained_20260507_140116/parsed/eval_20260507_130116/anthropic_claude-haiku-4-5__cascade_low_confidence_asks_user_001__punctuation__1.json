@@ -1,0 +1,49 @@
+{
+  "fixture_id": "cascade_low_confidence_asks_user_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Unable to commit memory without user clarification. Cloud escalation is disabled and model confidence is below threshold for autonomous decision.",
+    "citations": [
+      "cascade_low_confidence_asks_user_001__punctuation"
+    ],
+    "conflict_classification": "ambiguous_input_low_confidence",
+    "decision": "defer_to_user",
+    "entity_resolution": {
+      "action": "hold_pending_clarification",
+      "entity_id": null,
+      "reason": "Low model confidence and cloud escalation disabled; ambiguity cannot be resolved automatically"
+    },
+    "intent": "Evaluate low-confidence memory candidate for 'Sam' with ambiguous punctuation and escalation disabled",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject_of_note",
+            "type": "person"
+          }
+        ],
+        "kind": "uncertain_fact",
+        "relationships": [],
+        "statement": "Sam note contains ambiguous punctuation or phrasing requiring clarification"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory candidate held pending user input",
+        "Low confidence threshold not met for autonomous commit",
+        "Cloud escalation unavailable",
+        "Ambiguity preserved; no superseded facts presented"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "User clarifies the ambiguous punctuation or phrasing in the Sam note",
+      "User confirms or rejects the proposed memory statement",
+      "Enable cloud escalation for higher-confidence resolution",
+      "Provide additional context to disambiguate the statement"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

@@ -1,0 +1,48 @@
+{
+  "fixture_id": "cascade_low_confidence_asks_user_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Unable to commit memory without user clarification. The note about Sam contains ambiguous elements that cannot be reliably resolved at current confidence threshold with escalation disabled.",
+    "citations": [
+      "cascade_low_confidence_asks_user_001__punctuation"
+    ],
+    "conflict_classification": "ambiguous_input_low_confidence",
+    "decision": "defer_to_user",
+    "entity_resolution": {
+      "action": "hold_pending_clarification",
+      "entity_id": null,
+      "reason": "Low model confidence combined with disabled cloud escalation prevents confident entity matching; ambiguity must be resolved by user"
+    },
+    "intent": "Evaluate low-confidence memory candidate for 'Sam' with ambiguous punctuation and escalation disabled",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject_of_note",
+            "type": "person"
+          }
+        ],
+        "kind": "uncertain_fact",
+        "relationships": [],
+        "statement": "Sam note contains ambiguous punctuation or phrasing requiring clarification"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory candidate held pending user input",
+        "Low confidence threshold not met for autonomous commitment",
+        "Cloud escalation unavailable",
+        "Ambiguity preserved; no superseded facts presented"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "User clarifies the ambiguous punctuation or phrasing in the Sam note",
+      "User confirms intended meaning of the statement",
+      "User provides additional context to disambiguate the reference"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

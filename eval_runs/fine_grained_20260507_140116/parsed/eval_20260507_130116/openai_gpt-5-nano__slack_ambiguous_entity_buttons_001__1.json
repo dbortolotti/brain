@@ -1,0 +1,89 @@
+{
+  "fixture_id": "slack_ambiguous_entity_buttons_001",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Cannot determine which Sam is being referred to. Both Sam from Goldman and Sam from Point72 may like Bill Evans. Clarification required.",
+    "citations": [],
+    "conflict_classification": "ambiguous_entity_fusion_needed",
+    "decision": "ambiguous_entity_resolution_required",
+    "entity_resolution": {
+      "action": "require_disambiguation",
+      "entity_id": null,
+      "reason": "Two potential Sams exist (Goldman and Point72). The statement 'Sam likes Bill Evans' could refer to either individual; no unique identifier present."
+    },
+    "intent": "memory_classification",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unknown",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "subject_of_interest",
+            "type": "person"
+          }
+        ],
+        "kind": "person",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliation",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "affiliation",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman; Sam from Point72. /brain remember Sam likes Bill Evans."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unknown",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "subject_of_interest",
+            "type": "person"
+          }
+        ],
+        "kind": "note",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "liking",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman; Sam from Point72. /brain remember Sam likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memories loaded with ambiguity preserved.",
+        "Entity resolution pending user input."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for additional identifying details to disambiguate which Sam is being referenced.",
+      "Store two separate memory cards for Sam (Goldman) and Sam (Point72) with their respective associations, without merging them.",
+      "Mark the statement about 'Sam likes Bill Evans' as ambiguous pending disambiguation."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

@@ -1,0 +1,75 @@
+{
+  "error": null,
+  "fixture_id": "email_source_meeting_followup_001__context",
+  "model": "groq:llama-3.3-70b-versatile",
+  "payload": {
+    "answer": "none",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "awaiting_response",
+    "entity_resolution": {
+      "action": "update",
+      "entity_id": "sam@example.com",
+      "reason": "new_information"
+    },
+    "intent": "request_for_information",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "sender",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "personal_update",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72 last month"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "requester",
+            "type": "person"
+          },
+          {
+            "name": "AI infra article",
+            "role": "requested_item",
+            "type": "document"
+          }
+        ],
+        "kind": "request",
+        "relationships": [
+          {
+            "object": "AI infra article",
+            "predicate": "requested",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam requested the AI infra article"
+      }
+    ],
+    "receipt": {
+      "details": [],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"request_for_information\",\n   \"decision\": \"awaiting_response\",\n   \"memory_cards\": [\n       {\n           \"kind\": \"personal_update\",\n           \"statement\": \"Sam joined Point72 last month\",\n           \"confidence\": \"high\",\n           \"entities\": [\n               {\n                   \"name\": \"Sam\",\n                   \"type\": \"person\",\n                   \"role\": \"sender\"\n               },\n               {\n                   \"name\": \"Point72\",\n                   \"type\": \"organization\",\n                   \"role\": \"employer\"\n               }\n           ],\n           \"relationships\": [\n               {\n                   \"subject\": \"Sam\",\n                   \"predicate\": \"joined\",\n                   \"object\": \"Point72\"\n               }\n           ]\n       },\n       {\n           \"kind\": \"request\",\n           \"statement\": \"Sam requested the AI infra article\",\n           \"confidence\": \"high\",\n           \"entities\": [\n               {\n                   \"name\": \"Sam\",\n                   \"type\": \"person\",\n                   \"role\": \"requester\"\n               },\n               {\n                   \"name\": \"AI infra article\",\n                   \"type\": \"document\",\n                   \"role\": \"requested_item\"\n               }\n           ],\n           \"relationships\": [\n               {\n                   \"subject\": \"Sam\",\n                   \"predicate\": \"requested\",\n                   \"object\": \"AI infra article\"\n               }\n           ]\n       }\n   ],\n   \"entity_resolution\": {\n       \"action\": \"update\",\n       \"entity_id\": \"sam@example.com\",\n       \"reason\": \"new_information\"\n   },\n   \"conflict_classification\": \"none\",\n   \"answer\": \"none\",\n   \"citations\": [],\n   \"repair_options\": [],\n   \"receipt\": {\n       \"success\": true,\n       \"details\": []\n   }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

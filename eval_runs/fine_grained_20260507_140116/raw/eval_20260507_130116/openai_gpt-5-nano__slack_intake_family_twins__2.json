@@ -1,0 +1,58 @@
+{
+  "error": null,
+  "fixture_id": "slack_intake_family_twins",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Nur and Sara are twin daughters.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "retain_as_memory",
+    "entity_resolution": {
+      "action": "identified",
+      "entity_id": null,
+      "reason": "Names map to individuals; no unique IDs available in statement."
+    },
+    "intent": "classify_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "twin sister of Sara",
+            "predicate": "is",
+            "subject": "Nur"
+          },
+          {
+            "object": "twin sister of Nur",
+            "predicate": "is",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Nur and Sara are my twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created for fact about Nur and Sara being twin daughters."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"classify_memory\",\n  \"decision\": \"retain_as_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Nur and Sara are my twin daughters.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Nur\",\n          \"type\": \"person\",\n          \"role\": \"daughter\"\n        },\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"daughter\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Nur\",\n          \"predicate\": \"is\",\n          \"object\": \"twin sister of Sara\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is\",\n          \"object\": \"twin sister of Nur\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"identified\",\n    \"entity_id\": null,\n    \"reason\": \"Names map to individuals; no unique IDs available in statement.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Nur and Sara are twin daughters.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card created for fact about Nur and Sara being twin daughters.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

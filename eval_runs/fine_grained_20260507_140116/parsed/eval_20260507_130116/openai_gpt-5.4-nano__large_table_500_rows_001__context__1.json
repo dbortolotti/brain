@@ -1,0 +1,88 @@
+{
+  "fixture_id": "large_table_500_rows_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Insufficient information to choose a specific storage strategy; treat the policy question as ambiguous pending clarification.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Do not commit durable memory yet; the provided context does not specify the required storage policy (e.g., whether to normalize, deduplicate, index, or store raw rows). Treat as an open question and request clarification.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No stable real-world entities beyond the fixture/dataset descriptors are provided, and no mapping is requested."
+    },
+    "intent": "Determine storage approach for a large CSV table (500 rows, repeated id/name/value patterns) in the Brain personal memory system.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "large_table_500_rows_001__context",
+            "role": "input_context",
+            "type": "fixture"
+          },
+          {
+            "name": "500-row CSV table",
+            "role": "dataset",
+            "type": "data_object"
+          },
+          {
+            "name": "id/name/value",
+            "role": "column_pattern",
+            "type": "schema_fields"
+          }
+        ],
+        "kind": "policy_ambiguity",
+        "relationships": [
+          {
+            "object": "500-row CSV table",
+            "predicate": "contains",
+            "subject": "large_table_500_rows_001__context"
+          },
+          {
+            "object": "id/name/value",
+            "predicate": "has_pattern_fields",
+            "subject": "500-row CSV table"
+          }
+        ],
+        "statement": "The prompt asks how a 500-row CSV table with repeated id/name/value data should be stored, but it does not define the storage policy requirements (e.g., deduplication, indexing, normalization, retention, or query needs)."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "storage model",
+            "role": "decision_target",
+            "type": "design_choice"
+          },
+          {
+            "name": "retrieval/query use-cases",
+            "role": "missing_spec",
+            "type": "requirements"
+          }
+        ],
+        "kind": "request_for_clarification",
+        "relationships": [
+          {
+            "object": "retrieval/query use-cases",
+            "predicate": "depends_on",
+            "subject": "storage model"
+          }
+        ],
+        "statement": "Clarify the intended retrieval/query use-cases and constraints (e.g., need to search by id, deduplicate repeated rows, preserve original row order, or optimize for memory size) before selecting a concrete storage model."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted only statements about missing requirements/ambiguity; no definitive storage policy committed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide the exact Brain storage policy requirements (e.g., deduplicate by id, keep provenance, index fields for search, preserve raw rows vs normalized representation).",
+      "Specify the primary queries (lookup by id, filtering by name/value, analytics, or chronological reconstruction).",
+      "State constraints (memory size limits, need for reversibility/audit trail, and acceptable preprocessing)."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

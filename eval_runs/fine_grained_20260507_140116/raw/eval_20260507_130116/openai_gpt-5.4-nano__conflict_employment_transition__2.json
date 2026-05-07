@@ -1,0 +1,92 @@
+{
+  "error": null,
+  "fixture_id": "conflict_employment_transition",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "There is a conflict about Sam\u2019s current employer: the existing fact states Sam works at Goldman, while the new fact says Sam left Goldman and joined Point72. Treat this as an employment transition and request/record missing timing (e.g., when Sam left Goldman) before asserting either as the current employer.",
+    "citations": [],
+    "conflict_classification": "employment_transition_conflict",
+    "decision": "Keep both employment facts as conflicting/transition information rather than overwriting the existing current fact, and mark the situation as a role/employment transition requiring temporal disambiguation.",
+    "entity_resolution": {
+      "action": "no_merge",
+      "entity_id": null,
+      "reason": "Assume both facts refer to the same person 'Sam' and the same companies; however, the contradiction is about currentness/timing and should be handled as a transition, not a merge."
+    },
+    "intent": "Explain and manage the conflict between existing and new employment facts for the same person.",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "company"
+          }
+        ],
+        "kind": "employment_status_current",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "ex-employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "company"
+          },
+          {
+            "name": "Point72",
+            "role": "new_employer",
+            "type": "company"
+          }
+        ],
+        "kind": "employment_transition",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored both statements as conflicting employment facts to avoid asserting superseded information as current.",
+        "Classified as an employment transition requiring temporal disambiguation."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for the date (or approximate timeframe) when Sam left Goldman and started at Point72.",
+      "Record Goldman as a former employer for Sam once timing is confirmed.",
+      "Update the 'current' employer only after verifying the most recent start/end dates."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Explain and manage the conflict between existing and new employment facts for the same person.\",\n  \"decision\": \"Keep both employment facts as conflicting/transition information rather than overwriting the existing current fact, and mark the situation as a role/employment transition requiring temporal disambiguation.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"employment_status_current\",\n      \"statement\": \"Sam works at Goldman.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"employee\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"company\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"employment_transition\",\n      \"statement\": \"Sam left Goldman and joined Point72.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"ex-employee\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"company\",\n          \"role\": \"former_employer\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"company\",\n          \"role\": \"new_employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"left\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_merge\",\n    \"entity_id\": null,\n    \"reason\": \"Assume both facts refer to the same person 'Sam' and the same companies; however, the contradiction is about currentness/timing and should be handled as a transition, not a merge.\"\n  },\n  \"conflict_classification\": \"employment_transition_conflict\",\n  \"answer\": \"There is a conflict about Sam\u2019s current employer: the existing fact states Sam works at Goldman, while the new fact says Sam left Goldman and joined Point72. Treat this as an employment transition and request/record missing timing (e.g., when Sam left Goldman) before asserting either as the current employer.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Ask for the date (or approximate timeframe) when Sam left Goldman and started at Point72.\",\n    \"Record Goldman as a former employer for Sam once timing is confirmed.\",\n    \"Update the 'current' employer only after verifying the most recent start/end dates.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Stored both statements as conflicting employment facts to avoid asserting superseded information as current.\",\n      \"Classified as an employment transition requiring temporal disambiguation.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

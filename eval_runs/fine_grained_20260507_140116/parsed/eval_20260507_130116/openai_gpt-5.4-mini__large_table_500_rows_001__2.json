@@ -1,0 +1,76 @@
+{
+  "fixture_id": "large_table_500_rows_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Store it as structured data if needed, but do not promote the repeated table contents into durable memory; at most keep a brief non-durable note about the dataset.",
+    "citations": [
+      "Input description: \"CSV table with 500 rows: id,name,value repeated many times.\""
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "Do not commit the table contents as durable memory. If anything is retained, store only a brief, non-durable note that the input was a large repetitive CSV table requiring policy handling.",
+    "entity_resolution": {
+      "action": "no_entity",
+      "entity_id": null,
+      "reason": "No stable personal entity or durable fact to resolve; the content is a generic data artifact."
+    },
+    "intent": "Classify how to store a large repetitive CSV table (500 rows with id, name, value) in memory policy terms.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "input",
+            "type": "data_artifact"
+          },
+          {
+            "name": "id",
+            "role": "column",
+            "type": "field"
+          },
+          {
+            "name": "name",
+            "role": "column",
+            "type": "field"
+          },
+          {
+            "name": "value",
+            "role": "column",
+            "type": "field"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "id",
+            "predicate": "has_column",
+            "subject": "CSV table"
+          },
+          {
+            "object": "name",
+            "predicate": "has_column",
+            "subject": "CSV table"
+          },
+          {
+            "object": "value",
+            "predicate": "has_column",
+            "subject": "CSV table"
+          }
+        ],
+        "statement": "The input is a CSV table with 500 rows and repeated columns/values: id, name, value."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed as a generic large repeated CSV table.",
+        "No durable memory commitment made for row-level contents."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want this retained, provide a specific summary or schema-level fact instead of the full repeated table.",
+      "If the table encodes a stable preference or important user fact, state that explicitly for durable storage."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

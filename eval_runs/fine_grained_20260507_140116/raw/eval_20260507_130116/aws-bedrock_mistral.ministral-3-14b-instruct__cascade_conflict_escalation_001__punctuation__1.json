@@ -1,0 +1,74 @@
+{
+  "error": null,
+  "fixture_id": "cascade_conflict_escalation_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The system detects a conflict between existing memory ('Sara is my daughter') and new input ('Sara is my niece'). Resolution requires explicit user input to determine the correct relationship.",
+    "citations": [],
+    "conflict_classification": "cascade_conflict_escalation",
+    "decision": "conflict_escalation_required",
+    "entity_resolution": {
+      "action": "pending",
+      "entity_id": "Sara",
+      "reason": "Ambiguous relationship to 'Sara' (daughter vs. niece). Requires user clarification to resolve conflict."
+    },
+    "intent": "memory_update",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "parent_of",
+            "subject": "I"
+          }
+        ],
+        "statement": "Sara is my daughter"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "niece",
+            "type": "person"
+          }
+        ],
+        "kind": "input_memory",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "aunt_or_uncle_of",
+            "subject": "I"
+          }
+        ],
+        "statement": "Sara is my niece"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict detected in durable memory for entity 'Sara'.",
+        "No automatic resolution applied due to ambiguity.",
+        "User intervention required to commit changes."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Clarify: Is Sara your daughter or niece?",
+      "Merge: Retain both relationships (e.g., 'Sara is my daughter and niece' if contextually valid)",
+      "Delete: Supersede the existing memory with the new input ('Sara is my niece')",
+      "Reject: Discard the new input as incorrect"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_update\",\n  \"decision\": \"conflict_escalation_required\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"durable_memory\",\n      \"statement\": \"Sara is my daughter\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"daughter\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"I\",\n          \"predicate\": \"parent_of\",\n          \"object\": \"Sara\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"input_memory\",\n      \"statement\": \"Sara is my niece\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"niece\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"I\",\n          \"predicate\": \"aunt_or_uncle_of\",\n          \"object\": \"Sara\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"pending\",\n    \"entity_id\": \"Sara\",\n    \"reason\": \"Ambiguous relationship to 'Sara' (daughter vs. niece). Requires user clarification to resolve conflict.\"\n  },\n  \"conflict_classification\": \"cascade_conflict_escalation\",\n  \"answer\": \"The system detects a conflict between existing memory ('Sara is my daughter') and new input ('Sara is my niece'). Resolution requires explicit user input to determine the correct relationship.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Clarify: Is Sara your daughter or niece?\",\n    \"Merge: Retain both relationships (e.g., 'Sara is my daughter and niece' if contextually valid)\",\n    \"Delete: Supersede the existing memory with the new input ('Sara is my niece')\",\n    \"Reject: Discard the new input as incorrect\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Conflict detected in durable memory for entity 'Sara'.\",\n      \"No automatic resolution applied due to ambiguity.\",\n      \"User intervention required to commit changes.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

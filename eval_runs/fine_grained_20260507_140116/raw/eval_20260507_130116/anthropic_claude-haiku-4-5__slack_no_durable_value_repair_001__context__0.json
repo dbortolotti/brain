@@ -1,0 +1,60 @@
+{
+  "error": null,
+  "fixture_id": "slack_no_durable_value_repair_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "This statement should not be committed to durable memory. Weather conditions are transient facts with no lasting relevance after the observation period expires.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "Do not commit to durable memory",
+    "entity_resolution": {
+      "action": "skip_persistence",
+      "entity_id": null,
+      "reason": "Weather observations are ephemeral and lack durable value; temporal scope 'today' becomes stale immediately"
+    },
+    "intent": "Store transient weather observation",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "weather",
+            "role": "subject",
+            "type": "phenomenon"
+          },
+          {
+            "name": "today",
+            "role": "temporal_scope",
+            "type": "temporal_reference"
+          }
+        ],
+        "kind": "transient_observation",
+        "relationships": [
+          {
+            "object": "cloudy",
+            "predicate": "is",
+            "subject": "today's weather"
+          }
+        ],
+        "statement": "Today's weather is cloudy"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Input parsed successfully",
+        "Transient observation identified",
+        "Durable memory commitment rejected",
+        "No entity candidates ranked for persistence"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If weather patterns are relevant to a decision, store the decision rationale instead",
+      "If tracking climate trends, store aggregated patterns with explicit date ranges",
+      "If this supports a time-sensitive action, store the action with its deadline instead"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Store transient weather observation\",\n  \"decision\": \"Do not commit to durable memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"transient_observation\",\n      \"statement\": \"Today's weather is cloudy\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"weather\",\n          \"type\": \"phenomenon\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"today\",\n          \"type\": \"temporal_reference\",\n          \"role\": \"temporal_scope\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"today's weather\",\n          \"predicate\": \"is\",\n          \"object\": \"cloudy\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"skip_persistence\",\n    \"entity_id\": null,\n    \"reason\": \"Weather observations are ephemeral and lack durable value; temporal scope 'today' becomes stale immediately\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"This statement should not be committed to durable memory. Weather conditions are transient facts with no lasting relevance after the observation period expires.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If weather patterns are relevant to a decision, store the decision rationale instead\",\n    \"If tracking climate trends, store aggregated patterns with explicit date ranges\",\n    \"If this supports a time-sensitive action, store the action with its deadline instead\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Input parsed successfully\",\n      \"Transient observation identified\",\n      \"Durable memory commitment rejected\",\n      \"No entity candidates ranked for persistence\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

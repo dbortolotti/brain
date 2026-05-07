@@ -1,0 +1,92 @@
+{
+  "error": null,
+  "fixture_id": "article_url_ai_memory_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Extracted two design-oriented memory statements: (1) graph memory helps preserve relationships; (2) provenance and update semantics are needed for graph memory.",
+    "citations": [
+      "https://example.com/ai-memory"
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "No explicit entity identifiers provided; entities are stored as concepts under memory cards."
+    },
+    "intent": "Extract durable memory cards from provided article context for knowledge graph memory design.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Graph memory",
+            "role": "memory approach",
+            "type": "concept"
+          },
+          {
+            "name": "Agents",
+            "role": "consumer",
+            "type": "system"
+          }
+        ],
+        "kind": "design_principle",
+        "relationships": [
+          {
+            "object": "relationships",
+            "predicate": "helps_preserve",
+            "subject": "Graph memory"
+          }
+        ],
+        "statement": "Graph-based memory can help agents preserve relationships."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Provenance",
+            "role": "data quality",
+            "type": "concept"
+          },
+          {
+            "name": "Update semantics",
+            "role": "consistency",
+            "type": "concept"
+          },
+          {
+            "name": "Graph memory",
+            "role": "memory approach",
+            "type": "concept"
+          }
+        ],
+        "kind": "design_principle",
+        "relationships": [
+          {
+            "object": "provenance",
+            "predicate": "requires",
+            "subject": "Graph memory"
+          },
+          {
+            "object": "update semantics",
+            "predicate": "requires",
+            "subject": "Graph memory"
+          }
+        ],
+        "statement": "Provenance and update semantics are needed for graph memory to manage relationship trust and change over time."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed design-principle style cards derived from the provided mock fetched article context."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If more article text becomes available, refine these statements with specific definitions or examples of provenance/update semantics.",
+      "Split 'provenance' into sub-concepts (e.g., source attribution vs. temporal validity) if the article provides distinctions."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Extract durable memory cards from provided article context for knowledge graph memory design.\",\n  \"decision\": \"commit\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"design_principle\",\n      \"statement\": \"Graph-based memory can help agents preserve relationships.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Graph memory\",\n          \"type\": \"concept\",\n          \"role\": \"memory approach\"\n        },\n        {\n          \"name\": \"Agents\",\n          \"type\": \"system\",\n          \"role\": \"consumer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Graph memory\",\n          \"predicate\": \"helps_preserve\",\n          \"object\": \"relationships\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"design_principle\",\n      \"statement\": \"Provenance and update semantics are needed for graph memory to manage relationship trust and change over time.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Provenance\",\n          \"type\": \"concept\",\n          \"role\": \"data quality\"\n        },\n        {\n          \"name\": \"Update semantics\",\n          \"type\": \"concept\",\n          \"role\": \"consistency\"\n        },\n        {\n          \"name\": \"Graph memory\",\n          \"type\": \"concept\",\n          \"role\": \"memory approach\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Graph memory\",\n          \"predicate\": \"requires\",\n          \"object\": \"provenance\"\n        },\n        {\n          \"subject\": \"Graph memory\",\n          \"predicate\": \"requires\",\n          \"object\": \"update semantics\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create\",\n    \"entity_id\": null,\n    \"reason\": \"No explicit entity identifiers provided; entities are stored as concepts under memory cards.\"\n  },\n  \"conflict_classification\": \"none_detected\",\n  \"answer\": \"Extracted two design-oriented memory statements: (1) graph memory helps preserve relationships; (2) provenance and update semantics are needed for graph memory.\",\n  \"citations\": [\n    \"https://example.com/ai-memory\"\n  ],\n  \"repair_options\": [\n    \"If more article text becomes available, refine these statements with specific definitions or examples of provenance/update semantics.\",\n    \"Split 'provenance' into sub-concepts (e.g., source attribution vs. temporal validity) if the article provides distinctions.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Committed design-principle style cards derived from the provided mock fetched article context.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

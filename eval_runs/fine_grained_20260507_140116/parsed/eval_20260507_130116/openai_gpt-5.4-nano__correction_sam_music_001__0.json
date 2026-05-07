@@ -1,0 +1,59 @@
+{
+  "fixture_id": "correction_sam_music_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Update the memory to reflect the correction: Sam (from Goldman) likes early Coltrane rather than Bill Evans. Do not keep the older preference as current.",
+    "citations": [],
+    "conflict_classification": "preference_correction",
+    "decision": "replace_existing_preference",
+    "entity_resolution": {
+      "action": "confirm_and_use_canonical_entities",
+      "entity_id": null,
+      "reason": "The correction specifies the same person context ('Sam from Goldman') and provides a distinct music preference target, indicating the intended entity is 'Sam (Goldman)'."
+    },
+    "intent": "Resolve conflict between an existing preference memory about Sam\u2019s music tastes and a provided correction.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "music_preference_subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_context",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "music_preference_object",
+            "type": "artist_period"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (from Goldman) likes early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict detected between existing memory (Bill Evans) and provided correction (early Coltrane) for the same subject context (Sam from Goldman).",
+        "Committed durable memory reflects only the corrected preference."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Store only the corrected preference (Sam -> early Coltrane).",
+      "If the system supports historical traces, record the earlier preference as non-current (e.g., archived/overwritten) rather than current memory."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

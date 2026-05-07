@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "fixture_id": "duplicate_sam_bill_evans_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "The existing and new memories are duplicates. Retain single authoritative record without duplication.",
+    "citations": [
+      "Existing memory: Sam from Goldman mentioned that he likes Bill Evans",
+      "New memory: Sam from Goldman said he likes Bill Evans"
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "Merge as single fact; no conflict detected",
+    "entity_resolution": {
+      "action": "consolidate",
+      "entity_id": "sam_goldman_001",
+      "reason": "Existing and new statements are identical in content and source; represent same fact"
+    },
+    "intent": "Evaluate duplicate memory entries for Sam from Goldman's preference for Bill Evans",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No substantive conflict identified",
+        "Statements are semantically equivalent",
+        "Single memory card committed to durable store",
+        "Entity Sam from Goldman unified under sam_goldman_001"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Deduplicate by retaining one memory card with merged provenance",
+      "Tag both sources as corroborating evidence if audit trail is needed"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Evaluate duplicate memory entries for Sam from Goldman's preference for Bill Evans\",\n  \"decision\": \"Merge as single fact; no conflict detected\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam from Goldman likes Bill Evans\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"consolidate\",\n    \"entity_id\": \"sam_goldman_001\",\n    \"reason\": \"Existing and new statements are identical in content and source; represent same fact\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"The existing and new memories are duplicates. Retain single authoritative record without duplication.\",\n  \"citations\": [\n    \"Existing memory: Sam from Goldman mentioned that he likes Bill Evans\",\n    \"New memory: Sam from Goldman said he likes Bill Evans\"\n  ],\n  \"repair_options\": [\n    \"Deduplicate by retaining one memory card with merged provenance\",\n    \"Tag both sources as corroborating evidence if audit trail is needed\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"No substantive conflict identified\",\n      \"Statements are semantically equivalent\",\n      \"Single memory card committed to durable store\",\n      \"Entity Sam from Goldman unified under sam_goldman_001\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

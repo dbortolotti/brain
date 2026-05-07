@@ -1,0 +1,89 @@
+{
+  "fixture_id": "conflict_sara_niece_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Sara being Daniele's daughter and Nur's twin is compatible with Sara also being your niece; the new claim doesn't directly conflict with the existing high-confidence facts, but the exact family linkage to 'your' side is unclear.",
+    "citations": [],
+    "conflict_classification": "No direct contradiction; compatible but ambiguous due to missing linkage between 'Daniele/Nur' and the user's family.",
+    "decision": "keep existing high-confidence facts; add the new relationship as non-conflicting but ambiguous relative to existing family details",
+    "entity_resolution": {
+      "action": "no_merge",
+      "entity_id": null,
+      "reason": "Existing high-confidence identity for Sara is already established; the new statement adds a different relationship (niece-of-me) that does not directly contradict the existing parent/twin facts, though it remains dependent on the user's identity and which side of the family connects."
+    },
+    "intent": "conflict_explainer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "twin_sibling",
+            "type": "person"
+          }
+        ],
+        "kind": "family_relationship",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is daughter of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is twin of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "me",
+            "role": "reference_person",
+            "type": "person"
+          }
+        ],
+        "kind": "family_relationship",
+        "relationships": [
+          {
+            "object": "me",
+            "predicate": "is niece of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preserved the existing high-confidence memory unchanged.",
+        "Added 'Sara is my niece' as a non-contradictory but ambiguity-prone relationship with medium confidence."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm whether Daniele is your sibling (or otherwise related to you) so 'Sara is my niece' can be anchored to the existing facts.",
+      "Provide which parent of yours is Daniele/Nur-related, or how you are connected to Daniele.",
+      "If Sara is not your niece, specify the correct relationship (e.g., cousin, goddaughter)."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

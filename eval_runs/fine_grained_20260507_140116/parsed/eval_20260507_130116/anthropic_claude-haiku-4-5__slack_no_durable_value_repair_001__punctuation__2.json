@@ -1,0 +1,62 @@
+{
+  "fixture_id": "slack_no_durable_value_repair_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory recorded with low confidence due to missing temporal specificity and location context",
+    "citations": [],
+    "conflict_classification": "temporal_ambiguity",
+    "decision": "accept_with_low_confidence",
+    "entity_resolution": {
+      "action": "create_temporal_anchor",
+      "entity_id": null,
+      "reason": "Temporal reference 'today' is ambiguous without explicit date; no durable location or timezone specified"
+    },
+    "intent": "store_weather_observation",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "today",
+            "role": "time_anchor",
+            "type": "temporal_reference"
+          },
+          {
+            "name": "weather",
+            "role": "subject",
+            "type": "domain"
+          },
+          {
+            "name": "cloudy",
+            "role": "observation_value",
+            "type": "weather_condition"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "cloudy",
+            "predicate": "has_weather_condition",
+            "subject": "today"
+          }
+        ],
+        "statement": "Today's weather is cloudy"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Statement stored as observation",
+        "Temporal anchor 'today' flagged as ambiguous",
+        "No location context provided",
+        "Confidence level: low due to insufficient durable anchors"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Specify date: 'On [DATE], the weather was cloudy'",
+      "Specify location: 'In [LOCATION], today's weather is cloudy'",
+      "Provide time window: 'This morning/afternoon the weather was cloudy'"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

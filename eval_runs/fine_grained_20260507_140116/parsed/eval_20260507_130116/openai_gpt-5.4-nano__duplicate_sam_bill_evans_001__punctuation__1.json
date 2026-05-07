@@ -1,0 +1,59 @@
+{
+  "fixture_id": "duplicate_sam_bill_evans_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "The two existing memory entries are duplicates expressing the same fact: Sam from Goldman likes Bill Evans. Keep a single consolidated memory and remove/avoid storing the redundant variant.",
+    "citations": [],
+    "conflict_classification": "duplicate_same_fact",
+    "decision": "deduplicate_keep_one",
+    "entity_resolution": {
+      "action": "map_to_existing_same_entity",
+      "entity_id": null,
+      "reason": "Both memory statements refer to the same person (Sam from Goldman) and the same preference (likes Bill Evans). The content is duplicated with only minor phrasing/punctuation variation."
+    },
+    "intent": "Explain and resolve a potential duplicate/conflict in existing memory about Sam\u2019s music preference.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "artist",
+            "type": "musician"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          }
+        ],
+        "kind": "memory",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman said he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected identical semantic content across two entries.",
+        "No true contradiction found; only duplication."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Store only one consolidated card: 'Sam from Goldman said he likes Bill Evans.'",
+      "If tracking provenance, keep both source snippets as metadata but ensure only one active fact card remains."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

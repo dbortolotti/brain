@@ -1,0 +1,64 @@
+{
+  "error": null,
+  "fixture_id": "slack_success_receipt_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory committed: Sam (Goldman Sachs) prefers Bill Evans (jazz pianist/composer).",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "durable_memory_commit",
+    "entity_resolution": {
+      "action": "create_new_entity",
+      "entity_id": null,
+      "reason": "No prior mention of 'Sam' or 'Bill Evans' in this context; Goldman Sachs is inferred as affiliation."
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object_of_preference",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "mentioned_preference_for",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman Sachs",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (Goldman Sachs) mentioned a preference for Bill Evans (jazz pianist/composer)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted entities: Sam (person), Goldman Sachs (organization), Bill Evans (person).",
+        "Inferred relationship: Sam's preference for Bill Evans.",
+        "No conflicts detected; memory committed as durable fact."
+      ],
+      "success": true
+    }
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_ingestion\",\n  \"decision\": \"durable_memory_commit\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam (Goldman Sachs) mentioned a preference for Bill Evans (jazz pianist/composer).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"object_of_preference\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"mentioned_preference_for\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"affiliated_with\",\n          \"object\": \"Goldman Sachs\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_new_entity\",\n    \"entity_id\": null,\n    \"reason\": \"No prior mention of 'Sam' or 'Bill Evans' in this context; Goldman Sachs is inferred as affiliation.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Memory committed: Sam (Goldman Sachs) prefers Bill Evans (jazz pianist/composer).\",\n  \"citations\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Extracted entities: Sam (person), Goldman Sachs (organization), Bill Evans (person).\",\n      \"Inferred relationship: Sam's preference for Bill Evans.\",\n      \"No conflicts detected; memory committed as durable fact.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

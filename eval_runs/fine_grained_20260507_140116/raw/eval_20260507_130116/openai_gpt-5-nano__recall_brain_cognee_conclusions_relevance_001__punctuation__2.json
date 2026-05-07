@@ -1,0 +1,89 @@
+{
+  "error": null,
+  "fixture_id": "recall_brain_cognee_conclusions_relevance_001__punctuation",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "The conclusions you reached about Brain and Cognee are that Brain serves as the primary memory store while Cognee offers rebuildable projections for forecasting; Slack strict intake and family facts shape those conclusions. No superseded conclusions were identified in the provided records.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "present_conclusions_without_superceded_facts",
+    "entity_resolution": {
+      "action": "reference",
+      "entity_id": null,
+      "reason": "No explicit unique identifiers provided for Brain or Cognee in the query; resolved by contextual names."
+    },
+    "intent": "recall_brain_cognee_conclusions",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "primary_memory",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "projection_engine",
+            "type": "system"
+          }
+        ],
+        "kind": "record",
+        "relationships": [
+          {
+            "object": "Cognee",
+            "predicate": "supports",
+            "subject": "Brain"
+          },
+          {
+            "object": "rebuildable projections",
+            "predicate": "produces",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain is the primary memory system; Cognee provides rebuildable projections for forecasting and planning."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Slack strict intake",
+            "role": "input_source",
+            "type": "process"
+          },
+          {
+            "name": "family facts",
+            "role": "input_source",
+            "type": "information"
+          }
+        ],
+        "kind": "record",
+        "relationships": [
+          {
+            "object": "conclusions",
+            "predicate": "influences",
+            "subject": "Slack strict intake"
+          },
+          {
+            "object": "conclusions",
+            "predicate": "influences",
+            "subject": "family facts"
+          }
+        ],
+        "statement": "Slack strict intake and family facts are inputs shaping conclusions about Brain and Cognee."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recall processed",
+        "No superseded facts detected",
+        "Ambiguities preserved where present"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"recall_brain_cognee_conclusions\",\n  \"decision\": \"present_conclusions_without_superceded_facts\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"record\",\n      \"statement\": \"Brain is the primary memory system; Cognee provides rebuildable projections for forecasting and planning.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Brain\", \"type\": \"system\", \"role\": \"primary_memory\"},\n        {\"name\": \"Cognee\", \"type\": \"system\", \"role\": \"projection_engine\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Brain\", \"predicate\": \"supports\", \"object\": \"Cognee\"},\n        {\"subject\": \"Cognee\", \"predicate\": \"produces\", \"object\": \"rebuildable projections\"}\n      ]\n    },\n    {\n      \"kind\": \"record\",\n      \"statement\": \"Slack strict intake and family facts are inputs shaping conclusions about Brain and Cognee.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\"name\": \"Slack strict intake\", \"type\": \"process\", \"role\": \"input_source\"},\n        {\"name\": \"family facts\", \"type\": \"information\", \"role\": \"input_source\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Slack strict intake\", \"predicate\": \"influences\", \"object\": \"conclusions\"},\n        {\"subject\": \"family facts\", \"predicate\": \"influences\", \"object\": \"conclusions\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"reference\",\n    \"entity_id\": null,\n    \"reason\": \"No explicit unique identifiers provided for Brain or Cognee in the query; resolved by contextual names.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"The conclusions you reached about Brain and Cognee are that Brain serves as the primary memory store while Cognee offers rebuildable projections for forecasting; Slack strict intake and family facts shape those conclusions. No superseded conclusions were identified in the provided records.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\"Recall processed\", \"No superseded facts detected\", \"Ambiguities preserved where present\"]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

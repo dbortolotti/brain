@@ -1,0 +1,103 @@
+{
+  "error": null,
+  "fixture_id": "small_table_preferences_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Extracted two preference facts from the table: Sam likes Bill Evans; Anna likes Barolo.",
+    "citations": [
+      "Dinner 2026-05-05",
+      "Lunch 2026-05-01"
+    ],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "No existing entity IDs provided; use names as-is."
+    },
+    "intent": "extract_person_firm_preferences_from_table",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "firm"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "artist"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "firm_affiliation",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (Goldman) likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Anna",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "JPM",
+            "role": "context",
+            "type": "firm"
+          },
+          {
+            "name": "Barolo",
+            "role": "object",
+            "type": "wine"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Barolo",
+            "predicate": "likes",
+            "subject": "Anna"
+          },
+          {
+            "object": "JPM",
+            "predicate": "firm_affiliation",
+            "subject": "Anna"
+          }
+        ],
+        "statement": "Anna (JPM) likes Barolo."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored 2 preference memory cards from the input table."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm whether 'Goldman' refers to Goldman Sachs or another entity.",
+      "Confirm whether 'JPM' refers to JPMorgan Chase."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"extract_person_firm_preferences_from_table\",\n  \"decision\": \"store\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam (Goldman) likes Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"firm\",\n          \"role\": \"context\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"artist\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"firm_affiliation\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Anna (JPM) likes Barolo.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Anna\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"JPM\",\n          \"type\": \"firm\",\n          \"role\": \"context\"\n        },\n        {\n          \"name\": \"Barolo\",\n          \"type\": \"wine\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Anna\",\n          \"predicate\": \"likes\",\n          \"object\": \"Barolo\"\n        },\n        {\n          \"subject\": \"Anna\",\n          \"predicate\": \"firm_affiliation\",\n          \"object\": \"JPM\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entity IDs provided; use names as-is.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Extracted two preference facts from the table: Sam likes Bill Evans; Anna likes Barolo.\",\n  \"citations\": [\n    \"Dinner 2026-05-05\",\n    \"Lunch 2026-05-01\"\n  ],\n  \"repair_options\": [\n    \"Confirm whether 'Goldman' refers to Goldman Sachs or another entity.\",\n    \"Confirm whether 'JPM' refers to JPMorgan Chase.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Stored 2 preference memory cards from the input table.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

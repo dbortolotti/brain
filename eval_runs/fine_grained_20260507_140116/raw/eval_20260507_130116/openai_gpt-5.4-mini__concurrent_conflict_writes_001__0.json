@@ -1,0 +1,71 @@
+{
+  "error": null,
+  "fixture_id": "concurrent_conflict_writes_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Ambiguous: Sam is linked to two concurrent employment claims, at Goldman and at Point72. No single current employer should be committed from this input alone.",
+    "citations": [
+      "input: Concurrent writes: Sam works at Goldman. Sam joined Point72."
+    ],
+    "conflict_classification": "concurrent_conflict",
+    "decision": "Do not commit a single current employer. Record the situation as a conflict: one write says Sam works at Goldman, another says Sam joined Point72. Both may be valid at different times or one may supersede the other, but the provided input does not establish order or recency.",
+    "entity_resolution": {
+      "action": "preserve_ambiguity",
+      "entity_id": null,
+      "reason": "The input does not provide enough evidence to determine whether Goldman and Point72 refer to the same timeframe, whether one statement supersedes the other, or whether they are contradictory current claims."
+    },
+    "intent": "Resolve concurrent conflicting employment writes for Sam while preserving ambiguity and avoiding overwriting either claim as current.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer-claim",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "employer-claim",
+            "type": "organization"
+          }
+        ],
+        "kind": "conflict",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "reported_employed_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "reported_joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam has conflicting employment information in concurrent writes: one says Sam works at Goldman, another says Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict detected between two employment claims for the same person.",
+        "No superseded fact was promoted as current.",
+        "Ambiguity preserved."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Wait for a later timestamp or explicit supersession to determine the current employer.",
+      "Store both claims as time-uncertain and mark them conflicting.",
+      "If a source of truth is available, reconcile using recency or authoritative employment history."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Resolve concurrent conflicting employment writes for Sam while preserving ambiguity and avoiding overwriting either claim as current.\",\"decision\":\"Do not commit a single current employer. Record the situation as a conflict: one write says Sam works at Goldman, another says Sam joined Point72. Both may be valid at different times or one may supersede the other, but the provided input does not establish order or recency.\",\"memory_cards\":[{\"kind\":\"conflict\",\"statement\":\"Sam has conflicting employment information in concurrent writes: one says Sam works at Goldman, another says Sam joined Point72.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"employer-claim\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer-claim\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"reported_employed_at\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"reported_joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"preserve_ambiguity\",\"entity_id\":null,\"reason\":\"The input does not provide enough evidence to determine whether Goldman and Point72 refer to the same timeframe, whether one statement supersedes the other, or whether they are contradictory current claims.\"},\"conflict_classification\":\"concurrent_conflict\",\"answer\":\"Ambiguous: Sam is linked to two concurrent employment claims, at Goldman and at Point72. No single current employer should be committed from this input alone.\",\"citations\":[\"input: Concurrent writes: Sam works at Goldman. Sam joined Point72.\"],\"repair_options\":[\"Wait for a later timestamp or explicit supersession to determine the current employer.\",\"Store both claims as time-uncertain and mark them conflicting.\",\"If a source of truth is available, reconcile using recency or authoritative employment history.\"],\"receipt\":{\"success\":true,\"details\":[\"Conflict detected between two employment claims for the same person.\",\"No superseded fact was promoted as current.\",\"Ambiguity preserved.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

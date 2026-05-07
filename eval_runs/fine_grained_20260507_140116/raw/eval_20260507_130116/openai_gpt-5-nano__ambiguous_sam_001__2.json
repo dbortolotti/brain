@@ -1,0 +1,94 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_sam_001",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Ambiguity detected: two known Sams exist (Goldman and Point72). The statement about Sam liking Bill Evans is anchored to a Sam, but which Sam is unspecified. Await disambiguation or additional identifiers before updating memory as a single canonical event.",
+    "citations": [],
+    "conflict_classification": "name_ambiguity_across_known_entities",
+    "decision": "preserve_ambiguous_memory_and_attempt_resolution",
+    "entity_resolution": {
+      "action": "defer_resolution",
+      "entity_id": null,
+      "reason": "Two distinct known Sams (from Goldman and Point72) share the same name; the new mention \"Sam\" is ambiguous without additional disambiguating attributes."
+    },
+    "intent": "update_memory_with_ambiguous_entities",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unknown",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "musician",
+            "type": "person"
+          }
+        ],
+        "kind": "ambiguous_entity",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam mentioned that he likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "existing_entity",
+        "relationships": [],
+        "statement": "Sam from Goldman"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "existing_entity",
+        "relationships": [],
+        "statement": "Sam from Point72"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguity preserved between Sam from Goldman and Sam from Point72.",
+        "New relation added: Sam likes Bill Evans, but subject unresolved."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add disambiguating attributes to Sam mentions (e.g., employer, role, or middle initial) when new statements are recorded.",
+      "Create separate memory cards for each potential Sam mapping and mark as provisional until disambiguation.\n",
+      "If Bill Evans is clearly linked to a particular Sam via context (e.g., prior notes), associate with that Sam; otherwise keep as a generic association with ambiguity noted."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"update_memory_with_ambiguous_entities\",\n  \"decision\": \"preserve_ambiguous_memory_and_attempt_resolution\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"ambiguous_entity\",\n      \"statement\": \"Sam mentioned that he likes Bill Evans.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"unknown\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"musician\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n    ,\n    {\n      \"kind\": \"existing_entity\",\n      \"statement\": \"Sam from Goldman\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"employee\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": []\n    }\n    ,\n    {\n      \"kind\": \"existing_entity\",\n      \"statement\": \"Sam from Point72\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"employee\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": []\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer_resolution\",\n    \"entity_id\": null,\n    \"reason\": \"Two distinct known Sams (from Goldman and Point72) share the same name; the new mention \\\"Sam\\\" is ambiguous without additional disambiguating attributes.\"\n  },\n  \"conflict_classification\": \"name_ambiguity_across_known_entities\",\n  \"answer\": \"Ambiguity detected: two known Sams exist (Goldman and Point72). The statement about Sam liking Bill Evans is anchored to a Sam, but which Sam is unspecified. Await disambiguation or additional identifiers before updating memory as a single canonical event.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Add disambiguating attributes to Sam mentions (e.g., employer, role, or middle initial) when new statements are recorded.\",\n    \"Create separate memory cards for each potential Sam mapping and mark as provisional until disambiguation.\\n\",\n    \"If Bill Evans is clearly linked to a particular Sam via context (e.g., prior notes), associate with that Sam; otherwise keep as a generic association with ambiguity noted.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Ambiguity preserved between Sam from Goldman and Sam from Point72.\",\n      \"New relation added: Sam likes Bill Evans, but subject unresolved.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

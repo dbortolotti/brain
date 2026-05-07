@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_time_reference_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Store the intent-to-leave employer as a relative-time fact, but do not convert 'last Friday'/'next month' into an exact date.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "store_with_ambiguity",
+    "entity_resolution": {
+      "action": "no_resolution",
+      "entity_id": null,
+      "reason": "Only relative time is provided ('last Friday', 'next month') without a calendar date; cannot resolve to an exact timestamp or specific instance."
+    },
+    "intent": "durability_filter",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact_ambiguous_time",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "plans_to_leave_employer",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said last Friday that he is leaving Goldman next month."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured as a relative-time, ambiguous-duration statement.",
+        "Did not attempt to infer exact dates."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide the exact date of 'last Friday' and the month/year for 'next month' to make the timing durable and resolvable.",
+      "Clarify whether 'Goldman' refers to a specific entity (e.g., Goldman Sachs) to improve entity grounding."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"durability_filter\",\n  \"decision\": \"store_with_ambiguity\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact_ambiguous_time\",\n      \"statement\": \"Sam said last Friday that he is leaving Goldman next month.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"plans_to_leave_employer\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_resolution\",\n    \"entity_id\": null,\n    \"reason\": \"Only relative time is provided ('last Friday', 'next month') without a calendar date; cannot resolve to an exact timestamp or specific instance.\"\n  },\n  \"conflict_classification\": \"none_detected\",\n  \"answer\": \"Store the intent-to-leave employer as a relative-time fact, but do not convert 'last Friday'/'next month' into an exact date.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Provide the exact date of 'last Friday' and the month/year for 'next month' to make the timing durable and resolvable.\",\n    \"Clarify whether 'Goldman' refers to a specific entity (e.g., Goldman Sachs) to improve entity grounding.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Captured as a relative-time, ambiguous-duration statement.\",\n      \"Did not attempt to infer exact dates.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,91 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "No direct conflict: the new fact (Sara is your niece) appears consistent with the existing fact about Sara\u2019s family background. Store it as an additional relationship to the user.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "no_conflict_additional_fact",
+    "entity_resolution": {
+      "action": "keep_separate",
+      "entity_id": null,
+      "reason": "The new statement adds a relationship to the user (niece) and does not contradict the existing family details (daughter of Daniele and twin of Nur)."
+    },
+    "intent": "resolve_memory_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "twin",
+            "type": "person"
+          }
+        ],
+        "kind": "identity_relationship",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is daughter of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is twin of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "me",
+            "role": "reference",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship_to_user",
+        "relationships": [
+          {
+            "object": "me",
+            "predicate": "is niece of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preserved existing high-confidence family facts about Sara.",
+        "Added the new user-relative relationship without removing or changing the existing facts."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you later clarify how 'niece' connects (e.g., which sibling/parent), link it explicitly to Daniele/Nur family details.",
+      "If 'Sara' refers to someone else, provide disambiguation (full name or distinguishing details)."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"resolve_memory_conflict\",\n  \"decision\": \"no_conflict_additional_fact\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"identity_relationship\",\n      \"statement\": \"Sara is Daniele's daughter and Nur's twin.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"parent\"\n        },\n        {\n          \"name\": \"Nur\",\n          \"type\": \"person\",\n          \"role\": \"twin\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is daughter of\",\n          \"object\": \"Daniele\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is twin of\",\n          \"object\": \"Nur\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"relationship_to_user\",\n      \"statement\": \"Sara is my niece.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"me\",\n          \"type\": \"person\",\n          \"role\": \"reference\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is niece of\",\n          \"object\": \"me\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"keep_separate\",\n    \"entity_id\": null,\n    \"reason\": \"The new statement adds a relationship to the user (niece) and does not contradict the existing family details (daughter of Daniele and twin of Nur).\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"No direct conflict: the new fact (Sara is your niece) appears consistent with the existing fact about Sara\u2019s family background. Store it as an additional relationship to the user.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If you later clarify how 'niece' connects (e.g., which sibling/parent), link it explicitly to Daniele/Nur family details.\",\n    \"If 'Sara' refers to someone else, provide disambiguation (full name or distinguishing details).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Preserved existing high-confidence family facts about Sara.\",\n      \"Added the new user-relative relationship without removing or changing the existing facts.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,53 @@
+{
+  "fixture_id": "no_durable_value_weather_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Not storing: the statement is a transient daily weather update.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "do_not_store",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Weather observations are typically ephemeral and not suitable for durable personal memory without explicit user preference."
+    },
+    "intent": "durability_filter",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "weather",
+            "role": "subject",
+            "type": "natural_phenomenon"
+          },
+          {
+            "name": "today",
+            "role": "time",
+            "type": "time_period"
+          }
+        ],
+        "kind": "ephemeral_weather",
+        "relationships": [
+          {
+            "object": "cloudy",
+            "predicate": "has_weather",
+            "subject": "today"
+          }
+        ],
+        "statement": "Today's weather is cloudy."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Classified as ephemeral weather information and excluded from durable storage."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want durable memory, specify location and that you want it tracked (e.g., 'Remember that my local weather is usually cloudy in summer').",
+      "Provide a long-term preference or pattern rather than today's observation."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

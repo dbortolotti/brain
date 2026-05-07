@@ -1,0 +1,67 @@
+{
+  "fixture_id": "article_url_fetch_failure_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Article ingestion aborted due to 404 error and URL format ambiguity. No durable memory committed. Original URL requires correction before reprocessing.",
+    "citations": [],
+    "conflict_classification": "none_applicable",
+    "decision": "abort_due_to_failure",
+    "entity_resolution": {
+      "action": "flag_for_review",
+      "entity_id": null,
+      "reason": "Ambiguous URL format (missing punctuation) may indicate user error or system parsing failure. Requires manual validation before retry."
+    },
+    "intent": "memory_ingestion_attempt",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https -//examplecom/missing",
+            "role": "target_resource",
+            "type": "url"
+          },
+          {
+            "name": "404 network error",
+            "role": "failure_reason",
+            "type": "error_code"
+          },
+          {
+            "name": "punctuation/format ambiguity",
+            "role": "processing_obstacle",
+            "type": "metadata_issue"
+          }
+        ],
+        "kind": "system_event",
+        "relationships": [
+          {
+            "object": "aborted_state",
+            "predicate": "resulted_in",
+            "subject": "memory_ingestion_attempt"
+          },
+          {
+            "object": "successful_fetch",
+            "predicate": "prevented",
+            "subject": "url_format_issue"
+          }
+        ],
+        "statement": "Failed to fetch article at URL 'https -//examplecom/missing' due to 404 network error (punctuation/format ambiguity in URL)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "404 error encountered during fetch attempt",
+        "URL format contains punctuation ambiguity ('https -//' instead of 'https://')",
+        "No content ingested; no memory cards committed to durable storage"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Verify URL punctuation (e.g., 'https://example.com/missing')",
+      "Check network connectivity",
+      "Confirm article exists at intended location",
+      "Retry with corrected URL format"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

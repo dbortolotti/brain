@@ -1,0 +1,77 @@
+{
+  "fixture_id": "email_source_meeting_followup_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Extracted two items: (1) Sam joined Point72 last month, and (2) Sam requested the AI infra article be sent.",
+    "citations": [],
+    "conflict_classification": "no_conflict_detected",
+    "decision": "store_relevant_facts_and_request",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No existing entity IDs were provided for resolution."
+    },
+    "intent": "meeting_followup_request",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "sam@examplecom",
+            "role": "sender",
+            "type": "email"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "contact_update",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "sam@examplecom"
+          }
+        ],
+        "statement": "Sam said they joined Point72 last month."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "AI infra article",
+            "role": "requested_resource",
+            "type": "document"
+          },
+          {
+            "name": "sam@examplecom",
+            "role": "requester",
+            "type": "email"
+          }
+        ],
+        "kind": "information_request",
+        "relationships": [
+          {
+            "object": "AI infra article",
+            "predicate": "requested",
+            "subject": "sam@examplecom"
+          }
+        ],
+        "statement": "Sam requested that the AI infrastructure article be sent."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created 2 memory cards from the email content."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If 'sam' is known as a different canonical contact, map sam@examplecom to that contact in entity resolution.",
+      "If 'Point72' should be disambiguated (e.g., legal entity name), capture the preferred name."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

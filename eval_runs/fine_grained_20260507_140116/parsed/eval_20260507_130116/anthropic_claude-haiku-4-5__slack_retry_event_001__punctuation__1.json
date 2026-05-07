@@ -1,0 +1,64 @@
+{
+  "fixture_id": "slack_retry_event_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Duplicate Slack event processed as single memory. Relationship recorded: Sam (Goldman) likes Bill Evans.",
+    "citations": [
+      "slack_retry_event_001__punctuation"
+    ],
+    "conflict_classification": "duplicate_suppression",
+    "decision": "Accept single memory card; suppress duplicate",
+    "entity_resolution": {
+      "action": "deduplicate",
+      "entity_id": "slack_retry_event_001__punctuation",
+      "reason": "Identical event delivered twice; single canonical fact extracted"
+    },
+    "intent": "Deduplicate repeated Slack event and extract relationship fact",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Duplicate event detected and deduplicated",
+        "One memory card committed",
+        "No conflicting facts present"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

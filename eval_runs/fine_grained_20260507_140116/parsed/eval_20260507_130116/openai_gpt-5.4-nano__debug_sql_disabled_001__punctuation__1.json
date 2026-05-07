@@ -1,0 +1,30 @@
+{
+  "fixture_id": "debug_sql_disabled_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Because BRAIN_DEBUG_SQL_ENABLED is set to false, the system should not run or expose the requested debug/admin SQL operation (SELECT * FROM memory_cards). Any attempt to fetch memory_cards via debug SQL is therefore blocked or treated as non-actionable.",
+    "citations": [],
+    "conflict_classification": "Policy/feature conflict: request to run/inspect SQL (SELECT from memory_cards) conflicts with BRAIN_DEBUG_SQL_ENABLED=false.",
+    "decision": "Do not execute or reveal SQL/debug SQL operations; treat the request as conflicting with the disabled debug SQL setting.",
+    "entity_resolution": {
+      "action": "no-op",
+      "entity_id": null,
+      "reason": "No durable facts about memory content or system state beyond the presence of the flag are supported; the instruction explicitly disables debug SQL, so query evaluation details are not executed."
+    },
+    "intent": "Explain the conflict/behavior requested by an admin SQL query when SQL debug is disabled.",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Flag detected: BRAIN_DEBUG_SQL_ENABLED=false",
+        "Result: debug SQL execution/introspection not performed"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Enable BRAIN_DEBUG_SQL_ENABLED and retry the request if such access is intended and permitted.",
+      "Use a supported non-SQL memory retrieval pathway (e.g., query by natural language intent) instead of SELECT * FROM memory_cards.",
+      "If you only need confirmation of memory behavior, request a high-level explanation of what would have happened without executing SQL."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

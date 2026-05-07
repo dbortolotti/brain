@@ -1,0 +1,45 @@
+{
+  "error": null,
+  "fixture_id": "article_url_fetch_failure_001",
+  "model": "groq:llama-3.1-8b-instant",
+  "payload": {
+    "answer": "Failed to fetch article URL: https://example.com/missing",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "retry",
+    "entity_resolution": {
+      "action": "fetch",
+      "entity_id": null,
+      "reason": "404 network error"
+    },
+    "intent": "article_url_fetch_failure",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "article_url",
+            "type": "url"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [],
+        "statement": "Article URL: https://example.com/missing"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "404 network error"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "retry",
+      "use cached version"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"article_url_fetch_failure\",\n   \"decision\": \"retry\",\n   \"memory_cards\": [\n      {\n         \"kind\": \"fact\",\n         \"statement\": \"Article URL: https://example.com/missing\",\n         \"confidence\": \"low\",\n         \"entities\": [\n            {\n               \"name\": \"https://example.com/missing\",\n               \"type\": \"url\",\n               \"role\": \"article_url\"\n            }\n         ],\n         \"relationships\": []\n      }\n   ],\n   \"entity_resolution\": {\n      \"action\": \"fetch\",\n      \"entity_id\": null,\n      \"reason\": \"404 network error\"\n   },\n   \"conflict_classification\": \"none\",\n   \"answer\": \"Failed to fetch article URL: https://example.com/missing\",\n   \"citations\": [],\n   \"repair_options\": [\n      \"retry\",\n      \"use cached version\"\n   ],\n   \"receipt\": {\n      \"success\": false,\n      \"details\": [\n         \"404 network error\"\n      ]\n   }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

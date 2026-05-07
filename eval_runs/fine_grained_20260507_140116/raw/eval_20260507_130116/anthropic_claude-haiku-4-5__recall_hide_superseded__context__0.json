@@ -1,0 +1,59 @@
+{
+  "error": null,
+  "fixture_id": "recall_hide_superseded__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Sam works at Point72",
+    "citations": [
+      "mem_new"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "Return current fact only; suppress superseded fact",
+    "entity_resolution": {
+      "action": "retain_current",
+      "entity_id": "mem_new",
+      "reason": "Current fact supersedes prior employment record; Goldman employment is obsolete"
+    },
+    "intent": "Retrieve current employment information for Sam, excluding superseded facts",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "current_fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "currently_employed_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded fact (Goldman) excluded from answer",
+        "Current fact (Point72) returned as authoritative",
+        "No ambiguity in temporal ordering"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If Goldman employment should be retained as historical context, mark mem_old as 'past_employment' rather than delete"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Retrieve current employment information for Sam, excluding superseded facts\",\n  \"decision\": \"Return current fact only; suppress superseded fact\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"current_fact\",\n      \"statement\": \"Sam joined Point72\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"employee\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"currently_employed_at\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"retain_current\",\n    \"entity_id\": \"mem_new\",\n    \"reason\": \"Current fact supersedes prior employment record; Goldman employment is obsolete\"\n  },\n  \"conflict_classification\": \"supersession\",\n  \"answer\": \"Sam works at Point72\",\n  \"citations\": [\n    \"mem_new\"\n  ],\n  \"repair_options\": [\n    \"If Goldman employment should be retained as historical context, mark mem_old as 'past_employment' rather than delete\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Superseded fact (Goldman) excluded from answer\",\n      \"Current fact (Point72) returned as authoritative\",\n      \"No ambiguity in temporal ordering\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,140 @@
+{
+  "error": null,
+  "fixture_id": "long_markdown_chat_summary_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Extracted five atomic memory cards: three established architecture principles (Brain DB as source of truth; Cognee as rebuildable semantic projection; Slack as strict memory intake), plus two open questions (Telegram addition; cheapest saturating model).",
+    "citations": [
+      "Fixture long_markdown_chat_summary_001__context"
+    ],
+    "conflict_classification": "no_conflicts_detected",
+    "decision": "Proceed with current roles/assumptions: Brain DB is source of truth; Cognee is a rebuildable semantic projection; Slack is a strict memory intake agent. Mark Telegram and model-cost questions as open.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Source text provides no IDs; only named concepts are extracted as-is."
+    },
+    "intent": "Extract atomic memory cards from chat summary context for Brain architecture evaluation.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system"
+          }
+        ],
+        "kind": "architecture_principle",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "is",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB should be the source of truth for memory."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "semantic_projection",
+            "type": "system"
+          },
+          {
+            "name": "Brain DB",
+            "role": "upstream_source",
+            "type": "system"
+          }
+        ],
+        "kind": "architecture_principle",
+        "relationships": [
+          {
+            "object": "rebuildable semantic projection",
+            "predicate": "is a",
+            "subject": "Cognee"
+          },
+          {
+            "object": "Brain DB",
+            "predicate": "is derived from",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee should be a rebuildable semantic projection derived from Brain DB."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "memory_intake_agent",
+            "type": "channel"
+          }
+        ],
+        "kind": "architecture_principle",
+        "relationships": [
+          {
+            "object": "strict memory intake agent",
+            "predicate": "acts as",
+            "subject": "Slack"
+          }
+        ],
+        "statement": "Slack should act as a strict memory intake agent."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Telegram",
+            "role": "potential_future_intake",
+            "type": "channel"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [
+          {
+            "object": "added later",
+            "predicate": "might be",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "Open question: Should Telegram be added later as an additional memory intake channel?"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "model selection",
+            "role": "performance_optimization",
+            "type": "decision_area"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [
+          {
+            "object": "cheapest model that saturates performance",
+            "predicate": "needs to find",
+            "subject": "model selection"
+          }
+        ],
+        "statement": "Open question: Which model is cheapest while saturating performance for the system?"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "All cards derived directly from the provided chat summary context.",
+        "No superseded facts were asserted as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If additional context specifies constraints or implementation details, update confidence and add more granular cards (e.g., exact rebuild triggers, validation rules for Slack intake).",
+      "If a definitive decision is made about Telegram or model selection, convert the corresponding open_question cards into decision/implemented cards."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Extract atomic memory cards from chat summary context for Brain architecture evaluation.\",\n  \"decision\": \"Proceed with current roles/assumptions: Brain DB is source of truth; Cognee is a rebuildable semantic projection; Slack is a strict memory intake agent. Mark Telegram and model-cost questions as open.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"architecture_principle\",\n      \"statement\": \"Brain DB should be the source of truth for memory.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"system\",\n          \"role\": \"source_of_truth\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"is\",\n          \"object\": \"source of truth\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"architecture_principle\",\n      \"statement\": \"Cognee should be a rebuildable semantic projection derived from Brain DB.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"system\",\n          \"role\": \"semantic_projection\"\n        },\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"system\",\n          \"role\": \"upstream_source\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"is a\",\n          \"object\": \"rebuildable semantic projection\"\n        },\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"is derived from\",\n          \"object\": \"Brain DB\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"architecture_principle\",\n      \"statement\": \"Slack should act as a strict memory intake agent.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Slack\",\n          \"type\": \"channel\",\n          \"role\": \"memory_intake_agent\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Slack\",\n          \"predicate\": \"acts as\",\n          \"object\": \"strict memory intake agent\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"open_question\",\n      \"statement\": \"Open question: Should Telegram be added later as an additional memory intake channel?\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Telegram\",\n          \"type\": \"channel\",\n          \"role\": \"potential_future_intake\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Telegram\",\n          \"predicate\": \"might be\",\n          \"object\": \"added later\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"open_question\",\n      \"statement\": \"Open question: Which model is cheapest while saturating performance for the system?\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"model selection\",\n          \"type\": \"decision_area\",\n          \"role\": \"performance_optimization\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"model selection\",\n          \"predicate\": \"needs to find\",\n          \"object\": \"cheapest model that saturates performance\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"Source text provides no IDs; only named concepts are extracted as-is.\"\n  },\n  \"conflict_classification\": \"no_conflicts_detected\",\n  \"answer\": \"Extracted five atomic memory cards: three established architecture principles (Brain DB as source of truth; Cognee as rebuildable semantic projection; Slack as strict memory intake), plus two open questions (Telegram addition; cheapest saturating model).\",\n  \"citations\": [\n    \"Fixture long_markdown_chat_summary_001__context\"\n  ],\n  \"repair_options\": [\n    \"If additional context specifies constraints or implementation details, update confidence and add more granular cards (e.g., exact rebuild triggers, validation rules for Slack intake).\",\n    \"If a definitive decision is made about Telegram or model selection, convert the corresponding open_question cards into decision/implemented cards.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"All cards derived directly from the provided chat summary context.\",\n      \"No superseded facts were asserted as current.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

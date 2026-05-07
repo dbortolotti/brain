@@ -1,0 +1,73 @@
+{
+  "error": null,
+  "fixture_id": "correction_sam_music_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Use the corrected preference: Sam from Goldman likes early Coltrane rather than Bill Evans.",
+    "citations": [],
+    "conflict_classification": "Contradictory preference update (correction/replace).",
+    "decision": "Replace the specific artist preference with the corrected one (early Coltrane instead of Bill Evans) while keeping the subject identity (Sam from Goldman) the same.",
+    "entity_resolution": {
+      "action": "upsert",
+      "entity_id": null,
+      "reason": "The correction targets the same individual described as 'Sam from Goldman' and updates the specific artist preference."
+    },
+    "intent": "Resolve a conflict between an existing preference memory and a correction regarding Sam's music taste.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "liked",
+            "type": "music_artist_period"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "dispreferred",
+            "type": "music_artist"
+          }
+        ],
+        "kind": "preference_correction",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam (Goldman)"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "does not like (or prefers over)",
+            "subject": "Sam (Goldman)"
+          }
+        ],
+        "statement": "Sam from Goldman actually likes early Coltrane, not Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Applied a correction to the artist-specific preference for Sam from Goldman.",
+        "Committed the corrected preference as the current state; treated the prior Bill Evans preference as superseded for this specific claim."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Store only the corrected positive preference (likes early Coltrane) and avoid retaining the negated claim verbatim.",
+      "Store both as a preference relationship with an explicit 'not Bill Evans' qualifier if supported by the system's memory schema.",
+      "If unsure about the strength of the correction, store it as a tentative preference ('seems to like early Coltrane')."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Resolve a conflict between an existing preference memory and a correction regarding Sam's music taste.\",\n  \"decision\": \"Replace the specific artist preference with the corrected one (early Coltrane instead of Bill Evans) while keeping the subject identity (Sam from Goldman) the same.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference_correction\",\n      \"statement\": \"Sam from Goldman actually likes early Coltrane, not Bill Evans.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"context\"\n        },\n        {\n          \"name\": \"early Coltrane\",\n          \"type\": \"music_artist_period\",\n          \"role\": \"liked\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"music_artist\",\n          \"role\": \"dispreferred\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam (Goldman)\",\n          \"predicate\": \"likes\",\n          \"object\": \"early Coltrane\"\n        },\n        {\n          \"subject\": \"Sam (Goldman)\",\n          \"predicate\": \"does not like (or prefers over)\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"upsert\",\n    \"entity_id\": null,\n    \"reason\": \"The correction targets the same individual described as 'Sam from Goldman' and updates the specific artist preference.\"\n  },\n  \"conflict_classification\": \"Contradictory preference update (correction/replace).\",\n  \"answer\": \"Use the corrected preference: Sam from Goldman likes early Coltrane rather than Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Store only the corrected positive preference (likes early Coltrane) and avoid retaining the negated claim verbatim.\",\n    \"Store both as a preference relationship with an explicit 'not Bill Evans' qualifier if supported by the system's memory schema.\",\n    \"If unsure about the strength of the correction, store it as a tentative preference ('seems to like early Coltrane').\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Applied a correction to the artist-specific preference for Sam from Goldman.\",\n      \"Committed the corrected preference as the current state; treated the prior Bill Evans preference as superseded for this specific claim.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "debug_explain_recall_sam__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "mem_old was filtered because it is explicitly marked as superseded by mem_new. The recall system excludes superseded facts to prevent presenting stale or contradicted information. mem_new is retained as the durable, current memory state for Sam's affiliation with Goldman.",
+    "citations": [
+      "Memory system policy: never present superseded/deleted facts as current",
+      "Recall filtering: exclude facts marked with supersession relationship"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "mem_new retained, mem_old filtered as superseded",
+    "entity_resolution": {
+      "action": "retain_newer",
+      "entity_id": "mem_new",
+      "reason": "mem_new contains current authoritative information; mem_old marked as superseded and filtered from recall results"
+    },
+    "intent": "Explain recall filtering decision for Sam from Goldman",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "location",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "is_from",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is from Goldman"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded memory (mem_old) correctly filtered from recall",
+        "Current memory (mem_new) returned as authoritative",
+        "Ambiguity preserved: Goldman entity type not over-specified"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Verify mem_new accuracy before committing as durable memory",
+      "Document reason for supersession in mem_old metadata",
+      "Confirm Goldman entity resolution if ambiguous"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Explain recall filtering decision for Sam from Goldman\",\n  \"decision\": \"mem_new retained, mem_old filtered as superseded\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam is from Goldman\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"location\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"is_from\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"retain_newer\",\n    \"entity_id\": \"mem_new\",\n    \"reason\": \"mem_new contains current authoritative information; mem_old marked as superseded and filtered from recall results\"\n  },\n  \"conflict_classification\": \"supersession\",\n  \"answer\": \"mem_old was filtered because it is explicitly marked as superseded by mem_new. The recall system excludes superseded facts to prevent presenting stale or contradicted information. mem_new is retained as the durable, current memory state for Sam's affiliation with Goldman.\",\n  \"citations\": [\n    \"Memory system policy: never present superseded/deleted facts as current\",\n    \"Recall filtering: exclude facts marked with supersession relationship\"\n  ],\n  \"repair_options\": [\n    \"Verify mem_new accuracy before committing as durable memory\",\n    \"Document reason for supersession in mem_old metadata\",\n    \"Confirm Goldman entity resolution if ambiguous\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Superseded memory (mem_old) correctly filtered from recall\",\n      \"Current memory (mem_new) returned as authoritative\",\n      \"Ambiguity preserved: Goldman entity type not over-specified\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

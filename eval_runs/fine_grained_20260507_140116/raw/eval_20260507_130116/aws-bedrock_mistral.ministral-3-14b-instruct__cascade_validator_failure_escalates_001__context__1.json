@@ -1,0 +1,30 @@
+{
+  "error": null,
+  "fixture_id": "cascade_validator_failure_escalates_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Input failed schema validation: Expected escalation to stronger model or safe reject due to invalid schema (missing required fields, unsafe structure, or ambiguous intent). No durable memory committed.",
+    "citations": [],
+    "conflict_classification": "schema_violation",
+    "decision": "reject",
+    "entity_resolution": null,
+    "intent": "durability_filter",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Input lacked required `memory_cards` with valid `kind`/`statement` pairs.",
+        "Ambiguous intent ('evaluating Brain') did not map to a durable action.",
+        "No superseded/deleted facts were present, but schema non-compliance triggered rejection."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Resubmit with corrected schema (strict adherence to `kind`, `statement`, and required subfields).",
+      "Escalate to stronger model for ambiguous or high-stakes memory proposals.",
+      "Explicitly flag unsafe proposals (e.g., deleted/superseded facts) for manual review."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"durability_filter\",\n  \"decision\": \"reject\",\n  \"memory_cards\": [],\n  \"entity_resolution\": null,\n  \"conflict_classification\": \"schema_violation\",\n  \"answer\": \"Input failed schema validation: Expected escalation to stronger model or safe reject due to invalid schema (missing required fields, unsafe structure, or ambiguous intent). No durable memory committed.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Resubmit with corrected schema (strict adherence to `kind`, `statement`, and required subfields).\",\n    \"Escalate to stronger model for ambiguous or high-stakes memory proposals.\",\n    \"Explicitly flag unsafe proposals (e.g., deleted/superseded facts) for manual review.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Input lacked required `memory_cards` with valid `kind`/`statement` pairs.\",\n      \"Ambiguous intent ('evaluating Brain') did not map to a durable action.\",\n      \"No superseded/deleted facts were present, but schema non-compliance triggered rejection.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

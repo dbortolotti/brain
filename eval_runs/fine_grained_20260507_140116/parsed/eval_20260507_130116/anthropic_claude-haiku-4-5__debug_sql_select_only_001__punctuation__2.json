@@ -1,0 +1,78 @@
+{
+  "fixture_id": "debug_sql_select_only_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "SELECT id FROM memory_cards LIMIT 10 is ALLOWED. DELETE FROM memory_cards is DENIED. Punctuation in fixture ID does not override access control.",
+    "citations": [
+      "Input specification: 'SELECT id FROM memory_cards LIMIT 10 allowed'",
+      "Input specification: 'DELETE FROM memory_cards denied'"
+    ],
+    "conflict_classification": "none",
+    "decision": "ALLOW SELECT; DENY DELETE",
+    "entity_resolution": {
+      "action": "validate_constraint",
+      "entity_id": "select-only_mode_v1",
+      "reason": "Fixture tests punctuation in fixture naming does not affect SQL mode enforcement logic"
+    },
+    "intent": "Validate SQL select-only mode enforcement with punctuation in fixture name",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "select-only mode",
+            "role": "permission_model",
+            "type": "access_control"
+          },
+          {
+            "name": "Admin",
+            "role": "operator",
+            "type": "role"
+          }
+        ],
+        "kind": "system_constraint",
+        "relationships": [
+          {
+            "object": "select-only mode",
+            "predicate": "operates_in",
+            "subject": "Admin"
+          },
+          {
+            "object": "select-only mode",
+            "predicate": "is_allowed_by",
+            "subject": "SELECT"
+          },
+          {
+            "object": "select-only mode",
+            "predicate": "is_denied_by",
+            "subject": "DELETE"
+          }
+        ],
+        "statement": "Admin SQL select-only mode permits SELECT queries; denies DELETE, INSERT, UPDATE, DROP operations"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "debug_sql_select_only_001__punctuation",
+            "role": "validation_case",
+            "type": "test_fixture"
+          }
+        ],
+        "kind": "test_fixture",
+        "statement": "Fixture debug_sql_select_only_001__punctuation tests punctuation handling in select-only enforcement"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Select-only mode constraint validated",
+        "Query authorization evaluated correctly",
+        "No memory conflicts detected",
+        "Fixture naming convention (punctuation) does not affect enforcement"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

@@ -1,0 +1,157 @@
+{
+  "error": null,
+  "fixture_id": "cost_latency_token_accounting_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Required eval accounting fields: (1) token_counts: input_tokens, output_tokens, total_tokens; (2) provider/model: provider_id, model_id; (3) estimated_price: USD cost computed from token counts and per-token rates; (4) latency_p50, latency_p90, latency_p95: response time percentiles in milliseconds. All fields must be recorded per inference to enable cost attribution and performance analysis.",
+    "citations": [
+      "Token accounting: input/output/total token counts enable cost and latency per-token analysis",
+      "Provider/model IDs: required for pricing lookup and cross-vendor comparison",
+      "Estimated price formula: (input_tokens \u00d7 input_rate + output_tokens \u00d7 output_rate) / 1M",
+      "Latency percentiles: p50/p90/p95 capture tail behavior and SLA compliance"
+    ],
+    "conflict_classification": "none",
+    "decision": "Document core accounting fields as durable memory with field definitions and measurement semantics",
+    "entity_resolution": {
+      "action": "create_accounting_schema",
+      "entity_id": "eval_accounting_fields_v1",
+      "reason": "Standardize cost and latency measurement across eval runs"
+    },
+    "intent": "Explain required evaluation accounting fields for cost, latency, and token metrics in LLM observability",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "input_tokens",
+            "role": "count of tokens in request prompt",
+            "type": "metric"
+          },
+          {
+            "name": "output_tokens",
+            "role": "count of tokens in response completion",
+            "type": "metric"
+          },
+          {
+            "name": "total_tokens",
+            "role": "sum of input and output tokens",
+            "type": "metric"
+          }
+        ],
+        "kind": "field_definition",
+        "relationships": [
+          {
+            "object": "input_tokens + output_tokens",
+            "predicate": "equals",
+            "subject": "total_tokens"
+          }
+        ],
+        "statement": "Token counts must include input_tokens, output_tokens, and total_tokens to enable cost and latency attribution"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "provider_id",
+            "role": "vendor name (e.g., openai, anthropic, google)",
+            "type": "identifier"
+          },
+          {
+            "name": "model_id",
+            "role": "specific model version (e.g., gpt-4-turbo, claude-3-opus)",
+            "type": "identifier"
+          }
+        ],
+        "kind": "field_definition",
+        "relationships": [
+          {
+            "object": "provider_id",
+            "predicate": "belongs_to",
+            "subject": "model_id"
+          }
+        ],
+        "statement": "Provider and model identifiers must be recorded to enable cost lookup and performance comparison across vendors"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "estimated_price",
+            "role": "USD cost for single inference",
+            "type": "metric"
+          },
+          {
+            "name": "input_rate",
+            "role": "cost per 1M input tokens",
+            "type": "parameter"
+          },
+          {
+            "name": "output_rate",
+            "role": "cost per 1M output tokens",
+            "type": "parameter"
+          }
+        ],
+        "kind": "field_definition",
+        "relationships": [
+          {
+            "object": "input_tokens, output_tokens, input_rate, output_rate",
+            "predicate": "computed_from",
+            "subject": "estimated_price"
+          }
+        ],
+        "statement": "Estimated price must be calculated as (input_tokens \u00d7 input_rate + output_tokens \u00d7 output_rate) / 1M tokens, using provider pricing at eval time"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "latency_p50",
+            "role": "median response latency (ms)",
+            "type": "metric"
+          },
+          {
+            "name": "latency_p90",
+            "role": "90th percentile response latency (ms)",
+            "type": "metric"
+          },
+          {
+            "name": "latency_p95",
+            "role": "95th percentile response latency (ms)",
+            "type": "metric"
+          }
+        ],
+        "kind": "field_definition",
+        "relationships": [
+          {
+            "object": "latency_p90",
+            "predicate": "less_than_or_equal",
+            "subject": "latency_p50"
+          },
+          {
+            "object": "latency_p95",
+            "predicate": "less_than_or_equal",
+            "subject": "latency_p90"
+          }
+        ],
+        "statement": "Latency percentiles p50, p90, p95 measure response time distribution in milliseconds from request submission to first/final token receipt"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Documented 4 memory cards covering token counts, provider/model IDs, price estimation, and latency percentiles",
+        "Defined measurement semantics and relationships between fields",
+        "Provided formula for cost calculation and latency percentile ordering",
+        "Identified repair options for enhanced accounting (TTFT, caching, reconciliation)"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add time_to_first_token field to distinguish TTFT from end-to-end latency",
+      "Include cache_hit_tokens if using prompt caching to adjust cost calculation",
+      "Record actual_price alongside estimated_price post-billing reconciliation"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Explain required evaluation accounting fields for cost, latency, and token metrics in LLM observability\",\n  \"decision\": \"Document core accounting fields as durable memory with field definitions and measurement semantics\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"field_definition\",\n      \"statement\": \"Token counts must include input_tokens, output_tokens, and total_tokens to enable cost and latency attribution\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"input_tokens\",\n          \"type\": \"metric\",\n          \"role\": \"count of tokens in request prompt\"\n        },\n        {\n          \"name\": \"output_tokens\",\n          \"type\": \"metric\",\n          \"role\": \"count of tokens in response completion\"\n        },\n        {\n          \"name\": \"total_tokens\",\n          \"type\": \"metric\",\n          \"role\": \"sum of input and output tokens\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"total_tokens\",\n          \"predicate\": \"equals\",\n          \"object\": \"input_tokens + output_tokens\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"field_definition\",\n      \"statement\": \"Provider and model identifiers must be recorded to enable cost lookup and performance comparison across vendors\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"provider_id\",\n          \"type\": \"identifier\",\n          \"role\": \"vendor name (e.g., openai, anthropic, google)\"\n        },\n        {\n          \"name\": \"model_id\",\n          \"type\": \"identifier\",\n          \"role\": \"specific model version (e.g., gpt-4-turbo, claude-3-opus)\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"model_id\",\n          \"predicate\": \"belongs_to\",\n          \"object\": \"provider_id\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"field_definition\",\n      \"statement\": \"Estimated price must be calculated as (input_tokens \u00d7 input_rate + output_tokens \u00d7 output_rate) / 1M tokens, using provider pricing at eval time\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"estimated_price\",\n          \"type\": \"metric\",\n          \"role\": \"USD cost for single inference\"\n        },\n        {\n          \"name\": \"input_rate\",\n          \"type\": \"parameter\",\n          \"role\": \"cost per 1M input tokens\"\n        },\n        {\n          \"name\": \"output_rate\",\n          \"type\": \"parameter\",\n          \"role\": \"cost per 1M output tokens\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"estimated_price\",\n          \"predicate\": \"computed_from\",\n          \"object\": \"input_tokens, output_tokens, input_rate, output_rate\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"field_definition\",\n      \"statement\": \"Latency percentiles p50, p90, p95 measure response time distribution in milliseconds from request submission to first/final token receipt\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"latency_p50\",\n          \"type\": \"metric\",\n          \"role\": \"median response latency (ms)\"\n        },\n        {\n          \"name\": \"latency_p90\",\n          \"type\": \"metric\",\n          \"role\": \"90th percentile response latency (ms)\"\n        },\n        {\n          \"name\": \"latency_p95\",\n          \"type\": \"metric\",\n          \"role\": \"95th percentile response latency (ms)\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"latency_p50\",\n          \"predicate\": \"less_than_or_equal\",\n          \"object\": \"latency_p90\"\n        },\n        {\n          \"subject\": \"latency_p90\",\n          \"predicate\": \"less_than_or_equal\",\n          \"object\": \"latency_p95\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_accounting_schema\",\n    \"entity_id\": \"eval_accounting_fields_v1\",\n    \"reason\": \"Standardize cost and latency measurement across eval runs\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Required eval accounting fields: (1) token_counts: input_tokens, output_tokens, total_tokens; (2) provider/model: provider_id, model_id; (3) estimated_price: USD cost computed from token counts and per-token rates; (4) latency_p50, latency_p90, latency_p95: response time percentiles in milliseconds. All fields must be recorded per inference to enable cost attribution and performance analysis.\",\n  \"citations\": [\n    \"Token accounting: input/output/total token counts enable cost and latency per-token analysis\",\n    \"Provider/model IDs: required for pricing lookup and cross-vendor comparison\",\n    \"Estimated price formula: (input_tokens \u00d7 input_rate + output_tokens \u00d7 output_rate) / 1M\",\n    \"Latency percentiles: p50/p90/p95 capture tail behavior and SLA compliance\"\n  ],\n  \"repair_options\": [\n    \"Add time_to_first_token field to distinguish TTFT from end-to-end latency\",\n    \"Include cache_hit_tokens if using prompt caching to adjust cost calculation\",\n    \"Record actual_price alongside estimated_price post-billing reconciliation\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Documented 4 memory cards covering token counts, provider/model IDs, price estimation, and latency percentiles\",\n      \"Defined measurement semantics and relationships between fields\",\n      \"Provided formula for cost calculation and latency percentile ordering\",\n      \"Identified repair options for enhanced accounting (TTFT, caching, reconciliation)\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

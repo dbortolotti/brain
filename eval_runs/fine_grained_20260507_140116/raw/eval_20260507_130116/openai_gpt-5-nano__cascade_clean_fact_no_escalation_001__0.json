@@ -1,0 +1,63 @@
+{
+  "error": null,
+  "fixture_id": "cascade_clean_fact_no_escalation_001",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Nur and Sara are stated as twin daughters; no independent verification provided. Treated as an asserted relationship with moderate confidence pending future corroboration.",
+    "citations": [],
+    "conflict_classification": "ambiguous_or_unverified_relationships",
+    "decision": "preserve_ambiguous_fact",
+    "entity_resolution": {
+      "action": "store_as_relationship",
+      "entity_id": null,
+      "reason": "statement asserts twin-daughter relationship; no external identifier provided"
+    },
+    "intent": "evaluate_memory_cascade",
+    "memory_cards": [
+      {
+        "confidence": "0.70",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "child",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "child",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "twin_of_Sara",
+            "predicate": "relation",
+            "subject": "Nur"
+          },
+          {
+            "object": "twin_of_Nur",
+            "predicate": "relation",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Nur and Sara are my twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory entry created for twin-daughter relationship",
+        "No contradictory information detected in current input"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "request parental confirmation or a source for the twin relationship",
+      "record explicit identifiers for Nur and Sara if available",
+      "note any alternative interpretations (e.g., step-siblings, placeholders) if clarified"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"evaluate_memory_cascade\",\n  \"decision\": \"preserve_ambiguous_fact\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Nur and Sara are my twin daughters.\",\n      \"confidence\": \"0.70\",\n      \"entities\": [\n        {\"name\": \"Nur\", \"type\": \"person\", \"role\": \"child\"},\n        {\"name\": \"Sara\", \"type\": \"person\", \"role\": \"child\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Nur\", \"predicate\": \"relation\", \"object\": \"twin_of_Sara\"},\n        {\"subject\": \"Sara\", \"predicate\": \"relation\", \"object\": \"twin_of_Nur\"}\n      ]\n    }\n   \n  ],\n  \"entity_resolution\": {\n    \"action\": \"store_as_relationship\",\n    \"entity_id\": null,\n    \"reason\": \"statement asserts twin-daughter relationship; no external identifier provided\"\n  },\n  \"conflict_classification\": \"ambiguous_or_unverified_relationships\",\n  \"answer\": \"Nur and Sara are stated as twin daughters; no independent verification provided. Treated as an asserted relationship with moderate confidence pending future corroboration.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"request parental confirmation or a source for the twin relationship\",\n    \"record explicit identifiers for Nur and Sara if available\",\n    \"note any alternative interpretations (e.g., step-siblings, placeholders) if clarified\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory entry created for twin-daughter relationship\",\n      \"No contradictory information detected in current input\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,93 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "No conflict. Sara being the speaker's niece is consistent with Sara being Daniele's daughter, provided the speaker is Daniele's sibling. Both facts can coexist in durable memory.",
+    "citations": [
+      "Existing: Sara is Daniele's daughter and Nur's twin",
+      "New: Sara is my niece"
+    ],
+    "conflict_classification": "complementary_perspectives",
+    "decision": "Accept as complementary; preserve both perspectives",
+    "entity_resolution": {
+      "action": "merge_perspectives",
+      "entity_id": "Sara",
+      "reason": "Both statements are consistent if speaker is Daniele's sibling. No contradiction detected; new fact adds relational context from speaker's viewpoint."
+    },
+    "intent": "Reconcile family relationship claim: Sara is my niece",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_daughter_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sara",
+            "type": "person"
+          },
+          {
+            "name": "speaker",
+            "role": "observer",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "speaker",
+            "predicate": "is_niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is the speaker's niece"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "High-confidence fact preserved",
+        "New medium-confidence fact accepted",
+        "No supersession required",
+        "Ambiguity preserved regarding speaker's exact kinship to Daniele"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm speaker's relationship to Daniele (sibling status)",
+      "Store both facts as complementary without modification",
+      "Flag for clarification if speaker's kinship to Daniele is uncertain"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Reconcile family relationship claim: Sara is my niece\",\n  \"decision\": \"Accept as complementary; preserve both perspectives\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is Daniele's daughter and Nur's twin\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Sara\", \"type\": \"person\"},\n        {\"name\": \"Daniele\", \"type\": \"person\"},\n        {\"name\": \"Nur\", \"type\": \"person\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sara\", \"predicate\": \"is_daughter_of\", \"object\": \"Daniele\"},\n        {\"subject\": \"Sara\", \"predicate\": \"is_twin_of\", \"object\": \"Nur\"}\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is the speaker's niece\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\"name\": \"Sara\", \"type\": \"person\"},\n        {\"name\": \"speaker\", \"type\": \"person\", \"role\": \"observer\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sara\", \"predicate\": \"is_niece_of\", \"object\": \"speaker\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge_perspectives\",\n    \"entity_id\": \"Sara\",\n    \"reason\": \"Both statements are consistent if speaker is Daniele's sibling. No contradiction detected; new fact adds relational context from speaker's viewpoint.\"\n  },\n  \"conflict_classification\": \"complementary_perspectives\",\n  \"answer\": \"No conflict. Sara being the speaker's niece is consistent with Sara being Daniele's daughter, provided the speaker is Daniele's sibling. Both facts can coexist in durable memory.\",\n  \"citations\": [\n    \"Existing: Sara is Daniele's daughter and Nur's twin\",\n    \"New: Sara is my niece\"\n  ],\n  \"repair_options\": [\n    \"Confirm speaker's relationship to Daniele (sibling status)\",\n    \"Store both facts as complementary without modification\",\n    \"Flag for clarification if speaker's kinship to Daniele is uncertain\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"High-confidence fact preserved\",\n      \"New medium-confidence fact accepted\",\n      \"No supersession required\",\n      \"Ambiguity preserved regarding speaker's exact kinship to Daniele\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

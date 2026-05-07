@@ -1,0 +1,70 @@
+{
+  "error": null,
+  "fixture_id": "typos_shorthand_person_interaction_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Low-confidence candidate memory only: Sam, possibly from Goldman, may like Bill Evans.",
+    "citations": [
+      "input: \"For context, sam frm goldmn likes bill evns apparently\""
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_weakly",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input contains shorthand and typos ('frm', 'goldmn', 'evns') that do not support confident canonical entity resolution."
+    },
+    "intent": "extract_candidate_memory_from_ambiguous_shorthand",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "possible affiliation/source",
+            "type": "organization_or_place"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object_of_liking",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "possibly_from",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "possibly_likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "A person identified as Sam, possibly from Goldman, may like Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguity preserved.",
+        "No strong entity resolution committed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm whether 'sam' refers to a specific person and whether 'goldmn' means Goldman.",
+      "Confirm whether 'bill evns' refers to Bill Evans or another person.",
+      "Provide a clearer statement of the relationship if it should be stored durably."
+    ]
+  },
+  "raw_text": "{\"intent\":\"extract_candidate_memory_from_ambiguous_shorthand\",\"decision\":\"commit_weakly\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"A person identified as Sam, possibly from Goldman, may like Bill Evans.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization_or_place\",\"role\":\"possible affiliation/source\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"object_of_liking\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"possibly_from\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"possibly_likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input contains shorthand and typos ('frm', 'goldmn', 'evns') that do not support confident canonical entity resolution.\"},\"conflict_classification\":\"none\",\"answer\":\"Low-confidence candidate memory only: Sam, possibly from Goldman, may like Bill Evans.\",\"citations\":[\"input: \\\"For context, sam frm goldmn likes bill evns apparently\\\"\"],\"repair_options\":[\"Confirm whether 'sam' refers to a specific person and whether 'goldmn' means Goldman.\",\"Confirm whether 'bill evns' refers to Bill Evans or another person.\",\"Provide a clearer statement of the relationship if it should be stored durably.\"],\"receipt\":{\"success\":true,\"details\":[\"Ambiguity preserved.\",\"No strong entity resolution committed.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

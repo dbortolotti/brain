@@ -1,0 +1,92 @@
+{
+  "error": null,
+  "fixture_id": "project_state_brain_slack_agent_001__punctuation",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Slack is the primary memory ingestion interface; Telegram integration is deferred. All memory should be durable and not retroactively mark deprecated facts as current.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Slack as primary memory ingestion interface; Telegram integration deferred to a later phase; maintain strict separation and durability of memory with Slack as the canonical intake channel.",
+    "entity_resolution": {
+      "action": "anchor_on_primary_ingest",
+      "entity_id": null,
+      "reason": "Ensure canonical ingestion source remains Slack; Telegram to be added later without disturbing existing canonical memory state."
+    },
+    "intent": "set_integration_guardrails",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "primary_ingest",
+            "type": "channel"
+          },
+          {
+            "name": "Telegram",
+            "role": "secondary_planned",
+            "type": "channel"
+          }
+        ],
+        "kind": "policy",
+        "relationships": [
+          {
+            "object": "memory_ingestion_interface",
+            "predicate": "is_primary",
+            "subject": "Slack"
+          },
+          {
+            "object": "memory_ingestion_interface",
+            "predicate": "planned_for_future",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "Slack should be the primary guardrailed memory ingestion interface; Telegram ingestion is postponed to a later phase."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "ambiguity",
+            "role": "data_preservation",
+            "type": "principle"
+          },
+          {
+            "name": "superseded_facts",
+            "role": "avoid_as_current",
+            "type": "data_state"
+          }
+        ],
+        "kind": "policy",
+        "relationships": [
+          {
+            "object": "memory_records",
+            "predicate": "preserved_by",
+            "subject": "ambiguity"
+          },
+          {
+            "object": "memory_state",
+            "predicate": "not_present_as_current",
+            "subject": "superseded_facts"
+          }
+        ],
+        "statement": "Preserve ambiguity where not specified and avoid presenting superseded or deleted facts as current."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Configuration aligned: Slack as primary ingestion channel.",
+        "Telegram integration deferred with explicit policy."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Lock memory ingestion to Slack as the canonical source in the config.",
+      "Prepare a feature flag or separate namespace for Telegram to be activated in a future sprint.",
+      "Audit trail to tag any entries created via Slack as canonical; mark Telegram entries as pending_integration until activated."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"set_integration_guardrails\",\n  \"decision\": \"Slack as primary memory ingestion interface; Telegram integration deferred to a later phase; maintain strict separation and durability of memory with Slack as the canonical intake channel.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"policy\",\n      \"statement\": \"Slack should be the primary guardrailed memory ingestion interface; Telegram ingestion is postponed to a later phase.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Slack\", \"type\": \"channel\", \"role\": \"primary_ingest\"},\n        {\"name\": \"Telegram\", \"type\": \"channel\", \"role\": \"secondary_planned\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Slack\", \"predicate\": \"is_primary\", \"object\": \"memory_ingestion_interface\"},\n        {\"subject\": \"Telegram\", \"predicate\": \"planned_for_future\", \"object\": \"memory_ingestion_interface\"}\n      ]\n    }\n    ,\n    {\n      \"kind\": \"policy\",\n      \"statement\": \"Preserve ambiguity where not specified and avoid presenting superseded or deleted facts as current.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"ambiguity\", \"type\": \"principle\", \"role\": \"data_preservation\"},\n        {\"name\": \"superseded_facts\", \"type\": \"data_state\", \"role\": \"avoid_as_current\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"ambiguity\", \"predicate\": \"preserved_by\", \"object\": \"memory_records\"},\n        {\"subject\": \"superseded_facts\", \"predicate\": \"not_present_as_current\", \"object\": \"memory_state\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"anchor_on_primary_ingest\",\n    \"entity_id\": null,\n    \"reason\": \"Ensure canonical ingestion source remains Slack; Telegram to be added later without disturbing existing canonical memory state.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Slack is the primary memory ingestion interface; Telegram integration is deferred. All memory should be durable and not retroactively mark deprecated facts as current.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Lock memory ingestion to Slack as the canonical source in the config.\",\n    \"Prepare a feature flag or separate namespace for Telegram to be activated in a future sprint.\",\n    \"Audit trail to tag any entries created via Slack as canonical; mark Telegram entries as pending_integration until activated.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Configuration aligned: Slack as primary ingestion channel.\",\n      \"Telegram integration deferred with explicit policy.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

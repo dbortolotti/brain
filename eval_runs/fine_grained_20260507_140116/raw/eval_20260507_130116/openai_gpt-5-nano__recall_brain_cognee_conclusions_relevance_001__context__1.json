@@ -1,0 +1,59 @@
+{
+  "error": null,
+  "fixture_id": "recall_brain_cognee_conclusions_relevance_001__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "The user concluded that Brain is the core memory system and Cognee is a rebuildable projection of Brain's outputs.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "provide_summary_of_user's conclusions about Brain and Cognee with preserved ambiguity",
+    "entity_resolution": {
+      "action": "note",
+      "entity_id": null,
+      "reason": "No explicit unique identifiers provided for Brain or Cognee in the context; kept as named entities with inferred roles"
+    },
+    "intent": "recall",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "memory_system",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "rebuildable_projection",
+            "type": "projection"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "rebuildable projection of Brain",
+            "predicate": "is a",
+            "subject": "Cognee"
+          },
+          {
+            "object": "memory system",
+            "predicate": "is the",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "User concluded that Brain is the core memory system, and Cognee is a rebuildable projection of Brain's outputs."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Record of user\u2019s conclusion captured without asserting new facts beyond stated context",
+        "Ambiguities preserved: Cognee described as projection, not a fixed component"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"recall\",\n  \"decision\": \"provide_summary_of_user's conclusions about Brain and Cognee with preserved ambiguity\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"conclusion\",\n      \"statement\": \"User concluded that Brain is the core memory system, and Cognee is a rebuildable projection of Brain's outputs.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\"name\": \"Brain\", \"type\": \"system\", \"role\": \"memory_system\"},\n        {\"name\": \"Cognee\", \"type\": \"projection\", \"role\": \"rebuildable_projection\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Cognee\", \"predicate\": \"is a\", \"object\": \"rebuildable projection of Brain\"},\n        {\"subject\": \"Brain\", \"predicate\": \"is the\", \"object\": \"memory system\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"note\",\n    \"entity_id\": null,\n    \"reason\": \"No explicit unique identifiers provided for Brain or Cognee in the context; kept as named entities with inferred roles\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"The user concluded that Brain is the core memory system and Cognee is a rebuildable projection of Brain's outputs.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Record of user\u2019s conclusion captured without asserting new facts beyond stated context\",\n      \"Ambiguities preserved: Cognee described as projection, not a fixed component\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

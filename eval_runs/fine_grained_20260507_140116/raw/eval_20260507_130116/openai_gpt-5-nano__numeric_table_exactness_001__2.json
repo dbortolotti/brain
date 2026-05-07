@@ -1,0 +1,104 @@
+{
+  "error": null,
+  "fixture_id": "numeric_table_exactness_001",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Both PPO-001 and PPO-002 are retained as distinct records; PPO-002 shows improved metrics and entropy tuning compared to PPO-001 baseline.",
+    "citations": [
+      "PPO-001: baseline",
+      "PPO-002: entropy tuned"
+    ],
+    "conflict_classification": "none",
+    "decision": "select_baseline_or_enhanced",
+    "entity_resolution": {
+      "action": "retain_all",
+      "entity_id": null,
+      "reason": "both entries represent distinct experiments with unique IDs and modifiers; no explicit conflict to resolve."
+    },
+    "intent": "evaluate_memory",
+    "memory_cards": [
+      {
+        "confidence": "0.70",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "identifier",
+            "type": "experiment_id"
+          },
+          {
+            "name": "baseline",
+            "role": "descriptor",
+            "type": "tag"
+          }
+        ],
+        "kind": "table_entry",
+        "relationships": [
+          {
+            "object": "0.12",
+            "predicate": "has_reward",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "0.45",
+            "predicate": "has_sharpe",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "baseline",
+            "predicate": "is_tagged_with",
+            "subject": "PPO-001"
+          }
+        ],
+        "statement": "PPO-001 baseline: Reward 0.12, Sharpe 0.45"
+      },
+      {
+        "confidence": "0.70",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "identifier",
+            "type": "experiment_id"
+          },
+          {
+            "name": "entropy tuned",
+            "role": "descriptor",
+            "type": "modification"
+          }
+        ],
+        "kind": "table_entry",
+        "relationships": [
+          {
+            "object": "0.18",
+            "predicate": "has_reward",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "0.51",
+            "predicate": "has_sharpe",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "entropy_tuned",
+            "predicate": "applied_modification",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "PPO-002 enhancement: Reward 0.18, Sharpe 0.51, entropy tuned"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory cards created for both PPO-001 and PPO-002",
+        "No conflicts detected between entries"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Keep both entries as separate experiments",
+      "If desired, add a time-based ordering or a summary decision favoring PPO-002 for entropy tuning"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"evaluate_memory\",\n  \"decision\": \"select_baseline_or_enhanced\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"table_entry\",\n      \"statement\": \"PPO-001 baseline: Reward 0.12, Sharpe 0.45\",\n      \"confidence\": \"0.70\",\n      \"entities\": [\n        {\"name\": \"PPO-001\", \"type\": \"experiment_id\", \"role\": \"identifier\"},\n        {\"name\": \"baseline\", \"type\": \"tag\", \"role\": \"descriptor\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"PPO-001\", \"predicate\": \"has_reward\", \"object\": \"0.12\"},\n        {\"subject\": \"PPO-001\", \"predicate\": \"has_sharpe\", \"object\": \"0.45\"},\n        {\"subject\": \"PPO-001\", \"predicate\": \"is_tagged_with\", \"object\": \"baseline\"}\n      ]\n    },\n    {\n      \"kind\": \"table_entry\",\n      \"statement\": \"PPO-002 enhancement: Reward 0.18, Sharpe 0.51, entropy tuned\",\n      \"confidence\": \"0.70\",\n      \"entities\": [\n        {\"name\": \"PPO-002\", \"type\": \"experiment_id\", \"role\": \"identifier\"},\n        {\"name\": \"entropy tuned\", \"type\": \"modification\", \"role\": \"descriptor\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"PPO-002\", \"predicate\": \"has_reward\", \"object\": \"0.18\"},\n        {\"subject\": \"PPO-002\", \"predicate\": \"has_sharpe\", \"object\": \"0.51\"},\n        {\"subject\": \"PPO-002\", \"predicate\": \"applied_modification\", \"object\": \"entropy_tuned\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"retain_all\",\n    \"entity_id\": null,\n    \"reason\": \"both entries represent distinct experiments with unique IDs and modifiers; no explicit conflict to resolve.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Both PPO-001 and PPO-002 are retained as distinct records; PPO-002 shows improved metrics and entropy tuning compared to PPO-001 baseline.\",\n  \"citations\": [\n    \"PPO-001: baseline\",\n    \"PPO-002: entropy tuned\"\n  ],\n  \"repair_options\": [\n    \"Keep both entries as separate experiments\",\n    \"If desired, add a time-based ordering or a summary decision favoring PPO-002 for entropy tuning\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory cards created for both PPO-001 and PPO-002\",\n      \"No conflicts detected between entries\"\n    ]\n    }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

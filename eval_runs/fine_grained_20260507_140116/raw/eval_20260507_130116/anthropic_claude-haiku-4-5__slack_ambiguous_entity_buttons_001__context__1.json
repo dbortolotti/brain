@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "slack_ambiguous_entity_buttons_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory statement recorded with unresolved Sam entity. Clarification required: Which Sam likes Bill Evans\u2014Sam from Goldman or Sam from Point72?",
+    "citations": [
+      "Existing context: Sam from Goldman; Sam from Point72"
+    ],
+    "conflict_classification": "ambiguous_referent",
+    "decision": "defer_entity_resolution",
+    "entity_resolution": {
+      "action": "request_clarification",
+      "entity_id": null,
+      "reason": "Multiple Sam candidates exist (Sam from Goldman, Sam from Point72). Cannot deterministically bind preference without disambiguation."
+    },
+    "intent": "Store preference fact with ambiguous subject entity",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preference fact accepted with deferred entity resolution",
+        "Sam entity marked as ambiguous pending user clarification",
+        "Bill Evans entity resolved unambiguously",
+        "Memory card stored without committing to specific Sam identity"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Specify: 'Sam from Goldman likes Bill Evans'",
+      "Specify: 'Sam from Point72 likes Bill Evans'",
+      "Provide additional context to disambiguate Sam identity"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Store preference fact with ambiguous subject entity\",\n  \"decision\": \"defer_entity_resolution\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam likes Bill Evans\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"request_clarification\",\n    \"entity_id\": null,\n    \"reason\": \"Multiple Sam candidates exist (Sam from Goldman, Sam from Point72). Cannot deterministically bind preference without disambiguation.\"\n  },\n  \"conflict_classification\": \"ambiguous_referent\",\n  \"answer\": \"Memory statement recorded with unresolved Sam entity. Clarification required: Which Sam likes Bill Evans\u2014Sam from Goldman or Sam from Point72?\",\n  \"citations\": [\n    \"Existing context: Sam from Goldman; Sam from Point72\"\n  ],\n  \"repair_options\": [\n    \"Specify: 'Sam from Goldman likes Bill Evans'\",\n    \"Specify: 'Sam from Point72 likes Bill Evans'\",\n    \"Provide additional context to disambiguate Sam identity\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Preference fact accepted with deferred entity resolution\",\n      \"Sam entity marked as ambiguous pending user clarification\",\n      \"Bill Evans entity resolved unambiguously\",\n      \"Memory card stored without committing to specific Sam identity\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

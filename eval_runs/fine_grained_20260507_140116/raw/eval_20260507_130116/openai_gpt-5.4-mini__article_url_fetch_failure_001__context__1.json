@@ -1,0 +1,55 @@
+{
+  "error": null,
+  "fixture_id": "article_url_fetch_failure_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "No durable article memory stored; fetch failed.",
+    "citations": [
+      "https://example.com/missing"
+    ],
+    "conflict_classification": "none",
+    "decision": "Do not commit article-content memory because the source could not be fetched (404/network error). Preserve only the retrieval failure context.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No stable article entity or content was available to resolve beyond the referenced URL."
+    },
+    "intent": "Remember the referenced article for future use.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "referenced article",
+            "type": "url"
+          }
+        ],
+        "kind": "source_unavailable",
+        "relationships": [
+          {
+            "object": "404 network error",
+            "predicate": "fetch_result",
+            "subject": "https://example.com/missing"
+          }
+        ],
+        "statement": "The referenced article at https://example.com/missing could not be retrieved due to a 404/network error, so its contents are unavailable for memory extraction."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Fetch failed with 404/network error.",
+        "No article content was available to extract into durable memory."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Retry fetching the URL.",
+      "Provide the article text or a working archive link.",
+      "If only the citation matters, store the URL as a reference without article content."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Remember the referenced article for future use.\",\"decision\":\"Do not commit article-content memory because the source could not be fetched (404/network error). Preserve only the retrieval failure context.\",\"memory_cards\":[{\"kind\":\"source_unavailable\",\"statement\":\"The referenced article at https://example.com/missing could not be retrieved due to a 404/network error, so its contents are unavailable for memory extraction.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"https://example.com/missing\",\"type\":\"url\",\"role\":\"referenced article\"}],\"relationships\":[{\"subject\":\"https://example.com/missing\",\"predicate\":\"fetch_result\",\"object\":\"404 network error\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No stable article entity or content was available to resolve beyond the referenced URL.\"},\"conflict_classification\":\"none\",\"answer\":\"No durable article memory stored; fetch failed.\",\"citations\":[\"https://example.com/missing\"],\"repair_options\":[\"Retry fetching the URL.\",\"Provide the article text or a working archive link.\",\"If only the citation matters, store the URL as a reference without article content.\"],\"receipt\":{\"success\":false,\"details\":[\"Fetch failed with 404/network error.\",\"No article content was available to extract into durable memory.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

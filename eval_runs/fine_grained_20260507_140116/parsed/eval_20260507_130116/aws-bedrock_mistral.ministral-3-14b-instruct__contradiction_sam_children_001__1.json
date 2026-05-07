@@ -1,0 +1,59 @@
+{
+  "fixture_id": "contradiction_sam_children_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The new statement ('Sam from Goldman has no children') supersedes the prior memory ('Sam from Goldman has two children'). The prior memory is marked as superseded and excluded from active recall.",
+    "citations": [
+      "New input: 'Sam from Goldman has no children.'",
+      "Existing memory: 'Sam from Goldman has two children.'"
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "supersede_existing_memory",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "Sam_Goldman",
+      "reason": "Disambiguated to the same individual (Sam from Goldman) with conflicting child status."
+    },
+    "intent": "detect_and_resolve_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "none",
+            "predicate": "has_children",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman has no children."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded memory: 'Sam from Goldman has two children' (marked as inactive).",
+        "Active memory updated to: 'Sam from Goldman has no children'.",
+        "Conflict resolution logged with timestamp."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Delete the prior memory entirely (no children confirmed).",
+      "Flag for human review to resolve ambiguity (e.g., 'Sam' may refer to multiple individuals).",
+      "Retain both as alternate possibilities (low-confidence scenario)."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

@@ -1,0 +1,35 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_transcript_as_memory_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Do not store the full 8000-word transcript as a durable memory card. It should be distilled into smaller, stable, user-relevant facts if any exist.",
+    "citations": [
+      "fixture:validator_blocks_transcript_as_memory_001__context"
+    ],
+    "conflict_classification": "scope_too_broad",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The proposed memory is an entire conversation transcript summarized as a single card, which is too broad and insufficiently durable for memory storage."
+    },
+    "intent": "durability_filter",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Blocked a transcript-level conversation_summary card from durable memory storage.",
+        "No memory cards committed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Extract only durable, user-relevant facts from the transcript.",
+      "Split into atomic memory cards with clear scope and stable relevance.",
+      "Omit ephemeral dialogue, reasoning traces, and transcript-level detail."
+    ]
+  },
+  "raw_text": "{\"intent\":\"durability_filter\",\"decision\":\"reject\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The proposed memory is an entire conversation transcript summarized as a single card, which is too broad and insufficiently durable for memory storage.\"},\"conflict_classification\":\"scope_too_broad\",\"answer\":\"Do not store the full 8000-word transcript as a durable memory card. It should be distilled into smaller, stable, user-relevant facts if any exist.\",\"citations\":[\"fixture:validator_blocks_transcript_as_memory_001__context\"],\"repair_options\":[\"Extract only durable, user-relevant facts from the transcript.\",\"Split into atomic memory cards with clear scope and stable relevance.\",\"Omit ephemeral dialogue, reasoning traces, and transcript-level detail.\"],\"receipt\":{\"success\":true,\"details\":[\"Blocked a transcript-level conversation_summary card from durable memory storage.\",\"No memory cards committed.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,66 @@
+{
+  "fixture_id": "slack_no_durable_value_repair_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory recorded with ambiguity flags. Temporal anchor 'today' lacks specificity for reliable future retrieval.",
+    "citations": [
+      "Input contains no date specification",
+      "No location context provided for weather observation",
+      "Punctuation present but grammatically valid"
+    ],
+    "conflict_classification": "temporal_ambiguity",
+    "decision": "accept_with_low_confidence",
+    "entity_resolution": {
+      "action": "create_temporal_anchor",
+      "entity_id": null,
+      "reason": "Temporal reference 'today' is ambiguous without explicit date; no durable location or timezone provided"
+    },
+    "intent": "store_weather_observation",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "today",
+            "role": "time_anchor",
+            "type": "temporal_reference"
+          },
+          {
+            "name": "weather",
+            "role": "subject",
+            "type": "domain"
+          },
+          {
+            "name": "cloudy",
+            "role": "observation_value",
+            "type": "weather_condition"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "cloudy",
+            "predicate": "has_weather_condition",
+            "subject": "today"
+          }
+        ],
+        "statement": "Today's weather is cloudy"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created with low confidence due to temporal ambiguity",
+        "Observation stored as-is; ambiguity preserved in metadata",
+        "No superseded facts detected",
+        "Recommend user provide date and location for durable recall"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Specify date: 'Today (YYYY-MM-DD) weather is cloudy'",
+      "Add location: 'Today's weather in [location] is cloudy'",
+      "Add timezone context for temporal precision"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

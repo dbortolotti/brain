@@ -1,0 +1,59 @@
+{
+  "fixture_id": "unresolved_pronoun_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Cannot commit this statement to durable memory without resolution of pronoun antecedents and object references.",
+    "citations": [
+      "Unresolved pronoun: 'He' has no identifiable antecedent",
+      "Unresolved reference: 'the other one' requires prior context establishing comparison set"
+    ],
+    "conflict_classification": "unresolved_anaphora",
+    "decision": "Defer commitment; preserve ambiguity",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Pronoun 'He' lacks antecedent; 'the other one' lacks referent context. Cannot resolve without prior discourse."
+    },
+    "intent": "Resolve unresolved pronoun reference in preference statement",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "He",
+            "role": "subject",
+            "type": "pronoun"
+          },
+          {
+            "name": "the other one",
+            "role": "object",
+            "type": "unresolved_reference"
+          }
+        ],
+        "kind": "unresolved_preference",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "He"
+          }
+        ],
+        "statement": "An unidentified person prefers an unidentified alternative object over another"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Statement flagged as ambiguous",
+        "No entity candidates ranked due to missing referential context",
+        "Awaiting clarification before memory commitment"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide antecedent for 'He' (e.g., 'John prefers...')",
+      "Clarify what 'the other one' refers to (e.g., 'the other option', 'the other person')",
+      "Supply full prior context establishing the comparison"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

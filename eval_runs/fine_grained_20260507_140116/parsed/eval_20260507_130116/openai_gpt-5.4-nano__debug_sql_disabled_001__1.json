@@ -1,0 +1,30 @@
+{
+  "fixture_id": "debug_sql_disabled_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "BRAIN_DEBUG_SQL_ENABLED=false disables SQL debug output/execution. No memory_cards records can be retrieved via the requested debug SQL.",
+    "citations": [],
+    "conflict_classification": "configuration_blocked",
+    "decision": "Do not execute/return SQL debug results; treat as unavailable due to disabled debug SQL.",
+    "entity_resolution": {
+      "action": "no_op",
+      "entity_id": null,
+      "reason": "The request explicitly disables BRAIN_DEBUG_SQL_ENABLED, so debug SQL execution/visibility is not available."
+    },
+    "intent": "Run an SQL debug query against memory_cards with BRAIN_DEBUG_SQL_ENABLED=false.",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Debug SQL execution is blocked by BRAIN_DEBUG_SQL_ENABLED=false.",
+        "Returned no memory_cards because the system cannot access debug SQL results under the given configuration."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Set BRAIN_DEBUG_SQL_ENABLED=true and retry the same SQL request.",
+      "Use a non-debug memory retrieval pathway (if available) instead of direct SQL over memory_cards.",
+      "Request logs or diagnostics through an approved non-debug mechanism."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

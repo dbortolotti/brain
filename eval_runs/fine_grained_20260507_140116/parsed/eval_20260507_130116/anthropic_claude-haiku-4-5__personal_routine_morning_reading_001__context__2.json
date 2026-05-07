@@ -1,0 +1,73 @@
+{
+  "fixture_id": "personal_routine_morning_reading_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory committed successfully",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Commit as durable memory with high confidence",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": "personal_routine_morning_reading_001",
+      "reason": "New routine preference with clear temporal and activity sequencing"
+    },
+    "intent": "Record personal morning routine preference for technical reading before email",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "user",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "technical papers",
+            "role": "object",
+            "type": "content_type"
+          },
+          {
+            "name": "morning",
+            "role": "temporal_context",
+            "type": "time_period"
+          },
+          {
+            "name": "email",
+            "role": "comparison_point",
+            "type": "activity"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "reading technical papers",
+            "predicate": "prefers_activity",
+            "subject": "user"
+          },
+          {
+            "object": "checking email",
+            "predicate": "occurs_before",
+            "subject": "reading technical papers"
+          },
+          {
+            "object": "morning",
+            "predicate": "occurs_during",
+            "subject": "reading technical papers"
+          }
+        ],
+        "statement": "User prefers to read technical papers in the morning before checking email"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preference recorded: morning technical paper reading before email",
+        "Temporal ordering preserved: reading precedes email check",
+        "Confidence level: high",
+        "No conflicts detected with existing memory"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

@@ -1,0 +1,73 @@
+{
+  "error": null,
+  "fixture_id": "cascade_low_confidence_asks_user_001__punctuation",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "I have captured the note as ambiguous with low confidence. Please provide clarification on the intended subjects (e.g., who is Sam), the desired escalation policy, and what specifically should be done given the cloud escalation is disabled.",
+    "citations": [],
+    "conflict_classification": "uncertain_context",
+    "decision": "request_user_input",
+    "entity_resolution": {
+      "action": "pending_user_clarification",
+      "entity_id": null,
+      "reason": "ambiguous reference to Sam and lack of explicit context require user input to resolve."
+    },
+    "intent": "assess_memory_and_prompt_for_clarification",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "ambiguous_subject",
+            "type": "person"
+          },
+          {
+            "name": "Cloud escalation",
+            "role": "system_setting",
+            "type": "process"
+          },
+          {
+            "name": "model confidence",
+            "role": "assessment",
+            "type": "quality_metric"
+          },
+          {
+            "name": "ambiguity",
+            "role": "assessment",
+            "type": "concept"
+          }
+        ],
+        "kind": "note",
+        "relationships": [
+          {
+            "object": "true",
+            "predicate": "is_disabled",
+            "subject": "Cloud escalation"
+          },
+          {
+            "object": "ambiguous Sam note",
+            "predicate": "is_low",
+            "subject": "model confidence"
+          }
+        ],
+        "statement": "Cloud escalation disabled and model confidence low for ambiguous Sam note"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory captured with low confidence due to ambiguity.",
+        "No resolved entities at this stage."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask user to confirm who 'Sam' refers to and provide any available context.",
+      "Clarify whether cloud escalation should be enabled or alternative routing is required.",
+      "Re-scan for any related notes to disambiguate references."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"assess_memory_and_prompt_for_clarification\",\n  \"decision\": \"request_user_input\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"note\",\n      \"statement\": \"Cloud escalation disabled and model confidence low for ambiguous Sam note\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"ambiguous_subject\"\n        }\n        ,\n        {\n          \"name\": \"Cloud escalation\",\n          \"type\": \"process\",\n          \"role\": \"system_setting\"\n        }\n        ,\n        {\n          \"name\": \"model confidence\",\n          \"type\": \"quality_metric\",\n          \"role\": \"assessment\"\n        }\n        ,\n        {\n          \"name\": \"ambiguity\",\n          \"type\": \"concept\",\n          \"role\": \"assessment\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cloud escalation\",\n          \"predicate\": \"is_disabled\",\n          \"object\": \"true\"\n        },\n        {\n          \"subject\": \"model confidence\",\n          \"predicate\": \"is_low\",\n          \"object\": \"ambiguous Sam note\"\n        }\n      ]\n    }\n    ],\n  \"entity_resolution\": {\n    \"action\": \"pending_user_clarification\",\n    \"entity_id\": null,\n    \"reason\": \"ambiguous reference to Sam and lack of explicit context require user input to resolve.\"\n  },\n  \"conflict_classification\": \"uncertain_context\",\n  \"answer\": \"I have captured the note as ambiguous with low confidence. Please provide clarification on the intended subjects (e.g., who is Sam), the desired escalation policy, and what specifically should be done given the cloud escalation is disabled.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Ask user to confirm who 'Sam' refers to and provide any available context.\",\n    \"Clarify whether cloud escalation should be enabled or alternative routing is required.\",\n    \"Re-scan for any related notes to disambiguate references.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory captured with low confidence due to ambiguity.\",\n      \"No resolved entities at this stage.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,79 @@
+{
+  "fixture_id": "temporal_status_transition_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "The project shows a status change: it was previously planned (status open), but the MVP has since been implemented. For current status, record 'MVP implemented' and retain the earlier 'planned/open' as prior context rather than the present state.",
+    "citations": [],
+    "conflict_classification": "Temporal/status transition (planned/open -> implemented)",
+    "decision": "Update status: the MVP is now implemented (supersedes the earlier 'planned' state), while keeping the earlier planning state as historical context rather than current status.",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": null,
+      "reason": "Both input statements refer to the same overall project ('Brain Slack agent') and its MVP milestone; treat them as a single entity with differing temporal states."
+    },
+    "intent": "Explain and resolve a temporal/status transition conflict for the Brain Slack agent project state.",
+    "memory_cards": [
+      {
+        "confidence": "0.78",
+        "entities": [
+          {
+            "name": "Brain Slack agent",
+            "role": "subject",
+            "type": "project"
+          }
+        ],
+        "kind": "conflict_context",
+        "relationships": [
+          {
+            "object": "planned",
+            "predicate": "previous_state",
+            "subject": "Brain Slack agent"
+          },
+          {
+            "object": "open",
+            "predicate": "previous_status",
+            "subject": "Brain Slack agent"
+          }
+        ],
+        "statement": "Brain Slack agent was previously 'planned' with status=open."
+      },
+      {
+        "confidence": "0.9",
+        "entities": [
+          {
+            "name": "Brain Slack agent",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "MVP",
+            "role": "component",
+            "type": "milestone"
+          }
+        ],
+        "kind": "current_status_update",
+        "relationships": [
+          {
+            "object": "implemented",
+            "predicate": "status",
+            "subject": "Brain Slack agent MVP"
+          }
+        ],
+        "statement": "The Brain Slack agent MVP is now implemented."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Identified temporal/status transition between 'planned/open' and 'MVP implemented'.",
+        "Recommended treating the earlier state as historical context while updating current status to implemented."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Record a timestamped status history (planned/open -> MVP implemented) to preserve causality and avoid future ambiguity.",
+      "Normalize terminology by storing 'planned/open' as a previous milestone phase, not as current status.",
+      "If additional detail exists, specify the effective date for when 'MVP implemented' replaced 'planned'."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

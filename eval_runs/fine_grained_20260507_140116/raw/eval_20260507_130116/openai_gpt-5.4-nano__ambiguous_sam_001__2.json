@@ -1,0 +1,31 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_sam_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Cannot commit the new information durably because 'Sam' is ambiguous between existing entities.",
+    "citations": [],
+    "conflict_classification": "ambiguous_entity_reference",
+    "decision": "NO_DURABLE_MEMORY",
+    "entity_resolution": {
+      "action": "ask_clarification",
+      "entity_id": null,
+      "reason": "Message refers to 'Sam' but existing entities include multiple Sams (e.g., Sam from Goldman; Sam from Point72). No disambiguating context is provided to link 'Sam' to a specific entity."
+    },
+    "intent": "durability_filter",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Skipped creating a durable memory card due to unresolved entity reference for 'Sam'."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask which Sam (Goldman or Point72) mentioned liking Bill Evans.",
+      "If another identifier is available (e.g., company, role, or context), use it to resolve 'Sam' and then store: [Sam] likes Bill Evans."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"durability_filter\",\n  \"decision\": \"NO_DURABLE_MEMORY\",\n  \"conflict_classification\": \"ambiguous_entity_reference\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"ask_clarification\",\n    \"entity_id\": null,\n    \"reason\": \"Message refers to 'Sam' but existing entities include multiple Sams (e.g., Sam from Goldman; Sam from Point72). No disambiguating context is provided to link 'Sam' to a specific entity.\"\n  },\n  \"answer\": \"Cannot commit the new information durably because 'Sam' is ambiguous between existing entities.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Ask which Sam (Goldman or Point72) mentioned liking Bill Evans.\",\n    \"If another identifier is available (e.g., company, role, or context), use it to resolve 'Sam' and then store: [Sam] likes Bill Evans.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Skipped creating a durable memory card due to unresolved entity reference for 'Sam'.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

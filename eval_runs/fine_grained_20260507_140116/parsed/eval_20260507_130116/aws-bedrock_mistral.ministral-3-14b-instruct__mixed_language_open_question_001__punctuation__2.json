@@ -1,0 +1,70 @@
+{
+  "fixture_id": "mixed_language_open_question_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The query targets the interdisciplinary study of **language and human intelligence**, encompassing fields like cognitive science, linguistics, and neuroscience. Key subtopics may include: Sapir-Whorf hypothesis, language acquisition (e.g., Chomsky), intelligence theories (e.g., Gardner\u2019s multiple intelligences), and neurobiological correlates (e.g., Broca\u2019s area).",
+    "citations": [
+      "Chomsky, N. (1959). *Review of B.F. Skinner\u2019s Verbal Behavior*. Language.",
+      "Gardner, H. (1983). *Framing Mind: The Theory of Multiple Intelligences*. Basic Books.",
+      "Pinker, S. (1994). *The Language Instinct*. William Morrow."
+    ],
+    "conflict_classification": "none",
+    "decision": "extract_entities_and_relationships",
+    "entity_resolution": {
+      "action": "disambiguate",
+      "entity_id": null,
+      "reason": "Term 'linguaggio' is Italian for 'language'; 'intelligence umana' is Italian for 'human intelligence'. Cross-lingual alignment required for research scope."
+    },
+    "intent": "research_query",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "linguaggio",
+            "role": "primary_topic",
+            "type": "concept"
+          },
+          {
+            "name": "intelligence umana",
+            "role": "primary_topic",
+            "type": "concept"
+          },
+          {
+            "name": "rapporto tra",
+            "role": "connective",
+            "type": "relationship"
+          }
+        ],
+        "kind": "research_intent",
+        "relationships": [
+          {
+            "object": "intelligence umana",
+            "predicate": "has_relationship_with",
+            "subject": "linguaggio"
+          },
+          {
+            "object": "linguaggio AND intelligence umana",
+            "predicate": "describes",
+            "subject": "rapporto tra"
+          }
+        ],
+        "statement": "User seeks information on the relationship between language and human intelligence."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted core entities: *linguaggio* (language), *intelligence umana* (human intelligence).",
+        "Resolved cross-lingual ambiguity; no superseded facts detected.",
+        "Generated answer with foundational citations; repair options provided for refinement."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Narrow to a specific theory (e.g., 'Sapir-Whorf hypothesis')",
+      "Expand to include computational models (e.g., NLP and AI)",
+      "Focus on developmental psychology (e.g., language milestones in children)"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

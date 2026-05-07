@@ -1,0 +1,58 @@
+{
+  "error": null,
+  "fixture_id": "vague_memory_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "No durable memory exists for 'the thing from yesterday' due to insufficient specificity. Clarification required.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "ambiguous_durable_commitment",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Ambiguity in temporal anchoring ('yesterday') and undefined referent ('thing') prevents resolution. No superseded/deleted facts apply."
+    },
+    "intent": "memory_retrieval",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "yesterday",
+            "role": "anchor",
+            "type": "temporal_reference"
+          },
+          {
+            "name": "thing",
+            "role": "target",
+            "type": "unspecified_entity"
+          }
+        ],
+        "kind": "vague_memory",
+        "relationships": [
+          {
+            "object": "specificity",
+            "predicate": "requires",
+            "subject": "query"
+          }
+        ],
+        "statement": "The unspecified 'thing' from yesterday remains unresolved due to lack of contextual specificity. No durable memory exists for this query."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Query rejected for durability: Ambiguous temporal/referential anchors violate commitment criteria.",
+        "No superseded facts exist; ambiguity is intrinsic to the input."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide additional context (e.g., domain, type, or temporal constraints).",
+      "Specify if 'thing' refers to an event, object, or abstract concept.",
+      "Confirm if 'yesterday' is relative to a known reference point (e.g., last interaction)."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_retrieval\",\n  \"decision\": \"ambiguous_durable_commitment\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"vague_memory\",\n      \"statement\": \"The unspecified 'thing' from yesterday remains unresolved due to lack of contextual specificity. No durable memory exists for this query.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"yesterday\",\n          \"type\": \"temporal_reference\",\n          \"role\": \"anchor\"\n        },\n        {\n          \"name\": \"thing\",\n          \"type\": \"unspecified_entity\",\n          \"role\": \"target\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"query\",\n          \"predicate\": \"requires\",\n          \"object\": \"specificity\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguity in temporal anchoring ('yesterday') and undefined referent ('thing') prevents resolution. No superseded/deleted facts apply.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"No durable memory exists for 'the thing from yesterday' due to insufficient specificity. Clarification required.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Provide additional context (e.g., domain, type, or temporal constraints).\",\n    \"Specify if 'thing' refers to an event, object, or abstract concept.\",\n    \"Confirm if 'yesterday' is relative to a known reference point (e.g., last interaction).\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Query rejected for durability: Ambiguous temporal/referential anchors violate commitment criteria.\",\n      \"No superseded facts exist; ambiguity is intrinsic to the input.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

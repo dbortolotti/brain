@@ -1,0 +1,34 @@
+{
+  "error": null,
+  "fixture_id": "cascade_validator_failure_escalates_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The input failed schema validation and contained unsafe proposals (e.g., superseded/deleted facts). Escalation to a stronger model is required for durable memory evaluation.",
+    "citations": [],
+    "conflict_classification": "schema_violation",
+    "decision": "reject_with_escalation",
+    "entity_resolution": {
+      "action": "null",
+      "entity_id": null,
+      "reason": "No valid entities or relationships extracted from invalid schema output."
+    },
+    "intent": "durability_validation",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Schema mismatch: Missing required fields (e.g., 'kind', 'statement' in memory_cards).",
+        "Unsafe proposal detected: Potential superseded/deleted facts in output.",
+        "Ambiguity preserved: No valid entities/relationships to commit."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Reject and escalate to a higher-capacity model for re-evaluation.",
+      "Flag as 'unsafe' and quarantine memory proposal.",
+      "Audit for implicit assumptions or deleted facts before reprocessing."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"durability_validation\",\n  \"decision\": \"reject_with_escalation\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"null\",\n    \"entity_id\": null,\n    \"reason\": \"No valid entities or relationships extracted from invalid schema output.\"\n  },\n  \"conflict_classification\": \"schema_violation\",\n  \"answer\": \"The input failed schema validation and contained unsafe proposals (e.g., superseded/deleted facts). Escalation to a stronger model is required for durable memory evaluation.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Reject and escalate to a higher-capacity model for re-evaluation.\",\n    \"Flag as 'unsafe' and quarantine memory proposal.\",\n    \"Audit for implicit assumptions or deleted facts before reprocessing.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Schema mismatch: Missing required fields (e.g., 'kind', 'statement' in memory_cards).\",\n      \"Unsafe proposal detected: Potential superseded/deleted facts in output.\",\n      \"Ambiguity preserved: No valid entities/relationships to commit.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

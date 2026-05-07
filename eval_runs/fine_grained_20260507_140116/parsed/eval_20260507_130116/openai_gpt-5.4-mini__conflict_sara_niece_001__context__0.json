@@ -1,0 +1,93 @@
+{
+  "fixture_id": "conflict_sara_niece_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "The new statement does not clearly conflict with the existing memory. Sara being Daniele's daughter and Nur's twin can still be true if Sara is also the speaker's niece. Because the speaker is unspecified, this should be treated as an unconfirmed additional relation, not a replacement.",
+    "citations": [
+      "Existing high-confidence memory: Sara is Daniele's daughter and Nur's twin.",
+      "New: Sara is my niece."
+    ],
+    "conflict_classification": "potentially_compatible_but_underspecified",
+    "decision": "do_not_commit_new_memory",
+    "entity_resolution": {
+      "action": "keep_separate_pending_context",
+      "entity_id": null,
+      "reason": "The new statement may be compatible with the existing one if the speaker is Daniele's sibling or otherwise related, but the speaker identity is unknown, so no durable reclassification is justified."
+    },
+    "intent": "explain_relation_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "twin",
+            "type": "person"
+          }
+        ],
+        "kind": "existing_high_confidence",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_child_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "speaker",
+            "role": "reference",
+            "type": "person"
+          }
+        ],
+        "kind": "new_reported",
+        "relationships": [
+          {
+            "object": "speaker",
+            "predicate": "is_niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No deletion or overwrite performed.",
+        "Existing high-confidence memory preserved.",
+        "New relation treated as ambiguous and not committed durably."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask who 'my' refers to before updating memory.",
+      "Store the niece relation only as speaker-relative and low confidence.",
+      "If later confirmed that the speaker is Daniele's sibling, retain both relations as compatible."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

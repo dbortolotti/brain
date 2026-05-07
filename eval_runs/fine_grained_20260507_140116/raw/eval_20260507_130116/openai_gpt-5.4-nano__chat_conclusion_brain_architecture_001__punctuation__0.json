@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "fixture_id": "chat_conclusion_brain_architecture_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Cognee is a rebuildable semantic projection; Brain DB is the authoritative source of truth.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Commit: Cognee is a rebuildable semantic projection; Brain DB is the source of truth for Brain.",
+    "entity_resolution": {
+      "action": "no_change",
+      "entity_id": null,
+      "reason": "Entity names are already specific and unambiguous in the conclusion."
+    },
+    "intent": "Extract durable memory cards from chat conclusion about system architecture",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "semantic_projection",
+            "type": "system_component"
+          }
+        ],
+        "kind": "architecture_principle",
+        "relationships": [
+          {
+            "object": "Brain",
+            "predicate": "is_rebuildable_semantic_projection",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee should be treated as a rebuildable semantic projection (i.e., derived/recreatable rather than authoritative)."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system_component"
+          },
+          {
+            "name": "Brain",
+            "role": "memory_system",
+            "type": "system"
+          }
+        ],
+        "kind": "architecture_principle",
+        "relationships": [
+          {
+            "object": "Brain",
+            "predicate": "is_source_of_truth_for",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB remains the source of truth for Brain (authoritative storage)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted two architecture principles from the provided conclusion."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"Extract durable memory cards from chat conclusion about system architecture\",\n  \"decision\": \"Commit: Cognee is a rebuildable semantic projection; Brain DB is the source of truth for Brain.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"architecture_principle\",\n      \"statement\": \"Cognee should be treated as a rebuildable semantic projection (i.e., derived/recreatable rather than authoritative).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"system_component\",\n          \"role\": \"semantic_projection\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"is_rebuildable_semantic_projection\",\n          \"object\": \"Brain\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"architecture_principle\",\n      \"statement\": \"Brain DB remains the source of truth for Brain (authoritative storage).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"system_component\",\n          \"role\": \"source_of_truth\"\n        },\n        {\n          \"name\": \"Brain\",\n          \"type\": \"system\",\n          \"role\": \"memory_system\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"is_source_of_truth_for\",\n          \"object\": \"Brain\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_change\",\n    \"entity_id\": null,\n    \"reason\": \"Entity names are already specific and unambiguous in the conclusion.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Cognee is a rebuildable semantic projection; Brain DB is the authoritative source of truth.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Extracted two architecture principles from the provided conclusion.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

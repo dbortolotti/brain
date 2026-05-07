@@ -1,0 +1,72 @@
+{
+  "fixture_id": "correction_sam_music_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam from Goldman\u2019s durable memory has been updated to reflect a preference for early Coltrane, with Bill Evans removed as a conflicting preference. No residual ambiguity remains.",
+    "citations": [
+      "Correction input: 'Sam from Goldman actually likes early Coltrane, not Bill Evans'"
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "resolve_conflict",
+    "entity_resolution": {
+      "action": "replace",
+      "entity_id": "music_preference_sam_goldman",
+      "reason": "Correction supersedes prior conflicting memory; Bill Evans is explicitly excluded as a preference."
+    },
+    "intent": "correction",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "contextual",
+            "type": "affiliation"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "preferred_entity",
+            "type": "music_artist"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "superseded_entity",
+            "type": "music_artist"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "does_not_like",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane (not Bill Evans)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded memory card (Bill Evans preference) marked as invalid.",
+        "New durable memory card committed with high confidence.",
+        "Entity resolution applied to 'music_preference_sam_goldman'."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Delete all prior references to Sam liking Bill Evans.",
+      "Flag superseded memory for audit (if archival retention is required)."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

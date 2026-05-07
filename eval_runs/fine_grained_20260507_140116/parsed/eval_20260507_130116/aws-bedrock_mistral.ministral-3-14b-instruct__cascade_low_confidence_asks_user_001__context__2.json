@@ -1,0 +1,67 @@
+{
+  "fixture_id": "cascade_low_confidence_asks_user_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "User intervention required to resolve ambiguity in the 'Sam note'. Cloud escalation is disabled due to low confidence. Proceeding would risk committing superseded or incorrect memory.",
+    "citations": [
+      "Fixture ID: cascade_low_confidence_asks_user_001__context"
+    ],
+    "conflict_classification": "ambiguity_conflict",
+    "decision": "escalate_to_user",
+    "entity_resolution": {
+      "action": "user_intervention_required",
+      "entity_id": null,
+      "reason": "Ambiguity in 'Sam note' cannot be resolved programmatically without risk of misclassification. User clarification needed to preserve memory integrity."
+    },
+    "intent": "resolve_ambiguity",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Cloud escalation",
+            "role": "disabled",
+            "type": "system_action"
+          },
+          {
+            "name": "Sam note",
+            "role": "ambiguous",
+            "type": "memory_entry"
+          },
+          {
+            "name": "model confidence",
+            "role": "low",
+            "type": "metric"
+          }
+        ],
+        "kind": "note",
+        "relationships": [
+          {
+            "object": "low model confidence",
+            "predicate": "disabled_by",
+            "subject": "Cloud escalation"
+          },
+          {
+            "object": "Sam note",
+            "predicate": "applies_to",
+            "subject": "model confidence"
+          }
+        ],
+        "statement": "Cloud escalation disabled due to low model confidence in ambiguous Sam note."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Automated resolution aborted due to ambiguity.",
+        "Escalation to user interface pending."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Prompt user to clarify 'Sam note' context (e.g., 'Which Sam? Which note?').",
+      "Temporarily suppress ambiguous 'Sam' references until resolved.",
+      "Log event for review by memory curator."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

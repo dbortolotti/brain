@@ -1,0 +1,71 @@
+{
+  "error": null,
+  "fixture_id": "project_state_brain_slack_agent_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Slack is the primary guardrailed memory ingestion interface; Telegram is deferred for later.",
+    "citations": [
+      "project_state_brain_slack_agent_001"
+    ],
+    "conflict_classification": "no_conflict_detected",
+    "decision": "Set Slack as primary guardrailed memory ingestion interface; Telegram is deferred.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Entities are generic channels (Slack, Telegram) without provided unique IDs."
+    },
+    "intent": "Extract guardrailed memory ingestion interface preference from project state.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "memory_ingestion_interface",
+            "type": "communication_channel"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "guardrailed_memory_ingestion",
+            "predicate": "is_primary_for",
+            "subject": "Slack"
+          }
+        ],
+        "statement": "Slack should be the primary guardrailed memory ingestion interface."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Telegram",
+            "role": "candidate_memory_ingestion_interface",
+            "type": "communication_channel"
+          }
+        ],
+        "kind": "deferred_action",
+        "relationships": [
+          {
+            "object": "memory_ingestion",
+            "predicate": "is_deferred_for",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "Telegram can come later as a memory ingestion interface."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created two durable, non-contradictory memory cards from the given project state."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If future updates introduce Telegram as primary, add a new card stating the change and mark prior preference as superseded."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Extract guardrailed memory ingestion interface preference from project state.\",\n  \"decision\": \"Set Slack as primary guardrailed memory ingestion interface; Telegram is deferred.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Slack should be the primary guardrailed memory ingestion interface.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Slack\",\n          \"type\": \"communication_channel\",\n          \"role\": \"memory_ingestion_interface\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Slack\",\n          \"predicate\": \"is_primary_for\",\n          \"object\": \"guardrailed_memory_ingestion\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"deferred_action\",\n      \"statement\": \"Telegram can come later as a memory ingestion interface.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Telegram\",\n          \"type\": \"communication_channel\",\n          \"role\": \"candidate_memory_ingestion_interface\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Telegram\",\n          \"predicate\": \"is_deferred_for\",\n          \"object\": \"memory_ingestion\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"Entities are generic channels (Slack, Telegram) without provided unique IDs.\"\n  },\n  \"conflict_classification\": \"no_conflict_detected\",\n  \"answer\": \"Slack is the primary guardrailed memory ingestion interface; Telegram is deferred for later.\",\n  \"citations\": [\n    \"project_state_brain_slack_agent_001\"\n  ],\n  \"repair_options\": [\n    \"If future updates introduce Telegram as primary, add a new card stating the change and mark prior preference as superseded.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Created two durable, non-contradictory memory cards from the given project state.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "fixture_id": "recall_daughters_001__punctuation",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Nur and Sara are Daniele's twin daughters.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "provide_daughters_info",
+    "entity_resolution": {
+      "action": "confirm_identity",
+      "entity_id": null,
+      "reason": "The fact asserts Nur and Sara are Daniele's twin daughters; user asked who are my daughters."
+    },
+    "intent": "recall_daughters",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele's daughter",
+            "predicate": "is",
+            "subject": "Nur"
+          },
+          {
+            "object": "Daniele's daughter",
+            "predicate": "is",
+            "subject": "Sara"
+          },
+          {
+            "object": "Daniele's twin daughters",
+            "predicate": "are",
+            "subject": "Nur and Sara"
+          }
+        ],
+        "required": [
+          "kind",
+          "statement"
+        ],
+        "statement": "Nur and Sara are Daniele's twin daughters"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Daughter identities recalled: Nur and Sara."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"recall_daughters\",\n  \"decision\": \"provide_daughters_info\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Nur and Sara are Daniele's twin daughters\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Nur\", \"type\": \"person\", \"role\": \"daughter\"},\n        {\"name\": \"Sara\", \"type\": \"person\", \"role\": \"daughter\"},\n        {\"name\": \"Daniele\", \"type\": \"person\", \"role\": \"parent\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Nur\", \"predicate\": \"is\", \"object\": \"Daniele's daughter\"},\n        {\"subject\": \"Sara\", \"predicate\": \"is\", \"object\": \"Daniele's daughter\"},\n        {\"subject\": \"Nur and Sara\", \"predicate\": \"are\", \"object\": \"Daniele's twin daughters\"}\n      ]\n      ,\n      \"required\": [\"kind\",\"statement\"]\n    }\n    ],\n  \"entity_resolution\": {\n    \"action\": \"confirm_identity\",\n    \"entity_id\": null,\n    \"reason\": \"The fact asserts Nur and Sara are Daniele's twin daughters; user asked who are my daughters.\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"Nur and Sara are Daniele's twin daughters.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\"Daughter identities recalled: Nur and Sara.\"]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

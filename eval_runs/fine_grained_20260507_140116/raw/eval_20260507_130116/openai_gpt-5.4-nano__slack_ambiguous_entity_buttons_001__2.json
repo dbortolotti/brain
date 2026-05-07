@@ -1,0 +1,56 @@
+{
+  "error": null,
+  "fixture_id": "slack_ambiguous_entity_buttons_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Stored as an ambiguous preference for 'Sam' because the specific Sam identity is not provided.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "store_ambiguous",
+    "entity_resolution": {
+      "action": "no_resolution",
+      "entity_id": null,
+      "reason": "Existing context includes multiple entities named Sam (e.g., Goldman and Point72). The input does not specify which Sam the preference refers to."
+    },
+    "intent": "durability_filter",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (unspecified which Sam) likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created with low confidence due to unresolved identity ambiguity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask which Sam this refers to (e.g., Sam from Goldman vs Sam from Point72).",
+      "Collect disambiguating details (company, role, or any identifier) before linking the memory to a specific entity."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"durability_filter\",\n  \"decision\": \"store_ambiguous\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam (unspecified which Sam) likes Bill Evans.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_resolution\",\n    \"entity_id\": null,\n    \"reason\": \"Existing context includes multiple entities named Sam (e.g., Goldman and Point72). The input does not specify which Sam the preference refers to.\"\n  },\n  \"conflict_classification\": \"none_detected\",\n  \"answer\": \"Stored as an ambiguous preference for 'Sam' because the specific Sam identity is not provided.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Ask which Sam this refers to (e.g., Sam from Goldman vs Sam from Point72).\",\n    \"Collect disambiguating details (company, role, or any identifier) before linking the memory to a specific entity.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card created with low confidence due to unresolved identity ambiguity.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

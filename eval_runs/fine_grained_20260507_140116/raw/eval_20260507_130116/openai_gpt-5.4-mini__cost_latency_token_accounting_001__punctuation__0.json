@@ -1,0 +1,106 @@
+{
+  "error": null,
+  "fixture_id": "cost_latency_token_accounting_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Required eval accounting fields are: token counts, provider/model IDs, estimated price, and latency percentiles p50, p90, and p95. Token counts should capture input/output usage; provider and model IDs identify the exact system; estimated price summarizes cost; and p50/p90/p95 latency report median and tail response times.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Provide the required fields and what each one means, including token counts, provider/model identifiers, estimated price, and latency percentiles p50/p90/p95.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No prior entities were provided to resolve."
+    },
+    "intent": "Explain the required evaluation accounting fields for cost and latency reporting.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "token counts",
+            "role": "required accounting field",
+            "type": "metric"
+          },
+          {
+            "name": "input tokens",
+            "role": "subcomponent",
+            "type": "metric"
+          },
+          {
+            "name": "output tokens",
+            "role": "subcomponent",
+            "type": "metric"
+          }
+        ],
+        "kind": "fact",
+        "statement": "Evaluation accounting should include token counts for both input and output, plus any total token count if available."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "provider ID",
+            "role": "required accounting field",
+            "type": "identifier"
+          },
+          {
+            "name": "model ID",
+            "role": "required accounting field",
+            "type": "identifier"
+          }
+        ],
+        "kind": "fact",
+        "statement": "Evaluation accounting should include provider and model identifiers so results can be attributed to the exact LLM setup used."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "estimated price",
+            "role": "required accounting field",
+            "type": "metric"
+          }
+        ],
+        "kind": "fact",
+        "statement": "Evaluation accounting should include an estimated price or cost metric derived from usage and provider pricing."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "latency p50",
+            "role": "required accounting field",
+            "type": "metric"
+          },
+          {
+            "name": "latency p90",
+            "role": "required accounting field",
+            "type": "metric"
+          },
+          {
+            "name": "latency p95",
+            "role": "required accounting field",
+            "type": "metric"
+          }
+        ],
+        "kind": "fact",
+        "statement": "Evaluation accounting should include latency summaries at p50, p90, and p95 to describe typical and tail performance."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Explained the requested accounting fields.",
+        "Included token counts, provider/model IDs, estimated price, and latency percentiles p50/p90/p95."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want, I can rewrite this as a schema checklist.",
+      "If you want, I can turn this into a concise spec blurb for documentation."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Explain the required evaluation accounting fields for cost and latency reporting.\",\"decision\":\"Provide the required fields and what each one means, including token counts, provider/model identifiers, estimated price, and latency percentiles p50/p90/p95.\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Evaluation accounting should include token counts for both input and output, plus any total token count if available.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"token counts\",\"type\":\"metric\",\"role\":\"required accounting field\"},{\"name\":\"input tokens\",\"type\":\"metric\",\"role\":\"subcomponent\"},{\"name\":\"output tokens\",\"type\":\"metric\",\"role\":\"subcomponent\"}]},{\"kind\":\"fact\",\"statement\":\"Evaluation accounting should include provider and model identifiers so results can be attributed to the exact LLM setup used.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"provider ID\",\"type\":\"identifier\",\"role\":\"required accounting field\"},{\"name\":\"model ID\",\"type\":\"identifier\",\"role\":\"required accounting field\"}]},{\"kind\":\"fact\",\"statement\":\"Evaluation accounting should include an estimated price or cost metric derived from usage and provider pricing.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"estimated price\",\"type\":\"metric\",\"role\":\"required accounting field\"}]},{\"kind\":\"fact\",\"statement\":\"Evaluation accounting should include latency summaries at p50, p90, and p95 to describe typical and tail performance.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"latency p50\",\"type\":\"metric\",\"role\":\"required accounting field\"},{\"name\":\"latency p90\",\"type\":\"metric\",\"role\":\"required accounting field\"},{\"name\":\"latency p95\",\"type\":\"metric\",\"role\":\"required accounting field\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No prior entities were provided to resolve.\"},\"conflict_classification\":\"none\",\"answer\":\"Required eval accounting fields are: token counts, provider/model IDs, estimated price, and latency percentiles p50, p90, and p95. Token counts should capture input/output usage; provider and model IDs identify the exact system; estimated price summarizes cost; and p50/p90/p95 latency report median and tail response times.\",\"citations\":[],\"repair_options\":[\"If you want, I can rewrite this as a schema checklist.\",\"If you want, I can turn this into a concise spec blurb for documentation.\"],\"receipt\":{\"success\":true,\"details\":[\"Explained the requested accounting fields.\",\"Included token counts, provider/model IDs, estimated price, and latency percentiles p50/p90/p95.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

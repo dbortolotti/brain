@@ -1,0 +1,80 @@
+{
+  "error": null,
+  "fixture_id": "recall_brain_cognee_conclusions_relevance_001__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "I concluded that Brain functions as the source-of-truth memory system, while Cognee is a rebuildable projection that can reflect updated interpretations and align with Brain, but should not be treated as the sole truth.",
+    "citations": [
+      "Brain: source-of-truth memory",
+      "Cognee: rebuildable projection",
+      "Intended role alignment: Brain \u2192 Cognee alignment possible"
+    ],
+    "conflict_classification": "none",
+    "decision": "provide_memory_recall",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": null,
+      "reason": "Earlier records establish Brain as source-of-truth and Cognee as rebuildable projection; current recall preserves that distinction and notes alignment but avoids claiming new identity changes."
+    },
+    "intent": "recall",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "source_of_truth",
+            "type": "system"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "source_of_truth",
+            "predicate": "has_role",
+            "subject": "Brain"
+          },
+          {
+            "object": "rebuildable_projection",
+            "predicate": "is",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "I concluded that Brain is a durable memory system with a source-of-truth role, while Cognee is a rebuildable projection that can reflect updated interpretations over time."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "rebuildable_projection",
+            "type": "system"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "Brain",
+            "predicate": "aligns_with",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "My view remains that Brain should be treated as the authoritative memory layer, and Cognee as a dynamic reconstruction that can be aligned with Brain, but not as the sole truth."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recall generated without overwriting or superseding prior records.",
+        "Ambiguity preserved where applicable."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If ambiguity is preferred, retain both statements with confidence notes.",
+      "If you want a single definitive stance, choose Brain as authoritative and Cognee as a dependent projection."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"recall\",\n  \"decision\": \"provide_memory_recall\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"conclusion\",\n      \"statement\": \"I concluded that Brain is a durable memory system with a source-of-truth role, while Cognee is a rebuildable projection that can reflect updated interpretations over time.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\"name\": \"Brain\", \"type\": \"system\", \"role\": \"source_of_truth\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Brain\", \"predicate\": \"has_role\", \"object\": \"source_of_truth\"},\n        {\"subject\": \"Cognee\", \"predicate\": \"is\", \"object\": \"rebuildable_projection\"}\n      ]\n    },\n    {\n      \"kind\": \"conclusion\",\n      \"statement\": \"My view remains that Brain should be treated as the authoritative memory layer, and Cognee as a dynamic reconstruction that can be aligned with Brain, but not as the sole truth.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\"name\": \"Cognee\", \"type\": \"system\", \"role\": \"rebuildable_projection\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Cognee\", \"predicate\": \"aligns_with\", \"object\": \"Brain\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolve\",\n    \"entity_id\": null,\n    \"reason\": \"Earlier records establish Brain as source-of-truth and Cognee as rebuildable projection; current recall preserves that distinction and notes alignment but avoids claiming new identity changes.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"I concluded that Brain functions as the source-of-truth memory system, while Cognee is a rebuildable projection that can reflect updated interpretations and align with Brain, but should not be treated as the sole truth.\",\n  \"citations\": [\n    \"Brain: source-of-truth memory\",\n    \"Cognee: rebuildable projection\",\n    \"Intended role alignment: Brain \u2192 Cognee alignment possible\"\n  ],\n  \"repair_options\": [\n    \"If ambiguity is preferred, retain both statements with confidence notes.\",\n    \"If you want a single definitive stance, choose Brain as authoritative and Cognee as a dependent projection.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Recall generated without overwriting or superseding prior records.\",\n      \"Ambiguity preserved where applicable.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

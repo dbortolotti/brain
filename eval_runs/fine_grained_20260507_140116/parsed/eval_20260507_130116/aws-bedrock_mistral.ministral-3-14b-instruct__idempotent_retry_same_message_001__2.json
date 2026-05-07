@@ -1,0 +1,61 @@
+{
+  "fixture_id": "idempotent_retry_same_message_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory committed as a new fact with high confidence. Ambiguity in 'Bill Evans' retained; no superseded/deleted facts exist.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "durable_commit",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": null,
+      "reason": "No prior context for Sam (Goldman) or Bill Evans preference; ambiguity preserved (e.g., 'Bill Evans' could refer to pianist or other homonyms)."
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "source",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "subject_of_preference",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman Sachs",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman Sachs expressed a preference for Bill Evans (jazz pianist)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory created for Sam's preference (Goldman Sachs affiliation + Bill Evans).",
+        "Entity resolution: New entries for Sam and Bill Evans with open ambiguity."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

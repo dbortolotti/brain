@@ -1,0 +1,93 @@
+{
+  "fixture_id": "temporal_status_transition_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The Brain Slack agent's status has transitioned from 'planned (status=open)' to 'implemented (MVP)'. The prior fact is superseded and should not be referenced as current.",
+    "citations": [
+      "New input: 'The Brain Slack agent MVP is now implemented.'",
+      "Existing state: 'The Brain Slack agent is planned, status=open.'"
+    ],
+    "conflict_classification": "temporal_status_transition",
+    "decision": "transition_from_planned_to_implemented",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "brain_slack_agent_project",
+      "reason": "New status update for the same project entity; supersedes prior 'planned' state."
+    },
+    "intent": "update_project_status",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain Slack agent",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "MVP",
+            "role": "status_qualifier",
+            "type": "milestone"
+          },
+          {
+            "name": "implemented",
+            "role": "current_state",
+            "type": "status"
+          }
+        ],
+        "kind": "project_status_update",
+        "relationships": [
+          {
+            "object": "planned (status=open)",
+            "predicate": "was_previously",
+            "subject": "Brain Slack agent"
+          },
+          {
+            "object": "implemented (MVP)",
+            "predicate": "now_has_status",
+            "subject": "Brain Slack agent"
+          }
+        ],
+        "statement": "The Brain Slack agent MVP is now implemented (previously planned, status=open)."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "The Brain Slack agent is planned, status=open",
+            "role": "superseded",
+            "type": "fact"
+          },
+          {
+            "name": "The Brain Slack agent MVP is now implemented",
+            "role": "superseding",
+            "type": "fact"
+          }
+        ],
+        "kind": "fact_supersession",
+        "relationships": [
+          {
+            "object": "superseding_fact",
+            "predicate": "is_replaced_by",
+            "subject": "superseded_fact"
+          }
+        ],
+        "statement": "The previous fact 'The Brain Slack agent is planned, status=open' is now superseded by the new implementation status."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory updated to reflect current status: implemented (MVP).",
+        "Ambiguity preserved: No conflicting interpretations exist.",
+        "Superseded facts excluded from active retrieval."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Delete the superseded 'planned' fact from durable memory.",
+      "Tag the superseded fact with a 'superseded' metadata flag.",
+      "Archive the transition in a temporal audit log."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

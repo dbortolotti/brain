@@ -1,0 +1,61 @@
+{
+  "error": null,
+  "fixture_id": "entity_ambiguous_sam_two_people__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory recorded with low confidence pending clarification of which Sam holds this preference",
+    "citations": [
+      "Existing entities: Sam from Goldman (person), Sam from Point72 (person)"
+    ],
+    "conflict_classification": "unresolved_ambiguity",
+    "decision": "Create ambiguous memory card; defer entity resolution",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Ambiguous reference to Sam; two existing entities (Sam from Goldman, Sam from Point72) match. Insufficient context to disambiguate. Preserving ambiguity per system design."
+    },
+    "intent": "Record a preference attribute for an ambiguous entity (Sam) without disambiguating which Sam",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "music"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes early Coltrane"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguous memory card created",
+        "Entity resolution deferred",
+        "Awaiting user clarification to commit to specific Sam entity"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify: 'Sam from Goldman likes early Coltrane'",
+      "Clarify: 'Sam from Point72 likes early Coltrane'",
+      "Provide additional context to disambiguate Sam"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Record a preference attribute for an ambiguous entity (Sam) without disambiguating which Sam\",\n  \"decision\": \"Create ambiguous memory card; defer entity resolution\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam likes early Coltrane\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"early Coltrane\",\n          \"type\": \"music\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"early Coltrane\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguous reference to Sam; two existing entities (Sam from Goldman, Sam from Point72) match. Insufficient context to disambiguate. Preserving ambiguity per system design.\"\n  },\n  \"conflict_classification\": \"unresolved_ambiguity\",\n  \"answer\": \"Memory recorded with low confidence pending clarification of which Sam holds this preference\",\n  \"citations\": [\n    \"Existing entities: Sam from Goldman (person), Sam from Point72 (person)\"\n  ],\n  \"repair_options\": [\n    \"Clarify: 'Sam from Goldman likes early Coltrane'\",\n    \"Clarify: 'Sam from Point72 likes early Coltrane'\",\n    \"Provide additional context to disambiguate Sam\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Ambiguous memory card created\",\n      \"Entity resolution deferred\",\n      \"Awaiting user clarification to commit to specific Sam entity\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

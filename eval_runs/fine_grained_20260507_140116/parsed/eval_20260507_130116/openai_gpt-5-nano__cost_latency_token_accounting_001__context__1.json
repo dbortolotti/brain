@@ -1,0 +1,120 @@
+{
+  "fixture_id": "cost_latency_token_accounting_001__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Key eval accounting fields: token counts (usage units consumed), provider IDs (data source), model IDs (which model/version processed), estimated price (cost projection), and latency metrics (p50, p90, p95) to reflect typical tail latency. Use clear unit conventions and timestamped snapshots; preserve ambiguity about naming and measurement window where applicable.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "provide a concise, structured explanation of required evaluation accounting fields for Brain memory system, preserving ambiguity where applicable.",
+    "entity_resolution": {
+      "action": "derive_evaluation_fields",
+      "entity_id": null,
+      "reason": "Ambiguity exists around exact field names and measurement epochs; fields are standard but can be renamed in later iterations."
+    },
+    "intent": "explain_eval_accounting_fields",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "token counts",
+            "role": "input/measurement",
+            "type": "metric"
+          },
+          {
+            "name": "provider IDs",
+            "role": "source",
+            "type": "identifier"
+          },
+          {
+            "name": "model IDs",
+            "role": "model",
+            "type": "identifier"
+          },
+          {
+            "name": "estimated price",
+            "role": "financial",
+            "type": "cost"
+          },
+          {
+            "name": "latency",
+            "role": "performance",
+            "type": "metric"
+          },
+          {
+            "name": "p50",
+            "role": "latency",
+            "type": "statistic"
+          },
+          {
+            "name": "p90",
+            "role": "latency",
+            "type": "statistic"
+          },
+          {
+            "name": "p95",
+            "role": "latency",
+            "type": "statistic"
+          }
+        ],
+        "kind": "explanation",
+        "relationships": [
+          {
+            "object": "usage units",
+            "predicate": "measures",
+            "subject": "token counts"
+          },
+          {
+            "object": "data source",
+            "predicate": "identifies",
+            "subject": "provider IDs"
+          },
+          {
+            "object": "model version",
+            "predicate": "identifies",
+            "subject": "model IDs"
+          },
+          {
+            "object": "cost projection",
+            "predicate": "reflects",
+            "subject": "estimated price"
+          },
+          {
+            "object": "system responsiveness",
+            "predicate": "characterizes",
+            "subject": "latency"
+          },
+          {
+            "object": "latency",
+            "predicate": "is_metric_of",
+            "subject": "p50"
+          },
+          {
+            "object": "latency",
+            "predicate": "is_metric_of",
+            "subject": "p90"
+          },
+          {
+            "object": "latency",
+            "predicate": "is_metric_of",
+            "subject": "p95"
+          }
+        ],
+        "statement": "Required eval accounting fields include token counts (usage units), provider/model IDs (source of tokens), estimated price (cost projection), and latency metrics (p50, p90, p95) to quantify performance."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Accounting fields defined and linked to latency metrics.",
+        "Ambiguity preserved through entity_resolution note."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add schema fields for timestamp, currency, and measurement window to reduce ambiguity.",
+      "Define explicit units for token counts and latency (e.g., tokens, milliseconds).",
+      "Include per-request vs per-batch aggregation guidelines."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

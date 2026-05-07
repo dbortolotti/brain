@@ -1,0 +1,83 @@
+{
+  "error": null,
+  "fixture_id": "email_source_meeting_followup_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Understood.",
+    "citations": [
+      "From - sam@examplecom Subject - Follow up Great seeing you Yes, I joined Point72 last month Please send the AI infra article"
+    ],
+    "conflict_classification": "none",
+    "decision": "Store one durable memory: the sender said they joined Point72 last month. Treat the article request as a transient action item, not a durable memory.",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "The sender is identified as Sam by the email source, but there is not enough information to resolve a stable existing entity with high confidence."
+    },
+    "intent": "Follow-up after meeting; share a requested AI infrastructure article.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "sender",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said they joined Point72 last month."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "sender",
+            "type": "person"
+          },
+          {
+            "name": "AI infra article",
+            "role": "requested item",
+            "type": "document"
+          }
+        ],
+        "kind": "request",
+        "relationships": [
+          {
+            "object": "AI infra article",
+            "predicate": "requested",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam asked to be sent the AI infra article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed a follow-up email.",
+        "Extracted a durable fact about employment change.",
+        "Captured a transient request for an article."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If desired, I can merge this Sam with an existing contact once a clearer identity match is available."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Follow-up after meeting; share a requested AI infrastructure article.\",\"decision\":\"Store one durable memory: the sender said they joined Point72 last month. Treat the article request as a transient action item, not a durable memory.\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam said they joined Point72 last month.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"sender\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]},{\"kind\":\"request\",\"statement\":\"Sam asked to be sent the AI infra article.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"sender\"},{\"name\":\"AI infra article\",\"type\":\"document\",\"role\":\"requested item\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"requested\",\"object\":\"AI infra article\"}]}],\"entity_resolution\":{\"action\":\"create_or_update\",\"entity_id\":null,\"reason\":\"The sender is identified as Sam by the email source, but there is not enough information to resolve a stable existing entity with high confidence.\"},\"conflict_classification\":\"none\",\"answer\":\"Understood.\",\"citations\":[\"From - sam@examplecom Subject - Follow up Great seeing you Yes, I joined Point72 last month Please send the AI infra article\"],\"repair_options\":[\"If desired, I can merge this Sam with an existing contact once a clearer identity match is available.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed a follow-up email.\",\"Extracted a durable fact about employment change.\",\"Captured a transient request for an article.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

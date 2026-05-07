@@ -1,0 +1,65 @@
+{
+  "error": null,
+  "fixture_id": "article_url_ai_memory_001__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Context of article captured for memory design considerations; preserves ambiguity about provenance and update semantics without asserting specifics beyond mocked statements.",
+    "citations": [
+      "https://example.com/ai-memory"
+    ],
+    "conflict_classification": "none",
+    "decision": "persist_resource_for_knowledge_graph_memory",
+    "entity_resolution": {
+      "action": "record_source_and_context",
+      "entity_id": null,
+      "reason": "source article needs to be referenced for knowledge graph memory design considerations"
+    },
+    "intent": "store_article_context",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "https://example.com/ai-memory",
+            "role": "source",
+            "type": "URL"
+          }
+        ],
+        "kind": "article_context",
+        "relationships": [
+          {
+            "object": "agents preserve relationships",
+            "predicate": "helps",
+            "subject": "Graph memory"
+          },
+          {
+            "object": "provenance",
+            "predicate": "requires",
+            "subject": "Graph memory"
+          },
+          {
+            "object": "update semantics",
+            "predicate": "requires",
+            "subject": "Graph memory"
+          }
+        ],
+        "statement": "Remembered article: https://example.com/ai-memory. Purpose: useful for thinking about knowledge graph memory design. Mock fetched content notes: Graph memory helps agents preserve relationships; provenance and update semantics are needed."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Article context stored as memory_card of type article_context.",
+        "Source citation recorded."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add more detailed provenance tracking requirements.",
+      "Capture update semantics rules as separate memory events with timestamps.",
+      "Annotate confidence levels per memory card and allow future revision."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"store_article_context\",\n  \"decision\": \"persist_resource_for_knowledge_graph_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"article_context\",\n      \"statement\": \"Remembered article: https://example.com/ai-memory. Purpose: useful for thinking about knowledge graph memory design. Mock fetched content notes: Graph memory helps agents preserve relationships; provenance and update semantics are needed.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"https://example.com/ai-memory\",\n          \"type\": \"URL\",\n          \"role\": \"source\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Graph memory\",\n          \"predicate\": \"helps\",\n          \"object\": \"agents preserve relationships\"\n        },\n        {\n          \"subject\": \"Graph memory\",\n          \"predicate\": \"requires\",\n          \"object\": \"provenance\"\n        },\n        {\n          \"subject\": \"Graph memory\",\n          \"predicate\": \"requires\",\n          \"object\": \"update semantics\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"record_source_and_context\",\n    \"entity_id\": null,\n    \"reason\": \"source article needs to be referenced for knowledge graph memory design considerations\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Context of article captured for memory design considerations; preserves ambiguity about provenance and update semantics without asserting specifics beyond mocked statements.\",\n  \"citations\": [\n    \"https://example.com/ai-memory\"\n  ],\n  \"repair_options\": [\n    \"Add more detailed provenance tracking requirements.\",\n    \"Capture update semantics rules as separate memory events with timestamps.\",\n    \"Annotate confidence levels per memory card and allow future revision.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Article context stored as memory_card of type article_context.\",\n      \"Source citation recorded.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

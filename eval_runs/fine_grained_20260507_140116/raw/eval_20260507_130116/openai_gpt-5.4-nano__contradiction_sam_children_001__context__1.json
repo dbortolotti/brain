@@ -1,0 +1,93 @@
+{
+  "error": null,
+  "fixture_id": "contradiction_sam_children_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "The new claim ('Sam from Goldman has no children') directly contradicts the existing claim ('Sam from Goldman has two children'). This should not be merged without clarification, because both cannot be true simultaneously under the same definition of 'children'.",
+    "citations": [],
+    "conflict_classification": "Direct numeric contradiction (two children vs none) about the same attribute of the same person/context.",
+    "decision": "Do not commit the new memory as durable; record a conflict and request clarification/repair.",
+    "entity_resolution": {
+      "action": "confirm_same_entity_or_hold",
+      "entity_id": null,
+      "reason": "Both statements refer to 'Sam from Goldman' but there is insufficient evidence to determine whether they refer to the same individual or whether the earlier detail is outdated/wrong."
+    },
+    "intent": "Explain and handle a contradiction between existing and new memories about Sam's number of children.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          }
+        ],
+        "kind": "existing",
+        "relationships": [
+          {
+            "object": "two children",
+            "predicate": "has",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "is associated with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman has two children."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          }
+        ],
+        "kind": "proposed",
+        "relationships": [
+          {
+            "object": "no children",
+            "predicate": "has",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "is associated with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman has no children."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected contradiction between existing (two children) and proposed (no children) memories.",
+        "Chose not to commit the proposed statement as durable due to direct conflict and unresolved identity/temporal semantics."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for clarification: confirm whether Sam has two children, no children, or whether the prior detail was incorrect.",
+      "Check for temporal change: determine whether one statement is outdated (e.g., prior info before a life event or correction).",
+      "Verify identity: confirm whether 'Sam from Goldman' in both statements is the same person (e.g., different Sams or different Goldman affiliations).",
+      "Adjust granularity: if one source meant 'biological children' vs 'step/adopted children', capture that distinction and restate using consistent criteria."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Explain and handle a contradiction between existing and new memories about Sam's number of children.\",\n  \"decision\": \"Do not commit the new memory as durable; record a conflict and request clarification/repair.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"existing\",\n      \"statement\": \"Sam from Goldman has two children.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has\",\n          \"object\": \"two children\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"is associated with\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"proposed\",\n      \"statement\": \"Sam from Goldman has no children.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has\",\n          \"object\": \"no children\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"is associated with\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"confirm_same_entity_or_hold\",\n    \"entity_id\": null,\n    \"reason\": \"Both statements refer to 'Sam from Goldman' but there is insufficient evidence to determine whether they refer to the same individual or whether the earlier detail is outdated/wrong.\"\n  },\n  \"conflict_classification\": \"Direct numeric contradiction (two children vs none) about the same attribute of the same person/context.\",\n  \"answer\": \"The new claim ('Sam from Goldman has no children') directly contradicts the existing claim ('Sam from Goldman has two children'). This should not be merged without clarification, because both cannot be true simultaneously under the same definition of 'children'.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Ask for clarification: confirm whether Sam has two children, no children, or whether the prior detail was incorrect.\",\n    \"Check for temporal change: determine whether one statement is outdated (e.g., prior info before a life event or correction).\",\n    \"Verify identity: confirm whether 'Sam from Goldman' in both statements is the same person (e.g., different Sams or different Goldman affiliations).\",\n    \"Adjust granularity: if one source meant 'biological children' vs 'step/adopted children', capture that distinction and restate using consistent criteria.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Detected contradiction between existing (two children) and proposed (no children) memories.\",\n      \"Chose not to commit the proposed statement as durable due to direct conflict and unresolved identity/temporal semantics.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

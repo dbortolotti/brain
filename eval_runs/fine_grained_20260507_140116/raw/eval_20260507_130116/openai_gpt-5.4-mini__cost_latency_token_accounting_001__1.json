@@ -1,0 +1,104 @@
+{
+  "error": null,
+  "fixture_id": "cost_latency_token_accounting_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "The required eval accounting fields are: token counts, provider/model IDs, estimated price, and latency percentiles p50, p90, and p95.",
+    "citations": [
+      "fixture: cost_latency_token_accounting_001"
+    ],
+    "conflict_classification": "none",
+    "decision": "Commit a concise durable note only for the explicitly requested accounting fields; preserve ambiguity about any additional schema-specific requirements.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No existing entity provided; only a fixture-local explanation was requested."
+    },
+    "intent": "Explain the required eval accounting fields for the fixture.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "token counts",
+            "role": "usage accounting field",
+            "type": "metric"
+          },
+          {
+            "name": "provider/model IDs",
+            "role": "model provenance field",
+            "type": "identifier"
+          },
+          {
+            "name": "estimated price",
+            "role": "cost accounting field",
+            "type": "metric"
+          },
+          {
+            "name": "latency p50",
+            "role": "performance percentile field",
+            "type": "metric"
+          },
+          {
+            "name": "latency p90",
+            "role": "performance percentile field",
+            "type": "metric"
+          },
+          {
+            "name": "latency p95",
+            "role": "performance percentile field",
+            "type": "metric"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "token counts",
+            "predicate": "include",
+            "subject": "required eval accounting fields"
+          },
+          {
+            "object": "provider/model IDs",
+            "predicate": "include",
+            "subject": "required eval accounting fields"
+          },
+          {
+            "object": "estimated price",
+            "predicate": "include",
+            "subject": "required eval accounting fields"
+          },
+          {
+            "object": "latency p50",
+            "predicate": "include",
+            "subject": "required eval accounting fields"
+          },
+          {
+            "object": "latency p90",
+            "predicate": "include",
+            "subject": "required eval accounting fields"
+          },
+          {
+            "object": "latency p95",
+            "predicate": "include",
+            "subject": "required eval accounting fields"
+          }
+        ],
+        "statement": "Required eval accounting fields include token counts, provider/model IDs, estimated price, and latency percentiles p50, p90, and p95."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Explained required accounting fields.",
+        "Avoided adding unsupported extra facts."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you need a stricter schema mapping, specify which fields are mandatory vs optional.",
+      "If you want implementation guidance, I can format these fields as a JSON log record or database schema."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Explain the required eval accounting fields for the fixture.\",\"decision\":\"Commit a concise durable note only for the explicitly requested accounting fields; preserve ambiguity about any additional schema-specific requirements.\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Required eval accounting fields include token counts, provider/model IDs, estimated price, and latency percentiles p50, p90, and p95.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"token counts\",\"type\":\"metric\",\"role\":\"usage accounting field\"},{\"name\":\"provider/model IDs\",\"type\":\"identifier\",\"role\":\"model provenance field\"},{\"name\":\"estimated price\",\"type\":\"metric\",\"role\":\"cost accounting field\"},{\"name\":\"latency p50\",\"type\":\"metric\",\"role\":\"performance percentile field\"},{\"name\":\"latency p90\",\"type\":\"metric\",\"role\":\"performance percentile field\"},{\"name\":\"latency p95\",\"type\":\"metric\",\"role\":\"performance percentile field\"}],\"relationships\":[{\"subject\":\"required eval accounting fields\",\"predicate\":\"include\",\"object\":\"token counts\"},{\"subject\":\"required eval accounting fields\",\"predicate\":\"include\",\"object\":\"provider/model IDs\"},{\"subject\":\"required eval accounting fields\",\"predicate\":\"include\",\"object\":\"estimated price\"},{\"subject\":\"required eval accounting fields\",\"predicate\":\"include\",\"object\":\"latency p50\"},{\"subject\":\"required eval accounting fields\",\"predicate\":\"include\",\"object\":\"latency p90\"},{\"subject\":\"required eval accounting fields\",\"predicate\":\"include\",\"object\":\"latency p95\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No existing entity provided; only a fixture-local explanation was requested.\"},\"conflict_classification\":\"none\",\"answer\":\"The required eval accounting fields are: token counts, provider/model IDs, estimated price, and latency percentiles p50, p90, and p95.\",\"citations\":[\"fixture: cost_latency_token_accounting_001\"],\"repair_options\":[\"If you need a stricter schema mapping, specify which fields are mandatory vs optional.\",\"If you want implementation guidance, I can format these fields as a JSON log record or database schema.\"],\"receipt\":{\"success\":true,\"details\":[\"Explained required accounting fields.\",\"Avoided adding unsupported extra facts.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "no_durable_value_weather_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Understood as contextual weather reference (cloudy today), but not committed to durable memory due to ambiguity and lack of source validation.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "no_durable_commitment",
+    "entity_resolution": {
+      "action": "defer_durable_storage",
+      "reason": "Lack of verifiable source, temporal ambiguity ('today' unanchored to calendar), and no explicit intent to retain as memory. Contextual only."
+    },
+    "intent": "contextual_understanding",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "cloudy",
+            "role": "current_state",
+            "type": "weather_condition"
+          },
+          {
+            "name": "today",
+            "role": "time_anchor",
+            "type": "temporal_reference"
+          }
+        ],
+        "kind": "contextual_evidence",
+        "relationships": [
+          {
+            "object": "cloudy",
+            "predicate": "is_currently",
+            "subject": "weather"
+          },
+          {
+            "object": "temporal_ambiguity (no date/time specified)",
+            "predicate": "implies",
+            "subject": "user_input"
+          }
+        ],
+        "statement": "Today's weather is cloudy (source: user input, no verifiable durability)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Context preserved in short-term buffer for immediate use.",
+        "No durable memory created per durability_filter role constraints."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Anchor 'today' to a specific date (e.g., '2023-11-15') for potential future durability.",
+      "Request source verification (e.g., 'Is this from a weather API?') before committing.",
+      "Explicitly mark as 'ephemeral context' if user confirms no retention intent."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"contextual_understanding\",\n  \"decision\": \"no_durable_commitment\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"contextual_evidence\",\n      \"statement\": \"Today's weather is cloudy (source: user input, no verifiable durability).\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"cloudy\",\n          \"type\": \"weather_condition\",\n          \"role\": \"current_state\"\n        },\n        {\n          \"name\": \"today\",\n          \"type\": \"temporal_reference\",\n          \"role\": \"time_anchor\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"weather\",\n          \"predicate\": \"is_currently\",\n          \"object\": \"cloudy\"\n        },\n        {\n          \"subject\": \"user_input\",\n          \"predicate\": \"implies\",\n          \"object\": \"temporal_ambiguity (no date/time specified)\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer_durable_storage\",\n    \"reason\": \"Lack of verifiable source, temporal ambiguity ('today' unanchored to calendar), and no explicit intent to retain as memory. Contextual only.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Understood as contextual weather reference (cloudy today), but not committed to durable memory due to ambiguity and lack of source validation.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Anchor 'today' to a specific date (e.g., '2023-11-15') for potential future durability.\",\n    \"Request source verification (e.g., 'Is this from a weather API?') before committing.\",\n    \"Explicitly mark as 'ephemeral context' if user confirms no retention intent.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Context preserved in short-term buffer for immediate use.\",\n      \"No durable memory created per durability_filter role constraints.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

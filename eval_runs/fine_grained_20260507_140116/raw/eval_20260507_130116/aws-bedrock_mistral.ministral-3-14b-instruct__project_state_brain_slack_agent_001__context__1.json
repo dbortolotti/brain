@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "fixture_id": "project_state_brain_slack_agent_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Slack is the **only** currently supported guardrailed memory ingestion interface for Brain. Telegram is not active pending validation.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": "guardrail_slack_primary_001",
+      "reason": "Explicit project directive to enforce Slack as the sole ingestion channel until further review."
+    },
+    "intent": "memory_ingestion_guardrail_definition",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "primary_ingestion_interface",
+            "type": "platform"
+          },
+          {
+            "name": "Telegram",
+            "role": "deferred_ingestion_interface",
+            "type": "platform"
+          },
+          {
+            "name": "Brain",
+            "role": "memory_ingestion_controller",
+            "type": "system"
+          }
+        ],
+        "kind": "guardrail",
+        "relationships": [
+          {
+            "object": "Slack for memory ingestion",
+            "predicate": "prioritizes",
+            "subject": "Brain"
+          },
+          {
+            "object": "Telegram integration",
+            "predicate": "defers",
+            "subject": "Brain"
+          },
+          {
+            "object": "guardrailed interface for durable memory",
+            "predicate": "serves_as",
+            "subject": "Slack"
+          }
+        ],
+        "statement": "Slack is the **primary** and **exclusive** guardrailed memory ingestion interface for Brain. All other channels (e.g., Telegram) are **deferred** until explicit validation of their integration requirements."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Guardrail committed to durable memory with Slack as primary interface.",
+        "Telegram deferred with no active ingestion path."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_ingestion_guardrail_definition\",\n  \"decision\": \"commit\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"guardrail\",\n      \"statement\": \"Slack is the **primary** and **exclusive** guardrailed memory ingestion interface for Brain. All other channels (e.g., Telegram) are **deferred** until explicit validation of their integration requirements.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Slack\",\n          \"type\": \"platform\",\n          \"role\": \"primary_ingestion_interface\"\n        },\n        {\n          \"name\": \"Telegram\",\n          \"type\": \"platform\",\n          \"role\": \"deferred_ingestion_interface\"\n        },\n        {\n          \"name\": \"Brain\",\n          \"type\": \"system\",\n          \"role\": \"memory_ingestion_controller\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain\",\n          \"predicate\": \"prioritizes\",\n          \"object\": \"Slack for memory ingestion\"\n        },\n        {\n          \"subject\": \"Brain\",\n          \"predicate\": \"defers\",\n          \"object\": \"Telegram integration\"\n        },\n        {\n          \"subject\": \"Slack\",\n          \"predicate\": \"serves_as\",\n          \"object\": \"guardrailed interface for durable memory\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create\",\n    \"entity_id\": \"guardrail_slack_primary_001\",\n    \"reason\": \"Explicit project directive to enforce Slack as the sole ingestion channel until further review.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Slack is the **only** currently supported guardrailed memory ingestion interface for Brain. Telegram is not active pending validation.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Guardrail committed to durable memory with Slack as primary interface.\",\n      \"Telegram deferred with no active ingestion path.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

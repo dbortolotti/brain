@@ -1,0 +1,59 @@
+{
+  "fixture_id": "unresolved_pronoun_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Statement cannot be durably committed without disambiguation of subject identity and object reference",
+    "citations": [
+      "Unresolved pronoun: 'He' has no identifiable antecedent in provided context",
+      "Unresolved ellipsis: 'the other one' presupposes prior mention of at least two alternatives"
+    ],
+    "conflict_classification": "unresolved_anaphora_and_ellipsis",
+    "decision": "defer_with_ambiguity",
+    "entity_resolution": {
+      "action": "cannot_resolve",
+      "entity_id": null,
+      "reason": "Pronoun 'He' lacks antecedent context; 'the other one' references unknown comparison set"
+    },
+    "intent": "Store preference statement with unresolved pronouns",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "He",
+            "role": "subject",
+            "type": "pronoun"
+          },
+          {
+            "name": "the other one",
+            "role": "object_of_preference",
+            "type": "unresolved_reference"
+          }
+        ],
+        "kind": "preference_statement",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "He"
+          }
+        ],
+        "statement": "An unidentified person prefers 'the other one' over an unidentified alternative"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguity preserved; statement stored as unresolved",
+        "No entity binding committed",
+        "Awaiting clarification before durable memory commitment"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide antecedent for 'He' (e.g., 'John prefers...')",
+      "Clarify what 'the other one' refers to (e.g., 'prefers the red one over the blue one')",
+      "Supply prior context establishing the comparison set"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

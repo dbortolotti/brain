@@ -1,0 +1,67 @@
+{
+  "fixture_id": "slack_retry_event_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "One memory card committed. Duplicate event suppressed to prevent redundant storage.",
+    "citations": [
+      "slack_retry_event_001__context"
+    ],
+    "conflict_classification": "duplicate_event",
+    "decision": "Accept single memory card; suppress duplicate",
+    "entity_resolution": {
+      "action": "deduplicate",
+      "entity_id": null,
+      "reason": "Identical Slack event ID indicates retry delivery of same fact; single canonical record preserved"
+    },
+    "intent": "Deduplicate and rank entity candidates from duplicate Slack event delivery",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Duplicate Slack event detected and deduplicated",
+        "Single relationship fact committed to durable memory",
+        "No conflicting versions present"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm Sam identity and Goldman affiliation if ambiguous across systems",
+      "Verify Bill Evans identity if multiple persons with same name exist"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

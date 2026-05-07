@@ -1,0 +1,69 @@
+{
+  "fixture_id": "recall_profile_sara_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Sara is one of Daniele's twin daughters. Her twin sister is Nur.",
+    "citations": [
+      "Fact: Nur and Sara are Daniele's twin daughters"
+    ],
+    "conflict_classification": "none",
+    "decision": "Synthesize available fact about Sara's family relationship",
+    "entity_resolution": {
+      "action": "identify",
+      "entity_id": "sara_daniele_twin",
+      "reason": "Sara identified as one of two twin daughters of Daniele"
+    },
+    "intent": "Recall information about Sara from stored facts",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "twin_sibling",
+            "type": "person"
+          }
+        ],
+        "kind": "relational_fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_twin_daughter_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is_twin_sibling_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is one of Daniele's twin daughters"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Fact successfully recalled",
+        "Single memory card created from source fact",
+        "Entity relationships established",
+        "No conflicts detected"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request additional biographical details about Sara",
+      "Clarify which twin is older",
+      "Provide context about Daniele's family structure"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

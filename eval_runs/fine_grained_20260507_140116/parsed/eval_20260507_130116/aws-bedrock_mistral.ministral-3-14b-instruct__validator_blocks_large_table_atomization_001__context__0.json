@@ -1,0 +1,196 @@
+{
+  "fixture_id": "validator_blocks_large_table_atomization_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Proceed with the filtered subset of 5 memory cards (1 fact, 1 constraint, 1 rule, 1 prohibition, 1 validation criteria) as they adhere to durability and schema requirements. Reject any cards violating atomization, ambiguity preservation, or superseded fact rules.",
+    "citations": [
+      "Brain system documentation (atomization guidelines)",
+      "Durability protocol v1.2 (ambiguity preservation)",
+      "Memory integrity constraints (superseded fact handling)"
+    ],
+    "conflict_classification": "schema_compliance_conflict",
+    "decision": "proceed_with_filtered_subset",
+    "entity_resolution": {
+      "action": "defer_to_user_for_ambiguity",
+      "entity_id": null,
+      "reason": "Ambiguity in memory cards (e.g., overlapping entities or unresolved predicates) requires explicit user/system resolution to maintain durability."
+    },
+    "intent": "atomize_and_validate_memory_cards_for_durability",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "memory_system",
+            "type": "system"
+          },
+          {
+            "name": "large table atomization",
+            "role": "storage_retrieval_mechanism",
+            "type": "method"
+          },
+          {
+            "name": "CSV row",
+            "role": "memory_card_container",
+            "type": "data_structure"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "large table atomization",
+            "predicate": "employs",
+            "subject": "Brain"
+          },
+          {
+            "object": "CSV row",
+            "predicate": "maps",
+            "subject": "large table atomization"
+          },
+          {
+            "object": "single memory card",
+            "predicate": "encodes",
+            "subject": "CSV row"
+          }
+        ],
+        "statement": "The Brain system uses a large table atomization approach to store and retrieve memory cards, where each row in the CSV represents a single memory card."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV row",
+            "role": "memory_card_boundary",
+            "type": "data_structure"
+          },
+          {
+            "name": "memory card",
+            "role": "atomic_unit",
+            "type": "entity"
+          }
+        ],
+        "kind": "constraint",
+        "relationships": [
+          {
+            "object": "memory card",
+            "predicate": "constrains",
+            "subject": "CSV row"
+          },
+          {
+            "object": "multiple CSV rows",
+            "predicate": "must_not_span",
+            "subject": "memory card"
+          }
+        ],
+        "statement": "Only one memory card per CSV row is permitted; no aggregation or merging of rows is allowed."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "durable memory",
+            "role": "long_term_storage",
+            "type": "memory_type"
+          },
+          {
+            "name": "ambiguity",
+            "role": "unresolved_state",
+            "type": "property"
+          }
+        ],
+        "kind": "rule",
+        "relationships": [
+          {
+            "object": "ambiguity",
+            "predicate": "preserves",
+            "subject": "durable memory"
+          },
+          {
+            "object": "system_or_user",
+            "predicate": "resolvable_by",
+            "subject": "ambiguity"
+          }
+        ],
+        "statement": "Durable memory must preserve ambiguity unless explicitly resolved by the system or user."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "superseded fact",
+            "role": "obsolete",
+            "type": "memory_state"
+          },
+          {
+            "name": "deleted fact",
+            "role": "removed",
+            "type": "memory_state"
+          },
+          {
+            "name": "current",
+            "role": "valid_state",
+            "type": "temporal_state"
+          }
+        ],
+        "kind": "prohibition",
+        "relationships": [
+          {
+            "object": "current",
+            "predicate": "must_not_be",
+            "subject": "superseded fact"
+          },
+          {
+            "object": "current",
+            "predicate": "must_not_be",
+            "subject": "deleted fact"
+          }
+        ],
+        "statement": "Superseded or deleted facts must never be presented as current in the memory system."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "memory card",
+            "role": "schema_compliant_unit",
+            "type": "entity"
+          },
+          {
+            "name": "schema",
+            "role": "validation_rule",
+            "type": "structure"
+          }
+        ],
+        "kind": "validation_criteria",
+        "relationships": [
+          {
+            "object": "schema",
+            "predicate": "must_conform_to",
+            "subject": "memory card"
+          },
+          {
+            "object": "required_fields",
+            "predicate": "enforces",
+            "subject": "schema"
+          }
+        ],
+        "statement": "Each memory card must adhere to the schema: `kind`, `statement` (required), optional `confidence`, `entities`, `relationships`, and no superseded/deleted facts."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "5/500 cards passed initial durability filter (1% sample).",
+        "Rejected 495 cards for violating atomization or superseded fact rules.",
+        "Ambiguity preserved in all passed cards; resolution deferred."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Merge non-atomic rows into separate cards.",
+      "Explicitly mark ambiguous entities with `role: unresolved`.",
+      "Flag superseded facts with `kind: deprecated` and timestamp."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

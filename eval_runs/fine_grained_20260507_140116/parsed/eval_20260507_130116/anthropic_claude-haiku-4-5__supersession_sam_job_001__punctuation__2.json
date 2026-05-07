@@ -1,0 +1,82 @@
+{
+  "fixture_id": "supersession_sam_job_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Sam's employment history shows progression from Goldman Sachs to Point72. The second fact supersedes the first regarding current employment, but both are durable facts about Sam's career.",
+    "citations": [
+      "Existing memory fact 1: Sam works at Goldman",
+      "Existing memory fact 2: Sam left Goldman and joined Point72"
+    ],
+    "conflict_classification": "temporal_supersession",
+    "decision": "Supersession detected - retain both facts with temporal ordering",
+    "entity_resolution": {
+      "action": "merge_temporal",
+      "entity_id": "sam_employment_timeline",
+      "reason": "Both facts are consistent when ordered chronologically; second fact supersedes first as current employment status"
+    },
+    "intent": "Resolve temporal conflict between two employment facts for Sam",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_history",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "worked_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam worked at Goldman Sachs"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_current",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict resolved as chronological progression",
+        "Current employment: Point72",
+        "Historical employment: Goldman Sachs",
+        "Both facts retained with proper temporal ordering"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Explicitly timestamp both facts (e.g., 'Sam worked at Goldman Sachs until [date]')",
+      "Mark first fact as historical/superseded while preserving it",
+      "Add transition date between positions"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

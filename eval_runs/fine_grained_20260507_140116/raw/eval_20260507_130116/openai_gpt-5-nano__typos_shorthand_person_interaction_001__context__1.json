@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "fixture_id": "typos_shorthand_person_interaction_001__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "There is an informal claim that a person named Sam from Golden(?) likes Bill Evans, but key identifiers are uncertain. No durable memory established due to typos and ambiguity.",
+    "citations": [],
+    "conflict_classification": "ambiguous_identity_and_spelling_typos",
+    "decision": "tentative",
+    "entity_resolution": {
+      "action": "no_change",
+      "entity_id": null,
+      "reason": "insufficient reliable data to resolve identities or correct typos"
+    },
+    "intent": "classify_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "sam",
+            "role": "owner",
+            "type": "person"
+          },
+          {
+            "name": "goldmn",
+            "role": "origin_or_group",
+            "type": "location_or_group"
+          },
+          {
+            "name": "bill evns",
+            "role": "object_of_affection",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "goldmn",
+            "predicate": "is_from_or_affiliated_with",
+            "subject": "sam"
+          },
+          {
+            "object": "bill evns",
+            "predicate": "likes",
+            "subject": "sam"
+          }
+        ],
+        "statement": "sam frm goldmn likes bill evns apparently"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Processed input and constructed provisional memory entry with ambiguity preserved."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request clarification on names (Sam, goldmn, bill evns) and confirm spellings.",
+      "If available, add canonical identifiers (full names, locations) to disambiguate.",
+      "Store as provisional note with uncertainty flag."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"classify_memory\",\n  \"decision\": \"tentative\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"sam frm goldmn likes bill evns apparently\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\"name\": \"sam\", \"type\": \"person\", \"role\": \"subject\"},\n        {\"name\": \"sam\", \"type\": \"person\", \"role\": \"owner\"},\n        {\"name\": \"goldmn\", \"type\": \"location_or_group\", \"role\": \"origin_or_group\"},\n        {\"name\": \"bill evns\", \"type\": \"person\", \"role\": \"object_of_affection\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"sam\", \"predicate\": \"is_from_or_affiliated_with\", \"object\": \"goldmn\"},\n        {\"subject\": \"sam\", \"predicate\": \"likes\", \"object\": \"bill evns\"}\n      ]\n    }\n    ],\n  \"entity_resolution\": {\n    \"action\": \"no_change\",\n    \"entity_id\": null,\n    \"reason\": \"insufficient reliable data to resolve identities or correct typos\"\n  },\n  \"conflict_classification\": \"ambiguous_identity_and_spelling_typos\",\n  \"answer\": \"There is an informal claim that a person named Sam from Golden(?) likes Bill Evans, but key identifiers are uncertain. No durable memory established due to typos and ambiguity.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Request clarification on names (Sam, goldmn, bill evns) and confirm spellings.\",\n    \"If available, add canonical identifiers (full names, locations) to disambiguate.\",\n    \"Store as provisional note with uncertainty flag.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Processed input and constructed provisional memory entry with ambiguity preserved.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

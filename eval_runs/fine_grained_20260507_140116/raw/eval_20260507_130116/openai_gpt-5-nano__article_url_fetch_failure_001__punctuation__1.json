@@ -1,0 +1,78 @@
+{
+  "error": null,
+  "fixture_id": "article_url_fetch_failure_001__punctuation",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Memorized: a reference to an article at an ambiguous URL with a 404 fetch result; no confirmation of article content. Stored as memory cue for architecture context and fetch failure scenario.",
+    "citations": [
+      "https://example.com/missing (unverified)"
+    ],
+    "conflict_classification": "ambiguous_source",
+    "decision": "store_memory_with_ambiguity_preserved",
+    "entity_resolution": {
+      "action": "defer_resolution",
+      "entity_id": null,
+      "reason": "Insufficient verifiable content; memory should avoid asserting the article exists; preserve ambiguity"
+    },
+    "intent": "evaluate_memory_import",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "target",
+            "type": "url"
+          },
+          {
+            "name": "memory architecture",
+            "role": "association",
+            "type": "topic"
+          }
+        ],
+        "kind": "article_url",
+        "relationships": [
+          {
+            "object": "memory architecture",
+            "predicate": "is_about",
+            "subject": "https://example.com/missing"
+          },
+          {
+            "object": "404 network error",
+            "predicate": "fetch_result",
+            "subject": "https://example.com/missing"
+          }
+        ],
+        "statement": "Remember this article - https -//examplecom/missing why - useful for memory architecture Mock fetch result - 404 network error"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "404 network error",
+            "role": "result",
+            "type": "error"
+          }
+        ],
+        "kind": "system_note",
+        "relationships": [],
+        "statement": "Fixture indicates fetch failure for the article; preserve as durability cue without asserting article existence."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card for article_url has been created with ambiguity preserved",
+        "System_note recorded about fetch failure"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retry fetch with a valid URL and canonical domain",
+      "Record fetch status separately from content validity",
+      "Annotate memory with uncertainty level and source reliability"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"evaluate_memory_import\",\n  \"decision\": \"store_memory_with_ambiguity_preserved\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"article_url\",\n      \"statement\": \"Remember this article - https -//examplecom/missing why - useful for memory architecture Mock fetch result - 404 network error\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\"name\": \"https://example.com/missing\", \"type\": \"url\", \"role\": \"target\"},\n        {\"name\": \"memory architecture\", \"type\": \"topic\", \"role\": \"association\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"https://example.com/missing\", \"predicate\": \"is_about\", \"object\": \"memory architecture\"},\n        {\"subject\": \"https://example.com/missing\", \"predicate\": \"fetch_result\", \"object\": \"404 network error\"}\n      ]\n    }\n    ,\n    {\n      \"kind\": \"system_note\",\n      \"statement\": \"Fixture indicates fetch failure for the article; preserve as durability cue without asserting article existence.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\"name\": \"404 network error\", \"type\": \"error\", \"role\": \"result\"}\n      ],\n      \"relationships\": []\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer_resolution\",\n    \"entity_id\": null,\n    \"reason\": \"Insufficient verifiable content; memory should avoid asserting the article exists; preserve ambiguity\"\n  },\n  \"conflict_classification\": \"ambiguous_source\",\n  \"answer\": \"Memorized: a reference to an article at an ambiguous URL with a 404 fetch result; no confirmation of article content. Stored as memory cue for architecture context and fetch failure scenario.\",\n  \"citations\": [\n    \"https://example.com/missing (unverified)\"\n  ],\n  \"repair_options\": [\n    \"Retry fetch with a valid URL and canonical domain\",\n    \"Record fetch status separately from content validity\",\n    \"Annotate memory with uncertainty level and source reliability\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card for article_url has been created with ambiguity preserved\",\n      \"System_note recorded about fetch failure\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

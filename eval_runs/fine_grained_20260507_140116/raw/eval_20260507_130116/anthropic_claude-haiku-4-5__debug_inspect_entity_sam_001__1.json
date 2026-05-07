@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "debug_inspect_entity_sam_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "No definitive memory retrieved. Entity 'Sam from Goldman' matches zero or multiple candidates in memory. Stored facts about this person are insufficient or non-existent.",
+    "citations": [],
+    "conflict_classification": "unresolved_ambiguity",
+    "decision": "Perform entity resolution and return all associated memory cards with confidence levels and relationship data",
+    "entity_resolution": {
+      "action": "ambiguous_match",
+      "entity_id": null,
+      "reason": "Query 'Sam from Goldman' is underspecified. Multiple Sams may exist at Goldman Sachs or other Goldman entities. No unique identifier provided. Requires disambiguation: full name, role, team, or date context."
+    },
+    "intent": "Inspect and retrieve all stored memory about an entity identified as 'Sam from Goldman'",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unknown",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer_or_affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "entity_profile",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at or is associated with Goldman"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Entity resolution failed: insufficient specificity",
+        "No memory cards matched with high confidence",
+        "Ambiguity preserved per protocol",
+        "No superseded facts presented"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide Sam's full name or surname",
+      "Specify Goldman division or team",
+      "Provide date of interaction or context",
+      "Provide Sam's role or title",
+      "Search by alternative identifiers (email, ID)"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Inspect and retrieve all stored memory about an entity identified as 'Sam from Goldman'\",\n  \"decision\": \"Perform entity resolution and return all associated memory cards with confidence levels and relationship data\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"entity_profile\",\n      \"statement\": \"Sam works at or is associated with Goldman\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"unknown\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer_or_affiliation\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"associated_with\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"ambiguous_match\",\n    \"entity_id\": null,\n    \"reason\": \"Query 'Sam from Goldman' is underspecified. Multiple Sams may exist at Goldman Sachs or other Goldman entities. No unique identifier provided. Requires disambiguation: full name, role, team, or date context.\"\n  },\n  \"conflict_classification\": \"unresolved_ambiguity\",\n  \"answer\": \"No definitive memory retrieved. Entity 'Sam from Goldman' matches zero or multiple candidates in memory. Stored facts about this person are insufficient or non-existent.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Provide Sam's full name or surname\",\n    \"Specify Goldman division or team\",\n    \"Provide date of interaction or context\",\n    \"Provide Sam's role or title\",\n    \"Search by alternative identifiers (email, ID)\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Entity resolution failed: insufficient specificity\",\n      \"No memory cards matched with high confidence\",\n      \"Ambiguity preserved per protocol\",\n      \"No superseded facts presented\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

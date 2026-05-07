@@ -1,0 +1,91 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "No contradiction detected. Keep the existing high-confidence relationship about Sara\u2019s parentage/twin status, and add that Sara is your niece as a compatible but identity-dependent relationship with medium confidence.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "no_direct_conflict",
+    "entity_resolution": {
+      "action": "keep_existing_and_add_new",
+      "entity_id": null,
+      "reason": "The new statement (Sara is my niece) does not contradict the existing high-confidence family facts (Sara is Daniele's daughter and Nur's twin); however, 'my niece' depends on the user's identity, so it should be added with only medium confidence."
+    },
+    "intent": "conflict_explainer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "twin",
+            "type": "person"
+          }
+        ],
+        "kind": "high_confidence_fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is daughter of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is twin of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "me",
+            "role": "related_to",
+            "type": "person"
+          }
+        ],
+        "kind": "new_relation",
+        "relationships": [
+          {
+            "object": "me",
+            "predicate": "is my niece",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No durable deletion of existing fact.",
+        "New relation preserved as compatible and marked medium due to ambiguity about 'my'."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm which side of your family Sara is related to (e.g., sister/brother's child) to raise confidence in the 'my niece' relationship.",
+      "If you know whether Daniele or Nur is on your side, record that additional detail."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"conflict_explainer\",\n  \"decision\": \"no_direct_conflict\",\n  \"conflict_classification\": \"none\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"high_confidence_fact\",\n      \"statement\": \"Sara is Daniele's daughter and Nur's twin.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"parent\"\n        },\n        {\n          \"name\": \"Nur\",\n          \"type\": \"person\",\n          \"role\": \"twin\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is daughter of\",\n          \"object\": \"Daniele\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is twin of\",\n          \"object\": \"Nur\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"new_relation\",\n      \"statement\": \"Sara is my niece.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"me\",\n          \"type\": \"person\",\n          \"role\": \"related_to\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is my niece\",\n          \"object\": \"me\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"keep_existing_and_add_new\",\n    \"entity_id\": null,\n    \"reason\": \"The new statement (Sara is my niece) does not contradict the existing high-confidence family facts (Sara is Daniele's daughter and Nur's twin); however, 'my niece' depends on the user's identity, so it should be added with only medium confidence.\"\n  },\n  \"answer\": \"No contradiction detected. Keep the existing high-confidence relationship about Sara\u2019s parentage/twin status, and add that Sara is your niece as a compatible but identity-dependent relationship with medium confidence.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Confirm which side of your family Sara is related to (e.g., sister/brother's child) to raise confidence in the 'my niece' relationship.\",\n    \"If you know whether Daniele or Nur is on your side, record that additional detail.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"No durable deletion of existing fact.\",\n      \"New relation preserved as compatible and marked medium due to ambiguity about 'my'.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

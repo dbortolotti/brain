@@ -1,0 +1,130 @@
+{
+  "fixture_id": "conversation_transcript_sam_001__context",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "",
+    "citations": [
+      "Sam: No, I left Goldman last month and joined Point72.",
+      "Sam: Yes, but lately more early Coltrane.",
+      "Daniele: We should catch up about AI infra. Sam: Definitely, send me that article."
+    ],
+    "conflict_classification": "supersedes_prior_current_employment_at_goldman_if_present",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No stable existing entity identifiers were provided; names are kept as mentioned."
+    },
+    "intent": "extract_atomic_memory_cards",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "formerly_worked_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "currently_works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said he left Goldman last month and joined Point72; Sam should no longer be treated as currently at Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "music artist",
+            "type": "person"
+          },
+          {
+            "name": "Coltrane",
+            "role": "music artist",
+            "type": "person"
+          }
+        ],
+        "kind": "music_preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "listens_to",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "recently_prefers_more",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam still listens to Bill Evans, but lately has been listening more to early Coltrane."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "conversation partner",
+            "type": "person"
+          },
+          {
+            "name": "AI infra",
+            "role": "discussion topic",
+            "type": "topic"
+          }
+        ],
+        "kind": "interest",
+        "relationships": [
+          {
+            "object": "AI infra",
+            "predicate": "interested_in_discussing",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is interested in catching up about AI infrastructure."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted durable employment update for Sam.",
+        "Extracted music preference update for Sam.",
+        "Extracted AI infrastructure discussion interest.",
+        "Did not preserve 'Sam is at Goldman' as current because it was explicitly negated."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

@@ -1,0 +1,109 @@
+{
+  "error": null,
+  "fixture_id": "cost_latency_token_accounting_001__punctuation",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Key fields to record for evaluation accounting: token_count (tokens used), provider_id and model_id (which service and model were used), estimated_price (cost projection for the run), and latency measurements (latency_p50, latency_p90, latency_p95) to capture performance. These enable traceability, cost estimation, and performance benchmarking across runs.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "provide a concise, structured explanation of required evaluation accounting fields for token usage and latency metrics without asserting any specific values.",
+    "entity_resolution": {
+      "action": "note",
+      "entity_id": null,
+      "reason": "fields are generic accounting metadata; actual IDs resolved at runtime per evaluation run"
+    },
+    "intent": "explain_eval_accounting_fields",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "token_count",
+            "role": "measurement",
+            "type": "metric"
+          },
+          {
+            "name": "provider_id",
+            "role": "source",
+            "type": "identifier"
+          },
+          {
+            "name": "model_id",
+            "role": "model",
+            "type": "identifier"
+          },
+          {
+            "name": "estimated_price",
+            "role": "cost",
+            "type": "pricing"
+          },
+          {
+            "name": "latency_p50",
+            "role": "performance",
+            "type": "latency"
+          },
+          {
+            "name": "latency_p90",
+            "role": "performance",
+            "type": "latency"
+          },
+          {
+            "name": "latency_p95",
+            "role": "performance",
+            "type": "latency"
+          }
+        ],
+        "kind": "explanation",
+        "relationships": [
+          {
+            "object": "tokens consumed",
+            "predicate": "measures",
+            "subject": "token_count"
+          },
+          {
+            "object": "service provider",
+            "predicate": "identifies",
+            "subject": "provider_id"
+          },
+          {
+            "object": "model version",
+            "predicate": "identifies",
+            "subject": "model_id"
+          },
+          {
+            "object": "token_count, model_id, provider_id",
+            "predicate": "derived_from",
+            "subject": "estimated_price"
+          },
+          {
+            "object": "latency distribution",
+            "predicate": "percentile",
+            "subject": "latency_p50"
+          },
+          {
+            "object": "latency distribution",
+            "predicate": "percentile",
+            "subject": "latency_p90"
+          },
+          {
+            "object": "latency distribution",
+            "predicate": "percentile",
+            "subject": "latency_p95"
+          }
+        ],
+        "statement": "Required evaluation accounting fields include token counts, provider/model identifiers, estimated price, and latency statistics (p50, p90, p95). These fields enable cost estimation, performance benchmarking, and provenance tracking for each evaluation run."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Accounting schema described",
+        "No values committed; placeholders used for explanation"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"explain_eval_accounting_fields\",\n  \"decision\": \"provide a concise, structured explanation of required evaluation accounting fields for token usage and latency metrics without asserting any specific values.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"explanation\",\n      \"statement\": \"Required evaluation accounting fields include token counts, provider/model identifiers, estimated price, and latency statistics (p50, p90, p95). These fields enable cost estimation, performance benchmarking, and provenance tracking for each evaluation run.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"token_count\", \"type\": \"metric\", \"role\": \"measurement\"},\n        {\"name\": \"provider_id\", \"type\": \"identifier\", \"role\": \"source\"},\n        {\"name\": \"model_id\", \"type\": \"identifier\", \"role\": \"model\"},\n        {\"name\": \"estimated_price\", \"type\": \"pricing\", \"role\": \"cost\"},\n        {\"name\": \"latency_p50\", \"type\": \"latency\", \"role\": \"performance\"},\n        {\"name\": \"latency_p90\", \"type\": \"latency\", \"role\": \"performance\"},\n        {\"name\": \"latency_p95\", \"type\": \"latency\", \"role\": \"performance\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"token_count\", \"predicate\": \"measures\", \"object\": \"tokens consumed\"},\n        {\"subject\": \"provider_id\", \"predicate\": \"identifies\", \"object\": \"service provider\"},\n        {\"subject\": \"model_id\", \"predicate\": \"identifies\", \"object\": \"model version\"},\n        {\"subject\": \"estimated_price\", \"predicate\": \"derived_from\", \"object\": \"token_count, model_id, provider_id\"},\n        {\"subject\": \"latency_p50\", \"predicate\": \"percentile\", \"object\": \"latency distribution\"},\n        {\"subject\": \"latency_p90\", \"predicate\": \"percentile\", \"object\": \"latency distribution\"},\n        {\"subject\": \"latency_p95\", \"predicate\": \"percentile\", \"object\": \"latency distribution\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"note\",\n    \"entity_id\": null,\n    \"reason\": \"fields are generic accounting metadata; actual IDs resolved at runtime per evaluation run\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Key fields to record for evaluation accounting: token_count (tokens used), provider_id and model_id (which service and model were used), estimated_price (cost projection for the run), and latency measurements (latency_p50, latency_p90, latency_p95) to capture performance. These enable traceability, cost estimation, and performance benchmarking across runs.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\"Accounting schema described\", \"No values committed; placeholders used for explanation\"]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

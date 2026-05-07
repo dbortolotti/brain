@@ -1,0 +1,88 @@
+{
+  "error": null,
+  "fixture_id": "debug_sql_select_only_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Brain's memory system correctly enforces select-only access in this fixture. READ operations are permitted; WRITE/DELETE operations are denied. No durable memory is committed or superseded by this debug context.",
+    "citations": [
+      "Fixture constraint: SELECT id FROM memory_cards LIMIT 10 allowed",
+      "Fixture constraint: DELETE FROM memory_cards denied"
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "ALLOW_READ_ONLY_OPERATION",
+    "entity_resolution": {
+      "action": "acknowledge_constraint",
+      "entity_id": "debug_sql_select_only_001__context",
+      "reason": "Access control fixture properly restricts destructive operations while permitting read operations"
+    },
+    "intent": "Evaluate Brain memory system behavior under SQL select-only access control",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Admin SQL mode",
+            "role": "constraint_enforcer",
+            "type": "access_control_mode"
+          },
+          {
+            "name": "SELECT",
+            "role": "allowed",
+            "type": "sql_operation"
+          },
+          {
+            "name": "DELETE",
+            "role": "denied",
+            "type": "sql_operation"
+          }
+        ],
+        "kind": "access_control_constraint",
+        "relationships": [
+          {
+            "object": "SELECT queries",
+            "predicate": "permits",
+            "subject": "Admin SQL mode"
+          },
+          {
+            "object": "DELETE queries",
+            "predicate": "denies",
+            "subject": "Admin SQL mode"
+          }
+        ],
+        "statement": "Admin SQL mode restricts operations to SELECT queries only; DELETE operations are denied"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "memory_cards",
+            "role": "query_target",
+            "type": "table"
+          }
+        ],
+        "kind": "operational_capability",
+        "relationships": [
+          {
+            "object": "memory_cards table",
+            "predicate": "operates_on",
+            "subject": "SELECT query"
+          }
+        ],
+        "statement": "SELECT id FROM memory_cards LIMIT 10 is a valid permitted operation under this fixture"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Access control mode validated",
+        "Operation permissions correctly classified",
+        "No memory conflicts detected",
+        "Read-only constraint acknowledged"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Evaluate Brain memory system behavior under SQL select-only access control\",\n  \"decision\": \"ALLOW_READ_ONLY_OPERATION\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"access_control_constraint\",\n      \"statement\": \"Admin SQL mode restricts operations to SELECT queries only; DELETE operations are denied\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Admin SQL mode\",\n          \"type\": \"access_control_mode\",\n          \"role\": \"constraint_enforcer\"\n        },\n        {\n          \"name\": \"SELECT\",\n          \"type\": \"sql_operation\",\n          \"role\": \"allowed\"\n        },\n        {\n          \"name\": \"DELETE\",\n          \"type\": \"sql_operation\",\n          \"role\": \"denied\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Admin SQL mode\",\n          \"predicate\": \"permits\",\n          \"object\": \"SELECT queries\"\n        },\n        {\n          \"subject\": \"Admin SQL mode\",\n          \"predicate\": \"denies\",\n          \"object\": \"DELETE queries\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"operational_capability\",\n      \"statement\": \"SELECT id FROM memory_cards LIMIT 10 is a valid permitted operation under this fixture\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"memory_cards\",\n          \"type\": \"table\",\n          \"role\": \"query_target\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"SELECT query\",\n          \"predicate\": \"operates_on\",\n          \"object\": \"memory_cards table\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"acknowledge_constraint\",\n    \"entity_id\": \"debug_sql_select_only_001__context\",\n    \"reason\": \"Access control fixture properly restricts destructive operations while permitting read operations\"\n  },\n  \"conflict_classification\": \"none_detected\",\n  \"answer\": \"Brain's memory system correctly enforces select-only access in this fixture. READ operations are permitted; WRITE/DELETE operations are denied. No durable memory is committed or superseded by this debug context.\",\n  \"citations\": [\n    \"Fixture constraint: SELECT id FROM memory_cards LIMIT 10 allowed\",\n    \"Fixture constraint: DELETE FROM memory_cards denied\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Access control mode validated\",\n      \"Operation permissions correctly classified\",\n      \"No memory conflicts detected\",\n      \"Read-only constraint acknowledged\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,129 @@
+{
+  "fixture_id": "long_markdown_chat_summary_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Recorded architectural source-of-truth and projection/intake principles for Brain DB, Cognee, and Slack; preserved unresolved questions about adding Telegram and selecting the cheapest model that saturates performance.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "No finalized decisions; record architectural commitments and mark open questions as unresolved.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No explicit entity IDs were provided in the source context; use plain names as references."
+    },
+    "intent": "Extract durable memory cards from the provided chat summary context about Brain architecture.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system"
+          }
+        ],
+        "kind": "architecture_principle",
+        "relationships": [
+          {
+            "object": "personal memory",
+            "predicate": "is the source of truth for",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB should be the source of truth for personal memory."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "semantic_projection",
+            "type": "system"
+          },
+          {
+            "name": "Brain DB",
+            "role": "upstream",
+            "type": "system"
+          }
+        ],
+        "kind": "architecture_principle",
+        "relationships": [
+          {
+            "object": "Brain DB",
+            "predicate": "is a rebuildable projection of",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee should be a rebuildable semantic projection derived from Brain DB."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "memory_intake_agent",
+            "type": "channel/integration"
+          }
+        ],
+        "kind": "architecture_principle",
+        "relationships": [
+          {
+            "object": "strict memory intake agent",
+            "predicate": "serves as",
+            "subject": "Slack"
+          }
+        ],
+        "statement": "Slack should be a strict memory intake agent."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Telegram",
+            "role": "candidate_intake",
+            "type": "channel/integration"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [
+          {
+            "object": "undecided_add_later",
+            "predicate": "status",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "Should Telegram be added later as an additional memory intake channel/integration?"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "model",
+            "role": "inference",
+            "type": "component"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [
+          {
+            "object": "cheapest while saturating performance",
+            "predicate": "optimization_goal",
+            "subject": "model"
+          }
+        ],
+        "statement": "Which model is cheapest while saturating performance for the system?"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted 5 memory cards: 3 principles and 2 open questions; no hard decisions beyond source-of-truth/projection/intake statements."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If additional details become available (e.g., exact behavior rules for 'strict memory intake agent'), update the Slack principle with more operational constraints.",
+      "When a decision is made on Telegram inclusion, replace the open question card with a finalized architecture decision card."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

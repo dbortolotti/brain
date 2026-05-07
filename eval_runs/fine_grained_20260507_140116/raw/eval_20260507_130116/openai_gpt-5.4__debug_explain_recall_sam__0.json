@@ -1,0 +1,88 @@
+{
+  "error": null,
+  "fixture_id": "debug_explain_recall_sam",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "mem_new was returned because it is the current, non-superseded memory for Sam from Goldman. mem_old was filtered out because the system treats superseded memories as historical context rather than current recall results, preventing outdated facts from being presented as current.",
+    "citations": [
+      "mem_new",
+      "mem_old"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "Recall returned the newer memory for Sam at Goldman because it is the current active fact, and filtered the older memory because it was marked superseded by the newer update.",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": "Sam",
+      "reason": "The query explicitly targets Sam, and the returned active memory matches that entity and organization context."
+    },
+    "intent": "debug_explain_recall",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "active_memory",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "related_entity",
+            "type": "organization"
+          }
+        ],
+        "kind": "superseded_memory",
+        "relationships": [
+          {
+            "object": "mem_new",
+            "predicate": "superseded_by",
+            "subject": "older_memory"
+          }
+        ],
+        "statement": "An older memory about Sam relevant to Goldman exists but is not current because it was superseded."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Resolved entity: Sam.",
+        "Selected current memory: mem_new.",
+        "Excluded historical memory: mem_old because it is superseded.",
+        "Explanation preserves distinction between current and historical facts."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Inspect the supersession link between mem_old and mem_new.",
+      "Verify mem_new is marked active and mem_old is marked superseded/inactive.",
+      "If mem_old should still be recallable, change retrieval settings to include historical or superseded memories.",
+      "Audit timestamps and conflict-resolution rules for Sam-related memories."
+    ]
+  },
+  "raw_text": "{\"intent\":\"debug_explain_recall\",\"decision\":\"Recall returned the newer memory for Sam at Goldman because it is the current active fact, and filtered the older memory because it was marked superseded by the newer update.\",\"memory_cards\":[{\"kind\":\"active_memory\",\"statement\":\"Sam works at Goldman.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Goldman\"}]},{\"kind\":\"superseded_memory\",\"statement\":\"An older memory about Sam relevant to Goldman exists but is not current because it was superseded.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"related_entity\"}],\"relationships\":[{\"subject\":\"older_memory\",\"predicate\":\"superseded_by\",\"object\":\"mem_new\"}]}],\"entity_resolution\":{\"action\":\"resolved\",\"entity_id\":\"Sam\",\"reason\":\"The query explicitly targets Sam, and the returned active memory matches that entity and organization context.\"},\"conflict_classification\":\"supersession\",\"answer\":\"mem_new was returned because it is the current, non-superseded memory for Sam from Goldman. mem_old was filtered out because the system treats superseded memories as historical context rather than current recall results, preventing outdated facts from being presented as current.\",\"citations\":[\"mem_new\",\"mem_old\"],\"repair_options\":[\"Inspect the supersession link between mem_old and mem_new.\",\"Verify mem_new is marked active and mem_old is marked superseded/inactive.\",\"If mem_old should still be recallable, change retrieval settings to include historical or superseded memories.\",\"Audit timestamps and conflict-resolution rules for Sam-related memories.\"],\"receipt\":{\"success\":true,\"details\":[\"Resolved entity: Sam.\",\"Selected current memory: mem_new.\",\"Excluded historical memory: mem_old because it is superseded.\",\"Explanation preserves distinction between current and historical facts.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

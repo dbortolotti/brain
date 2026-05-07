@@ -1,0 +1,33 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_unresolved_pronoun_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory card rejected due to unresolved pronoun ('the other one') and missing referential context. Requires explicit entity resolution or clarification.",
+    "citations": [],
+    "conflict_classification": "unresolvable_ambiguity",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "unresolved",
+      "entity_id": null,
+      "reason": "Ambiguous pronoun 'the other one' lacks referent. No prior context or entities resolved to disambiguate."
+    },
+    "intent": "durability_filter",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Pronoun 'the other one' has no antecedent in current memory context.",
+        "Violation of durability principle: Ambiguous statements cannot be durably committed without resolution."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Add explicit referent (e.g., 'He prefers the other [entity: X]')",
+      "Delete memory card if ambiguity cannot be resolved",
+      "Request user clarification for pronoun resolution"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"durability_filter\",\n  \"decision\": \"reject\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"unresolved\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguous pronoun 'the other one' lacks referent. No prior context or entities resolved to disambiguate.\"\n  },\n  \"conflict_classification\": \"unresolvable_ambiguity\",\n  \"answer\": \"Memory card rejected due to unresolved pronoun ('the other one') and missing referential context. Requires explicit entity resolution or clarification.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Add explicit referent (e.g., 'He prefers the other [entity: X]')\",\n    \"Delete memory card if ambiguity cannot be resolved\",\n    \"Request user clarification for pronoun resolution\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Pronoun 'the other one' has no antecedent in current memory context.\",\n      \"Violation of durability principle: Ambiguous statements cannot be durably committed without resolution.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

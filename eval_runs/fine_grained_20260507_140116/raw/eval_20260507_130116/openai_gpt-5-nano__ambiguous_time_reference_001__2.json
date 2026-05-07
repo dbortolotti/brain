@@ -1,0 +1,82 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_time_reference_001",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "The statement contains temporal references ('last Friday' and 'next month') whose exact dates depend on the reference date, making the leaving date ambiguous. No definitive date can be determined from the given sentence alone.",
+    "citations": [],
+    "conflict_classification": "temporal_ambiguity",
+    "decision": "ambiguous_time_reference",
+    "entity_resolution": {
+      "action": "preserve_ambiguity",
+      "entity_id": null,
+      "reason": "The phrase 'last Friday' and 'next month' refer to relative times without a fixed anchor date, leading to ambiguity about the exact dates."
+    },
+    "intent": "classify_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "last Friday",
+            "role": "temporal_reference",
+            "type": "time_reference"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          },
+          {
+            "name": "next month",
+            "role": "temporal_reference",
+            "type": "time_reference"
+          }
+        ],
+        "kind": "ambiguous_time_reference",
+        "relationships": [
+          {
+            "object": "last Friday",
+            "predicate": "said",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "leaving",
+            "subject": "Sam"
+          },
+          {
+            "object": "leave next month",
+            "predicate": "will",
+            "subject": "Sam"
+          }
+        ],
+        "required": [
+          "kind",
+          "statement"
+        ],
+        "statement": "Sam said last Friday that he is leaving Goldman next month."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created with ambiguity preserved.",
+        "No facts about exact dates asserted."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide a concrete date for 'last Friday' and 'next month' using a known reference date.",
+      "Clarify the reference date (e.g., 'as of 2026-05-07, last Friday was 2026-05-01; next month would be 2026-06').",
+      "Store both possible interpretations if the reference date remains unknown."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"classify_memory\",\n  \"decision\": \"ambiguous_time_reference\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"ambiguous_time_reference\",\n      \"statement\": \"Sam said last Friday that he is leaving Goldman next month.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Sam\", \"type\": \"person\", \"role\": \"subject\"},\n        {\"name\": \"last Friday\", \"type\": \"time_reference\", \"role\": \"temporal_reference\"},\n        {\"name\": \"Goldman\", \"type\": \"organization\", \"role\": \"employer\"},\n        {\"name\": \"next month\", \"type\": \"time_reference\", \"role\": \"temporal_reference\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sam\", \"predicate\": \"said\", \"object\": \"last Friday\"},\n        {\"subject\": \"Sam\", \"predicate\": \"leaving\", \"object\": \"Goldman\"},\n        {\"subject\": \"Sam\", \"predicate\": \"will\", \"object\": \"leave next month\"}\n      ]\n      ,\n      \"required\": [\"kind\",\"statement\"]\n    }\n    ],\n  \"entity_resolution\": {\n    \"action\": \"preserve_ambiguity\",\n    \"entity_id\": null,\n    \"reason\": \"The phrase 'last Friday' and 'next month' refer to relative times without a fixed anchor date, leading to ambiguity about the exact dates.\"\n  },\n  \"conflict_classification\": \"temporal_ambiguity\",\n  \"answer\": \"The statement contains temporal references ('last Friday' and 'next month') whose exact dates depend on the reference date, making the leaving date ambiguous. No definitive date can be determined from the given sentence alone.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Provide a concrete date for 'last Friday' and 'next month' using a known reference date.\",\n    \"Clarify the reference date (e.g., 'as of 2026-05-07, last Friday was 2026-05-01; next month would be 2026-06').\",\n    \"Store both possible interpretations if the reference date remains unknown.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card created with ambiguity preserved.\",\n      \"No facts about exact dates asserted.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,106 @@
+{
+  "error": null,
+  "fixture_id": "duplicate_sam_bill_evans_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The new statement is a duplicate of the existing memory. No conflict exists; retain the original durable memory and discard the duplicate candidate.",
+    "citations": [
+      "Original memory timestamp: [existing_timestamp]",
+      "Duplicate candidate timestamp: [new_timestamp]"
+    ],
+    "conflict_classification": "duplicate_identity",
+    "decision": "duplicate_preservation",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "sam_goldman_001",
+      "reason": "Identical subject (Sam from Goldman) and predicate (likes Bill Evans) with no conflicting details. Preserve original phrasing for ambiguity retention."
+    },
+    "intent": "memory_conflict_detection",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "source",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_target",
+            "type": "person"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman mentioned that he likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "source",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_target",
+            "type": "person"
+          }
+        ],
+        "kind": "duplicate_candidate",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman said he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Duplicate candidate detected and resolved via merge.",
+        "Original memory preserved with unchanged confidence.",
+        "No superseded facts introduced."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Merge into existing durable memory (recommended)",
+      "Flag as duplicate for review",
+      "Discard duplicate candidate"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_conflict_detection\",\n  \"decision\": \"duplicate_preservation\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"durable_memory\",\n      \"statement\": \"Sam from Goldman mentioned that he likes Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"source\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"preference_target\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"affiliated_with\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"duplicate_candidate\",\n      \"statement\": \"Sam from Goldman said he likes Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"source\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"preference_target\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"affiliated_with\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge\",\n    \"entity_id\": \"sam_goldman_001\",\n    \"reason\": \"Identical subject (Sam from Goldman) and predicate (likes Bill Evans) with no conflicting details. Preserve original phrasing for ambiguity retention.\"\n  },\n  \"conflict_classification\": \"duplicate_identity\",\n  \"answer\": \"The new statement is a duplicate of the existing memory. No conflict exists; retain the original durable memory and discard the duplicate candidate.\",\n  \"citations\": [\n    \"Original memory timestamp: [existing_timestamp]\",\n    \"Duplicate candidate timestamp: [new_timestamp]\"\n  ],\n  \"repair_options\": [\n    \"Merge into existing durable memory (recommended)\",\n    \"Flag as duplicate for review\",\n    \"Discard duplicate candidate\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Duplicate candidate detected and resolved via merge.\",\n      \"Original memory preserved with unchanged confidence.\",\n      \"No superseded facts introduced.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

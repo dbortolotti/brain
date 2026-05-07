@@ -1,0 +1,62 @@
+{
+  "fixture_id": "large_table_500_rows_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Use compact structured storage or summary storage; avoid creating 500 separate durable memories for repeated rows unless some rows are specifically important.",
+    "citations": [
+      "Input: CSV table with 500 rows, repeated many times",
+      "Policy question: how should it be stored?"
+    ],
+    "conflict_classification": "none",
+    "decision": "Store it compactly as a structured dataset or summarized artifact; do not commit each repeated row as separate durable memory unless specific rows are individually meaningful and user-relevant.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No stable real-world entity needs resolution; this is a policy/format question about handling a data artifact."
+    },
+    "intent": "Determine the storage policy for a large repetitive CSV table (500 rows) in the memory system.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "input",
+            "type": "data_artifact"
+          },
+          {
+            "name": "Brain",
+            "role": "target system",
+            "type": "memory_system"
+          }
+        ],
+        "kind": "policy",
+        "relationships": [
+          {
+            "object": "compact structured artifact or summary",
+            "predicate": "should be stored as",
+            "subject": "large repetitive CSV table"
+          },
+          {
+            "object": "they are individually meaningful",
+            "predicate": "should be stored separately only if",
+            "subject": "individual rows"
+          }
+        ],
+        "statement": "Large repetitive CSV tables should generally be stored as a compact structured artifact or summary rather than as many separate atomic memories, unless individual rows carry distinct durable meaning."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Identified this as a storage-policy question rather than a factual memory candidate.",
+        "Preserved ambiguity by not asserting that every row is disposable; rows may be stored individually if uniquely meaningful."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If needed, extract only unique schema/field patterns and notable exceptions.",
+      "If the table is important as a source artifact, store a reference to the dataset plus a concise summary instead of all rows."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

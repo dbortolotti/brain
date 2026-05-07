@@ -1,0 +1,64 @@
+{
+  "fixture_id": "large_table_500_rows_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Store only a brief policy-level summary, not the full 500-row table. Preserve the raw CSV externally or as a single non-decomposed reference if needed.",
+    "citations": [
+      "Input: CSV table with 500 rows - id,name,value repeated many times",
+      "Input: Policy question - how should it be stored?"
+    ],
+    "conflict_classification": "none",
+    "decision": "Do not commit the full table as durable memory. Store only a concise high-level note that a large CSV table with repeated fields exists, if needed, and keep the raw table out of memory cards.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No stable named person or uniquely identifiable entity is present; the input describes a generic data table and a storage policy question."
+    },
+    "intent": "Determine how to store a large CSV table (500 rows of repeated id,name,value data) in personal memory.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "source",
+            "type": "data artifact"
+          },
+          {
+            "name": "memory cards",
+            "role": "storage target",
+            "type": "memory object"
+          }
+        ],
+        "kind": "policy",
+        "relationships": [
+          {
+            "object": "many durable memory cards",
+            "predicate": "should not be expanded into",
+            "subject": "large repetitive CSV tables"
+          },
+          {
+            "object": "a single high-level reference or external data artifact",
+            "predicate": "should be stored as",
+            "subject": "large repetitive CSV tables"
+          }
+        ],
+        "statement": "Large repetitive CSV tables should not be expanded into many durable memory cards; preserve them as a single high-level reference or external data artifact instead."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Identified the input as a storage policy question rather than a durable factual claim.",
+        "Chose a conservative representation that avoids memorizing repetitive raw table contents.",
+        "Preserved ambiguity by not asserting any row-level facts."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If a specific row is later important, extract only that row as a separate atomic card.",
+      "If the table itself must be retained, store it as an external attachment or compressed reference rather than as many memory entries.",
+      "If there is a schema or aggregation pattern, store the schema and summary statistics instead of raw repetition."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

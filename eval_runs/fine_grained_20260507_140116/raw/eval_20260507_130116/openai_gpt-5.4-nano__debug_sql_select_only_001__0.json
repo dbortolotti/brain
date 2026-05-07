@@ -1,0 +1,33 @@
+{
+  "error": null,
+  "fixture_id": "debug_sql_select_only_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "In select-only mode, querying memory_cards is allowed (e.g., SELECT id FROM memory_cards LIMIT 10). Any DELETE from memory_cards is denied to prevent destructive changes.",
+    "citations": [],
+    "conflict_classification": "policy_enforcement_conflict (attempted destructive modification vs. select-only constraint); resolved by denying DELETE and permitting SELECT.",
+    "decision": "ALLOW SELECT statements (e.g., SELECT id FROM memory_cards LIMIT 10) and DENY any DELETE statements targeting memory_cards.",
+    "entity_resolution": {
+      "action": "no_persisted_change",
+      "entity_id": null,
+      "reason": "No durable memory updates are required; the fixture specifies a policy constraint for SQL operations."
+    },
+    "intent": "Explain and enforce admin SQL select-only mode where SELECT is allowed and DELETE is denied.",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected policy: SELECT allowed; DELETE denied for memory_cards.",
+        "Applied resolution: permit SELECT, block DELETE."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Use SELECT-only queries against memory_cards (e.g., SELECT id FROM memory_cards LIMIT 10).",
+      "If you intended to remove data, perform the operation outside select-only mode or through an explicitly permitted administrative workflow.",
+      "Replace DELETE with a non-destructive action (e.g., mark records in a separate field) only if such updates are allowed by policy."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Explain and enforce admin SQL select-only mode where SELECT is allowed and DELETE is denied.\",\n  \"decision\": \"ALLOW SELECT statements (e.g., SELECT id FROM memory_cards LIMIT 10) and DENY any DELETE statements targeting memory_cards.\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"no_persisted_change\",\n    \"entity_id\": null,\n    \"reason\": \"No durable memory updates are required; the fixture specifies a policy constraint for SQL operations.\"\n  },\n  \"conflict_classification\": \"policy_enforcement_conflict (attempted destructive modification vs. select-only constraint); resolved by denying DELETE and permitting SELECT.\",\n  \"answer\": \"In select-only mode, querying memory_cards is allowed (e.g., SELECT id FROM memory_cards LIMIT 10). Any DELETE from memory_cards is denied to prevent destructive changes.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Use SELECT-only queries against memory_cards (e.g., SELECT id FROM memory_cards LIMIT 10).\",\n    \"If you intended to remove data, perform the operation outside select-only mode or through an explicitly permitted administrative workflow.\",\n    \"Replace DELETE with a non-destructive action (e.g., mark records in a separate field) only if such updates are allowed by policy.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Detected policy: SELECT allowed; DELETE denied for memory_cards.\",\n      \"Applied resolution: permit SELECT, block DELETE.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

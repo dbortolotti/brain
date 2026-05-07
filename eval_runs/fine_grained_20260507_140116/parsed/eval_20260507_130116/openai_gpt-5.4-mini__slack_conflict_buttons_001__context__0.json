@@ -1,0 +1,66 @@
+{
+  "fixture_id": "slack_conflict_buttons_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Accepted as a replacement/update to the prior employment fact.",
+    "citations": [
+      "Existing: Sam works at Goldman.",
+      "User: /brain remember Sam left Goldman and joined Point72."
+    ],
+    "conflict_classification": "superseding_update",
+    "decision": "accepted",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": "Sam",
+      "reason": "The request refers to the same person as the existing context entry 'Sam works at Goldman'."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored a durable update for Sam's employment.",
+        "Prior Goldman fact should no longer be treated as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark the Goldman employment as superseded and retain the new employment at Point72 as current."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

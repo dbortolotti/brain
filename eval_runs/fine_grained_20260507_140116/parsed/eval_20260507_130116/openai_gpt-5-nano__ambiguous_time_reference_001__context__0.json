@@ -1,0 +1,58 @@
+{
+  "fixture_id": "ambiguous_time_reference_001__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "The statement references Sam's claim on a time-relative frame ('last Friday') about him leaving Goldman 'next month', but the exact calendar dates are ambiguous without a current date.",
+    "citations": [],
+    "conflict_classification": "time_reference_ambiguity",
+    "decision": "ambiguous_time_reference",
+    "entity_resolution": {
+      "action": "preserve_ambiguity",
+      "entity_id": null,
+      "reason": "The phrase 'last Friday' creates time ambiguity without a current date reference; 'next month' depends on the date of evaluation."
+    },
+    "intent": "classify_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "ambiguous_time_reference",
+        "relationships": [
+          {
+            "object": "he is leaving Goldman next month",
+            "predicate": "stated",
+            "subject": "Sam"
+          },
+          {
+            "object": "context of Sam's statement",
+            "predicate": "time_reference",
+            "subject": "last Friday"
+          }
+        ],
+        "statement": "For context, Sam said last Friday that he is leaving Goldman next month."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory entry created with ambiguity preserved for time words 'last Friday' and 'next month'."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Record both the 'last Friday' interpretation and the corresponding 'next month' expectation with explicit note of date Referent.",
+      "Request current date to resolve the exact dates for 'last Friday' and 'next month'."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

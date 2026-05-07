@@ -1,0 +1,72 @@
+{
+  "fixture_id": "email_source_meeting_followup_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Extracted: (1) request for AI infra article, (2) claimed job start at Point72 last month.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "extract_memory_cards",
+    "entity_resolution": {
+      "action": "no_merge",
+      "entity_id": null,
+      "reason": "Only email address and organization name are present; no existing entity IDs were provided."
+    },
+    "intent": "Send AI infrastructure article in follow-up after meeting",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "sam@example.com",
+            "role": "requestor",
+            "type": "email"
+          }
+        ],
+        "kind": "request",
+        "relationships": [
+          {
+            "object": "AI infra article",
+            "predicate": "requested",
+            "subject": "sam@example.com"
+          }
+        ],
+        "statement": "Sam asked to send an AI infra article."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          },
+          {
+            "name": "sam@example.com",
+            "role": "speaker",
+            "type": "email"
+          }
+        ],
+        "kind": "profile_update",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "sam@example.com"
+          }
+        ],
+        "statement": "Sam said they joined Point72 last month."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed subject and message body for a request and a personal update."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If the AI infra article title/link is known, store it alongside the request.",
+      "If an internal contact ID exists for sam@example.com, link it in entity resolution."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

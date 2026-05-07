@@ -1,0 +1,84 @@
+{
+  "error": null,
+  "fixture_id": "pdf_ocr_noisy_source_001",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "Committed two architecture-principle memory cards with medium confidence due to OCR noise.",
+    "citations": [
+      "[OCR noisy] Brain DB remalns source of trvth.",
+      "Cognee shou1d be rebuildable projection."
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "commit_with_ocr_caveat",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No existing entity IDs were provided; names are preserved as stated, with obvious OCR corrections applied cautiously."
+    },
+    "intent": "extract_atomic_memory_cards_from_noisy_ocr",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system_or_database"
+          }
+        ],
+        "kind": "architecture_principle",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "remains",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB remains the source of truth."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "projection",
+            "type": "system"
+          },
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system_or_database"
+          }
+        ],
+        "kind": "architecture_principle",
+        "relationships": [
+          {
+            "object": "rebuildable projection",
+            "predicate": "should_be",
+            "subject": "Cognee"
+          },
+          {
+            "object": "Brain DB",
+            "predicate": "projects_from",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee should be a rebuildable projection of Brain DB."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted 'Brain DB remains the source of truth' from noisy OCR.",
+        "Extracted 'Cognee should be a rebuildable projection' and inferred projection source as Brain DB from the preceding sentence."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Verify OCR text against the original PDF/source image.",
+      "Confirm whether 'Cognee' is intended to be a rebuildable projection specifically of Brain DB."
+    ]
+  },
+  "raw_text": "{\"intent\":\"extract_atomic_memory_cards_from_noisy_ocr\",\"decision\":\"commit_with_ocr_caveat\",\"memory_cards\":[{\"kind\":\"architecture_principle\",\"statement\":\"Brain DB remains the source of truth.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Brain DB\",\"type\":\"system_or_database\",\"role\":\"source_of_truth\"}],\"relationships\":[{\"subject\":\"Brain DB\",\"predicate\":\"remains\",\"object\":\"source of truth\"}]},{\"kind\":\"architecture_principle\",\"statement\":\"Cognee should be a rebuildable projection of Brain DB.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Cognee\",\"type\":\"system\",\"role\":\"projection\"},{\"name\":\"Brain DB\",\"type\":\"system_or_database\",\"role\":\"source_of_truth\"}],\"relationships\":[{\"subject\":\"Cognee\",\"predicate\":\"should_be\",\"object\":\"rebuildable projection\"},{\"subject\":\"Cognee\",\"predicate\":\"projects_from\",\"object\":\"Brain DB\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No existing entity IDs were provided; names are preserved as stated, with obvious OCR corrections applied cautiously.\"},\"conflict_classification\":\"none_detected\",\"answer\":\"Committed two architecture-principle memory cards with medium confidence due to OCR noise.\",\"citations\":[\"[OCR noisy] Brain DB remalns source of trvth.\",\"Cognee shou1d be rebuildable projection.\"],\"repair_options\":[\"Verify OCR text against the original PDF/source image.\",\"Confirm whether 'Cognee' is intended to be a rebuildable projection specifically of Brain DB.\"],\"receipt\":{\"success\":true,\"details\":[\"Extracted 'Brain DB remains the source of truth' from noisy OCR.\",\"Extracted 'Cognee should be a rebuildable projection' and inferred projection source as Brain DB from the preceding sentence.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

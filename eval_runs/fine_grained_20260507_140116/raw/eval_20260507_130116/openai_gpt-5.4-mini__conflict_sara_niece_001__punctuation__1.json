@@ -1,0 +1,91 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "No conflict detected. 'Sara is my niece' is compatible with 'Sara is Daniele's daughter and Nur's twin' if the speaker is a sibling of one of Sara's parents or otherwise an aunt/uncle. Preserve both as separate relations with the new one marked perspective-dependent and lower confidence.",
+    "citations": [
+      "Existing high-confidence memory: Sara is Daniele's daughter and Nur's twin",
+      "New: Sara is my niece"
+    ],
+    "conflict_classification": "compatible_contextual_relation",
+    "decision": "compatible_no_overwrite",
+    "entity_resolution": {
+      "action": "no_change",
+      "entity_id": null,
+      "reason": "The new statement is perspective-dependent and does not contradict the existing family relations; it may be compatible if the speaker is Sara's aunt/uncle."
+    },
+    "intent": "evaluate_conflict_between_existing_memory_and_new_statement",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "twin",
+            "type": "person"
+          }
+        ],
+        "kind": "relation",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "child_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "twin_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "relation",
+        "relationships": [
+          {
+            "object": "speaker",
+            "predicate": "niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Existing memory retained.",
+        "New statement added only as a contextual, perspective-dependent relation.",
+        "No supersession or deletion required."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Store 'Sara is my niece' as a speaker-relative relation with low confidence.",
+      "If later evidence identifies the speaker's family role, upgrade or resolve the niece relation.",
+      "Do not replace the existing parent/twin relation."
+    ]
+  },
+  "raw_text": "{\"intent\":\"evaluate_conflict_between_existing_memory_and_new_statement\",\"decision\":\"compatible_no_overwrite\",\"memory_cards\":[{\"kind\":\"relation\",\"statement\":\"Sara is Daniele's daughter and Nur's twin.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Daniele\",\"type\":\"person\",\"role\":\"parent\"},{\"name\":\"Nur\",\"type\":\"person\",\"role\":\"twin\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"child_of\",\"object\":\"Daniele\"},{\"subject\":\"Sara\",\"predicate\":\"twin_of\",\"object\":\"Nur\"}]},{\"kind\":\"relation\",\"statement\":\"Sara is my niece.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"niece_of\",\"object\":\"speaker\"}]}],\"entity_resolution\":{\"action\":\"no_change\",\"entity_id\":null,\"reason\":\"The new statement is perspective-dependent and does not contradict the existing family relations; it may be compatible if the speaker is Sara's aunt/uncle.\"},\"conflict_classification\":\"compatible_contextual_relation\",\"answer\":\"No conflict detected. 'Sara is my niece' is compatible with 'Sara is Daniele's daughter and Nur's twin' if the speaker is a sibling of one of Sara's parents or otherwise an aunt/uncle. Preserve both as separate relations with the new one marked perspective-dependent and lower confidence.\",\"citations\":[\"Existing high-confidence memory: Sara is Daniele's daughter and Nur's twin\",\"New: Sara is my niece\"],\"repair_options\":[\"Store 'Sara is my niece' as a speaker-relative relation with low confidence.\",\"If later evidence identifies the speaker's family role, upgrade or resolve the niece relation.\",\"Do not replace the existing parent/twin relation.\"],\"receipt\":{\"success\":true,\"details\":[\"Existing memory retained.\",\"New statement added only as a contextual, perspective-dependent relation.\",\"No supersession or deletion required.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

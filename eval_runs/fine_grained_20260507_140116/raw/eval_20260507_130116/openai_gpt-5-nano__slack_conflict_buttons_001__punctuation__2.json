@@ -1,0 +1,64 @@
+{
+  "error": null,
+  "fixture_id": "slack_conflict_buttons_001__punctuation",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Sam is now employed at Point72; previous association with Goldman is superseded.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "update",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": null,
+      "reason": "new information supersedes prior association"
+    },
+    "intent": "memory_update",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unknown",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer (former)",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "employer (current)",
+            "type": "organization"
+          }
+        ],
+        "kind": "memory",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "employment",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman Sachs",
+            "predicate": "former_employer",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman Sachs and joined Point72"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Updated memory to reflect current employer of Sam as Point72.",
+        "Removed active linkage to Goldman Sachs as Sam's current employer."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"memory_update\",\n  \"decision\": \"update\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"memory\",\n      \"statement\": \"Sam left Goldman Sachs and joined Point72\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"unknown\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"employer (former)\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer (current)\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"employment\",\n          \"object\": \"Point72\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"former_employer\",\n          \"object\": \"Goldman Sachs\"\n        }\n      ]\n    }\n    ],\n  \"entity_resolution\": {\n    \"action\": \"resolve\",\n    \"entity_id\": null,\n    \"reason\": \"new information supersedes prior association\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Sam is now employed at Point72; previous association with Goldman is superseded.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Updated memory to reflect current employer of Sam as Point72.\",\n      \"Removed active linkage to Goldman Sachs as Sam's current employer.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

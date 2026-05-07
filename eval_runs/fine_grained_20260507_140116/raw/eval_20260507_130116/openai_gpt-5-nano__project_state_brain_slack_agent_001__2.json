@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "project_state_brain_slack_agent_001",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Slack will be the primary ingestion interface for Brain memory; Telegram is acknowledged as a potential future addition.",
+    "citations": [],
+    "conflict_classification": "ambiguous_role_between_platforms",
+    "decision": "Slack should be the primary memory ingestion interface; Telegram integration deferred.",
+    "entity_resolution": {
+      "action": "provision_primary_ingestion_interface",
+      "entity_id": null,
+      "reason": "To lock in current architecture while preserving option for later Telegram integration."
+    },
+    "intent": "update_memory_ingestion_flow",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "ingestion_interface",
+            "type": "platform"
+          },
+          {
+            "name": "Telegram",
+            "role": "future_interface",
+            "type": "platform"
+          }
+        ],
+        "kind": "policy",
+        "relationships": [
+          {
+            "object": "memory_ingestion",
+            "predicate": "is_primary_for",
+            "subject": "Slack"
+          },
+          {
+            "object": "future_integration",
+            "predicate": "is_planned_for",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "Slack is designated as the primary guardrailed memory ingestion interface for Brain; Telegram integration may be introduced in a future phase."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ingestion interface set to Slack as primary.",
+        "Telegram marked as future integration."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Lock configuration to Slack as primary ingestion path with explicit guardrails.",
+      "Document phased plan for Telegram integration including data schema compatibility and access controls."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"update_memory_ingestion_flow\",\n  \"decision\": \"Slack should be the primary memory ingestion interface; Telegram integration deferred.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"policy\",\n      \"statement\": \"Slack is designated as the primary guardrailed memory ingestion interface for Brain; Telegram integration may be introduced in a future phase.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Slack\",\n          \"type\": \"platform\",\n          \"role\": \"ingestion_interface\"\n        },\n        {\n          \"name\": \"Telegram\",\n          \"type\": \"platform\",\n          \"role\": \"future_interface\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Slack\",\n          \"predicate\": \"is_primary_for\",\n          \"object\": \"memory_ingestion\"\n        },\n        {\n          \"subject\": \"Telegram\",\n          \"predicate\": \"is_planned_for\",\n          \"object\": \"future_integration\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"provision_primary_ingestion_interface\",\n    \"entity_id\": null,\n    \"reason\": \"To lock in current architecture while preserving option for later Telegram integration.\"\n  },\n  \"conflict_classification\": \"ambiguous_role_between_platforms\",\n  \"answer\": \"Slack will be the primary ingestion interface for Brain memory; Telegram is acknowledged as a potential future addition.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Lock configuration to Slack as primary ingestion path with explicit guardrails.\",\n    \"Document phased plan for Telegram integration including data schema compatibility and access controls.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Ingestion interface set to Slack as primary.\",\n      \"Telegram marked as future integration.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

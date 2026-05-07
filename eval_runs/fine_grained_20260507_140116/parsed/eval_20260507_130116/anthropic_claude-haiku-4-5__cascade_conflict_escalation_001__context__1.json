@@ -1,0 +1,74 @@
+{
+  "fixture_id": "cascade_conflict_escalation_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Conflict detected: existing memory states 'Sara is my daughter' but new input claims 'Sara is my niece'. These relationships are mutually exclusive. User clarification required.",
+    "citations": [
+      "Existing: Sara is my daughter",
+      "Input: Sara is my niece"
+    ],
+    "conflict_classification": "cascade_conflict_escalation",
+    "decision": "Preserve both claims as conflicting; escalate for user clarification",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": "Sara",
+      "reason": "Kinship relationship is logically contradictory; cannot be both daughter and niece simultaneously without additional context (e.g., adoption, remarriage, or data error)"
+    },
+    "intent": "Resolve conflicting kinship claims about Sara's relationship to the user",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "existing_fact",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "has_child",
+            "subject": "user"
+          }
+        ],
+        "statement": "Sara is my daughter"
+      },
+      {
+        "confidence": "unresolved",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "niece",
+            "type": "person"
+          }
+        ],
+        "kind": "conflicting_input",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "has_niece",
+            "subject": "user"
+          }
+        ],
+        "statement": "Sara is my niece"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict preserved without overwriting existing memory",
+        "Ambiguity maintained; no superseded facts presented as current",
+        "Escalation required for durable memory commitment"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Confirm Sara is your biological/legal daughter and discard niece claim",
+      "Confirm Sara is your niece and correct the daughter claim",
+      "Provide context: is Sara adopted, step-relation, or is there a family structure explanation?",
+      "Mark both claims as uncertain pending verification"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

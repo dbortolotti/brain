@@ -1,0 +1,68 @@
+{
+  "fixture_id": "preference_jazz_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Store the preference as a durable memory.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": null,
+      "reason": "Artists and preference context are clear and unambiguous."
+    },
+    "intent": "durability_filter",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sonny Rollins",
+            "role": "preferred_artist",
+            "type": "person"
+          },
+          {
+            "name": "John Coltrane",
+            "role": "less_preferred_artist",
+            "type": "person"
+          },
+          {
+            "name": "Sunday listening",
+            "role": "listening_context",
+            "type": "time_context"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Sonny Rollins",
+            "predicate": "prefers",
+            "subject": "User"
+          },
+          {
+            "object": "John Coltrane",
+            "predicate": "over",
+            "subject": "User"
+          },
+          {
+            "object": "relaxed listening",
+            "predicate": "applies_to_preference",
+            "subject": "Sunday listening"
+          }
+        ],
+        "statement": "User prefers Sonny Rollins over John Coltrane for relaxed Sunday listening."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No conflicts detected.",
+        "Preference contains explicit artist comparison and listening context."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If the user later clarifies the preference scope, update or narrow the stored context."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

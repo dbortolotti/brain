@@ -1,0 +1,139 @@
+{
+  "fixture_id": "conversation_transcript_sam_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam left Goldman Sachs last month to join Point72, continues listening to jazz (now favoring early Coltrane alongside Bill Evans), and requested an AI infrastructure article from Daniele for further discussion.",
+    "citations": [],
+    "conflict_classification": "none",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": null,
+      "reason": "No prior conflicting records for Sam's employment or jazz interests; new facts are unambiguous."
+    },
+    "intent": "update_occupational_and_interest_status",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "previous_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "occupational_change",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "left_employer",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined_employer",
+            "subject": "Sam"
+          },
+          {
+            "object": "current",
+            "predicate": "employment_status",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman Sachs last month and joined Point72 as an employee."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred_artist",
+            "type": "artist"
+          },
+          {
+            "name": "John Coltrane (early works)",
+            "role": "recently_discovered_artist",
+            "type": "artist"
+          }
+        ],
+        "kind": "interest_update",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "listens_to",
+            "subject": "Sam"
+          },
+          {
+            "object": "John Coltrane (early works)",
+            "predicate": "recently_discovered",
+            "subject": "Sam"
+          },
+          {
+            "object": "from_Bill_Evans_to_early_Coltrane",
+            "predicate": "preference_shift",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam continues to listen to jazz, with a recent shift toward early Coltrane, though still appreciates Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "requester",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "recipient",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "subject_matter",
+            "type": "topic"
+          }
+        ],
+        "kind": "action_request",
+        "relationships": [
+          {
+            "object": "article_on_AI_infrastructure",
+            "predicate": "requested",
+            "subject": "Sam"
+          },
+          {
+            "object": "sending_article",
+            "predicate": "responsible_for",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Sam requested Daniele to send an article related to AI infrastructure for further discussion."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory committed for Sam's occupational change (Goldman \u2192 Point72).",
+        "Interest update (jazz preferences) preserved with temporal context.",
+        "Action request logged without ambiguity."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

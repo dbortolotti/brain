@@ -1,0 +1,108 @@
+{
+  "fixture_id": "recall_profile_sam_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Sam is an individual associated with Goldman with a documented interest in AI infrastructure and a preference for Bill Evans. An open action item exists to send Sam an article about AI infrastructure.",
+    "citations": [
+      "Facts: Sam from Goldman likes Bill Evans",
+      "Facts: is associated with Goldman",
+      "Facts: is interested in AI infrastructure",
+      "Open loop: send Sam article about AI infra"
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "Synthesize available facts while preserving open loop status and maintaining confidence boundaries",
+    "entity_resolution": {
+      "action": "maintain_identity",
+      "entity_id": "sam_goldman_001",
+      "reason": "Sam from Goldman is a distinct individual with consistent organizational affiliation"
+    },
+    "intent": "Retrieve comprehensive information about Sam from Goldman",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "individual",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer_or_affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "entity_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is associated with Goldman"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "type": "person_or_entity"
+          }
+        ],
+        "kind": "preference_fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "type": "topic"
+          }
+        ],
+        "kind": "interest_fact",
+        "relationships": [
+          {
+            "object": "AI infrastructure",
+            "predicate": "interested_in",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is interested in AI infrastructure"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "3 memory cards committed",
+        "1 entity resolved",
+        "1 open loop identified and preserved",
+        "0 conflicts detected",
+        "4 repair options generated for ambiguity reduction"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify nature of Bill Evans interest (person, musician, historical figure, etc.)",
+      "Confirm Goldman affiliation details (division, tenure, role)",
+      "Specify AI infrastructure focus areas (ML ops, compute, networking, etc.)",
+      "Track completion status of article delivery action item"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

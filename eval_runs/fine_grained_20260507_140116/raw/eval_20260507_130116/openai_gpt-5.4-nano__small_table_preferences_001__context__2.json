@@ -1,0 +1,96 @@
+{
+  "error": null,
+  "fixture_id": "small_table_preferences_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Extracted two preference statements: Sam likes Bill Evans; Anna likes Barolo.",
+    "citations": [
+      "Fixture small_table_preferences_001__context"
+    ],
+    "conflict_classification": "no_conflict_detected",
+    "decision": "store_in_memory",
+    "entity_resolution": {
+      "action": "link_or_create",
+      "entity_id": null,
+      "reason": "Input provides names/roles without existing IDs; create new entity records as needed."
+    },
+    "intent": "extract_atomic_memory_cards",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "type": "firm"
+          },
+          {
+            "name": "Bill Evans",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (Goldman) likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Anna",
+            "type": "person"
+          },
+          {
+            "name": "JPM",
+            "type": "firm"
+          },
+          {
+            "name": "Barolo",
+            "type": "wine"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Barolo",
+            "predicate": "likes",
+            "subject": "Anna"
+          },
+          {
+            "object": "JPM",
+            "predicate": "works_at",
+            "subject": "Anna"
+          }
+        ],
+        "statement": "Anna (JPM) likes Barolo."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created 2 preference memory cards from the provided context table."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If 'Goldman' refers to a person rather than a firm, clarify the firm/entity type.",
+      "If multiple people named Sam/Anna exist, disambiguate using additional context."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"extract_atomic_memory_cards\",\n  \"decision\": \"store_in_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam (Goldman) likes Bill Evans.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"firm\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Anna (JPM) likes Barolo.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Anna\",\n          \"type\": \"person\"\n        },\n        {\n          \"name\": \"JPM\",\n          \"type\": \"firm\"\n        },\n        {\n          \"name\": \"Barolo\",\n          \"type\": \"wine\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Anna\",\n          \"predicate\": \"likes\",\n          \"object\": \"Barolo\"\n        },\n        {\n          \"subject\": \"Anna\",\n          \"predicate\": \"works_at\",\n          \"object\": \"JPM\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"link_or_create\",\n    \"entity_id\": null,\n    \"reason\": \"Input provides names/roles without existing IDs; create new entity records as needed.\"\n  },\n  \"conflict_classification\": \"no_conflict_detected\",\n  \"answer\": \"Extracted two preference statements: Sam likes Bill Evans; Anna likes Barolo.\",\n  \"citations\": [\n    \"Fixture small_table_preferences_001__context\"\n  ],\n  \"repair_options\": [\n    \"If 'Goldman' refers to a person rather than a firm, clarify the firm/entity type.\",\n    \"If multiple people named Sam/Anna exist, disambiguate using additional context.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Created 2 preference memory cards from the provided context table.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

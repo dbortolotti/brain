@@ -1,0 +1,33 @@
+{
+  "error": null,
+  "fixture_id": "slack_ambiguous_entity_buttons_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Cannot commit memory due to unresolved entity ambiguity. Please specify which 'Sam' (Goldman Sachs or Point72) likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "entity_ambiguity",
+    "decision": "defer_due_to_ambiguity",
+    "entity_resolution": {
+      "action": "flag_for_resolution",
+      "entity_id": null,
+      "reason": "Ambiguous reference to 'Sam' (Goldman Sachs vs. Point72) without disambiguation. Cannot commit memory without risk of incorrect association."
+    },
+    "intent": "memory_creation_with_ambiguity",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Memory creation deferred due to entity ambiguity.",
+        "No memory cards created to avoid incorrect associations."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Explicitly state: 'Sam from Goldman Sachs likes Bill Evans.'",
+      "Explicitly state: 'Sam from Point72 likes Bill Evans.'",
+      "Provide additional context to disambiguate (e.g., 'Sam in the trading team...')."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_creation_with_ambiguity\",\n  \"decision\": \"defer_due_to_ambiguity\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"flag_for_resolution\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguous reference to 'Sam' (Goldman Sachs vs. Point72) without disambiguation. Cannot commit memory without risk of incorrect association.\"\n  },\n  \"conflict_classification\": \"entity_ambiguity\",\n  \"answer\": \"Cannot commit memory due to unresolved entity ambiguity. Please specify which 'Sam' (Goldman Sachs or Point72) likes Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Explicitly state: 'Sam from Goldman Sachs likes Bill Evans.'\",\n    \"Explicitly state: 'Sam from Point72 likes Bill Evans.'\",\n    \"Provide additional context to disambiguate (e.g., 'Sam in the trading team...').\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Memory creation deferred due to entity ambiguity.\",\n      \"No memory cards created to avoid incorrect associations.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

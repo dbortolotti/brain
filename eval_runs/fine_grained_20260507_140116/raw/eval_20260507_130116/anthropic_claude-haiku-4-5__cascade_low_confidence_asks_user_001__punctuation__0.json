@@ -1,0 +1,52 @@
+{
+  "error": null,
+  "fixture_id": "cascade_low_confidence_asks_user_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Cannot commit memory. The note about Sam contains ambiguous punctuation that creates multiple valid interpretations. With cloud escalation disabled and model confidence low, user clarification is required before durable memory commitment.",
+    "citations": [
+      "cascade_low_confidence_asks_user_001__punctuation"
+    ],
+    "conflict_classification": "ambiguity_unresolvable_without_user_input",
+    "decision": "defer_to_user",
+    "entity_resolution": {
+      "action": "hold_pending_clarification",
+      "entity_id": null,
+      "reason": "Ambiguous punctuation prevents confident entity linking; cloud escalation disabled; user input required to resolve"
+    },
+    "intent": "Evaluate low-confidence memory candidate for 'Sam' with ambiguous punctuation and escalation disabled",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject_of_note",
+            "type": "person"
+          }
+        ],
+        "kind": "uncertain_fact",
+        "relationships": [],
+        "statement": "Sam note contains ambiguous punctuation requiring clarification"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Low confidence candidate identified",
+        "Ambiguity preserved without false commitment",
+        "Escalation unavailable; user decision required",
+        "Memory card staged but not committed"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "User clarifies intended punctuation and meaning",
+      "User confirms which interpretation is correct",
+      "User provides additional context to disambiguate",
+      "User rejects the candidate entirely"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Evaluate low-confidence memory candidate for 'Sam' with ambiguous punctuation and escalation disabled\",\n  \"decision\": \"defer_to_user\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"uncertain_fact\",\n      \"statement\": \"Sam note contains ambiguous punctuation requiring clarification\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject_of_note\"\n        }\n      ],\n      \"relationships\": []\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"hold_pending_clarification\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguous punctuation prevents confident entity linking; cloud escalation disabled; user input required to resolve\"\n  },\n  \"conflict_classification\": \"ambiguity_unresolvable_without_user_input\",\n  \"answer\": \"Cannot commit memory. The note about Sam contains ambiguous punctuation that creates multiple valid interpretations. With cloud escalation disabled and model confidence low, user clarification is required before durable memory commitment.\",\n  \"citations\": [\n    \"cascade_low_confidence_asks_user_001__punctuation\"\n  ],\n  \"repair_options\": [\n    \"User clarifies intended punctuation and meaning\",\n    \"User confirms which interpretation is correct\",\n    \"User provides additional context to disambiguate\",\n    \"User rejects the candidate entirely\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Low confidence candidate identified\",\n      \"Ambiguity preserved without false commitment\",\n      \"Escalation unavailable; user decision required\",\n      \"Memory card staged but not committed\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

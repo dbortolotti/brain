@@ -1,0 +1,69 @@
+{
+  "fixture_id": "slack_conflict_buttons_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam's employment status is now recorded as having left Goldman Sachs and joined Point72. The prior memory ('Sam works at Goldman') is superseded, but the exact departure date from Goldman Sachs is not specified.",
+    "citations": [
+      "User input: 'Sam left Goldman and joined Point72'",
+      "Prior memory: 'Sam works at Goldman'"
+    ],
+    "conflict_classification": "temporal_supersession_with_ambiguity",
+    "decision": "supersede_existing_with_qualified_ambiguity",
+    "entity_resolution": {
+      "action": "merge_with_qualifier",
+      "entity_id": "Sam",
+      "reason": "Ambiguity preserved: explicit supersession of prior employment fact with timestamped update, but no explicit end date recorded for Goldman Sachs."
+    },
+    "intent": "memory_update_conflict_resolution",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "left_employment_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined_employment_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam's employment status is ambiguous as of [timestamp]. The most recent explicit update indicates Sam left Goldman Sachs and joined Point72, but no explicit end date for Goldman Sachs is recorded. Prior memory ('Sam works at Goldman') is superseded by this update."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded memory: 'Sam works at Goldman' \u2192 Archived with timestamp.",
+        "New durable memory created with qualified ambiguity.",
+        "Entity resolution applied: Sam \u2192 merged with employment transition qualifiers."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add explicit end date for Goldman Sachs employment (e.g., 'Sam left Goldman Sachs in [YYYY-MM-DD]')",
+      "Flag ambiguity for user clarification: 'Is there a known end date for Sam's employment at Goldman Sachs?'",
+      "No action: Preserve ambiguity as-is with superseded prior memory"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

@@ -1,0 +1,65 @@
+{
+  "fixture_id": "cascade_low_confidence_asks_user_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "User intervention required to resolve ambiguity in the 'Sam note'. Cloud escalation is disabled due to low confidence. Proceeding with memory commit is unsafe without clarification.",
+    "citations": [],
+    "conflict_classification": "ambiguity_conflict",
+    "decision": "escalate_to_user",
+    "entity_resolution": {
+      "action": "user_intervention_required",
+      "entity_id": null,
+      "reason": "Ambiguity in 'Sam note' cannot be resolved programmatically without risk of misinterpretation. User clarification needed to commit durable memory."
+    },
+    "intent": "resolve_ambiguity",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Cloud escalation",
+            "role": "disabled",
+            "type": "system_action"
+          },
+          {
+            "name": "Sam note",
+            "role": "ambiguous",
+            "type": "memory_entry"
+          },
+          {
+            "name": "model confidence",
+            "role": "low",
+            "type": "metric"
+          }
+        ],
+        "kind": "note",
+        "relationships": [
+          {
+            "object": "low model confidence",
+            "predicate": "disabled_by",
+            "subject": "Cloud escalation"
+          },
+          {
+            "object": "ambiguity",
+            "predicate": "caused",
+            "subject": "Sam note"
+          }
+        ],
+        "statement": "Cloud escalation disabled due to low model confidence in ambiguous Sam note."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguity in 'Sam note' detected. Memory commit aborted to preserve integrity.",
+        "Escalation to user for resolution initiated."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Prompt user: 'Clarify the ambiguous 'Sam note' (e.g., context, intent, or resolution).'",
+      "Temporarily suppress 'Sam note' from memory until resolved.",
+      "Log ambiguity for review in a 'pending_resolution' queue."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

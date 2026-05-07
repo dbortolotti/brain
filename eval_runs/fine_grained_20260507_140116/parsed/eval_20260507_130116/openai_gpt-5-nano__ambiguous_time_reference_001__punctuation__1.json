@@ -1,0 +1,96 @@
+{
+  "fixture_id": "ambiguous_time_reference_001__punctuation",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Ambiguity: Without a reference date, 'last Friday' and 'next month' cannot be resolved to exact dates. If you provide the current date, I can resolve them and update the memory.",
+    "citations": [],
+    "conflict_classification": "temporal_ambiguity",
+    "decision": "ambiguous_time_reference",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Temporal reference 'last Friday' lacks a concrete date; 'next month' depends on current date to resolve definitively."
+    },
+    "intent": "classify_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "statement",
+        "relationships": [
+          {
+            "object": "last Friday that he is leaving Goldman next month",
+            "predicate": "said",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said last Friday that he is leaving Goldman next month"
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Friday",
+            "role": "reference_point",
+            "type": "time_unit"
+          }
+        ],
+        "kind": "temporal_reference",
+        "relationships": [],
+        "statement": "last Friday"
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "he",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          },
+          {
+            "name": "next month",
+            "role": "timeline",
+            "type": "time"
+          }
+        ],
+        "kind": "intent",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "intends_to_leave",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "he is leaving Goldman next month"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored multiple facets of the sentence with explicit ambiguity preserved.",
+        "No facts marked as current without resolution."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide current date to resolve 'last Friday' and 'next month'.",
+      "Record both interpretations with possible dates based on different assumed current dates."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

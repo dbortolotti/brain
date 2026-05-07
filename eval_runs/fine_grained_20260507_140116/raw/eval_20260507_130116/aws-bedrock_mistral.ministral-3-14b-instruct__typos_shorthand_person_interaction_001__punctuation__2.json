@@ -1,0 +1,83 @@
+{
+  "error": null,
+  "fixture_id": "typos_shorthand_person_interaction_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Input contains unresolved shorthand ('sam frm goldmn' \u2192 likely 'Sam from Goldman Sachs' or similar) and ambiguous entity ('bill evns' \u2192 likely 'Bill Evans'). Relationship: Sam (from Goldman) likes Bill Evans, with 'apparently' suggesting uncertainty.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "proceed_with_ambiguous_resolution",
+    "entity_resolution": {
+      "action": "flag_for_review",
+      "entity_id": null,
+      "reason": "Ambiguous shorthand ('frm goldmn'/'bill evns') and lack of context prevent resolution. Potential interpretations: 'Sam from Goldman' (affiliation) and 'Bill Evans' (person)."
+    },
+    "intent": "entity_mention_extraction",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "frm goldmn",
+            "role": "potential_affiliation",
+            "type": "unresolved_abbreviation"
+          },
+          {
+            "name": "bill evns",
+            "role": "potential_person",
+            "type": "unresolved_abbreviation"
+          }
+        ],
+        "kind": "entity_mention",
+        "relationships": [
+          {
+            "object": "bill evns",
+            "predicate": "likes",
+            "subject": "sam"
+          },
+          {
+            "object": "frm goldmn",
+            "predicate": "has_ambiguous_affiliation_with",
+            "subject": "sam"
+          }
+        ],
+        "statement": "Unresolved shorthand/typos in input: 'sam frm goldmn' and 'bill evns'"
+      },
+      {
+        "confidence": "medium",
+        "entities": [],
+        "kind": "punctuation_interpretation",
+        "relationships": [
+          {
+            "object": "bill evns",
+            "predicate": "likes",
+            "qualifier": "apparently",
+            "subject": "sam"
+          }
+        ],
+        "statement": "Input lacks punctuation; 'apparently' may indicate uncertainty or hearsay"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguous shorthand detected ('frm goldmn', 'bill evns')",
+        "No durable memory committed due to unresolved entities",
+        "Suggested repair options provided for user confirmation"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Request clarification: 'Do you mean Sam from Goldman Sachs and Bill Evans?'",
+      "Propose disambiguation: 'Sam (Goldman Sachs) \u2192 Bill Evans (jazz pianist)?'",
+      "Log as-is with flags: 'Unresolved shorthand: [sam frm goldmn] \u2192 [bill evns]'"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"entity_mention_extraction\",\n  \"decision\": \"proceed_with_ambiguous_resolution\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"entity_mention\",\n      \"statement\": \"Unresolved shorthand/typos in input: 'sam frm goldmn' and 'bill evns'\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"frm goldmn\",\n          \"type\": \"unresolved_abbreviation\",\n          \"role\": \"potential_affiliation\"\n        },\n        {\n          \"name\": \"bill evns\",\n          \"type\": \"unresolved_abbreviation\",\n          \"role\": \"potential_person\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"bill evns\"\n        },\n        {\n          \"subject\": \"sam\",\n          \"predicate\": \"has_ambiguous_affiliation_with\",\n          \"object\": \"frm goldmn\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"punctuation_interpretation\",\n      \"statement\": \"Input lacks punctuation; 'apparently' may indicate uncertainty or hearsay\",\n      \"confidence\": \"medium\",\n      \"entities\": [],\n      \"relationships\": [\n        {\n          \"subject\": \"sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"bill evns\",\n          \"qualifier\": \"apparently\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"flag_for_review\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguous shorthand ('frm goldmn'/'bill evns') and lack of context prevent resolution. Potential interpretations: 'Sam from Goldman' (affiliation) and 'Bill Evans' (person).\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Input contains unresolved shorthand ('sam frm goldmn' \u2192 likely 'Sam from Goldman Sachs' or similar) and ambiguous entity ('bill evns' \u2192 likely 'Bill Evans'). Relationship: Sam (from Goldman) likes Bill Evans, with 'apparently' suggesting uncertainty.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Request clarification: 'Do you mean Sam from Goldman Sachs and Bill Evans?'\",\n    \"Propose disambiguation: 'Sam (Goldman Sachs) \u2192 Bill Evans (jazz pianist)?'\",\n    \"Log as-is with flags: 'Unresolved shorthand: [sam frm goldmn] \u2192 [bill evns]'\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Ambiguous shorthand detected ('frm goldmn', 'bill evns')\",\n      \"No durable memory committed due to unresolved entities\",\n      \"Suggested repair options provided for user confirmation\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

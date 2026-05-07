@@ -1,0 +1,85 @@
+{
+  "error": null,
+  "fixture_id": "concurrent_conflict_writes_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam currently works at Point72 (joined Goldman Sachs previously).",
+    "citations": [
+      "Concurrent writes: 'Sam works at Goldman Sam joined Point72'",
+      "Temporal inference: 'joined' implies a transition from prior employment."
+    ],
+    "conflict_classification": "temporal_supersession",
+    "decision": "resolve_ambiguity",
+    "entity_resolution": {
+      "action": "merge_entities",
+      "entity_id": "Sam",
+      "reason": "Concurrent writes imply temporal distinction: 'works at' (Goldman Sachs) is superseded by 'joined' (Point72). Preserve only the most recent fact."
+    },
+    "intent": "detect_concurrent_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman Sachs"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory updated: 'Sam works at Point72' (confidence: high).",
+        "Superseded fact 'Sam works at Goldman Sachs' archived (not presented as current).",
+        "Ambiguity preserved: No forced resolution without temporal context."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retain only 'Sam joined Point72' (current fact) and discard 'works at Goldman Sachs' as superseded.",
+      "Flag as ambiguous: 'Sam works at Goldman Sachs and Point72' (if concurrent employment is plausible)."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"detect_concurrent_conflict\",\n  \"decision\": \"resolve_ambiguity\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam works at Goldman Sachs\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Goldman Sachs\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam joined Point72\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge_entities\",\n    \"entity_id\": \"Sam\",\n    \"reason\": \"Concurrent writes imply temporal distinction: 'works at' (Goldman Sachs) is superseded by 'joined' (Point72). Preserve only the most recent fact.\"\n  },\n  \"conflict_classification\": \"temporal_supersession\",\n  \"answer\": \"Sam currently works at Point72 (joined Goldman Sachs previously).\",\n  \"citations\": [\n    \"Concurrent writes: 'Sam works at Goldman Sam joined Point72'\",\n    \"Temporal inference: 'joined' implies a transition from prior employment.\"\n  ],\n  \"repair_options\": [\n    \"Retain only 'Sam joined Point72' (current fact) and discard 'works at Goldman Sachs' as superseded.\",\n    \"Flag as ambiguous: 'Sam works at Goldman Sachs and Point72' (if concurrent employment is plausible).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Durable memory updated: 'Sam works at Point72' (confidence: high).\",\n      \"Superseded fact 'Sam works at Goldman Sachs' archived (not presented as current).\",\n      \"Ambiguity preserved: No forced resolution without temporal context.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

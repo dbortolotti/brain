@@ -1,0 +1,79 @@
+{
+  "error": null,
+  "fixture_id": "typos_shorthand_person_interaction_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Input contains ambiguous entity mentions ('sam frm goldmn', 'bill evns') due to likely typos/shorthand. Resolution requires disambiguation (e.g., 'Goldman Sachs' vs. surname, 'Bill Evans' vs. generic 'Bill'). No durable memory committed.",
+    "conflict_classification": "none",
+    "decision": "ambiguous_interpretation_required",
+    "entity_resolution": {
+      "action": "defer_resolution",
+      "reason": "Input contains multiple plausible interpretations due to typos/shorthand. Requires clarification or context to commit to durable memory."
+    },
+    "intent": "entity_mention_extraction",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "goldmn",
+            "reason": "likely typo for 'Goldman' (e.g., Goldman Sachs) or 'Goldman' as a surname",
+            "role": "potential_affiliation",
+            "type": "organization_or_person"
+          },
+          {
+            "name": "bill",
+            "reason": "could refer to 'Bill Evans' (jazz musician), 'Bill' as a first name, or 'Bill' as shorthand for an event",
+            "role": "object_of_preference",
+            "type": "person_or_event"
+          },
+          {
+            "name": "evns",
+            "reason": "likely typo for 'events' or 'Bill Evans' (if 'bill evns' is intended as a single entity)",
+            "role": "potential_object",
+            "type": "event_or_abbreviation"
+          }
+        ],
+        "kind": "entity_mention",
+        "relationships": [
+          {
+            "object": "goldmn (potential Goldman Sachs or surname)",
+            "predicate": "has_affiliation_or_preference_for",
+            "subject": "sam"
+          },
+          {
+            "object": "bill (potential person/event)",
+            "predicate": "likes",
+            "subject": "sam"
+          },
+          {
+            "object": "evns (potential events or Bill Evans)",
+            "predicate": "interacts_with",
+            "subject": "sam"
+          }
+        ],
+        "statement": "Unresolved shorthand/typos in input: 'sam frm goldmn likes bill evns apparently'"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguity detected in entity mentions due to typos/shorthand.",
+        "No memory committed; requires user resolution."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Clarify 'goldmn' as Goldman Sachs/affiliation or surname.",
+      "Disambiguate 'bill evns' as 'Bill Evans' (jazz musician) or separate entities ('Bill' + 'events').",
+      "Request full names/terms for unambiguous extraction."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"entity_mention_extraction\",\n  \"decision\": \"ambiguous_interpretation_required\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"entity_mention\",\n      \"statement\": \"Unresolved shorthand/typos in input: 'sam frm goldmn likes bill evns apparently'\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"goldmn\",\n          \"type\": \"organization_or_person\",\n          \"role\": \"potential_affiliation\",\n          \"reason\": \"likely typo for 'Goldman' (e.g., Goldman Sachs) or 'Goldman' as a surname\"\n        },\n        {\n          \"name\": \"bill\",\n          \"type\": \"person_or_event\",\n          \"role\": \"object_of_preference\",\n          \"reason\": \"could refer to 'Bill Evans' (jazz musician), 'Bill' as a first name, or 'Bill' as shorthand for an event\"\n        },\n        {\n          \"name\": \"evns\",\n          \"type\": \"event_or_abbreviation\",\n          \"role\": \"potential_object\",\n          \"reason\": \"likely typo for 'events' or 'Bill Evans' (if 'bill evns' is intended as a single entity)\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"sam\",\n          \"predicate\": \"has_affiliation_or_preference_for\",\n          \"object\": \"goldmn (potential Goldman Sachs or surname)\"\n        },\n        {\n          \"subject\": \"sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"bill (potential person/event)\"\n        },\n        {\n          \"subject\": \"sam\",\n          \"predicate\": \"interacts_with\",\n          \"object\": \"evns (potential events or Bill Evans)\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer_resolution\",\n    \"reason\": \"Input contains multiple plausible interpretations due to typos/shorthand. Requires clarification or context to commit to durable memory.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Input contains ambiguous entity mentions ('sam frm goldmn', 'bill evns') due to likely typos/shorthand. Resolution requires disambiguation (e.g., 'Goldman Sachs' vs. surname, 'Bill Evans' vs. generic 'Bill'). No durable memory committed.\",\n  \"repair_options\": [\n    \"Clarify 'goldmn' as Goldman Sachs/affiliation or surname.\",\n    \"Disambiguate 'bill evns' as 'Bill Evans' (jazz musician) or separate entities ('Bill' + 'events').\",\n    \"Request full names/terms for unambiguous extraction.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Ambiguity detected in entity mentions due to typos/shorthand.\",\n      \"No memory committed; requires user resolution.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

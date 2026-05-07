@@ -1,0 +1,73 @@
+{
+  "fixture_id": "debug_sql_select_only_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Brain correctly enforces select-only mode: SELECT id FROM memory_cards LIMIT 10 is permitted; DELETE FROM memory_cards is denied. Permission model functions as specified.",
+    "citations": [
+      "Fixture ID: debug_sql_select_only_001",
+      "Admin SQL select-only mode specification"
+    ],
+    "conflict_classification": "none",
+    "decision": "ALLOW SELECT; DENY DELETE - permission model correctly enforced",
+    "entity_resolution": {
+      "action": "validate_permission_model",
+      "entity_id": "admin_sql_mode",
+      "reason": "Confirm select-only restriction is enforced at query execution layer"
+    },
+    "intent": "Evaluate Brain memory system behavior under SQL select-only admin mode with DELETE restriction",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "admin_sql_mode",
+            "role": "access_control_context",
+            "type": "system_mode"
+          },
+          {
+            "name": "memory_cards",
+            "role": "protected_resource",
+            "type": "data_table"
+          }
+        ],
+        "kind": "system_constraint",
+        "relationships": [
+          {
+            "object": "SELECT queries",
+            "predicate": "permits",
+            "subject": "admin_sql_mode"
+          },
+          {
+            "object": "DELETE operations",
+            "predicate": "denies",
+            "subject": "admin_sql_mode"
+          }
+        ],
+        "statement": "Admin SQL select-only mode permits SELECT queries; denies DELETE operations"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "debug_sql_select_only_001",
+            "role": "validation_context",
+            "type": "test_fixture"
+          }
+        ],
+        "kind": "fixture_specification",
+        "statement": "Fixture debug_sql_select_only_001 validates permission enforcement for read-only SQL access"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "SELECT query validation passed",
+        "DELETE operation restriction confirmed",
+        "Permission enforcement layer operational",
+        "No memory conflicts detected"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

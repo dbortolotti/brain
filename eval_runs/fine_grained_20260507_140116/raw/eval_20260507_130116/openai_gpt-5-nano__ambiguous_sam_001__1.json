@@ -1,0 +1,54 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_sam_001",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "The message introduces Sam and Bill Evans but does not disambiguate which Sam (Goldman or Point72) is referenced.",
+    "citations": [],
+    "conflict_classification": "ambiguous_source_identity",
+    "decision": "ambiguous_entity_resolution",
+    "entity_resolution": {
+      "action": "defer_specific_sam_identity",
+      "entity_id": null,
+      "reason": "Existing entities include two Sam individuals (Goldman and Point72). The message does not disambiguate which Sam is being referred to, and there is no direct link to either existing Sam entity beyond the name mentioned in the statement."
+    },
+    "intent": "classify_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unknown",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "musician",
+            "type": "person"
+          }
+        ],
+        "kind": "ambiguous_entity",
+        "relationships": [],
+        "statement": "Sam mentioned that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed statement",
+        "Identified potential entities",
+        "Marked ambiguity regarding Sam identity"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request clarification of which Sam is speaking.",
+      "Associate the statement with both Sam entities and tag as potential references.",
+      "Add follow-up to capture additional context (e.g., organization, project) to resolve identity.",
+      "If Bill Evans is known in context as a musician, infer potential relationship but keep identity ambiguous."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"classify_memory\",\n  \"decision\": \"ambiguous_entity_resolution\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"ambiguous_entity\",\n      \"statement\": \"Sam mentioned that he likes Bill Evans.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"unknown\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"musician\"\n        }\n      ],\n      \"relationships\": []\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer_specific_sam_identity\",\n    \"entity_id\": null,\n    \"reason\": \"Existing entities include two Sam individuals (Goldman and Point72). The message does not disambiguate which Sam is being referred to, and there is no direct link to either existing Sam entity beyond the name mentioned in the statement.\"\n  },\n  \"conflict_classification\": \"ambiguous_source_identity\",\n  \"answer\": \"The message introduces Sam and Bill Evans but does not disambiguate which Sam (Goldman or Point72) is referenced.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Request clarification of which Sam is speaking.\",\n    \"Associate the statement with both Sam entities and tag as potential references.\",\n    \"Add follow-up to capture additional context (e.g., organization, project) to resolve identity.\",\n    \"If Bill Evans is known in context as a musician, infer potential relationship but keep identity ambiguous.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Parsed statement\",\n      \"Identified potential entities\",\n      \"Marked ambiguity regarding Sam identity\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

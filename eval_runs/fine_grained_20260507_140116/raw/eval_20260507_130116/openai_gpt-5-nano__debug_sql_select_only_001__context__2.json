@@ -1,0 +1,84 @@
+{
+  "error": null,
+  "fixture_id": "debug_sql_select_only_001__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "In Admin SQL select-only mode, reads from memory_cards are permitted (e.g., SELECT id FROM memory_cards LIMIT 10). Deletions are denied. No memory_delete operations are allowed under current policy.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "deny_delete_disallowed",
+    "entity_resolution": {
+      "action": "preserve_current_rules",
+      "entity_id": null,
+      "reason": "system mode explicitly forbids deletions; selects allowed"
+    },
+    "intent": "evaluate_memory_system",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Admin",
+            "role": "subject",
+            "type": "role"
+          },
+          {
+            "name": "SQL",
+            "role": "modifier",
+            "type": "system"
+          },
+          {
+            "name": "memory_cards",
+            "role": "target",
+            "type": "resource"
+          },
+          {
+            "name": "SELECT id",
+            "role": "operation",
+            "type": "query"
+          },
+          {
+            "name": "LIMIT 10",
+            "role": "limit",
+            "type": "constraint"
+          },
+          {
+            "name": "DELETE FROM memory_cards",
+            "role": "forbidden",
+            "type": "operation"
+          }
+        ],
+        "kind": "statement",
+        "relationships": [
+          {
+            "object": "memory_cards",
+            "predicate": "operates_on",
+            "subject": "SELECT id"
+          },
+          {
+            "object": "result_count",
+            "predicate": "restricts",
+            "subject": "LIMIT 10"
+          },
+          {
+            "object": "Admin_SQL_mode",
+            "predicate": "is_denied_by",
+            "subject": "DELETE FROM memory_cards"
+          }
+        ],
+        "statement": "Admin SQL select-only mode: SELECT id FROM memory_cards LIMIT 10 allowed; DELETE FROM memory_cards denied."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Enforced read-only access for memory_cards.",
+        "DELETE statements are blocked by policy."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"evaluate_memory_system\",\n  \"decision\": \"deny_delete_disallowed\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"statement\",\n      \"statement\": \"Admin SQL select-only mode: SELECT id FROM memory_cards LIMIT 10 allowed; DELETE FROM memory_cards denied.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Admin\", \"type\": \"role\", \"role\": \"subject\"},\n        {\"name\": \"SQL\", \"type\": \"system\", \"role\": \"modifier\"},\n        {\"name\": \"memory_cards\", \"type\": \"resource\", \"role\": \"target\"},\n        {\"name\": \"SELECT id\", \"type\": \"query\", \"role\": \"operation\"},\n        {\"name\": \"LIMIT 10\", \"type\": \"constraint\", \"role\": \"limit\"},\n        {\"name\": \"DELETE FROM memory_cards\", \"type\": \"operation\", \"role\": \"forbidden\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"SELECT id\", \"predicate\": \"operates_on\", \"object\": \"memory_cards\"},\n        {\"subject\": \"LIMIT 10\", \"predicate\": \"restricts\", \"object\": \"result_count\"},\n        {\"subject\": \"DELETE FROM memory_cards\", \"predicate\": \"is_denied_by\", \"object\": \"Admin_SQL_mode\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"preserve_current_rules\",\n    \"entity_id\": null,\n    \"reason\": \"system mode explicitly forbids deletions; selects allowed\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"In Admin SQL select-only mode, reads from memory_cards are permitted (e.g., SELECT id FROM memory_cards LIMIT 10). Deletions are denied. No memory_delete operations are allowed under current policy.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Enforced read-only access for memory_cards.\",\n      \"DELETE statements are blocked by policy.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

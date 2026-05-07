@@ -1,0 +1,109 @@
+{
+  "fixture_id": "recall_brain_cognee_conclusions_relevance_001__punctuation",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "The current durable conclusions live in Brain DB as the source-of-truth. Cognee provides rebuildable projections that may indicate future states but are not presented as current durable conclusions unless Brain DB corroborates them. Slack intake, family facts, and Sam preferences are contextual data that should not override or delete the established Brain conclusions. If you want a specific conclusion about Brain and Cognee, please indicate whether you want the durable Brain DB fact or the speculative Cognee projection.",
+    "citations": [
+      "Brain DB: source-of-truth conclusions",
+      "Cognee: rebuildable projection",
+      "Slack intake: contextual data",
+      "family facts: contextual data",
+      "Sam preferences: influencing interpretation"
+    ],
+    "conflict_classification": "ambiguous_between_source_of_truth and projection",
+    "decision": "provide a concise answer about Brain and Cognee conclusions without introducing superseded or deleted facts",
+    "entity_resolution": {
+      "action": "derive_current_understanding_from_distinct_sources",
+      "entity_id": null,
+      "reason": "To avoid conflating transient projections with durable Brain DB conclusions; preserve ambiguity between rebuilt projections and source-of-truth conclusions"
+    },
+    "intent": "recall",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "system",
+            "type": "entity"
+          },
+          {
+            "name": "Cognee",
+            "role": "projection",
+            "type": "entity"
+          }
+        ],
+        "kind": "memory_conclusion",
+        "relationships": [
+          {
+            "object": "source-of-truth conclusions",
+            "predicate": "owns",
+            "subject": "Brain"
+          },
+          {
+            "object": "rebuildable projection",
+            "predicate": "provides",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain: Source-of-truth conclusions exist in Brain DB; Cognee rebuildable projection reflects potential future state but is not treated as final fact unless corroborated by Brain DB"
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "data_source",
+            "type": "entity"
+          },
+          {
+            "name": "family facts",
+            "role": "data_context",
+            "type": "concept"
+          }
+        ],
+        "kind": "memory_conclusion",
+        "relationships": [
+          {
+            "object": "intake data",
+            "predicate": "provides",
+            "subject": "Slack"
+          }
+        ],
+        "statement": "Slack strict intake and family facts are part of the data context but do not override Brain DB conclusions"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "user",
+            "type": "person"
+          }
+        ],
+        "kind": "memory_conclusion",
+        "relationships": [
+          {
+            "object": "interpretation",
+            "predicate": "influences",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam preferences may influence interpretation but do not modify stored conclusions unless explicitly updated in Brain DB"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Answer produced with preserved ambiguity between durable and projected conclusions",
+        "No superseded facts presented as current"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Explicitly tag Cognee projections as speculative in any summary",
+      "Annotate any conclusion with its source and timestamp",
+      "Archive superseded conclusions and surface only current Brain DB facts"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

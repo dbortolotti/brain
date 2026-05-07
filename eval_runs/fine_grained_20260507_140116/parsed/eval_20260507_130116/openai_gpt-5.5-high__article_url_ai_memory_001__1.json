@@ -1,0 +1,132 @@
+{
+  "fixture_id": "article_url_ai_memory_001",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "Remembered the article and its stated relevance to knowledge graph memory design.",
+    "citations": [
+      "https://example.com/ai-memory"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "No existing article entity was provided; create a new memory entry keyed by the supplied URL."
+    },
+    "intent": "remember_article",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/ai-memory",
+            "role": "source",
+            "type": "article_url"
+          },
+          {
+            "name": "User",
+            "role": "requester",
+            "type": "person"
+          },
+          {
+            "name": "knowledge graph memory design",
+            "role": "use_case",
+            "type": "topic"
+          }
+        ],
+        "kind": "source_reference",
+        "relationships": [
+          {
+            "object": "https://example.com/ai-memory",
+            "predicate": "asked_to_remember",
+            "subject": "User"
+          },
+          {
+            "object": "knowledge graph memory design",
+            "predicate": "is_useful_for",
+            "subject": "https://example.com/ai-memory"
+          }
+        ],
+        "statement": "The user asked to remember the article at https://example.com/ai-memory because it is useful for thinking about knowledge graph memory design."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/ai-memory",
+            "role": "source",
+            "type": "article_url"
+          },
+          {
+            "name": "graph memory",
+            "role": "subject",
+            "type": "concept"
+          },
+          {
+            "name": "agents",
+            "role": "beneficiary",
+            "type": "concept"
+          },
+          {
+            "name": "relationships",
+            "role": "preserved_item",
+            "type": "concept"
+          }
+        ],
+        "kind": "article_claim",
+        "relationships": [
+          {
+            "object": "graph memory helps agents preserve relationships",
+            "predicate": "states",
+            "subject": "https://example.com/ai-memory"
+          }
+        ],
+        "statement": "The article at https://example.com/ai-memory says that graph memory helps agents preserve relationships."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/ai-memory",
+            "role": "source",
+            "type": "article_url"
+          },
+          {
+            "name": "provenance",
+            "role": "requirement",
+            "type": "concept"
+          },
+          {
+            "name": "update semantics",
+            "role": "requirement",
+            "type": "concept"
+          },
+          {
+            "name": "graph memory design",
+            "role": "context",
+            "type": "topic"
+          }
+        ],
+        "kind": "article_claim",
+        "relationships": [
+          {
+            "object": "provenance and update semantics are needed for graph memory design",
+            "predicate": "states",
+            "subject": "https://example.com/ai-memory"
+          }
+        ],
+        "statement": "The article at https://example.com/ai-memory says that provenance and update semantics are needed for graph memory design."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed article URL as a remembered source.",
+        "Stored the user's stated reason for remembering it.",
+        "Stored sourced article claims with provenance to the URL."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

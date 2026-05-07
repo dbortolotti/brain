@@ -1,0 +1,65 @@
+{
+  "fixture_id": "cascade_low_confidence_asks_user_001__punctuation",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Please provide clarification on which Sam note is referenced and whether cloud escalation should be re-enabled for handling the ambiguity.",
+    "citations": [],
+    "conflict_classification": "ambiguity_with_disabled_escalation",
+    "decision": "request_user_clarification_due_to_low_confidence_and ambiguity",
+    "entity_resolution": {
+      "action": "flag_for_user_clarification",
+      "entity_id": null,
+      "reason": "ambiguous reference to Sam and unclear context about which note is meant; Cloud escalation is disabled per statement."
+    },
+    "intent": "assess_and_route_cloud_escalation_question",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "ambiguous_reference",
+            "type": "person"
+          },
+          {
+            "name": "Cloud escalation",
+            "role": "status",
+            "type": "process"
+          }
+        ],
+        "kind": "note",
+        "relationships": [
+          {
+            "object": "disabled",
+            "predicate": "status",
+            "subject": "Cloud escalation"
+          },
+          {
+            "object": "low",
+            "predicate": "confidence",
+            "subject": "model"
+          },
+          {
+            "object": "unresolved",
+            "predicate": "ambiguity",
+            "subject": "Sam note"
+          }
+        ],
+        "statement": "Cloud escalation is disabled and model confidence is low for ambiguous Sam note."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Processed input with ambiguity and disabled escalation.",
+        "Prepared options for user-driven resolution."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Re-enable cloud escalation to allow automated handling of ambiguous notes (if policy permits).",
+      "Request user to specify Sam note details (date, context) to resolve ambiguity.",
+      "Annotate note as pending clarification and do not act on it until clarified."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

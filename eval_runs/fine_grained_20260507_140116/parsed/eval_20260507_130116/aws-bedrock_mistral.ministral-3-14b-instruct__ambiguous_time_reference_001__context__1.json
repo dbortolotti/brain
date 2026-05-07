@@ -1,0 +1,95 @@
+{
+  "fixture_id": "ambiguous_time_reference_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam's statement about leaving Goldman Sachs contains ambiguous temporal references ('last Friday' and 'next month') that cannot be resolved without additional context. No durable memory should be committed until ambiguity is clarified.",
+    "citations": [
+      "Original input: 'Sam said last Friday that he is leaving Goldman next month.'"
+    ],
+    "conflict_classification": "temporal_ambiguity",
+    "entity_resolution": {
+      "action": "flag_for_ambiguity",
+      "entity_id": null,
+      "reason": "Temporal references ('last Friday' and 'next month') lack sufficient context to resolve to a specific date. Ambiguity must be preserved to avoid misinterpretation."
+    },
+    "intent": "entity_mention_extraction_with_ambiguity_preservation",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "event",
+        "relationships": [
+          {
+            "object": "leave_Goldman_Sachs",
+            "predicate": "stated_intent_to",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam made a statement about leaving Goldman Sachs."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "last Friday",
+            "role": "event_anchor",
+            "type": "time_reference"
+          }
+        ],
+        "kind": "temporal_reference",
+        "relationships": [
+          {
+            "object": "specific_date",
+            "predicate": "is_ambiguous_without_context",
+            "subject": "last Friday"
+          }
+        ],
+        "statement": "Sam referenced 'last Friday' as a past event."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "next month",
+            "role": "event_horizon",
+            "type": "time_reference"
+          }
+        ],
+        "kind": "temporal_reference",
+        "relationships": [
+          {
+            "object": "specific_date",
+            "predicate": "is_ambiguous_without_context",
+            "subject": "next month"
+          }
+        ],
+        "statement": "Sam referenced 'next month' as a future event."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted entities and relationships while preserving ambiguity.",
+        "Flagged temporal references for resolution.",
+        "Avoided committing superseded/deleted facts."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request clarification: 'Which specific dates do 'last Friday' and 'next month' refer to?'",
+      "Store as-is with metadata: 'Ambiguous temporal references\u2014do not commit as fact.'",
+      "Query for context: 'What was the date of 'last Friday' in Sam\u2019s calendar?'"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

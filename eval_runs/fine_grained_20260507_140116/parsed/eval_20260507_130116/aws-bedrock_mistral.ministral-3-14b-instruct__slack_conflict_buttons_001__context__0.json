@@ -1,0 +1,92 @@
+{
+  "fixture_id": "slack_conflict_buttons_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam's employment status is now definitively recorded as having left Goldman Sachs and joined Point72. The prior statement ('Sam works at Goldman') is retained as a historical fact without temporal context.",
+    "citations": [
+      "User command: 'brain remember Sam left Goldman and joined Point72'",
+      "Existing memory: 'Sam works at Goldman'"
+    ],
+    "conflict_classification": "temporal_supersession_with_ambiguity",
+    "decision": "supersede_existing_with_ambiguity_preserved",
+    "entity_resolution": {
+      "action": "merge_entities_with_contextual_disambiguation",
+      "entity_id": "Sam",
+      "reason": "Ambiguity preserved: Original statement lacks temporal context; update provides definitive employment change. No deletion of prior fact, only contextual supersession."
+    },
+    "intent": "memory_update_conflict_resolution",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "employed_by",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman Sachs (as of [unspecified date])."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "left_employment_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "employed_by",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman Sachs and joined Point72 (as of [unspecified date])."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Original memory preserved as historical fact with low confidence.",
+        "New memory committed as high-confidence durable update.",
+        "No deleted facts presented as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add explicit date to original statement (e.g., 'Sam worked at Goldman Sachs until [YYYY-MM]')",
+      "Flag for user clarification on temporal boundaries of prior employment"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

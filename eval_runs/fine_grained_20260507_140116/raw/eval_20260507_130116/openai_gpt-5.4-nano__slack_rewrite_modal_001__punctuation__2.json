@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "fixture_id": "slack_rewrite_modal_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Stored a low-confidence preference memory based on the user-selected 'Rewrite memory' action.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "store_memory_card_rewrite",
+    "entity_resolution": {
+      "action": "no_exact_id",
+      "entity_id": null,
+      "reason": "The pronoun 'He' and the referenced options are not uniquely identifiable from the provided text."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "He",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "the other one",
+            "role": "preferred_option",
+            "type": "choice"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "He"
+          }
+        ],
+        "statement": "He seems to prefer the other one (as opposed to the currently suggested option)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No conflicting durable facts were provided.",
+        "Stored as ambiguous/low confidence due to unresolved referents."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask who 'He' refers to (name or identifier).",
+      "Clarify what 'the other one' specifically is (e.g., Option A vs Option B, or link to the exact labels)."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"remember\",\n  \"decision\": \"store_memory_card_rewrite\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"He seems to prefer the other one (as opposed to the currently suggested option).\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"He\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"the other one\",\n          \"type\": \"choice\",\n          \"role\": \"preferred_option\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"He\",\n          \"predicate\": \"prefers\",\n          \"object\": \"the other one\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_exact_id\",\n    \"entity_id\": null,\n    \"reason\": \"The pronoun 'He' and the referenced options are not uniquely identifiable from the provided text.\"\n  },\n  \"conflict_classification\": \"none_detected\",\n  \"answer\": \"Stored a low-confidence preference memory based on the user-selected 'Rewrite memory' action.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Ask who 'He' refers to (name or identifier).\",\n    \"Clarify what 'the other one' specifically is (e.g., Option A vs Option B, or link to the exact labels).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"No conflicting durable facts were provided.\",\n      \"Stored as ambiguous/low confidence due to unresolved referents.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

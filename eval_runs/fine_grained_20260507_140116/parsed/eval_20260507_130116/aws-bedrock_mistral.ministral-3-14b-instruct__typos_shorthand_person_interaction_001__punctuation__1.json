@@ -1,0 +1,76 @@
+{
+  "fixture_id": "typos_shorthand_person_interaction_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Input contains ambiguous entity mentions ('sam frm goldmn', 'bill evns') due to likely typos/shorthand. No durable memory committed. Resolution requires additional context.",
+    "conflict_classification": "none",
+    "decision": "ambiguous_interpretation_required",
+    "entity_resolution": {
+      "action": "defer",
+      "reason": "Input contains multiple plausible interpretations due to typos/shorthand. Requires contextual clarification or disambiguation."
+    },
+    "intent": "entity_mention_extraction",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "goldmn",
+            "reason": "likely typo for 'Goldman' (e.g., Goldman Sachs) or surname",
+            "role": "potential_affiliation",
+            "type": "organization_or_person"
+          },
+          {
+            "name": "bill",
+            "reason": "could refer to Bill Gates, Bill Evans (jazz musician), or 'Bill' as a generic name",
+            "role": "object_of_preference",
+            "type": "person_or_event"
+          },
+          {
+            "name": "evns",
+            "reason": "likely typo for 'events' or 'Evans' (e.g., Bill Evans)",
+            "role": "ambiguous_object",
+            "type": "event_or_person"
+          }
+        ],
+        "kind": "entity_mention",
+        "relationships": [
+          {
+            "object": "goldmn",
+            "predicate": "has_affiliation_with",
+            "subject": "sam"
+          },
+          {
+            "object": "bill",
+            "predicate": "likes",
+            "subject": "sam"
+          },
+          {
+            "object": "evns",
+            "predicate": "interacts_with",
+            "subject": "sam"
+          }
+        ],
+        "statement": "Unresolved shorthand/typos in input: 'sam frm goldmn likes bill evns apparently'"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguity detected in entity mentions due to punctuation/typos.",
+        "No memory committed pending resolution."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Clarify 'goldmn' (e.g., 'Goldman Sachs' or surname?)",
+      "Disambiguate 'bill' (person/event?) and 'evns' (event/person?)",
+      "Request corrected phrasing (e.g., 'Sam from Goldman Sachs likes Bill Evans')"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

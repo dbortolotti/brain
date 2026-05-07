@@ -1,0 +1,53 @@
+{
+  "error": null,
+  "fixture_id": "unresolved_pronoun_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The pronoun 'the other one' is unresolved due to lack of prior context. No entity can be definitively linked without additional information.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "ambiguous_reference",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Ambiguous antecedent for 'the other one'\u2014requires contextual disambiguation (e.g., prior mention of two distinct entities). No durable memory committed."
+    },
+    "intent": "entity_mention_resolution",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "other_one",
+            "role": "anaphoric_reference",
+            "type": "pronoun"
+          }
+        ],
+        "kind": "entity_mention",
+        "relationships": [
+          {
+            "object": "other_one",
+            "predicate": "prefers",
+            "subject": "he"
+          }
+        ],
+        "statement": "He prefers the other one."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No antecedent identified for 'the other one' in current memory.",
+        "Ambiguity preserved; no superseded facts introduced."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Request clarification: 'Which of the two [X or Y] does he prefer?'",
+      "Prompt for context: 'What are the two options he is choosing between?'",
+      "Flag as ambiguous: 'Ambiguous reference\u2014cannot resolve without context.'"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"entity_mention_resolution\",\n  \"decision\": \"ambiguous_reference\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"entity_mention\",\n      \"statement\": \"He prefers the other one.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"other_one\",\n          \"type\": \"pronoun\",\n          \"role\": \"anaphoric_reference\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"he\",\n          \"predicate\": \"prefers\",\n          \"object\": \"other_one\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguous antecedent for 'the other one'\u2014requires contextual disambiguation (e.g., prior mention of two distinct entities). No durable memory committed.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"The pronoun 'the other one' is unresolved due to lack of prior context. No entity can be definitively linked without additional information.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Request clarification: 'Which of the two [X or Y] does he prefer?'\",\n    \"Prompt for context: 'What are the two options he is choosing between?'\",\n    \"Flag as ambiguous: 'Ambiguous reference\u2014cannot resolve without context.'\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"No antecedent identified for 'the other one' in current memory.\",\n      \"Ambiguity preserved; no superseded facts introduced.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,80 @@
+{
+  "fixture_id": "cascade_conflict_escalation_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "You currently have two incompatible claims about Sara: you previously recorded her as your daughter, but the new input says she is your niece. Since both cannot be simultaneously true in the same context, the system should treat the new information as conflicting and ask for clarification rather than updating one over the other.",
+    "citations": [],
+    "conflict_classification": "Direct relational conflict (same subject, mutually inconsistent family roles).",
+    "decision": "Do not commit either relationship as authoritative; record both as conflicting, pending clarification.",
+    "entity_resolution": {
+      "action": "ambiguous_match",
+      "entity_id": null,
+      "reason": "Both statements refer to the same name 'Sara', but the relationship types conflict; no additional disambiguating details are provided to confirm which claim is correct."
+    },
+    "intent": "Explain and resolve a contradiction between existing and new relationship claims about the same person.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "self",
+            "role": "owner",
+            "type": "person"
+          }
+        ],
+        "kind": "conflict_note",
+        "relationships": [
+          {
+            "object": "daughter",
+            "predicate": "is my",
+            "subject": "Sara"
+          },
+          {
+            "object": "niece",
+            "predicate": "is my",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Existing memory says: Sara is my daughter. New input says: Sara is my niece. These two relationship claims conflict and require clarification about which relationship is correct."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "candidate_fact",
+        "relationships": [
+          {
+            "object": "niece",
+            "predicate": "is my",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "New input candidate: Sara is my niece (conflicts with existing daughter claim)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected contradiction between existing and new relationship assertions for the same entity name.",
+        "Stored a conflict note and treated the new claim as non-authoritative pending clarification."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm which relationship is correct: is Sara your daughter or your niece?",
+      "If one is correct and the other was a mistake, replace the incorrect entry (with the correct one) after confirmation.",
+      "If the intended meaning differs (e.g., 'daughter' used informally, or different family members named Sara), provide clarifying details (middle name, age, parent/relative name).",
+      "If both relationships can be true due to context (e.g., adoption, step/half-family, or multiple family relations), specify the context so the memory can store a consistent set of relationships."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

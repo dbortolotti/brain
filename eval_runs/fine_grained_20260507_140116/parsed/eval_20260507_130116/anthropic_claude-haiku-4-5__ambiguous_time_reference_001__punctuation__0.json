@@ -1,0 +1,75 @@
+{
+  "fixture_id": "ambiguous_time_reference_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory accepted with temporal ambiguity preserved. Sam intends to leave Goldman; the statement was made on an unspecified 'last Friday' with departure planned for an unspecified 'next month'. Absolute dates require anchor context.",
+    "citations": [
+      "Input statement: 'Sam said last Friday that he is leaving Goldman next month'"
+    ],
+    "conflict_classification": "temporal_ambiguity",
+    "decision": "Accept with ambiguity preservation",
+    "entity_resolution": {
+      "action": "defer_resolution",
+      "entity_id": null,
+      "reason": "Temporal references are relative and require anchor date context; 'last Friday' and 'next month' cannot be resolved to absolute dates without knowing when the statement was made or when it is being queried"
+    },
+    "intent": "Extract and store facts about Sam's employment transition with temporal ambiguity",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "agent_statement",
+        "relationships": [
+          {
+            "object": "last Friday",
+            "predicate": "stated_on",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "is_leaving",
+            "subject": "Sam"
+          },
+          {
+            "object": "next month",
+            "predicate": "departure_timeframe",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said (on last Friday) that he is leaving Goldman next month"
+      },
+      {
+        "confidence": "medium",
+        "kind": "temporal_ambiguity",
+        "statement": "Reference frame for 'last Friday' and 'next month' is unknown; relative to statement date or current query date"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Fact stored with temporal ambiguity flag",
+        "Entities identified: Sam (person), Goldman (organization)",
+        "Relationships captured: statement_date, departure_intent, timeframe",
+        "Requires context injection for absolute temporal resolution"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify: What is the reference date for 'last Friday'?",
+      "Clarify: When was this statement made relative to today?",
+      "Clarify: What is the reference date for 'next month'?",
+      "Store with explicit anchor: 'Sam said [DATE] that he is leaving Goldman in [MONTH/YEAR]'"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

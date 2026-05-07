@@ -1,0 +1,179 @@
+{
+  "error": null,
+  "fixture_id": "long_markdown_chat_summary_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Brain\u2019s architecture is structured with Brain DB as the canonical memory store, Cognee as a dynamic semantic layer, and Slack as the primary intake agent. Ambiguities (e.g., Telegram, cost-performance tradeoffs) are flagged for future resolution without premature commitment.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit_durable_memory_with_ambiguity_preservation",
+    "entity_resolution": {
+      "action": "preserve_ambiguity",
+      "reason": "Open questions (e.g., Telegram integration, model selection) lack definitive resolution and require further evaluation."
+    },
+    "intent": "clarify_system_architecture_and_validate_memory_intake_process",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "database"
+          }
+        ],
+        "kind": "system_design",
+        "relationships": [
+          {
+            "object": "authoritative_memory_store",
+            "predicate": "serves_as",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB is the authoritative source of truth for all durable memory storage, ensuring consistency and non-repudiation of facts."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "projection",
+            "type": "semantic_layer"
+          },
+          {
+            "name": "Brain DB",
+            "role": "canonical_source",
+            "type": "database"
+          }
+        ],
+        "kind": "system_design",
+        "relationships": [
+          {
+            "object": "Brain DB",
+            "predicate": "derives_from",
+            "subject": "Cognee"
+          },
+          {
+            "object": "true",
+            "predicate": "is_rebuildable",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee is a rebuildable semantic projection of Brain DB, enabling flexible querying and inference without altering the canonical data."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "memory_validation",
+            "type": "intake_agent"
+          },
+          {
+            "name": "Brain DB",
+            "role": "target_store",
+            "type": "database"
+          }
+        ],
+        "kind": "system_design",
+        "relationships": [
+          {
+            "object": "user_interactions",
+            "predicate": "ingests",
+            "subject": "Slack"
+          },
+          {
+            "object": "Brain DB storage",
+            "predicate": "validates_before",
+            "subject": "Slack"
+          }
+        ],
+        "statement": "Slack is a strict memory intake agent, responsible for ingesting and validating user interactions before potential durable storage in Brain DB."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Telegram",
+            "role": "potential_intake_agent",
+            "type": "platform"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [
+          {
+            "object": "future_memory_intake",
+            "predicate": "is_considered_for",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "Telegram integration is under consideration for future expansion as a secondary memory intake channel."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "cost-performance",
+            "role": "optimization_target",
+            "type": "system_constraint"
+          },
+          {
+            "name": "model_selection",
+            "role": "unspecified",
+            "type": "decision_variable"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [
+          {
+            "object": "cost_and_performance",
+            "predicate": "must_balance",
+            "subject": "model_selection"
+          }
+        ],
+        "statement": "Cost-performance optimization is required to identify the cheapest model that saturates system performance without compromising durability or accuracy."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "superseded_facts",
+            "role": "excluded",
+            "type": "memory_artifact"
+          },
+          {
+            "name": "deleted_facts",
+            "role": "excluded",
+            "type": "memory_artifact"
+          },
+          {
+            "name": "Cognee",
+            "role": "projection_filter",
+            "type": "semantic_layer"
+          }
+        ],
+        "kind": "memory_policy",
+        "relationships": [
+          {
+            "object": "superseded_or_deleted_facts",
+            "predicate": "filters_out",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Superseded or deleted facts are explicitly excluded from current memory projections (e.g., Cognee) to maintain factual consistency."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed durable memory cards with strict adherence to source-of-truth principles.",
+        "Preserved ambiguity for unresolved questions (e.g., Telegram, model selection).",
+        "Excluded superseded/deleted facts from projections."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"clarify_system_architecture_and_validate_memory_intake_process\",\n  \"decision\": \"commit_durable_memory_with_ambiguity_preservation\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"system_design\",\n      \"statement\": \"Brain DB is the authoritative source of truth for all durable memory storage, ensuring consistency and non-repudiation of facts.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"database\",\n          \"role\": \"source_of_truth\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"serves_as\",\n          \"object\": \"authoritative_memory_store\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"system_design\",\n      \"statement\": \"Cognee is a rebuildable semantic projection of Brain DB, enabling flexible querying and inference without altering the canonical data.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"semantic_layer\",\n          \"role\": \"projection\"\n        },\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"database\",\n          \"role\": \"canonical_source\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"derives_from\",\n          \"object\": \"Brain DB\"\n        },\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"is_rebuildable\",\n          \"object\": \"true\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"system_design\",\n      \"statement\": \"Slack is a strict memory intake agent, responsible for ingesting and validating user interactions before potential durable storage in Brain DB.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Slack\",\n          \"type\": \"intake_agent\",\n          \"role\": \"memory_validation\"\n        },\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"database\",\n          \"role\": \"target_store\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Slack\",\n          \"predicate\": \"ingests\",\n          \"object\": \"user_interactions\"\n        },\n        {\n          \"subject\": \"Slack\",\n          \"predicate\": \"validates_before\",\n          \"object\": \"Brain DB storage\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"open_question\",\n      \"statement\": \"Telegram integration is under consideration for future expansion as a secondary memory intake channel.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Telegram\",\n          \"type\": \"platform\",\n          \"role\": \"potential_intake_agent\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Telegram\",\n          \"predicate\": \"is_considered_for\",\n          \"object\": \"future_memory_intake\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"open_question\",\n      \"statement\": \"Cost-performance optimization is required to identify the cheapest model that saturates system performance without compromising durability or accuracy.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"cost-performance\",\n          \"type\": \"system_constraint\",\n          \"role\": \"optimization_target\"\n        },\n        {\n          \"name\": \"model_selection\",\n          \"type\": \"decision_variable\",\n          \"role\": \"unspecified\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"model_selection\",\n          \"predicate\": \"must_balance\",\n          \"object\": \"cost_and_performance\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"memory_policy\",\n      \"statement\": \"Superseded or deleted facts are explicitly excluded from current memory projections (e.g., Cognee) to maintain factual consistency.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"superseded_facts\",\n          \"type\": \"memory_artifact\",\n          \"role\": \"excluded\"\n        },\n        {\n          \"name\": \"deleted_facts\",\n          \"type\": \"memory_artifact\",\n          \"role\": \"excluded\"\n        },\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"semantic_layer\",\n          \"role\": \"projection_filter\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"filters_out\",\n          \"object\": \"superseded_or_deleted_facts\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"preserve_ambiguity\",\n    \"reason\": \"Open questions (e.g., Telegram integration, model selection) lack definitive resolution and require further evaluation.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Brain\u2019s architecture is structured with Brain DB as the canonical memory store, Cognee as a dynamic semantic layer, and Slack as the primary intake agent. Ambiguities (e.g., Telegram, cost-performance tradeoffs) are flagged for future resolution without premature commitment.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Committed durable memory cards with strict adherence to source-of-truth principles.\",\n      \"Preserved ambiguity for unresolved questions (e.g., Telegram, model selection).\",\n      \"Excluded superseded/deleted facts from projections.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

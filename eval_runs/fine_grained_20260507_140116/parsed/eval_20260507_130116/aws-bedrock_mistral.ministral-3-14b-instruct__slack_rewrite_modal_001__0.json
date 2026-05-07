@@ -1,0 +1,56 @@
+{
+  "fixture_id": "slack_rewrite_modal_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory rewritten to reflect preference for an unspecified alternative, with explicit note of ambiguity. No superseded facts retained.",
+    "citations": [],
+    "conflict_classification": "ambiguity_resolution",
+    "decision": "supersede_ambiguous",
+    "entity_resolution": {
+      "action": "resolve_ambiguity",
+      "entity_id": null,
+      "reason": "Original statement lacked specificity ('the other one'). Rewrite preserves ambiguity while clarifying the subject's intent."
+    },
+    "intent": "rewrite_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "User",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "unspecified_alternative",
+            "role": "preferred_entity",
+            "type": "object"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "unspecified_alternative",
+            "predicate": "prefers",
+            "subject": "User"
+          }
+        ],
+        "statement": "User prefers an unspecified alternative (context: 'the other one')"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Original memory superseded (no deletion of prior facts; ambiguity preserved)",
+        "New memory tagged as 'low confidence' due to unresolved reference",
+        "Entity 'unspecified_alternative' created for tracking"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add context to 'the other one' (e.g., 'the other option in [X]')",
+      "Clarify if 'the other one' refers to a prior memory (link to entity ID if known)",
+      "Delete if preference is irrelevant"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

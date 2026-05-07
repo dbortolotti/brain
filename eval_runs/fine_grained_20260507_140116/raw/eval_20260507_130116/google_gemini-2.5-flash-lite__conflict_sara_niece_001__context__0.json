@@ -1,0 +1,78 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001__context",
+  "model": "google:gemini-2.5-flash-lite",
+  "payload": {
+    "answer": "The existing memory states Sara is Daniele's daughter and Nur's twin. The new information states Sara is your niece. These statements contradict each other regarding Sara's familial relationship.",
+    "citations": [],
+    "conflict_classification": "contradiction",
+    "decision": "prioritize_existing",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The conflict is between two statements about the same entity, not a resolution of entity identity."
+    },
+    "intent": "resolve_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "type": "PERSON"
+          },
+          {
+            "name": "Daniele",
+            "type": "PERSON"
+          },
+          {
+            "name": "Nur",
+            "type": "PERSON"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is daughter of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is twin of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sara",
+            "type": "PERSON"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict identified and classified as contradiction.",
+        "Existing memory prioritized due to higher confidence.",
+        "Repair options provided for user to resolve ambiguity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for clarification on Sara's relationship to the user.",
+      "Ask for clarification on Sara's relationship to Daniele.",
+      "Ask for clarification on Sara's relationship to Nur."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"resolve_conflict\",\n  \"decision\": \"prioritize_existing\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is Daniele's daughter and Nur's twin.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"PERSON\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"PERSON\"\n        },\n        {\n          \"name\": \"Nur\",\n          \"type\": \"PERSON\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is daughter of\",\n          \"object\": \"Daniele\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is twin of\",\n          \"object\": \"Nur\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is my niece.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"PERSON\"\n        }\n      ],\n      \"relationships\": []\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"The conflict is between two statements about the same entity, not a resolution of entity identity.\"\n  },\n  \"conflict_classification\": \"contradiction\",\n  \"answer\": \"The existing memory states Sara is Daniele's daughter and Nur's twin. The new information states Sara is your niece. These statements contradict each other regarding Sara's familial relationship.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Ask for clarification on Sara's relationship to the user.\",\n    \"Ask for clarification on Sara's relationship to Daniele.\",\n    \"Ask for clarification on Sara's relationship to Nur.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Conflict identified and classified as contradiction.\",\n      \"Existing memory prioritized due to higher confidence.\",\n      \"Repair options provided for user to resolve ambiguity.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

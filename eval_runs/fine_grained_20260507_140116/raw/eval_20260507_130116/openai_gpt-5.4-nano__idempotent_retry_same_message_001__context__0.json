@@ -1,0 +1,61 @@
+{
+  "error": null,
+  "fixture_id": "idempotent_retry_same_message_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Committed a single memory card representing the preference statement; repeated delivery treated as idempotent.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "best_effort",
+      "entity_id": null,
+      "reason": "No stable entity ID was provided; stored using surface names and the Goldman affiliation context."
+    },
+    "intent": "store_personal_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "source/mentioned person",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (from Goldman) likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Same message received multiple times; only one memory card produced."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you provide a unique identifier for Sam, link the memory to that entity.",
+      "If 'Goldman' refers to a specific person/department, add that detail for disambiguation."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"store_personal_memory\",\n  \"decision\": \"commit\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam (from Goldman) likes Bill Evans.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"source/mentioned person\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"liked artist\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"best_effort\",\n    \"entity_id\": null,\n    \"reason\": \"No stable entity ID was provided; stored using surface names and the Goldman affiliation context.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Committed a single memory card representing the preference statement; repeated delivery treated as idempotent.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If you provide a unique identifier for Sam, link the memory to that entity.\",\n    \"If 'Goldman' refers to a specific person/department, add that detail for disambiguation.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Same message received multiple times; only one memory card produced.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

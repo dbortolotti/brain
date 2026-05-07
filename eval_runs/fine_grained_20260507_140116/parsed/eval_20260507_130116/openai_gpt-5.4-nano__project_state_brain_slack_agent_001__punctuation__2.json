@@ -1,0 +1,64 @@
+{
+  "fixture_id": "project_state_brain_slack_agent_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Slack is the primary guardrailed memory ingestion interface; Telegram may be added later.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Commit guarded memory that Slack is the primary ingestion interface; mark Telegram as a later option.",
+    "entity_resolution": {
+      "action": "create_or_confirm",
+      "entity_id": null,
+      "reason": "Entities (Brain, Slack, Telegram) are referenced without existing IDs in the input."
+    },
+    "intent": "Determine primary guardrailed memory ingestion interface for the Brain project state.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "memory_personal_system",
+            "type": "system"
+          },
+          {
+            "name": "Slack",
+            "role": "primary_ingestion_interface",
+            "type": "channel"
+          },
+          {
+            "name": "Telegram",
+            "role": "future_ingestion_interface",
+            "type": "channel"
+          }
+        ],
+        "kind": "preference_guardrailed_interface",
+        "relationships": [
+          {
+            "object": "Slack",
+            "predicate": "uses_primary_guardrailed_ingestion_interface",
+            "subject": "Brain"
+          },
+          {
+            "object": "Brain",
+            "predicate": "is_accepted_as_later_ingestion_interface_for",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "Slack should be the primary guardrailed memory ingestion interface for Brain; Telegram can come later."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted a single preference statement with secondary 'later' constraint.",
+        "No contradictions detected in provided input."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If a different interface is currently configured, update this card with the correct current primary interface.",
+      "Specify a timeframe or criteria for when Telegram should be introduced (e.g., after feature X)."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

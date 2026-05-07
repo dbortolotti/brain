@@ -1,0 +1,58 @@
+{
+  "error": null,
+  "fixture_id": "additive_sam_preferences_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "No conflict: this is an additional liking preference for the same person (Sam from Goldman). The existing fact that Sam likes Bill Evans is consistent with also liking Sonny Rollins.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "no_conflict_additional_memory",
+    "entity_resolution": {
+      "action": "link_to_existing_entity",
+      "entity_id": null,
+      "reason": "The new statement refers to the same person as the existing memory: Sam from Goldman. No competing identifiers are provided."
+    },
+    "intent": "conflict_explainer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "object",
+            "type": "music_artist"
+          },
+          {
+            "name": "Goldman",
+            "role": "context_for_Sam",
+            "type": "organization"
+          }
+        ],
+        "kind": "preference_music_artist",
+        "relationships": [
+          {
+            "object": "Sonny Rollins",
+            "predicate": "likes",
+            "subject": "Sam (from Goldman)"
+          }
+        ],
+        "statement": "Sam (from Goldman) also likes Sonny Rollins."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Added new preference (Sam likes Sonny Rollins) without contradicting the existing preference (Sam likes Bill Evans)."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"conflict_explainer\",\n  \"decision\": \"no_conflict_additional_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference_music_artist\",\n      \"statement\": \"Sam (from Goldman) also likes Sonny Rollins.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Sonny Rollins\",\n          \"type\": \"music_artist\",\n          \"role\": \"object\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"context_for_Sam\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam (from Goldman)\",\n          \"predicate\": \"likes\",\n          \"object\": \"Sonny Rollins\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"link_to_existing_entity\",\n    \"entity_id\": null,\n    \"reason\": \"The new statement refers to the same person as the existing memory: Sam from Goldman. No competing identifiers are provided.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"No conflict: this is an additional liking preference for the same person (Sam from Goldman). The existing fact that Sam likes Bill Evans is consistent with also liking Sonny Rollins.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Added new preference (Sam likes Sonny Rollins) without contradicting the existing preference (Sam likes Bill Evans).\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

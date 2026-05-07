@@ -1,0 +1,62 @@
+{
+  "fixture_id": "ambiguous_time_reference_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Store only as an ambiguous reported intent, not as a confirmed current fact.",
+    "citations": [
+      "Input: \"Sam said last Friday that he is leaving Goldman next month.\""
+    ],
+    "conflict_classification": "temporal_ambiguity_reported_statement",
+    "decision": "store_ambiguous",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "\"Sam\" is underspecified, and the statement contains relative time references that prevent precise durable resolution."
+    },
+    "intent": "Evaluate whether to commit a durable memory from a time-relative, reported statement.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker/subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "reported_intent",
+        "relationships": [
+          {
+            "object": "he is leaving Goldman next month",
+            "predicate": "reportedly_said",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam reportedly said that he is leaving Goldman next month; the reference point is last Friday, so the exact departure date is ambiguous."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured as reported intent with ambiguity preserved.",
+        "Did not assert the departure as confirmed current fact.",
+        "Did not resolve identity beyond the provided name."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If available, resolve which Sam is meant and convert relative dates (\"last Friday\", \"next month\") into absolute dates.",
+      "If the departure has already happened or was later retracted, update or supersede this memory accordingly."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

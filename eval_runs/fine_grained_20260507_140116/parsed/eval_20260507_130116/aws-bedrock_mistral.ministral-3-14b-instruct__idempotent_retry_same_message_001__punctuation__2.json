@@ -1,0 +1,61 @@
+{
+  "fixture_id": "idempotent_retry_same_message_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory card created for Sam's mention of Bill Evans (Goldman Sachs \u2192 Sam \u2192 Bill Evans preference).",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "durable",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": null,
+      "reason": "No prior context for Sam (Goldman Sachs) or Bill Evans in this conversation thread."
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "source",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "subject_of_preference",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "mentioned_preference_for",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman Sachs",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (Goldman Sachs) mentioned a preference for Bill Evans (jazz pianist)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory committed with high confidence.",
+        "No superseded/deleted facts detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

@@ -1,0 +1,96 @@
+{
+  "error": null,
+  "fixture_id": "conflict_employment_transition__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The new fact ('Sam left Goldman and joined Point72') is durably committed as a **temporal update** to the existing fact ('Sam works at Goldman'). The original fact is **not deleted** but is implicitly contextualized as a past state. Ambiguity about the transition period (e.g., 'left' without a date) is preserved to avoid over-precision.",
+    "citations": [
+      "New fact explicitly states a transition (left/joined), which contradicts the static 'works at' predicate.",
+      "No superseded facts are presented as current; the original fact remains in memory but is no longer the sole active state."
+    ],
+    "conflict_classification": "temporal_supersession_with_ambiguity",
+    "decision": "resolve_with_ambiguity_preservation",
+    "entity_resolution": {
+      "action": "merge_with_contextual_clarification",
+      "entity_id": null,
+      "reason": "The new fact supersedes the current fact but retains ambiguity about the *exact* transition date (e.g., 'left' could be recent or historical). No deletion of the original fact; instead, the new fact is durably committed as a temporal update."
+    },
+    "intent": "detect_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "current_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "new_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory updated: New fact committed as active; original fact preserved with contextual ambiguity.",
+        "No superseded facts exposed as current.",
+        "Ambiguity in 'left' retained to avoid false precision."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add a temporal qualifier to the original fact (e.g., 'Sam worked at Goldman [until unspecified date]') and mark it as 'historical' with low confidence.",
+      "Retain both facts with a disambiguation note: 'Sam\u2019s employment at Goldman is unresolved\u2014new evidence suggests a transition to Point72.'",
+      "Flag the transition date as ambiguous and request clarification if critical."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"detect_conflict\",\n  \"decision\": \"resolve_with_ambiguity_preservation\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"current_fact\",\n      \"statement\": \"Sam works at Goldman\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"new_fact\",\n      \"statement\": \"Sam left Goldman and joined Point72\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"former_employer\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"current_employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"left\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge_with_contextual_clarification\",\n    \"entity_id\": null,\n    \"reason\": \"The new fact supersedes the current fact but retains ambiguity about the *exact* transition date (e.g., 'left' could be recent or historical). No deletion of the original fact; instead, the new fact is durably committed as a temporal update.\"\n  },\n  \"conflict_classification\": \"temporal_supersession_with_ambiguity\",\n  \"answer\": \"The new fact ('Sam left Goldman and joined Point72') is durably committed as a **temporal update** to the existing fact ('Sam works at Goldman'). The original fact is **not deleted** but is implicitly contextualized as a past state. Ambiguity about the transition period (e.g., 'left' without a date) is preserved to avoid over-precision.\",\n  \"citations\": [\n    \"New fact explicitly states a transition (left/joined), which contradicts the static 'works at' predicate.\",\n    \"No superseded facts are presented as current; the original fact remains in memory but is no longer the sole active state.\"\n  ],\n  \"repair_options\": [\n    \"Add a temporal qualifier to the original fact (e.g., 'Sam worked at Goldman [until unspecified date]') and mark it as 'historical' with low confidence.\",\n    \"Retain both facts with a disambiguation note: 'Sam\u2019s employment at Goldman is unresolved\u2014new evidence suggests a transition to Point72.'\",\n    \"Flag the transition date as ambiguous and request clarification if critical.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Durable memory updated: New fact committed as active; original fact preserved with contextual ambiguity.\",\n      \"No superseded facts exposed as current.\",\n      \"Ambiguity in 'left' retained to avoid false precision.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

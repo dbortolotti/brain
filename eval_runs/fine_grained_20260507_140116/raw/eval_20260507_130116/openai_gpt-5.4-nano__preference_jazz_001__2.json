@@ -1,0 +1,65 @@
+{
+  "error": null,
+  "fixture_id": "preference_jazz_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Store this as a durable preference.",
+    "citations": [],
+    "conflict_classification": "no_conflict_detected",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "link_or_create",
+      "entity_id": null,
+      "reason": "Artist names are clear; no existing entity IDs provided, so create/link as needed."
+    },
+    "intent": "Evaluate whether to store a durable personal preference memory.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sonny Rollins",
+            "role": "preferred_artist",
+            "type": "person"
+          },
+          {
+            "name": "John Coltrane",
+            "role": "less_preferred_artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Sonny Rollins",
+            "predicate": "prefers",
+            "subject": "User"
+          },
+          {
+            "object": "John Coltrane",
+            "predicate": "over",
+            "subject": "User"
+          },
+          {
+            "object": "relaxed Sunday listening",
+            "predicate": "for_context",
+            "subject": "User"
+          }
+        ],
+        "statement": "User prefers Sonny Rollins over John Coltrane for relaxed Sunday listening."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preference statement extracted with high confidence and no conflicting prior facts provided."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If the preference is not consistent (e.g., only sometimes on Sundays), store it as a conditional preference instead of a general one."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Evaluate whether to store a durable personal preference memory.\",\n  \"decision\": \"commit\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"User prefers Sonny Rollins over John Coltrane for relaxed Sunday listening.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sonny Rollins\",\n          \"type\": \"person\",\n          \"role\": \"preferred_artist\"\n        },\n        {\n          \"name\": \"John Coltrane\",\n          \"type\": \"person\",\n          \"role\": \"less_preferred_artist\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"User\",\n          \"predicate\": \"prefers\",\n          \"object\": \"Sonny Rollins\"\n        },\n        {\n          \"subject\": \"User\",\n          \"predicate\": \"over\",\n          \"object\": \"John Coltrane\"\n        },\n        {\n          \"subject\": \"User\",\n          \"predicate\": \"for_context\",\n          \"object\": \"relaxed Sunday listening\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"link_or_create\",\n    \"entity_id\": null,\n    \"reason\": \"Artist names are clear; no existing entity IDs provided, so create/link as needed.\"\n  },\n  \"conflict_classification\": \"no_conflict_detected\",\n  \"answer\": \"Store this as a durable preference.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If the preference is not consistent (e.g., only sometimes on Sundays), store it as a conditional preference instead of a general one.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Preference statement extracted with high confidence and no conflicting prior facts provided.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

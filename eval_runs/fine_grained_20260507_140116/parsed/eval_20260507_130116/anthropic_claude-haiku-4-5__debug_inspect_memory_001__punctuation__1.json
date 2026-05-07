@@ -1,0 +1,55 @@
+{
+  "fixture_id": "debug_inspect_memory_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory card mem_123 cannot be retrieved: no persistent storage state provided in fixture. In production, this command would return the stored memory card's statement, confidence level, entities, and relationships. Punctuation and formatting are preserved as committed.",
+    "citations": [
+      "fixture: debug_inspect_memory_001__punctuation",
+      "command: /brain inspect memory mem_123"
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "retrieve and display memory card contents with structural validation",
+    "entity_resolution": {
+      "action": "lookup",
+      "entity_id": "mem_123",
+      "reason": "memory card identifier provided in inspect command"
+    },
+    "intent": "inspect memory card mem_123",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "mem_123",
+            "role": "subject",
+            "type": "memory_card_id"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "memory_card",
+            "predicate": "is_type",
+            "subject": "mem_123"
+          }
+        ],
+        "statement": "Memory card mem_123 was requested for inspection via /brain inspect memory command"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "command parsed successfully",
+        "entity mem_123 identified as memory_card_id",
+        "memory store not available in debug context",
+        "no conflicting or superseded facts detected"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "verify mem_123 exists in persistent memory store",
+      "check memory card creation timestamp and access permissions",
+      "confirm no deletion or supersession markers on mem_123"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

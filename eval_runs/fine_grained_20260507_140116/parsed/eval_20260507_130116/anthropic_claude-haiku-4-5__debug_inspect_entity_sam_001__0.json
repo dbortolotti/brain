@@ -1,0 +1,56 @@
+{
+  "fixture_id": "debug_inspect_entity_sam_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "No definitive entity record found. The query references 'Sam from Goldman' but lacks sufficient detail for certain resolution. Please provide: full name, Goldman division/location, or context of relationship.",
+    "citations": [],
+    "conflict_classification": "insufficient_specificity",
+    "decision": "Perform entity resolution and return all associated memory cards with confidence levels and relationship data",
+    "entity_resolution": {
+      "action": "ambiguous_match",
+      "entity_id": null,
+      "reason": "Query 'Sam from Goldman' is underspecified. Multiple interpretations possible: Sam could be an employee, contact, or reference at Goldman Sachs or another Goldman entity. No unique identifier provided. Requires disambiguation."
+    },
+    "intent": "Inspect and retrieve all stored memory about an entity identified as 'Sam from Goldman'",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unknown",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "type": "organization"
+          }
+        ],
+        "kind": "person",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at or is associated with Goldman"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Entity resolution failed due to ambiguity",
+        "No memory cards with high confidence matched the query",
+        "Recommend user provide additional disambiguating information"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide Sam's full name or surname",
+      "Specify which Goldman entity (Goldman Sachs, Goldman Sachs Asset Management, etc.)",
+      "Provide date or context when Sam was encountered",
+      "Supply email, employee ID, or other unique identifier"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

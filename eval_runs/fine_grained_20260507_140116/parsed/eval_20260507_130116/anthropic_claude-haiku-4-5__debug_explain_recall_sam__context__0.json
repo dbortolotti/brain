@@ -1,0 +1,83 @@
+{
+  "fixture_id": "debug_explain_recall_sam__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Recall filtered mem_old because it has been superseded by mem_new. The system preserves durable memory by retaining only the current valid state (mem_new) and excluding obsolete records (mem_old) from results, preventing stale information from being presented as current.",
+    "citations": [
+      "Memory system principle: never present superseded/deleted facts as current",
+      "Recall filtering logic: exclude records marked as superseded"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "mem_new retained, mem_old filtered due to supersession",
+    "entity_resolution": {
+      "action": "retain_current",
+      "entity_id": "mem_new",
+      "reason": "mem_new represents the most recent and authoritative information; mem_old is marked as superseded and must not be presented as current fact"
+    },
+    "intent": "Explain recall filtering decision for Sam from Goldman",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "mem_new contains current information about Sam from Goldman"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "mem_old",
+            "role": "superseded",
+            "type": "memory_record"
+          },
+          {
+            "name": "mem_new",
+            "role": "current",
+            "type": "memory_record"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "mem_new",
+            "predicate": "superseded_by",
+            "subject": "mem_old"
+          }
+        ],
+        "statement": "mem_old is superseded by mem_new and therefore excluded from recall results"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "mem_new identified as active record",
+        "mem_old identified as superseded",
+        "Filtering decision validated against durable memory principles"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Verify mem_new contains complete and accurate information about Sam from Goldman",
+      "Confirm supersession relationship is correctly marked in memory store",
+      "Audit mem_old to understand what information was replaced"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

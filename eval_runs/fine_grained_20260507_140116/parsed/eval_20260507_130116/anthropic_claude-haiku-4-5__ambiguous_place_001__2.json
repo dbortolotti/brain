@@ -1,0 +1,56 @@
+{
+  "fixture_id": "ambiguous_place_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory committed to Brutto restaurant (London) with confidence that context supports restaurant interpretation, while acknowledging article alias remains possible.",
+    "citations": [
+      "Existing: Brutto restaurant in London",
+      "Existing: Brutto article alias",
+      "New note: subjective evaluation suggests experiential context"
+    ],
+    "conflict_classification": "entity_ambiguity_low_severity",
+    "decision": "Link new note to existing Brutto restaurant entity; preserve ambiguity about which Brutto (restaurant vs article alias)",
+    "entity_resolution": {
+      "action": "link_to_existing",
+      "entity_id": "brutto_restaurant_london",
+      "reason": "New note most likely refers to restaurant experience; article alias is less probable context for subjective evaluation. Ambiguity preserved by not deleting alternative interpretation."
+    },
+    "intent": "Disambiguate Brutto entity and commit subjective experience memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brutto",
+            "role": "subject_of_evaluation",
+            "type": "place_or_concept"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "user_expectation",
+            "predicate": "exceeded_expectations",
+            "subject": "Brutto"
+          }
+        ],
+        "statement": "Brutto exceeded expectations in quality or experience"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created for subjective observation",
+        "Linked to Brutto restaurant entity with moderate confidence",
+        "Ambiguity preserved; no existing facts deleted",
+        "Repair options available if clarification needed"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify: Is this about the restaurant or the article?",
+      "Create separate memory card if note applies to article alias",
+      "Tag memory with 'needs_disambiguation' if uncertainty persists"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

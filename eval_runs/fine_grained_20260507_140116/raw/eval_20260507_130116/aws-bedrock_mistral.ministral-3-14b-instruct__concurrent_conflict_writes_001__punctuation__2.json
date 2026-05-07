@@ -1,0 +1,86 @@
+{
+  "error": null,
+  "fixture_id": "concurrent_conflict_writes_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam is associated with both Goldman Sachs (current/primary employer) and Point72 (potential secondary affiliation or past role). The system must retain both facts without merging them into a single superseded state, as the relationship dynamics (e.g., tenure, role type) are unresolved.",
+    "citations": [
+      "Concurrent writes imply non-superseding facts; no explicit deletion markers.",
+      "Punctuation in 'Goldman Sam' vs. 'Goldman Sachs' suggests a likely typo in the first input, but the second input ('Point72') is unambiguous."
+    ],
+    "conflict_classification": "temporal_role_ambiguity",
+    "decision": "preserve_ambiguity",
+    "entity_resolution": {
+      "action": "merge_entities",
+      "entity_id": "Sam",
+      "reason": "Same person referenced in both statements; no conflict in identity, only in temporal/role ambiguity."
+    },
+    "intent": "concurrent_conflict_resolution",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman Sachs."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory preserved: Both facts retained as distinct, non-superseding entries.",
+        "Ambiguity documented: No forced resolution of temporal/role conflict.",
+        "User prompt suggested for 'Goldman Sam' clarification."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Flag 'Goldman Sam' as a likely typo and prompt user for clarification (e.g., 'Did you mean Goldman Sachs?').",
+      "Add a temporal qualifier to the Goldman Sachs fact (e.g., 'Sam worked at Goldman Sachs [past/present]') if context allows.",
+      "Create a separate 'affiliation' card for Point72 with a 'joined_date' placeholder for future resolution."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"concurrent_conflict_resolution\",\n  \"decision\": \"preserve_ambiguity\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam works at Goldman Sachs.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman Sachs\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Goldman Sachs\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam joined Point72.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge_entities\",\n    \"entity_id\": \"Sam\",\n    \"reason\": \"Same person referenced in both statements; no conflict in identity, only in temporal/role ambiguity.\"\n  },\n  \"conflict_classification\": \"temporal_role_ambiguity\",\n  \"answer\": \"Sam is associated with both Goldman Sachs (current/primary employer) and Point72 (potential secondary affiliation or past role). The system must retain both facts without merging them into a single superseded state, as the relationship dynamics (e.g., tenure, role type) are unresolved.\",\n  \"citations\": [\n    \"Concurrent writes imply non-superseding facts; no explicit deletion markers.\",\n    \"Punctuation in 'Goldman Sam' vs. 'Goldman Sachs' suggests a likely typo in the first input, but the second input ('Point72') is unambiguous.\"\n  ],\n  \"repair_options\": [\n    \"Flag 'Goldman Sam' as a likely typo and prompt user for clarification (e.g., 'Did you mean Goldman Sachs?').\",\n    \"Add a temporal qualifier to the Goldman Sachs fact (e.g., 'Sam worked at Goldman Sachs [past/present]') if context allows.\",\n    \"Create a separate 'affiliation' card for Point72 with a 'joined_date' placeholder for future resolution.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Durable memory preserved: Both facts retained as distinct, non-superseding entries.\",\n      \"Ambiguity documented: No forced resolution of temporal/role conflict.\",\n      \"User prompt suggested for 'Goldman Sam' clarification.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

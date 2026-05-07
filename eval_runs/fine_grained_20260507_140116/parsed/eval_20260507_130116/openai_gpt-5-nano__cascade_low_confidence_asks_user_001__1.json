@@ -1,0 +1,65 @@
+{
+  "fixture_id": "cascade_low_confidence_asks_user_001",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Ambiguity detected: cloud escalation is disabled and model confidence is low for the Sam note. No durable memory commitment should be made to resolve the ambiguity. Consider prompting user for clarification or additional context before locking memory.",
+    "citations": [],
+    "conflict_classification": "ambiguity_high_confidence_low",
+    "decision": "maintain_or_lock",
+    "entity_resolution": {
+      "action": "preserve_ambiguity",
+      "entity_id": null,
+      "reason": "The note indicates uncertainty (ambiguous Sam note) and low confidence; no durable resolution should be committed."
+    },
+    "intent": "classify_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "cloud escalation",
+            "role": "action",
+            "type": "process"
+          }
+        ],
+        "kind": "note",
+        "relationships": [
+          {
+            "object": "ambiguous_note",
+            "predicate": "related_to",
+            "subject": "Sam"
+          },
+          {
+            "object": "disabled",
+            "predicate": "status",
+            "subject": "cloud escalation"
+          },
+          {
+            "object": "low",
+            "predicate": "confidence",
+            "subject": "model"
+          }
+        ],
+        "statement": "Cloud escalation disabled and model confidence low for ambiguous Sam note."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed input into low-confidence, ambiguity-preserving memory entry.",
+        "Did not commit any definitive resolution or assertion about Sam note."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request clarification from user about Sam note and intended action.",
+      "Capture provisional memory with explicit caveats and retry after user input.",
+      "Retry with higher confidence threshold if more context becomes available."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

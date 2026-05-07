@@ -1,0 +1,103 @@
+{
+  "fixture_id": "slack_ambiguous_entity_buttons_001__punctuation",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Ambiguity detected: two separate entities named Sam with different affiliations (Goldman vs Point72). No definitive resolution for which Sam is referred to in 'Sam likes Bill Evans' without additional context.",
+    "citations": [],
+    "conflict_classification": "name_ambiguity",
+    "decision": "ambiguous_entity_buttons",
+    "entity_resolution": {
+      "action": "delegate_ambiguous_match",
+      "entity_id": null,
+      "reason": "Two distinct entities share the same name 'Sam' with different affiliations (Goldman vs Point72); no unambiguous disambiguation provided."
+    },
+    "intent": "classify_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unknown",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "entity",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliation",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unknown",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "entity",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "affiliation",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Point72"
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "memory",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "brain remembers Sam likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed input into two Sam entities and a liking relation.",
+        "Identified ambiguity between Goldman-Sam and Point72-Sam."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask clarifying question to disambiguate which Sam is intended (Goldman or Point72).",
+      "If context indicates a single Sam, update memory to resolve to that entity and discard the other.",
+      "Store both potential Sam entities with distinct identifiers and include contextual cues to differentiate."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

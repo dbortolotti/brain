@@ -1,0 +1,138 @@
+{
+  "fixture_id": "conversation_transcript_sam_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Extracted three current preference/work/employment memory cards from the transcript.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "link",
+      "entity_id": null,
+      "reason": "No external entity IDs provided in the transcript; entities are kept as raw names."
+    },
+    "intent": "extract_personal_memory_cards",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "previous_employer",
+            "type": "company"
+          },
+          {
+            "name": "Point72",
+            "role": "new_employer",
+            "type": "company"
+          }
+        ],
+        "kind": "employment_status",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman last month and joined Point72."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "music_artist",
+            "type": "musician"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "preferred_style_recently",
+            "type": "musical_artist_period"
+          }
+        ],
+        "kind": "music_preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "has_been_listening_to_more_recently",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "is_listening_to",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is listening to Bill Evans, but lately has been listening more to early Coltrane."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "listener",
+            "type": "person"
+          },
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "discussion_topic",
+            "type": "topic"
+          },
+          {
+            "name": "article",
+            "role": "shared_resource",
+            "type": "document"
+          }
+        ],
+        "kind": "work_planning",
+        "relationships": [
+          {
+            "object": "Sam",
+            "predicate": "will_catch_up_with",
+            "subject": "Daniele"
+          },
+          {
+            "object": "the AI infra article",
+            "predicate": "will_send",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Daniele and Sam plan to catch up about AI infrastructure; Sam will send the related article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Identified employment change ('left Goldman last month' -> 'joined Point72').",
+        "Captured recent music listening emphasis ('more early Coltrane' while still listening to Bill Evans).",
+        "Captured a planning intent ('catch up about AI infra' and 'send me that article')."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide a stable identifier for Sam (e.g., full name) to improve long-term linkage.",
+      "Confirm whether 'Point72' refers to Point72 Asset Management or another Point72 entity."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

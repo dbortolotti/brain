@@ -1,0 +1,76 @@
+{
+  "fixture_id": "debug_explain_recall_sam__punctuation",
+  "model": "google:gemini-2.5-flash",
+  "payload": {
+    "answer": "Recall returned 'Sam works at Goldman Sachs' (mem_new) because it is the current, more precise fact. 'Sam works at Goldman' (mem_old) was filtered as it was superseded by mem_new, which provides the full name of the organization.",
+    "citations": [],
+    "conflict_classification": "superseded",
+    "decision": "The system successfully recalled the most current and precise memory ('mem_new') regarding Sam's employer and filtered out the superseded memory ('mem_old'). The supersession occurred because 'mem_new' provided a more complete and accurate name for the organization, rendering 'mem_old' outdated.",
+    "entity_resolution": {
+      "action": "identify",
+      "entity_id": "sam_goldman_entity_id",
+      "reason": "The input 'Sam from Goldman' was resolved to a known entity 'Sam' whose current employer is 'Goldman Sachs', based on existing memory and contextual understanding."
+    },
+    "intent": "Explain a recall decision regarding superseded memory.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "object",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "works at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman Sachs."
+      },
+      {
+        "confidence": "superseded",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "object",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Explanation generated successfully for the recall decision.",
+        "mem_new was identified as the current, active memory.",
+        "mem_old was identified as superseded due to a more precise statement in mem_new."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

@@ -1,0 +1,55 @@
+{
+  "error": null,
+  "fixture_id": "article_url_fetch_failure_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Unable to extract article memory because the source could not be fetched (404 network error).",
+    "citations": [
+      "https://example.com/missing"
+    ],
+    "conflict_classification": "no_content_available",
+    "decision": "Do not commit article content as durable memory because the fetch failed with a 404 network error; only preserve the retrieval failure context.",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "The referenced article could not be resolved due to a fetch failure, so no durable article entity should be committed."
+    },
+    "intent": "Remember article at https://example.com/missing for memory architecture.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "target article",
+            "type": "url"
+          }
+        ],
+        "kind": "ephemeral",
+        "relationships": [
+          {
+            "object": "https://example.com/missing",
+            "predicate": "failed for",
+            "subject": "fetch attempt"
+          }
+        ],
+        "statement": "An attempt to fetch the article at https://example.com/missing failed with a 404 network error."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Fetch failed: 404 network error.",
+        "No article content available for memory extraction."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Retry fetching the URL later.",
+      "If the article text is available elsewhere, provide the content directly for extraction.",
+      "Store only the retrieval-failure note if operational context is desired."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Remember article at https://example.com/missing for memory architecture.\",\"decision\":\"Do not commit article content as durable memory because the fetch failed with a 404 network error; only preserve the retrieval failure context.\",\"memory_cards\":[{\"kind\":\"ephemeral\",\"statement\":\"An attempt to fetch the article at https://example.com/missing failed with a 404 network error.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"https://example.com/missing\",\"type\":\"url\",\"role\":\"target article\"}],\"relationships\":[{\"subject\":\"fetch attempt\",\"predicate\":\"failed for\",\"object\":\"https://example.com/missing\"}]}],\"entity_resolution\":{\"action\":\"create\",\"entity_id\":null,\"reason\":\"The referenced article could not be resolved due to a fetch failure, so no durable article entity should be committed.\"},\"conflict_classification\":\"no_content_available\",\"answer\":\"Unable to extract article memory because the source could not be fetched (404 network error).\",\"citations\":[\"https://example.com/missing\"],\"repair_options\":[\"Retry fetching the URL later.\",\"If the article text is available elsewhere, provide the content directly for extraction.\",\"Store only the retrieval-failure note if operational context is desired.\"],\"receipt\":{\"success\":false,\"details\":[\"Fetch failed: 404 network error.\",\"No article content available for memory extraction.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

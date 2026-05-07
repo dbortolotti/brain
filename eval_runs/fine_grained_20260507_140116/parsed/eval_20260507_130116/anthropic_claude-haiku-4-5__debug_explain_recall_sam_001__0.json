@@ -1,0 +1,58 @@
+{
+  "fixture_id": "debug_explain_recall_sam_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "No durable memory records found for 'Sam from Goldman'. The query is ambiguous and may refer to multiple entities. Please provide additional context such as: full name, department, date of interaction, or specific Goldman entity (e.g., Goldman Sachs).",
+    "citations": [],
+    "conflict_classification": "no_conflict_detected",
+    "decision": "Partial recall with ambiguity preservation",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Insufficient context to disambiguate: 'Sam' could refer to multiple individuals; 'Goldman' could mean Goldman Sachs or another entity. No prior memory cards match this query with high confidence."
+    },
+    "intent": "Retrieve all stored information about a person named Sam associated with Goldman",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unknown",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer_or_context",
+            "type": "organization"
+          }
+        ],
+        "kind": "entity_reference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is associated with Goldman"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Query executed without errors",
+        "No matching memory cards retrieved",
+        "Ambiguity preserved per protocol",
+        "Entity resolution deferred pending disambiguation"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Clarify full name of Sam",
+      "Specify which Goldman organization",
+      "Provide date or context of interaction",
+      "Search by alternative identifiers (email, role, project)"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

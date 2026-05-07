@@ -1,0 +1,70 @@
+{
+  "fixture_id": "duplicate_sam_bill_evans_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "No conflict exists. Both statements convey identical information. Retain single memory card to avoid redundancy.",
+    "citations": [
+      "Existing memory: Sam from Goldman mentioned that he likes Bill Evans",
+      "New: Sam from Goldman said he likes Bill Evans"
+    ],
+    "conflict_classification": "duplicate",
+    "decision": "Consolidate into single memory card; entries are identical",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "sam_goldman_001",
+      "reason": "Existing and new statements are semantically identical; no new information introduced"
+    },
+    "intent": "Evaluate duplicate memory entries for Sam from Goldman's preference for Bill Evans",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Duplicate detected and consolidated",
+        "Single authoritative memory card retained",
+        "No contradictions found",
+        "Entity Sam (Goldman) unified under sam_goldman_001"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Keep existing memory card unchanged",
+      "Update timestamp if new statement provides fresher confirmation",
+      "Discard new entry as redundant"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

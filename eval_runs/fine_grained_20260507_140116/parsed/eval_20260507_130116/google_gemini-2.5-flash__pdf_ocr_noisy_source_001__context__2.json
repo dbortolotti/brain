@@ -1,0 +1,74 @@
+{
+  "fixture_id": "pdf_ocr_noisy_source_001__context",
+  "model": "google:gemini-2.5-flash",
+  "payload": {
+    "answer": "Brain DB is the primary source of truth, and Cognee is a rebuildable projection.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "Brain DB is the authoritative data source; Cognee is a derived, rebuildable component.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No specific entity resolution task identified."
+    },
+    "intent": "Establish data source hierarchy and system design principles.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "data_source",
+            "type": "system"
+          },
+          {
+            "name": "source of truth",
+            "role": "attribute",
+            "type": "concept"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "is",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB remains the source of truth."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "component",
+            "type": "system"
+          },
+          {
+            "name": "rebuildable projection",
+            "role": "attribute",
+            "type": "concept"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "rebuildable projection",
+            "predicate": "should be",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee should be a rebuildable projection."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted two key facts about system architecture and data authority despite OCR noise."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

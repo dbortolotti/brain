@@ -1,0 +1,93 @@
+{
+  "fixture_id": "conflict_correction_like",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "Conflict detected: replace the current Bill Evans preference with early Coltrane. Do not keep 'Sam from Goldman likes Bill Evans' as a current fact.",
+    "citations": [
+      "Existing current fact: Sam from Goldman likes Bill Evans.",
+      "Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans."
+    ],
+    "conflict_classification": "explicit_correction_supersedes_existing_current_fact",
+    "decision": "conflict_detected_replace_superseded_fact",
+    "entity_resolution": {
+      "action": "match_existing",
+      "entity_id": null,
+      "reason": "The correction explicitly refers to the existing entity described as Sam from Goldman; no stable entity ID was provided in the fixture."
+    },
+    "intent": "correct_existing_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation/context",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "liked_object",
+            "type": "music/style or era"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "superseded_object",
+            "type": "person/musician"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "replacement_object",
+            "type": "music/style or era"
+          }
+        ],
+        "kind": "retraction",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "previous_like_fact_superseded",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "The prior current fact that Sam from Goldman likes Bill Evans should be superseded; the correction says the intended preference was early Coltrane, not Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Identified explicit correction language: 'actually' and 'not Bill Evans'.",
+        "Detected direct conflict with the existing current fact.",
+        "Prepared replacement memory while preserving the superseded fact only as historical/retraction context."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark the existing Bill Evans preference as superseded or deleted.",
+      "Add the corrected current preference: Sam from Goldman likes early Coltrane.",
+      "Do not infer a durable current fact that Sam dislikes Bill Evans; treat 'not Bill Evans' primarily as a correction of the prior memory."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

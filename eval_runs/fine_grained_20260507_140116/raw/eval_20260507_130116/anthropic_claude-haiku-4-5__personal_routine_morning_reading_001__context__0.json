@@ -1,0 +1,76 @@
+{
+  "error": null,
+  "fixture_id": "personal_routine_morning_reading_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory committed successfully",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Commit as durable memory with high confidence",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": "personal_routine_morning_reading_001",
+      "reason": "New routine preference with clear temporal and activity sequencing"
+    },
+    "intent": "Record personal morning routine preference for technical reading before email",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "user",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "technical papers",
+            "role": "object",
+            "type": "content_type"
+          },
+          {
+            "name": "morning",
+            "role": "temporal_context",
+            "type": "time_period"
+          },
+          {
+            "name": "email",
+            "role": "comparison_point",
+            "type": "activity"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "reading technical papers",
+            "predicate": "prefers_activity",
+            "subject": "user"
+          },
+          {
+            "object": "checking email",
+            "predicate": "occurs_before",
+            "subject": "reading technical papers"
+          },
+          {
+            "object": "morning",
+            "predicate": "occurs_during",
+            "subject": "reading technical papers"
+          }
+        ],
+        "statement": "User prefers to read technical papers in the morning before checking email"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preference recorded: morning technical paper reading before email",
+        "Temporal ordering preserved: reading precedes email check",
+        "Confidence level: high",
+        "No conflicts detected with existing memory"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Record personal morning routine preference for technical reading before email\",\n  \"decision\": \"Commit as durable memory with high confidence\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"User prefers to read technical papers in the morning before checking email\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"user\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"technical papers\",\n          \"type\": \"content_type\",\n          \"role\": \"object\"\n        },\n        {\n          \"name\": \"morning\",\n          \"type\": \"time_period\",\n          \"role\": \"temporal_context\"\n        },\n        {\n          \"name\": \"email\",\n          \"type\": \"activity\",\n          \"role\": \"comparison_point\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"user\",\n          \"predicate\": \"prefers_activity\",\n          \"object\": \"reading technical papers\"\n        },\n        {\n          \"subject\": \"reading technical papers\",\n          \"predicate\": \"occurs_before\",\n          \"object\": \"checking email\"\n        },\n        {\n          \"subject\": \"reading technical papers\",\n          \"predicate\": \"occurs_during\",\n          \"object\": \"morning\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create\",\n    \"entity_id\": \"personal_routine_morning_reading_001\",\n    \"reason\": \"New routine preference with clear temporal and activity sequencing\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Memory committed successfully\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Preference recorded: morning technical paper reading before email\",\n      \"Temporal ordering preserved: reading precedes email check\",\n      \"Confidence level: high\",\n      \"No conflicts detected with existing memory\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

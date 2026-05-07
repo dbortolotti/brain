@@ -1,0 +1,45 @@
+{
+  "error": null,
+  "fixture_id": "article_url_fetch_failure_001__punctuation",
+  "model": "groq:llama-3.1-8b-instant",
+  "payload": {
+    "answer": "Failed to fetch article",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_with_punctuation",
+    "entity_resolution": {
+      "action": "store_with_punctuation",
+      "entity_id": null,
+      "reason": "punctuation"
+    },
+    "intent": "article_url_fetch_failure",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "https://example.com/missing why",
+            "role": "article_url",
+            "type": "url"
+          }
+        ],
+        "kind": "article",
+        "relationships": [],
+        "statement": "https://example.com/missing why"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "404 network error"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "retry_fetch",
+      "remove_punctuation"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"article_url_fetch_failure\",\n   \"decision\": \"store_with_punctuation\",\n   \"memory_cards\": [\n      {\n         \"kind\": \"article\",\n         \"statement\": \"https://example.com/missing why\",\n         \"confidence\": \"low\",\n         \"entities\": [\n            {\n               \"name\": \"https://example.com/missing why\",\n               \"type\": \"url\",\n               \"role\": \"article_url\"\n            }\n         ],\n         \"relationships\": []\n      }\n   ],\n   \"entity_resolution\": {\n      \"action\": \"store_with_punctuation\",\n      \"entity_id\": null,\n      \"reason\": \"punctuation\"\n   },\n   \"conflict_classification\": \"none\",\n   \"answer\": \"Failed to fetch article\",\n   \"citations\": [],\n   \"repair_options\": [\n      \"retry_fetch\",\n      \"remove_punctuation\"\n   ],\n   \"receipt\": {\n      \"success\": false,\n      \"details\": [\n         \"404 network error\"\n      ]\n   }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

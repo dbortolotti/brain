@@ -1,0 +1,62 @@
+{
+  "fixture_id": "ambiguous_time_reference_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The statement contains an unresolved temporal reference ('next month') that cannot be committed to durable memory without clarification. The core fact (Sam's intent to leave Goldman Sachs) is preserved, but the timing is ambiguous.",
+    "citations": [
+      "Utterance timestamp: 'last Friday' (unresolved)",
+      "Temporal reference: 'next month' (unresolved)"
+    ],
+    "conflict_classification": "temporal_ambiguity",
+    "entity_resolution": {
+      "action": "flag_ambiguity",
+      "entity_id": null,
+      "reason": "Temporal reference ('last Friday' and 'next month') lacks explicit timestamp relative to system clock. Cannot resolve to a durable fact without additional context."
+    },
+    "intent": "entity_mention_extraction",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "statement",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "intends_to_leave",
+            "subject": "Sam"
+          },
+          {
+            "object": "future_departure",
+            "predicate": "made_statement_about",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam expressed intent to leave Goldman Sachs in an unspecified future timeframe (referenced as 'next month' but ambiguous relative to the utterance's timestamp)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Temporal ambiguity prevents durable memory commitment.",
+        "Core entities ('Sam', 'Goldman Sachs') extracted but relationships lack temporal grounding."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Request clarification: 'Do you mean next month from today or from last Friday?'",
+      "Store as conditional: 'Sam may leave Goldman Sachs in [unresolved timeframe]'",
+      "Reject as non-durable: 'Ambiguous timing; cannot commit to memory.'"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

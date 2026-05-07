@@ -1,0 +1,59 @@
+{
+  "fixture_id": "unresolved_pronoun_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Cannot commit this statement to durable memory without disambiguation",
+    "citations": [
+      "Pronoun 'He' requires prior context",
+      "Noun phrase 'the other one' requires prior comparison set"
+    ],
+    "conflict_classification": "unresolved_pronouns_and_ellipsis",
+    "decision": "defer_with_ambiguity",
+    "entity_resolution": {
+      "action": "cannot_resolve",
+      "entity_id": null,
+      "reason": "Pronoun 'He' lacks antecedent context; 'the other one' is anaphoric reference without prior entity introduction"
+    },
+    "intent": "Store preference statement with unresolved pronouns",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "He",
+            "role": "subject",
+            "type": "pronoun"
+          },
+          {
+            "name": "the other one",
+            "role": "object_of_preference",
+            "type": "unresolved_reference"
+          }
+        ],
+        "kind": "preference_statement",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "He"
+          }
+        ],
+        "statement": "An unidentified person prefers 'the other one' over an unidentified alternative"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Statement recorded as ambiguous fragment",
+        "No entity bindings created",
+        "Awaiting clarification before persistence"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide antecedent: 'Who is He?'",
+      "Clarify comparison: 'What are the two options being compared?'",
+      "Full statement: '[Name] prefers [specific item] over [specific item]'"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

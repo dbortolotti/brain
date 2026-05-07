@@ -1,0 +1,255 @@
+{
+  "error": null,
+  "fixture_id": "cost_latency_token_accounting_001",
+  "model": "google:gemini-2.5-flash",
+  "payload": {
+    "answer": "The required evaluation accounting fields for Brain include: **Token Counts** (input/output) for cost and rate limit tracking; **Provider/Model IDs** for identifying the specific LLM and its source, enabling granular performance and cost analysis; **Estimated Price** for calculating the monetary cost based on tokens and pricing rates; and **Latency (p50, p90, p95)** to measure operation completion times and understand the distribution of responsiveness, crucial for user experience.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "The user is asking for an explanation of key metrics used for evaluating the performance and cost of a personal memory system, specifically focusing on token accounting, provider/model identification, estimated pricing, and latency measurements.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No specific entities from the input require resolution; the request is for conceptual explanation."
+    },
+    "intent": "Explain required evaluation accounting fields for a personal memory system (Brain).",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Token counts",
+            "role": "subject",
+            "type": "metric"
+          },
+          {
+            "name": "input tokens",
+            "role": "object",
+            "type": "metric_component"
+          },
+          {
+            "name": "output tokens",
+            "role": "object",
+            "type": "metric_component"
+          },
+          {
+            "name": "cost",
+            "role": "object",
+            "type": "impact"
+          },
+          {
+            "name": "rate limits",
+            "role": "object",
+            "type": "impact"
+          }
+        ],
+        "kind": "explanation",
+        "relationships": [
+          {
+            "object": "cost",
+            "predicate": "impacts",
+            "subject": "Token counts"
+          },
+          {
+            "object": "rate limits",
+            "predicate": "impacts",
+            "subject": "Token counts"
+          }
+        ],
+        "statement": "Token counts are essential for tracking the number of input and output tokens processed by language models within the Brain system. This directly impacts cost, as most LLM providers charge per token, and also helps in understanding rate limit consumption and overall processing volume."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Provider IDs",
+            "role": "subject",
+            "type": "identifier"
+          },
+          {
+            "name": "Model IDs",
+            "role": "subject",
+            "type": "identifier"
+          },
+          {
+            "name": "language model",
+            "role": "object",
+            "type": "technology"
+          },
+          {
+            "name": "performance",
+            "role": "object",
+            "type": "metric"
+          },
+          {
+            "name": "cost",
+            "role": "object",
+            "type": "metric"
+          },
+          {
+            "name": "behavior",
+            "role": "object",
+            "type": "characteristic"
+          }
+        ],
+        "kind": "explanation",
+        "relationships": [
+          {
+            "object": "language model",
+            "predicate": "identifies",
+            "subject": "Provider IDs"
+          },
+          {
+            "object": "language model",
+            "predicate": "identifies",
+            "subject": "Model IDs"
+          },
+          {
+            "object": "performance",
+            "predicate": "enables tracking of",
+            "subject": "Provider IDs"
+          },
+          {
+            "object": "performance",
+            "predicate": "enables tracking of",
+            "subject": "Model IDs"
+          },
+          {
+            "object": "cost",
+            "predicate": "enables tracking of",
+            "subject": "Provider IDs"
+          },
+          {
+            "object": "cost",
+            "predicate": "enables tracking of",
+            "subject": "Model IDs"
+          }
+        ],
+        "statement": "Provider and model IDs are crucial for identifying which specific language model and its originating provider were used for a particular operation. This allows for granular tracking of performance, cost, and behavior across different models and providers, enabling informed decisions about model selection and optimization within the Brain system."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Estimated price",
+            "role": "subject",
+            "type": "metric"
+          },
+          {
+            "name": "token counts",
+            "role": "object",
+            "type": "metric_component"
+          },
+          {
+            "name": "pricing rates",
+            "role": "object",
+            "type": "data_source"
+          },
+          {
+            "name": "operational expenses",
+            "role": "object",
+            "type": "impact"
+          }
+        ],
+        "kind": "explanation",
+        "relationships": [
+          {
+            "object": "token counts",
+            "predicate": "derived from",
+            "subject": "Estimated price"
+          },
+          {
+            "object": "pricing rates",
+            "predicate": "derived from",
+            "subject": "Estimated price"
+          },
+          {
+            "object": "operational expenses",
+            "predicate": "reflects",
+            "subject": "Estimated price"
+          }
+        ],
+        "statement": "Estimated price represents the calculated monetary cost of an operation, derived from the token counts and the known pricing rates of the specific provider and model used. This metric provides a direct financial understanding of the operational expenses incurred by the Brain system."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Latency",
+            "role": "subject",
+            "type": "metric"
+          },
+          {
+            "name": "p50",
+            "role": "object",
+            "type": "percentile"
+          },
+          {
+            "name": "p90",
+            "role": "object",
+            "type": "percentile"
+          },
+          {
+            "name": "p95",
+            "role": "object",
+            "type": "percentile"
+          },
+          {
+            "name": "responsiveness",
+            "role": "object",
+            "type": "quality"
+          },
+          {
+            "name": "user experience",
+            "role": "object",
+            "type": "quality"
+          }
+        ],
+        "kind": "explanation",
+        "relationships": [
+          {
+            "object": "time taken",
+            "predicate": "measures",
+            "subject": "Latency"
+          },
+          {
+            "object": "median completion time",
+            "predicate": "represents",
+            "subject": "p50"
+          },
+          {
+            "object": "90th percentile completion time",
+            "predicate": "represents",
+            "subject": "p90"
+          },
+          {
+            "object": "95th percentile completion time",
+            "predicate": "represents",
+            "subject": "p95"
+          },
+          {
+            "object": "responsiveness",
+            "predicate": "impacts",
+            "subject": "Latency"
+          },
+          {
+            "object": "user experience",
+            "predicate": "impacts",
+            "subject": "Latency"
+          }
+        ],
+        "statement": "Latency measures the time taken for an operation to complete. The percentiles p50, p90, and p95 are critical for understanding the distribution of latency: p50 (median) indicates that 50% of requests complete within this time, p90 indicates 90% complete within this time, and p95 indicates 95% complete within this time. These metrics are vital for assessing the responsiveness and user experience of the Brain system, highlighting not just average performance but also tail latencies that affect a significant portion of users."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Explanation of accounting fields provided as requested."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"Explain required evaluation accounting fields for a personal memory system (Brain).\",\"decision\":\"The user is asking for an explanation of key metrics used for evaluating the performance and cost of a personal memory system, specifically focusing on token accounting, provider/model identification, estimated pricing, and latency measurements.\",\"memory_cards\":[{\"kind\":\"explanation\",\"statement\":\"Token counts are essential for tracking the number of input and output tokens processed by language models within the Brain system. This directly impacts cost, as most LLM providers charge per token, and also helps in understanding rate limit consumption and overall processing volume.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Token counts\",\"type\":\"metric\",\"role\":\"subject\"},{\"name\":\"input tokens\",\"type\":\"metric_component\",\"role\":\"object\"},{\"name\":\"output tokens\",\"type\":\"metric_component\",\"role\":\"object\"},{\"name\":\"cost\",\"type\":\"impact\",\"role\":\"object\"},{\"name\":\"rate limits\",\"type\":\"impact\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"Token counts\",\"predicate\":\"impacts\",\"object\":\"cost\"},{\"subject\":\"Token counts\",\"predicate\":\"impacts\",\"object\":\"rate limits\"}]},{\"kind\":\"explanation\",\"statement\":\"Provider and model IDs are crucial for identifying which specific language model and its originating provider were used for a particular operation. This allows for granular tracking of performance, cost, and behavior across different models and providers, enabling informed decisions about model selection and optimization within the Brain system.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Provider IDs\",\"type\":\"identifier\",\"role\":\"subject\"},{\"name\":\"Model IDs\",\"type\":\"identifier\",\"role\":\"subject\"},{\"name\":\"language model\",\"type\":\"technology\",\"role\":\"object\"},{\"name\":\"performance\",\"type\":\"metric\",\"role\":\"object\"},{\"name\":\"cost\",\"type\":\"metric\",\"role\":\"object\"},{\"name\":\"behavior\",\"type\":\"characteristic\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"Provider IDs\",\"predicate\":\"identifies\",\"object\":\"language model\"},{\"subject\":\"Model IDs\",\"predicate\":\"identifies\",\"object\":\"language model\"},{\"subject\":\"Provider IDs\",\"predicate\":\"enables tracking of\",\"object\":\"performance\"},{\"subject\":\"Model IDs\",\"predicate\":\"enables tracking of\",\"object\":\"performance\"},{\"subject\":\"Provider IDs\",\"predicate\":\"enables tracking of\",\"object\":\"cost\"},{\"subject\":\"Model IDs\",\"predicate\":\"enables tracking of\",\"object\":\"cost\"}]},{\"kind\":\"explanation\",\"statement\":\"Estimated price represents the calculated monetary cost of an operation, derived from the token counts and the known pricing rates of the specific provider and model used. This metric provides a direct financial understanding of the operational expenses incurred by the Brain system.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Estimated price\",\"type\":\"metric\",\"role\":\"subject\"},{\"name\":\"token counts\",\"type\":\"metric_component\",\"role\":\"object\"},{\"name\":\"pricing rates\",\"type\":\"data_source\",\"role\":\"object\"},{\"name\":\"operational expenses\",\"type\":\"impact\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"Estimated price\",\"predicate\":\"derived from\",\"object\":\"token counts\"},{\"subject\":\"Estimated price\",\"predicate\":\"derived from\",\"object\":\"pricing rates\"},{\"subject\":\"Estimated price\",\"predicate\":\"reflects\",\"object\":\"operational expenses\"}]},{\"kind\":\"explanation\",\"statement\":\"Latency measures the time taken for an operation to complete. The percentiles p50, p90, and p95 are critical for understanding the distribution of latency: p50 (median) indicates that 50% of requests complete within this time, p90 indicates 90% complete within this time, and p95 indicates 95% complete within this time. These metrics are vital for assessing the responsiveness and user experience of the Brain system, highlighting not just average performance but also tail latencies that affect a significant portion of users.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Latency\",\"type\":\"metric\",\"role\":\"subject\"},{\"name\":\"p50\",\"type\":\"percentile\",\"role\":\"object\"},{\"name\":\"p90\",\"type\":\"percentile\",\"role\":\"object\"},{\"name\":\"p95\",\"type\":\"percentile\",\"role\":\"object\"},{\"name\":\"responsiveness\",\"type\":\"quality\",\"role\":\"object\"},{\"name\":\"user experience\",\"type\":\"quality\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"Latency\",\"predicate\":\"measures\",\"object\":\"time taken\"},{\"subject\":\"p50\",\"predicate\":\"represents\",\"object\":\"median completion time\"},{\"subject\":\"p90\",\"predicate\":\"represents\",\"object\":\"90th percentile completion time\"},{\"subject\":\"p95\",\"predicate\":\"represents\",\"object\":\"95th percentile completion time\"},{\"subject\":\"Latency\",\"predicate\":\"impacts\",\"object\":\"responsiveness\"},{\"subject\":\"Latency\",\"predicate\":\"impacts\",\"object\":\"user experience\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No specific entities from the input require resolution; the request is for conceptual explanation.\"},\"conflict_classification\":\"none\",\"answer\":\"The required evaluation accounting fields for Brain include: **Token Counts** (input/output) for cost and rate limit tracking; **Provider/Model IDs** for identifying the specific LLM and its source, enabling granular performance and cost analysis; **Estimated Price** for calculating the monetary cost based on tokens and pricing rates; and **Latency (p50, p90, p95)** to measure operation completion times and understand the distribution of responsiveness, crucial for user experience.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Explanation of accounting fields provided as requested.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

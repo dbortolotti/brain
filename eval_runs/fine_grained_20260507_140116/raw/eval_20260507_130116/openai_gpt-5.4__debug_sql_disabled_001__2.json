@@ -1,0 +1,37 @@
+{
+  "error": null,
+  "fixture_id": "debug_sql_disabled_001",
+  "model": "openai:gpt-5.4",
+  "payload": {
+    "answer": "SQL admin execution is disabled because BRAIN_DEBUG_SQL_ENABLED=false. The request '/brain admin sql SELECT * FROM memory_cards' was not run. No results are available.",
+    "citations": [
+      "Input command: /brain admin sql SELECT * FROM memory_cards",
+      "Runtime flag: BRAIN_DEBUG_SQL_ENABLED=false"
+    ],
+    "conflict_classification": "none",
+    "decision": "deny_execution_explain_debug_flag",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No durable user memory should be created from an admin SQL/debug request."
+    },
+    "intent": "admin_sql_request",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Blocked admin SQL request due to disabled debug SQL flag.",
+        "No query executed.",
+        "No memory changes committed."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Set BRAIN_DEBUG_SQL_ENABLED=true in the appropriate debug environment, then retry the command.",
+      "Use a non-SQL admin/debug interface if one is available.",
+      "Inspect application logs or configured diagnostics for why SQL debug access is disabled."
+    ]
+  },
+  "raw_text": "{\"intent\":\"admin_sql_request\",\"decision\":\"deny_execution_explain_debug_flag\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No durable user memory should be created from an admin SQL/debug request.\"},\"conflict_classification\":\"none\",\"answer\":\"SQL admin execution is disabled because BRAIN_DEBUG_SQL_ENABLED=false. The request '/brain admin sql SELECT * FROM memory_cards' was not run. No results are available.\",\"citations\":[\"Input command: /brain admin sql SELECT * FROM memory_cards\",\"Runtime flag: BRAIN_DEBUG_SQL_ENABLED=false\"],\"repair_options\":[\"Set BRAIN_DEBUG_SQL_ENABLED=true in the appropriate debug environment, then retry the command.\",\"Use a non-SQL admin/debug interface if one is available.\",\"Inspect application logs or configured diagnostics for why SQL debug access is disabled.\"],\"receipt\":{\"success\":false,\"details\":[\"Blocked admin SQL request due to disabled debug SQL flag.\",\"No query executed.\",\"No memory changes committed.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,69 @@
+{
+  "fixture_id": "duplicate_sam_bill_evans_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The new statement is a duplicate of an existing durable memory. No action required beyond preserving the original.",
+    "citations": [
+      "Existing memory: Sam from Goldman mentioned that he likes Bill Evans.",
+      "New input: Sam from Goldman said he likes Bill Evans."
+    ],
+    "conflict_classification": "duplicate_statement",
+    "decision": "suppress_duplicate",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "sam_goldman_001",
+      "reason": "Identical source (Sam from Goldman) and identical preference (Bill Evans) with no additional context to distinguish."
+    },
+    "intent": "detect_duplicate_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "source",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_target",
+            "type": "person"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman mentioned that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Duplicate memory suppressed to preserve durability.",
+        "Original memory retained with high confidence.",
+        "No superseded/deleted facts introduced."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ignore the new statement (recommended).",
+      "Merge with existing memory (implicitly handled via suppression).",
+      "Flag for manual review if ambiguity persists (not applicable here)."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

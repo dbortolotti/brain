@@ -1,0 +1,63 @@
+{
+  "fixture_id": "debug_inspect_memory_001",
+  "model": "google:gemini-2.5-flash",
+  "payload": {
+    "answer": "Details for memory card 'mem_123' have been retrieved and are displayed above.",
+    "citations": [
+      "mem_123"
+    ],
+    "conflict_classification": "none",
+    "decision": "display_memory_card_details",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No entity resolution required for direct memory inspection."
+    },
+    "intent": "inspect_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "mem_123",
+            "role": "identifier",
+            "type": "memory_card"
+          },
+          {
+            "name": "user",
+            "role": "owner",
+            "type": "person"
+          },
+          {
+            "name": "dark mode",
+            "role": "topic",
+            "type": "preference"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "user's preference",
+            "predicate": "contains_information_about",
+            "subject": "mem_123"
+          },
+          {
+            "object": "dark mode",
+            "predicate": "has_preference_for",
+            "subject": "user"
+          }
+        ],
+        "statement": "Memory card mem_123 contains information about the user's preference for dark mode."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card 'mem_123' found.",
+        "Memory card details successfully retrieved and formatted."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

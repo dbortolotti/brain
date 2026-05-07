@@ -1,0 +1,68 @@
+{
+  "error": null,
+  "fixture_id": "memory_compiler_small_table__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "store_context",
+    "entity_resolution": {
+      "action": "preserve_current_mentions",
+      "entity_id": null,
+      "reason": "Context excerpt provided is a snapshot of current preferences; no explicit unique identifiers available."
+    },
+    "intent": "memory_compiler",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "Person"
+          },
+          {
+            "name": "Daniele",
+            "role": "subject",
+            "type": "Person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "assignee_preference",
+            "type": "Preference"
+          },
+          {
+            "name": "Knowledge graphs",
+            "role": "assignee_preference",
+            "type": "Preference"
+          }
+        ],
+        "kind": "context",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "has_preference",
+            "subject": "Sam"
+          },
+          {
+            "object": "Knowledge graphs",
+            "predicate": "has_preference",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "For context, | Person | Preference |\n| --- | --- |\n| Sam | Bill Evans |\n| Daniele | Knowledge graphs |"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Context stored as memory_cards[0] with inferred entities and relationships."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"memory_compiler\",\n  \"decision\": \"store_context\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"context\",\n      \"statement\": \"For context, | Person | Preference |\\n| --- | --- |\\n| Sam | Bill Evans |\\n| Daniele | Knowledge graphs |\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"Person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"Person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"Preference\",\n          \"role\": \"assignee_preference\"\n        },\n        {\n          \"name\": \"Knowledge graphs\",\n          \"type\": \"Preference\",\n          \"role\": \"assignee_preference\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has_preference\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Daniele\",\n          \"predicate\": \"has_preference\",\n          \"object\": \"Knowledge graphs\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"preserve_current_mentions\",\n    \"entity_id\": null,\n    \"reason\": \"Context excerpt provided is a snapshot of current preferences; no explicit unique identifiers available.\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Context stored as memory_cards[0] with inferred entities and relationships.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

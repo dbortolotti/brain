@@ -1,0 +1,55 @@
+{
+  "fixture_id": "ambiguous_place_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Committed subjective experience to Brutto restaurant record. Ambiguity preserved: note could theoretically reference article alias, but restaurant interpretation is more probable given evaluative content.",
+    "citations": [
+      "Existing: Brutto restaurant in London",
+      "Existing: Brutto article alias",
+      "New note: Brutto was better than expected"
+    ],
+    "conflict_classification": "entity_scope_ambiguity",
+    "decision": "Link new note to existing Brutto restaurant entity; preserve ambiguity about which Brutto (restaurant vs article alias)",
+    "entity_resolution": {
+      "action": "link_with_ambiguity",
+      "entity_id": "ambiguous_place_001",
+      "reason": "New note most likely refers to Brutto restaurant (contextually more evaluable than article alias), but source ambiguity preserved. No merge performed."
+    },
+    "intent": "Disambiguate Brutto entity and commit subjective experience memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brutto",
+            "role": "subject_of_evaluation",
+            "type": "place_or_concept"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "quality",
+            "predicate": "exceeded_expectations",
+            "subject": "Brutto"
+          }
+        ],
+        "statement": "Brutto exceeded expectations in quality"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created for subjective evaluation",
+        "Entity linked to ambiguous_place_001 without forced disambiguation",
+        "Ambiguity flag preserved for future resolution"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify: Was this note about the restaurant or the article?",
+      "Split entities if future notes confirm distinct Brutto references",
+      "Add location/context tag to disambiguate on next mention"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

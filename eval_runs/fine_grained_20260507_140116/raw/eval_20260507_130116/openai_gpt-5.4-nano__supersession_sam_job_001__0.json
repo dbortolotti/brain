@@ -1,0 +1,116 @@
+{
+  "error": null,
+  "fixture_id": "supersession_sam_job_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "You currently have conflicting claims about Sam\u2019s employer. Preserve the existing memory that Sam works at Goldman, and treat the new claim that Sam joined Point72 as unverified until confirmed; store this as a conflict/ambiguity rather than overwriting.",
+    "citations": [],
+    "conflict_classification": "contradicting_employment_status",
+    "decision": "Do not overwrite existing durable memory; record a conflict/ambiguity about Sam's employer and store the new claim as non-authoritative or as supersession pending confirmation.",
+    "entity_resolution": {
+      "action": "no_change",
+      "entity_id": null,
+      "reason": "No unique entity identifiers are provided; treat 'Sam', 'Goldman', and 'Point72' as the same surface forms referenced in both existing and new statements."
+    },
+    "intent": "Explain and resolve a conflict between existing memory and new input about Sam's employer.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "conflict",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "employed_by",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "employed_by",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "There is a potential conflict about Sam's current employer: existing memory says Sam works at Goldman, while new input says Sam left Goldman and joined Point72."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "memory_preservation_note",
+        "relationships": [],
+        "statement": "Existing durable fact 'Sam works at Goldman' conflicts with the new claim; do not treat either statement as definitively current without verification."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "previous_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "new_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "non_authoritative_new_claim",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "New claim: Sam left Goldman and joined Point72 (unverified; conflicts with existing memory)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected direct conflict between existing and new employment statements.",
+        "Chose preservation over overwrite due to lack of verification.",
+        "Stored the new claim as non-authoritative to avoid asserting current status."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for a confirmation date (e.g., when Sam left Goldman and when he started at Point72).",
+      "If new information is authoritative, update the durable memory to reflect the verified current employer and mark the old employer as historical.",
+      "Maintain both as time-scoped facts (e.g., 'at Goldman until <date>' and 'at Point72 since <date>') once dates are known."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Explain and resolve a conflict between existing memory and new input about Sam's employer.\",\n  \"decision\": \"Do not overwrite existing durable memory; record a conflict/ambiguity about Sam's employer and store the new claim as non-authoritative or as supersession pending confirmation.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"conflict\",\n      \"statement\": \"There is a potential conflict about Sam's current employer: existing memory says Sam works at Goldman, while new input says Sam left Goldman and joined Point72.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"employed_by\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"employed_by\",\n          \"object\": \"Point72\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"memory_preservation_note\",\n      \"statement\": \"Existing durable fact 'Sam works at Goldman' conflicts with the new claim; do not treat either statement as definitively current without verification.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        }\n      ],\n      \"relationships\": []\n    },\n    {\n      \"kind\": \"non_authoritative_new_claim\",\n      \"statement\": \"New claim: Sam left Goldman and joined Point72 (unverified; conflicts with existing memory).\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"previous_employer\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"new_employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"left\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_change\",\n    \"entity_id\": null,\n    \"reason\": \"No unique entity identifiers are provided; treat 'Sam', 'Goldman', and 'Point72' as the same surface forms referenced in both existing and new statements.\"\n  },\n  \"conflict_classification\": \"contradicting_employment_status\",\n  \"answer\": \"You currently have conflicting claims about Sam\u2019s employer. Preserve the existing memory that Sam works at Goldman, and treat the new claim that Sam joined Point72 as unverified until confirmed; store this as a conflict/ambiguity rather than overwriting.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Ask for a confirmation date (e.g., when Sam left Goldman and when he started at Point72).\",\n    \"If new information is authoritative, update the durable memory to reflect the verified current employer and mark the old employer as historical.\",\n    \"Maintain both as time-scoped facts (e.g., 'at Goldman until <date>' and 'at Point72 since <date>') once dates are known.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Detected direct conflict between existing and new employment statements.\",\n      \"Chose preservation over overwrite due to lack of verification.\",\n      \"Stored the new claim as non-authoritative to avoid asserting current status.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,53 @@
+{
+  "error": null,
+  "fixture_id": "vague_memory_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "No durable memory can be committed or retrieved due to the vague temporal reference. Clarification is required to resolve ambiguity.",
+    "citations": [],
+    "conflict_classification": "none_applicable",
+    "decision": "ambiguous_due_to_vague_temporal_reference",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Insufficient specificity in temporal reference ('yesterday') to resolve to a unique memory card. Ambiguity persists due to lack of contextual cues (e.g., topic, modality, or associated entities)."
+    },
+    "intent": "retrieve_vague_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "yesterday",
+            "role": "vague_anchor",
+            "type": "temporal_reference"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "temporal_disambiguation",
+            "predicate": "requires",
+            "subject": "user_intent"
+          }
+        ],
+        "statement": "The user requested retrieval of a memory from 'yesterday,' but the system lacks a precise timestamp or contextual anchor to disambiguate which event or fact is being referenced."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Temporal reference 'yesterday' is underspecified for durable memory retrieval.",
+        "No superseded/deleted facts were consulted; only active, unambiguous memories are considered."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Request user to specify: (1) a topic/keyword, (2) a time range, or (3) associated entities to narrow the search.",
+      "Check for implicit context in prior interactions (e.g., recent discussions about 'the thing') but note this may introduce bias.",
+      "Flag as unresolved and prompt for explicit memory capture if the event was significant."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"retrieve_vague_memory\",\n  \"decision\": \"ambiguous_due_to_vague_temporal_reference\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"durable_memory\",\n      \"statement\": \"The user requested retrieval of a memory from 'yesterday,' but the system lacks a precise timestamp or contextual anchor to disambiguate which event or fact is being referenced.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"yesterday\",\n          \"type\": \"temporal_reference\",\n          \"role\": \"vague_anchor\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"user_intent\",\n          \"predicate\": \"requires\",\n          \"object\": \"temporal_disambiguation\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Insufficient specificity in temporal reference ('yesterday') to resolve to a unique memory card. Ambiguity persists due to lack of contextual cues (e.g., topic, modality, or associated entities).\"\n  },\n  \"conflict_classification\": \"none_applicable\",\n  \"answer\": \"No durable memory can be committed or retrieved due to the vague temporal reference. Clarification is required to resolve ambiguity.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Request user to specify: (1) a topic/keyword, (2) a time range, or (3) associated entities to narrow the search.\",\n    \"Check for implicit context in prior interactions (e.g., recent discussions about 'the thing') but note this may introduce bias.\",\n    \"Flag as unresolved and prompt for explicit memory capture if the event was significant.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Temporal reference 'yesterday' is underspecified for durable memory retrieval.\",\n      \"No superseded/deleted facts were consulted; only active, unambiguous memories are considered.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

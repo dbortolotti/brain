@@ -1,0 +1,67 @@
+{
+  "fixture_id": "recall_hide_deleted_001__punctuation",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Based on current memory, Sam likes Bill Evans. The deleted memory stated Sam liked Taylor Swift but that claim is not current and should not be presented as true unless restored. If restoring history is intended, that action would change the answer to include Taylor Swift as a past preference but not as a current fact.",
+    "citations": [],
+    "conflict_classification": "ambiguous_or_conflicting_evidence_with_deleted_memory_present",
+    "decision": "ambiguous_due_to_deleted_memory",
+    "entity_resolution": {
+      "action": "compare_current_and_deleted",
+      "entity_id": null,
+      "reason": "Current memory states Sam likes Bill Evans; deleted memory previously asserted Sam likes Taylor Swift. The query asks what music Sam likes; must reflect both, but deleted memory should not be asserted as current."
+    },
+    "intent": "query_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "music_artist"
+          }
+        ],
+        "kind": "memory",
+        "relationships": [],
+        "statement": "Sam likes Bill Evans"
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Taylor Swift",
+            "role": "object",
+            "type": "music_artist"
+          }
+        ],
+        "kind": "memory",
+        "relationships": [],
+        "statement": "Sam likes Taylor Swift"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Processed memory list and identified deleted vs. current statements.",
+        "Generated cautious answer reflecting current memory state."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Restore Taylor Swift as a current memory (if intended): Sam likes Taylor Swift.",
+      "Keep Taylor Swift as deleted: Do not include Taylor Swift in current answer.",
+      "Provide both current and historical preferences separately with clear labels."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

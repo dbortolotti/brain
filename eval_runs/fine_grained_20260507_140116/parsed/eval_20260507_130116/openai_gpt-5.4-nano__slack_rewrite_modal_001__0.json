@@ -1,0 +1,54 @@
+{
+  "fixture_id": "slack_rewrite_modal_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Saved preference via Rewrite memory.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "store_new",
+    "entity_resolution": {
+      "action": "create_or_unknown",
+      "entity_id": null,
+      "reason": "The pronoun 'He' and the phrase 'the other one' are not uniquely identifiable from the input alone."
+    },
+    "intent": "rewrite_memory_preference",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "He",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "the other one",
+            "role": "preferred_target",
+            "type": "option"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "He"
+          }
+        ],
+        "statement": "He prefers the other one."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed a durable preference statement: 'He prefers the other one.'",
+        "Stored with medium confidence due to ambiguity in referents."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify who 'He' refers to (name or context).",
+      "Specify what 'the other one' is (e.g., which option, item, or setting)."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

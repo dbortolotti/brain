@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "fixture_id": "slack_no_durable_value_repair_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory recorded with ambiguity flags. Temporal anchor 'today' lacks specificity for reliable future retrieval.",
+    "citations": [
+      "Input contains no date specification",
+      "No location context provided for weather observation",
+      "Punctuation present but grammatically valid"
+    ],
+    "conflict_classification": "temporal_ambiguity",
+    "decision": "accept_with_low_confidence",
+    "entity_resolution": {
+      "action": "create_temporal_anchor",
+      "entity_id": null,
+      "reason": "Temporal reference 'today' is ambiguous without explicit date; no durable location or timezone provided"
+    },
+    "intent": "store_weather_observation",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "today",
+            "role": "time_anchor",
+            "type": "temporal_reference"
+          },
+          {
+            "name": "weather",
+            "role": "subject",
+            "type": "domain"
+          },
+          {
+            "name": "cloudy",
+            "role": "observation_value",
+            "type": "weather_condition"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "cloudy",
+            "predicate": "has_weather_condition",
+            "subject": "today"
+          }
+        ],
+        "statement": "Today's weather is cloudy"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created with low confidence due to temporal ambiguity",
+        "Observation stored as-is; ambiguity preserved in metadata",
+        "No superseded facts detected",
+        "Recommend user provide date and location for durable recall"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Specify date: 'Today (YYYY-MM-DD) weather is cloudy'",
+      "Add location: 'Today's weather in [location] is cloudy'",
+      "Add timezone context for temporal precision"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"store_weather_observation\",\n  \"decision\": \"accept_with_low_confidence\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"observation\",\n      \"statement\": \"Today's weather is cloudy\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"today\",\n          \"type\": \"temporal_reference\",\n          \"role\": \"time_anchor\"\n        },\n        {\n          \"name\": \"weather\",\n          \"type\": \"domain\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"cloudy\",\n          \"type\": \"weather_condition\",\n          \"role\": \"observation_value\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"today\",\n          \"predicate\": \"has_weather_condition\",\n          \"object\": \"cloudy\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_temporal_anchor\",\n    \"entity_id\": null,\n    \"reason\": \"Temporal reference 'today' is ambiguous without explicit date; no durable location or timezone provided\"\n  },\n  \"conflict_classification\": \"temporal_ambiguity\",\n  \"answer\": \"Memory recorded with ambiguity flags. Temporal anchor 'today' lacks specificity for reliable future retrieval.\",\n  \"citations\": [\n    \"Input contains no date specification\",\n    \"No location context provided for weather observation\",\n    \"Punctuation present but grammatically valid\"\n  ],\n  \"repair_options\": [\n    \"Specify date: 'Today (YYYY-MM-DD) weather is cloudy'\",\n    \"Add location: 'Today's weather in [location] is cloudy'\",\n    \"Add timezone context for temporal precision\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card created with low confidence due to temporal ambiguity\",\n      \"Observation stored as-is; ambiguity preserved in metadata\",\n      \"No superseded facts detected\",\n      \"Recommend user provide date and location for durable recall\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

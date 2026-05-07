@@ -1,0 +1,96 @@
+{
+  "fixture_id": "project_state_brain_slack_agent_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Slack is designated as the primary guardrailed memory ingestion interface for Brain, with Telegram integration deferred pending guardrail evaluation. All ingested content via Slack must adhere to strict validation protocols.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Slack as primary guardrailed memory ingestion interface; Telegram deferred",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": null,
+      "reason": "No existing entity matches the defined roles for Slack/Telegram in memory ingestion."
+    },
+    "intent": "define_primary_ingestion_interface",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "primary_ingestion_interface",
+            "type": "platform"
+          },
+          {
+            "name": "Telegram",
+            "role": "deferred_ingestion_interface",
+            "type": "platform"
+          },
+          {
+            "name": "guardrailed_memory_ingestion",
+            "role": "validation_mechanism",
+            "type": "process"
+          }
+        ],
+        "kind": "system_rule",
+        "relationships": [
+          {
+            "object": "primary_ingestion_interface",
+            "predicate": "HAS_ROLE",
+            "subject": "Slack"
+          },
+          {
+            "object": "deferred_ingestion_interface",
+            "predicate": "HAS_ROLE",
+            "subject": "Telegram"
+          },
+          {
+            "object": "strict_validation",
+            "predicate": "REQUIRES",
+            "subject": "guardrailed_memory_ingestion"
+          }
+        ],
+        "statement": "Slack must serve as the primary guardrailed interface for memory ingestion in Brain, with strict validation and access controls applied to all ingested content."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Telegram",
+            "role": "deferred_integration",
+            "type": "platform"
+          },
+          {
+            "name": "guardrails",
+            "role": "pending_evaluation",
+            "type": "concept"
+          }
+        ],
+        "kind": "system_constraint",
+        "relationships": [
+          {
+            "object": "deferred_integration",
+            "predicate": "IS_SUBJECT_TO",
+            "subject": "Telegram"
+          },
+          {
+            "object": "further_evaluation",
+            "predicate": "REQUIRE",
+            "subject": "guardrails"
+          }
+        ],
+        "statement": "Telegram integration for memory ingestion is explicitly deferred until further evaluation of guardrails and access control mechanisms."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "System rule for Slack as primary ingestion interface recorded.",
+        "Deferred status for Telegram integration documented.",
+        "No conflicts detected with existing memory cards."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

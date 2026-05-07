@@ -1,0 +1,66 @@
+{
+  "fixture_id": "project_state_brain_slack_agent_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Captured as a project preference: use Slack first for guardrailed memory ingestion; Telegram may be added later.",
+    "citations": [
+      "Input: \"Brain project state - Slack should be the primary guardrailed memory ingestion interface; Telegram can come later\""
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "Slack is the primary guardrailed memory ingestion interface; Telegram is deferred for later consideration.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The statement is project-level guidance and does not require linking to an existing canonical entity."
+    },
+    "intent": "Extract a durable project-state memory about preferred memory ingestion interfaces.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "primary interface",
+            "type": "product"
+          },
+          {
+            "name": "Telegram",
+            "role": "deferred future interface",
+            "type": "product"
+          },
+          {
+            "name": "Brain",
+            "role": "project context",
+            "type": "system"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "guardrailed memory ingestion",
+            "predicate": "is primary for",
+            "subject": "Slack"
+          },
+          {
+            "object": "later",
+            "predicate": "is deferred for",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "Slack should be the primary guardrailed memory ingestion interface, with Telegram considered later."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "One preference card extracted.",
+        "No conflicting facts detected.",
+        "Deferred scope for Telegram preserved."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If this policy changes, update the interface priority explicitly and supersede this statement."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

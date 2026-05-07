@@ -1,0 +1,60 @@
+{
+  "error": null,
+  "fixture_id": "entity_ambiguous_sam_two_people",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory recorded without entity binding. Fact is durable but unattached pending clarification of which Sam.",
+    "citations": [],
+    "conflict_classification": "unresolved_ambiguity",
+    "decision": "Create unresolved memory card; defer entity binding",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Ambiguous reference to two existing Sams (Goldman, Point72); insufficient context to bind to either entity; preserving ambiguity per system design"
+    },
+    "intent": "Store a preference fact about an ambiguous entity (Sam) without resolving which Sam is intended",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "music"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes early Coltrane"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preference fact stored",
+        "Entity binding deferred",
+        "Ambiguity preserved",
+        "No superseded facts affected"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify: 'Sam from Goldman likes early Coltrane'",
+      "Clarify: 'Sam from Point72 likes early Coltrane'",
+      "Provide additional context to disambiguate Sam identity"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Store a preference fact about an ambiguous entity (Sam) without resolving which Sam is intended\",\n  \"decision\": \"Create unresolved memory card; defer entity binding\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam likes early Coltrane\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"early Coltrane\",\n          \"type\": \"music\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"early Coltrane\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguous reference to two existing Sams (Goldman, Point72); insufficient context to bind to either entity; preserving ambiguity per system design\"\n  },\n  \"conflict_classification\": \"unresolved_ambiguity\",\n  \"answer\": \"Memory recorded without entity binding. Fact is durable but unattached pending clarification of which Sam.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Clarify: 'Sam from Goldman likes early Coltrane'\",\n    \"Clarify: 'Sam from Point72 likes early Coltrane'\",\n    \"Provide additional context to disambiguate Sam identity\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Preference fact stored\",\n      \"Entity binding deferred\",\n      \"Ambiguity preserved\",\n      \"No superseded facts affected\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

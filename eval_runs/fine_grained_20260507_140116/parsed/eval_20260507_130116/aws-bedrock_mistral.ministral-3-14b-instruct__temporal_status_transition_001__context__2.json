@@ -1,0 +1,105 @@
+{
+  "fixture_id": "temporal_status_transition_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The Brain Slack agent project status is now **implemented (MVP)**. The prior 'open' status is superseded and should not be used in current references.",
+    "citations": [
+      "New MVP implementation input (temporal_status_transition_001__context)",
+      "Project state transition rule: 'implemented' supersedes 'open'"
+    ],
+    "conflict_classification": "temporal_supersession",
+    "decision": "confirm_temporal_transition",
+    "entity_resolution": {
+      "action": "supersede",
+      "entity_id": "status_open_brain_slack_agent",
+      "reason": "New MVP implementation renders the 'open' status invalid for current state representation."
+    },
+    "intent": "update_project_status",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain Slack agent",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "open",
+            "role": "current_state",
+            "type": "status"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "open",
+            "predicate": "had_status",
+            "subject": "Brain Slack agent"
+          }
+        ],
+        "statement": "The Brain Slack agent project was previously in the 'open' status (planning phase)."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain Slack agent MVP",
+            "role": "subject",
+            "type": "milestone"
+          },
+          {
+            "name": "implemented",
+            "role": "new_state",
+            "type": "status"
+          },
+          {
+            "name": "open",
+            "role": "superseded_state",
+            "type": "status"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "open",
+            "predicate": "transitioned_from",
+            "subject": "Brain Slack agent"
+          },
+          {
+            "object": "open",
+            "predicate": "replaces",
+            "subject": "Brain Slack agent MVP"
+          }
+        ],
+        "statement": "The Brain Slack agent MVP is now implemented, superseding the 'open' status."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "open",
+            "role": "obsolete",
+            "type": "status"
+          }
+        ],
+        "kind": "inference",
+        "statement": "The 'open' status is now obsolete and should not be referenced as current."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded 'open' status marked as obsolete.",
+        "New 'implemented (MVP)' status committed to durable memory.",
+        "Conflict resolution applied: temporal_supersession."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Update all references to 'open' status to 'implemented (MVP)' in memory cards.",
+      "Flag superseded facts for archival (e.g., 'Brain Slack agent was previously in planning phase').",
+      "Add temporal constraint: 'open' status valid only before [timestamp of MVP implementation].'"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

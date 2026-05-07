@@ -1,0 +1,61 @@
+{
+  "fixture_id": "supersession_sam_job_001__context",
+  "model": "google:gemini-2.5-flash-lite",
+  "payload": {
+    "answer": "Sam no longer works at Goldman; they have joined Point72.",
+    "citations": [],
+    "conflict_classification": "supersession",
+    "decision": "Supersede existing memory.",
+    "entity_resolution": {
+      "action": "supersede",
+      "entity_id": null,
+      "reason": "The new information directly contradicts and updates the previous statement about Sam's employment."
+    },
+    "intent": "Update memory about Sam's employment.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "PERSON"
+          },
+          {
+            "name": "Goldman",
+            "type": "ORGANIZATION"
+          },
+          {
+            "name": "Point72",
+            "type": "ORGANIZATION"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Existing memory about Sam working at Goldman has been superseded.",
+        "New memory about Sam joining Point72 has been committed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm Sam's current employment status.",
+      "Clarify the timeline of Sam's employment changes."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

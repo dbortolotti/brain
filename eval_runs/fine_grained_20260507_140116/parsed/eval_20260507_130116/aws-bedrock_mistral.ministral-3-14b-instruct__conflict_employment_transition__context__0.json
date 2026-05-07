@@ -1,0 +1,95 @@
+{
+  "fixture_id": "conflict_employment_transition__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam's employment record has been updated to reflect departure from Goldman Sachs and current affiliation with Point72 Ventures. Ambiguity in transition details is preserved.",
+    "citations": [
+      "New fact: 'Sam left Goldman and joined Point72' (input)",
+      "Existing fact: 'Sam works at Goldman' (superseded, not retained)"
+    ],
+    "conflict_classification": "employment_transition",
+    "decision": "resolve_conflict_with_ambiguity_preservation",
+    "entity_resolution": {
+      "action": "merge_employment_records",
+      "entity_id": "Sam",
+      "reason": "New employment fact supersedes prior 'works_at' relationship without explicit deletion timestamp."
+    },
+    "intent": "update_durable_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "left_employment_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam no longer works at Goldman Sachs (as of an unspecified transition date)."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72 Ventures",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72 Ventures",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam currently works at Point72 Ventures (as of an unspecified transition date)."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "metadata",
+        "statement": "Transition date and role details are ambiguous; no superseded facts are retained."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded fact removed from durable memory.",
+        "New facts committed with preserved ambiguity.",
+        "No contradictions introduced."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add explicit transition date if known.",
+      "Clarify role at Point72 (e.g., 'Partner', 'Analyst').",
+      "Flag for follow-up if ambiguity persists."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

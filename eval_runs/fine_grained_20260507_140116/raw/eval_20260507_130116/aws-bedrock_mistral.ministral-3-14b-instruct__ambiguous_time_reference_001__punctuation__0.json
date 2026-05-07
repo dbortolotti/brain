@@ -1,0 +1,79 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_time_reference_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The statement contains two ambiguous time references ('last Friday' and 'next month') that cannot be resolved without additional context. No contradictions or superseded facts exist.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "ambiguous_time_reference",
+    "entity_resolution": {
+      "action": "flag_ambiguity",
+      "entity_id": null,
+      "reason": "Time references ('last Friday' and 'next month') lack precise calendar anchoring. 'Last Friday' could refer to any of the past 5 Fridays, and 'next month' is ambiguous without knowing the current date. No superseded/deleted facts are present."
+    },
+    "intent": "entity_mention_extraction",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "last Friday",
+            "role": "past_event_anchor",
+            "type": "time_reference"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          },
+          {
+            "name": "next month",
+            "role": "future_event_anchor",
+            "type": "time_reference"
+          }
+        ],
+        "kind": "statement",
+        "relationships": [
+          {
+            "object": "last Friday that he is leaving Goldman next month",
+            "predicate": "said",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "is_leaving",
+            "subject": "Sam"
+          },
+          {
+            "object": "next month",
+            "predicate": "scheduled_for",
+            "subject": "leaving Goldman"
+          }
+        ],
+        "statement": "Sam said last Friday that he is leaving Goldman next month."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguous time references ('last Friday', 'next month') prevent durable memory commitment.",
+        "No superseded/deleted facts detected."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Request clarification: 'Which Friday do you mean?'",
+      "Request clarification: 'What is the current date?'",
+      "Anchor to a known reference: 'Last Friday (June 7) you said...'",
+      "Reject as ambiguous: 'Time references are unclear; cannot commit to memory.'"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"entity_mention_extraction\",\n  \"decision\": \"ambiguous_time_reference\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"statement\",\n      \"statement\": \"Sam said last Friday that he is leaving Goldman next month.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"last Friday\",\n          \"type\": \"time_reference\",\n          \"role\": \"past_event_anchor\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        },\n        {\n          \"name\": \"next month\",\n          \"type\": \"time_reference\",\n          \"role\": \"future_event_anchor\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"said\",\n          \"object\": \"last Friday that he is leaving Goldman next month\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"is_leaving\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"leaving Goldman\",\n          \"predicate\": \"scheduled_for\",\n          \"object\": \"next month\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"flag_ambiguity\",\n    \"entity_id\": null,\n    \"reason\": \"Time references ('last Friday' and 'next month') lack precise calendar anchoring. 'Last Friday' could refer to any of the past 5 Fridays, and 'next month' is ambiguous without knowing the current date. No superseded/deleted facts are present.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"The statement contains two ambiguous time references ('last Friday' and 'next month') that cannot be resolved without additional context. No contradictions or superseded facts exist.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Request clarification: 'Which Friday do you mean?'\",\n    \"Request clarification: 'What is the current date?'\",\n    \"Anchor to a known reference: 'Last Friday (June 7) you said...'\",\n    \"Reject as ambiguous: 'Time references are unclear; cannot commit to memory.'\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Ambiguous time references ('last Friday', 'next month') prevent durable memory commitment.\",\n      \"No superseded/deleted facts detected.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

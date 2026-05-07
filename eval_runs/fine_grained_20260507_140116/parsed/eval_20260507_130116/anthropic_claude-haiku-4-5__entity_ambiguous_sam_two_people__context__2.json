@@ -1,0 +1,58 @@
+{
+  "fixture_id": "entity_ambiguous_sam_two_people__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Cannot commit to either Sam entity without disambiguation. Preference recorded as ambiguous pending clarification.",
+    "citations": [
+      "Existing entities: Sam from Goldman (person), Sam from Point72 (person)"
+    ],
+    "conflict_classification": "unresolved_ambiguity",
+    "decision": "defer_resolution",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Two existing Sam entities (Goldman, Point72) create ambiguity. Insufficient context to determine which Sam or if both share this preference."
+    },
+    "intent": "Record a preference attribute for an ambiguous entity",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "music"
+          }
+        ],
+        "kind": "ambiguous_preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes early Coltrane"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preference statement captured but not linked to specific entity",
+        "Ambiguity preserved; no superseding of existing facts",
+        "Awaiting entity disambiguation before durable commit"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Clarify which Sam likes early Coltrane (Goldman or Point72)",
+      "Provide additional context linking Sam to one of the known entities",
+      "Confirm if both Sams share this preference"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

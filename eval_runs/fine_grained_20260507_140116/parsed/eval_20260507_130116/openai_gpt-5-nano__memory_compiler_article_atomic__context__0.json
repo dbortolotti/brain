@@ -1,0 +1,77 @@
+{
+  "fixture_id": "memory_compiler_article_atomic__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "The article emphasizes small, traceable atomic memory cards with durable source evidence; semantic indexing can help recall, but lifecycle and conflict state ownership must reside with the application database.",
+    "citations": [],
+    "conflict_classification": "ambiguous_owner_of_lifecycle_and_conflict_state",
+    "decision": "proceed_with_memory_model_review",
+    "entity_resolution": {
+      "action": "tentative_disambiguation",
+      "entity_id": null,
+      "reason": "terms are high-level; no conflicting identity resolved yet"
+    },
+    "intent": "evaluate_memory_compiler_article_atomic",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Atomic memory cards",
+            "role": "subject",
+            "type": "object"
+          },
+          {
+            "name": "durable source evidence",
+            "role": "requirement",
+            "type": "concept"
+          }
+        ],
+        "kind": "statement",
+        "relationships": [],
+        "statement": "Atomic memory cards should be small and traceable; durable source evidence is required for AI memory systems."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "semantic index",
+            "role": "feature",
+            "type": "concept"
+          },
+          {
+            "name": "application database",
+            "role": "owner",
+            "type": "system"
+          }
+        ],
+        "kind": "statement",
+        "relationships": [
+          {
+            "object": "recall",
+            "predicate": "improves",
+            "subject": "semantic index"
+          },
+          {
+            "object": "lifecycle and conflict state",
+            "predicate": "owns",
+            "subject": "application database"
+          }
+        ],
+        "statement": "A semantic index can improve recall, but the application database must own lifecycle and conflict state."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed core points: durability, small/traceable cards, semantic index, ownership of lifecycle/conflict state."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add explicit definitions for 'atomic memory cards' size, traceability, and durability requirements.",
+      "Define ownership and lifecycle management policy for semantics index vs. application database.",
+      "Capture conflicting states and resolution rules in a formal policy document."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

@@ -1,0 +1,61 @@
+{
+  "error": null,
+  "fixture_id": "debug_explain_recall_sam_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "No definitive recall returned. The query references 'Sam from Goldman' but lacks sufficient specificity to retrieve stored facts. Please clarify: (1) Sam's full name or identifier, (2) which Goldman entity, (3) the relationship context (colleague, contact, client, etc.)",
+    "citations": [],
+    "conflict_classification": "unresolved_entity_reference",
+    "decision": "Attempt recall with entity resolution ambiguity flagged",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Insufficient context to resolve Sam uniquely. Goldman could reference Goldman Sachs, Goldman Sachs Asset Management, or other entities. Multiple Sams may exist in memory with Goldman affiliation. Punctuation in original query ('Sam from Goldman') does not disambiguate."
+    },
+    "intent": "Recall all stored information about a person named Sam associated with Goldman",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unknown",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_context",
+            "type": "organization"
+          }
+        ],
+        "kind": "person_reference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman - entity reference requires disambiguation"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Query parsed successfully",
+        "Entity resolution failed due to ambiguity",
+        "No memory cards retrieved with sufficient confidence",
+        "Durable memory preserved; no facts presented as current"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide Sam's full name or known aliases",
+      "Specify Goldman division or full organization name",
+      "Include date range or project context",
+      "Clarify professional relationship or role"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Recall all stored information about a person named Sam associated with Goldman\",\n  \"decision\": \"Attempt recall with entity resolution ambiguity flagged\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"person_reference\",\n      \"statement\": \"Sam from Goldman - entity reference requires disambiguation\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"unknown\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation_context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"associated_with\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Insufficient context to resolve Sam uniquely. Goldman could reference Goldman Sachs, Goldman Sachs Asset Management, or other entities. Multiple Sams may exist in memory with Goldman affiliation. Punctuation in original query ('Sam from Goldman') does not disambiguate.\"\n  },\n  \"conflict_classification\": \"unresolved_entity_reference\",\n  \"answer\": \"No definitive recall returned. The query references 'Sam from Goldman' but lacks sufficient specificity to retrieve stored facts. Please clarify: (1) Sam's full name or identifier, (2) which Goldman entity, (3) the relationship context (colleague, contact, client, etc.)\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Provide Sam's full name or known aliases\",\n    \"Specify Goldman division or full organization name\",\n    \"Include date range or project context\",\n    \"Clarify professional relationship or role\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Query parsed successfully\",\n      \"Entity resolution failed due to ambiguity\",\n      \"No memory cards retrieved with sufficient confidence\",\n      \"Durable memory preserved; no facts presented as current\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,144 @@
+{
+  "error": null,
+  "fixture_id": "conversation_transcript_sam_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "assign_new_ids",
+      "entity_id": null,
+      "reason": "No external entity IDs provided; retain entity names as written."
+    },
+    "intent": "extract_atomic_memory_cards",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_status",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman last month and joined Point72."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "musician",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "preference",
+            "type": "music_style_or_period"
+          }
+        ],
+        "kind": "music_preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "listens_to",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "currently_prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is still listening to Bill Evans, but lately more to early Coltrane."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "listener",
+            "type": "person"
+          },
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "discussion_topic",
+            "type": "topic"
+          },
+          {
+            "name": "article",
+            "role": "reference_to_send",
+            "type": "information_item"
+          }
+        ],
+        "kind": "planning_intent",
+        "relationships": [
+          {
+            "object": "AI infrastructure",
+            "predicate": "proposed_discussion_topic",
+            "subject": "Daniele"
+          },
+          {
+            "object": "catch_up_on_AI_infrastructure",
+            "predicate": "agreed",
+            "subject": "Sam"
+          },
+          {
+            "object": "send_article",
+            "predicate": "requested",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam told Daniele to send an article after deciding they should catch up about AI infrastructure."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted three actionable memory cards from the transcript."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If a canonical company name for 'Goldman' is available (e.g., Goldman Sachs), map 'Goldman' to it.",
+      "If 'early Coltrane' should be normalized to a specific album/era, replace with the canonical description."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"extract_atomic_memory_cards\",\n  \"decision\": \"store\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"employment_status\",\n      \"statement\": \"Sam left Goldman last month and joined Point72.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"former_employer\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"current_employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"left\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"music_preference\",\n      \"statement\": \"Sam is still listening to Bill Evans, but lately more to early Coltrane.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"musician\"\n        },\n        {\n          \"name\": \"early Coltrane\",\n          \"type\": \"music_style_or_period\",\n          \"role\": \"preference\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"listens_to\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"currently_prefers\",\n          \"object\": \"early Coltrane\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"planning_intent\",\n      \"statement\": \"Sam told Daniele to send an article after deciding they should catch up about AI infrastructure.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"listener\"\n        },\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"speaker\"\n        },\n        {\n          \"name\": \"AI infrastructure\",\n          \"type\": \"topic\",\n          \"role\": \"discussion_topic\"\n        },\n        {\n          \"name\": \"article\",\n          \"type\": \"information_item\",\n          \"role\": \"reference_to_send\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Daniele\",\n          \"predicate\": \"proposed_discussion_topic\",\n          \"object\": \"AI infrastructure\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"agreed\",\n          \"object\": \"catch_up_on_AI_infrastructure\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"requested\",\n          \"object\": \"send_article\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"assign_new_ids\",\n    \"entity_id\": null,\n    \"reason\": \"No external entity IDs provided; retain entity names as written.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If a canonical company name for 'Goldman' is available (e.g., Goldman Sachs), map 'Goldman' to it.\",\n    \"If 'early Coltrane' should be normalized to a specific album/era, replace with the canonical description.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Extracted three actionable memory cards from the transcript.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

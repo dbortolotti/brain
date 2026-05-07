@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "no_durable_value_weather_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Understood, but this weather information is not being stored as durable memory due to lack of verifiable source.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "no_durable_commitment",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Lack of durable source attribution; weather data is transient and not verifiable for long-term memory"
+    },
+    "intent": "contextual_understanding",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "cloudy",
+            "role": "current_state",
+            "type": "weather_condition"
+          },
+          {
+            "name": "today",
+            "role": "time_anchor",
+            "type": "temporal_reference"
+          }
+        ],
+        "kind": "contextual_evidence",
+        "relationships": [
+          {
+            "object": "cloudy",
+            "predicate": "has_condition",
+            "subject": "weather"
+          },
+          {
+            "object": "current_date",
+            "predicate": "refers_to",
+            "subject": "today"
+          }
+        ],
+        "statement": "Today's weather is cloudy (source: user input, not durable)"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Contextual input processed without durable memory commitment.",
+        "Ambiguity preserved regarding temporal scope ('today')."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request user to provide a verifiable source for weather data if durability is required.",
+      "Suggest using a weather API for real-time, durable weather tracking."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"contextual_understanding\",\n  \"decision\": \"no_durable_commitment\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"contextual_evidence\",\n      \"statement\": \"Today's weather is cloudy (source: user input, not durable)\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"cloudy\",\n          \"type\": \"weather_condition\",\n          \"role\": \"current_state\"\n        },\n        {\n          \"name\": \"today\",\n          \"type\": \"temporal_reference\",\n          \"role\": \"time_anchor\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"weather\",\n          \"predicate\": \"has_condition\",\n          \"object\": \"cloudy\"\n        },\n        {\n          \"subject\": \"today\",\n          \"predicate\": \"refers_to\",\n          \"object\": \"current_date\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Lack of durable source attribution; weather data is transient and not verifiable for long-term memory\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Understood, but this weather information is not being stored as durable memory due to lack of verifiable source.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Request user to provide a verifiable source for weather data if durability is required.\",\n    \"Suggest using a weather API for real-time, durable weather tracking.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Contextual input processed without durable memory commitment.\",\n      \"Ambiguity preserved regarding temporal scope ('today').\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

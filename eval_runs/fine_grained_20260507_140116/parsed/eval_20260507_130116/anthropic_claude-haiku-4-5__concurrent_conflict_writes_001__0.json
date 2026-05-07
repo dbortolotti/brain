@@ -1,0 +1,83 @@
+{
+  "fixture_id": "concurrent_conflict_writes_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Two conflicting employment states detected. Point72 is treated as current based on 'joined' language suggesting recent transition. Goldman relationship downgraded to historical pending clarification of timeline.",
+    "citations": [
+      "Input statement: 'Sam joined Point72' (suggests current/recent)",
+      "Input statement: 'Sam works at Goldman' (present tense, but conflicts with join statement)"
+    ],
+    "conflict_classification": "temporal_employment_conflict",
+    "decision": "Preserve both facts with temporal ambiguity; flag for user clarification",
+    "entity_resolution": {
+      "action": "defer_with_flag",
+      "entity_id": "Sam",
+      "reason": "Concurrent writes indicate possible job transition; temporal ordering unknown. Goldman may be prior role."
+    },
+    "intent": "Resolve concurrent conflicting employment facts for Sam",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_current",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "currently_employed_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Point72"
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "prior_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_prior",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "previously_employed_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict detected and classified",
+        "Both facts preserved with confidence markers",
+        "Point72 marked as primary current employment",
+        "Goldman marked as historical with low confidence",
+        "User clarification requested via repair options"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm: Is Sam currently at Point72 and formerly at Goldman?",
+      "Confirm: Are both roles concurrent (dual employment)?",
+      "Provide: Transition date between Goldman and Point72"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

@@ -1,0 +1,63 @@
+{
+  "fixture_id": "cost_latency_token_accounting_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "For evaluation accounting, you typically need to report: (1) token counts (e.g., prompt/input tokens, completion/output tokens, and total tokens), (2) provider/model identifiers (provider name and model ID/version), (3) estimated price/cost (usually derived from token counts and the provider\u2019s pricing for that model), and (4) latency statistics, specifically p50, p90, and p95 response times (often measured per request over the evaluation set).",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "answer",
+    "entity_resolution": {
+      "action": "no_commit",
+      "entity_id": null,
+      "reason": "The fixture requests a generic explanation of required fields; no stable user-specific facts are provided that would warrant durable memory."
+    },
+    "intent": "Explain required evaluation accounting fields for a model/provider usage report",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "token counts",
+            "role": "accounting_metric",
+            "type": "field_group"
+          },
+          {
+            "name": "provider/model IDs",
+            "role": "provenance_metric",
+            "type": "identifier_group"
+          },
+          {
+            "name": "estimated price",
+            "role": "cost_metric",
+            "type": "field"
+          },
+          {
+            "name": "latency p50 p90 p95",
+            "role": "performance_metric",
+            "type": "field_group"
+          }
+        ],
+        "kind": "instruction",
+        "relationships": [
+          {
+            "object": "token counts, provider/model IDs, estimated price, and latency percentiles (p50/p90/p95)",
+            "predicate": "include",
+            "subject": "required eval accounting fields"
+          }
+        ],
+        "statement": "Include token counts, provider/model identifiers, estimated price, and latency percentiles (p50, p90, p95) when explaining required evaluation accounting fields."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Returned a generic list of required accounting fields: token counts, provider/model IDs, estimated price, and latency percentiles (p50/p90/p95)."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If token count breakdown differs by system, clarify which token fields are required (input vs output vs total).",
+      "If latency measurements are defined differently (server time vs end-to-end), specify the latency definition used for p50/p90/p95."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

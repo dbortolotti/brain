@@ -1,0 +1,75 @@
+{
+  "error": null,
+  "fixture_id": "email_source_meeting_followup_001__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Acknowledged. I will send the AI infra article to sam@example.com and note that sam joined Point72 last month. Do you want me to draft a reply confirming delivery and provide any additional context?",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "store_memories_with_context_and_schedule_followup",
+    "entity_resolution": {
+      "action": "record_author_identity_and_affiliation",
+      "entity_id": null,
+      "reason": "sender identity and organizational context needed for follow-up and article delivery"
+    },
+    "intent": "email_followup_ready",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "sam@example.com",
+            "role": "sender",
+            "type": "email_address"
+          },
+          {
+            "name": "Follow up",
+            "role": "email_subject",
+            "type": "subject"
+          },
+          {
+            "name": "Point72",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "AI infra article",
+            "role": "requested_document",
+            "type": "document"
+          }
+        ],
+        "kind": "email_context",
+        "relationships": [
+          {
+            "object": "email_header",
+            "predicate": "sent",
+            "subject": "sam@example.com"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "sam@example.com"
+          },
+          {
+            "object": "AI infra article",
+            "predicate": "requests",
+            "subject": "email"
+          }
+        ],
+        "statement": "From sam@example.com: Follow up. Great seeing you. Yes, I joined Point72 last month. Please send the AI infra article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Email context stored",
+        "Affiliation update noted",
+        "Follow-up action queued: send AI infra article"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"email_followup_ready\",\n  \"decision\": \"store_memories_with_context_and_schedule_followup\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"email_context\",\n      \"statement\": \"From sam@example.com: Follow up. Great seeing you. Yes, I joined Point72 last month. Please send the AI infra article.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"sam@example.com\", \"type\": \"email_address\", \"role\": \"sender\"},\n        {\"name\": \"Follow up\", \"type\": \"subject\", \"role\": \"email_subject\"},\n        {\"name\": \"Point72\", \"type\": \"organization\", \"role\": \"affiliation\"},\n        {\"name\": \"AI infra article\", \"type\": \"document\", \"role\": \"requested_document\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"sam@example.com\", \"predicate\": \"sent\", \"object\": \"email_header\"},\n        {\"subject\": \"sam@example.com\", \"predicate\": \"joined\", \"object\": \"Point72\"},\n        {\"subject\": \"email\", \"predicate\": \"requests\", \"object\": \"AI infra article\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"record_author_identity_and_affiliation\",\n    \"entity_id\": null,\n    \"reason\": \"sender identity and organizational context needed for follow-up and article delivery\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"Acknowledged. I will send the AI infra article to sam@example.com and note that sam joined Point72 last month. Do you want me to draft a reply confirming delivery and provide any additional context?\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Email context stored\",\n      \"Affiliation update noted\",\n      \"Follow-up action queued: send AI infra article\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

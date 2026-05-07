@@ -1,0 +1,94 @@
+{
+  "error": null,
+  "fixture_id": "typos_shorthand_person_interaction_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory recorded with low confidence due to abbreviated/informal input. Recommend user clarification on full names and affiliation context.",
+    "citations": [
+      "Input contains non-standard abbreviations: 'frm' (from), 'goldmn' (Goldman?), 'evns' (Evans?)"
+    ],
+    "conflict_classification": "ambiguity_unresolved",
+    "decision": "Accept with confidence preservation; flag ambiguities",
+    "entity_resolution": {
+      "action": "defer_pending_clarification",
+      "entity_id": null,
+      "reason": "Shorthand and typos prevent confident entity matching; 'sam', 'goldmn', and 'bill evns' require normalization and disambiguation"
+    },
+    "intent": "Record a social relationship between two people with informal/abbreviated input",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "goldmn",
+            "role": "affiliation",
+            "type": "organization_or_location"
+          }
+        ],
+        "kind": "entity_mention",
+        "relationships": [],
+        "statement": "Person identified as 'sam' from 'goldmn' (likely Goldman)"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "bill evns",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "entity_mention",
+        "relationships": [],
+        "statement": "Person identified as 'bill evns' (likely Bill Evans)"
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "bill evns",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship",
+        "relationships": [
+          {
+            "object": "bill evns",
+            "predicate": "likes",
+            "subject": "sam"
+          }
+        ],
+        "statement": "sam (from goldmn) likes bill evns"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created with ambiguity flags",
+        "Entity resolution deferred pending user clarification",
+        "Relationship recorded but marked low-confidence",
+        "No superseded facts present"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm full name: 'sam' \u2192 Samuel/Samantha [surname]?",
+      "Confirm affiliation: 'goldmn' \u2192 Goldman Sachs, Goldman [surname], or other?",
+      "Confirm full name: 'bill evns' \u2192 Bill Evans [middle initial/suffix]?",
+      "Clarify relationship type: does 'likes' mean professional respect, friendship, or romantic interest?"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Record a social relationship between two people with informal/abbreviated input\",\n  \"decision\": \"Accept with confidence preservation; flag ambiguities\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"entity_mention\",\n      \"statement\": \"Person identified as 'sam' from 'goldmn' (likely Goldman)\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"goldmn\",\n          \"type\": \"organization_or_location\",\n          \"role\": \"affiliation\"\n        }\n      ],\n      \"relationships\": []\n    },\n    {\n      \"kind\": \"entity_mention\",\n      \"statement\": \"Person identified as 'bill evns' (likely Bill Evans)\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"bill evns\",\n          \"type\": \"person\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": []\n    },\n    {\n      \"kind\": \"relationship\",\n      \"statement\": \"sam (from goldmn) likes bill evns\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"bill evns\",\n          \"type\": \"person\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"bill evns\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer_pending_clarification\",\n    \"entity_id\": null,\n    \"reason\": \"Shorthand and typos prevent confident entity matching; 'sam', 'goldmn', and 'bill evns' require normalization and disambiguation\"\n  },\n  \"conflict_classification\": \"ambiguity_unresolved\",\n  \"answer\": \"Memory recorded with low confidence due to abbreviated/informal input. Recommend user clarification on full names and affiliation context.\",\n  \"citations\": [\n    \"Input contains non-standard abbreviations: 'frm' (from), 'goldmn' (Goldman?), 'evns' (Evans?)\"\n  ],\n  \"repair_options\": [\n    \"Confirm full name: 'sam' \u2192 Samuel/Samantha [surname]?\",\n    \"Confirm affiliation: 'goldmn' \u2192 Goldman Sachs, Goldman [surname], or other?\",\n    \"Confirm full name: 'bill evns' \u2192 Bill Evans [middle initial/suffix]?\",\n    \"Clarify relationship type: does 'likes' mean professional respect, friendship, or romantic interest?\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card created with ambiguity flags\",\n      \"Entity resolution deferred pending user clarification\",\n      \"Relationship recorded but marked low-confidence\",\n      \"No superseded facts present\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

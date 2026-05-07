@@ -1,0 +1,86 @@
+{
+  "fixture_id": "slack_conflict_buttons_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Update accepted. Sam's current employer is Point72. Previous employment at Goldman is archived as superseded.",
+    "citations": [
+      "User explicit statement: 'Sam left Goldman and joined Point72'"
+    ],
+    "conflict_classification": "temporal_supersession",
+    "decision": "Accept update with supersession",
+    "entity_resolution": {
+      "action": "merge_and_update",
+      "entity_id": "Sam",
+      "reason": "Same entity with updated employment status; prior fact superseded by explicit correction"
+    },
+    "intent": "Update Sam's employment status from Goldman to Point72",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact_superseded",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact_current",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded fact marked as historical",
+        "Current fact committed to durable memory",
+        "Entity Sam unified with updated employment relationship"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retain both facts with temporal markers if employment history is relevant",
+      "Archive Goldman employment with end_date marker"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

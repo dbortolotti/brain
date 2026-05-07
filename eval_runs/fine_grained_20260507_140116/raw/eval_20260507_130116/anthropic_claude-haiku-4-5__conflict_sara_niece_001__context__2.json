@@ -1,0 +1,106 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "No conflict. The new assertion (Sara is my niece) is logically consistent with existing memory. If Sara is Daniele's daughter and the speaker claims Sara as their niece, this implies the speaker is Daniele's sibling. This relationship is compatible with all existing facts.",
+    "citations": [
+      "Existing: Sara is Daniele's daughter (high confidence)",
+      "Existing: Sara is Nur's twin (high confidence)",
+      "New: Sara is my niece (medium confidence)"
+    ],
+    "conflict_classification": "COMPATIBLE_INFERENCE",
+    "decision": "ACCEPT_WITH_CLARIFICATION",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "Sara",
+      "reason": "All statements refer to the same individual Sara; new assertion establishes kinship relationship between Sara and the speaker, consistent with Sara being Daniele's daughter (implying speaker is Daniele's sibling)"
+    },
+    "intent": "Evaluate consistency between existing memory (Sara is Daniele's daughter and Nur's twin) and new assertion (Sara is my niece)",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_child_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Nur's twin"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sara",
+            "type": "person"
+          },
+          {
+            "name": "speaker",
+            "role": "narrator",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "speaker",
+            "predicate": "is_niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is the speaker's niece"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "New assertion accepted without contradiction",
+        "Kinship chain validated: speaker \u2192 sibling of Daniele \u2192 uncle/aunt of Sara",
+        "All high-confidence existing facts preserved",
+        "New fact recorded at medium confidence pending additional corroboration"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retain all three facts as mutually consistent",
+      "Optionally add inferred fact: Speaker is Daniele's sibling"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Evaluate consistency between existing memory (Sara is Daniele's daughter and Nur's twin) and new assertion (Sara is my niece)\",\n  \"decision\": \"ACCEPT_WITH_CLARIFICATION\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is Daniele's daughter\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Sara\", \"type\": \"person\"},\n        {\"name\": \"Daniele\", \"type\": \"person\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sara\", \"predicate\": \"is_child_of\", \"object\": \"Daniele\"}\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is Nur's twin\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Sara\", \"type\": \"person\"},\n        {\"name\": \"Nur\", \"type\": \"person\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sara\", \"predicate\": \"is_twin_of\", \"object\": \"Nur\"}\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sara is the speaker's niece\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\"name\": \"Sara\", \"type\": \"person\"},\n        {\"name\": \"speaker\", \"type\": \"person\", \"role\": \"narrator\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sara\", \"predicate\": \"is_niece_of\", \"object\": \"speaker\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge\",\n    \"entity_id\": \"Sara\",\n    \"reason\": \"All statements refer to the same individual Sara; new assertion establishes kinship relationship between Sara and the speaker, consistent with Sara being Daniele's daughter (implying speaker is Daniele's sibling)\"\n  },\n  \"conflict_classification\": \"COMPATIBLE_INFERENCE\",\n  \"answer\": \"No conflict. The new assertion (Sara is my niece) is logically consistent with existing memory. If Sara is Daniele's daughter and the speaker claims Sara as their niece, this implies the speaker is Daniele's sibling. This relationship is compatible with all existing facts.\",\n  \"citations\": [\n    \"Existing: Sara is Daniele's daughter (high confidence)\",\n    \"Existing: Sara is Nur's twin (high confidence)\",\n    \"New: Sara is my niece (medium confidence)\"\n  ],\n  \"repair_options\": [\n    \"Retain all three facts as mutually consistent\",\n    \"Optionally add inferred fact: Speaker is Daniele's sibling\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"New assertion accepted without contradiction\",\n      \"Kinship chain validated: speaker \u2192 sibling of Daniele \u2192 uncle/aunt of Sara\",\n      \"All high-confidence existing facts preserved\",\n      \"New fact recorded at medium confidence pending additional corroboration\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

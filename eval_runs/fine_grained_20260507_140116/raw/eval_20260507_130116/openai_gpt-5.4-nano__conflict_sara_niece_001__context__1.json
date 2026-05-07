@@ -1,0 +1,92 @@
+{
+  "error": null,
+  "fixture_id": "conflict_sara_niece_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "No direct contradiction is shown between 'Sara is Daniele's daughter and Nur's twin' and 'Sara is my niece'; however, 'niece' requires knowing which parent/sibling connects to the user. Without that linkage, store the niece relationship with low confidence and keep the existing high-confidence parent/twin facts unchanged.",
+    "citations": [],
+    "conflict_classification": "Potentially consistent but insufficiently grounded; relationship (niece) depends on who the user's family member is (no mapping between user and Sara's parents/sibling).",
+    "decision": "store_new_relationship_as_unverified_relative_link",
+    "entity_resolution": {
+      "action": "link_as_same_person_if_applicable",
+      "entity_id": null,
+      "reason": "The new statement refers to 'Sara' but does not identify the user\u2019s relationship to Daniele or Nur; cannot confirm whether this 'Sara' matches the same individual beyond name."
+    },
+    "intent": "conflict_explainer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "twin",
+            "type": "person"
+          }
+        ],
+        "kind": "existing_high_confidence",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is daughter of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is twin of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "User",
+            "role": "relative",
+            "type": "person"
+          }
+        ],
+        "kind": "new_low_confidence",
+        "relationships": [
+          {
+            "object": "User",
+            "predicate": "is niece of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preserved existing high-confidence facts without alteration.",
+        "Added the new 'niece' relationship with low confidence due to missing connection details."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm which of your siblings/parents is connected to Sara (e.g., 'Daniele is my brother' or 'Nur is my sibling').",
+      "Confirm whether 'my niece' refers to Sara specifically and whether Sara is the same person as Daniele\u2019s daughter and Nur\u2019s twin.",
+      "If applicable, add: who among Daniele/Nur is related to you by blood/marriage so 'niece' can be grounded."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"conflict_explainer\",\n  \"decision\": \"store_new_relationship_as_unverified_relative_link\",\n  \"conflict_classification\": \"Potentially consistent but insufficiently grounded; relationship (niece) depends on who the user's family member is (no mapping between user and Sara's parents/sibling).\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"existing_high_confidence\",\n      \"statement\": \"Sara is Daniele's daughter and Nur's twin.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Daniele\",\n          \"type\": \"person\",\n          \"role\": \"parent\"\n        },\n        {\n          \"name\": \"Nur\",\n          \"type\": \"person\",\n          \"role\": \"twin\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is daughter of\",\n          \"object\": \"Daniele\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is twin of\",\n          \"object\": \"Nur\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"new_low_confidence\",\n      \"statement\": \"Sara is my niece.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"User\",\n          \"type\": \"person\",\n          \"role\": \"relative\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is niece of\",\n          \"object\": \"User\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"link_as_same_person_if_applicable\",\n    \"entity_id\": null,\n    \"reason\": \"The new statement refers to 'Sara' but does not identify the user\u2019s relationship to Daniele or Nur; cannot confirm whether this 'Sara' matches the same individual beyond name.\"\n  },\n  \"answer\": \"No direct contradiction is shown between 'Sara is Daniele's daughter and Nur's twin' and 'Sara is my niece'; however, 'niece' requires knowing which parent/sibling connects to the user. Without that linkage, store the niece relationship with low confidence and keep the existing high-confidence parent/twin facts unchanged.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Confirm which of your siblings/parents is connected to Sara (e.g., 'Daniele is my brother' or 'Nur is my sibling').\",\n    \"Confirm whether 'my niece' refers to Sara specifically and whether Sara is the same person as Daniele\u2019s daughter and Nur\u2019s twin.\",\n    \"If applicable, add: who among Daniele/Nur is related to you by blood/marriage so 'niece' can be grounded.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Preserved existing high-confidence facts without alteration.\",\n      \"Added the new 'niece' relationship with low confidence due to missing connection details.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

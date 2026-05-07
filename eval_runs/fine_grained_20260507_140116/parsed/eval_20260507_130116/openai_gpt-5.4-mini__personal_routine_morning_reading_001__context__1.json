@@ -1,0 +1,67 @@
+{
+  "fixture_id": "personal_routine_morning_reading_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Store as a tentative personal routine preference: technical papers in the morning before email.",
+    "citations": [
+      "input: \"For context, I usually prefer to read technical papers in the morning before checking email.\""
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_soft",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No specific named entity requires resolution; this is a general personal preference."
+    },
+    "intent": "Extract a likely stable personal reading preference from context.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "user",
+            "role": "preference_holder",
+            "type": "person"
+          },
+          {
+            "name": "technical papers",
+            "role": "preferred_morning_reading",
+            "type": "content_type"
+          },
+          {
+            "name": "email",
+            "role": "activity_postponed_until_after_reading",
+            "type": "communication_channel"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "read technical papers in the morning before checking email",
+            "predicate": "usually_prefers",
+            "subject": "user"
+          },
+          {
+            "object": "checking email",
+            "predicate": "occur_before",
+            "subject": "technical papers"
+          }
+        ],
+        "statement": "The user usually prefers to read technical papers in the morning before checking email."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recorded one soft preference memory card.",
+        "Preserved uncertainty with medium confidence.",
+        "No entity conflicts detected."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If this is only situational, mark it as a temporary routine rather than a durable preference.",
+      "If the user later states a stronger or different morning routine, supersede this card with the newer preference."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

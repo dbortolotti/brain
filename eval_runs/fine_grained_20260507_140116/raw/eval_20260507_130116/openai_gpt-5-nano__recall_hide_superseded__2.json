@@ -1,0 +1,90 @@
+{
+  "error": null,
+  "fixture_id": "recall_hide_superseded",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Sam now works at Point72.",
+    "citations": [],
+    "conflict_classification": "supersession",
+    "decision": "resolve_current_employment",
+    "entity_resolution": {
+      "action": "prioritize_recent",
+      "entity_id": null,
+      "reason": "The most recently asserted mem_new indicates Sam joined Point72, superseding the older statement."
+    },
+    "intent": "recall",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "previous_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "mem_new",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72"
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": " Goldman",
+            "role": "prior_claim",
+            "type": "organization"
+          }
+        ],
+        "kind": "mem_old",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded fact 'Sam works at Goldman' ignored in favor of 'Sam left Goldman and joined Point72'"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm current employment with Point72",
+      "Flag Goldman as superseded in memory graph"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"recall\",\n  \"decision\": \"resolve_current_employment\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"mem_new\",\n      \"statement\": \"Sam left Goldman and joined Point72\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Sam\", \"type\": \"person\", \"role\": \"subject\"},\n        {\"name\": \"Goldman\", \"type\": \"organization\", \"role\": \"previous_employer\"},\n        {\"name\": \"Point72\", \"type\": \"organization\", \"role\": \"current_employer\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sam\", \"predicate\": \"left\", \"object\": \"Goldman\"},\n        {\"subject\": \"Sam\", \"predicate\": \"joined\", \"object\": \"Point72\"}\n      ]\n    },\n    {\n      \"kind\": \"mem_old\",\n      \"statement\": \"Sam works at Goldman\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\"name\": \"Sam\", \"type\": \"person\", \"role\": \"subject\"},\n        {\"name\": \" Goldman\", \"type\": \"organization\", \"role\": \"prior_claim\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sam\", \"predicate\": \"works_at\", \"object\": \"Goldman\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"prioritize_recent\",\n    \"entity_id\": null,\n    \"reason\": \"The most recently asserted mem_new indicates Sam joined Point72, superseding the older statement.\"\n  },\n  \"conflict_classification\": \"supersession\",\n  \"answer\": \"Sam now works at Point72.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Confirm current employment with Point72\",\n    \"Flag Goldman as superseded in memory graph\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\"Superseded fact 'Sam works at Goldman' ignored in favor of 'Sam left Goldman and joined Point72'\"]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

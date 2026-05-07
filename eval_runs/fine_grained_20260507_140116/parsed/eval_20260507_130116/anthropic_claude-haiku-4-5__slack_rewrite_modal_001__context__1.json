@@ -1,0 +1,59 @@
+{
+  "fixture_id": "slack_rewrite_modal_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory rewrite accepted with ambiguity preserved. The statement 'User prefers the other one' has been committed. The specific object of preference remains unresolved and should be clarified in future interactions.",
+    "citations": [
+      "User explicit rewrite request via modal"
+    ],
+    "conflict_classification": "ambiguous_referent",
+    "decision": "accept_rewrite",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Referent 'the other one' is ambiguous without prior context; requires clarification"
+    },
+    "intent": "rewrite_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "user",
+            "role": "subject",
+            "type": "agent"
+          },
+          {
+            "name": "the other one",
+            "role": "object",
+            "type": "unknown"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "user"
+          }
+        ],
+        "statement": "User prefers the other one"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created with preference statement",
+        "Ambiguity flagged for entity 'the other one'",
+        "Confidence set to medium due to unresolved referent",
+        "Ready for future disambiguation"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify what 'the other one' refers to",
+      "Provide context from prior conversation turn",
+      "Request user to specify the preferred item explicitly"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

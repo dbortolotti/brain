@@ -1,0 +1,56 @@
+{
+  "error": null,
+  "fixture_id": "recall_absence_claims_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "You have no open loops recorded with Sam.",
+    "citations": [
+      "open-loop table lookup for Sam returned empty result"
+    ],
+    "conflict_classification": "none",
+    "decision": "Return absence claim with high confidence",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": "Sam",
+      "reason": "Single person entity identified; table lookup completed"
+    },
+    "intent": "Query open loops associated with Sam",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject_of_query",
+            "type": "person"
+          }
+        ],
+        "kind": "absence_claim",
+        "relationships": [
+          {
+            "object": "none_recorded",
+            "predicate": "has_open_loops",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "No open loops found in open-loop table for Sam"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Query processed successfully",
+        "Open-loop table checked",
+        "No records found",
+        "Absence claim committed to memory"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Manually add an open loop with Sam if one exists but was not recorded",
+      "Verify Sam's entity record for potential duplicates or aliases"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Query open loops associated with Sam\",\n  \"decision\": \"Return absence claim with high confidence\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"absence_claim\",\n      \"statement\": \"No open loops found in open-loop table for Sam\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject_of_query\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has_open_loops\",\n          \"object\": \"none_recorded\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolved\",\n    \"entity_id\": \"Sam\",\n    \"reason\": \"Single person entity identified; table lookup completed\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"You have no open loops recorded with Sam.\",\n  \"citations\": [\n    \"open-loop table lookup for Sam returned empty result\"\n  ],\n  \"repair_options\": [\n    \"Manually add an open loop with Sam if one exists but was not recorded\",\n    \"Verify Sam's entity record for potential duplicates or aliases\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Query processed successfully\",\n      \"Open-loop table checked\",\n      \"No records found\",\n      \"Absence claim committed to memory\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

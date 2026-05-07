@@ -1,0 +1,64 @@
+{
+  "error": null,
+  "fixture_id": "slack_success_receipt_001__punctuation",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Stored memory: Sam from Goldman mentioned that he likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "new_memory",
+    "entity_resolution": {
+      "action": "store_identity",
+      "entity_id": null,
+      "reason": "Newly observed memory with explicit entities; no prior linkage available"
+    },
+    "intent": "classify_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "mentioner",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_person",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "person",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "mentioned",
+            "subject": "Sam"
+          },
+          {
+            "object": "Sam",
+            "predicate": "associated_with",
+            "subject": "Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman mentioned that he likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created for entity 'Sam' and relationship to 'Bill Evans'.",
+        "No existing conflicting memory found."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"classify_memory\",\n  \"decision\": \"new_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"person\",\n      \"statement\": \"Sam from Goldman mentioned that he likes Bill Evans\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"mentioner\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"liked_person\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"mentioned\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Goldman\",\n          \"predicate\": \"associated_with\",\n          \"object\": \"Sam\"\n        }\n      ]\n    }\n    ],\n  \"entity_resolution\": {\n    \"action\": \"store_identity\",\n    \"entity_id\": null,\n    \"reason\": \"Newly observed memory with explicit entities; no prior linkage available\"\n  },\n  \"conflict_classification\": \"no_conflict\",\n  \"answer\": \"Stored memory: Sam from Goldman mentioned that he likes Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card created for entity 'Sam' and relationship to 'Bill Evans'.\",\n      \"No existing conflicting memory found.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

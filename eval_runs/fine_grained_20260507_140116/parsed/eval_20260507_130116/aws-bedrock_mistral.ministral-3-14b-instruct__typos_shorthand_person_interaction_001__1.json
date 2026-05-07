@@ -1,0 +1,60 @@
+{
+  "fixture_id": "typos_shorthand_person_interaction_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Input contains ambiguous/unresolved entity mentions. No durable memory committed. Requires clarification: (1) 'frm goldmn' \u2192 intended entity? (2) 'bill evns' \u2192 person/event? (3) Context of 'likes'?",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "proceed_with_ambiguous_resolution",
+    "entity_resolution": {
+      "action": "flag_for_review",
+      "entity_id": null,
+      "reason": "Potential typos ('frm goldmn' \u2192 likely 'from Goldman Sachs' or similar; 'bill evns' \u2192 likely 'Bill Evans' or 'Bill Evans (musician)'). Ambiguity in intent ('likes' could mean admiration, social media follow, or other)."
+    },
+    "intent": "entity_mention_extraction",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "frm goldmn",
+            "role": "source_organization",
+            "type": "unresolved"
+          },
+          {
+            "name": "bill evns",
+            "role": "target_entity",
+            "type": "unresolved"
+          }
+        ],
+        "kind": "entity_mention",
+        "relationships": [
+          {
+            "object": "bill evns",
+            "predicate": "likes",
+            "subject": "sam"
+          }
+        ],
+        "statement": "Unresolved shorthand/typos detected in input: 'sam frm goldmn likes bill evns apparently'."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No memory committed due to unresolved ambiguity.",
+        "Input requires explicit entity resolution before processing."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Clarify 'frm goldmn' as Goldman Sachs (finance) or Goldman (other)",
+      "Disambiguate 'bill evns' as Bill Evans (jazz pianist) or Bill Evans (other)",
+      "Specify 'likes' context (e.g., social media, admiration, event attendance)"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

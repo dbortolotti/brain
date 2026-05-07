@@ -1,0 +1,31 @@
+{
+  "fixture_id": "large_table_500_rows_001",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "A 500-row CSV table should not be stored as hundreds of durable memory cards. Store it as a file, dataset, or structured table artifact, with optional metadata such as title, source, schema, upload date, and a short summary. Only extract durable memory cards for specific rows if they contain stable, personally relevant facts the user explicitly wants remembered.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "do_not_atomize_into_durable_memory_cards",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input is a policy question about a large CSV-like table, not a durable personal fact about an entity."
+    },
+    "intent": "storage_policy_for_large_tabular_input",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No durable memory cards were created.",
+        "Large repeated tabular data should be preserved as an artifact/table rather than atomized into memory.",
+        "Ambiguity preserved: no actual CSV rows or user-specific facts were provided."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Store the full CSV as an attached file or structured dataset artifact.",
+      "Create a lightweight metadata/index record describing the dataset and where it is stored.",
+      "Extract only specific durable, personally relevant facts if explicitly requested."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

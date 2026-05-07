@@ -1,0 +1,59 @@
+{
+  "fixture_id": "duplicate_sam_bill_evans_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "The two existing memories are duplicates/nearly identical: both say Sam from Goldman likes Bill Evans New. The difference is only punctuation/formatting, so they can be merged into a single durable memory.",
+    "citations": [],
+    "conflict_classification": "duplicate_information",
+    "decision": "merge_duplicates",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": null,
+      "reason": "Both statements attribute the same preference to Sam from Goldman and refer to the same item (Bill Evans New), differing only by punctuation/wording."
+    },
+    "intent": "Explain and resolve a duplicate/near-duplicate memory statement about Sam liking Bill Evans (New).",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans New",
+            "role": "music_preference_target",
+            "type": "work_or_album"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans New",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman said he likes Bill Evans New."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected duplicate statements with the same subject (Sam from Goldman) and same preference target (Bill Evans New).",
+        "Resolved by merging rather than treating as a contradiction."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Store one consolidated statement: 'Sam from Goldman said he likes Bill Evans New.'",
+      "If 'New' could be ambiguous, optionally clarify the exact title/album name in future inputs without overwriting this preference."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

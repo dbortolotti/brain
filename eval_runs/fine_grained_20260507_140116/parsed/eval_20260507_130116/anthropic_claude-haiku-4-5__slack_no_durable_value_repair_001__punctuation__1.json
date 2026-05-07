@@ -1,0 +1,62 @@
+{
+  "fixture_id": "slack_no_durable_value_repair_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory recorded with caveats: observation lacks specific date, time, and location context required for reliable retrieval and verification.",
+    "citations": [],
+    "conflict_classification": "temporal_ambiguity",
+    "decision": "accept_with_low_confidence",
+    "entity_resolution": {
+      "action": "create_temporal_anchor",
+      "entity_id": null,
+      "reason": "Temporal reference 'today' is ambiguous without explicit date; no durable location or timezone specified"
+    },
+    "intent": "store_weather_observation",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "today",
+            "role": "time_anchor",
+            "type": "temporal_reference"
+          },
+          {
+            "name": "weather",
+            "role": "subject",
+            "type": "domain"
+          },
+          {
+            "name": "cloudy",
+            "role": "observation",
+            "type": "weather_condition"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "cloudy",
+            "predicate": "has_weather_condition",
+            "subject": "today"
+          }
+        ],
+        "statement": "Today's weather is cloudy"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Statement stored as observation",
+        "Temporal anchor 'today' recorded without resolution to absolute date",
+        "Low confidence due to missing location and precise timestamp",
+        "No conflicts with existing memory detected"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Specify date (e.g., 'Today (2024-01-15) weather is cloudy')",
+      "Add location context (e.g., 'Weather in [city] is cloudy')",
+      "Add time precision (e.g., 'This morning's weather is cloudy')"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

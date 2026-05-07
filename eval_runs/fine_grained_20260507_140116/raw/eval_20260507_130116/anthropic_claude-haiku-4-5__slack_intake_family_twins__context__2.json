@@ -1,0 +1,73 @@
+{
+  "error": null,
+  "fixture_id": "slack_intake_family_twins__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Family relationship recorded: Nur and Sara are twin daughters",
+    "citations": [
+      "Input statement: 'Nur and Sara are my twin daughters'"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_link",
+      "entity_id": null,
+      "reason": "Two distinct entities (Nur and Sara) identified with clear family relationship context"
+    },
+    "intent": "Record family relationship information about twin daughters",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "twin daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "twin daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "family_relationship",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "is_twin_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "user",
+            "predicate": "is_daughter_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "user",
+            "predicate": "is_daughter_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Nur and Sara are twin daughters of the user"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Entity 'Nur' created/linked as twin daughter",
+        "Entity 'Sara' created/linked as twin daughter",
+        "Twin relationship established between Nur and Sara",
+        "Filial relationships established with user"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Record family relationship information about twin daughters\",\n  \"decision\": \"commit\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"family_relationship\",\n      \"statement\": \"Nur and Sara are twin daughters of the user\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Nur\",\n          \"type\": \"person\",\n          \"role\": \"twin daughter\"\n        },\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"twin daughter\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Nur\",\n          \"predicate\": \"is_twin_of\",\n          \"object\": \"Sara\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is_twin_of\",\n          \"object\": \"Nur\"\n        },\n        {\n          \"subject\": \"Nur\",\n          \"predicate\": \"is_daughter_of\",\n          \"object\": \"user\"\n        },\n        {\n          \"subject\": \"Sara\",\n          \"predicate\": \"is_daughter_of\",\n          \"object\": \"user\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_or_link\",\n    \"entity_id\": null,\n    \"reason\": \"Two distinct entities (Nur and Sara) identified with clear family relationship context\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Family relationship recorded: Nur and Sara are twin daughters\",\n  \"citations\": [\n    \"Input statement: 'Nur and Sara are my twin daughters'\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Entity 'Nur' created/linked as twin daughter\",\n      \"Entity 'Sara' created/linked as twin daughter\",\n      \"Twin relationship established between Nur and Sara\",\n      \"Filial relationships established with user\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

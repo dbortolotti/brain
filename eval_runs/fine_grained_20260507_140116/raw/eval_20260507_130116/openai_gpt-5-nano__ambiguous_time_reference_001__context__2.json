@@ -1,0 +1,63 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_time_reference_001__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Tempo-specific details are ambiguous: the exact date of last Friday and the timing of 'next month' cannot be resolved without a current date.",
+    "citations": [],
+    "conflict_classification": "temporal_ambiguity",
+    "decision": "ambiguous_time_reference",
+    "entity_resolution": {
+      "action": "preserve_ambiguous_reference",
+      "entity_id": null,
+      "reason": "Time reference 'last Friday' is relative and current date is unknown; no durable anchor available."
+    },
+    "intent": "classify_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "he is leaving Goldman next month",
+            "predicate": "stated",
+            "subject": "Sam"
+          },
+          {
+            "object": "Sam said he is leaving Goldman next month",
+            "predicate": "time_reference",
+            "subject": "last Friday"
+          }
+        ],
+        "statement": "Sam said last Friday that he is leaving Goldman next month."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory for ambiguous time reference stored.",
+        "No durable resolution of temporal expressions attempted due to lack of current date."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Record with explicit time anchors once current date is known (e.g., replace 'last Friday' with a specific date).",
+      "Add note clarifying that 'next month' depends on the current date when the statement was made.",
+      "If possible, store additional context about when the statement was observed."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"classify_memory\",\n  \"decision\": \"ambiguous_time_reference\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam said last Friday that he is leaving Goldman next month.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"stated\",\n          \"object\": \"he is leaving Goldman next month\"\n        },\n        {\n          \"subject\": \"last Friday\",\n          \"predicate\": \"time_reference\",\n          \"object\": \"Sam said he is leaving Goldman next month\"\n        }\n      ]\n    }\n    ],\n  \"entity_resolution\": {\n    \"action\": \"preserve_ambiguous_reference\",\n    \"entity_id\": null,\n    \"reason\": \"Time reference 'last Friday' is relative and current date is unknown; no durable anchor available.\"\n  },\n  \"conflict_classification\": \"temporal_ambiguity\",\n  \"answer\": \"Tempo-specific details are ambiguous: the exact date of last Friday and the timing of 'next month' cannot be resolved without a current date.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Record with explicit time anchors once current date is known (e.g., replace 'last Friday' with a specific date).\",\n    \"Add note clarifying that 'next month' depends on the current date when the statement was made.\",\n    \"If possible, store additional context about when the statement was observed.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory for ambiguous time reference stored.\",\n      \"No durable resolution of temporal expressions attempted due to lack of current date.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

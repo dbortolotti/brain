@@ -1,0 +1,83 @@
+{
+  "error": null,
+  "fixture_id": "contradiction_sam_children_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "The new information directly contradicts the existing memory about Sam\u2019s number of children. Preserve both as conflicting until a source clarifies which is correct.",
+    "citations": [],
+    "conflict_classification": "Direct contradiction (child count mismatch).",
+    "decision": "Store both statements as conflicting, preserve ambiguity, and do not overwrite existing memory.",
+    "entity_resolution": {
+      "action": "keep_separate_or_mark_same",
+      "entity_id": null,
+      "reason": "Both statements refer to 'Sam from Goldman' but there is no additional disambiguating detail; treat as the same subject string and mark as conflicting rather than overwriting."
+    },
+    "intent": "Explain and reconcile a contradiction in facts about Sam from Goldman\u2019s number of children.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          }
+        ],
+        "kind": "memory",
+        "relationships": [
+          {
+            "object": "two children",
+            "predicate": "has",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman has two children."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          }
+        ],
+        "kind": "memory",
+        "relationships": [
+          {
+            "object": "no children",
+            "predicate": "has",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman has no children."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Did not delete or replace the existing statement.",
+        "Added the contradictory new statement as an additional conflicting memory card.",
+        "Marked the situation as a direct contradiction requiring clarification."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for clarification: confirm the correct number of children for Sam from Goldman.",
+      "Record provenance/sources for each statement and prefer the more reliable one.",
+      "Add a conditional qualifier if the claims refer to different times (e.g., before/after a certain event)."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Explain and reconcile a contradiction in facts about Sam from Goldman\u2019s number of children.\",\n  \"decision\": \"Store both statements as conflicting, preserve ambiguity, and do not overwrite existing memory.\",\n  \"conflict_classification\": \"Direct contradiction (child count mismatch).\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"memory\",\n      \"statement\": \"Sam from Goldman has two children.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has\",\n          \"object\": \"two children\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"memory\",\n      \"statement\": \"Sam from Goldman has no children.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has\",\n          \"object\": \"no children\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"keep_separate_or_mark_same\",\n    \"entity_id\": null,\n    \"reason\": \"Both statements refer to 'Sam from Goldman' but there is no additional disambiguating detail; treat as the same subject string and mark as conflicting rather than overwriting.\"\n  },\n  \"answer\": \"The new information directly contradicts the existing memory about Sam\u2019s number of children. Preserve both as conflicting until a source clarifies which is correct.\",\n  \"repair_options\": [\n    \"Ask for clarification: confirm the correct number of children for Sam from Goldman.\",\n    \"Record provenance/sources for each statement and prefer the more reliable one.\",\n    \"Add a conditional qualifier if the claims refer to different times (e.g., before/after a certain event).\"\n  ],\n  \"citations\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Did not delete or replace the existing statement.\",\n      \"Added the contradictory new statement as an additional conflicting memory card.\",\n      \"Marked the situation as a direct contradiction requiring clarification.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

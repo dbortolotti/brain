@@ -1,0 +1,65 @@
+{
+  "error": null,
+  "fixture_id": "pdf_ocr_noisy_source_001",
+  "model": "groq:llama-3.3-70b-versatile",
+  "payload": {
+    "answer": "no clear answer",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "preserve ambiguity",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "insufficient information"
+    },
+    "intent": "extract atomic card",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source",
+            "type": "database"
+          }
+        ],
+        "kind": "statement",
+        "relationships": [
+          {
+            "object": "truth",
+            "predicate": "is source of",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB remains source of truth"
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Cognitive function",
+            "role": "subject",
+            "type": "concept"
+          }
+        ],
+        "kind": "statement",
+        "relationships": [],
+        "statement": "Cognitive function should be rebuildable projection"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "noisy input",
+        "low confidence"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "request clarification",
+      "provide additional context"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"extract atomic card\",\n   \"decision\": \"preserve ambiguity\",\n   \"memory_cards\": [\n       {\n           \"kind\": \"statement\",\n           \"statement\": \"Brain DB remains source of truth\",\n           \"confidence\": \"low\",\n           \"entities\": [\n               {\n                   \"name\": \"Brain DB\",\n                   \"type\": \"database\",\n                   \"role\": \"source\"\n               }\n           ],\n           \"relationships\": [\n               {\n                   \"subject\": \"Brain DB\",\n                   \"predicate\": \"is source of\",\n                   \"object\": \"truth\"\n               }\n           ]\n       },\n       {\n           \"kind\": \"statement\",\n           \"statement\": \"Cognitive function should be rebuildable projection\",\n           \"confidence\": \"low\",\n           \"entities\": [\n               {\n                   \"name\": \"Cognitive function\",\n                   \"type\": \"concept\",\n                   \"role\": \"subject\"\n               }\n           ],\n           \"relationships\": []\n       }\n   ],\n   \"entity_resolution\": {\n       \"action\": \"none\",\n       \"entity_id\": null,\n       \"reason\": \"insufficient information\"\n   },\n   \"conflict_classification\": \"none\",\n   \"answer\": \"no clear answer\",\n   \"citations\": [],\n   \"repair_options\": [\n       \"request clarification\",\n       \"provide additional context\"\n   ],\n   \"receipt\": {\n       \"success\": false,\n       \"details\": [\n           \"noisy input\",\n           \"low confidence\"\n       ]\n   }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

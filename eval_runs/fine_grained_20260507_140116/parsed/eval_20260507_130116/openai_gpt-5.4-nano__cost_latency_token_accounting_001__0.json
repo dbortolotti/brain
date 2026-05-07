@@ -1,0 +1,28 @@
+{
+  "fixture_id": "cost_latency_token_accounting_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Required eval accounting fields for an LLM call typically include:\n\n1) Token counts (usage accounting)\n- prompt_tokens: number of tokens in the input/prompt.\n- completion_tokens: number of tokens generated in the output.\n- total_tokens: usually prompt_tokens + completion_tokens (or the provider-reported aggregate).\n- (Optional but common) token_breakdown: e.g., cached_tokens / reasoning_tokens / tool_tokens, if the provider exposes them.\n\n2) Provider and model identifiers (traceability)\n- provider_id: which API vendor/platform handled the request.\n- model_id: the exact model name/version string returned by the provider.\n- (Optional) deployment_id / engine_id: some platforms distinguish deployments from base model.\n\n3) Estimated price (cost estimation)\n- currency: e.g., USD.\n- unit_pricing: the $/1K or $/1M token rates used for estimation (prompt vs completion may differ).\n- estimated_prompt_cost: prompt_tokens * prompt_rate.\n- estimated_completion_cost: completion_tokens * completion_rate.\n- estimated_total_cost: sum of estimated components.\n- (Optional) actual_cost: if the provider returns billed/true cost, for reconciliation.\n\n4) Latency percentiles (performance)\n- latency_p50_ms: median latency.\n- latency_p90_ms: 90th percentile latency.\n- latency_p95_ms: 95th percentile latency.\n- (Optional) latency_avg_ms, latency_p99_ms, and latency_sample_count (n) to interpret percentile reliability.\n\nPractical note: \u201clatency\u201d should have a consistent definition (e.g., end-to-end request time vs time-to-first-token vs full generation time). For reliable accounting, record the latency measurement convention alongside the percentiles.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "no_memory_update",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No stable personal facts or durable state were provided or needed to store."
+    },
+    "intent": "Explain required evaluation accounting fields for token counts, provider/model IDs, estimated price, and latency percentiles (p50/p90/p95).",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Provided a field checklist covering token usage, provider/model IDs, cost estimation inputs/outputs, and latency percentiles."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If a provider supplies more detailed usage fields (e.g., input/output tokens separately), map them into the required canonical fields.",
+      "If latency is measured as time-to-first-token vs end-to-end, record both or standardize to one and document the definition."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

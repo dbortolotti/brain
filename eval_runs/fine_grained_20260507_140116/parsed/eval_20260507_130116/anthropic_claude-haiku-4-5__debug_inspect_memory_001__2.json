@@ -1,0 +1,64 @@
+{
+  "fixture_id": "debug_inspect_memory_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory card mem_123 inspection initiated. Awaiting system response with card contents, metadata, confidence scores, and associated entity graph.",
+    "citations": [
+      "Command: /brain inspect memory mem_123",
+      "Fixture: debug_inspect_memory_001"
+    ],
+    "conflict_classification": "none",
+    "decision": "Return memory card metadata, content, and associated entities without modification",
+    "entity_resolution": {
+      "action": "lookup",
+      "entity_id": "mem_123",
+      "reason": "Direct memory card ID provided in inspect command"
+    },
+    "intent": "Inspect and retrieve memory card mem_123 from the Brain system",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "mem_123",
+            "role": "subject",
+            "type": "memory_card_id"
+          },
+          {
+            "name": "Brain",
+            "role": "container",
+            "type": "system"
+          }
+        ],
+        "kind": "inspection_result",
+        "relationships": [
+          {
+            "object": "Brain",
+            "predicate": "is_stored_in",
+            "subject": "mem_123"
+          },
+          {
+            "object": "debug_inspect_memory_001",
+            "predicate": "requested_by",
+            "subject": "mem_123"
+          }
+        ],
+        "statement": "Memory card mem_123 requested for inspection via debug command"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Inspection request parsed successfully",
+        "Memory card ID resolved: mem_123",
+        "Ready to retrieve and display memory contents"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Verify mem_123 exists in persistent store",
+      "Check access permissions for memory card",
+      "Validate card integrity and metadata consistency"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

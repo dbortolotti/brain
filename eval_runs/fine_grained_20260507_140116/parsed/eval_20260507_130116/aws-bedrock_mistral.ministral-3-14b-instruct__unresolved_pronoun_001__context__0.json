@@ -1,0 +1,55 @@
+{
+  "fixture_id": "unresolved_pronoun_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Pronoun 'He' and noun phrase 'the other one' are unresolved due to missing context. No actionable entities extracted.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "unresolved_pronoun",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Ambiguous pronoun 'He' lacks sufficient context to resolve referent. 'The other one' also requires antecedent clarification. No durable memory committed."
+    },
+    "intent": "entity_mention_extraction",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "He",
+            "role": "referent_ambiguous",
+            "type": "pronoun"
+          },
+          {
+            "name": "the other one",
+            "role": "referent_ambiguous",
+            "type": "noun_phrase"
+          }
+        ],
+        "kind": "contextual_ambiguity",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "He"
+          }
+        ],
+        "statement": "He prefers the other one."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No referents resolved due to ambiguity.",
+        "Memory not committed: adhering to strict durability rules."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Request clarification: 'Which person do you mean by 'He'?'",
+      "Request context: 'What are the two options being compared in 'the other one'?'",
+      "Await additional input to resolve ambiguity."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

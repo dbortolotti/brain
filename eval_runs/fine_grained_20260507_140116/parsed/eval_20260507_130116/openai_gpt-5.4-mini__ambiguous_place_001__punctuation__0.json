@@ -1,0 +1,49 @@
+{
+  "fixture_id": "ambiguous_place_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Do not commit a durable entity-specific memory yet; the note is too ambiguous to safely resolve to one Brutto entity.",
+    "citations": [],
+    "conflict_classification": "ambiguous_reference",
+    "decision": "defer",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The mention of Brutto is ambiguous and does not uniquely identify whether the note refers to the restaurant or the article alias."
+    },
+    "intent": "Evaluate whether the new note should be linked to an existing Brutto entity or stored as a new memory.",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Brutto",
+            "role": "possible referent",
+            "type": "ambiguous_entity"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "restaurant in London or article alias",
+            "predicate": "may_refer_to",
+            "subject": "Brutto"
+          }
+        ],
+        "statement": "The note says Brutto was better than expected, but the referent is ambiguous between the restaurant and the article alias."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguous reference detected.",
+        "No durable entity merge performed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask a follow-up question to clarify which Brutto is meant.",
+      "Store only a tentative, non-durable note about ambiguous positive sentiment toward Brutto."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

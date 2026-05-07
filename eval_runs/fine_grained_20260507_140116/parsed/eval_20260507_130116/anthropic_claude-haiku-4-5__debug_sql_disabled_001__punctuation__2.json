@@ -1,0 +1,59 @@
+{
+  "fixture_id": "debug_sql_disabled_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "SQL query execution denied. BRAIN_DEBUG_SQL_ENABLED is set to false, which disables direct SQL access to memory_cards. Enable the flag or use standard Brain API methods to query memory.",
+    "citations": [
+      "fixture: debug_sql_disabled_001__punctuation",
+      "constraint: BRAIN_DEBUG_SQL_ENABLED access control"
+    ],
+    "conflict_classification": "access_control_violation",
+    "decision": "DENY - SQL execution blocked when BRAIN_DEBUG_SQL_ENABLED=false",
+    "entity_resolution": {
+      "action": "block",
+      "entity_id": null,
+      "reason": "Debug SQL flag is disabled; query execution not permitted"
+    },
+    "intent": "Execute SQL query on memory_cards table with debug SQL disabled",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "BRAIN_DEBUG_SQL_ENABLED",
+            "role": "access_control",
+            "type": "system_flag"
+          },
+          {
+            "name": "memory_cards",
+            "role": "target_resource",
+            "type": "table"
+          }
+        ],
+        "kind": "system_constraint",
+        "relationships": [
+          {
+            "object": "SQL_query_execution",
+            "predicate": "controls_access_to",
+            "subject": "BRAIN_DEBUG_SQL_ENABLED"
+          }
+        ],
+        "statement": "SQL query execution is disabled when BRAIN_DEBUG_SQL_ENABLED flag is set to false"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Query blocked by access control policy",
+        "Debug SQL mode is currently disabled",
+        "No memory cards returned"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Set BRAIN_DEBUG_SQL_ENABLED=true to enable SQL debug mode",
+      "Use Brain API query methods instead of raw SQL",
+      "Contact system administrator to enable debug SQL access"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

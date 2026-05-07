@@ -1,0 +1,51 @@
+{
+  "error": null,
+  "fixture_id": "debug_explain_recall_sam_001__punctuation",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "I don\u2019t have any stored details about a person named Sam at Goldman. If you want me to recall or summarize information, please provide specific context or confirm which Sam and what Goldman you\u2019re referring to. I can then pull together available details and note any ambiguities.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "provide_memory_recall_with_ambiguity_preservation",
+    "entity_resolution": {
+      "action": "no_explicit_resolution_required",
+      "entity_id": null,
+      "reason": "Insufficient stored data about Sam to resolve identities beyond the provided names."
+    },
+    "intent": "debug_explain_recall",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unknown",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "memory",
+        "relationships": [],
+        "statement": "Sam from Goldman is referenced in the user's request, but no prior stored memory details are provided in this context."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Triggered recall workflow with ambiguity preservation."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide more context about which Sam (full name, role) and which Goldman (firm location, department).",
+      "Allow me to create a provisional memory entry with user-supplied attributes while marking as unverified.",
+      "Ask clarifying questions to disambiguate identity (e.g., middle name, tenure, department)."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"debug_explain_recall\",\n  \"decision\": \"provide_memory_recall_with_ambiguity_preservation\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"memory\",\n      \"statement\": \"Sam from Goldman is referenced in the user's request, but no prior stored memory details are provided in this context.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\"name\": \"Sam\", \"type\": \"person\", \"role\": \"unknown\"},\n        {\"name\": \"Goldman\", \"type\": \"organization\", \"role\": \"employer\"}\n      ],\n      \"relationships\": []\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_explicit_resolution_required\",\n    \"entity_id\": null,\n    \"reason\": \"Insufficient stored data about Sam to resolve identities beyond the provided names.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"I don\u2019t have any stored details about a person named Sam at Goldman. If you want me to recall or summarize information, please provide specific context or confirm which Sam and what Goldman you\u2019re referring to. I can then pull together available details and note any ambiguities.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Provide more context about which Sam (full name, role) and which Goldman (firm location, department).\",\n    \"Allow me to create a provisional memory entry with user-supplied attributes while marking as unverified.\",\n    \"Ask clarifying questions to disambiguate identity (e.g., middle name, tenure, department).\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Triggered recall workflow with ambiguity preservation.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

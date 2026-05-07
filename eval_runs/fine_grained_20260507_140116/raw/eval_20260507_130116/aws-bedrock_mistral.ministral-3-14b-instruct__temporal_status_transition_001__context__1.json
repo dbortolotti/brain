@@ -1,0 +1,82 @@
+{
+  "error": null,
+  "fixture_id": "temporal_status_transition_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The Brain Slack agent's status is now **implemented (MVP)**, superseding the prior 'planned (status=open)' state. No conflicting facts are retained as current.",
+    "citations": [
+      "New input: 'The Brain Slack agent MVP is now implemented.'",
+      "Existing context: 'The Brain Slack agent is planned, status=open.'"
+    ],
+    "conflict_classification": "temporal_status_resolution",
+    "decision": "confirm_temporal_transition",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "Brain Slack agent",
+      "reason": "Temporal transition from 'planned' to 'implemented (MVP)' requires unified entity reference while preserving historical context."
+    },
+    "intent": "update_project_status",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain Slack agent",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "MVP",
+            "role": "status",
+            "type": "milestone"
+          },
+          {
+            "name": "implemented",
+            "role": "current_status",
+            "type": "state"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "implemented (MVP)",
+            "predicate": "has_status",
+            "subject": "Brain Slack agent"
+          },
+          {
+            "object": "planned (status=open)",
+            "predicate": "supersedes",
+            "subject": "Brain Slack agent"
+          }
+        ],
+        "statement": "The Brain Slack agent MVP is now implemented (previously planned, status=open)."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "original_plan",
+            "role": "excluded_context",
+            "type": "reference"
+          }
+        ],
+        "kind": "contextual_note",
+        "statement": "Ambiguity preserved: 'implemented' does not specify full feature parity with original plan; no superseded facts are presented as current."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory updated: Brain Slack agent \u2192 implemented (MVP).",
+        "Ambiguity preserved: No superseded facts presented as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Verify MVP scope alignment with original plan (if needed).",
+      "Flag for follow-up: 'Does 'implemented' imply full feature parity?'"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"update_project_status\",\n  \"decision\": \"confirm_temporal_transition\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"The Brain Slack agent MVP is now implemented (previously planned, status=open).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain Slack agent\",\n          \"type\": \"project\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"MVP\",\n          \"type\": \"milestone\",\n          \"role\": \"status\"\n        },\n        {\n          \"name\": \"implemented\",\n          \"type\": \"state\",\n          \"role\": \"current_status\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain Slack agent\",\n          \"predicate\": \"has_status\",\n          \"object\": \"implemented (MVP)\"\n        },\n        {\n          \"subject\": \"Brain Slack agent\",\n          \"predicate\": \"supersedes\",\n          \"object\": \"planned (status=open)\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"contextual_note\",\n      \"statement\": \"Ambiguity preserved: 'implemented' does not specify full feature parity with original plan; no superseded facts are presented as current.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"original_plan\",\n          \"type\": \"reference\",\n          \"role\": \"excluded_context\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge\",\n    \"entity_id\": \"Brain Slack agent\",\n    \"reason\": \"Temporal transition from 'planned' to 'implemented (MVP)' requires unified entity reference while preserving historical context.\"\n  },\n  \"conflict_classification\": \"temporal_status_resolution\",\n  \"answer\": \"The Brain Slack agent's status is now **implemented (MVP)**, superseding the prior 'planned (status=open)' state. No conflicting facts are retained as current.\",\n  \"citations\": [\n    \"New input: 'The Brain Slack agent MVP is now implemented.'\",\n    \"Existing context: 'The Brain Slack agent is planned, status=open.'\"\n  ],\n  \"repair_options\": [\n    \"Verify MVP scope alignment with original plan (if needed).\",\n    \"Flag for follow-up: 'Does 'implemented' imply full feature parity?'\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Durable memory updated: Brain Slack agent \u2192 implemented (MVP).\",\n      \"Ambiguity preserved: No superseded facts presented as current.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

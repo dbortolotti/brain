@@ -1,0 +1,81 @@
+{
+  "error": null,
+  "fixture_id": "memory_compiler_small_table",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Extracted 2 atomic preference memory cards.",
+    "citations": [
+      "fixture:memory_compiler_small_table"
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "Commit two durable preference facts as separate atomic memory cards.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The table provides only names and preferences with no prior entity context or ambiguous duplicates to resolve."
+    },
+    "intent": "Extract atomic preference memory cards from the provided table.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred entity",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam prefers Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "knowledge graphs",
+            "role": "preferred topic",
+            "type": "concept"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "knowledge graphs",
+            "predicate": "prefers",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Daniele prefers knowledge graphs."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed 2 rows from the table.",
+        "Created one atomic memory card per person-preference pair.",
+        "No conflicts or supersessions detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"Extract atomic preference memory cards from the provided table.\",\"decision\":\"Commit two durable preference facts as separate atomic memory cards.\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam prefers Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"preferred entity\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"prefers\",\"object\":\"Bill Evans\"}]},{\"kind\":\"preference\",\"statement\":\"Daniele prefers knowledge graphs.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Daniele\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"knowledge graphs\",\"type\":\"concept\",\"role\":\"preferred topic\"}],\"relationships\":[{\"subject\":\"Daniele\",\"predicate\":\"prefers\",\"object\":\"knowledge graphs\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The table provides only names and preferences with no prior entity context or ambiguous duplicates to resolve.\"},\"conflict_classification\":\"no_conflict\",\"answer\":\"Extracted 2 atomic preference memory cards.\",\"citations\":[\"fixture:memory_compiler_small_table\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Parsed 2 rows from the table.\",\"Created one atomic memory card per person-preference pair.\",\"No conflicts or supersessions detected.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

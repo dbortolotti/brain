@@ -1,0 +1,103 @@
+{
+  "error": null,
+  "fixture_id": "pdf_ocr_noisy_source_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The input describes a *noisy OCR-derived* memory system ('Brain DB') where truth must be cognitively reconstructed despite source degradation. Key principles: (1) OCR noise corrupts fidelity, (2) rebuildability requires projections of durable memory. No superseded facts exist; ambiguity is preserved.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "retain_ambiguous_with_preservation",
+    "entity_resolution": {
+      "action": "preserve_ambiguity",
+      "entity_id": null,
+      "reason": "Source text contains OCR artifacts ('remalns', 'trvth', 'Cognee') that cannot be disambiguated without additional context. Retaining raw phrasing preserves potential meaning while flagging uncertainty."
+    },
+    "intent": "memory_reconstruction",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "memory_storage",
+            "type": "system"
+          },
+          {
+            "name": "OCR noise",
+            "role": "data_quality_issue",
+            "type": "artifact"
+          },
+          {
+            "name": "truth",
+            "role": "epistemic_anchor",
+            "type": "concept"
+          }
+        ],
+        "kind": "source_metadata",
+        "relationships": [
+          {
+            "object": "OCR noise",
+            "predicate": "is_affected_by",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "cognitive reconstruction",
+            "predicate": "requires",
+            "subject": "truth"
+          }
+        ],
+        "statement": "The Brain DB is a *noisy OCR source* of truth, requiring cognitive reconstruction."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "cognitive system",
+            "role": "agent",
+            "type": "system"
+          },
+          {
+            "name": "durable memory",
+            "role": "foundation",
+            "type": "concept"
+          },
+          {
+            "name": "projection",
+            "role": "reconstruction_mechanism",
+            "type": "process"
+          }
+        ],
+        "kind": "system_principle",
+        "relationships": [
+          {
+            "object": "durable memory",
+            "predicate": "depends_on",
+            "subject": "cognitive system"
+          },
+          {
+            "object": "rebuildability",
+            "predicate": "enables",
+            "subject": "projection"
+          }
+        ],
+        "statement": "Cognitive systems should be *rebuildable* from projections of durable memory, even when source fidelity is compromised."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted 2 atomic cards: 1 source metadata, 1 system principle",
+        "Preserved OCR noise as explicit ambiguity markers",
+        "No conflicts detected; no superseded facts identified"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Flag OCR artifacts for manual review",
+      "Generate probabilistic reconstructions of corrupted terms (e.g., 'remalns' \u2192 ['remains', 'remains?', '?'])",
+      "Link to source provenance metadata if available"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"memory_reconstruction\",\n  \"decision\": \"retain_ambiguous_with_preservation\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"source_metadata\",\n      \"statement\": \"The Brain DB is a *noisy OCR source* of truth, requiring cognitive reconstruction.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"system\",\n          \"role\": \"memory_storage\"\n        },\n        {\n          \"name\": \"OCR noise\",\n          \"type\": \"artifact\",\n          \"role\": \"data_quality_issue\"\n        },\n        {\n          \"name\": \"truth\",\n          \"type\": \"concept\",\n          \"role\": \"epistemic_anchor\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"is_affected_by\",\n          \"object\": \"OCR noise\"\n        },\n        {\n          \"subject\": \"truth\",\n          \"predicate\": \"requires\",\n          \"object\": \"cognitive reconstruction\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"system_principle\",\n      \"statement\": \"Cognitive systems should be *rebuildable* from projections of durable memory, even when source fidelity is compromised.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"cognitive system\",\n          \"type\": \"system\",\n          \"role\": \"agent\"\n        },\n        {\n          \"name\": \"durable memory\",\n          \"type\": \"concept\",\n          \"role\": \"foundation\"\n        },\n        {\n          \"name\": \"projection\",\n          \"type\": \"process\",\n          \"role\": \"reconstruction_mechanism\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"cognitive system\",\n          \"predicate\": \"depends_on\",\n          \"object\": \"durable memory\"\n        },\n        {\n          \"subject\": \"projection\",\n          \"predicate\": \"enables\",\n          \"object\": \"rebuildability\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"preserve_ambiguity\",\n    \"entity_id\": null,\n    \"reason\": \"Source text contains OCR artifacts ('remalns', 'trvth', 'Cognee') that cannot be disambiguated without additional context. Retaining raw phrasing preserves potential meaning while flagging uncertainty.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"The input describes a *noisy OCR-derived* memory system ('Brain DB') where truth must be cognitively reconstructed despite source degradation. Key principles: (1) OCR noise corrupts fidelity, (2) rebuildability requires projections of durable memory. No superseded facts exist; ambiguity is preserved.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Flag OCR artifacts for manual review\",\n    \"Generate probabilistic reconstructions of corrupted terms (e.g., 'remalns' \u2192 ['remains', 'remains?', '?'])\",\n    \"Link to source provenance metadata if available\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Extracted 2 atomic cards: 1 source metadata, 1 system principle\",\n      \"Preserved OCR noise as explicit ambiguity markers\",\n      \"No conflicts detected; no superseded facts identified\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

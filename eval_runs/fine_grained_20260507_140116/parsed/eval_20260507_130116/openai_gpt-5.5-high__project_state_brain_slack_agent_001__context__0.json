@@ -1,0 +1,62 @@
+{
+  "fixture_id": "project_state_brain_slack_agent_001__context",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "Committed: Slack is the primary guardrailed memory ingestion interface for Brain; Telegram is deferred.",
+    "citations": [
+      "For context, Brain project state: Slack should be the primary guardrailed memory ingestion interface; Telegram can come later."
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_memory",
+    "entity_resolution": {
+      "action": "link_or_create",
+      "entity_id": null,
+      "reason": "The input refers to the Brain project but provides no durable entity identifier; link to an existing Brain project entity if available, otherwise create one."
+    },
+    "intent": "store_project_state",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "Slack",
+            "role": "primary guardrailed memory ingestion interface",
+            "type": "communication_platform"
+          },
+          {
+            "name": "Telegram",
+            "role": "deferred future memory ingestion interface",
+            "type": "communication_platform"
+          }
+        ],
+        "kind": "project_state",
+        "relationships": [
+          {
+            "object": "Slack",
+            "predicate": "uses_primary_guardrailed_memory_ingestion_interface",
+            "subject": "Brain"
+          },
+          {
+            "object": "Brain",
+            "predicate": "can_come_later_for",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "For the Brain project, Slack should be the primary guardrailed memory ingestion interface; Telegram is deferred to a later phase."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored one project-state memory card about Brain's preferred memory ingestion interface priority."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

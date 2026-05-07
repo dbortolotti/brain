@@ -1,0 +1,150 @@
+{
+  "error": null,
+  "fixture_id": "cost_latency_token_accounting_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Required eval accounting fields: (1) token_counts: input_tokens, output_tokens, total_tokens; (2) provider/model_ids: provider_id, model_id; (3) estimated_price: derived from tokens \u00d7 provider rates; (4) latency_percentiles: p50, p90, p95 milliseconds",
+    "citations": [
+      "Fixture: cost_latency_token_accounting_001"
+    ],
+    "conflict_classification": "none",
+    "decision": "Commit structured memory cards capturing token accounting dimensions with relationships to provider/model context",
+    "entity_resolution": {
+      "action": "create_accounting_schema",
+      "entity_id": "cost_latency_token_accounting_001",
+      "reason": "Fixture establishes durable accounting field requirements for eval system"
+    },
+    "intent": "Document required evaluation accounting fields for cost, latency, and token metrics in Brain memory system",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "input_tokens",
+            "role": "cost_component",
+            "type": "metric"
+          },
+          {
+            "name": "output_tokens",
+            "role": "cost_component",
+            "type": "metric"
+          },
+          {
+            "name": "total_tokens",
+            "role": "aggregate",
+            "type": "metric"
+          }
+        ],
+        "kind": "metric_requirement",
+        "relationships": [
+          {
+            "object": "total_tokens",
+            "predicate": "contributes_to",
+            "subject": "input_tokens"
+          },
+          {
+            "object": "total_tokens",
+            "predicate": "contributes_to",
+            "subject": "output_tokens"
+          }
+        ],
+        "statement": "Token count accounting requires input_tokens, output_tokens, and total_tokens fields for cost and usage tracking"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "provider_id",
+            "role": "service_source",
+            "type": "identifier"
+          },
+          {
+            "name": "model_id",
+            "role": "model_specification",
+            "type": "identifier"
+          }
+        ],
+        "kind": "metric_requirement",
+        "relationships": [
+          {
+            "object": "model_id",
+            "predicate": "identifies",
+            "subject": "provider_id"
+          }
+        ],
+        "statement": "Provider and model identification fields enable cost calculation and performance attribution across different LLM services"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "estimated_price",
+            "role": "cost_output",
+            "type": "metric"
+          }
+        ],
+        "kind": "metric_requirement",
+        "relationships": [
+          {
+            "object": "estimated_price",
+            "predicate": "determines",
+            "subject": "total_tokens"
+          },
+          {
+            "object": "estimated_price",
+            "predicate": "provides_rate_for",
+            "subject": "provider_id"
+          }
+        ],
+        "statement": "Estimated price field captures cost derived from token counts and provider pricing rates"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "latency_p50",
+            "role": "performance_median",
+            "type": "metric"
+          },
+          {
+            "name": "latency_p90",
+            "role": "performance_tail",
+            "type": "metric"
+          },
+          {
+            "name": "latency_p95",
+            "role": "performance_tail",
+            "type": "metric"
+          }
+        ],
+        "kind": "metric_requirement",
+        "relationships": [
+          {
+            "object": "latency_p90",
+            "predicate": "precedes",
+            "subject": "latency_p50"
+          },
+          {
+            "object": "latency_p95",
+            "predicate": "precedes",
+            "subject": "latency_p90"
+          }
+        ],
+        "statement": "Latency percentiles (p50, p90, p95) measure response time distribution for performance evaluation and SLA tracking"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Token accounting fields committed",
+        "Provider/model identification fields committed",
+        "Cost estimation field committed",
+        "Latency percentile fields committed"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Document required evaluation accounting fields for cost, latency, and token metrics in Brain memory system\",\n  \"decision\": \"Commit structured memory cards capturing token accounting dimensions with relationships to provider/model context\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"metric_requirement\",\n      \"statement\": \"Token count accounting requires input_tokens, output_tokens, and total_tokens fields for cost and usage tracking\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"input_tokens\",\n          \"type\": \"metric\",\n          \"role\": \"cost_component\"\n        },\n        {\n          \"name\": \"output_tokens\",\n          \"type\": \"metric\",\n          \"role\": \"cost_component\"\n        },\n        {\n          \"name\": \"total_tokens\",\n          \"type\": \"metric\",\n          \"role\": \"aggregate\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"input_tokens\",\n          \"predicate\": \"contributes_to\",\n          \"object\": \"total_tokens\"\n        },\n        {\n          \"subject\": \"output_tokens\",\n          \"predicate\": \"contributes_to\",\n          \"object\": \"total_tokens\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"metric_requirement\",\n      \"statement\": \"Provider and model identification fields enable cost calculation and performance attribution across different LLM services\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"provider_id\",\n          \"type\": \"identifier\",\n          \"role\": \"service_source\"\n        },\n        {\n          \"name\": \"model_id\",\n          \"type\": \"identifier\",\n          \"role\": \"model_specification\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"provider_id\",\n          \"predicate\": \"identifies\",\n          \"object\": \"model_id\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"metric_requirement\",\n      \"statement\": \"Estimated price field captures cost derived from token counts and provider pricing rates\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"estimated_price\",\n          \"type\": \"metric\",\n          \"role\": \"cost_output\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"total_tokens\",\n          \"predicate\": \"determines\",\n          \"object\": \"estimated_price\"\n        },\n        {\n          \"subject\": \"provider_id\",\n          \"predicate\": \"provides_rate_for\",\n          \"object\": \"estimated_price\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"metric_requirement\",\n      \"statement\": \"Latency percentiles (p50, p90, p95) measure response time distribution for performance evaluation and SLA tracking\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"latency_p50\",\n          \"type\": \"metric\",\n          \"role\": \"performance_median\"\n        },\n        {\n          \"name\": \"latency_p90\",\n          \"type\": \"metric\",\n          \"role\": \"performance_tail\"\n        },\n        {\n          \"name\": \"latency_p95\",\n          \"type\": \"metric\",\n          \"role\": \"performance_tail\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"latency_p50\",\n          \"predicate\": \"precedes\",\n          \"object\": \"latency_p90\"\n        },\n        {\n          \"subject\": \"latency_p90\",\n          \"predicate\": \"precedes\",\n          \"object\": \"latency_p95\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_accounting_schema\",\n    \"entity_id\": \"cost_latency_token_accounting_001\",\n    \"reason\": \"Fixture establishes durable accounting field requirements for eval system\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Required eval accounting fields: (1) token_counts: input_tokens, output_tokens, total_tokens; (2) provider/model_ids: provider_id, model_id; (3) estimated_price: derived from tokens \u00d7 provider rates; (4) latency_percentiles: p50, p90, p95 milliseconds\",\n  \"citations\": [\n    \"Fixture: cost_latency_token_accounting_001\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Token accounting fields committed\",\n      \"Provider/model identification fields committed\",\n      \"Cost estimation field committed\",\n      \"Latency percentile fields committed\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

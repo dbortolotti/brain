@@ -1,0 +1,81 @@
+{
+  "error": null,
+  "fixture_id": "slack_ambiguous_entity_buttons_001__punctuation",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Ambiguity detected: 'Sam' is linked to Goldman and Sam? Point72; cannot determine if these refer to the same person. Also memory states 'Sam likes Bill Evans' without tying to a specific Sam instance. Please disambiguate entities or provide additional identifying attributes.",
+    "citations": [],
+    "conflict_classification": "ambiguous_identity_overlap",
+    "decision": "ambiguous_authority_conflict",
+    "entity_resolution": {
+      "action": "partial_merge",
+      "entity_id": null,
+      "reason": "Two different Sam references (affiliations to Goldman and Point72) potentially refer to same or different individuals; current data insufficient to conclusively resolve; preserve ambiguity."
+    },
+    "intent": "classify_memory_validity",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "person",
+        "relationships": [],
+        "statement": "Sam from Goldman; Sam from Point72"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object_of_affection",
+            "type": "person"
+          }
+        ],
+        "kind": "memory",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "brain remember Sam likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed inputs into memory cards with explicit ambiguity preserved.",
+        "No irreversible changes made to existing memories; potential merge as placeholder only."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add unique identifiers for Sam instances (e.g., employee IDs) to distinguish or confirm if same person.",
+      "If intended to be same Sam, explicitly state this and unify affiliations under a single entity.",
+      "Separate memory cards for each potential Sam with provisional status and a note to resolve later."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"classify_memory_validity\",\n  \"decision\": \"ambiguous_authority_conflict\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"person\",\n      \"statement\": \"Sam from Goldman; Sam from Point72\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\"name\": \"Sam\", \"type\": \"person\", \"role\": \"subject\"},\n        {\"name\": \"Goldman\", \"type\": \"organization\", \"role\": \"affiliation\"},\n        {\"name\": \"Point72\", \"type\": \"organization\", \"role\": \"affiliation\"}\n      ],\n      \"relationships\": []\n    },\n    {\n      \"kind\": \"memory\",\n      \"statement\": \"brain remember Sam likes Bill Evans\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\"name\": \"Sam\", \"type\": \"person\", \"role\": \"subject\"},\n        {\"name\": \"Bill Evans\", \"type\": \"person\", \"role\": \"object_of_affection\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sam\", \"predicate\": \"likes\", \"object\": \"Bill Evans\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"partial_merge\",\n    \"entity_id\": null,\n    \"reason\": \"Two different Sam references (affiliations to Goldman and Point72) potentially refer to same or different individuals; current data insufficient to conclusively resolve; preserve ambiguity.\"\n  },\n  \"conflict_classification\": \"ambiguous_identity_overlap\",\n  \"answer\": \"Ambiguity detected: 'Sam' is linked to Goldman and Sam? Point72; cannot determine if these refer to the same person. Also memory states 'Sam likes Bill Evans' without tying to a specific Sam instance. Please disambiguate entities or provide additional identifying attributes.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Add unique identifiers for Sam instances (e.g., employee IDs) to distinguish or confirm if same person.\",\n    \"If intended to be same Sam, explicitly state this and unify affiliations under a single entity.\",\n    \"Separate memory cards for each potential Sam with provisional status and a note to resolve later.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Parsed inputs into memory cards with explicit ambiguity preserved.\",\n      \"No irreversible changes made to existing memories; potential merge as placeholder only.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

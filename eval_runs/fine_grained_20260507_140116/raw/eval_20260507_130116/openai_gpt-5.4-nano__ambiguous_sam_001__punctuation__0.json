@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_sam_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Cannot durably store the preference because 'Sam' is ambiguous between two existing entities.",
+    "citations": [],
+    "conflict_classification": "ambiguity_due_to_multiple_possible_entities",
+    "decision": "no_commit",
+    "entity_resolution": {
+      "action": "request_clarification",
+      "entity_id": null,
+      "reason": "The name 'Sam' matches multiple existing entities (Sam from Goldman; Sam from Point72). The message does not specify which Sam likes Bill Evans, so committing would be ambiguous."
+    },
+    "intent": "durability_filter",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_by",
+            "type": "person"
+          }
+        ],
+        "kind": "preference_ambiguous",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (unspecified whether Goldman or Point72) likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected ambiguous subject ('Sam') relative to existing entities."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask which Sam: 'Do you mean Sam from Goldman or Sam from Point72?'",
+      "If context is available, look for additional identifying details (e.g., firm, role, or other co-mentioned facts) to disambiguate before storing.",
+      "Store the preference only after disambiguation, as either 'Sam (Goldman) likes Bill Evans' or 'Sam (Point72) likes Bill Evans'."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"durability_filter\",\n  \"decision\": \"no_commit\",\n  \"conflict_classification\": \"ambiguity_due_to_multiple_possible_entities\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference_ambiguous\",\n      \"statement\": \"Sam (unspecified whether Goldman or Point72) likes Bill Evans.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"liked_by\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"request_clarification\",\n    \"entity_id\": null,\n    \"reason\": \"The name 'Sam' matches multiple existing entities (Sam from Goldman; Sam from Point72). The message does not specify which Sam likes Bill Evans, so committing would be ambiguous.\"\n  },\n  \"answer\": \"Cannot durably store the preference because 'Sam' is ambiguous between two existing entities.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Ask which Sam: 'Do you mean Sam from Goldman or Sam from Point72?'\",\n    \"If context is available, look for additional identifying details (e.g., firm, role, or other co-mentioned facts) to disambiguate before storing.\",\n    \"Store the preference only after disambiguation, as either 'Sam (Goldman) likes Bill Evans' or 'Sam (Point72) likes Bill Evans'.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Detected ambiguous subject ('Sam') relative to existing entities.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

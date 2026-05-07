@@ -1,0 +1,58 @@
+{
+  "fixture_id": "slack_retry_event_001__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "The input notes that a single Slack event ID was delivered twice for the interaction: 'Sam from Goldman likes Bill Evans.' This is recorded as a potential duplication artifact with no change in the underlying meaning.",
+    "citations": [],
+    "conflict_classification": "duplication_event",
+    "decision": "preserve_ambiguous_memory",
+    "entity_resolution": {
+      "action": "record",
+      "entity_id": null,
+      "reason": "Event duplication behavior observed; no unique persistent entity identified beyond the event reference."
+    },
+    "intent": "memory_classification",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": " Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object_of_like",
+            "type": "person"
+          },
+          {
+            "name": "Slack event ID",
+            "role": "identifier",
+            "type": "event"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [],
+        "statement": "Same Slack event ID delivered twice for: Sam from Goldman likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created for duplicate Slack event observation.",
+        "No conflicting facts detected; ambiguity preserved."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If desired, deduplicate by consolidating duplicate event deliveries under a single memory record while preserving the original delivery instances for audit.",
+      "Tag the memory entry with a duplicate_of reference to the other delivery if both are kept for provenance."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

@@ -1,0 +1,78 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_transcript_as_memory_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "A single 8000-word conversation summary cannot be durably committed as-is. Instead, decompose into discrete memory cards (e.g., per-speaker turns, decisions, or fact assertions) with explicit confidence scores, timestamps, and conflict markers. Use the `validator_blocks_transcript_as_memory_001` fixture to guide granular extraction.",
+    "citations": [
+      "Durability Principle 3.1: Memory cards must preserve ambiguity until resolution.",
+      "Conflict Handling Protocol 2.4: Superseded facts require explicit deletion markers."
+    ],
+    "conflict_classification": "systematic_aggregation_conflict",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Transcript lacks explicit metadata to resolve entities (e.g., speaker roles, timestamps, or deletion markers)."
+    },
+    "intent": "evaluate_durability_of_conversation_summary_card",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "8000-word_transcript",
+            "role": "input_source",
+            "type": "document"
+          },
+          {
+            "name": "durability_principles",
+            "role": "violation_reference",
+            "type": "concept"
+          },
+          {
+            "name": "ambiguity_preservation",
+            "role": "unmet",
+            "type": "requirement"
+          }
+        ],
+        "kind": "durability_violation",
+        "relationships": [
+          {
+            "object": "contradictory_facts",
+            "predicate": "contains",
+            "subject": "8000-word_transcript"
+          },
+          {
+            "object": "temporal_ambiguity",
+            "predicate": "fails_to_resolve",
+            "subject": "single_summary_card"
+          },
+          {
+            "object": "granular_memory_cards",
+            "predicate": "requires",
+            "subject": "durability_filter"
+          }
+        ],
+        "statement": "The proposed single 8000-word transcript summary card violates durability principles by: (1) aggregating ambiguous, contradictory, or superseded facts into a single statement without granular resolution; (2) failing to preserve temporal or contextual ambiguity inherent in long-form transcripts; (3) conflating ephemeral conversational turns with durable memory requirements."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Violation detected: Loss of temporal granularity.",
+        "Violation detected: Ambiguity suppression in aggregation.",
+        "Action required: Decompose into atomic memory cards."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Split transcript into 500-word chunks with clear boundaries.",
+      "Tag each statement with [speaker], [timestamp], and [confidence] metadata.",
+      "Flag unresolved contradictions as 'pending_resolution' with citations.",
+      "Use separate cards for assertions vs. hypotheses (e.g., 'User claimed X' vs. 'System verified X')."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"evaluate_durability_of_conversation_summary_card\",\n  \"decision\": \"reject\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"durability_violation\",\n      \"statement\": \"The proposed single 8000-word transcript summary card violates durability principles by: (1) aggregating ambiguous, contradictory, or superseded facts into a single statement without granular resolution; (2) failing to preserve temporal or contextual ambiguity inherent in long-form transcripts; (3) conflating ephemeral conversational turns with durable memory requirements.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"8000-word_transcript\",\n          \"type\": \"document\",\n          \"role\": \"input_source\"\n        },\n        {\n          \"name\": \"durability_principles\",\n          \"type\": \"concept\",\n          \"role\": \"violation_reference\"\n        },\n        {\n          \"name\": \"ambiguity_preservation\",\n          \"type\": \"requirement\",\n          \"role\": \"unmet\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"8000-word_transcript\",\n          \"predicate\": \"contains\",\n          \"object\": \"contradictory_facts\"\n        },\n        {\n          \"subject\": \"single_summary_card\",\n          \"predicate\": \"fails_to_resolve\",\n          \"object\": \"temporal_ambiguity\"\n        },\n        {\n          \"subject\": \"durability_filter\",\n          \"predicate\": \"requires\",\n          \"object\": \"granular_memory_cards\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Transcript lacks explicit metadata to resolve entities (e.g., speaker roles, timestamps, or deletion markers).\"\n  },\n  \"conflict_classification\": \"systematic_aggregation_conflict\",\n  \"answer\": \"A single 8000-word conversation summary cannot be durably committed as-is. Instead, decompose into discrete memory cards (e.g., per-speaker turns, decisions, or fact assertions) with explicit confidence scores, timestamps, and conflict markers. Use the `validator_blocks_transcript_as_memory_001` fixture to guide granular extraction.\",\n  \"citations\": [\n    \"Durability Principle 3.1: Memory cards must preserve ambiguity until resolution.\",\n    \"Conflict Handling Protocol 2.4: Superseded facts require explicit deletion markers.\"\n  ],\n  \"repair_options\": [\n    \"Split transcript into 500-word chunks with clear boundaries.\",\n    \"Tag each statement with [speaker], [timestamp], and [confidence] metadata.\",\n    \"Flag unresolved contradictions as 'pending_resolution' with citations.\",\n    \"Use separate cards for assertions vs. hypotheses (e.g., 'User claimed X' vs. 'System verified X').\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Violation detected: Loss of temporal granularity.\",\n      \"Violation detected: Ambiguity suppression in aggregation.\",\n      \"Action required: Decompose into atomic memory cards.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

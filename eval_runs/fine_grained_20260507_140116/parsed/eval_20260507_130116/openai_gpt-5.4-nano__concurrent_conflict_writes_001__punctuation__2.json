@@ -1,0 +1,81 @@
+{
+  "fixture_id": "concurrent_conflict_writes_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "The statements may be inconsistent or may both be true at different times. Without timestamps (or clarification whether 'Goldman' is current and 'Point72' is a past/future move, or whether these are concurrent roles), the safest stance is to avoid recording a definitive current employment/affiliation claim.",
+    "citations": [],
+    "conflict_classification": "Potential conflicting employment/affiliation facts due to concurrent writes (work at Goldman vs joined Point72) without timestamps or context.",
+    "decision": "Do not commit durable memory; treat as ambiguous because the two writes may refer to different time periods or different roles/affiliations.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input does not provide identifiers beyond the name 'Sam' and organization names that could be partial; cannot safely resolve to durable entity records."
+    },
+    "intent": "Explain and resolve a potential conflict arising from concurrent writes about Sam\u2019s affiliations/employment.",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "organization",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected two concurrent affiliation-related writes about the same person ('Sam') with different organizations ('Goldman' vs 'Point72').",
+        "Classified as a potential conflict due to missing temporal context.",
+        "Chose non-commitment to avoid asserting a single current state."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask whether 'Goldman' is Sam\u2019s current employer or a previous one, and whether 'joined Point72' is a start date and whether it is current.",
+      "Request timestamps (month/year) for both affiliations.",
+      "Clarify whether 'Goldman' refers to Goldman Sachs and whether 'Point72' refers to Point72 Asset Management or another entity.",
+      "Store both as time-bounded events once dates are provided (e.g., 'worked at Goldman from X to Y', 'joined Point72 in Z')."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

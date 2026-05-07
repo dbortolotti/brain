@@ -1,0 +1,74 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_time_reference_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory stored with temporal uncertainty flags. Absolute dates cannot be inferred from relative references.",
+    "citations": [
+      "Input statement contains two unresolved relative time references: 'last Friday' and 'next month'"
+    ],
+    "conflict_classification": "temporal_ambiguity",
+    "decision": "Accept with confidence caveats due to unresolved time references",
+    "entity_resolution": {
+      "action": "defer_with_flag",
+      "entity_id": null,
+      "reason": "Cannot resolve 'last Friday' or 'next month' to absolute dates without system clock or prior context"
+    },
+    "intent": "Store a statement about Sam's employment transition with temporal ambiguity",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "assertion",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "employed_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "stated_departure_from",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam stated (on an unspecified Friday) that he is leaving Goldman in an unspecified future month"
+      },
+      {
+        "confidence": "low",
+        "entities": [],
+        "kind": "temporal_ambiguity",
+        "relationships": [],
+        "statement": "Reference 'last Friday' is unresolved without current date context; 'next month' is relative to unspecified speech date"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card created for Sam's departure intent",
+        "Temporal references marked as ambiguous and unresolved",
+        "No superseded facts detected",
+        "Ambiguity preserved in statement text"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify: What is today's date relative to 'last Friday'?",
+      "Clarify: In which calendar month will Sam leave Goldman?",
+      "Clarify: What is the exact date Sam made this statement?"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Store a statement about Sam's employment transition with temporal ambiguity\",\n  \"decision\": \"Accept with confidence caveats due to unresolved time references\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"assertion\",\n      \"statement\": \"Sam stated (on an unspecified Friday) that he is leaving Goldman in an unspecified future month\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"employed_at\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"stated_departure_from\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"temporal_ambiguity\",\n      \"statement\": \"Reference 'last Friday' is unresolved without current date context; 'next month' is relative to unspecified speech date\",\n      \"confidence\": \"low\",\n      \"entities\": [],\n      \"relationships\": []\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer_with_flag\",\n    \"entity_id\": null,\n    \"reason\": \"Cannot resolve 'last Friday' or 'next month' to absolute dates without system clock or prior context\"\n  },\n  \"conflict_classification\": \"temporal_ambiguity\",\n  \"answer\": \"Memory stored with temporal uncertainty flags. Absolute dates cannot be inferred from relative references.\",\n  \"citations\": [\n    \"Input statement contains two unresolved relative time references: 'last Friday' and 'next month'\"\n  ],\n  \"repair_options\": [\n    \"Clarify: What is today's date relative to 'last Friday'?\",\n    \"Clarify: In which calendar month will Sam leave Goldman?\",\n    \"Clarify: What is the exact date Sam made this statement?\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card created for Sam's departure intent\",\n      \"Temporal references marked as ambiguous and unresolved\",\n      \"No superseded facts detected\",\n      \"Ambiguity preserved in statement text\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

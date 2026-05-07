@@ -1,0 +1,109 @@
+{
+  "fixture_id": "cost_latency_token_accounting_001",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Required eval accounting fields: token_counts (tokens consumed in the evaluation), provider_id (which provider was used), model_id (which model/version was used), estimated_price (cost estimate for the run, often derived from token_counts and per-token price), latency_p50/p90/p95 (latency percentiles to summarize response times: median, 90th, and 95th percentile). Additional fields may include currency, timestamp, and per-request identifiers as needed for traceability.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "provide a clear description of required evaluation accounting fields for cost, latency, and usage metrics, including definitions and example structure.",
+    "entity_resolution": {
+      "action": "normalize_and_link",
+      "entity_id": null,
+      "reason": "Fields describe evaluation metrics; IDs may be cross-referenced to external catalogs as needed."
+    },
+    "intent": "explain_eval_accounting_fields",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "token_counts",
+            "role": "quantitative_usage",
+            "type": "metric"
+          },
+          {
+            "name": "provider_id",
+            "role": "source_provider",
+            "type": "identifier"
+          },
+          {
+            "name": "model_id",
+            "role": "model_variant",
+            "type": "identifier"
+          },
+          {
+            "name": "estimated_price",
+            "role": "cost_estimate",
+            "type": "currency"
+          },
+          {
+            "name": "latency_p50",
+            "role": "performance_metric",
+            "type": "latency"
+          },
+          {
+            "name": "latency_p90",
+            "role": "performance_metric",
+            "type": "latency"
+          },
+          {
+            "name": "latency_p95",
+            "role": "performance_metric",
+            "type": "latency"
+          }
+        ],
+        "kind": "explanation",
+        "relationships": [
+          {
+            "object": "tokens_used",
+            "predicate": "measures",
+            "subject": "token_counts"
+          },
+          {
+            "object": "provider",
+            "predicate": "identifies",
+            "subject": "provider_id"
+          },
+          {
+            "object": "model_variant",
+            "predicate": "identifies",
+            "subject": "model_id"
+          },
+          {
+            "object": "token_counts",
+            "predicate": "based_on",
+            "subject": "estimated_price"
+          },
+          {
+            "object": "latency_measurements",
+            "predicate": "is_statistic_of",
+            "subject": "latency_p50"
+          },
+          {
+            "object": "latency_measurements",
+            "predicate": "is_statistic_of",
+            "subject": "latency_p90"
+          },
+          {
+            "object": "latency_measurements",
+            "predicate": "is_statistic_of",
+            "subject": "latency_p95"
+          }
+        ],
+        "statement": "Evaluation accounting fields capture usage and cost metrics for a model/provider run. Core fields include token counts, provider/model IDs, estimated price, and latency percentiles (p50, p90, p95)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Accounting fields described and structured for evaluation summaries."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add explicit units for token_counts (tokens) and estimated_price (currency + unit, e.g., USD).",
+      "Include timestamp and request_id for traceability.",
+      "Provide per-request breakdown of latency components if available (network, processing, queuing)."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

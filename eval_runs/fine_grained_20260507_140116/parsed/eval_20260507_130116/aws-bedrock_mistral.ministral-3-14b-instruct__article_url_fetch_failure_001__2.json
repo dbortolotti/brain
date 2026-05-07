@@ -1,0 +1,32 @@
+{
+  "fixture_id": "article_url_fetch_failure_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Article at 'https://example.com/missing' returned a 404 network error. No content ingested.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "abort",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No entities to resolve; article fetch failed."
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "HTTP 404 error encountered during fetch.",
+        "No durable memory committed due to missing content.",
+        "Ambiguity preserved: no superseded/deleted facts introduced."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Retry fetch with exponential backoff.",
+      "Verify URL correctness or check for server-side issues.",
+      "Use cached metadata if available (e.g., Wayback Machine).",
+      "Flag as 'unreliable source' in memory architecture."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

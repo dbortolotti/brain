@@ -1,0 +1,105 @@
+{
+  "fixture_id": "contradiction_sam_children_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The system detects a direct contradiction between two statements about Sam from Goldman's children. The new statement ('no children') supersedes the prior ('two children') but retains ambiguity due to potential external context (e.g., adoption, stepchildren, or evolving life circumstances). No deletion of prior memory occurs; instead, the system flags the conflict for manual review.",
+    "citations": [
+      "Existing memory (durable): 'Sam from Goldman has two children.'",
+      "New memory (proposed): 'Sam from Goldman has no children.'"
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "supersede_with_ambiguity_preservation",
+    "entity_resolution": {
+      "action": "merge_entities",
+      "entity_id": "Sam_Goldman_001",
+      "reason": "Same name and affiliation; disambiguation required for family status."
+    },
+    "intent": "detect_and_resolve_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "two children",
+            "role": "object",
+            "type": "family_relation"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "two children",
+            "predicate": "has",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman has two children."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "no children",
+            "role": "object",
+            "type": "family_relation"
+          }
+        ],
+        "kind": "new_memory",
+        "relationships": [
+          {
+            "object": "no children",
+            "predicate": "has",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman has no children."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict detected and classified as direct contradiction.",
+        "Entity resolution applied to merge Sam from Goldman references.",
+        "No memory deletion; ambiguity preserved for future reconciliation.",
+        "Repair options generated for stakeholder action."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retain both statements with a disambiguation note (e.g., 'As of [date], conflicting reports exist; verify source.').",
+      "Query Sam directly for clarification.",
+      "Check external sources (e.g., LinkedIn, Goldman Sachs records) for authoritative data.",
+      "Tag as 'pending resolution' and suppress in public-facing outputs."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

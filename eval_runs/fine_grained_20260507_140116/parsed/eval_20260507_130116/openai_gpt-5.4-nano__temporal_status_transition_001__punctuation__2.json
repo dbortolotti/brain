@@ -1,0 +1,74 @@
+{
+  "fixture_id": "temporal_status_transition_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "The existing record says the Brain Slack agent is planned with status 'open', while a newer message states the MVP is 'now implemented'. These statements conflict on delivery readiness/status. Without a clarifying update indicating whether 'planned/open' has been replaced or whether only the MVP is implemented (but the overall agent remains open), the safest approach is to retain both as competing status claims and request confirmation of the current status and scope.",
+    "citations": [],
+    "conflict_classification": "Status transition inconsistency (planned/open vs implemented/now).",
+    "decision": "Keep both statements as competing versions of status; do not mark either as the current truth without clarification, and flag for resolution.",
+    "entity_resolution": {
+      "action": "no_merge_without_confirmation",
+      "entity_id": null,
+      "reason": "The 'Brain Slack agent' and 'Brain Slack agent MVP' may refer to the same workstream but the update language differs; treat them as potentially distinct scope until clarified."
+    },
+    "intent": "Explain and reconcile a project status punctuation conflict between 'planned/open' and 'implemented/now'.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain Slack agent",
+            "role": "subject",
+            "type": "project"
+          }
+        ],
+        "kind": "fact_conflict",
+        "relationships": [
+          {
+            "object": "planned/open",
+            "predicate": "status",
+            "subject": "Brain Slack agent"
+          }
+        ],
+        "statement": "Existing project state indicates 'The Brain Slack agent is planned' and its status is 'open'."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain Slack agent MVP",
+            "role": "subject",
+            "type": "deliverable"
+          },
+          {
+            "name": "MVP",
+            "role": "component",
+            "type": "milestone"
+          }
+        ],
+        "kind": "fact_conflict",
+        "relationships": [
+          {
+            "object": "implemented",
+            "predicate": "status",
+            "subject": "Brain Slack agent MVP"
+          }
+        ],
+        "statement": "A new update claims: 'The Brain Slack agent MVP is now implemented'."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected contradiction between 'planned/open' and 'MVP is now implemented'.",
+        "Chose non-destructive handling by preserving both versions instead of asserting a single current truth."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify whether the overall 'Brain Slack agent' status should change from 'open/planned' to 'implemented'.",
+      "Clarify scope: confirm that only the 'MVP' is implemented while the full agent remains 'open', or confirm both are implemented.",
+      "Record an explicit status transition event (e.g., 'planned/open' -> 'implemented') with timestamp and owner."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "fixture_id": "slack_rewrite_modal_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "I can\u2019t safely store this preference durably because the people/option referred to by \u201che\u201d and \u201cthe other one\u201d aren\u2019t identified.",
+    "citations": [],
+    "conflict_classification": "insufficient_context",
+    "decision": "not_commit_due_to_ambiguity",
+    "entity_resolution": {
+      "action": "no_resolution",
+      "entity_id": null,
+      "reason": "The referent for 'he' and what 'the other one' refers to are not specified, so this cannot be safely and durably stored."
+    },
+    "intent": "rewrite_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "he",
+            "role": "unknown_referent",
+            "type": "person"
+          },
+          {
+            "name": "the other one",
+            "role": "unknown_referent",
+            "type": "unspecified_option"
+          }
+        ],
+        "kind": "preference_utterance",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "he"
+          }
+        ],
+        "statement": "The user indicates that 'he' prefers the other one (exact referent of 'the other one' is unspecified)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Rewrite requested, but durable memory commit blocked due to ambiguous referents."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Specify who \u201che\u201d is (name or unique identifier).",
+      "Specify what \u201cthe other one\u201d is (e.g., \u201cthe redesigned modal,\u201d \u201cOption B,\u201d a product name, or the items being compared).",
+      "Provide the full context of the rewrite (what it is replacing) so the memory update can be applied correctly."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"rewrite_memory\",\n  \"decision\": \"not_commit_due_to_ambiguity\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference_utterance\",\n      \"statement\": \"The user indicates that 'he' prefers the other one (exact referent of 'the other one' is unspecified).\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"he\",\n          \"type\": \"person\",\n          \"role\": \"unknown_referent\"\n        },\n        {\n          \"name\": \"the other one\",\n          \"type\": \"unspecified_option\",\n          \"role\": \"unknown_referent\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"he\",\n          \"predicate\": \"prefers\",\n          \"object\": \"the other one\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_resolution\",\n    \"entity_id\": null,\n    \"reason\": \"The referent for 'he' and what 'the other one' refers to are not specified, so this cannot be safely and durably stored.\"\n  },\n  \"conflict_classification\": \"insufficient_context\",\n  \"answer\": \"I can\u2019t safely store this preference durably because the people/option referred to by \u201che\u201d and \u201cthe other one\u201d aren\u2019t identified.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Specify who \u201che\u201d is (name or unique identifier).\",\n    \"Specify what \u201cthe other one\u201d is (e.g., \u201cthe redesigned modal,\u201d \u201cOption B,\u201d a product name, or the items being compared).\",\n    \"Provide the full context of the rewrite (what it is replacing) so the memory update can be applied correctly.\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Rewrite requested, but durable memory commit blocked due to ambiguous referents.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

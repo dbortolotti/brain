@@ -1,0 +1,66 @@
+{
+  "error": null,
+  "fixture_id": "project_state_brain_slack_agent_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Slack is the primary guardrailed memory ingestion interface; Telegram can come later.",
+    "citations": [
+      "Input: \"Brain project state: Slack should be the primary guardrailed memory ingestion interface; Telegram can come later.\""
+    ],
+    "conflict_classification": "none",
+    "decision": "Commit that Slack is the primary guardrailed memory ingestion interface for Brain; Telegram may be considered later.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No existing entity identifier is provided or required for this extraction."
+    },
+    "intent": "Extract a durable project-state memory about the preferred ingestion interface for Brain.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "system under evaluation",
+            "type": "project"
+          },
+          {
+            "name": "Slack",
+            "role": "primary ingestion interface",
+            "type": "application"
+          },
+          {
+            "name": "Telegram",
+            "role": "future/secondary option",
+            "type": "application"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Slack",
+            "predicate": "uses as primary ingestion interface",
+            "subject": "Brain"
+          },
+          {
+            "object": "Telegram",
+            "predicate": "may use later",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "Brain should use Slack as the primary guardrailed memory ingestion interface, with Telegram deferred for later consideration."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted one durable preference memory.",
+        "Preserved temporal ambiguity by treating Telegram as future/secondary rather than current."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"Extract a durable project-state memory about the preferred ingestion interface for Brain.\",\"decision\":\"Commit that Slack is the primary guardrailed memory ingestion interface for Brain; Telegram may be considered later.\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Brain should use Slack as the primary guardrailed memory ingestion interface, with Telegram deferred for later consideration.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Brain\",\"type\":\"project\",\"role\":\"system under evaluation\"},{\"name\":\"Slack\",\"type\":\"application\",\"role\":\"primary ingestion interface\"},{\"name\":\"Telegram\",\"type\":\"application\",\"role\":\"future/secondary option\"}],\"relationships\":[{\"subject\":\"Brain\",\"predicate\":\"uses as primary ingestion interface\",\"object\":\"Slack\"},{\"subject\":\"Brain\",\"predicate\":\"may use later\",\"object\":\"Telegram\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No existing entity identifier is provided or required for this extraction.\"},\"conflict_classification\":\"none\",\"answer\":\"Slack is the primary guardrailed memory ingestion interface; Telegram can come later.\",\"citations\":[\"Input: \\\"Brain project state: Slack should be the primary guardrailed memory ingestion interface; Telegram can come later.\\\"\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Extracted one durable preference memory.\",\"Preserved temporal ambiguity by treating Telegram as future/secondary rather than current.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

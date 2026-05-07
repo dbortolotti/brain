@@ -1,0 +1,26 @@
+{
+  "fixture_id": "cost_latency_token_accounting_001__punctuation",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Required eval accounting fields typically mean:\n- token_counts: record input/prompt tokens, output/completion tokens, and total tokens; if relevant, also cache-read/cache-write or reasoning tokens.\n- provider_id: the API/vendor used, such as OpenAI, Anthropic, or Google.\n- model_id: the exact model name/version used for the run.\n- estimated_price: the computed cost for the call, usually derived from token counts and the provider/model pricing table; include currency and whether it is estimated rather than invoiced.\n- latency_p50: median latency across runs.\n- latency_p90: 90th percentile latency across runs.\n- latency_p95: 95th percentile latency across runs.\nUseful conventions:\n- Keep units explicit, for example latency in ms and price in USD.\n- Distinguish per-run fields from aggregate summary fields.\n- Do not infer unavailable values; leave them null or omitted according to the eval spec.\n- If punctuation/tokenization affects counts, rely on the provider tokenizer for the exact model, because punctuation can change token totals.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "do_not_commit_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input is a general request for explanation, not a durable user-specific fact."
+    },
+    "intent": "explain_required_eval_accounting_fields",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No memory committed.",
+        "Provided a schema-aligned explanation of token counts, provider/model IDs, estimated price, and latency percentiles p50/p90/p95."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

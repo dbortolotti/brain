@@ -1,0 +1,54 @@
+{
+  "fixture_id": "article_url_fetch_failure_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Saved a memory card capturing the fetch failure for the provided URL.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_fetch_failure_only",
+    "entity_resolution": {
+      "action": "no_explicit_resolution",
+      "entity_id": null,
+      "reason": "Only a URL and generic fetch error details are present; no stable entity IDs were provided."
+    },
+    "intent": "Extract durable memory cards from an article fetch failure event.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "source",
+            "type": "url"
+          },
+          {
+            "name": "HTTP 404",
+            "role": "error_code",
+            "type": "status_code"
+          }
+        ],
+        "kind": "system_event",
+        "relationships": [
+          {
+            "object": "404 network error",
+            "predicate": "fetch_result",
+            "subject": "https://example.com/missing"
+          }
+        ],
+        "statement": "Fetching the article at https://example.com/missing resulted in an HTTP 404 with a network error."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured the provided fetch failure details without asserting article contents."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retry fetching the same URL (in case of transient network issues).",
+      "Verify the URL path/slug or update it if the resource moved.",
+      "Use an alternate source or cached copy if available."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

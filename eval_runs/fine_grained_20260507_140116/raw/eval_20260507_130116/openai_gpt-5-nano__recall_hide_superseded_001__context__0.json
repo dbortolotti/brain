@@ -1,0 +1,82 @@
+{
+  "error": null,
+  "fixture_id": "recall_hide_superseded_001__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Sam currently works at Point72.",
+    "citations": [],
+    "conflict_classification": "superseded_fact_present_but_not_current",
+    "decision": "provide_current_employer",
+    "entity_resolution": {
+      "action": "resolve_current_employer",
+      "entity_id": null,
+      "reason": "Superseded memory should not be presented as current; current memory indicates Sam joined Point72"
+    },
+    "intent": "route_query",
+    "memory_cards": [
+      {
+        "confidence": "0.85",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "memory",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      },
+      {
+        "confidence": "0.60",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "memory",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "worked_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Current memory used: Sam joined Point72.",
+        "Superseded memory retained for audit: Sam works at Goldman."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark 'Sam works at Goldman' as superseded and hidden from current view",
+      "Preserve both statements with explicit timestamps and status",
+      "Update user-facing answer to reflect the most recent non-superseded fact"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"route_query\",\n  \"decision\": \"provide_current_employer\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"memory\",\n      \"statement\": \"Sam joined Point72.\",\n      \"confidence\": \"0.85\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Point72\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"memory\",\n      \"statement\": \"Sam works at Goldman.\",\n      \"confidence\": \"0.60\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"worked_at\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolve_current_employer\",\n    \"entity_id\": null,\n    \"reason\": \"Superseded memory should not be presented as current; current memory indicates Sam joined Point72\"\n  },\n  \"conflict_classification\": \"superseded_fact_present_but_not_current\",\n  \"answer\": \"Sam currently works at Point72.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Mark 'Sam works at Goldman' as superseded and hidden from current view\",\n    \"Preserve both statements with explicit timestamps and status\",\n    \"Update user-facing answer to reflect the most recent non-superseded fact\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Current memory used: Sam joined Point72.\",\n      \"Superseded memory retained for audit: Sam works at Goldman.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

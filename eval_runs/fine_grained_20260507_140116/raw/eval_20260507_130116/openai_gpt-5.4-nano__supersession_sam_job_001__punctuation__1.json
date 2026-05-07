@@ -1,0 +1,91 @@
+{
+  "error": null,
+  "fixture_id": "supersession_sam_job_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "The existing memory contains a contradiction about Sam\u2019s employer: one fragment implies Sam works at Goldman New, while another states Sam left Goldman and joined Point72. Store them as a timeline (previously at Goldman New; later joined Point72) and avoid asserting which employer is currently active unless explicitly confirmed.",
+    "citations": [],
+    "conflict_classification": "employment supersession / contradictory current-tenure statements",
+    "decision": "Do not store a single conflicting 'current' employer; preserve the timeline as prior vs later and mark current employment as ambiguous unless the latest employer is explicitly current.",
+    "entity_resolution": {
+      "action": "merge_into_one_employment_timeline",
+      "entity_id": null,
+      "reason": "Existing notes refer to Sam with two employers (Goldman/Goldman New, and Point72). They are best represented as a time-based sequence rather than a single current employer to avoid contradiction."
+    },
+    "intent": "conflict_explainer",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman New",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_history",
+        "relationships": [
+          {
+            "object": "Goldman New",
+            "predicate": "previously_worked_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam previously worked at Goldman New."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "new_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_transition",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "later_joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and later joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Converted conflicting 'works at' vs 'left/joined' into non-current employment history to prevent durable contradiction."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask/confirm whether Point72 is Sam\u2019s current employer (and whether 'Goldman New' is the same entity as 'Goldman').",
+      "Update the record to 'Sam worked at Goldman New previously; Sam joined Point72 (date not specified)' without claiming current status.",
+      "If Point72 is confirmed current, explicitly record 'Sam works at Point72' and downgrade Goldman New to 'previously worked at'."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"conflict_explainer\",\n  \"decision\": \"Do not store a single conflicting 'current' employer; preserve the timeline as prior vs later and mark current employment as ambiguous unless the latest employer is explicitly current.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"employment_history\",\n      \"statement\": \"Sam previously worked at Goldman New.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman New\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"previously_worked_at\",\n          \"object\": \"Goldman New\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"employment_transition\",\n      \"statement\": \"Sam left Goldman and later joined Point72.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"former_employer\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"new_employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"left\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"later_joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge_into_one_employment_timeline\",\n    \"entity_id\": null,\n    \"reason\": \"Existing notes refer to Sam with two employers (Goldman/Goldman New, and Point72). They are best represented as a time-based sequence rather than a single current employer to avoid contradiction.\"\n  },\n  \"conflict_classification\": \"employment supersession / contradictory current-tenure statements\",\n  \"answer\": \"The existing memory contains a contradiction about Sam\u2019s employer: one fragment implies Sam works at Goldman New, while another states Sam left Goldman and joined Point72. Store them as a timeline (previously at Goldman New; later joined Point72) and avoid asserting which employer is currently active unless explicitly confirmed.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Ask/confirm whether Point72 is Sam\u2019s current employer (and whether 'Goldman New' is the same entity as 'Goldman').\",\n    \"Update the record to 'Sam worked at Goldman New previously; Sam joined Point72 (date not specified)' without claiming current status.\",\n    \"If Point72 is confirmed current, explicitly record 'Sam works at Point72' and downgrade Goldman New to 'previously worked at'.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Converted conflicting 'works at' vs 'left/joined' into non-current employment history to prevent durable contradiction.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

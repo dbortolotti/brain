@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_transcript_as_memory_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "A single `conversation_summary` card cannot be durably committed as memory without decomposing it into granular, timestamped, speaker-attributed statements with explicit entity resolution. The proposed card fails to satisfy the 'preserve ambiguity' constraint (e.g., merged speaker turns, unresolved pronouns) and risks presenting superseded facts if the transcript contains edits or deletions. Repair requires: (1) splitting into `dialogue_turn` cards with `speaker` entities, (2) annotating temporal/conditional qualifiers (e.g., 'hypothetical', 'corrected later'), and (3) flagging unresolved references for human review.",
+    "citations": [
+      "Schema requirement: *entities* must be resolvable to unique IDs or roles; a summary lacks this.",
+      "Ambiguity preservation: Punctuation in transcripts (e.g., '...') often signals uncertainty; aggregation obscures this.",
+      "Durability principle: Superseded facts (e.g., 'initially said X, later clarified Y') cannot be represented in a monolithic summary."
+    ],
+    "conflict_classification": "schema_violation",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "null",
+      "entity_id": null,
+      "reason": "No discrete, actionable entities or relationships can be extracted from an 8000-word transcript summary without violating the 'preserve ambiguity' rule. The granularity of a full-transcript summary (e.g., 'conversation_summary') inherently conflates temporal, contextual, and speaker-specific nuances, making it impossible to commit to durable memory without risking supersession or false precision. Punctuation (e.g., ellipses, em dashes) in the original transcript may carry critical disambiguation (e.g., hesitation, interruption), which is lost in aggregation. The schema requires explicit entities/relationships; a summary lacks the referential anchors needed for durable storage."
+    },
+    "intent": "durability_filter_evaluation",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Input violates durability constraints: 8000-word aggregation cannot preserve temporal/referential integrity.",
+        "Schema compliance requires atomic, entity-resolved statements; summary is a composite.",
+        "Punctuation analysis is critical for disambiguation but cannot be inferred post-hoc."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Decompose the summary into `dialogue_turn` cards with `speaker`, `timestamp`, and `punctuation_analysis` fields.",
+      "Tag statements with `confidence: 'ambiguous'` if referents cannot be resolved.",
+      "Add a `transcript_metadata` card listing deletions/edits to prevent supersession.",
+      "Use `relationships` to link corrected statements (e.g., `subject: 'Claim A'`, `predicate: 'superseded_by'`, `object: 'Claim B'`)."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"durability_filter_evaluation\",\n  \"decision\": \"reject\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"null\",\n    \"entity_id\": null,\n    \"reason\": \"No discrete, actionable entities or relationships can be extracted from an 8000-word transcript summary without violating the 'preserve ambiguity' rule. The granularity of a full-transcript summary (e.g., 'conversation_summary') inherently conflates temporal, contextual, and speaker-specific nuances, making it impossible to commit to durable memory without risking supersession or false precision. Punctuation (e.g., ellipses, em dashes) in the original transcript may carry critical disambiguation (e.g., hesitation, interruption), which is lost in aggregation. The schema requires explicit entities/relationships; a summary lacks the referential anchors needed for durable storage.\"\n  },\n  \"conflict_classification\": \"schema_violation\",\n  \"answer\": \"A single `conversation_summary` card cannot be durably committed as memory without decomposing it into granular, timestamped, speaker-attributed statements with explicit entity resolution. The proposed card fails to satisfy the 'preserve ambiguity' constraint (e.g., merged speaker turns, unresolved pronouns) and risks presenting superseded facts if the transcript contains edits or deletions. Repair requires: (1) splitting into `dialogue_turn` cards with `speaker` entities, (2) annotating temporal/conditional qualifiers (e.g., 'hypothetical', 'corrected later'), and (3) flagging unresolved references for human review.\",\n  \"citations\": [\n    \"Schema requirement: *entities* must be resolvable to unique IDs or roles; a summary lacks this.\",\n    \"Ambiguity preservation: Punctuation in transcripts (e.g., '...') often signals uncertainty; aggregation obscures this.\",\n    \"Durability principle: Superseded facts (e.g., 'initially said X, later clarified Y') cannot be represented in a monolithic summary.\"\n  ],\n  \"repair_options\": [\n    \"Decompose the summary into `dialogue_turn` cards with `speaker`, `timestamp`, and `punctuation_analysis` fields.\",\n    \"Tag statements with `confidence: 'ambiguous'` if referents cannot be resolved.\",\n    \"Add a `transcript_metadata` card listing deletions/edits to prevent supersession.\",\n    \"Use `relationships` to link corrected statements (e.g., `subject: 'Claim A'`, `predicate: 'superseded_by'`, `object: 'Claim B'`).\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Input violates durability constraints: 8000-word aggregation cannot preserve temporal/referential integrity.\",\n      \"Schema compliance requires atomic, entity-resolved statements; summary is a composite.\",\n      \"Punctuation analysis is critical for disambiguation but cannot be inferred post-hoc.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

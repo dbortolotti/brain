@@ -1,0 +1,105 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_time_reference_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory committed with preserved ambiguity. Sam's departure from Goldman is confirmed as stated fact. Absolute dates cannot be resolved without reference anchor (current date context).",
+    "citations": [
+      "Input statement: 'Sam said last Friday that he is leaving Goldman next month'"
+    ],
+    "conflict_classification": "temporal_ambiguity",
+    "decision": "Commit memory with temporal ambiguity preserved",
+    "entity_resolution": {
+      "action": "defer_absolute_resolution",
+      "entity_id": null,
+      "reason": "Temporal references are relative and require anchor date context not provided in input"
+    },
+    "intent": "Extract and rank entity candidates from ambiguous temporal reference",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "employed_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "plans_to_leave",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam stated he is leaving Goldman"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "last Friday",
+            "role": "statement_timestamp",
+            "type": "temporal_reference"
+          }
+        ],
+        "kind": "temporal_context",
+        "relationships": [
+          {
+            "object": "last Friday",
+            "predicate": "made_on",
+            "subject": "Sam's statement"
+          }
+        ],
+        "statement": "Statement made on last Friday (relative reference, requires anchor date for absolute resolution)"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "next month",
+            "role": "departure_timeframe",
+            "type": "temporal_reference"
+          }
+        ],
+        "kind": "temporal_context",
+        "relationships": [
+          {
+            "object": "next month",
+            "predicate": "departure_planned_for",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Departure planned for next month (relative reference, ambiguous relative to statement date)"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Fact extracted: Sam plans to leave Goldman",
+        "Temporal ambiguity preserved in memory",
+        "Relative references flagged for future resolution",
+        "No superseded facts present"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide absolute date when statement was made to resolve 'last Friday'",
+      "Provide current date context to resolve 'next month' relative to statement date",
+      "Request Sam confirm specific departure date"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Extract and rank entity candidates from ambiguous temporal reference\",\n  \"decision\": \"Commit memory with temporal ambiguity preserved\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam stated he is leaving Goldman\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"employed_at\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"plans_to_leave\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"temporal_context\",\n      \"statement\": \"Statement made on last Friday (relative reference, requires anchor date for absolute resolution)\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"last Friday\",\n          \"type\": \"temporal_reference\",\n          \"role\": \"statement_timestamp\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam's statement\",\n          \"predicate\": \"made_on\",\n          \"object\": \"last Friday\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"temporal_context\",\n      \"statement\": \"Departure planned for next month (relative reference, ambiguous relative to statement date)\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"next month\",\n          \"type\": \"temporal_reference\",\n          \"role\": \"departure_timeframe\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"departure_planned_for\",\n          \"object\": \"next month\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer_absolute_resolution\",\n    \"entity_id\": null,\n    \"reason\": \"Temporal references are relative and require anchor date context not provided in input\"\n  },\n  \"conflict_classification\": \"temporal_ambiguity\",\n  \"answer\": \"Memory committed with preserved ambiguity. Sam's departure from Goldman is confirmed as stated fact. Absolute dates cannot be resolved without reference anchor (current date context).\",\n  \"citations\": [\n    \"Input statement: 'Sam said last Friday that he is leaving Goldman next month'\"\n  ],\n  \"repair_options\": [\n    \"Provide absolute date when statement was made to resolve 'last Friday'\",\n    \"Provide current date context to resolve 'next month' relative to statement date\",\n    \"Request Sam confirm specific departure date\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Fact extracted: Sam plans to leave Goldman\",\n      \"Temporal ambiguity preserved in memory\",\n      \"Relative references flagged for future resolution\",\n      \"No superseded facts present\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

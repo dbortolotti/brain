@@ -1,0 +1,59 @@
+{
+  "fixture_id": "ambiguous_sam_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Cannot commit preference to specific Sam entity. Requires clarification: Is this Sam from Goldman or Sam from Point72?",
+    "citations": [
+      "Existing entities: Sam from Goldman; Sam from Point72",
+      "New message: Sam mentioned that he likes Bill Evans"
+    ],
+    "conflict_classification": "ambiguous_referent",
+    "decision": "Create new memory card for preference without resolving Sam identity; flag for user clarification",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Two existing Sam entities (Goldman, Point72) create ambiguity. New message does not provide sufficient context to determine which Sam made the statement. Deferring resolution preserves accuracy."
+    },
+    "intent": "Disambiguate which Sam entity the preference statement refers to, and record the new preference fact",
+    "memory_cards": [
+      {
+        "confidence": "high_on_preference_low_on_identity",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preference fact captured but not linked to specific Sam entity",
+        "Ambiguity flagged for resolution before durable commit",
+        "User input required to proceed with entity linking"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask user to specify which Sam made the statement",
+      "Provide context clues (e.g., conversation source, timestamp) to disambiguate",
+      "Record preference as unattached fact pending identity confirmation"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

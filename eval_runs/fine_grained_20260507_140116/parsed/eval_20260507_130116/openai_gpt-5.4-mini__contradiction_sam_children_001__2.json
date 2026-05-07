@@ -1,0 +1,69 @@
+{
+  "fixture_id": "contradiction_sam_children_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Conflict detected: the new claim that Sam from Goldman has no children contradicts existing memory that Sam from Goldman has two children. Do not overwrite; keep both as conflicting claims pending clarification.",
+    "citations": [
+      "existing memory: Sam from Goldman has two children",
+      "new input: Sam from Goldman has no children"
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "conflict_detected_no_update",
+    "entity_resolution": {
+      "action": "keep_same_entity_but_unresolved",
+      "entity_id": null,
+      "reason": "The new input refers to the same apparent person (Sam from Goldman), but the child-count claims are directly contradictory and cannot be reconciled confidently."
+    },
+    "intent": "resolve contradictory claims about Sam from Goldman\u2019s children status without overwriting prior memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "conflict",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "0 in new input",
+            "predicate": "has_children_count_claimed_as",
+            "subject": "Sam"
+          },
+          {
+            "object": "2 in existing memory",
+            "predicate": "has_children_count_claimed_as",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "A new claim says Sam from Goldman has no children, which conflicts with existing memory that Sam from Goldman has two children."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected direct contradiction on children count.",
+        "Preserved ambiguity; no durable overwrite committed.",
+        "Did not present superseded fact as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for clarification about whether these refer to the same Sam from Goldman.",
+      "Retain both claims as conflicting until a source or timestamp distinguishes them.",
+      "If one source is known to be more recent or authoritative, update only after verification."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

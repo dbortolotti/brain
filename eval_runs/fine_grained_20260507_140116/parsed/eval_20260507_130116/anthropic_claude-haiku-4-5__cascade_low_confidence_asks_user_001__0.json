@@ -1,0 +1,49 @@
+{
+  "fixture_id": "cascade_low_confidence_asks_user_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "System cannot autonomously commit this memory. User clarification required before durable storage.",
+    "citations": [
+      "cascade_low_confidence_asks_user_001"
+    ],
+    "conflict_classification": "low_confidence_ambiguous_reference",
+    "decision": "Defer to user for disambiguation",
+    "entity_resolution": {
+      "action": "hold_for_user_confirmation",
+      "entity_id": null,
+      "reason": "Model confidence below threshold and cloud escalation unavailable; ambiguity requires human judgment to preserve accuracy"
+    },
+    "intent": "Evaluate low-confidence entity candidate from ambiguous Sam note with cloud escalation disabled",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject_of_note",
+            "type": "person"
+          }
+        ],
+        "kind": "ambiguous_observation",
+        "relationships": [],
+        "statement": "Sam note contains entity reference with insufficient model confidence for autonomous commitment"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Low model confidence detected",
+        "Cloud escalation disabled",
+        "Ambiguity preserved; no superseded facts presented",
+        "Awaiting user input for entity resolution"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "User confirms Sam identity and relationship context",
+      "User provides additional disambiguating details about the note",
+      "User explicitly rejects the candidate entity",
+      "User supplies alternative entity reference"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

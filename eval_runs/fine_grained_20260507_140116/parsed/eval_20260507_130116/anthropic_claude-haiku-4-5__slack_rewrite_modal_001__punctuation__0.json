@@ -1,0 +1,56 @@
+{
+  "fixture_id": "slack_rewrite_modal_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory stored with ambiguity preserved. Referents require clarification for future retrieval.",
+    "citations": [],
+    "conflict_classification": "ambiguous_referents",
+    "decision": "rewrite",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Referent 'He' and 'the other one' are ambiguous without additional context"
+    },
+    "intent": "store_preference",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "He",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "the other one",
+            "role": "preferred_item",
+            "type": "object"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "He"
+          }
+        ],
+        "statement": "He prefers the other one."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preference statement recorded",
+        "Ambiguous entities flagged for manual resolution",
+        "Memory marked for potential disambiguation on retrieval"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Specify who 'He' refers to",
+      "Clarify what 'the other one' refers to",
+      "Provide context for the preference comparison"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

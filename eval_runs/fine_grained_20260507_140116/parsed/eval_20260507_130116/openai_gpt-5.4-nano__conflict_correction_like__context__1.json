@@ -1,0 +1,59 @@
+{
+  "fixture_id": "conflict_correction_like__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Store the corrected current fact: Sam from Goldman likes early Coltrane (do not keep Bill Evans as the current preference).",
+    "citations": [],
+    "conflict_classification": "fact_correction",
+    "decision": "replace_existing_preference_with_correction",
+    "entity_resolution": {
+      "action": "confirm_existing_entity_for_update",
+      "entity_id": null,
+      "reason": "The correction refers to 'Sam from Goldman' and updates only the preference; no additional identity resolution details were provided."
+    },
+    "intent": "Apply conflict correction to personal memory: update Sam from Goldman\u2019s music preference based on corrected information.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "preference",
+            "type": "music_artist_period"
+          }
+        ],
+        "kind": "statement",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed only the corrected preference as current.",
+        "Did not retain the superseded preference (Bill Evans) as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Update the existing fact for Sam from Goldman to 'likes early Coltrane'.",
+      "If the system requires history, record the correction as a revision event while keeping only the corrected preference as current."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

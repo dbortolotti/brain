@@ -1,0 +1,81 @@
+{
+  "error": null,
+  "fixture_id": "email_source_meeting_followup_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Captured: (1) Sam joined Point72 last month; (2) Sam requested the AI infra article.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store relevant facts and the request",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No existing entity IDs were provided; entities kept as raw surface forms."
+    },
+    "intent": "Handle meeting follow-up and article request",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "sam@example.com",
+            "role": "sender",
+            "type": "email"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "person_affiliation",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "sam@example.com"
+          }
+        ],
+        "statement": "Sam (sam@example.com) joined Point72 last month."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "AI infra article",
+            "role": "requested item",
+            "type": "document"
+          },
+          {
+            "name": "sam@example.com",
+            "role": "requester",
+            "type": "email"
+          }
+        ],
+        "kind": "information_request",
+        "relationships": [
+          {
+            "object": "AI infra article",
+            "predicate": "requested",
+            "subject": "sam@example.com"
+          }
+        ],
+        "statement": "Sam requested that the AI infra article be sent."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed sender email and request from the follow-up message.",
+        "Extracted two atomic memory cards."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you have an existing entity profile for sam@example.com and/or Point72, provide the entity IDs for linking.",
+      "If the specific AI infra article title/link is known, provide it to store a precise document reference."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Handle meeting follow-up and article request\",\n  \"decision\": \"store relevant facts and the request\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"person_affiliation\",\n      \"statement\": \"Sam (sam@example.com) joined Point72 last month.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"sam@example.com\",\n          \"type\": \"email\",\n          \"role\": \"sender\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"sam@example.com\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"information_request\",\n      \"statement\": \"Sam requested that the AI infra article be sent.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"AI infra article\",\n          \"type\": \"document\",\n          \"role\": \"requested item\"\n        },\n        {\n          \"name\": \"sam@example.com\",\n          \"type\": \"email\",\n          \"role\": \"requester\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"sam@example.com\",\n          \"predicate\": \"requested\",\n          \"object\": \"AI infra article\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entity IDs were provided; entities kept as raw surface forms.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Captured: (1) Sam joined Point72 last month; (2) Sam requested the AI infra article.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"If you have an existing entity profile for sam@example.com and/or Point72, provide the entity IDs for linking.\",\n    \"If the specific AI infra article title/link is known, provide it to store a precise document reference.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Parsed sender email and request from the follow-up message.\",\n      \"Extracted two atomic memory cards.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

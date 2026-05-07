@@ -1,0 +1,114 @@
+{
+  "error": null,
+  "fixture_id": "small_table_preferences_001",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Stored two independent preference records: Sam_Goldman likes Bill Evans; Anna_JPM likes Barolo.",
+    "citations": [
+      "Dinner 2026-05-05",
+      "Lunch 2026-05-01"
+    ],
+    "conflict_classification": "no_direct_conflict",
+    "decision": "store_fixture_with_dual_preferences_preserved",
+    "entity_resolution": {
+      "action": "create_or_update_memory_entries",
+      "entity_id": null,
+      "reason": "two distinct person-firm-preference records from different sources, need to preserve both."
+    },
+    "intent": "record_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "Person"
+          },
+          {
+            "name": "Goldman",
+            "role": "owner_of_Sam",
+            "type": "Firm"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_object",
+            "type": "Person"
+          }
+        ],
+        "kind": "fixture",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "affinity",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "employed_by",
+            "subject": "Sam"
+          },
+          {
+            "object": "Sam_affinity_Bill_Evans",
+            "predicate": "source_of",
+            "subject": "Dinner 2026-05-05"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans (source: Dinner 2026-05-05)."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Anna",
+            "role": "subject",
+            "type": "Person"
+          },
+          {
+            "name": "JPM",
+            "role": "owner_of_Anna",
+            "type": "Firm"
+          },
+          {
+            "name": "Barolo",
+            "role": "preference_object",
+            "type": "Item"
+          }
+        ],
+        "kind": "fixture",
+        "relationships": [
+          {
+            "object": "Barolo",
+            "predicate": "affinity",
+            "subject": "Anna"
+          },
+          {
+            "object": "JPM",
+            "predicate": "employed_by",
+            "subject": "Anna"
+          },
+          {
+            "object": "Anna_affinity_Barolo",
+            "predicate": "source_of",
+            "subject": "Lunch 2026-05-01"
+          }
+        ],
+        "statement": "Anna from JPM likes Barolo (source: Lunch 2026-05-01)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Fixture Sam_Goldman_Bill_Evans recorded from Dinner 2026-05-05.",
+        "Fixture Anna_JPM_Barolo recorded from Lunch 2026-05-01."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Keep both records as distinct entities with explicit source annotations.",
+      "If future overlap occurs (e.g., same person-firm with conflicting preference), flag for review."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"record_memory\",\n  \"decision\": \"store_fixture_with_dual_preferences_preserved\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fixture\",\n      \"statement\": \"Sam from Goldman likes Bill Evans (source: Dinner 2026-05-05).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Sam\", \"type\": \"Person\", \"role\": \"subject\"},\n        {\"name\": \"Goldman\", \"type\": \"Firm\", \"role\": \"owner_of_Sam\"},\n        {\"name\": \"Bill Evans\", \"type\": \"Person\", \"role\": \"preference_object\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sam\", \"predicate\": \"affinity\", \"object\": \"Bill Evans\"},\n        {\"subject\": \"Sam\", \"predicate\": \"employed_by\", \"object\": \"Goldman\"},\n        {\"subject\": \"Dinner 2026-05-05\", \"predicate\": \"source_of\", \"object\": \"Sam_affinity_Bill_Evans\"}\n      ]\n    },\n    {\n      \"kind\": \"fixture\",\n      \"statement\": \"Anna from JPM likes Barolo (source: Lunch 2026-05-01).\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Anna\", \"type\": \"Person\", \"role\": \"subject\"},\n        {\"name\": \"JPM\", \"type\": \"Firm\", \"role\": \"owner_of_Anna\"},\n        {\"name\": \"Barolo\", \"type\": \"Item\", \"role\": \"preference_object\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Anna\", \"predicate\": \"affinity\", \"object\": \"Barolo\"},\n        {\"subject\": \"Anna\", \"predicate\": \"employed_by\", \"object\": \"JPM\"},\n        {\"subject\": \"Lunch 2026-05-01\", \"predicate\": \"source_of\", \"object\": \"Anna_affinity_Barolo\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_or_update_memory_entries\",\n    \"entity_id\": null,\n    \"reason\": \"two distinct person-firm-preference records from different sources, need to preserve both.\"\n    },\n  \"conflict_classification\": \"no_direct_conflict\",\n  \"answer\": \"Stored two independent preference records: Sam_Goldman likes Bill Evans; Anna_JPM likes Barolo.\",\n  \"citations\": [\n    \"Dinner 2026-05-05\",\n    \"Lunch 2026-05-01\"\n  ],\n  \"repair_options\": [\n    \"Keep both records as distinct entities with explicit source annotations.\",\n    \"If future overlap occurs (e.g., same person-firm with conflicting preference), flag for review.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Fixture Sam_Goldman_Bill_Evans recorded from Dinner 2026-05-05.\",\n      \"Fixture Anna_JPM_Barolo recorded from Lunch 2026-05-01.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

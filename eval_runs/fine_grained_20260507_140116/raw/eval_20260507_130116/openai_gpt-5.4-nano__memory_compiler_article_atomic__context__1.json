@@ -1,0 +1,140 @@
+{
+  "error": null,
+  "fixture_id": "memory_compiler_article_atomic__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Extracted four atomic design/requirement statements from the context, keeping them generic and avoiding unverified specificity.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "Store as non-personal, design-constraint memory cards with low-to-moderate confidence; avoid committing lifecycle/conflict-state claims as universal facts.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No specific named entities or IDs are provided in the input beyond generic concepts; cannot reliably resolve to concrete system entities."
+    },
+    "intent": "Extract atomic, traceable memory cards from the provided context about AI personal memory system requirements.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "AI memory systems",
+            "role": "subject",
+            "type": "system"
+          },
+          {
+            "name": "durable source evidence",
+            "role": "requirement",
+            "type": "evidence"
+          }
+        ],
+        "kind": "requirement",
+        "relationships": [
+          {
+            "object": "durable source evidence",
+            "predicate": "need",
+            "subject": "AI memory systems"
+          }
+        ],
+        "statement": "AI memory systems need durable source evidence for context."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "atomic memory cards",
+            "role": "subject",
+            "type": "memory_unit"
+          },
+          {
+            "name": "small",
+            "role": "size_constraint",
+            "type": "attribute"
+          },
+          {
+            "name": "traceable",
+            "role": "traceability_constraint",
+            "type": "attribute"
+          }
+        ],
+        "kind": "guideline",
+        "relationships": [
+          {
+            "object": "small and traceable",
+            "predicate": "should be",
+            "subject": "atomic memory cards"
+          }
+        ],
+        "statement": "Atomic memory cards should be small and traceable."
+      },
+      {
+        "confidence": "low_to_medium",
+        "entities": [
+          {
+            "name": "semantic index",
+            "role": "subject",
+            "type": "component"
+          },
+          {
+            "name": "recall",
+            "role": "benefit",
+            "type": "capability"
+          }
+        ],
+        "kind": "design_choice",
+        "relationships": [
+          {
+            "object": "recall",
+            "predicate": "can improve",
+            "subject": "semantic index"
+          }
+        ],
+        "statement": "A semantic index can improve recall in memory systems."
+      },
+      {
+        "confidence": "low_to_medium",
+        "entities": [
+          {
+            "name": "application database",
+            "role": "owner",
+            "type": "component"
+          },
+          {
+            "name": "lifecycle",
+            "role": "responsibility",
+            "type": "domain_concept"
+          },
+          {
+            "name": "conflict state",
+            "role": "responsibility",
+            "type": "domain_concept"
+          }
+        ],
+        "kind": "architecture_constraint",
+        "relationships": [
+          {
+            "object": "lifecycle and conflict state",
+            "predicate": "should own",
+            "subject": "application database"
+          }
+        ],
+        "statement": "The application database should own lifecycle and conflict state for the memory system."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created 4 atomic memory cards from the provided design-oriented context.",
+        "Used low-to-medium confidence where the text is advisory ('should'/'can') rather than a verified fact."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add citations or reference sources if available for durability and traceability claims.",
+      "If the system under evaluation has specific components, replace generic terms (e.g., 'application database') with concrete component names and IDs.",
+      "If conflict-state/lifecycle ownership is a documented policy, include the document reference or version."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Extract atomic, traceable memory cards from the provided context about AI personal memory system requirements.\",\n  \"decision\": \"Store as non-personal, design-constraint memory cards with low-to-moderate confidence; avoid committing lifecycle/conflict-state claims as universal facts.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"requirement\",\n      \"statement\": \"AI memory systems need durable source evidence for context.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"AI memory systems\",\n          \"type\": \"system\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"durable source evidence\",\n          \"type\": \"evidence\",\n          \"role\": \"requirement\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"AI memory systems\",\n          \"predicate\": \"need\",\n          \"object\": \"durable source evidence\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"guideline\",\n      \"statement\": \"Atomic memory cards should be small and traceable.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"atomic memory cards\",\n          \"type\": \"memory_unit\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"small\",\n          \"type\": \"attribute\",\n          \"role\": \"size_constraint\"\n        },\n        {\n          \"name\": \"traceable\",\n          \"type\": \"attribute\",\n          \"role\": \"traceability_constraint\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"atomic memory cards\",\n          \"predicate\": \"should be\",\n          \"object\": \"small and traceable\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"design_choice\",\n      \"statement\": \"A semantic index can improve recall in memory systems.\",\n      \"confidence\": \"low_to_medium\",\n      \"entities\": [\n        {\n          \"name\": \"semantic index\",\n          \"type\": \"component\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"recall\",\n          \"type\": \"capability\",\n          \"role\": \"benefit\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"semantic index\",\n          \"predicate\": \"can improve\",\n          \"object\": \"recall\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"architecture_constraint\",\n      \"statement\": \"The application database should own lifecycle and conflict state for the memory system.\",\n      \"confidence\": \"low_to_medium\",\n      \"entities\": [\n        {\n          \"name\": \"application database\",\n          \"type\": \"component\",\n          \"role\": \"owner\"\n        },\n        {\n          \"name\": \"lifecycle\",\n          \"type\": \"domain_concept\",\n          \"role\": \"responsibility\"\n        },\n        {\n          \"name\": \"conflict state\",\n          \"type\": \"domain_concept\",\n          \"role\": \"responsibility\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"application database\",\n          \"predicate\": \"should own\",\n          \"object\": \"lifecycle and conflict state\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No specific named entities or IDs are provided in the input beyond generic concepts; cannot reliably resolve to concrete system entities.\"\n  },\n  \"conflict_classification\": \"none_detected\",\n  \"answer\": \"Extracted four atomic design/requirement statements from the context, keeping them generic and avoiding unverified specificity.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Add citations or reference sources if available for durability and traceability claims.\",\n    \"If the system under evaluation has specific components, replace generic terms (e.g., 'application database') with concrete component names and IDs.\",\n    \"If conflict-state/lifecycle ownership is a documented policy, include the document reference or version.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Created 4 atomic memory cards from the provided design-oriented context.\",\n      \"Used low-to-medium confidence where the text is advisory ('should'/'can') rather than a verified fact.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

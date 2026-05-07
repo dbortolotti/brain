@@ -1,0 +1,58 @@
+{
+  "error": null,
+  "fixture_id": "debug_inspect_memory_001__punctuation",
+  "model": "google:gemini-2.5-flash",
+  "payload": {
+    "answer": "Memory card mem_123 contains the fact: 'The user's favorite punctuation mark is the exclamation point!'.",
+    "citations": [
+      "mem_123"
+    ],
+    "conflict_classification": "none",
+    "decision": "retrieve and display memory card details",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "no new entities to resolve during inspection"
+    },
+    "intent": "inspect memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "user",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "exclamation point",
+            "role": "object",
+            "type": "punctuation"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "exclamation point",
+            "predicate": "favorite punctuation mark is",
+            "subject": "user"
+          }
+        ],
+        "statement": "The user's favorite punctuation mark is the exclamation point!"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card mem_123 retrieved successfully."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "edit mem_123",
+      "delete mem_123"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"inspect memory\",\n  \"decision\": \"retrieve and display memory card details\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"The user's favorite punctuation mark is the exclamation point!\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"user\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"exclamation point\",\n          \"type\": \"punctuation\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"user\",\n          \"predicate\": \"favorite punctuation mark is\",\n          \"object\": \"exclamation point\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"no new entities to resolve during inspection\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Memory card mem_123 contains the fact: 'The user's favorite punctuation mark is the exclamation point!'.\",\n  \"citations\": [\n    \"mem_123\"\n  ],\n  \"repair_options\": [\n    \"edit mem_123\",\n    \"delete mem_123\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card mem_123 retrieved successfully.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

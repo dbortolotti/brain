@@ -1,0 +1,160 @@
+{
+  "error": null,
+  "fixture_id": "article_url_ai_memory_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Graph memory systems must preserve relationships, include provenance tracking, and define update semantics to function effectively.",
+    "citations": [
+      "https://examplecom/ai-memory"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_durable_memory",
+    "entity_resolution": {
+      "action": "create_new",
+      "entity_id": null,
+      "reason": "No existing entities match the extracted concepts; new entities required for graph memory design."
+    },
+    "intent": "extract_and_store_atomic_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Graph memory",
+            "role": "mechanism",
+            "type": "system"
+          },
+          {
+            "name": "agents",
+            "role": "user",
+            "type": "entity"
+          },
+          {
+            "name": "relationships",
+            "role": "preserved_property",
+            "type": "concept"
+          },
+          {
+            "name": "knowledge elements",
+            "role": "related_entity",
+            "type": "concept"
+          }
+        ],
+        "kind": "concept",
+        "relationships": [
+          {
+            "object": "agents to preserve relationships",
+            "predicate": "enables",
+            "subject": "Graph memory"
+          },
+          {
+            "object": "graph memory systems",
+            "predicate": "utilize",
+            "subject": "agents"
+          }
+        ],
+        "statement": "Graph memory systems enable agents to preserve relationships between knowledge elements."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "provenance",
+            "role": "critical_component",
+            "type": "feature"
+          },
+          {
+            "name": "graph memory systems",
+            "role": "dependent_entity",
+            "type": "system"
+          },
+          {
+            "name": "trust",
+            "role": "outcome",
+            "type": "concept"
+          },
+          {
+            "name": "traceability",
+            "role": "outcome",
+            "type": "concept"
+          }
+        ],
+        "kind": "requirement",
+        "relationships": [
+          {
+            "object": "provenance tracking",
+            "predicate": "require",
+            "subject": "graph memory systems"
+          },
+          {
+            "object": "trust",
+            "predicate": "enhances",
+            "subject": "provenance tracking"
+          },
+          {
+            "object": "traceability",
+            "predicate": "enables",
+            "subject": "provenance tracking"
+          }
+        ],
+        "statement": "Provenance tracking is essential for graph memory systems to maintain trust and traceability."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "update semantics",
+            "role": "critical_component",
+            "type": "feature"
+          },
+          {
+            "name": "graph memory systems",
+            "role": "dependent_entity",
+            "type": "system"
+          },
+          {
+            "name": "modifications",
+            "role": "use_case",
+            "type": "action"
+          },
+          {
+            "name": "deletions",
+            "role": "use_case",
+            "type": "action"
+          }
+        ],
+        "kind": "requirement",
+        "relationships": [
+          {
+            "object": "explicit update semantics",
+            "predicate": "require",
+            "subject": "graph memory systems"
+          },
+          {
+            "object": "modifications",
+            "predicate": "govern",
+            "subject": "update semantics"
+          },
+          {
+            "object": "deletions",
+            "predicate": "govern",
+            "subject": "update semantics"
+          }
+        ],
+        "statement": "Update semantics must be explicitly defined in graph memory systems to handle modifications and deletions."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted atomic statements from article.",
+        "Resolved entities and relationships with high confidence.",
+        "No conflicts detected; committed to durable memory."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"extract_and_store_atomic_memory\",\n  \"decision\": \"commit_durable_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"concept\",\n      \"statement\": \"Graph memory systems enable agents to preserve relationships between knowledge elements.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Graph memory\",\n          \"type\": \"system\",\n          \"role\": \"mechanism\"\n        },\n        {\n          \"name\": \"agents\",\n          \"type\": \"entity\",\n          \"role\": \"user\"\n        },\n        {\n          \"name\": \"relationships\",\n          \"type\": \"concept\",\n          \"role\": \"preserved_property\"\n        },\n        {\n          \"name\": \"knowledge elements\",\n          \"type\": \"concept\",\n          \"role\": \"related_entity\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Graph memory\",\n          \"predicate\": \"enables\",\n          \"object\": \"agents to preserve relationships\"\n        },\n        {\n          \"subject\": \"agents\",\n          \"predicate\": \"utilize\",\n          \"object\": \"graph memory systems\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"requirement\",\n      \"statement\": \"Provenance tracking is essential for graph memory systems to maintain trust and traceability.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"provenance\",\n          \"type\": \"feature\",\n          \"role\": \"critical_component\"\n        },\n        {\n          \"name\": \"graph memory systems\",\n          \"type\": \"system\",\n          \"role\": \"dependent_entity\"\n        },\n        {\n          \"name\": \"trust\",\n          \"type\": \"concept\",\n          \"role\": \"outcome\"\n        },\n        {\n          \"name\": \"traceability\",\n          \"type\": \"concept\",\n          \"role\": \"outcome\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"graph memory systems\",\n          \"predicate\": \"require\",\n          \"object\": \"provenance tracking\"\n        },\n        {\n          \"subject\": \"provenance tracking\",\n          \"predicate\": \"enhances\",\n          \"object\": \"trust\"\n        },\n        {\n          \"subject\": \"provenance tracking\",\n          \"predicate\": \"enables\",\n          \"object\": \"traceability\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"requirement\",\n      \"statement\": \"Update semantics must be explicitly defined in graph memory systems to handle modifications and deletions.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"update semantics\",\n          \"type\": \"feature\",\n          \"role\": \"critical_component\"\n        },\n        {\n          \"name\": \"graph memory systems\",\n          \"type\": \"system\",\n          \"role\": \"dependent_entity\"\n        },\n        {\n          \"name\": \"modifications\",\n          \"type\": \"action\",\n          \"role\": \"use_case\"\n        },\n        {\n          \"name\": \"deletions\",\n          \"type\": \"action\",\n          \"role\": \"use_case\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"graph memory systems\",\n          \"predicate\": \"require\",\n          \"object\": \"explicit update semantics\"\n        },\n        {\n          \"subject\": \"update semantics\",\n          \"predicate\": \"govern\",\n          \"object\": \"modifications\"\n        },\n        {\n          \"subject\": \"update semantics\",\n          \"predicate\": \"govern\",\n          \"object\": \"deletions\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create_new\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entities match the extracted concepts; new entities required for graph memory design.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Graph memory systems must preserve relationships, include provenance tracking, and define update semantics to function effectively.\",\n  \"citations\": [\n    \"https://examplecom/ai-memory\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Extracted atomic statements from article.\",\n      \"Resolved entities and relationships with high confidence.\",\n      \"No conflicts detected; committed to durable memory.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

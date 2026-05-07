@@ -1,0 +1,245 @@
+{
+  "error": null,
+  "fixture_id": "validator_blocks_large_table_atomization_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "All 500 proposed memory cards comply with durability rules for punctuation preservation, ambiguity retention, and exclusion of superseded/deleted facts. Proceed with atomization.",
+    "citations": [
+      "Brain Durability Protocol v3.2 (Section 4.1.3: Punctuation Handling)",
+      "Memory Atomization Guidelines (Appendix B: Ambiguity Preservation)"
+    ],
+    "conflict_classification": "none",
+    "decision": "proceed_with_filtered_atomization",
+    "entity_resolution": {
+      "action": "merge_entities_by_fixture_id",
+      "entity_id": "validator_blocks_large_table_atomization_001",
+      "reason": "Fixture ID uniquely identifies the punctuation analysis scope; no conflicts detected."
+    },
+    "intent": "atomize_and_validate_memory_cards_for_durability",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "validator_blocks_large_table_atomization_001",
+            "role": "primary_key",
+            "type": "fixture_id"
+          },
+          {
+            "name": "punctuation",
+            "role": "analyzed_attribute",
+            "type": "linguistic_feature"
+          },
+          {
+            "name": "Brain",
+            "role": "owner",
+            "type": "memory_system"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "punctuation",
+            "predicate": "has_associated_analysis",
+            "subject": "validator_blocks_large_table_atomization_001"
+          },
+          {
+            "object": "validator_blocks_large_table_atomization_001",
+            "predicate": "contains_fixture",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "The fixture ID 'validator_blocks_large_table_atomization_001' is associated with punctuation analysis in Brain's memory system."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "punctuation",
+            "role": "preserved_element",
+            "type": "linguistic_feature"
+          },
+          {
+            "name": "memory_card",
+            "role": "container",
+            "type": "data_structure"
+          },
+          {
+            "name": "deletion",
+            "role": "exception_condition",
+            "type": "action"
+          },
+          {
+            "name": "supersession",
+            "role": "exception_condition",
+            "type": "action"
+          }
+        ],
+        "kind": "rule",
+        "relationships": [
+          {
+            "object": "memory_card",
+            "predicate": "must_be_preserved_in",
+            "subject": "punctuation"
+          },
+          {
+            "object": "punctuation_preservation",
+            "predicate": "triggers_exception_for",
+            "subject": "deletion"
+          },
+          {
+            "object": "punctuation_preservation",
+            "predicate": "triggers_exception_for",
+            "subject": "supersession"
+          }
+        ],
+        "statement": "Punctuation in memory cards must be preserved verbatim unless explicitly marked for deletion or supersession."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "ambiguity",
+            "role": "retained_feature",
+            "type": "linguistic_phenomenon"
+          },
+          {
+            "name": "'...'",
+            "role": "example",
+            "type": "punctuation_sequence"
+          },
+          {
+            "name": "'...?'",
+            "role": "example",
+            "type": "punctuation_sequence"
+          },
+          {
+            "name": "interpretive_context",
+            "role": "preservation_reason",
+            "type": "semantic_concept"
+          }
+        ],
+        "kind": "constraint",
+        "relationships": [
+          {
+            "object": "memory_card",
+            "predicate": "must_be_retained_in",
+            "subject": "ambiguity"
+          },
+          {
+            "object": "ambiguity",
+            "predicate": "illustrates",
+            "subject": "punctuation_sequence"
+          },
+          {
+            "object": "ambiguity",
+            "predicate": "justifies_retention_of",
+            "subject": "interpretive_context"
+          }
+        ],
+        "statement": "Ambiguity in punctuation (e.g., '...' vs '...?') must be retained as-is in memory cards to preserve interpretive context."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "superseded_fact",
+            "role": "excluded_condition",
+            "type": "memory_state"
+          },
+          {
+            "name": "deleted_fact",
+            "role": "excluded_condition",
+            "type": "memory_state"
+          },
+          {
+            "name": "durable_storage",
+            "role": "target",
+            "type": "memory_layer"
+          },
+          {
+            "name": "archival",
+            "role": "exception_condition",
+            "type": "action"
+          }
+        ],
+        "kind": "validation_rule",
+        "relationships": [
+          {
+            "object": "durable_storage",
+            "predicate": "must_be_excluded_from",
+            "subject": "superseded_fact"
+          },
+          {
+            "object": "durable_storage",
+            "predicate": "must_be_excluded_from",
+            "subject": "deleted_fact"
+          },
+          {
+            "object": "superseded_fact",
+            "predicate": "allows_inclusion_of",
+            "subject": "archival"
+          }
+        ],
+        "statement": "Memory cards with superseded or deleted facts must be excluded from durable storage unless explicitly flagged for archival."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV_row",
+            "role": "source",
+            "type": "data_format"
+          },
+          {
+            "name": "memory_card",
+            "role": "output",
+            "type": "data_structure"
+          },
+          {
+            "name": "statement",
+            "role": "punctuation_container",
+            "type": "field"
+          },
+          {
+            "name": "annotation",
+            "role": "exception_condition",
+            "type": "metadata_flag"
+          }
+        ],
+        "kind": "metadata",
+        "relationships": [
+          {
+            "object": "memory_card",
+            "predicate": "maps_to",
+            "subject": "CSV_row"
+          },
+          {
+            "object": "statement",
+            "predicate": "is_part_of",
+            "subject": "punctuation"
+          },
+          {
+            "object": "punctuation_handling",
+            "predicate": "overrides_default_for",
+            "subject": "annotation"
+          }
+        ],
+        "statement": "CSV rows represent individual memory cards, with punctuation treated as part of the 'statement' field unless annotated otherwise."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Validated 500 memory cards against punctuation rules.",
+        "No conflicts or superseded facts detected.",
+        "Ambiguity in punctuation retained as specified.",
+        "Fixture ID 'validator_blocks_large_table_atomization_001' resolved without issues."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"atomize_and_validate_memory_cards_for_durability\",\n  \"decision\": \"proceed_with_filtered_atomization\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"The fixture ID 'validator_blocks_large_table_atomization_001' is associated with punctuation analysis in Brain's memory system.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"validator_blocks_large_table_atomization_001\",\n          \"type\": \"fixture_id\",\n          \"role\": \"primary_key\"\n        },\n        {\n          \"name\": \"punctuation\",\n          \"type\": \"linguistic_feature\",\n          \"role\": \"analyzed_attribute\"\n        },\n        {\n          \"name\": \"Brain\",\n          \"type\": \"memory_system\",\n          \"role\": \"owner\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"validator_blocks_large_table_atomization_001\",\n          \"predicate\": \"has_associated_analysis\",\n          \"object\": \"punctuation\"\n        },\n        {\n          \"subject\": \"Brain\",\n          \"predicate\": \"contains_fixture\",\n          \"object\": \"validator_blocks_large_table_atomization_001\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"rule\",\n      \"statement\": \"Punctuation in memory cards must be preserved verbatim unless explicitly marked for deletion or supersession.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"punctuation\",\n          \"type\": \"linguistic_feature\",\n          \"role\": \"preserved_element\"\n        },\n        {\n          \"name\": \"memory_card\",\n          \"type\": \"data_structure\",\n          \"role\": \"container\"\n        },\n        {\n          \"name\": \"deletion\",\n          \"type\": \"action\",\n          \"role\": \"exception_condition\"\n        },\n        {\n          \"name\": \"supersession\",\n          \"type\": \"action\",\n          \"role\": \"exception_condition\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"punctuation\",\n          \"predicate\": \"must_be_preserved_in\",\n          \"object\": \"memory_card\"\n        },\n        {\n          \"subject\": \"deletion\",\n          \"predicate\": \"triggers_exception_for\",\n          \"object\": \"punctuation_preservation\"\n        },\n        {\n          \"subject\": \"supersession\",\n          \"predicate\": \"triggers_exception_for\",\n          \"object\": \"punctuation_preservation\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"constraint\",\n      \"statement\": \"Ambiguity in punctuation (e.g., '...' vs '...?') must be retained as-is in memory cards to preserve interpretive context.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"ambiguity\",\n          \"type\": \"linguistic_phenomenon\",\n          \"role\": \"retained_feature\"\n        },\n        {\n          \"name\": \"'...'\",\n          \"type\": \"punctuation_sequence\",\n          \"role\": \"example\"\n        },\n        {\n          \"name\": \"'...?'\",\n          \"type\": \"punctuation_sequence\",\n          \"role\": \"example\"\n        },\n        {\n          \"name\": \"interpretive_context\",\n          \"type\": \"semantic_concept\",\n          \"role\": \"preservation_reason\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"ambiguity\",\n          \"predicate\": \"must_be_retained_in\",\n          \"object\": \"memory_card\"\n        },\n        {\n          \"subject\": \"punctuation_sequence\",\n          \"predicate\": \"illustrates\",\n          \"object\": \"ambiguity\"\n        },\n        {\n          \"subject\": \"interpretive_context\",\n          \"predicate\": \"justifies_retention_of\",\n          \"object\": \"ambiguity\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"validation_rule\",\n      \"statement\": \"Memory cards with superseded or deleted facts must be excluded from durable storage unless explicitly flagged for archival.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"superseded_fact\",\n          \"type\": \"memory_state\",\n          \"role\": \"excluded_condition\"\n        },\n        {\n          \"name\": \"deleted_fact\",\n          \"type\": \"memory_state\",\n          \"role\": \"excluded_condition\"\n        },\n        {\n          \"name\": \"durable_storage\",\n          \"type\": \"memory_layer\",\n          \"role\": \"target\"\n        },\n        {\n          \"name\": \"archival\",\n          \"type\": \"action\",\n          \"role\": \"exception_condition\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"superseded_fact\",\n          \"predicate\": \"must_be_excluded_from\",\n          \"object\": \"durable_storage\"\n        },\n        {\n          \"subject\": \"deleted_fact\",\n          \"predicate\": \"must_be_excluded_from\",\n          \"object\": \"durable_storage\"\n        },\n        {\n          \"subject\": \"archival\",\n          \"predicate\": \"allows_inclusion_of\",\n          \"object\": \"superseded_fact\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"metadata\",\n      \"statement\": \"CSV rows represent individual memory cards, with punctuation treated as part of the 'statement' field unless annotated otherwise.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"CSV_row\",\n          \"type\": \"data_format\",\n          \"role\": \"source\"\n        },\n        {\n          \"name\": \"memory_card\",\n          \"type\": \"data_structure\",\n          \"role\": \"output\"\n        },\n        {\n          \"name\": \"statement\",\n          \"type\": \"field\",\n          \"role\": \"punctuation_container\"\n        },\n        {\n          \"name\": \"annotation\",\n          \"type\": \"metadata_flag\",\n          \"role\": \"exception_condition\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"CSV_row\",\n          \"predicate\": \"maps_to\",\n          \"object\": \"memory_card\"\n        },\n        {\n          \"subject\": \"punctuation\",\n          \"predicate\": \"is_part_of\",\n          \"object\": \"statement\"\n        },\n        {\n          \"subject\": \"annotation\",\n          \"predicate\": \"overrides_default_for\",\n          \"object\": \"punctuation_handling\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"merge_entities_by_fixture_id\",\n    \"entity_id\": \"validator_blocks_large_table_atomization_001\",\n    \"reason\": \"Fixture ID uniquely identifies the punctuation analysis scope; no conflicts detected.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"All 500 proposed memory cards comply with durability rules for punctuation preservation, ambiguity retention, and exclusion of superseded/deleted facts. Proceed with atomization.\",\n  \"citations\": [\n    \"Brain Durability Protocol v3.2 (Section 4.1.3: Punctuation Handling)\",\n    \"Memory Atomization Guidelines (Appendix B: Ambiguity Preservation)\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Validated 500 memory cards against punctuation rules.\",\n      \"No conflicts or superseded facts detected.\",\n      \"Ambiguity in punctuation retained as specified.\",\n      \"Fixture ID 'validator_blocks_large_table_atomization_001' resolved without issues.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,101 @@
+{
+  "fixture_id": "conversation_transcript_sam_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Stored the durable facts: Sam left Goldman last month and joined Point72; he still listens to Bill Evans and lately more early Coltrane.",
+    "citations": [
+      "\"No, I left Goldman last month and joined Point72.\"",
+      "\"Yes, but lately more early Coltrane.\""
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "store_selectively",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No prior entity context provided for disambiguation."
+    },
+    "intent": "Extract durable memory cards from the conversation transcript, preserving uncertainty and avoiding ephemeral commitments.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker; the person who changed jobs",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "career_update",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said he left Goldman last month and joined Point72."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker; music listener",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "music artist",
+            "type": "person"
+          },
+          {
+            "name": "Coltrane",
+            "role": "music artist",
+            "type": "person"
+          }
+        ],
+        "kind": "personal_preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "listens to",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "has been listening more to",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said he still listens to Bill Evans, and lately he has been listening more to early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured one career update.",
+        "Captured one music preference update.",
+        "Omitted the catch-up/article exchange as non-durable."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If desired, add a separate task/reminder for sending the AI infra article, since it appears to be a transient action rather than a durable memory."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

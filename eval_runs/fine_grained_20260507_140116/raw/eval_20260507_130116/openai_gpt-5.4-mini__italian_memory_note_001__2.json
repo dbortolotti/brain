@@ -1,0 +1,64 @@
+{
+  "error": null,
+  "fixture_id": "italian_memory_note_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Stored as a preference memory with ambiguous identity context.",
+    "citations": [
+      "Input: \"Ricordami che Sam di Goldman preferisce Bill Evans.\""
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_new_or_link_if_possible",
+      "entity_id": null,
+      "reason": "\"Sam of Goldman\" is ambiguous; no durable identity can be confirmed from the note alone."
+    },
+    "intent": "Store a preference memory about Sam associated with Goldman.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "preference holder",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation/context",
+            "type": "organization"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam associated with Goldman prefers Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured a preference: Bill Evans.",
+        "Preserved ambiguity around which Sam at Goldman is meant."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you meant a specific Sam, provide a surname or role to disambiguate.",
+      "If Goldman refers to a company or team, specify which one."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Store a preference memory about Sam associated with Goldman.\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam associated with Goldman prefers Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"preference holder\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation/context\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"associated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"prefers\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"create_new_or_link_if_possible\",\"entity_id\":null,\"reason\":\"\\\"Sam of Goldman\\\" is ambiguous; no durable identity can be confirmed from the note alone.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored as a preference memory with ambiguous identity context.\",\"citations\":[\"Input: \\\"Ricordami che Sam di Goldman preferisce Bill Evans.\\\"\"],\"repair_options\":[\"If you meant a specific Sam, provide a surname or role to disambiguate.\",\"If Goldman refers to a company or team, specify which one.\"],\"receipt\":{\"success\":true,\"details\":[\"Captured a preference: Bill Evans.\",\"Preserved ambiguity around which Sam at Goldman is meant.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "fixture_id": "memory_compiler_small_table__punctuation",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_punctuation_table",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "table parsed; no conflicting entities detected"
+    },
+    "intent": "memory_compilation",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "Person"
+          },
+          {
+            "name": "Daniele",
+            "role": "subject",
+            "type": "Person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference",
+            "type": "Person"
+          },
+          {
+            "name": "Knowledge graphs",
+            "role": "preference",
+            "type": "Concept"
+          }
+        ],
+        "kind": "table",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "has_preference",
+            "subject": "Sam"
+          },
+          {
+            "object": "Knowledge graphs",
+            "predicate": "has_preference",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "| Person | Preference |\\n| --- | --- |\\n| Sam | Bill Evans |\\n| Daniele | Knowledge graphs |"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "memory_card_created",
+        "table_parsed_with_punctuation_preserved"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"memory_compilation\",\n  \"decision\": \"store_punctuation_table\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"table\",\n      \"statement\": \"| Person | Preference |\\\\n| --- | --- |\\\\n| Sam | Bill Evans |\\\\n| Daniele | Knowledge graphs |\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Sam\", \"type\": \"Person\", \"role\": \"subject\"},\n        {\"name\": \"Daniele\", \"type\": \"Person\", \"role\": \"subject\"},\n        {\"name\": \"Bill Evans\", \"type\": \"Person\", \"role\": \"preference\"},\n        {\"name\": \"Knowledge graphs\", \"type\": \"Concept\", \"role\": \"preference\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sam\", \"predicate\": \"has_preference\", \"object\": \"Bill Evans\"},\n        {\"subject\": \"Daniele\", \"predicate\": \"has_preference\", \"object\": \"Knowledge graphs\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"table parsed; no conflicting entities detected\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\"memory_card_created\", \"table_parsed_with_punctuation_preserved\"]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

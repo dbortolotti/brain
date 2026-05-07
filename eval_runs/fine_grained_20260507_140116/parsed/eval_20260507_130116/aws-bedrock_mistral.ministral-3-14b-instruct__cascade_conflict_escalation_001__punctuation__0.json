@@ -1,0 +1,83 @@
+{
+  "fixture_id": "cascade_conflict_escalation_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Conflict detected: Existing memory ('Sara is my daughter') conflicts with input ('Sara is my niece'). Resolution requires clarification of familial structure or intent. No durable update applied.",
+    "citations": [
+      "Family relationship ambiguity (daughter vs. niece) cannot be resolved algorithmically without additional context (e.g., 'Sara is my sister\u2019s daughter')."
+    ],
+    "conflict_classification": "cascade_conflict_escalation",
+    "decision": "conflict_escalation_required",
+    "entity_resolution": {
+      "action": "pending",
+      "entity_id": "Sara",
+      "reason": "Ambiguous familial relationship (daughter vs. niece) requires manual resolution. Punctuation or contextual cues (e.g., 'my sister\u2019s daughter') may clarify intent."
+    },
+    "intent": "memory_update",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "has_direct_relationship",
+            "subject": "I"
+          },
+          {
+            "object": "daughter",
+            "predicate": "is",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my daughter"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "niece",
+            "type": "person"
+          }
+        ],
+        "kind": "input_memory",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "has_direct_relationship",
+            "subject": "I"
+          },
+          {
+            "object": "niece",
+            "predicate": "is",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict detected in durable memory: 'Sara' cannot simultaneously be 'daughter' and 'niece' without additional context.",
+        "No automatic resolution applied to preserve data integrity.",
+        "Action required: User must provide clarifying input or select a repair option."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Clarify relationship: 'Sara is my sister\u2019s daughter' (niece) or 'Sara is my child' (daughter).",
+      "Merge as ambiguous: 'Sara is my daughter/niece (context pending).'",
+      "Delete conflicting memory: Retain only the newer input ('niece').",
+      "Flag for human review: Escalate to conflict resolution workflow."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

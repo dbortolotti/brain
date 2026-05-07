@@ -1,0 +1,78 @@
+{
+  "fixture_id": "memory_compiler_small_table__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Extracted two preference facts from the table.",
+    "citations": [],
+    "conflict_classification": "no_conflict_detected",
+    "decision": "store_memory",
+    "entity_resolution": {
+      "action": "no_external_resolution",
+      "entity_id": null,
+      "reason": "Only names/topics are provided; no IDs or prior memory references are available."
+    },
+    "intent": "extract_preferences_from_table",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "person",
+            "type": "Person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference",
+            "type": "Person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam's preference is Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "person",
+            "type": "Person"
+          },
+          {
+            "name": "Knowledge graphs",
+            "role": "preference",
+            "type": "Topic"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Knowledge graphs",
+            "predicate": "prefers",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Daniele's preference is knowledge graphs."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed table rows for Sam and Daniele.",
+        "Converted 'Preference' column values into preference memory cards."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If 'Bill Evans' refers to a specific recording or album, provide that scope.",
+      "If 'Knowledge graphs' refers to a particular system/framework, provide the specific name."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

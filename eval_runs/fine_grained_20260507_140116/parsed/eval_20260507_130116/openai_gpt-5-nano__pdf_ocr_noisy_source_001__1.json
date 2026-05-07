@@ -1,0 +1,94 @@
+{
+  "fixture_id": "pdf_ocr_noisy_source_001",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "The Brain DB is treated as the source of truth within this fragment, and Cognee is indicated to be a rebuildable projection. Due to OCR noise, some terms are left as provisional; no superseded/deleted facts are presented as current.",
+    "citations": [],
+    "conflict_classification": "ambiguity_present",
+    "decision": "store_as_is_with_minor_normalization",
+    "entity_resolution": {
+      "action": "preserve_ambiguity",
+      "entity_id": null,
+      "reason": "The input contains potential typographical errors (e.g., 'remalns', 'trvth', 'Cognee') and the factual status of terms is not fully verifiable from the snippet alone."
+    },
+    "intent": "evaluate_memory",
+    "memory_cards": [
+      {
+        "confidence": "0.60",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source",
+            "type": "system"
+          },
+          {
+            "name": "source of truth",
+            "role": "descriptor",
+            "type": "concept"
+          },
+          {
+            "name": "Cognee",
+            "role": "subject",
+            "type": "concept"
+          },
+          {
+            "name": "rebuildable projection",
+            "role": "predicate",
+            "type": "concept"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "is",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "rebuildable projection",
+            "predicate": "should be",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain DB remains source of truth. Cognee should be rebuildable projection."
+      },
+      {
+        "confidence": "0.50",
+        "entities": [
+          {
+            "name": "OCR",
+            "role": "source",
+            "type": "process"
+          },
+          {
+            "name": "noisy source",
+            "role": "description",
+            "type": "condition"
+          }
+        ],
+        "kind": "note",
+        "relationships": [
+          {
+            "object": "noisy source",
+            "predicate": "produces",
+            "subject": "OCR"
+          }
+        ],
+        "statement": "Noisily OCR'd input indicates possible typos; treat as provisional transcription."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory fragment created with provisional normalization.",
+        "Ambiguities preserved per requirement."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If higher confidence is required, obtain a cleaner transcription of the source text.",
+      "Add explicit metadata to distinguish between confirmed facts and provisional inferences.",
+      "Store multiple interpretations for 'Cognee' if it denotes different concepts in other fragments."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

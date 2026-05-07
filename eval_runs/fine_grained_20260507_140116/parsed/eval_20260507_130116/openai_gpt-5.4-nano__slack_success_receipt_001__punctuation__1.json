@@ -1,0 +1,58 @@
+{
+  "fixture_id": "slack_success_receipt_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Saved a qualified memory that Sam (with Goldman mentioned as context) likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "store_with_ambiguity",
+    "entity_resolution": {
+      "action": "no_canonical_id",
+      "entity_id": null,
+      "reason": "No unique identifiers were provided for 'Sam' or 'Bill Evans', only names; 'Goldman' appears as contextual affiliation."
+    },
+    "intent": "brain.remember",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker/subject (name as given)",
+            "type": "Person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation/context (as given)",
+            "type": "Organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked person (as given)",
+            "type": "Person"
+          }
+        ],
+        "kind": "preference_mention",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (associated with Goldman, as mentioned) likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored as an unconfirmed, qualified preference/like statement due to potential identity ambiguity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm which 'Sam' this is (e.g., full name or other identifiers).",
+      "Confirm whether the Goldman association is employment, a workplace, or merely a mention/context."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

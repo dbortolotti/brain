@@ -1,0 +1,58 @@
+{
+  "fixture_id": "additive_sam_preferences_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "The new information adds another liked musician (Sonny Rollins) for the same person (Sam from Goldman) and does not contradict the existing preference (Bill Evans).",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "No conflict detected; add the new preference as an additional, non-superseding memory.",
+    "entity_resolution": {
+      "action": "reuse_existing_or_identify_as_same_context",
+      "entity_id": null,
+      "reason": "Both facts refer to 'Sam from Goldman' and involve different liked artists; the context matches and there is no evidence they refer to different people."
+    },
+    "intent": "conflict_explainer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "preference_owner",
+            "type": "person"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "liked_artist",
+            "type": "musician"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_context",
+            "type": "organization"
+          }
+        ],
+        "kind": "preference/music_likes",
+        "relationships": [
+          {
+            "object": "Sonny Rollins",
+            "predicate": "likes",
+            "subject": "Sam (from Goldman)"
+          }
+        ],
+        "statement": "Sam (from Goldman) also likes Sonny Rollins."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No conflicting dislike or replacement detected.",
+        "Update is additive: extends the set of liked artists."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Record Sonny Rollins as an additional liked artist for Sam (from Goldman) without changing the existing Bill Evans preference."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

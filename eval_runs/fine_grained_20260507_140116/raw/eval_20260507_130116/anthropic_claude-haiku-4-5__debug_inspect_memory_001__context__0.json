@@ -1,0 +1,60 @@
+{
+  "error": null,
+  "fixture_id": "debug_inspect_memory_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory inspection command received. Awaiting actual mem_123 record from storage to return its statement, confidence level, entity graph, relationships, and full provenance chain. No superseded or deleted facts will be presented as current.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "Return memory card contents with full provenance, confidence metadata, and entity/relationship graph for the specified memory ID",
+    "entity_resolution": {
+      "action": "lookup",
+      "entity_id": "mem_123",
+      "reason": "Direct memory ID provided; no ambiguity in reference"
+    },
+    "intent": "Inspect and retrieve memory record mem_123 from Brain's durable memory system",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "mem_123",
+            "role": "subject_of_inspection",
+            "type": "memory_id"
+          },
+          {
+            "name": "Brain",
+            "role": "memory_store",
+            "type": "system"
+          }
+        ],
+        "kind": "inspection_request",
+        "relationships": [
+          {
+            "object": "mem_123",
+            "predicate": "requests_inspection_of",
+            "subject": "user"
+          }
+        ],
+        "statement": "User requested inspection of memory record mem_123 via /brain inspect memory command"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Inspection intent recognized",
+        "Memory ID mem_123 queued for retrieval",
+        "Ready to return memory contents with full provenance"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Verify mem_123 exists in durable store",
+      "Return full memory card with all metadata if found",
+      "Report not_found if mem_123 does not exist",
+      "Flag any conflicting versions and preserve ambiguity"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Inspect and retrieve memory record mem_123 from Brain's durable memory system\",\n  \"decision\": \"Return memory card contents with full provenance, confidence metadata, and entity/relationship graph for the specified memory ID\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"inspection_request\",\n      \"statement\": \"User requested inspection of memory record mem_123 via /brain inspect memory command\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"mem_123\",\n          \"type\": \"memory_id\",\n          \"role\": \"subject_of_inspection\"\n        },\n        {\n          \"name\": \"Brain\",\n          \"type\": \"system\",\n          \"role\": \"memory_store\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"user\",\n          \"predicate\": \"requests_inspection_of\",\n          \"object\": \"mem_123\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"lookup\",\n    \"entity_id\": \"mem_123\",\n    \"reason\": \"Direct memory ID provided; no ambiguity in reference\"\n  },\n  \"conflict_classification\": \"none_detected\",\n  \"answer\": \"Memory inspection command received. Awaiting actual mem_123 record from storage to return its statement, confidence level, entity graph, relationships, and full provenance chain. No superseded or deleted facts will be presented as current.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Verify mem_123 exists in durable store\",\n    \"Return full memory card with all metadata if found\",\n    \"Report not_found if mem_123 does not exist\",\n    \"Flag any conflicting versions and preserve ambiguity\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Inspection intent recognized\",\n      \"Memory ID mem_123 queued for retrieval\",\n      \"Ready to return memory contents with full provenance\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

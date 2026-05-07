@@ -1,0 +1,80 @@
+{
+  "error": null,
+  "fixture_id": "long_markdown_chat_summary_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Extracted two confirmed architecture/agent directives; left open questions unresolved.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Confirm architecture directives; leave open questions as unresolved.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No existing entity IDs were provided in the input; resolve-as-literal names only."
+    },
+    "intent": "extract_atomic_memory_cards_from_chat_summary",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "semantic_projection",
+            "type": "system"
+          }
+        ],
+        "kind": "architecture_principle",
+        "relationships": [
+          {
+            "object": "semantic memory",
+            "predicate": "is the source of truth for",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "a rebuildable semantic projection",
+            "predicate": "is",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain DB should be the source of truth, and Cognee should be a rebuildable semantic projection."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "memory_intake_agent",
+            "type": "channel"
+          }
+        ],
+        "kind": "agent_role",
+        "relationships": [
+          {
+            "object": "a strict memory intake agent",
+            "predicate": "should act as",
+            "subject": "Slack"
+          }
+        ],
+        "statement": "Slack should be a strict memory intake agent."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created atomic cards for Brain DB source-of-truth and Cognee rebuildable projection relationship.",
+        "Created atomic card for Slack strict memory intake agent role."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add explicit decision records for any future determinations about Telegram and model cost/performance."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"extract_atomic_memory_cards_from_chat_summary\",\n  \"decision\": \"Confirm architecture directives; leave open questions as unresolved.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"architecture_principle\",\n      \"statement\": \"Brain DB should be the source of truth, and Cognee should be a rebuildable semantic projection.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"system\",\n          \"role\": \"source_of_truth\"\n        },\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"system\",\n          \"role\": \"semantic_projection\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"is the source of truth for\",\n          \"object\": \"semantic memory\"\n        },\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"is\",\n          \"object\": \"a rebuildable semantic projection\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"agent_role\",\n      \"statement\": \"Slack should be a strict memory intake agent.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Slack\",\n          \"type\": \"channel\",\n          \"role\": \"memory_intake_agent\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Slack\",\n          \"predicate\": \"should act as\",\n          \"object\": \"a strict memory intake agent\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"none\",\n    \"entity_id\": null,\n    \"reason\": \"No existing entity IDs were provided in the input; resolve-as-literal names only.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Extracted two confirmed architecture/agent directives; left open questions unresolved.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Add explicit decision records for any future determinations about Telegram and model cost/performance.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Created atomic cards for Brain DB source-of-truth and Cognee rebuildable projection relationship.\",\n      \"Created atomic card for Slack strict memory intake agent role.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

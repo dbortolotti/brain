@@ -1,0 +1,29 @@
+{
+  "fixture_id": "slack_ambiguous_entity_buttons_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "I can\u2019t safely store 'Sam likes Bill Evans' because there are at least two different Sams referenced (Goldman and Point72). Specify which Sam the preference applies to.",
+    "citations": [],
+    "conflict_classification": "ambiguity",
+    "decision": "request_disambiguation",
+    "entity_resolution": {
+      "action": "no_commit",
+      "entity_id": null,
+      "reason": "The input implies multiple distinct entities named Sam (one at Goldman, one at Point72) but does not specify which Sam likes Bill Evans. Persisting the 'Sam likes Bill Evans' preference would be ambiguous."
+    },
+    "intent": "durability_filter",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected ambiguity in subject entity (Sam) across two possible organizations.",
+        "Chose not to commit durable memory to avoid incorrect association."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm whether the Sam at Goldman likes Bill Evans, or the Sam at Point72 likes Bill Evans.",
+      "Add a distinguishing attribute for the Sam in question (e.g., last name, role, or additional context)."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

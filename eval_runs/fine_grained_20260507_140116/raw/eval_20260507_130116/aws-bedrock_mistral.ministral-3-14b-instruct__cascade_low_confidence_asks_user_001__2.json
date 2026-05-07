@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "fixture_id": "cascade_low_confidence_asks_user_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The system cannot proceed with durable memory commitment for the ambiguous 'Sam' note due to low model confidence and disabled cloud escalation. User intervention is required to clarify the reference.",
+    "citations": [],
+    "conflict_classification": "unresolvable_ambiguity",
+    "decision": "escalate_to_user",
+    "entity_resolution": {
+      "action": "user_intervention_required",
+      "entity_id": null,
+      "reason": "Ambiguity in 'Sam' reference cannot be resolved automatically due to low confidence and disabled cloud escalation."
+    },
+    "intent": "resolve_ambiguity",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "ambiguous_reference",
+            "type": "person"
+          },
+          {
+            "name": "Cloud escalation",
+            "role": "disabled",
+            "type": "system_setting"
+          },
+          {
+            "name": "model confidence",
+            "role": "low",
+            "type": "metric"
+          }
+        ],
+        "kind": "note",
+        "relationships": [
+          {
+            "object": "ambiguous_note_resolution",
+            "predicate": "is_disabled_for",
+            "subject": "Cloud escalation"
+          },
+          {
+            "object": "Sam_note",
+            "predicate": "is_low_for",
+            "subject": "model confidence"
+          }
+        ],
+        "statement": "Cloud escalation disabled and model confidence low for ambiguous Sam note."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguous entity 'Sam' blocked durable memory commitment.",
+        "Cloud escalation disabled\u2014no fallback resolution available.",
+        "User prompt generated for clarification."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask user to specify which 'Sam' is referenced (e.g., Sam Smith, Sam Carter, or another entity).",
+      "Enable cloud escalation for ambiguous note resolution (if permitted).",
+      "Provide context for the system to re-evaluate confidence (e.g., surrounding notes or timeframe)."
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"resolve_ambiguity\",\n  \"decision\": \"escalate_to_user\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"note\",\n      \"statement\": \"Cloud escalation disabled and model confidence low for ambiguous Sam note.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"ambiguous_reference\"\n        },\n        {\n          \"name\": \"Cloud escalation\",\n          \"type\": \"system_setting\",\n          \"role\": \"disabled\"\n        },\n        {\n          \"name\": \"model confidence\",\n          \"type\": \"metric\",\n          \"role\": \"low\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Cloud escalation\",\n          \"predicate\": \"is_disabled_for\",\n          \"object\": \"ambiguous_note_resolution\"\n        },\n        {\n          \"subject\": \"model confidence\",\n          \"predicate\": \"is_low_for\",\n          \"object\": \"Sam_note\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"user_intervention_required\",\n    \"entity_id\": null,\n    \"reason\": \"Ambiguity in 'Sam' reference cannot be resolved automatically due to low confidence and disabled cloud escalation.\"\n  },\n  \"conflict_classification\": \"unresolvable_ambiguity\",\n  \"answer\": \"The system cannot proceed with durable memory commitment for the ambiguous 'Sam' note due to low model confidence and disabled cloud escalation. User intervention is required to clarify the reference.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Ask user to specify which 'Sam' is referenced (e.g., Sam Smith, Sam Carter, or another entity).\",\n    \"Enable cloud escalation for ambiguous note resolution (if permitted).\",\n    \"Provide context for the system to re-evaluate confidence (e.g., surrounding notes or timeframe).\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Ambiguous entity 'Sam' blocked durable memory commitment.\",\n      \"Cloud escalation disabled\u2014no fallback resolution available.\",\n      \"User prompt generated for clarification.\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

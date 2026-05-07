@@ -1,0 +1,34 @@
+{
+  "fixture_id": "debug_inspect_memory_001__punctuation",
+  "model": "openai:gpt-5.4-low",
+  "payload": {
+    "answer": "Inspection requested for memory ID mem_123. This is a read-only debug operation and does not create, update, or delete durable memory. No memory contents were provided in the fixture, so only the requested target can be identified.",
+    "citations": [
+      "mem_123"
+    ],
+    "conflict_classification": "none",
+    "decision": "read_only_inspection",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": "mem_123",
+      "reason": "The request targets an existing memory by its explicit memory ID; no entity resolution is needed."
+    },
+    "intent": "inspect_memory",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Parsed command: /brain inspect memory mem_123",
+        "Classified as inspection/debug request",
+        "No durable memory committed",
+        "No entity resolution beyond explicit memory ID reference"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide the stored contents or metadata for mem_123 to enable a detailed inspection result.",
+      "If mem_123 is invalid or missing, verify the memory ID and retry.",
+      "If the goal was to modify rather than inspect, use the appropriate create/update/delete command."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

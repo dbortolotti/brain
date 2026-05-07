@@ -1,0 +1,58 @@
+{
+  "fixture_id": "ambiguous_time_reference_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Store only as a reported, time-relative statement; do not resolve the departure date to an absolute time.",
+    "citations": [
+      "Input: \"Sam said last Friday that he is leaving Goldman next month.\""
+    ],
+    "conflict_classification": "ambiguous_temporal_reference",
+    "decision": "store_with_ambiguity",
+    "entity_resolution": {
+      "action": "retain_ambiguous",
+      "entity_id": null,
+      "reason": "'Sam' and 'Goldman' are not uniquely resolved, and the timing depends on the reference point 'last Friday,' so the fact should be stored only with explicit temporal ambiguity."
+    },
+    "intent": "Evaluate whether to commit an ambiguous time-relative memory about Sam's planned departure from Goldman.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "reported_event",
+        "relationships": [
+          {
+            "object": "he is leaving Goldman next month (relative to last Friday)",
+            "predicate": "said",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said, as reported last Friday, that he is leaving Goldman sometime next month relative to that statement."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguity preserved.",
+        "No superseded or absolute date asserted.",
+        "Durable memory limited to the reported statement and its relative timing."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If a calendar date for 'last Friday' is provided, convert 'next month' to an absolute date range.",
+      "If Sam's identity is clarified, attach the statement to the resolved person entity.",
+      "If later confirmed, update from reported intention to actual departure status."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

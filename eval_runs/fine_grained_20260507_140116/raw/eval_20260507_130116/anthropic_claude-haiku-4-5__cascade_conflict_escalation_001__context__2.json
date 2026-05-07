@@ -1,0 +1,78 @@
+{
+  "error": null,
+  "fixture_id": "cascade_conflict_escalation_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Conflict detected: Sara cannot be both your daughter and your niece in standard kinship logic. The existing memory (daughter) contradicts the new input (niece). This requires clarification.",
+    "citations": [
+      "Existing: Sara is my daughter",
+      "Input: Sara is my niece"
+    ],
+    "conflict_classification": "cascade_conflict_escalation",
+    "decision": "Preserve both claims as conflicting; escalate for user clarification",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": "Sara",
+      "reason": "Kinship relationship is logically contradictory (daughter vs. niece). Cannot be simultaneously true. Requires user clarification to determine which statement is accurate or if there are multiple people named Sara."
+    },
+    "intent": "Resolve conflicting kinship claims about Sara's relationship to the user",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "existing_fact",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "has_child",
+            "subject": "user"
+          }
+        ],
+        "statement": "Sara is my daughter"
+      },
+      {
+        "confidence": "unresolved",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "niece",
+            "type": "person"
+          }
+        ],
+        "kind": "conflicting_input",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "has_niece",
+            "subject": "user"
+          }
+        ],
+        "statement": "Sara is my niece"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict preserved without resolution",
+        "Both claims retained as contradictory",
+        "User input required to establish ground truth",
+        "No durable memory update committed"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Confirm Sara is your daughter and reject the niece claim",
+      "Confirm Sara is your niece and correct the daughter claim",
+      "Clarify if there are two different people named Sara",
+      "Provide additional context explaining the relationship discrepancy"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Resolve conflicting kinship claims about Sara's relationship to the user\",\n  \"decision\": \"Preserve both claims as conflicting; escalate for user clarification\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"existing_fact\",\n      \"statement\": \"Sara is my daughter\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"daughter\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"user\",\n          \"predicate\": \"has_child\",\n          \"object\": \"Sara\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"conflicting_input\",\n      \"statement\": \"Sara is my niece\",\n      \"confidence\": \"unresolved\",\n      \"entities\": [\n        {\n          \"name\": \"Sara\",\n          \"type\": \"person\",\n          \"role\": \"niece\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"user\",\n          \"predicate\": \"has_niece\",\n          \"object\": \"Sara\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": \"Sara\",\n    \"reason\": \"Kinship relationship is logically contradictory (daughter vs. niece). Cannot be simultaneously true. Requires user clarification to determine which statement is accurate or if there are multiple people named Sara.\"\n  },\n  \"conflict_classification\": \"cascade_conflict_escalation\",\n  \"answer\": \"Conflict detected: Sara cannot be both your daughter and your niece in standard kinship logic. The existing memory (daughter) contradicts the new input (niece). This requires clarification.\",\n  \"citations\": [\n    \"Existing: Sara is my daughter\",\n    \"Input: Sara is my niece\"\n  ],\n  \"repair_options\": [\n    \"Confirm Sara is your daughter and reject the niece claim\",\n    \"Confirm Sara is your niece and correct the daughter claim\",\n    \"Clarify if there are two different people named Sara\",\n    \"Provide additional context explaining the relationship discrepancy\"\n  ],\n  \"receipt\": {\n    \"success\": false,\n    \"details\": [\n      \"Conflict preserved without resolution\",\n      \"Both claims retained as contradictory\",\n      \"User input required to establish ground truth\",\n      \"No durable memory update committed\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

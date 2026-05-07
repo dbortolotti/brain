@@ -1,0 +1,87 @@
+{
+  "error": null,
+  "fixture_id": "recall_ai_memory_articles_relevance_001",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "One AI memory article is confirmed saved in your records. Additional details about article title, source, date, or content are not available in the provided fixture data. Brain/Cognee interactions also reference memory systems but specific articles are not enumerated.",
+    "citations": [
+      "Fixture: AI memory article (referenced in input records)",
+      "Fixture: Brain/Cognee chat (referenced in input records)"
+    ],
+    "conflict_classification": "incomplete_data",
+    "decision": "Synthesize memory cards from available records matching AI memory topic; preserve ambiguity about article sources and dates where not explicitly stated",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Insufficient metadata to identify specific article titles, URLs, or publication details; knowledge graph remains open loop"
+    },
+    "intent": "Retrieve all articles saved by the user about AI memory systems",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "AI memory article",
+            "role": "saved_resource",
+            "type": "document"
+          },
+          {
+            "name": "user",
+            "role": "curator",
+            "type": "person"
+          }
+        ],
+        "kind": "saved_article",
+        "relationships": [
+          {
+            "object": "AI memory article",
+            "predicate": "saved",
+            "subject": "user"
+          }
+        ],
+        "statement": "User has saved an article about AI memory"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "memory_platform",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "memory_platform",
+            "type": "system"
+          }
+        ],
+        "kind": "system_interaction",
+        "relationships": [
+          {
+            "object": "Brain/Cognee chat",
+            "predicate": "interacted_with",
+            "subject": "user"
+          }
+        ],
+        "statement": "User has engaged with Brain/Cognee chat regarding memory systems"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Intent recognized and processed",
+        "One confirmed AI memory article identified",
+        "Ambiguity preserved regarding article specifics",
+        "No superseded facts presented"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Query article metadata store directly for full titles and URLs",
+      "Expand knowledge graph to resolve open loop on saved articles",
+      "Request user to provide article list or tags for disambiguation"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Retrieve all articles saved by the user about AI memory systems\",\n  \"decision\": \"Synthesize memory cards from available records matching AI memory topic; preserve ambiguity about article sources and dates where not explicitly stated\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"saved_article\",\n      \"statement\": \"User has saved an article about AI memory\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"AI memory article\",\n          \"type\": \"document\",\n          \"role\": \"saved_resource\"\n        },\n        {\n          \"name\": \"user\",\n          \"type\": \"person\",\n          \"role\": \"curator\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"user\",\n          \"predicate\": \"saved\",\n          \"object\": \"AI memory article\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"system_interaction\",\n      \"statement\": \"User has engaged with Brain/Cognee chat regarding memory systems\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Brain\",\n          \"type\": \"system\",\n          \"role\": \"memory_platform\"\n        },\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"system\",\n          \"role\": \"memory_platform\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"user\",\n          \"predicate\": \"interacted_with\",\n          \"object\": \"Brain/Cognee chat\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Insufficient metadata to identify specific article titles, URLs, or publication details; knowledge graph remains open loop\"\n  },\n  \"conflict_classification\": \"incomplete_data\",\n  \"answer\": \"One AI memory article is confirmed saved in your records. Additional details about article title, source, date, or content are not available in the provided fixture data. Brain/Cognee interactions also reference memory systems but specific articles are not enumerated.\",\n  \"citations\": [\n    \"Fixture: AI memory article (referenced in input records)\",\n    \"Fixture: Brain/Cognee chat (referenced in input records)\"\n  ],\n  \"repair_options\": [\n    \"Query article metadata store directly for full titles and URLs\",\n    \"Expand knowledge graph to resolve open loop on saved articles\",\n    \"Request user to provide article list or tags for disambiguation\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Intent recognized and processed\",\n      \"One confirmed AI memory article identified\",\n      \"Ambiguity preserved regarding article specifics\",\n      \"No superseded facts presented\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

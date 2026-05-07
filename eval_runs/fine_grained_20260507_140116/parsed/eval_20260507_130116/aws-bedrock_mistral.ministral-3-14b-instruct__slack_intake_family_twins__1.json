@@ -1,0 +1,64 @@
+{
+  "fixture_id": "slack_intake_family_twins",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Extracted entities: **Nur** (twin daughter) and **Sara** (twin daughter), with confirmed twin relationship. No conflicts detected.",
+    "conflict_classification": "none",
+    "entity_resolution": {
+      "action": "create_new_entities",
+      "reason": "No prior mention of 'Nur' or 'Sara' in durable memory; new entities inferred as twin daughters."
+    },
+    "intent": "entity_mention_extraction",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "twin_daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "twin_daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "is_twin_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Sara",
+            "predicate": "has_relationship_with",
+            "role": "twin",
+            "subject": "Nur"
+          },
+          {
+            "object": "Nur",
+            "predicate": "has_relationship_with",
+            "role": "twin",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Nur and Sara are twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Entities 'Nur' and 'Sara' added to durable memory with role 'twin_daughter'.",
+        "Relationships 'is_twin_of' and 'has_relationship_with' (role: twin) established."
+      ],
+      "success": true
+    }
+  },
+  "run_id": "eval_20260507_130116"
+}

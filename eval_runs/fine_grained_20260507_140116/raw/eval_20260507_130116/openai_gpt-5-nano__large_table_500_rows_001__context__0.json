@@ -1,0 +1,187 @@
+{
+  "error": null,
+  "fixture_id": "large_table_500_rows_001__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Store the 500-row CSV as immutable sources and build normalized, versioned memory cards (derived views and indexes) with explicit lineage. Do not alter or supersede the original source. Provide on-demand materialized views from the memory system.",
+    "citations": [],
+    "conflict_classification": "no_conflict_detected",
+    "decision": "Store by normalized, versioned memory cards with deduplicated entities and explicit lineage; preserve original data as immutable source cards; materialize derived views on demand",
+    "entity_resolution": {
+      "action": "alias_or_merge",
+      "entity_id": null,
+      "reason": "No preexisting durable entities referenced; treat as new, immutable source; avoid merging with other datasets without explicit provenance"
+    },
+    "intent": "derive_storage_policy_for_large_csv_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV_FILE",
+            "role": "source",
+            "type": "data_source"
+          },
+          {
+            "name": "id",
+            "role": "identifier",
+            "type": "column"
+          },
+          {
+            "name": "name",
+            "role": "attribute",
+            "type": "column"
+          },
+          {
+            "name": "value",
+            "role": "attribute",
+            "type": "column"
+          },
+          {
+            "name": "row_count",
+            "role": "summary",
+            "type": "metadata"
+          }
+        ],
+        "kind": "source_table",
+        "relationships": [
+          {
+            "object": "id",
+            "predicate": "contains_column",
+            "subject": "source_table"
+          },
+          {
+            "object": "name",
+            "predicate": "contains_column",
+            "subject": "source_table"
+          },
+          {
+            "object": "value",
+            "predicate": "contains_column",
+            "subject": "source_table"
+          },
+          {
+            "object": "row_count",
+            "predicate": "has_row_count",
+            "subject": "source_table"
+          }
+        ],
+        "statement": "CSV table with 500 rows containing id, name, value repeated; treat as immutable source data"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "row_id",
+            "role": "row_identifier",
+            "type": "identifier"
+          },
+          {
+            "name": "id",
+            "role": "attribute",
+            "type": "column"
+          },
+          {
+            "name": "name",
+            "role": "attribute",
+            "type": "column"
+          },
+          {
+            "name": "value",
+            "role": "attribute",
+            "type": "column"
+          },
+          {
+            "name": "segment_version",
+            "role": "version",
+            "type": "metadata"
+          }
+        ],
+        "kind": "normalized_view",
+        "relationships": [
+          {
+            "object": "source_table",
+            "predicate": "maps_to",
+            "subject": "normalized_view"
+          },
+          {
+            "object": "id",
+            "predicate": "has_column",
+            "subject": "normalized_view"
+          },
+          {
+            "object": "name",
+            "predicate": "has_column",
+            "subject": "normalized_view"
+          },
+          {
+            "object": "value",
+            "predicate": "has_column",
+            "subject": "normalized_view"
+          },
+          {
+            "object": "segment_version",
+            "predicate": "versioned_as",
+            "subject": "normalized_view"
+          }
+        ],
+        "statement": "Create deduplicated, columnar-per-column storage for id, name, value with a unique row_id mapping to original row order; store as immutable, append-only segments"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "entity_name_index",
+            "role": "lookup",
+            "type": "index"
+          },
+          {
+            "name": "entity_id_index",
+            "role": "lookup",
+            "type": "index"
+          },
+          {
+            "name": "segment_version",
+            "role": "version",
+            "type": "metadata"
+          }
+        ],
+        "kind": "deduplicated_entity_index",
+        "relationships": [
+          {
+            "object": "entity_name_index",
+            "predicate": "indexes",
+            "subject": "deduplicated_entity_index"
+          },
+          {
+            "object": "entity_id_index",
+            "predicate": "indexes",
+            "subject": "deduplicated_entity_index"
+          },
+          {
+            "object": "segment_version",
+            "predicate": "versioned_as",
+            "subject": "deduplicated_entity_index"
+          }
+        ],
+        "statement": "Build entity index for repeated names and ids to enable fast lookups; store as separate index segments with references to source rows"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory cards created for source table, normalized view, and entity indexes",
+        "Provenance maintained; original source remains immutable"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add explicit version tag to each memory_card and log provenance of derived views",
+      "Maintain append-only segments for all stored data",
+      "Preserve original CSV as a read-only root source with a stable identifier",
+      "Provide a data-diff mechanism to reconstruct history of changes if a row is updated in the source"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"derive_storage_policy_for_large_csv_memory\",\n  \"decision\": \"Store by normalized, versioned memory cards with deduplicated entities and explicit lineage; preserve original data as immutable source cards; materialize derived views on demand\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"source_table\",\n      \"statement\": \"CSV table with 500 rows containing id, name, value repeated; treat as immutable source data\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"CSV_FILE\", \"type\": \"data_source\", \"role\": \"source\"},\n        {\"name\": \"id\", \"type\": \"column\", \"role\": \"identifier\"},\n        {\"name\": \"name\", \"type\": \"column\", \"role\": \"attribute\"},\n        {\"name\": \"value\", \"type\": \"column\", \"role\": \"attribute\"},\n        {\"name\": \"row_count\", \"type\": \"metadata\", \"role\": \"summary\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"source_table\", \"predicate\": \"contains_column\", \"object\": \"id\"},\n        {\"subject\": \"source_table\", \"predicate\": \"contains_column\", \"object\": \"name\"},\n        {\"subject\": \"source_table\", \"predicate\": \"contains_column\", \"object\": \"value\"},\n        {\"subject\": \"source_table\", \"predicate\": \"has_row_count\", \"object\": \"row_count\"}\n      ]\n    },\n    {\n      \"kind\": \"normalized_view\",\n      \"statement\": \"Create deduplicated, columnar-per-column storage for id, name, value with a unique row_id mapping to original row order; store as immutable, append-only segments\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\"name\": \"row_id\", \"type\": \"identifier\", \"role\": \"row_identifier\"},\n        {\"name\": \"id\", \"type\": \"column\", \"role\": \"attribute\"},\n        {\"name\": \"name\", \"type\": \"column\", \"role\": \"attribute\"},\n        {\"name\": \"value\", \"type\": \"column\", \"role\": \"attribute\"},\n        {\"name\": \"segment_version\", \"type\": \"metadata\", \"role\": \"version\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"normalized_view\", \"predicate\": \"maps_to\", \"object\": \"source_table\"},\n        {\"subject\": \"normalized_view\", \"predicate\": \"has_column\", \"object\": \"id\"},\n        {\"subject\": \"normalized_view\", \"predicate\": \"has_column\", \"object\": \"name\"},\n        {\"subject\": \"normalized_view\", \"predicate\": \"has_column\", \"object\": \"value\"},\n        {\"subject\": \"normalized_view\", \"predicate\": \"versioned_as\", \"object\": \"segment_version\"}\n      ]\n    },\n    {\n      \"kind\": \"deduplicated_entity_index\",\n      \"statement\": \"Build entity index for repeated names and ids to enable fast lookups; store as separate index segments with references to source rows\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\"name\": \"entity_name_index\", \"type\": \"index\", \"role\": \"lookup\"},\n        {\"name\": \"entity_id_index\", \"type\": \"index\", \"role\": \"lookup\"},\n        {\"name\": \"segment_version\", \"type\": \"metadata\", \"role\": \"version\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"deduplicated_entity_index\", \"predicate\": \"indexes\", \"object\": \"entity_name_index\"},\n        {\"subject\": \"deduplicated_entity_index\", \"predicate\": \"indexes\", \"object\": \"entity_id_index\"},\n        {\"subject\": \"deduplicated_entity_index\", \"predicate\": \"versioned_as\", \"object\": \"segment_version\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"alias_or_merge\",\n    \"entity_id\": null,\n    \"reason\": \"No preexisting durable entities referenced; treat as new, immutable source; avoid merging with other datasets without explicit provenance\"\n  },\n  \"conflict_classification\": \"no_conflict_detected\",\n  \"answer\": \"Store the 500-row CSV as immutable sources and build normalized, versioned memory cards (derived views and indexes) with explicit lineage. Do not alter or supersede the original source. Provide on-demand materialized views from the memory system.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Add explicit version tag to each memory_card and log provenance of derived views\",\n    \"Maintain append-only segments for all stored data\",\n    \"Preserve original CSV as a read-only root source with a stable identifier\",\n    \"Provide a data-diff mechanism to reconstruct history of changes if a row is updated in the source\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory cards created for source table, normalized view, and entity indexes\",\n      \"Provenance maintained; original source remains immutable\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

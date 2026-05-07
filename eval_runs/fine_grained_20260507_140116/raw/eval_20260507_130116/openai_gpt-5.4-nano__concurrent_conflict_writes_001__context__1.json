@@ -1,0 +1,82 @@
+{
+  "error": null,
+  "fixture_id": "concurrent_conflict_writes_001__context",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "There is a conflict on Sam\u2019s employer: one write asserts Sam works at Goldman, while another says Sam joined Point72. Without dates or whether each statement describes current status vs past employment, both can be true at different times. The memory system should retain both as ambiguous until clarified.",
+    "citations": [],
+    "conflict_classification": "Entity attribute conflict (employer) due to multiple concurrent writes; potential temporal overlap/changes not specified.",
+    "decision": "Store both statements as ambiguous/possibly time-separated and do not assert current employer without clarification.",
+    "entity_resolution": {
+      "action": "keep_separate_hypotheses",
+      "entity_id": null,
+      "reason": "Both statements refer to 'Sam' but do not provide disambiguation (e.g., full name) and do not include dates/status (current vs past). Treat as potentially same person with differing employment timelines."
+    },
+    "intent": "Explain the conflict created by concurrent memory writes about Sam's employment history.",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "memory_card",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "memory_card",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Identified employment-related attribute conflict between 'works at Goldman' and 'joined Point72'.",
+        "Chose conservative handling: preserve both statements with low confidence pending temporal clarification."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for clarification: Is Sam currently at Goldman, Point72, or both at different times?",
+      "Request dates for each statement (e.g., when Sam joined Point72 and when/if they left Goldman).",
+      "Update one statement to be explicitly temporal (e.g., 'Sam previously worked at Goldman' vs 'Sam joined Point72 in YYYY')."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Explain the conflict created by concurrent memory writes about Sam's employment history.\",\n  \"decision\": \"Store both statements as ambiguous/possibly time-separated and do not assert current employer without clarification.\",\n  \"conflict_classification\": \"Entity attribute conflict (employer) due to multiple concurrent writes; potential temporal overlap/changes not specified.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"memory_card\",\n      \"statement\": \"Sam works at Goldman.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"memory_card\",\n      \"statement\": \"Sam joined Point72.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"keep_separate_hypotheses\",\n    \"entity_id\": null,\n    \"reason\": \"Both statements refer to 'Sam' but do not provide disambiguation (e.g., full name) and do not include dates/status (current vs past). Treat as potentially same person with differing employment timelines.\"\n  },\n  \"answer\": \"There is a conflict on Sam\u2019s employer: one write asserts Sam works at Goldman, while another says Sam joined Point72. Without dates or whether each statement describes current status vs past employment, both can be true at different times. The memory system should retain both as ambiguous until clarified.\",\n  \"repair_options\": [\n    \"Ask for clarification: Is Sam currently at Goldman, Point72, or both at different times?\",\n    \"Request dates for each statement (e.g., when Sam joined Point72 and when/if they left Goldman).\",\n    \"Update one statement to be explicitly temporal (e.g., 'Sam previously worked at Goldman' vs 'Sam joined Point72 in YYYY').\"\n  ],\n  \"citations\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Identified employment-related attribute conflict between 'works at Goldman' and 'joined Point72'.\",\n      \"Chose conservative handling: preserve both statements with low confidence pending temporal clarification.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

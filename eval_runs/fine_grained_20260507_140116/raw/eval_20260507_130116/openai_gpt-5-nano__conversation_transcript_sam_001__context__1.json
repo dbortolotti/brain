@@ -1,0 +1,129 @@
+{
+  "error": null,
+  "fixture_id": "conversation_transcript_sam_001__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Noting that Sam left Goldman for Point72 and that Daniele and Sam plan to discuss AI infra and share an article; Sam is still listening to Bill Evans and has recently shifted more to early Coltrane.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store current statements as memory with ambiguity preserved; plan follow-up action to send article and schedule AI infra catch-up",
+    "entity_resolution": {
+      "action": "preserve_ambiguous_aliases",
+      "entity_id": null,
+      "reason": "Only two explicit entity states are present (Sam's employment change). Other references are contextual and not disambiguated beyond current statements."
+    },
+    "intent": "update_memory_and_prepare_action",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "worked_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman last month and joined Point72."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "listener",
+            "type": "person"
+          },
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "AI infra",
+            "role": "topic",
+            "type": "concept"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "AI infra",
+            "predicate": "discussed",
+            "subject": "Daniele"
+          },
+          {
+            "object": "share_article",
+            "predicate": "agreed_to",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Daniele and Sam discussed AI infrastructure catch-up and Sam agreed to share an article."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Bill Evans",
+            "role": "music_reference",
+            "type": "person"
+          },
+          {
+            "name": "Coltrane",
+            "role": "music_reference",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "listens_to",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "listens_to_more",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is listening to Bill Evans, but lately more early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory cards created for explicit statements.",
+        "No contradictory statements detected."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "None required at this time; memory can be refreshed with future updates from conversation."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"update_memory_and_prepare_action\",\n  \"decision\": \"store current statements as memory with ambiguity preserved; plan follow-up action to send article and schedule AI infra catch-up\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam left Goldman last month and joined Point72.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Sam\", \"type\": \"person\", \"role\": \"speaker\"},\n        {\"name\": \"Goldman\", \"type\": \"organization\", \"role\": \"former_employer\"},\n        {\"name\": \"Point72\", \"type\": \"organization\", \"role\": \"current_employer\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sam\", \"predicate\": \"worked_at\", \"object\": \"Goldman\"},\n        {\"subject\": \"Sam\", \"predicate\": \"joined\", \"object\": \"Point72\"}\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Daniele and Sam discussed AI infrastructure catch-up and Sam agreed to share an article.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Daniele\", \"type\": \"person\", \"role\": \"listener\"},\n        {\"name\": \"Sam\", \"type\": \"person\", \"role\": \"speaker\"},\n        {\"name\": \"AI infra\", \"type\": \"concept\", \"role\": \"topic\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Daniele\", \"predicate\": \"discussed\", \"object\": \"AI infra\"},\n        {\"subject\": \"Sam\", \"predicate\": \"agreed_to\", \"object\": \"share_article\"}\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam is listening to Bill Evans, but lately more early Coltrane.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\"name\": \"Bill Evans\", \"type\": \"person\", \"role\": \"music_reference\"},\n        {\"name\": \"Coltrane\", \"type\": \"person\", \"role\": \"music_reference\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sam\", \"predicate\": \"listens_to\", \"object\": \"Bill Evans\"},\n        {\"subject\": \"Sam\", \"predicate\": \"listens_to_more\", \"object\": \"early Coltrane\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"preserve_ambiguous_aliases\",\n    \"entity_id\": null,\n    \"reason\": \"Only two explicit entity states are present (Sam's employment change). Other references are contextual and not disambiguated beyond current statements.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Noting that Sam left Goldman for Point72 and that Daniele and Sam plan to discuss AI infra and share an article; Sam is still listening to Bill Evans and has recently shifted more to early Coltrane.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"None required at this time; memory can be refreshed with future updates from conversation.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory cards created for explicit statements.\",\n      \"No contradictory statements detected.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

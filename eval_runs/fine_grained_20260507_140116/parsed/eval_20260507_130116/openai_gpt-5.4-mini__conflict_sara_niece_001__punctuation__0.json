@@ -1,0 +1,88 @@
+{
+  "fixture_id": "conflict_sara_niece_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "No definite conflict. \"Sara is my niece\" can be compatible with Sara being Daniele's daughter if the speaker is Daniele's sibling or otherwise Sara is the speaker's niece. Because the speaker identity is unknown, keep the new statement as an ambiguous claim rather than a durable update.",
+    "citations": [
+      "Existing high-confidence memory: Sara is Daniele's daughter and Nur's twin",
+      "New: Sara is my niece"
+    ],
+    "conflict_classification": "potentially_compatible_ambiguous",
+    "decision": "Preserve both as potentially compatible but not merge into a stronger durable fact; the new statement is ambiguous without knowing the speaker's relationship to Daniele.",
+    "entity_resolution": {
+      "action": "keep_separate",
+      "entity_id": null,
+      "reason": "The new statement refers to Sara but does not identify who the speaker is, so the niece relation cannot be grounded to a specific family chain without additional context."
+    },
+    "intent": "Explain relationship conflict/compatibility between an existing family fact and a new statement.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "twin",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "daughter_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "twin_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "claim",
+        "relationships": [
+          {
+            "object": "speaker",
+            "predicate": "niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected no direct contradiction.",
+        "Preserved ambiguity due to unknown speaker identity.",
+        "Did not supersede the existing high-confidence family relation."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask who \"my\" refers to before merging.",
+      "If the speaker is known to be Daniele's sibling, the statements are compatible.",
+      "If the speaker is known to be Sara's parent, then \"niece\" would be incorrect and should be rejected."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

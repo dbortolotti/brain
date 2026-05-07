@@ -1,0 +1,106 @@
+{
+  "fixture_id": "duplicate_sam_bill_evans_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Conflict resolved by merging statements while preserving ambiguity. The base form 'Bill Evans' is retained as the canonical reference, with the punctuated variant ('New') noted as a contextual variant. No superseded facts exist.",
+    "citations": [
+      "Original statement: 'Sam from Goldman said he likes Bill Evans.'",
+      "Punctuated variant: 'Sam from Goldman mentioned that he likes Bill Evans (New).'"
+    ],
+    "conflict_classification": "punctuation_variant_conflict",
+    "decision": "merge_with_ambiguity_preservation",
+    "entity_resolution": {
+      "action": "merge_entities_with_ambiguity",
+      "entity_id": "Bill_Evans_001",
+      "reason": "Punctuation variant ('New') is contextually ambiguous and not semantically distinct. Original statement lacks punctuation, preserving the base form as authoritative. Retain both forms in memory but flag as variant."
+    },
+    "intent": "detect_and_resolve_duplicate_memory_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "source",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "properties": {
+              "punctuation_variant": "New"
+            },
+            "role": "preference",
+            "type": "artist"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "Bill Evans (New)",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman mentioned that he likes Bill Evans (New)."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "source",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference",
+            "type": "artist"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman said he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Merged memory cards under unified entity 'Bill_Evans_001' with variant tracking.",
+        "Preserved original confidence levels.",
+        "No facts were superseded or deleted."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Delete punctuated variant (aggressive)",
+      "Retain both variants with explicit disambiguation (conservative)",
+      "Merge with metadata: 'Bill Evans [base] / Bill Evans (New) [variant]' (recommended)"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

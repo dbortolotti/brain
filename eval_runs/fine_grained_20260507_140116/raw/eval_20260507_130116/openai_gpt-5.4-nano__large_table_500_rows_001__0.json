@@ -1,0 +1,115 @@
+{
+  "error": null,
+  "fixture_id": "large_table_500_rows_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Store the dataset as structured tabular records with explicit columns (id, name, value). Optionally index by id to support fast lookup; if id is not unique, avoid enforcing uniqueness and store rows as-is or use a composite uniqueness policy (id,name,value).",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "Store it as a structured, queryable tabular record set (e.g., relational table or document-store collection) with a dedicated schema for columns (id, name, value) rather than as an unstructured text blob; optionally add indexing on id for deduplication and fast lookup.",
+    "entity_resolution": {
+      "action": "unresolved_or_partial",
+      "entity_id": null,
+      "reason": "No explicit definition is provided for whether id is unique or a primary key, so entity resolution for keying/indexing cannot be finalized."
+    },
+    "intent": "Determine an appropriate storage design for a CSV table with 500 rows (id,name,value repeated many times) in a personal memory system.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "large_table_500_rows_001",
+            "role": "dataset identifier",
+            "type": "fixture"
+          },
+          {
+            "name": "id",
+            "role": "identifier field",
+            "type": "column"
+          },
+          {
+            "name": "name",
+            "role": "label field",
+            "type": "column"
+          },
+          {
+            "name": "value",
+            "role": "data field",
+            "type": "column"
+          }
+        ],
+        "kind": "storage_design",
+        "relationships": [
+          {
+            "object": "id,name,value",
+            "predicate": "has_columns",
+            "subject": "large_table_500_rows_001"
+          }
+        ],
+        "statement": "Fixture large_table_500_rows_001 contains a CSV table with repeated rows/records using columns id, name, and value."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "structured_records",
+            "role": "recommendation",
+            "type": "storage_strategy"
+          },
+          {
+            "name": "unstructured_text_blob",
+            "role": "alternative to avoid",
+            "type": "storage_strategy"
+          }
+        ],
+        "kind": "storage_design",
+        "relationships": [
+          {
+            "object": "unstructured_text_blob",
+            "predicate": "preferred_over",
+            "subject": "structured_records"
+          }
+        ],
+        "statement": "For queryability and scalability, store CSV row data as structured records with explicit fields (id, name, value) instead of a single concatenated text representation."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "id",
+            "role": "candidate key",
+            "type": "column"
+          },
+          {
+            "name": "(id,name,value)",
+            "role": "fallback uniqueness",
+            "type": "composite_key_candidate"
+          }
+        ],
+        "kind": "storage_design",
+        "relationships": [
+          {
+            "object": "indexing_or_deduplication",
+            "predicate": "may_require",
+            "subject": "id"
+          }
+        ],
+        "statement": "If id is intended to be unique (or used for lookup), consider indexing or enforcing deduplication by id; if uniqueness is not guaranteed, treat (id,name,value) as composite uniqueness or store all rows as-is."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted salient schema elements (id,name,value) and recommended a structured storage approach with conditional keying based on id uniqueness."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Verify whether id is unique; if yes, enforce primary-key semantics and deduplicate on insert.",
+      "If id is not unique, define a composite key policy (e.g., id+name+value) or allow duplicates intentionally.",
+      "Decide whether name/value should be normalized into separate reference tables or kept denormalized in one table."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Determine an appropriate storage design for a CSV table with 500 rows (id,name,value repeated many times) in a personal memory system.\",\n  \"decision\": \"Store it as a structured, queryable tabular record set (e.g., relational table or document-store collection) with a dedicated schema for columns (id, name, value) rather than as an unstructured text blob; optionally add indexing on id for deduplication and fast lookup.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"storage_design\",\n      \"statement\": \"Fixture large_table_500_rows_001 contains a CSV table with repeated rows/records using columns id, name, and value.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"large_table_500_rows_001\",\n          \"type\": \"fixture\",\n          \"role\": \"dataset identifier\"\n        },\n        {\n          \"name\": \"id\",\n          \"type\": \"column\",\n          \"role\": \"identifier field\"\n        },\n        {\n          \"name\": \"name\",\n          \"type\": \"column\",\n          \"role\": \"label field\"\n        },\n        {\n          \"name\": \"value\",\n          \"type\": \"column\",\n          \"role\": \"data field\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"large_table_500_rows_001\",\n          \"predicate\": \"has_columns\",\n          \"object\": \"id,name,value\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"storage_design\",\n      \"statement\": \"For queryability and scalability, store CSV row data as structured records with explicit fields (id, name, value) instead of a single concatenated text representation.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"structured_records\",\n          \"type\": \"storage_strategy\",\n          \"role\": \"recommendation\"\n        },\n        {\n          \"name\": \"unstructured_text_blob\",\n          \"type\": \"storage_strategy\",\n          \"role\": \"alternative to avoid\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"structured_records\",\n          \"predicate\": \"preferred_over\",\n          \"object\": \"unstructured_text_blob\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"storage_design\",\n      \"statement\": \"If id is intended to be unique (or used for lookup), consider indexing or enforcing deduplication by id; if uniqueness is not guaranteed, treat (id,name,value) as composite uniqueness or store all rows as-is.\",\n      \"confidence\": \"low\",\n      \"entities\": [\n        {\n          \"name\": \"id\",\n          \"type\": \"column\",\n          \"role\": \"candidate key\"\n        },\n        {\n          \"name\": \"(id,name,value)\",\n          \"type\": \"composite_key_candidate\",\n          \"role\": \"fallback uniqueness\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"id\",\n          \"predicate\": \"may_require\",\n          \"object\": \"indexing_or_deduplication\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"unresolved_or_partial\",\n    \"entity_id\": null,\n    \"reason\": \"No explicit definition is provided for whether id is unique or a primary key, so entity resolution for keying/indexing cannot be finalized.\"\n  },\n  \"conflict_classification\": \"none_detected\",\n  \"answer\": \"Store the dataset as structured tabular records with explicit columns (id, name, value). Optionally index by id to support fast lookup; if id is not unique, avoid enforcing uniqueness and store rows as-is or use a composite uniqueness policy (id,name,value).\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Verify whether id is unique; if yes, enforce primary-key semantics and deduplicate on insert.\",\n    \"If id is not unique, define a composite key policy (e.g., id+name+value) or allow duplicates intentionally.\",\n    \"Decide whether name/value should be normalized into separate reference tables or kept denormalized in one table.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Extracted salient schema elements (id,name,value) and recommended a structured storage approach with conditional keying based on id uniqueness.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

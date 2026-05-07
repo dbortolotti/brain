@@ -1,0 +1,54 @@
+{
+  "fixture_id": "slack_rewrite_modal_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory rewritten to reflect preference for 'the other one' without context, preserving original ambiguity.",
+    "citations": [],
+    "conflict_classification": "ambiguous_supersession",
+    "decision": "supersede_ambiguous",
+    "entity_resolution": {
+      "action": "preserve_ambiguity",
+      "entity_id": null,
+      "reason": "Original statement lacked specificity; rewrite retains ambiguity to avoid false precision."
+    },
+    "intent": "rewrite_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "user",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "other option",
+            "role": "object",
+            "type": "entity"
+          }
+        ],
+        "kind": "durable_memory",
+        "relationships": [
+          {
+            "object": "other option",
+            "predicate": "prefers",
+            "subject": "user"
+          }
+        ],
+        "statement": "The user prefers the other option (unspecified context)."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Original memory superseded with ambiguous rewrite.",
+        "No deleted facts retained; only current/unspecified preferences stored."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add context (e.g., 'other [product/option/choice]') if known.",
+      "Flag for user clarification if critical to disambiguate."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

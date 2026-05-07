@@ -1,0 +1,68 @@
+{
+  "fixture_id": "supersession_sam_job_001",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The new memory supersedes the existing fact that 'Sam works at Goldman.' The updated durable memory reflects Sam's departure from Goldman and employment at Point72. No conflicting facts remain.",
+    "citations": [
+      "New input: 'Sam left Goldman and joined Point72.'",
+      "Existing memory: 'Sam works at Goldman.' (now superseded)"
+    ],
+    "conflict_classification": "direct_supersession",
+    "decision": "supersede_existing_memory",
+    "entity_resolution": {
+      "action": "merge",
+      "entity_id": "sam_001",
+      "reason": "Consolidating Sam's employment history under a single entity ID to avoid ambiguity."
+    },
+    "intent": "update_durable_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "left_employment_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined_employment_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam no longer works at Goldman Sachs. Sam joined Point72 in [unspecified date]."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Superseded memory card marked as inactive.",
+        "New memory card committed with high confidence.",
+        "Entity resolution applied to 'Sam' (ID: sam_001)."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Delete the superseded memory card ('Sam works at Goldman') entirely.",
+      "Archive the superseded memory with a timestamp and context ('Sam worked at Goldman until [unspecified date]') for historical reference."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

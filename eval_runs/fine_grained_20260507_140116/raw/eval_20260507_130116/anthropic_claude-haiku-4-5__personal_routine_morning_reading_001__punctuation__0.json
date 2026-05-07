@@ -1,0 +1,88 @@
+{
+  "error": null,
+  "fixture_id": "personal_routine_morning_reading_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory committed. Recorded preference for morning technical paper reading before email. Frequency and consistency level remain unspecified.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit_with_ambiguity",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": "personal_routine_morning_reading_001",
+      "reason": "New preference record for morning routine pattern"
+    },
+    "intent": "Record personal morning routine preference regarding reading and email checking",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "technical papers",
+            "role": "object_of_preference",
+            "type": "content_type"
+          },
+          {
+            "name": "morning",
+            "role": "temporal_context",
+            "type": "time_period"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "technical papers",
+            "predicate": "prefers_to_read",
+            "subject": "user"
+          },
+          {
+            "object": "morning",
+            "predicate": "read_during",
+            "subject": "technical papers"
+          }
+        ],
+        "statement": "User prefers to read technical papers in the morning"
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "email",
+            "role": "secondary_activity",
+            "type": "activity"
+          },
+          {
+            "name": "reading",
+            "role": "primary_activity",
+            "type": "activity"
+          }
+        ],
+        "kind": "routine_sequence",
+        "relationships": [
+          {
+            "object": "email_checking",
+            "predicate": "precedes",
+            "subject": "reading"
+          }
+        ],
+        "statement": "User checks email after reading technical papers in the morning"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preference recorded with high confidence",
+        "Routine sequence recorded with medium confidence due to implicit ordering",
+        "Ambiguity preserved: no assumptions about consistency or exceptions"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify frequency: daily, weekly, or situational?",
+      "Specify paper types or domains of interest",
+      "Confirm whether this is aspirational or established routine"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Record personal morning routine preference regarding reading and email checking\",\n  \"decision\": \"commit_with_ambiguity\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"User prefers to read technical papers in the morning\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"technical papers\",\n          \"type\": \"content_type\",\n          \"role\": \"object_of_preference\"\n        },\n        {\n          \"name\": \"morning\",\n          \"type\": \"time_period\",\n          \"role\": \"temporal_context\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"user\",\n          \"predicate\": \"prefers_to_read\",\n          \"object\": \"technical papers\"\n        },\n        {\n          \"subject\": \"technical papers\",\n          \"predicate\": \"read_during\",\n          \"object\": \"morning\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"routine_sequence\",\n      \"statement\": \"User checks email after reading technical papers in the morning\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"email\",\n          \"type\": \"activity\",\n          \"role\": \"secondary_activity\"\n        },\n        {\n          \"name\": \"reading\",\n          \"type\": \"activity\",\n          \"role\": \"primary_activity\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"reading\",\n          \"predicate\": \"precedes\",\n          \"object\": \"email_checking\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"create\",\n    \"entity_id\": \"personal_routine_morning_reading_001\",\n    \"reason\": \"New preference record for morning routine pattern\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Memory committed. Recorded preference for morning technical paper reading before email. Frequency and consistency level remain unspecified.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Clarify frequency: daily, weekly, or situational?\",\n    \"Specify paper types or domains of interest\",\n    \"Confirm whether this is aspirational or established routine\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Preference recorded with high confidence\",\n      \"Routine sequence recorded with medium confidence due to implicit ordering\",\n      \"Ambiguity preserved: no assumptions about consistency or exceptions\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

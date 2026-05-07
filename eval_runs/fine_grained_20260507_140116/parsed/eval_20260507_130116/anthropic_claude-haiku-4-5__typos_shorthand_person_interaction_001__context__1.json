@@ -1,0 +1,69 @@
+{
+  "fixture_id": "typos_shorthand_person_interaction_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Memory card created with normalized entities and preserved uncertainty markers. Recommend user confirmation of full names and organizational context.",
+    "citations": [
+      "Input contains abbreviations: 'frm' (from), 'goldmn' (Goldman), 'evns' (Evans)"
+    ],
+    "conflict_classification": "ambiguity_preserved",
+    "decision": "Create memory cards with preserved ambiguity due to shorthand notation",
+    "entity_resolution": {
+      "action": "defer_disambiguation",
+      "entity_id": null,
+      "reason": "Shorthand 'goldmn' and 'evns' require confirmation; 'Goldman' could be Goldman Sachs or other entities; 'Bill Evans' could refer to multiple individuals (musician, athlete, etc.)"
+    },
+    "intent": "Extract and normalize person interaction from informal/abbreviated input",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "person_interaction",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at_or_affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed 3 entities: Sam, Goldman, Bill Evans",
+        "Extracted 2 relationships with medium confidence",
+        "Flagged 3 ambiguities for potential resolution",
+        "Memory card stored without overwriting potential prior context"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm full name of Goldman entity (Goldman Sachs, Goldman family, etc.)",
+      "Confirm identity of Bill Evans (musician, professional, etc.)",
+      "Clarify nature of 'likes' relationship (professional respect, personal preference, romantic interest, etc.)"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

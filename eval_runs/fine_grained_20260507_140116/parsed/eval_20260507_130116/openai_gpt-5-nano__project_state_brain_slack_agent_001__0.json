@@ -1,0 +1,61 @@
+{
+  "fixture_id": "project_state_brain_slack_agent_001",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Slack should be the primary guardrailed memory ingestion interface; Telegram integration is deferred to a future phase.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Slack is designated as the primary guardrailed memory ingestion interface; Telegram integration remains deferred for future development.",
+    "entity_resolution": {
+      "action": "preserve_current_policy",
+      "entity_id": null,
+      "reason": "No conflicting entities detected; policy to use Slack as primary ingestion interface remains in effect."
+    },
+    "intent": "update_ingestion_interface",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "ingestion_interface",
+            "type": "platform"
+          },
+          {
+            "name": "Telegram",
+            "role": "future_interface",
+            "type": "platform"
+          },
+          {
+            "name": "memory_ingestion",
+            "role": "guardrail",
+            "type": "process"
+          }
+        ],
+        "kind": "policy",
+        "relationships": [
+          {
+            "object": "memory_ingestion",
+            "predicate": "is_primary_for",
+            "subject": "Slack"
+          },
+          {
+            "object": "future_interface_integration",
+            "predicate": "is_deferred_for",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "Slack shall be the primary guardrailed memory ingestion interface for Brain."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Policy established: Slack as primary ingestion interface.",
+        "Telegram integration marked as future work."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

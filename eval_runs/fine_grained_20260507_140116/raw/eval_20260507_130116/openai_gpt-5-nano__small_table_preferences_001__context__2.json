@@ -1,0 +1,111 @@
+{
+  "error": null,
+  "fixture_id": "small_table_preferences_001__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Context stored: Sam Goldman likes Bill Evans (from Dinner 2026-05-05); Anna JPM likes Barolo (from Lunch 2026-05-01).",
+    "citations": [
+      "Dinner 2026-05-05: Sam, Goldman, Likes Bill Evans",
+      "Lunch 2026-05-01: Anna, JPM, Likes Barolo"
+    ],
+    "conflict_classification": "none",
+    "decision": "persist_memory",
+    "entity_resolution": {
+      "action": "confirm_and_store",
+      "entity_id": null,
+      "reason": "No conflicting or ambiguous entities detected; information is additive and time-stamped."
+    },
+    "intent": "store_context",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "Person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "Firm"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_target",
+            "type": "Person"
+          },
+          {
+            "name": "Dinner 2026-05-05",
+            "role": "source",
+            "type": "Event"
+          },
+          {
+            "name": "Anna",
+            "role": "subject",
+            "type": "Person"
+          },
+          {
+            "name": "JPM",
+            "role": "affiliation",
+            "type": "Firm"
+          },
+          {
+            "name": "Barolo",
+            "role": "preference",
+            "type": "Product"
+          },
+          {
+            "name": "Lunch 2026-05-01",
+            "role": "source",
+            "type": "Event"
+          }
+        ],
+        "kind": "context",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          },
+          {
+            "object": "Dinner 2026-05-05",
+            "predicate": "context",
+            "subject": "Sam"
+          },
+          {
+            "object": "JPM",
+            "predicate": "affiliated_with",
+            "subject": "Anna"
+          },
+          {
+            "object": "Barolo",
+            "predicate": "prefers",
+            "subject": "Anna"
+          },
+          {
+            "object": "Lunch 2026-05-01",
+            "predicate": "context",
+            "subject": "Anna"
+          }
+        ],
+        "statement": "Sam, Goldman, Likes Bill Evans (Dinner 2026-05-05); Anna, JPM, Likes Barolo (Lunch 2026-05-01)"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory entries created for individuals, affiliations, preferences, and sources."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"store_context\",\n  \"decision\": \"persist_memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"context\",\n      \"statement\": \"Sam, Goldman, Likes Bill Evans (Dinner 2026-05-05); Anna, JPM, Likes Barolo (Lunch 2026-05-01)\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Sam\", \"type\": \"Person\", \"role\": \"subject\"},\n        {\"name\": \"Goldman\", \"type\": \"Firm\", \"role\": \"affiliation\"},\n        {\"name\": \"Bill Evans\", \"type\": \"Person\", \"role\": \"preference_target\"},\n        {\"name\": \"Dinner 2026-05-05\", \"type\": \"Event\", \"role\": \"source\"},\n        {\"name\": \"Anna\", \"type\": \"Person\", \"role\": \"subject\"},\n        {\"name\": \"JPM\", \"type\": \"Firm\", \"role\": \"affiliation\"},\n        {\"name\": \"Barolo\", \"type\": \"Product\", \"role\": \"preference\"},\n        {\"name\": \"Lunch 2026-05-01\", \"type\": \"Event\", \"role\": \"source\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sam\", \"predicate\": \"affiliated_with\", \"object\": \"Goldman\"},\n        {\"subject\": \"Sam\", \"predicate\": \"prefers\", \"object\": \"Bill Evans\"},\n        {\"subject\": \"Sam\", \"predicate\": \"context\", \"object\": \"Dinner 2026-05-05\"},\n        {\"subject\": \"Anna\", \"predicate\": \"affiliated_with\", \"object\": \"JPM\"},\n        {\"subject\": \"Anna\", \"predicate\": \"prefers\", \"object\": \"Barolo\"},\n        {\"subject\": \"Anna\", \"predicate\": \"context\", \"object\": \"Lunch 2026-05-01\"}\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"confirm_and_store\",\n    \"entity_id\": null,\n    \"reason\": \"No conflicting or ambiguous entities detected; information is additive and time-stamped.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Context stored: Sam Goldman likes Bill Evans (from Dinner 2026-05-05); Anna JPM likes Barolo (from Lunch 2026-05-01).\",\n  \"citations\": [\n    \"Dinner 2026-05-05: Sam, Goldman, Likes Bill Evans\",\n    \"Lunch 2026-05-01: Anna, JPM, Likes Barolo\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory entries created for individuals, affiliations, preferences, and sources.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

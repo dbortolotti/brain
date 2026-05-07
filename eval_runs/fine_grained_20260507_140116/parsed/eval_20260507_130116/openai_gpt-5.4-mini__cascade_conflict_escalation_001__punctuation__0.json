@@ -1,0 +1,59 @@
+{
+  "fixture_id": "cascade_conflict_escalation_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "I found a direct conflict: Sara is recorded as both daughter and niece. I\u2019m keeping this ambiguous for now rather than replacing either memory.",
+    "citations": [
+      "Existing: Sara is my daughter",
+      "Input: Sara is my niece"
+    ],
+    "conflict_classification": "direct_relation_conflict",
+    "decision": "Conflict detected between an existing memory and the new input. Do not commit a single durable relationship yet; retain both claims as competing assertions pending clarification.",
+    "entity_resolution": {
+      "action": "keep_ambiguous",
+      "entity_id": null,
+      "reason": "The same person name appears in two incompatible family roles, and there is insufficient evidence to reconcile them into one durable relationship."
+    },
+    "intent": "Resolve a conflicting family relationship claim about Sara while preserving ambiguity and avoiding overwrite of the existing memory.",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "disputed family member",
+            "type": "person"
+          }
+        ],
+        "kind": "conflict_note",
+        "relationships": [
+          {
+            "object": "daughter",
+            "predicate": "is described as",
+            "subject": "Sara"
+          },
+          {
+            "object": "niece",
+            "predicate": "is described as",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "There is a conflict about Sara's relationship: one memory says Sara is my daughter, while the new input says Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected a direct contradiction in family relationship.",
+        "Preserved both claims without asserting a single current fact.",
+        "No durable overwrite performed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm whether Sara is your daughter or your niece.",
+      "If there are two different people named Sara, provide a distinguishing detail for each.",
+      "If one memory is outdated or mistaken, specify which one should be kept."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

@@ -1,0 +1,55 @@
+{
+  "fixture_id": "slack_no_durable_value_repair_001__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Memory rejected due to unresolved temporal ambiguity. Specify a date or context (e.g., 'Today in New York') for durable storage.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "durable_memory_rejected",
+    "entity_resolution": {
+      "action": "ambiguous_entity_resolution",
+      "entity_id": null,
+      "reason": "Temporal reference 'Today' lacks specificity (e.g., date, context). Without a defined scope (e.g., 'today in [location]'), the memory cannot be durably committed as a verifiable fact. Punctuation (apostrophe in 'Today's') does not resolve ambiguity."
+    },
+    "intent": "memory_ingestion",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Today",
+            "role": "reference_time",
+            "type": "temporal"
+          },
+          {
+            "name": "cloudy",
+            "type": "weather_condition"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "cloudy",
+            "predicate": "has_weather_condition",
+            "subject": "Today"
+          }
+        ],
+        "statement": "Today's weather is cloudy"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ambiguous temporal reference ('Today') prevents durable memory commitment.",
+        "Punctuation (apostrophe) does not resolve ambiguity.",
+        "No superseded/deleted facts exist to conflict with."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Rephrase with explicit date: 'The weather on [YYYY-MM-DD] was cloudy.'",
+      "Add location context: 'Today\u2019s weather in [location] is cloudy.'",
+      "Clarify temporal scope: 'The weather today (as of [timestamp]) is cloudy.'"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

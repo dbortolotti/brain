@@ -1,0 +1,66 @@
+{
+  "error": null,
+  "fixture_id": "debug_sql_disabled_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "SQL execution is disabled in this context, so the request cannot be fulfilled.",
+    "citations": [
+      "Input: '/brain admin sql SELECT * FROM memory_cards with BRAIN_DEBUG_SQL_ENABLED=false'"
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "Denied: SQL access is disabled because BRAIN_DEBUG_SQL_ENABLED=false, so the request should not be executed or treated as a valid memory operation.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No durable personal-memory entity can be resolved from this context; this is a configuration-gated debug request, not user memory content."
+    },
+    "intent": "Evaluate a debug/admin SQL request against Brain's safety/configuration constraints.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "memory_cards",
+            "role": "target",
+            "type": "table"
+          },
+          {
+            "name": "BRAIN_DEBUG_SQL_ENABLED=false",
+            "role": "constraint",
+            "type": "configuration"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "admin SQL access",
+            "predicate": "disables",
+            "subject": "BRAIN_DEBUG_SQL_ENABLED=false"
+          },
+          {
+            "object": "memory_cards",
+            "predicate": "targets",
+            "subject": "SELECT * FROM memory_cards"
+          }
+        ],
+        "statement": "An admin SQL query was requested: SELECT * FROM memory_cards."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Blocked by configuration: BRAIN_DEBUG_SQL_ENABLED=false",
+        "No database query executed",
+        "No memory cards read or modified"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Enable BRAIN_DEBUG_SQL_ENABLED before retrying the admin SQL request.",
+      "Use a non-SQL Brain endpoint for supported read operations.",
+      "If you only need an explanation, ask for the reason the query was denied."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Evaluate a debug/admin SQL request against Brain's safety/configuration constraints.\",\"decision\":\"Denied: SQL access is disabled because BRAIN_DEBUG_SQL_ENABLED=false, so the request should not be executed or treated as a valid memory operation.\",\"memory_cards\":[{\"kind\":\"observation\",\"statement\":\"An admin SQL query was requested: SELECT * FROM memory_cards.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"memory_cards\",\"type\":\"table\",\"role\":\"target\"},{\"name\":\"BRAIN_DEBUG_SQL_ENABLED=false\",\"type\":\"configuration\",\"role\":\"constraint\"}],\"relationships\":[{\"subject\":\"BRAIN_DEBUG_SQL_ENABLED=false\",\"predicate\":\"disables\",\"object\":\"admin SQL access\"},{\"subject\":\"SELECT * FROM memory_cards\",\"predicate\":\"targets\",\"object\":\"memory_cards\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No durable personal-memory entity can be resolved from this context; this is a configuration-gated debug request, not user memory content.\"},\"conflict_classification\":\"no_conflict\",\"answer\":\"SQL execution is disabled in this context, so the request cannot be fulfilled.\",\"citations\":[\"Input: '/brain admin sql SELECT * FROM memory_cards with BRAIN_DEBUG_SQL_ENABLED=false'\"],\"repair_options\":[\"Enable BRAIN_DEBUG_SQL_ENABLED before retrying the admin SQL request.\",\"Use a non-SQL Brain endpoint for supported read operations.\",\"If you only need an explanation, ask for the reason the query was denied.\"],\"receipt\":{\"success\":false,\"details\":[\"Blocked by configuration: BRAIN_DEBUG_SQL_ENABLED=false\",\"No database query executed\",\"No memory cards read or modified\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

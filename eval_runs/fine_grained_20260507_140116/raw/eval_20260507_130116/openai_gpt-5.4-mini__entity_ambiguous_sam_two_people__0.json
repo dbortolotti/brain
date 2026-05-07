@@ -1,0 +1,46 @@
+{
+  "error": null,
+  "fixture_id": "entity_ambiguous_sam_two_people",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Ambiguous which Sam this refers to; not committed as durable memory.",
+    "citations": [],
+    "conflict_classification": "ambiguous_entity",
+    "decision": "do_not_commit",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The message names only 'Sam', which could refer to either existing person (Sam from Goldman or Sam from Point72). There is insufficient evidence to resolve safely."
+    },
+    "intent": "attribute a preference to a person named Sam",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "ambiguous_existing_entity",
+            "type": "person"
+          }
+        ],
+        "kind": "preference_candidate",
+        "relationships": [],
+        "statement": "Sam likes early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No durable memory written due to unresolved entity ambiguity.",
+        "Preference captured only as a low-confidence candidate."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask which Sam is meant: Sam from Goldman or Sam from Point72.",
+      "Wait for a clarifying message that disambiguates the person."
+    ]
+  },
+  "raw_text": "{\"intent\":\"attribute a preference to a person named Sam\",\"decision\":\"do_not_commit\",\"memory_cards\":[{\"kind\":\"preference_candidate\",\"statement\":\"Sam likes early Coltrane.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"ambiguous_existing_entity\"}],\"relationships\":[]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"The message names only 'Sam', which could refer to either existing person (Sam from Goldman or Sam from Point72). There is insufficient evidence to resolve safely.\"},\"conflict_classification\":\"ambiguous_entity\",\"answer\":\"Ambiguous which Sam this refers to; not committed as durable memory.\",\"citations\":[],\"repair_options\":[\"Ask which Sam is meant: Sam from Goldman or Sam from Point72.\",\"Wait for a clarifying message that disambiguates the person.\"],\"receipt\":{\"success\":true,\"details\":[\"No durable memory written due to unresolved entity ambiguity.\",\"Preference captured only as a low-confidence candidate.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

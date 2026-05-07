@@ -1,0 +1,94 @@
+{
+  "fixture_id": "small_table_preferences_001__punctuation",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Stored two preference facts with sources dated 2026-05-05 and 2026-05-01. Ambiguity preserved where applicable; no deletions or superseded facts.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "record_individual_preferences",
+      "entity_id": null,
+      "reason": "Newly observed preferences from dated sources; no conflicting data yet."
+    },
+    "intent": "store_and_refine_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_target",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans; source Dinner 2026-05-05."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Anna",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "JPM",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Barolo",
+            "role": "preference_target",
+            "type": "item"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "JPM",
+            "predicate": "affiliated_with",
+            "subject": "Anna"
+          },
+          {
+            "object": "Barolo",
+            "predicate": "likes",
+            "subject": "Anna"
+          }
+        ],
+        "statement": "Anna from JPM likes Barolo; source Lunch 2026-05-01."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory entries created for Sam Goldman and Anna JPM preferences."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

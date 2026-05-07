@@ -1,0 +1,60 @@
+{
+  "error": null,
+  "fixture_id": "entity_ambiguous_sam_two_people__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Cannot commit to either Sam entity. Memory recorded but unlinked pending disambiguation.",
+    "citations": [],
+    "conflict_classification": "ambiguous_referent",
+    "decision": "Preserve ambiguity; create unattached memory card pending disambiguation",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Two existing Sam entities (Goldman, Point72); insufficient context to determine which Sam or if third party. Ambiguity preserved pending clarification."
+    },
+    "intent": "Disambiguate which Sam likes early Coltrane and store preference fact",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "object",
+            "type": "music"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes early Coltrane"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preference fact captured with high confidence",
+        "Entity resolution deferred due to ambiguity",
+        "Memory card created but not yet assigned to specific Sam",
+        "Awaiting clarification to commit durable link"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify: 'Which Sam\u2014the one from Goldman or Point72?'",
+      "Provide additional context: 'Sam from [organization] likes early Coltrane'",
+      "Confirm if this is a third Sam not yet in the system"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Disambiguate which Sam likes early Coltrane and store preference fact\",\n  \"decision\": \"Preserve ambiguity; create unattached memory card pending disambiguation\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam likes early Coltrane\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"early Coltrane\",\n          \"type\": \"music\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"early Coltrane\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Two existing Sam entities (Goldman, Point72); insufficient context to determine which Sam or if third party. Ambiguity preserved pending clarification.\"\n  },\n  \"conflict_classification\": \"ambiguous_referent\",\n  \"answer\": \"Cannot commit to either Sam entity. Memory recorded but unlinked pending disambiguation.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Clarify: 'Which Sam\u2014the one from Goldman or Point72?'\",\n    \"Provide additional context: 'Sam from [organization] likes early Coltrane'\",\n    \"Confirm if this is a third Sam not yet in the system\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Preference fact captured with high confidence\",\n      \"Entity resolution deferred due to ambiguity\",\n      \"Memory card created but not yet assigned to specific Sam\",\n      \"Awaiting clarification to commit durable link\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

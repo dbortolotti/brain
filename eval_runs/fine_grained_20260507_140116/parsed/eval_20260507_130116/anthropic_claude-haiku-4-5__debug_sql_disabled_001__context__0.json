@@ -1,0 +1,74 @@
+{
+  "fixture_id": "debug_sql_disabled_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Cannot execute SELECT * FROM memory_cards. SQL debugging is disabled (BRAIN_DEBUG_SQL_ENABLED=false). Use Brain's query API or enable debug mode in a controlled environment.",
+    "citations": [
+      "fixture: debug_sql_disabled_001__context",
+      "constraint: BRAIN_DEBUG_SQL_ENABLED flag status"
+    ],
+    "conflict_classification": "access_control_violation",
+    "decision": "Deny query execution and return diagnostic context",
+    "entity_resolution": {
+      "action": "block",
+      "entity_id": null,
+      "reason": "Debug SQL flag is disabled; query cannot be executed"
+    },
+    "intent": "Query memory_cards table with SQL debugging disabled",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "BRAIN_DEBUG_SQL_ENABLED",
+            "role": "access_control",
+            "type": "environment_flag"
+          }
+        ],
+        "kind": "system_constraint",
+        "relationships": [
+          {
+            "object": "memory_cards_sql_queries",
+            "predicate": "controls_access_to",
+            "subject": "BRAIN_DEBUG_SQL_ENABLED"
+          }
+        ],
+        "statement": "BRAIN_DEBUG_SQL_ENABLED is false; SQL queries against memory system are disabled"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "memory_cards",
+            "role": "protected_resource",
+            "type": "table"
+          }
+        ],
+        "kind": "operational_context",
+        "relationships": [
+          {
+            "object": "BRAIN_DEBUG_SQL_ENABLED",
+            "predicate": "requires_flag",
+            "subject": "memory_cards"
+          }
+        ],
+        "statement": "Direct SQL access to memory_cards is restricted in production mode"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Query blocked: SQL debugging disabled",
+        "Flag status: BRAIN_DEBUG_SQL_ENABLED=false",
+        "Requested resource: memory_cards table",
+        "Recommended action: Use API or enable debug mode appropriately"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Enable BRAIN_DEBUG_SQL_ENABLED=true in development environment only",
+      "Use Brain's memory query API instead of direct SQL",
+      "Request memory_cards data through standard memory retrieval methods"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

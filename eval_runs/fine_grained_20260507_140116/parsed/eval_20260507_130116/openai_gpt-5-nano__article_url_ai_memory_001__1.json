@@ -1,0 +1,100 @@
+{
+  "fixture_id": "article_url_ai_memory_001",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Memory entry created for article_url_ai_memory with notes on graph memory and need for provenance/update semantics.",
+    "citations": [
+      "https://example.com/ai-memory"
+    ],
+    "conflict_classification": "none",
+    "decision": "persist",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No conflicting identities detected; basic parsing of URLs and terms."
+    },
+    "intent": "store_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "ai-memory",
+            "role": "source",
+            "type": "URL"
+          },
+          {
+            "name": "knowledge_graph_memory_design",
+            "role": "theme",
+            "type": "topic"
+          }
+        ],
+        "kind": "article_reference",
+        "relationships": [
+          {
+            "object": "knowledge_graph_memory_design",
+            "predicate": "relates_to",
+            "subject": "ai-memory"
+          },
+          {
+            "object": " provenance and update semantics",
+            "predicate": "contains",
+            "subject": "ai-memory"
+          }
+        ],
+        "statement": "Remember this article: https://example.com/ai-memory"
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Graph memory",
+            "role": "concept",
+            "type": "concept"
+          },
+          {
+            "name": "provenance",
+            "role": "aspect",
+            "type": "concept"
+          },
+          {
+            "name": "update semantics",
+            "role": "aspect",
+            "type": "concept"
+          }
+        ],
+        "kind": "article_summary",
+        "relationships": [
+          {
+            "object": "agents preserve relationships",
+            "predicate": "helps",
+            "subject": "Graph memory"
+          },
+          {
+            "object": "provenance",
+            "predicate": "requires",
+            "subject": "Graph memory"
+          },
+          {
+            "object": "update semantics",
+            "predicate": "requires",
+            "subject": "Graph memory"
+          }
+        ],
+        "statement": "Mock fetched article: Graph memory helps agents preserve relationships; provenance and update semantics are needed."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memory card for article reference stored.",
+        "Summary card stored with cited concepts."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If additional details from the real article are obtained, attach as a new memory card with explicit provenance.",
+      "Resolve any future conflicts by timestamped versioning of statements."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

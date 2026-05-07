@@ -1,0 +1,69 @@
+{
+  "fixture_id": "additive_sam_preferences_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam from Goldman Sachs has a confirmed preference for both Bill Evans and Sonny Rollins. No conflict detected; preferences are additive.",
+    "citations": [
+      "Existing memory: Sam from Goldman likes Bill Evans.",
+      "New memory: Sam from Goldman also likes Sonny Rollins."
+    ],
+    "conflict_classification": "none",
+    "decision": "proceed_with_ambiguity_preservation",
+    "entity_resolution": {
+      "action": "merge_entities",
+      "entity_id": "sam_goldman_001",
+      "reason": "Disambiguated 'Sam from Goldman' as a single entity with additive preferences for jazz musicians."
+    },
+    "intent": "additive_memory_integration",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_object",
+            "type": "person"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "preference_object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          },
+          {
+            "object": "Sonny Rollins",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman (Goldman Sachs) has a preference for jazz musicians, specifically Bill Evans and Sonny Rollins."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory updated with additive preference for Sonny Rollins.",
+        "Ambiguity preserved: No superseded facts introduced."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "run_id": "eval_20260507_130116"
+}

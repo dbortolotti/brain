@@ -1,0 +1,56 @@
+{
+  "fixture_id": "ambiguous_place_001__context",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "New observation committed to Brutto restaurant entity with low-confidence cross-reference to article alias pending disambiguation.",
+    "citations": [
+      "Existing: Brutto restaurant in London",
+      "Existing: Brutto article alias",
+      "New note: Brutto was better than expected"
+    ],
+    "conflict_classification": "ambiguous_referent",
+    "decision": "Link new note to existing Brutto restaurant entity; preserve ambiguity regarding which Brutto (restaurant vs. article alias)",
+    "entity_resolution": {
+      "action": "link_to_existing",
+      "entity_id": "brutto_restaurant_london",
+      "reason": "New note most likely refers to restaurant experience; article alias is secondary candidate. Ambiguity preserved by not deleting alternative interpretation."
+    },
+    "intent": "Evaluate and rank entity candidate for 'Brutto' and commit new subjective observation to memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brutto",
+            "role": "subject_of_evaluation",
+            "type": "place_or_concept"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "user_experience",
+            "predicate": "exceeded_expectations",
+            "subject": "Brutto"
+          }
+        ],
+        "statement": "Brutto exceeded user expectations in quality"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Entity candidate ranked: Brutto restaurant (primary) > Brutto article alias (secondary)",
+        "Memory card created for subjective observation",
+        "Ambiguity preserved; no superseded facts deleted",
+        "Durable commit: observation linked to restaurant entity pending user confirmation"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Request clarification: 'Which Brutto did you visit or read about?'",
+      "Add temporal context to disambiguate (when/where was this experience)",
+      "Create separate memory card for article alias if future notes confirm distinction"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

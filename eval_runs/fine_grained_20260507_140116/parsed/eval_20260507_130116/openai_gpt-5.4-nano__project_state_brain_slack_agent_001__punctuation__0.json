@@ -1,0 +1,62 @@
+{
+  "fixture_id": "project_state_brain_slack_agent_001__punctuation",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Store: Slack is the primary guardrailed memory ingestion interface; Telegram is future/secondary.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "ingest_as_durable_memory",
+    "entity_resolution": {
+      "action": "link_or_create",
+      "entity_id": null,
+      "reason": "No existing entity IDs were provided; resolve as new/implicit entities."
+    },
+    "intent": "Extract guardrailed memory ingestion interface preference for Brain project state",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "primary_ingestion_interface",
+            "type": "messaging_platform"
+          },
+          {
+            "name": "Telegram",
+            "role": "secondary_unspecified_future_interface",
+            "type": "messaging_platform"
+          },
+          {
+            "name": "Brain",
+            "role": "memory_system",
+            "type": "system"
+          }
+        ],
+        "kind": "policy_preference",
+        "relationships": [
+          {
+            "object": "Slack",
+            "predicate": "prefers_primary_ingestion_interface",
+            "subject": "Brain"
+          },
+          {
+            "object": "Telegram",
+            "predicate": "allows_future_ingestion_interface",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "Slack should be the primary guardrailed memory ingestion interface for the Brain system; Telegram can come later."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Durable memory card created from the provided instruction."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If later decisions change the primary interface, update or add a new policy card indicating the new primary."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

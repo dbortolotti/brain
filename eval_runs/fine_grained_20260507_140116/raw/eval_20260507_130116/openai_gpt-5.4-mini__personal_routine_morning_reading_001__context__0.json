@@ -1,0 +1,74 @@
+{
+  "error": null,
+  "fixture_id": "personal_routine_morning_reading_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Yes\u2014store as a cautious preference/routine memory.",
+    "citations": [
+      "fixture:personal_routine_morning_reading_001__context"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_with_caution",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No specific external entity needs resolution; this is a self-referential routine preference."
+    },
+    "intent": "Assess whether to store a routine preference about morning reading before email.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "user",
+            "role": "preferrer",
+            "type": "person"
+          },
+          {
+            "name": "technical papers",
+            "role": "preferred reading material",
+            "type": "content"
+          },
+          {
+            "name": "morning",
+            "role": "preferred time",
+            "type": "time_of_day"
+          },
+          {
+            "name": "email",
+            "role": "checked_afterward",
+            "type": "communication_channel"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "reading technical papers in the morning before checking email",
+            "predicate": "usually prefers",
+            "subject": "user"
+          },
+          {
+            "object": "checking email",
+            "predicate": "occurs before",
+            "subject": "reading technical papers in the morning"
+          }
+        ],
+        "statement": "The user usually prefers to read technical papers in the morning before checking email."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recorded a medium-confidence routine preference.",
+        "Preserved ambiguity by keeping 'usually' rather than asserting a strict habit."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If later contradicted, downgrade this to a weaker preference or mark it as context-dependent.",
+      "If the user clarifies frequency or exceptions, replace 'usually' with a more precise qualifier."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Assess whether to store a routine preference about morning reading before email.\",\"decision\":\"commit_with_caution\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"The user usually prefers to read technical papers in the morning before checking email.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"user\",\"type\":\"person\",\"role\":\"preferrer\"},{\"name\":\"technical papers\",\"type\":\"content\",\"role\":\"preferred reading material\"},{\"name\":\"morning\",\"type\":\"time_of_day\",\"role\":\"preferred time\"},{\"name\":\"email\",\"type\":\"communication_channel\",\"role\":\"checked_afterward\"}],\"relationships\":[{\"subject\":\"user\",\"predicate\":\"usually prefers\",\"object\":\"reading technical papers in the morning before checking email\"},{\"subject\":\"reading technical papers in the morning\",\"predicate\":\"occurs before\",\"object\":\"checking email\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No specific external entity needs resolution; this is a self-referential routine preference.\"},\"conflict_classification\":\"none\",\"answer\":\"Yes\u2014store as a cautious preference/routine memory.\",\"citations\":[\"fixture:personal_routine_morning_reading_001__context\"],\"repair_options\":[\"If later contradicted, downgrade this to a weaker preference or mark it as context-dependent.\",\"If the user clarifies frequency or exceptions, replace 'usually' with a more precise qualifier.\"],\"receipt\":{\"success\":true,\"details\":[\"Recorded a medium-confidence routine preference.\",\"Preserved ambiguity by keeping 'usually' rather than asserting a strict habit.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

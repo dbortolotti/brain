@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "fixture_id": "ambiguous_sam_001__punctuation",
+  "model": "anthropic:claude-haiku-4-5",
+  "payload": {
+    "answer": "Cannot commit preference to specific Sam entity. Preference fact recorded as pending disambiguation.",
+    "citations": [
+      "Existing entities: Sam from Goldman; Sam from Point72",
+      "New message: Sam mentioned that he likes Bill Evans"
+    ],
+    "conflict_classification": "unresolved_entity_reference",
+    "decision": "Create new memory card for preference without resolving Sam identity; flag for user clarification",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Two existing Sam entities (Goldman, Point72) create ambiguity; message does not provide sufficient context to determine which Sam made the statement"
+    },
+    "intent": "Disambiguate which Sam entity the preference statement refers to, and record the new preference fact",
+    "memory_cards": [
+      {
+        "confidence": "high_on_preference_low_on_identity",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preference statement recorded without entity commitment",
+        "Ambiguity preserved; no superseding of existing Sam entities",
+        "User clarification required before durable memory commit"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify which Sam (Goldman or Point72) likes Bill Evans",
+      "Provide additional context linking the statement to one Sam entity",
+      "Merge or rename Sam entities if they refer to the same person"
+    ]
+  },
+  "raw_text": "```json\n{\n  \"intent\": \"Disambiguate which Sam entity the preference statement refers to, and record the new preference fact\",\n  \"decision\": \"Create new memory card for preference without resolving Sam identity; flag for user clarification\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam likes Bill Evans\",\n      \"confidence\": \"high_on_preference_low_on_identity\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Two existing Sam entities (Goldman, Point72) create ambiguity; message does not provide sufficient context to determine which Sam made the statement\"\n  },\n  \"conflict_classification\": \"unresolved_entity_reference\",\n  \"answer\": \"Cannot commit preference to specific Sam entity. Preference fact recorded as pending disambiguation.\",\n  \"citations\": [\n    \"Existing entities: Sam from Goldman; Sam from Point72\",\n    \"New message: Sam mentioned that he likes Bill Evans\"\n  ],\n  \"repair_options\": [\n    \"Clarify which Sam (Goldman or Point72) likes Bill Evans\",\n    \"Provide additional context linking the statement to one Sam entity\",\n    \"Merge or rename Sam entities if they refer to the same person\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Preference statement recorded without entity commitment\",\n      \"Ambiguity preserved; no superseding of existing Sam entities\",\n      \"User clarification required before durable memory commit\"\n    ]\n  }\n}\n```",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

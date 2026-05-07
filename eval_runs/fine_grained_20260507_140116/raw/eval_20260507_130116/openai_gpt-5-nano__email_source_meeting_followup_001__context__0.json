@@ -1,0 +1,73 @@
+{
+  "error": null,
+  "fixture_id": "email_source_meeting_followup_001__context",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Acknowledged. I will locate and send the AI infrastructure article to sam@example.com. If you have a preferred delivery method or link, please specify.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store_and_acknowledge",
+    "entity_resolution": {
+      "action": "no_action_needed",
+      "entity_id": null,
+      "reason": "Sender and request are clear; no conflicting identities detected."
+    },
+    "intent": "email_followup",
+    "memory_cards": [
+      {
+        "confidence": "0.70",
+        "entities": [
+          {
+            "name": "sam@example.com",
+            "role": "sender",
+            "type": "email_address"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          },
+          {
+            "name": "AI infra article",
+            "role": "request",
+            "type": "topic"
+          }
+        ],
+        "kind": "email_context",
+        "relationships": [
+          {
+            "object": "Follow up",
+            "predicate": "sent_subject",
+            "subject": "sam@example.com"
+          },
+          {
+            "object": "Point72",
+            "predicate": "mentioned_employer",
+            "subject": "sam@example.com"
+          },
+          {
+            "object": "joined_last_month",
+            "predicate": "status_update",
+            "subject": "sam@example.com"
+          },
+          {
+            "object": "sam@example.com",
+            "predicate": "requested_by",
+            "subject": "AI infra article"
+          }
+        ],
+        "statement": "From: sam@example.com, Subject: Follow up. Great seeing you. Yes, I joined Point72 last month. Please send the AI infra article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Email context stored: sender sam@example.com, employer Point72, request for AI infra article."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"email_followup\",\n  \"decision\": \"store_and_acknowledge\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"email_context\",\n      \"statement\": \"From: sam@example.com, Subject: Follow up. Great seeing you. Yes, I joined Point72 last month. Please send the AI infra article.\",\n      \"entities\": [\n        {\"name\": \"sam@example.com\", \"type\": \"email_address\", \"role\": \"sender\"},\n        {\"name\": \"Point72\", \"type\": \"organization\", \"role\": \"employer\"},\n        {\"name\": \"AI infra article\", \"type\": \"topic\", \"role\": \"request\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"sam@example.com\", \"predicate\": \"sent_subject\", \"object\": \"Follow up\"},\n        {\"subject\": \"sam@example.com\", \"predicate\": \"mentioned_employer\", \"object\": \"Point72\"},\n        {\"subject\": \"sam@example.com\", \"predicate\": \"status_update\", \"object\": \"joined_last_month\"},\n        {\"subject\": \"AI infra article\", \"predicate\": \"requested_by\", \"object\": \"sam@example.com\"}\n      ],\n      \"confidence\": \"0.70\"\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"no_action_needed\",\n    \"entity_id\": null,\n    \"reason\": \"Sender and request are clear; no conflicting identities detected.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Acknowledged. I will locate and send the AI infrastructure article to sam@example.com. If you have a preferred delivery method or link, please specify.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\"Email context stored: sender sam@example.com, employer Point72, request for AI infra article.\"]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

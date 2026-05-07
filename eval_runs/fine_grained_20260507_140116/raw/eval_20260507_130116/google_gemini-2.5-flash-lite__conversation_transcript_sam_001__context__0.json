@@ -1,0 +1,86 @@
+{
+  "error": null,
+  "fixture_id": "conversation_transcript_sam_001__context",
+  "model": "google:gemini-2.5-flash-lite",
+  "payload": {
+    "answer": "Okay, I've updated your information. You left Goldman last month and joined Point72. You're still listening to Bill Evans, but lately more early Coltrane. Anything else?",
+    "conflict_classification": "NONE",
+    "entity_resolution": {
+      "action": "MERGE",
+      "entity_id": null,
+      "reason": "New information about Sam's employment and music preferences."
+    },
+    "memory_cards": [
+      {
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "PERSON"
+          },
+          {
+            "name": "Goldman",
+            "type": "ORGANIZATION"
+          },
+          {
+            "name": "Point72",
+            "type": "ORGANIZATION"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman last month and joined Point72."
+      },
+      {
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "PERSON"
+          },
+          {
+            "name": "Bill Evans",
+            "type": "PERSON"
+          },
+          {
+            "name": "Coltrane",
+            "type": "PERSON"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "listens to",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "listens to",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is still listening to Bill Evans, but lately more early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Updated employment information for Sam.",
+        "Updated music preferences for Sam."
+      ],
+      "success": true
+    }
+  },
+  "raw_text": "{\n  \"memory_cards\": [\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam left Goldman last month and joined Point72.\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"PERSON\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"ORGANIZATION\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"ORGANIZATION\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"left\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"fact\",\n      \"statement\": \"Sam is still listening to Bill Evans, but lately more early Coltrane.\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"PERSON\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"PERSON\"\n        },\n        {\n          \"name\": \"Coltrane\",\n          \"type\": \"PERSON\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"listens to\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"listens to\",\n          \"object\": \"early Coltrane\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"MERGE\",\n    \"entity_id\": null,\n    \"reason\": \"New information about Sam's employment and music preferences.\"\n  },\n  \"conflict_classification\": \"NONE\",\n  \"answer\": \"Okay, I've updated your information. You left Goldman last month and joined Point72. You're still listening to Bill Evans, but lately more early Coltrane. Anything else?\",\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Updated employment information for Sam.\",\n      \"Updated music preferences for Sam.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

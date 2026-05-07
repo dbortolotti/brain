@@ -1,0 +1,60 @@
+{
+  "error": null,
+  "fixture_id": "additive_sam_preferences_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Add the new preference: Sam from Goldman likes Sonny Rollins. This is consistent with the existing memory that Sam from Goldman likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "NO_CONFLICT_ADDITIVE",
+    "decision": "ADD_NEW_PREFERENCE_NO_CONFLICT",
+    "entity_resolution": {
+      "action": "USE_EXISTING_ENTITY_REFERENCE",
+      "entity_id": null,
+      "reason": "The new statement refers to the same 'Sam from Goldman' as the existing memory; no alternative entity is indicated."
+    },
+    "intent": "Record the additional music preference for Sam from Goldman and check for conflicts with existing preferences.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context/identifier",
+            "type": "organization"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "object",
+            "type": "musician"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Sonny Rollins",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman also likes Sonny Rollins."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Existing memory: Sam from Goldman likes Bill Evans.",
+        "New information: Sam from Goldman also likes Sonny Rollins.",
+        "No contradiction detected; both preferences can coexist."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"Record the additional music preference for Sam from Goldman and check for conflicts with existing preferences.\",\n  \"decision\": \"ADD_NEW_PREFERENCE_NO_CONFLICT\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"Sam from Goldman also likes Sonny Rollins.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"context/identifier\"\n        },\n        {\n          \"name\": \"Sonny Rollins\",\n          \"type\": \"musician\",\n          \"role\": \"object\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam from Goldman\",\n          \"predicate\": \"likes\",\n          \"object\": \"Sonny Rollins\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"USE_EXISTING_ENTITY_REFERENCE\",\n    \"entity_id\": null,\n    \"reason\": \"The new statement refers to the same 'Sam from Goldman' as the existing memory; no alternative entity is indicated.\"\n  },\n  \"conflict_classification\": \"NO_CONFLICT_ADDITIVE\",\n  \"answer\": \"Add the new preference: Sam from Goldman likes Sonny Rollins. This is consistent with the existing memory that Sam from Goldman likes Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Existing memory: Sam from Goldman likes Bill Evans.\",\n      \"New information: Sam from Goldman also likes Sonny Rollins.\",\n      \"No contradiction detected; both preferences can coexist.\"\n    ]\n  }\n}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}

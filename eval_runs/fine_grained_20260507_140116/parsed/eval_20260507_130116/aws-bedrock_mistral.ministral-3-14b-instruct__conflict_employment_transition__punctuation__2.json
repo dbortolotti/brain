@@ -1,0 +1,93 @@
+{
+  "fixture_id": "conflict_employment_transition__punctuation",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "The new fact ('Sam left Goldman and joined Point72') supersedes the current fact ('Sam works at Goldman') by introducing a temporal transition. The system will commit the updated employment state while preserving the original fact as historical context (e.g., 'Sam worked at Goldman [past tense]'). No deletion of superseded facts; ambiguity is maintained via explicit temporal predicates.",
+    "citations": [
+      "Temporal conflict resolution protocol (v1.2): Preserve superseded facts as historical context unless explicitly marked for deletion.",
+      "Ambiguity preservation rule: Never present superseded facts as current unless resolved via explicit user confirmation."
+    ],
+    "conflict_classification": "temporal_transition_conflict",
+    "decision": "resolve_with_ambiguity_preservation",
+    "entity_resolution": {
+      "action": "merge_with_temporal_context",
+      "entity_id": "Sam",
+      "reason": "New fact supersedes the 'works_at' relationship with Goldman, introducing a temporal transition (left/joined). Ambiguity preserved by retaining both facts with explicit temporal markers."
+    },
+    "intent": "detect_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "current_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "new_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Original fact marked as 'historical' with implicit past-tense inference.",
+        "New fact committed as current state with explicit temporal relationships.",
+        "No deletion of superseded facts; conflict resolved via temporal context."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Commit new fact as current state: 'Sam works at Point72 (left Goldman [date unspecified])'.",
+      "Add temporal qualifier to original fact: 'Sam worked at Goldman [past tense]'.",
+      "Request user clarification on transition date (if critical)."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

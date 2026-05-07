@@ -1,0 +1,49 @@
+{
+  "fixture_id": "overly_broad_memory_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "I can\u2019t store 'everything about AI' as durable memory. If you want, specify particular facts, preferences, or details to remember (e.g., a specific definition, a list of concepts, or your preferred AI tools).",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "reject_due_to_overbreadth",
+    "entity_resolution": {
+      "action": "no_commit",
+      "entity_id": null,
+      "reason": "The request does not specify a particular fact or stable preference; it attempts to store an entire domain."
+    },
+    "intent": "Handle request to store an overly broad memory statement.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "AI",
+            "role": "subject",
+            "type": "concept"
+          }
+        ],
+        "kind": "durability_rejection",
+        "relationships": [
+          {
+            "object": "Remember everything about AI",
+            "predicate": "is_too_broad_for_durable_memory",
+            "subject": "request"
+          }
+        ],
+        "statement": "User asked to 'Remember everything about AI,' which is too broad and not a specific, durable memory fact."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No durable memory committed due to request overbreadth."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask to store a specific AI fact (e.g., 'Remember that Transformer attention uses scaled dot-product attention').",
+      "Provide a bounded list (e.g., 'Remember these 10 AI concepts: ...').",
+      "State a stable preference (e.g., 'Remember that I prefer concise explanations')."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

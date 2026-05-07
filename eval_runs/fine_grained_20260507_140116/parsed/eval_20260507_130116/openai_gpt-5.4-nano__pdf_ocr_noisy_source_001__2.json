@@ -1,0 +1,80 @@
+{
+  "fixture_id": "pdf_ocr_noisy_source_001",
+  "model": "openai:gpt-5.4-nano",
+  "payload": {
+    "answer": "Extracted two principles: (1) Brain DB is the source of truth; (2) Cognee should be a rebuildable projection.",
+    "citations": [
+      "pdf_ocr_noisy_source_001: \"Brain DB remalns source of trvth. Cognee shou1d be rebuildable projection.\""
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "commit_with_low_confidence",
+    "entity_resolution": {
+      "action": "no_resolution",
+      "entity_id": null,
+      "reason": "Names appear as-is in the OCR ('Brain DB', 'Cognee') with no additional context to reliably map to internal entity IDs."
+    },
+    "intent": "Extract durable memory cards from noisy OCR about Brain and related systems.",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "subject",
+            "type": "system"
+          },
+          {
+            "name": "source of truth",
+            "role": "object",
+            "type": "concept"
+          }
+        ],
+        "kind": "principle",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "is",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "The Brain DB remains the source of truth."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "subject",
+            "type": "system"
+          },
+          {
+            "name": "rebuildable projection",
+            "role": "object",
+            "type": "concept"
+          }
+        ],
+        "kind": "principle",
+        "relationships": [
+          {
+            "object": "rebuildable projection",
+            "predicate": "should be",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee should be a rebuildable projection."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created 2 memory cards from a single OCR sentence.",
+        "Marked confidence as low due to OCR noise and potential ambiguity in 'Cognee' naming."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Normalize OCR typos explicitly: 'remalns'->'remains', 'trvth'->'truth', 'shou1d'->'should'.",
+      "Confirm whether 'Cognee' refers to a specific internal component/system and its intended relationship to Brain DB."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

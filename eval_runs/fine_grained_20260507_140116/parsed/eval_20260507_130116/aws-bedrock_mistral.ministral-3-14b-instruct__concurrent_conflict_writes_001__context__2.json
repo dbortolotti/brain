@@ -1,0 +1,80 @@
+{
+  "fixture_id": "concurrent_conflict_writes_001__context",
+  "model": "aws-bedrock:mistral.ministral-3-14b-instruct",
+  "payload": {
+    "answer": "Sam's employment status is ambiguous due to concurrent or sequential claims: **Goldman Sachs (current/former)** and **Point72 (joined)**. No deletion or supersession is implied; further context (e.g., dates, job titles) is required to resolve.",
+    "citations": [],
+    "conflict_classification": "temporal_or_role_ambiguity",
+    "decision": "resolve_ambiguity",
+    "entity_resolution": {
+      "action": "disambiguate",
+      "entity_id": null,
+      "reason": "Concurrent employment or role transition ambiguity: 'works at' (Goldman Sachs) and 'joined' (Point72) may represent either (1) overlapping roles, (2) a transition period, or (3) distinct contexts (e.g., consulting vs. full-time). No superseded facts exist; both statements are independently valid but require reconciliation."
+    },
+    "intent": "detect_concurrent_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman Sachs",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman Sachs",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman Sachs."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict detected: No explicit resolution strategy provided in input.",
+        "Ambiguity preserved: No superseded facts exist; both statements retained as-is."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Merge into a single fact: 'Sam works at Goldman Sachs and joined Point72 [as of <date>].'",
+      "Split into temporal facts: 'Sam worked at Goldman Sachs until [date]; joined Point72 on [date].'",
+      "Flag for user clarification: 'Are these roles concurrent or sequential?'",
+      "Reject as conflicting: 'Ambiguous\u2014requires resolution before durable storage.'"
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

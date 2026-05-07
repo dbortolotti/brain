@@ -1,0 +1,60 @@
+{
+  "fixture_id": "slack_ambiguous_entity_buttons_001",
+  "model": "openai:gpt-5-nano",
+  "payload": {
+    "answer": "Ambiguous: there are two Sams (Goldman and Point72). The statement 'Sam likes Bill Evans' could refer to either; please specify which Sam you mean to update or create separate memories.",
+    "citations": [],
+    "conflict_classification": "ambiguous_entity",
+    "decision": "ambiguous_entity_resolution",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Ambiguity between two Sams (Goldman vs Point72); current memory lacks disambiguation and should not alias statements to a single Sam."
+    },
+    "intent": "memory_update",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "unknown",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "subject_of_interest",
+            "type": "person"
+          }
+        ],
+        "kind": "note",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Sam from Point72",
+            "predicate": "and",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman and Sam from Point72 both exist; current memory stores that Sam likes Bill Evans, but does not specify which Sam."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed input with potential entity ambiguity.",
+        "No conflicting current facts beyond ambiguity detected."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Create distinct memories for 'Sam (Goldman)' and 'Sam (Point72)' and associate 'likes Bill Evans' with the correct one.",
+      "If the intended memory is about a single Sam, add disambiguating context (employer, full name, or unique identifier) and update accordingly.",
+      "Add a tag or alias to differentiate the two Sams in future queries."
+    ]
+  },
+  "run_id": "eval_20260507_130116"
+}

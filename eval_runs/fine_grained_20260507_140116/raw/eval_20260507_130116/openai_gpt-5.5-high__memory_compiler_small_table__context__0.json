@@ -1,0 +1,80 @@
+{
+  "error": null,
+  "fixture_id": "memory_compiler_small_table__context",
+  "model": "openai:gpt-5.5-high",
+  "payload": {
+    "answer": "Extracted two preference memory cards from the table.",
+    "citations": [
+      "Sam | Bill Evans",
+      "Daniele | Knowledge graphs"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "not_resolved",
+      "entity_id": null,
+      "reason": "The names Sam and Daniele are ambiguous without additional identifying context."
+    },
+    "intent": "extract_atomic_memory_cards",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "preference_holder",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference",
+            "type": "person_or_topic"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "has_preference",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam's preference is Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "preference_holder",
+            "type": "person"
+          },
+          {
+            "name": "Knowledge graphs",
+            "role": "preference",
+            "type": "topic"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Knowledge graphs",
+            "predicate": "has_preference",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Daniele's preference is knowledge graphs."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed explicit table preferences while preserving ambiguity about entity identity."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"extract_atomic_memory_cards\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam's preference is Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"preference_holder\"},{\"name\":\"Bill Evans\",\"type\":\"person_or_topic\",\"role\":\"preference\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"has_preference\",\"object\":\"Bill Evans\"}]},{\"kind\":\"preference\",\"statement\":\"Daniele's preference is knowledge graphs.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Daniele\",\"type\":\"person\",\"role\":\"preference_holder\"},{\"name\":\"Knowledge graphs\",\"type\":\"topic\",\"role\":\"preference\"}],\"relationships\":[{\"subject\":\"Daniele\",\"predicate\":\"has_preference\",\"object\":\"Knowledge graphs\"}]}],\"entity_resolution\":{\"action\":\"not_resolved\",\"entity_id\":null,\"reason\":\"The names Sam and Daniele are ambiguous without additional identifying context.\"},\"conflict_classification\":\"none\",\"answer\":\"Extracted two preference memory cards from the table.\",\"citations\":[\"Sam | Bill Evans\",\"Daniele | Knowledge graphs\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Committed explicit table preferences while preserving ambiguity about entity identity.\"]}}",
+  "run_id": "eval_20260507_130116",
+  "status": "ok"
+}
