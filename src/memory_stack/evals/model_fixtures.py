@@ -1128,10 +1128,39 @@ FIXTURE_SET_ORDER = {
     "smoke": 0,
     "development": 1,
     "production": 2,
+    "brain-model-test-v2": 2,
+}
+
+FINE_GRAINED_ROLE_FIXTURE_SOURCES: dict[str, tuple[str, ...]] = {
+    "intent_router": ("router", "slack_intake", "memory_compiler", "recall_synthesizer", "debug_explainer"),
+    "source_classifier": ("slack_intake", "memory_compiler"),
+    "durability_filter": ("slack_intake", "validator_critic"),
+    "memory_kind_classifier": ("slack_intake", "memory_compiler"),
+    "atomic_card_extractor": ("memory_compiler",),
+    "entity_mention_extractor": ("slack_intake", "memory_compiler", "entity_resolution"),
+    "entity_candidate_ranker": ("entity_resolution", "slack_intake"),
+    "relationship_extractor": ("slack_intake", "memory_compiler"),
+    "open_loop_detector": ("slack_intake", "memory_compiler"),
+    "table_policy_handler": ("memory_compiler",),
+    "source_takeaway_extractor": ("memory_compiler",),
+    "conflict_candidate_detector": ("conflict_classifier",),
+    "conflict_explainer": ("conflict_classifier", "debug_explainer"),
+    "repair_option_generator": ("validator_critic", "slack_intake", "conflict_classifier"),
+    "success_receipt_generator": ("slack_intake",),
+    "recall_planner": ("router", "recall_synthesizer"),
+    "recall_synthesizer": ("recall_synthesizer",),
+    "groundedness_checker": ("recall_synthesizer",),
+    "debug_explainer": ("debug_explainer",),
+    "eval_judge": ("eval_judge",),
 }
 
 
-def select_fixtures(*, fixture_set: str, roles: set[str]) -> list[ModelEvalFixture]:
+def select_fixtures(
+    *,
+    fixture_set: str,
+    roles: set[str],
+    mode: str = "broad",
+) -> list[ModelEvalFixture]:
     if fixture_set not in FIXTURE_SET_ORDER:
         raise ValueError(f"unsupported fixture set: {fixture_set}")
     max_level = FIXTURE_SET_ORDER[fixture_set]
@@ -1140,9 +1169,43 @@ def select_fixtures(*, fixture_set: str, roles: set[str]) -> list[ModelEvalFixtu
         for fixture in MODEL_EVAL_FIXTURES
         if FIXTURE_SET_ORDER[fixture.fixture_set] <= max_level
     ]
-    if roles:
+    if mode == "fine-grained":
+        fixtures = derive_fine_grained_fixtures(fixtures, roles=roles)
+    elif roles:
         fixtures = [fixture for fixture in fixtures if fixture.role in roles]
     return fixtures
+
+
+def derive_fine_grained_fixtures(
+    fixtures: list[ModelEvalFixture],
+    *,
+    roles: set[str],
+) -> list[ModelEvalFixture]:
+    by_source_role: dict[str, list[ModelEvalFixture]] = {}
+    for fixture in fixtures:
+        by_source_role.setdefault(fixture.role, []).append(fixture)
+
+    selected_roles = roles or set(FINE_GRAINED_ROLE_FIXTURE_SOURCES)
+    derived: list[ModelEvalFixture] = []
+    for fine_role in sorted(selected_roles):
+        source_roles = FINE_GRAINED_ROLE_FIXTURE_SOURCES.get(fine_role)
+        if not source_roles:
+            continue
+        for source_role in source_roles:
+            for fixture in by_source_role.get(source_role, []):
+                derived.append(
+                    ModelEvalFixture(
+                        id=fixture.id,
+                        scenario_group=fixture.scenario_group,
+                        role=fine_role,
+                        input_text=fixture.input_text,
+                        expected=fixture.expected,
+                        fixture_set=fixture.fixture_set,
+                        zero_tolerance_checks=fixture.zero_tolerance_checks,
+                        context={**fixture.context, "source_role": source_role},
+                    )
+                )
+    return derived
 
 
 def fixture_prompt(fixture: ModelEvalFixture) -> str:

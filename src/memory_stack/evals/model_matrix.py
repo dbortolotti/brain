@@ -33,6 +33,7 @@ MODEL_TEST_INITIAL_REFS = [
 MODEL_SETS = {
     "model-test-initial": MODEL_TEST_INITIAL_REFS,
 }
+FINE_GRAINED_MATRIX_KEY = "fine_grained_eval_matrix"
 
 
 @dataclass(frozen=True)
@@ -106,6 +107,7 @@ def select_model_candidates(
     roles: set[str],
     scope: str,
     include_judge: bool,
+    mode: str = "broad",
 ) -> list[ModelCandidate]:
     if model_refs:
         index = registry_model_index(registry)
@@ -116,7 +118,9 @@ def select_model_candidates(
             ]
         )
 
-    if scope == "core":
+    if mode == "fine-grained":
+        candidates = fine_grained_candidates(registry, roles=roles, include_judge=include_judge)
+    elif scope == "core":
         candidates = core_candidates(registry, roles=roles, include_judge=include_judge)
     elif scope in {"enabled", "all"}:
         candidates = provider_candidates(
@@ -128,6 +132,28 @@ def select_model_candidates(
     else:
         raise ValueError(f"unsupported model scope: {scope}")
     return dedupe_candidates(candidates)
+
+
+def fine_grained_candidates(
+    registry: dict[str, Any],
+    *,
+    roles: set[str],
+    include_judge: bool,
+) -> list[ModelCandidate]:
+    index = registry_model_index(registry)
+    matrix = registry.get(FINE_GRAINED_MATRIX_KEY) or {}
+    candidates: list[ModelCandidate] = []
+    for role, refs in matrix.items():
+        if roles and role not in roles:
+            continue
+        for ref in refs or []:
+            candidate = candidate_from_ref(str(ref), index, roles={role}, include_judge=True)
+            if candidate.skip_reason:
+                continue
+            if candidate.judge_only and not include_judge:
+                continue
+            candidates.append(candidate)
+    return candidates
 
 
 def core_candidates(

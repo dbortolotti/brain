@@ -47,6 +47,23 @@ ROLE_CATEGORIES = {
     "router": "runtime",
     "slack_intake": "runtime",
     "memory_compiler": "runtime",
+    "intent_router": "runtime",
+    "source_classifier": "support",
+    "durability_filter": "support",
+    "memory_kind_classifier": "support",
+    "atomic_card_extractor": "runtime_or_support",
+    "entity_mention_extractor": "support",
+    "entity_candidate_ranker": "runtime_or_support",
+    "relationship_extractor": "runtime_or_support",
+    "open_loop_detector": "support",
+    "table_policy_handler": "support",
+    "source_takeaway_extractor": "runtime_or_support",
+    "conflict_candidate_detector": "runtime",
+    "conflict_explainer": "support",
+    "repair_option_generator": "support",
+    "success_receipt_generator": "support",
+    "recall_planner": "runtime",
+    "groundedness_checker": "judge",
     "validator_critic": "support",
     "entity_resolution": "runtime_or_support",
     "conflict_classifier": "runtime",
@@ -151,7 +168,12 @@ class FailureClass(str, Enum):
 class EvalRecord(BaseModel):
     model_config = ConfigDict(extra="allow")
 
+    record_id: str = ""
     run_id: str = ""
+    rerun_of_run_id: str | None = None
+    rerun_timestamp: str | None = None
+    fixture_set_version: str = "brain-model-test-v2"
+    policy_version: str = "memory-policy-v1"
     model: str = ""
     provider: str = ""
     role: str = ""
@@ -160,7 +182,9 @@ class EvalRecord(BaseModel):
 
     operational_success: bool = False
     failure_class: FailureClass = FailureClass.NONE
+    failure_number: int | None = None
     failure_message: str | None = None
+    failure_reason_codes: list[str] = Field(default_factory=list)
 
     schema_valid: bool = False
     json_parseable: bool = False

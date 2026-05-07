@@ -7,9 +7,9 @@ from pathlib import Path
 from typing import Any
 
 from memory_stack.config import Settings
-from memory_stack.evals.model_fixtures import ModelEvalFixture
+from memory_stack.evals.model_fixtures import ModelEvalFixture, select_fixtures
 from memory_stack.evals.model_matrix import load_model_registry, select_model_candidates
-from memory_stack.evals.model_runner import ModelEvalRunConfig, render_report, run_model_evals
+from memory_stack.evals.model_runner import ModelEvalRunConfig, read_eval_records, render_report, run_model_evals, run_rerun_failed
 from memory_stack.evals.provider_client import LiveProviderClient, ModelCallResult, ProviderCallError, openai_reasoning_effort
 from memory_stack.evals.scoring import (
     EvalRecord,
@@ -91,6 +91,20 @@ class ConcurrencyTrackingClient(FakeEvalClient):
                 self._active_by_model[model] -= 1
 
 
+class AlwaysFailClient(FakeEvalClient):
+    def complete_json(self, *args: Any, **kwargs: Any) -> ModelCallResult:
+        return ModelCallResult(
+            status="fail",
+            payload=None,
+            raw_text="",
+            error="HTTP 503: provider unavailable",
+            latency_ms=0,
+            input_tokens=0,
+            output_tokens=0,
+            estimated_cost_usd=0.0,
+        )
+
+
 def test_model_matrix_selects_explicit_alias_and_embeddings() -> None:
     registry = load_model_registry(REGISTRY_PATH)
 
@@ -140,6 +154,36 @@ def test_model_matrix_selects_gpt_5_4_and_gemini_3_1_pro_thinking_variants() -> 
     assert candidates[0].reasoning_effort == "high"
     assert candidates[1].api_model == "gemini-3.1-pro-preview"
     assert candidates[1].reasoning_effort == "medium"
+
+
+def test_fine_grained_model_matrix_selects_targeted_role_models() -> None:
+    registry = load_model_registry(REGISTRY_PATH)
+
+    candidates = select_model_candidates(
+        registry,
+        model_refs=None,
+        roles={"intent_router"},
+        scope="core",
+        include_judge=False,
+        mode="fine-grained",
+    )
+
+    assert [candidate.ref for candidate in candidates] == [
+        "openai:gpt-5-nano",
+        "google:gemini-2.5-flash-lite",
+        "groq:llama-3.1-8b-instant",
+    ]
+
+
+def test_select_fixtures_derives_fine_grained_roles() -> None:
+    fixtures = select_fixtures(
+        fixture_set="brain-model-test-v2",
+        roles={"intent_router"},
+        mode="fine-grained",
+    )
+
+    assert fixtures
+    assert all(fixture.role == "intent_router" for fixture in fixtures)
 
 
 def test_model_test_initial_model_set_runs_through_config(tmp_path) -> None:
@@ -535,6 +579,79 @@ def test_model_eval_runner_parallelizes_across_models_not_within_model(tmp_path)
 
     assert client.max_active_by_model["openai:gpt-5.4-nano"] == 1
     assert client.max_active_by_model["openai:gpt-5.4-mini"] == 1
+
+
+def test_model_eval_runner_generates_failed_manifest_and_stable_record_ids(tmp_path) -> None:
+    output = tmp_path / "results.json"
+    config = ModelEvalRunConfig(
+        registry_path=REGISTRY_PATH,
+        fixture_set="smoke",
+        mode="broad",
+        roles={"slack_intake"},
+        model_refs=["openai:gpt-5.4-nano"],
+        scope="core",
+        include_judge=False,
+        repeat_runs=1,
+        bootstrap_samples=0,
+        output_path=output,
+    )
+
+    result = run_model_evals(Settings(), config, client=AlwaysFailClient())
+
+    records = read_eval_records(output)
+    failed_manifest = read_eval_records(Path(result["failed_manifest_jsonl_path"]))
+
+    assert records
+    assert len(failed_manifest) == len(records)
+    assert all(record["record_id"] for record in records)
+    assert all(record["failure_number"] is not None for record in records)
+    assert Path(result["failed_manifest_md_path"]).exists()
+
+
+def test_rerun_failed_replaces_records_by_record_id(tmp_path) -> None:
+    output = tmp_path / "results.json"
+    initial = run_model_evals(
+        Settings(),
+        ModelEvalRunConfig(
+            registry_path=REGISTRY_PATH,
+            fixture_set="smoke",
+            mode="broad",
+            roles={"slack_intake"},
+            model_refs=["openai:gpt-5.4-nano"],
+            scope="core",
+            include_judge=False,
+            repeat_runs=1,
+            bootstrap_samples=0,
+            output_path=output,
+        ),
+        client=AlwaysFailClient(),
+    )
+
+    before = read_eval_records(output)
+    before_by_id = {record["record_id"]: record for record in before}
+
+    rerun_failed = run_rerun_failed(
+        Settings(),
+        registry_path=REGISTRY_PATH,
+        source_path=output,
+        failed_manifest_path=Path(initial["failed_manifest_jsonl_path"]),
+        output_path=output,
+        overwrite=True,
+        bootstrap_samples=0,
+        max_workers=2,
+        retry_attempts=0,
+        retry_backoff_seconds=0,
+        client=FakeEvalClient(),
+    )
+
+    after = read_eval_records(output)
+    after_by_id = {record["record_id"]: record for record in after}
+
+    assert len(before) == len(after)
+    assert set(before_by_id) == set(after_by_id)
+    assert any(before_by_id[record_id]["status"] == "fail" for record_id in before_by_id)
+    assert all(after_by_id[record_id]["run_id"] == rerun_failed["run_id"] for record_id in after_by_id)
+    assert all(after_by_id[record_id]["rerun_of_run_id"] == initial["run_id"] for record_id in after_by_id)
 
 
 def test_live_provider_client_retries_transient_provider_error(monkeypatch) -> None:

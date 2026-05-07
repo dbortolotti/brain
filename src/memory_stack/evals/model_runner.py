@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import csv
+import hashlib
 import json
 from collections import Counter, defaultdict
 from collections.abc import Callable
@@ -8,6 +10,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from statistics import mean
+from tempfile import NamedTemporaryFile
 from threading import Lock
 from typing import Any, Protocol
 
@@ -20,7 +23,9 @@ from memory_stack.evals.model_fixtures import (
 )
 from memory_stack.evals.model_matrix import (
     ModelCandidate,
+    candidate_from_ref,
     load_model_registry,
+    registry_model_index,
     select_model_candidates,
 )
 from memory_stack.evals.provider_client import LiveProviderClient, ModelCallResult
@@ -62,6 +67,7 @@ class ModelEvalRunConfig:
     repeat_runs: int
     bootstrap_samples: int
     output_path: Path
+    mode: str = "broad"
     model_set: str | None = None
     report_md_path: Path | None = None
     raw_output_dir: Path | None = None
@@ -93,8 +99,9 @@ def run_model_evals(
         roles=config.roles,
         scope=config.scope,
         include_judge=config.include_judge or bool(config.model_set),
+        mode=config.mode,
     )
-    fixtures = select_fixtures(fixture_set=config.fixture_set, roles=config.roles)
+    fixtures = select_fixtures(fixture_set=config.fixture_set, roles=config.roles, mode=config.mode)
     if not candidates:
         raise ValueError("no model candidates selected")
     if not fixtures:
@@ -158,32 +165,21 @@ def run_model_evals(
                     report_progress(record)
 
     config.output_path.parent.mkdir(parents=True, exist_ok=True)
-    write_jsonl(config.output_path, records)
+    assign_failure_numbers(records)
+    write_eval_records(config.output_path, records)
 
-    summaries = aggregate_model_role_records(records, bootstrap_samples=config.bootstrap_samples)
-    comparisons = paired_model_comparisons(records, bootstrap_samples=config.bootstrap_samples)
-    deployable_stack, missing_roles = is_stack_deployable(summaries)
-    recommendations = categorized_recommendations(summaries)
-
-    result = {
-        "run_id": run_id,
-        "fixture_set": config.fixture_set,
-        "models": [candidate.ref for candidate in candidates],
-        "roles": sorted(config.roles) if config.roles else "candidate_roles",
-        "record_count": len(records),
-        "output_path": str(config.output_path),
-        "report_md_path": str(config.report_md_path) if config.report_md_path else None,
-        "summaries": summaries,
-        "pairwise_comparisons": comparisons,
-        "deployable_stack": deployable_stack,
-        "missing_roles": missing_roles,
-        "eligible_counts_by_category": eligible_counts_by_category(summaries),
-        "recommended_stack": recommendations["mandatory"] if deployable_stack else {},
-        "partial_recommendations": recommendations["all"],
-    }
-    if config.report_md_path:
-        config.report_md_path.parent.mkdir(parents=True, exist_ok=True)
-        config.report_md_path.write_text(render_markdown_report(result, records), encoding="utf-8")
+    result = build_run_result(
+        run_id=run_id,
+        fixture_set=config.fixture_set,
+        mode=config.mode,
+        output_path=config.output_path,
+        report_md_path=config.report_md_path,
+        records=records,
+        models=[candidate.ref for candidate in candidates],
+        roles=sorted(config.roles) if config.roles else "candidate_roles",
+        bootstrap_samples=config.bootstrap_samples,
+    )
+    write_run_artifacts(result, records)
     return result
 
 
@@ -212,6 +208,8 @@ def evaluate_candidate_tasks(
     run_id: str,
     raw_output_dir: Path,
     parsed_output_dir: Path,
+    rerun_of_run_id: str | None = None,
+    rerun_timestamp: str | None = None,
 ) -> list[dict[str, Any]]:
     records: list[dict[str, Any]] = []
     first_fixture, first_repeat_idx = tasks[0]
@@ -223,6 +221,8 @@ def evaluate_candidate_tasks(
         repeat_idx=first_repeat_idx,
         raw_output_dir=raw_output_dir,
         parsed_output_dir=parsed_output_dir,
+        rerun_of_run_id=rerun_of_run_id,
+        rerun_timestamp=rerun_timestamp,
     )
     records.append(first_record)
 
@@ -238,6 +238,8 @@ def evaluate_candidate_tasks(
                     raw_output_dir=raw_output_dir,
                     parsed_output_dir=parsed_output_dir,
                     error=f"candidate preflight failed: {first_record['failure_message']}",
+                    rerun_of_run_id=rerun_of_run_id,
+                    rerun_timestamp=rerun_timestamp,
                 )
             )
         return records
@@ -252,6 +254,8 @@ def evaluate_candidate_tasks(
                 repeat_idx=repeat_idx,
                 raw_output_dir=raw_output_dir,
                 parsed_output_dir=parsed_output_dir,
+                rerun_of_run_id=rerun_of_run_id,
+                rerun_timestamp=rerun_timestamp,
             )
         )
     return records
@@ -266,6 +270,8 @@ def run_one_fixture(
     repeat_idx: int,
     raw_output_dir: Path,
     parsed_output_dir: Path,
+    rerun_of_run_id: str | None = None,
+    rerun_timestamp: str | None = None,
 ) -> dict[str, Any]:
     if candidate.kind == "embedding":
         call = client.embed(candidate, text=fixture.input_text)
@@ -279,6 +285,8 @@ def run_one_fixture(
         raw_output_dir=raw_output_dir,
         parsed_output_dir=parsed_output_dir,
         call=call,
+        rerun_of_run_id=rerun_of_run_id,
+        rerun_timestamp=rerun_timestamp,
     )
 
 
@@ -291,6 +299,8 @@ def synthetic_failure_record(
     raw_output_dir: Path,
     parsed_output_dir: Path,
     error: str,
+    rerun_of_run_id: str | None = None,
+    rerun_timestamp: str | None = None,
 ) -> dict[str, Any]:
     call = ModelCallResult(
         status="fail",
@@ -310,6 +320,8 @@ def synthetic_failure_record(
         raw_output_dir=raw_output_dir,
         parsed_output_dir=parsed_output_dir,
         call=call,
+        rerun_of_run_id=rerun_of_run_id,
+        rerun_timestamp=rerun_timestamp,
     )
 
 
@@ -322,8 +334,14 @@ def build_eval_record(
     raw_output_dir: Path,
     parsed_output_dir: Path,
     call: ModelCallResult,
+    rerun_of_run_id: str | None = None,
+    rerun_timestamp: str | None = None,
 ) -> dict[str, Any]:
     role = fixture.role if candidate.kind != "embedding" else "embeddings"
+    fixture_set_version = "brain-model-test-v2"
+    policy_version = "memory-policy-v1"
+    fixture_id = fixture.context.get("base_fixture_id", fixture.id)
+    variant_id = str(fixture.context.get("variant", "base"))
     raw_output_path = write_raw_output(
         raw_output_dir,
         run_id=run_id,
@@ -368,17 +386,32 @@ def build_eval_record(
         quality_score=quality_score,
         failure_message=failure_message,
     )
+    failure_reason_codes = notes if failure_class != FailureClass.NONE else []
 
     record = EvalRecord(
+        record_id=stable_record_id(
+            fixture_set_version=fixture_set_version,
+            policy_version=policy_version,
+            model=candidate.ref,
+            role=role,
+            fixture_id=str(fixture_id),
+            variant_id=variant_id,
+            repeat_idx=repeat_idx,
+        ),
         run_id=run_id,
+        rerun_of_run_id=rerun_of_run_id,
+        rerun_timestamp=rerun_timestamp,
+        fixture_set_version=fixture_set_version,
+        policy_version=policy_version,
         model=candidate.ref,
         provider=candidate.provider,
         role=role,
-        fixture_id=fixture.context.get("base_fixture_id", fixture.id),
-        variant_id=str(fixture.context.get("variant", "base")),
+        fixture_id=str(fixture_id),
+        variant_id=variant_id,
         operational_success=operational_success,
         failure_class=failure_class,
         failure_message=failure_message,
+        failure_reason_codes=failure_reason_codes,
         schema_valid=schema_valid,
         json_parseable=json_parseable,
         semantic_evaluable=semantic_evaluable,
@@ -397,8 +430,6 @@ def build_eval_record(
         status=evaluation_status,
         notes=notes,
         kind=candidate.kind,
-        fixture_set_version="brain-model-test-v2",
-        policy_version="memory-policy-v1",
     )
     return record.model_dump(mode="json")
 
@@ -499,11 +530,415 @@ def embedding_fixtures(fixtures: list[ModelEvalFixture]) -> list[ModelEvalFixtur
     return fixtures[:1]
 
 
-def write_jsonl(path: Path, records: list[dict[str, Any]]) -> None:
-    path.write_text(
-        "".join(json.dumps(record, sort_keys=True) + "\n" for record in records),
-        encoding="utf-8",
+def write_eval_records(path: Path, records: list[dict[str, Any]]) -> None:
+    if path.suffix == ".json":
+        path.write_text(json.dumps(records, indent=2, sort_keys=True), encoding="utf-8")
+        return
+    path.write_text("".join(json.dumps(record, sort_keys=True) + "\n" for record in records), encoding="utf-8")
+
+
+def read_eval_records(path: Path) -> list[dict[str, Any]]:
+    text = path.read_text(encoding="utf-8")
+    if path.suffix == ".json":
+        data = json.loads(text or "[]")
+        if not isinstance(data, list):
+            raise ValueError(f"expected JSON array in {path}")
+        return data
+    return [json.loads(line) for line in text.splitlines() if line.strip()]
+
+
+def atomic_write_eval_records(path: Path, records: list[dict[str, Any]]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with NamedTemporaryFile("w", encoding="utf-8", delete=False, dir=path.parent, suffix=path.suffix) as tmp:
+        tmp_path = Path(tmp.name)
+        if path.suffix == ".json":
+            tmp.write(json.dumps(records, indent=2, sort_keys=True))
+        else:
+            tmp.write("".join(json.dumps(record, sort_keys=True) + "\n" for record in records))
+    _ = read_eval_records(tmp_path)
+    tmp_path.replace(path)
+
+
+def stable_record_id(
+    *,
+    fixture_set_version: str,
+    policy_version: str,
+    model: str,
+    role: str,
+    fixture_id: str,
+    variant_id: str,
+    repeat_idx: int,
+) -> str:
+    payload = "\n".join(
+        [
+            fixture_set_version,
+            policy_version,
+            model,
+            role,
+            fixture_id,
+            variant_id,
+            str(repeat_idx),
+        ]
     )
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def assign_failure_numbers(records: list[dict[str, Any]]) -> None:
+    failure_number = 0
+    for record in records:
+        failure_class = FailureClass(record.get("failure_class", FailureClass.NONE))
+        status = record.get("status")
+        if failure_class == FailureClass.NONE and status not in {"fail", "schema_fail", "schema_invalid", "skipped"}:
+            record["failure_number"] = None
+            continue
+        if failure_class == FailureClass.NONE and status == "ok":
+            record["failure_number"] = None
+            continue
+        failure_number += 1
+        record["failure_number"] = failure_number
+
+
+def failure_records(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    failures: list[dict[str, Any]] = []
+    for record in records:
+        failure_class = FailureClass(record.get("failure_class", FailureClass.NONE))
+        if failure_class != FailureClass.NONE or record.get("status") in {"fail", "schema_fail", "schema_invalid", "skipped"}:
+            failures.append(record)
+    return failures
+
+
+def write_run_artifacts(result: dict[str, Any], records: list[dict[str, Any]]) -> None:
+    output_path = Path(result["output_path"])
+    output_dir = output_path.parent
+    output_dir.mkdir(parents=True, exist_ok=True)
+    report_path = Path(result["report_md_path"])
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    report_path.write_text(render_markdown_report(result, records), encoding="utf-8")
+
+    failed_path = output_dir / "failed_tests.jsonl"
+    failed_md_path = output_dir / "failed_tests.md"
+    failures = failure_records(records)
+    write_eval_records(failed_path, [failed_manifest_row(record) for record in failures])
+    failed_md_path.write_text(render_failed_tests_markdown(result["run_id"], failures), encoding="utf-8")
+
+    summaries = [Summary.model_validate(item) for item in result.get("summaries", [])]
+    write_model_role_summary_csv(output_dir / "model_role_summary.csv", summaries)
+    write_cost_latency_csv(output_dir / "cost_latency.csv", summaries)
+    write_zero_tolerance_csv(output_dir / "zero_tolerance_summary.csv", summaries)
+
+
+def build_run_result(
+    *,
+    run_id: str,
+    fixture_set: str,
+    mode: str,
+    output_path: Path,
+    report_md_path: Path | None,
+    records: list[dict[str, Any]],
+    models: list[str],
+    roles: list[str] | str,
+    bootstrap_samples: int,
+) -> dict[str, Any]:
+    summaries = aggregate_model_role_records(records, bootstrap_samples=bootstrap_samples)
+    comparisons = paired_model_comparisons(records, bootstrap_samples=bootstrap_samples)
+    deployable_stack, missing_roles = is_stack_deployable(summaries)
+    recommendations = categorized_recommendations(summaries)
+    report_path = report_md_path or output_path.parent / "summary.md"
+    return {
+        "run_id": run_id,
+        "fixture_set": fixture_set,
+        "mode": mode,
+        "models": models,
+        "roles": roles,
+        "record_count": len(records),
+        "output_path": str(output_path),
+        "report_md_path": str(report_path),
+        "failed_manifest_jsonl_path": str(output_path.parent / "failed_tests.jsonl"),
+        "failed_manifest_md_path": str(output_path.parent / "failed_tests.md"),
+        "summaries": summaries,
+        "pairwise_comparisons": comparisons,
+        "deployable_stack": deployable_stack,
+        "missing_roles": missing_roles,
+        "eligible_counts_by_category": eligible_counts_by_category(summaries),
+        "recommended_stack": recommendations["mandatory"] if deployable_stack else {},
+        "partial_recommendations": recommendations["all"],
+    }
+
+
+def run_rerun_failed(
+    settings: Settings,
+    *,
+    registry_path: Path,
+    source_path: Path,
+    failed_manifest_path: Path,
+    output_path: Path,
+    overwrite: bool,
+    bootstrap_samples: int,
+    max_workers: int,
+    retry_attempts: int,
+    retry_backoff_seconds: float,
+    failure_class: str | None = None,
+    role: str | None = None,
+    model: str | None = None,
+    client: EvalModelClient | None = None,
+) -> dict[str, Any]:
+    if output_path != source_path and not overwrite:
+        raise ValueError("rerun-failed currently requires --overwrite or matching source/output path")
+
+    canonical_records = read_eval_records(source_path)
+    manifest_records = read_eval_records(failed_manifest_path)
+    filtered_manifest = [
+        record
+        for record in manifest_records
+        if (failure_class is None or record.get("failure_class") == failure_class)
+        and (role is None or record.get("role") == role)
+        and (model is None or record.get("model") == model)
+    ]
+    if not filtered_manifest:
+        raise ValueError("no failed manifest rows matched the requested filters")
+
+    registry = load_model_registry(registry_path)
+    index = registry_model_index(registry)
+    rerun_run_id = f"eval_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}"
+    rerun_timestamp = datetime.now(UTC).isoformat()
+    active_client = client or LiveProviderClient(
+        settings,
+        retry_attempts=retry_attempts,
+        retry_backoff_seconds=retry_backoff_seconds,
+    )
+    raw_output_dir = output_path.parent / "raw" / rerun_run_id
+    parsed_output_dir = output_path.parent / "parsed" / rerun_run_id
+
+    grouped_tasks: dict[str, list[tuple[ModelEvalFixture, int]]] = defaultdict(list)
+    candidate_by_model: dict[str, ModelCandidate] = {}
+    rerun_of_run_id = str(filtered_manifest[0].get("run_id") or "")
+    selected_roles = {str(item["role"]) for item in filtered_manifest}
+    mode = mode_for_roles(selected_roles)
+
+    for item in filtered_manifest:
+        candidate = candidate_from_ref(str(item["model"]), index, roles={str(item["role"])}, include_judge=True)
+        candidate_by_model[candidate.ref] = candidate
+        fixture = find_fixture_for_record(
+            fixture_set="brain-model-test-v2",
+            role=str(item["role"]),
+            fixture_id=str(item["fixture_id"]),
+            variant_id=str(item.get("variant_id") or "base"),
+            mode=mode,
+        )
+        grouped_tasks[candidate.ref].append((fixture, int(item.get("repeat_idx") or 0)))
+
+    work_items = [(candidate_by_model[ref], tasks) for ref, tasks in grouped_tasks.items()]
+    rerun_records: list[dict[str, Any]] = []
+    if max_workers <= 1 or len(work_items) <= 1:
+        for candidate, tasks in work_items:
+            rerun_records.extend(
+                evaluate_candidate_tasks(
+                    active_client,
+                    candidate=candidate,
+                    tasks=tasks,
+                    run_id=rerun_run_id,
+                    raw_output_dir=raw_output_dir,
+                    parsed_output_dir=parsed_output_dir,
+                    rerun_of_run_id=rerun_of_run_id,
+                    rerun_timestamp=rerun_timestamp,
+                )
+            )
+    else:
+        with ThreadPoolExecutor(max_workers=min(max_workers, len(work_items))) as executor:
+            futures = [
+                executor.submit(
+                    evaluate_candidate_tasks,
+                    active_client,
+                    candidate=candidate,
+                    tasks=tasks,
+                    run_id=rerun_run_id,
+                    raw_output_dir=raw_output_dir,
+                    parsed_output_dir=parsed_output_dir,
+                    rerun_of_run_id=rerun_of_run_id,
+                    rerun_timestamp=rerun_timestamp,
+                )
+                for candidate, tasks in work_items
+            ]
+            for future in as_completed(futures):
+                rerun_records.extend(future.result())
+
+    assign_failure_numbers(rerun_records)
+    canonical_by_id = {str(record["record_id"]): record for record in canonical_records}
+    for record in rerun_records:
+        canonical_by_id[str(record["record_id"])] = record
+    merged = list(canonical_by_id.values())
+    atomic_write_eval_records(output_path, merged)
+
+    result = build_run_result(
+        run_id=rerun_run_id,
+        fixture_set="brain-model-test-v2",
+        mode=mode,
+        output_path=output_path,
+        report_md_path=output_path.parent / "summary.md",
+        records=merged,
+        models=sorted({record["model"] for record in merged}),
+        roles=sorted({record["role"] for record in merged}),
+        bootstrap_samples=bootstrap_samples,
+    )
+    write_run_artifacts(result, merged)
+    return result
+
+
+def mode_for_roles(roles: set[str]) -> str:
+    fine_grained_roles = {
+        "intent_router",
+        "source_classifier",
+        "durability_filter",
+        "memory_kind_classifier",
+        "atomic_card_extractor",
+        "entity_mention_extractor",
+        "entity_candidate_ranker",
+        "relationship_extractor",
+        "open_loop_detector",
+        "table_policy_handler",
+        "source_takeaway_extractor",
+        "conflict_candidate_detector",
+        "conflict_explainer",
+        "repair_option_generator",
+        "success_receipt_generator",
+        "recall_planner",
+        "groundedness_checker",
+    }
+    return "fine-grained" if roles & fine_grained_roles else "broad"
+
+
+def find_fixture_for_record(
+    *,
+    fixture_set: str,
+    role: str,
+    fixture_id: str,
+    variant_id: str,
+    mode: str,
+) -> ModelEvalFixture:
+    fixtures = select_fixtures(fixture_set=fixture_set, roles={role}, mode=mode)
+    for fixture in fixtures:
+        base_fixture_id = str(fixture.context.get("base_fixture_id", fixture.id))
+        fixture_variant = str(fixture.context.get("variant", "base"))
+        if base_fixture_id == fixture_id and fixture_variant == variant_id and fixture.role == role:
+            return fixture
+    raise ValueError(
+        f"fixture not found for role={role!r} fixture_id={fixture_id!r} variant_id={variant_id!r} mode={mode!r}"
+    )
+
+
+def failed_manifest_row(record: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "record_id": record.get("record_id"),
+        "failure_number": record.get("failure_number"),
+        "run_id": record.get("run_id"),
+        "model": record.get("model"),
+        "role": record.get("role"),
+        "fixture_id": record.get("fixture_id"),
+        "variant_id": record.get("variant_id"),
+        "repeat_idx": record.get("repeat_idx"),
+        "failure_class": record.get("failure_class"),
+        "failure_reason_codes": record.get("failure_reason_codes") or record.get("notes") or [],
+        "failure_message": record.get("failure_message"),
+        "raw_output_path": record.get("raw_output_path"),
+        "parsed_output_path": record.get("parsed_output_path"),
+    }
+
+
+def render_failed_tests_markdown(run_id: str, failed_records_: list[dict[str, Any]]) -> str:
+    lines = ["# Failed tests", "", f"Run ID: `{run_id}`", ""]
+    grouped: dict[str, dict[str, dict[str, list[dict[str, Any]]]]] = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
+    for record in failed_records_:
+        failure_class = str(record.get("failure_class"))
+        grouped[failure_class][str(record.get("role"))][str(record.get("fixture_id"))].append(record)
+    for failure_class in sorted(grouped):
+        lines.extend([f"## {failure_class}", ""])
+        for role in sorted(grouped[failure_class]):
+            for fixture_id in sorted(grouped[failure_class][role]):
+                lines.extend(
+                    [
+                        f"### {role} / {fixture_id}",
+                        "",
+                        "| Failure # | Model | Variant | Repeat | Reason |",
+                        "|---:|---|---|---:|---|",
+                    ]
+                )
+                for record in sorted(grouped[failure_class][role][fixture_id], key=lambda item: item.get("failure_number") or 0):
+                    reason = ", ".join(record.get("failure_reason_codes") or record.get("notes") or []) or "-"
+                    lines.append(
+                        f"| {record.get('failure_number') or ''} | `{record.get('model')}` | "
+                        f"`{record.get('variant_id')}` | {record.get('repeat_idx') or 0} | {reason} |"
+                    )
+                lines.append("")
+    return "\n".join(lines)
+
+
+def write_model_role_summary_csv(path: Path, summaries: list[Summary]) -> None:
+    with path.open("w", encoding="utf-8", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow(
+            [
+                "model",
+                "provider",
+                "role",
+                "role_category",
+                "records_total",
+                "operational_success_rate",
+                "schema_validity_rate",
+                "semantic_score_mean",
+                "zero_tolerance_failures",
+                "eligible",
+                "rejection_reasons",
+            ]
+        )
+        for summary in summaries:
+            writer.writerow(
+                [
+                    summary.model,
+                    summary.provider,
+                    summary.role,
+                    summary.role_category,
+                    summary.records_total,
+                    summary.operational_success_rate,
+                    summary.schema_validity_rate,
+                    summary.semantic_score_mean,
+                    summary.zero_tolerance_failures,
+                    summary.eligible,
+                    ";".join(summary.rejection_reasons),
+                ]
+            )
+
+
+def write_cost_latency_csv(path: Path, summaries: list[Summary]) -> None:
+    with path.open("w", encoding="utf-8", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow(["model", "role", "cost_per_1k_successful", "latency_p50_ms", "latency_p90_ms", "latency_p95_ms"])
+        for summary in summaries:
+            writer.writerow(
+                [
+                    summary.model,
+                    summary.role,
+                    summary.cost_per_1k_successful,
+                    summary.latency_p50_ms,
+                    summary.latency_p90_ms,
+                    summary.latency_p95_ms,
+                ]
+            )
+
+
+def write_zero_tolerance_csv(path: Path, summaries: list[Summary]) -> None:
+    with path.open("w", encoding="utf-8", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow(["model", "role", "zero_tolerance_failures", "zero_tolerance_upper_95_fail_rate", "eligible"])
+        for summary in summaries:
+            writer.writerow(
+                [
+                    summary.model,
+                    summary.role,
+                    summary.zero_tolerance_failures,
+                    summary.zero_tolerance_upper_95_fail_rate,
+                    summary.eligible,
+                ]
+            )
 
 
 def write_raw_output(
@@ -622,8 +1057,11 @@ def render_markdown_report(result: dict[str, Any], records: list[dict[str, Any]]
             "## Deployability status",
             "",
             f"- Run ID: `{result['run_id']}`",
+            f"- Eval mode: `{result.get('mode', 'broad')}`",
             f"- Fixture set: `{result['fixture_set']}`",
-            f"- JSONL output: `{result['output_path']}`",
+            f"- Canonical output: `{result['output_path']}`",
+            f"- Failed manifest JSONL: `{result.get('failed_manifest_jsonl_path', '')}`",
+            f"- Failed manifest markdown: `{result.get('failed_manifest_md_path', '')}`",
             f"- Records: `{result['record_count']}`",
             f"- Model-role summaries: `{len(summaries)}`",
             f"- Deployable stack: `{'yes' if deployable_stack else 'no'}`",
@@ -707,6 +1145,12 @@ def render_markdown_report(result: dict[str, Any], records: list[dict[str, Any]]
             "## Next actions",
             "",
             *next_action_rows(deployable_stack, missing_roles, eval_records, summaries),
+            "",
+            "## Rerun command",
+            "",
+            "```bash",
+            rerun_command(result),
+            "```",
             "",
         ]
     )
@@ -996,3 +1440,14 @@ def format_recommendation_lines(recommendations: dict[str, str] | list[str]) -> 
 
 def format_role_list(roles: list[str]) -> list[str]:
     return [f"- {role}" for role in roles] or ["- none"]
+
+
+def rerun_command(result: dict[str, Any]) -> str:
+    return (
+        "brain eval rerun-failed "
+        f"--source-json {result['output_path']} "
+        f"--failed-manifest {result.get('failed_manifest_jsonl_path', '')} "
+        "--concurrency 10 "
+        f"--output-json {result['output_path']} "
+        "--overwrite"
+    )
