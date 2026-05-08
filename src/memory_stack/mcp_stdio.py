@@ -31,7 +31,7 @@ def build_server():
     settings = load_settings()
     mcp = FastMCP("Brain")
 
-    @mcp.tool(name="brain.remember", structured_output=True)
+    @mcp.tool(name="brain_remember", structured_output=True)
     async def remember(
         input: str,
         input_type: str = "auto",
@@ -49,7 +49,7 @@ def build_server():
         )
         return brain_remember(request, settings).model_dump(mode="json")
 
-    @mcp.tool(name="brain.ingest_source", structured_output=True)
+    @mcp.tool(name="brain_ingest_source", structured_output=True)
     async def ingest_source(
         source: str,
         source_kind: str = "auto",
@@ -81,7 +81,7 @@ def build_server():
             "ingestion": receipt,
         }
 
-    @mcp.tool(name="brain.recall", structured_output=True)
+    @mcp.tool(name="brain_recall", structured_output=True)
     async def recall(
         query: str,
         mode: str = "auto",
@@ -101,7 +101,7 @@ def build_server():
         )
         return brain_recall(request, settings).model_dump(mode="json")
 
-    @mcp.tool(name="brain.profile_entity", structured_output=True)
+    @mcp.tool(name="brain_profile_entity", structured_output=True)
     async def profile_entity(
         name: str,
         entity_type: str = "auto",
@@ -121,7 +121,7 @@ def build_server():
             include_conflicts=include_conflicts,
         ).model_dump(mode="json")
 
-    @mcp.tool(name="brain.list_open_loops", structured_output=True)
+    @mcp.tool(name="brain_list_open_loops", structured_output=True)
     async def list_open_loops(
         topic: str | None = None,
         status: str = "open",
@@ -139,7 +139,7 @@ def build_server():
             )
         }
 
-    @mcp.tool(name="brain.get_memory", structured_output=True)
+    @mcp.tool(name="brain_get_memory", structured_output=True)
     async def get_memory(
         memory_id: str,
         include_links: bool = True,
@@ -150,7 +150,7 @@ def build_server():
         del include_links, include_entities, include_source
         return {"memory": brain_get_memory(memory_id, settings)}
 
-    @mcp.tool(name="brain.get_source", structured_output=True)
+    @mcp.tool(name="brain_get_source", structured_output=True)
     async def get_source(
         source_id: str,
         include_text: bool = False,
@@ -169,7 +169,7 @@ def build_server():
         )
         return {"source": source_without_text, "text": text}
 
-    @mcp.tool(name="brain.resolve_conflict", structured_output=True)
+    @mcp.tool(name="brain_resolve_conflict", structured_output=True)
     async def resolve_conflict(
         conflict_memory_id: str,
         target_memory_id: str,
@@ -185,7 +185,7 @@ def build_server():
             note=note,
         )
 
-    @mcp.tool(name="brain.forget", structured_output=True)
+    @mcp.tool(name="brain_forget", structured_output=True)
     async def forget(
         object_type: str,
         object_id: str,
@@ -195,7 +195,7 @@ def build_server():
     ) -> dict[str, Any]:
         """Soft delete a Brain object. Hard delete requires confirm=true."""
         if hard and not confirm:
-            raise ValueError("brain.forget requires confirm=true for hard deletes.")
+            raise ValueError("brain_forget requires confirm=true for hard deletes.")
         payload = brain_forget(
             settings,
             object_type=object_type,
@@ -209,7 +209,7 @@ def build_server():
             "cognee_sync_status": "stale",
         }
 
-    @mcp.tool(name="brain.review_recent", structured_output=True)
+    @mcp.tool(name="brain_review_recent", structured_output=True)
     async def review_recent(
         since: str | None = None,
         limit: int = 20,
@@ -228,12 +228,12 @@ def build_server():
             include_sources=include_sources,
         )
 
-    @mcp.tool(name="brain.undo_last", structured_output=True)
+    @mcp.tool(name="brain_undo_last", structured_output=True)
     async def undo_last(ingestion_run_id: str | None = None) -> dict[str, Any]:
         """Soft-delete objects created by one recent ingestion run."""
         return brain_undo_last(settings, ingestion_run_id=ingestion_run_id)
 
-    @mcp.tool(name="brain.sync_cognee", structured_output=True)
+    @mcp.tool(name="brain_sync_cognee", structured_output=True)
     async def sync_cognee(
         object_type: str = "all",
         object_id: str | None = None,
@@ -249,7 +249,7 @@ def build_server():
             force=force,
         )
 
-    @mcp.tool(name="brain.rebuild_cognee", structured_output=True)
+    @mcp.tool(name="brain_rebuild_cognee", structured_output=True)
     async def rebuild_cognee(
         dataset: str = "all",
         prune_first: bool = False,
@@ -263,7 +263,7 @@ def build_server():
             confirm=confirm,
         )
 
-    @mcp.tool(name="brain.merge_entities", structured_output=True)
+    @mcp.tool(name="brain_merge_entities", structured_output=True)
     async def merge_entities(
         primary_entity_id: str,
         duplicate_entity_id: str,

@@ -156,7 +156,7 @@ ADMIN_COGNEE_DATASETS = ["memory", "sources", "data", "all"]
 def memory_tool_definitions() -> list[dict[str, Any]]:
     return [
         {
-            "name": "brain.remember",
+            "name": "brain_remember",
             "description": "Store a user-level memory, fact, thought, or short note in Brain.",
             "inputSchema": {
                 "type": "object",
@@ -177,7 +177,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.ingest_source",
+            "name": "brain_ingest_source",
             "description": "Store source material and optionally extract durable Brain memories.",
             "inputSchema": {
                 "type": "object",
@@ -195,7 +195,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.recall",
+            "name": "brain_recall",
             "description": "Answer a user-level memory query with evidence.",
             "inputSchema": {
                 "type": "object",
@@ -220,7 +220,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.profile_entity",
+            "name": "brain_profile_entity",
             "description": "Build an entity-centric Brain profile.",
             "inputSchema": {
                 "type": "object",
@@ -237,7 +237,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.list_open_loops",
+            "name": "brain_list_open_loops",
             "description": "List open questions, ideas, reminders, and parked research threads.",
             "inputSchema": {
                 "type": "object",
@@ -252,7 +252,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.get_memory",
+            "name": "brain_get_memory",
             "description": "Read one Brain memory card by id.",
             "inputSchema": {
                 "type": "object",
@@ -267,7 +267,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.get_source",
+            "name": "brain_get_source",
             "description": "Read Brain source metadata and optionally truncated source text.",
             "inputSchema": {
                 "type": "object",
@@ -281,7 +281,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.resolve_conflict",
+            "name": "brain_resolve_conflict",
             "description": "Resolve a contradiction or duplicate between two Brain memories.",
             "inputSchema": {
                 "type": "object",
@@ -296,7 +296,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.forget",
+            "name": "brain_forget",
             "description": "Soft delete a Brain object. Hard delete requires confirm=true.",
             "inputSchema": {
                 "type": "object",
@@ -316,7 +316,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.review_recent",
+            "name": "brain_review_recent",
             "description": "Review recent Brain ingestion runs, sources, memories, and conflict links.",
             "inputSchema": {
                 "type": "object",
@@ -329,7 +329,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.undo_last",
+            "name": "brain_undo_last",
             "description": "Soft-delete objects created by one recent ingestion run.",
             "inputSchema": {
                 "type": "object",
@@ -340,7 +340,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.sync_cognee",
+            "name": "brain_sync_cognee",
             "description": "Manually sync pending Brain projections to Cognee.",
             "inputSchema": {
                 "type": "object",
@@ -354,7 +354,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.rebuild_cognee",
+            "name": "brain_rebuild_cognee",
             "description": "Mark Cognee projections stale so they can be rebuilt from Brain DB.",
             "inputSchema": {
                 "type": "object",
@@ -371,7 +371,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain.merge_entities",
+            "name": "brain_merge_entities",
             "description": "Merge a duplicate entity into a primary entity after confirmation.",
             "inputSchema": {
                 "type": "object",
@@ -841,7 +841,7 @@ async def handle_json_rpc(payload: Any) -> Any:
 async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
     name = str(params.get("name") or "")
     arguments = params.get("arguments") or {}
-    if name == "brain.remember":
+    if name == "brain_remember":
         request = RememberRequest.model_validate(
             {
                 "input": arguments.get("input", ""),
@@ -855,7 +855,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
         payload = brain_remember(request, settings).model_dump(mode="json")
         return json_tool_response(payload, summary=remember_summary(payload))
 
-    if name == "brain.ingest_source":
+    if name == "brain_ingest_source":
         if "source" in arguments:
             request = IngestSourceRequest.model_validate(
                 {
@@ -897,7 +897,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
             ),
         )
 
-    if name == "brain.recall":
+    if name == "brain_recall":
         request = RecallRequest.model_validate(
             {
                 "query": arguments["query"],
@@ -911,7 +911,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
         payload = brain_recall(request, settings).model_dump(mode="json")
         return json_tool_response(payload, summary=payload.get("answer", "Recall complete."))
 
-    if name == "brain.profile_entity":
+    if name == "brain_profile_entity":
         entity_type = arguments.get("entity_type")
         if entity_type == "auto":
             entity_type = None
@@ -924,7 +924,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
         ).model_dump(mode="json")
         return json_tool_response(payload, summary=payload.get("answer", "Profile complete."))
 
-    if name == "brain.list_open_loops":
+    if name == "brain_list_open_loops":
         payload = {
             "open_loops": brain_list_open_loops(
                 settings,
@@ -938,14 +938,14 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
             summary=f"Found {len(payload['open_loops'])} open loops.",
         )
 
-    if name == "brain.get_memory":
+    if name == "brain_get_memory":
         memory = brain_get_memory(str(arguments["memory_id"]), settings)
         return json_tool_response(
             {"memory": memory},
             summary="Memory found." if memory else "Memory not found.",
         )
 
-    if name == "brain.get_source":
+    if name == "brain_get_source":
         max_chars = bounded_int(arguments.get("max_chars", 10_000), minimum=1_000, maximum=100_000)
         source = brain_get_source(
             str(arguments["source_id"]),
@@ -962,7 +962,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
             summary="Source found." if source else "Source not found.",
         )
 
-    if name == "brain.resolve_conflict":
+    if name == "brain_resolve_conflict":
         payload = brain_resolve_conflict(
             settings,
             conflict_memory_id=str(arguments["conflict_memory_id"]),
@@ -975,10 +975,10 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
             summary=f"Conflict action applied: {payload.get('action')}.",
         )
 
-    if name == "brain.forget":
+    if name == "brain_forget":
         hard = bool(arguments.get("hard", False))
         if hard and not bool(arguments.get("confirm", False)):
-            raise ValueError("brain.forget requires confirm=true for hard deletes.")
+            raise ValueError("brain_forget requires confirm=true for hard deletes.")
         payload = brain_forget(
             settings,
             object_type=str(arguments["object_type"]),
@@ -990,7 +990,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
         payload = {**payload, "mode": mode, "cognee_sync_status": "stale"}
         return json_tool_response(payload, summary=f"{mode.title()} delete result: {payload['status']}.")
 
-    if name == "brain.review_recent":
+    if name == "brain_review_recent":
         payload = brain_review_recent(
             settings,
             since=parse_optional_datetime(arguments.get("since")),
@@ -1005,7 +1005,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
             ),
         )
 
-    if name == "brain.undo_last":
+    if name == "brain_undo_last":
         payload = brain_undo_last(
             settings,
             ingestion_run_id=arguments.get("ingestion_run_id"),
@@ -1015,7 +1015,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
             summary=f"Undo result: {payload['status']}.",
         )
 
-    if name == "brain.sync_cognee":
+    if name == "brain_sync_cognee":
         payload = brain_sync_cognee(
             settings,
             object_type=str(arguments.get("object_type", "all")),
@@ -1028,7 +1028,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
             summary=f"Cognee sync {payload.get('status', 'complete')}: {payload.get('processed', 0)} rows.",
         )
 
-    if name == "brain.rebuild_cognee":
+    if name == "brain_rebuild_cognee":
         payload = brain_rebuild_cognee(
             settings,
             dataset=str(arguments.get("dataset", "all")),
@@ -1044,7 +1044,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
             ),
         )
 
-    if name == "brain.merge_entities":
+    if name == "brain_merge_entities":
         payload = brain_merge_entities(
             settings,
             primary_entity_id=str(arguments["primary_entity_id"]),
