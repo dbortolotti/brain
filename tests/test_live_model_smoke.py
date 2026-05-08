@@ -43,6 +43,7 @@ def test_active_scope_selects_configured_llm_and_embedding(
     clear_provider_env(monkeypatch)
     settings = Settings(
         profile="openai",
+        openai_auth_mode="api_key",
         llm_provider="openai",
         llm_model="openai/gpt-5.4-mini",
         openai_api_key="sk-provider",
@@ -145,6 +146,7 @@ def test_openai_active_probe_makes_live_style_calls_without_leaking_key(
     clear_provider_env(monkeypatch)
     settings = Settings(
         profile="openai",
+        openai_auth_mode="api_key",
         llm_provider="openai",
         llm_model="gpt-5.4-mini",
         openai_api_key="sk-provider-secret",
@@ -215,6 +217,43 @@ def test_missing_key_fails_by_default_and_can_skip(
     assert fail_result.detail == "missing GROQ_API_KEY"
     assert skip_result.status == "skip"
     assert skip_result.detail == "missing GROQ_API_KEY"
+
+
+def test_openai_oauth_text_smoke_does_not_require_api_key(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    clear_provider_env(monkeypatch)
+    settings = Settings(
+        profile="openai",
+        openai_auth_mode="oauth",
+        llm_provider="openai",
+        llm_model="gpt-5.4-mini",
+        embedding_provider="openai",
+        embedding_model="text-embedding-3-small",
+        embedding_dimensions=1536,
+    )
+
+    assert (
+        live_model_smoke.missing_credential(
+            settings,
+            live_model_smoke.Probe(
+                provider="openai",
+                model="gpt-5.4-mini",
+                kind="llm",
+                label="openai:gpt-5.4-mini",
+            ),
+        )
+        is None
+    )
+    assert live_model_smoke.missing_credential(
+        settings,
+        live_model_smoke.Probe(
+            provider="openai",
+            model="text-embedding-3-small",
+            kind="embedding",
+            label="openai:text-embedding-3-small",
+        ),
+    ) == "missing OPENAI_API_KEY for OpenAI embeddings"
 
 
 def test_openrouter_probe_uses_api_model_and_quantization(

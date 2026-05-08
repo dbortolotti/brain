@@ -1,0 +1,742 @@
+{
+  "comparison_run_ids": [
+    "gpt55_contract_review_20260508_092347",
+    "gpt55_contract_review_20260508_092433"
+  ],
+  "created_at": "2026-05-08T08:24:46.313607+00:00",
+  "model": "openai:gpt-5.5",
+  "rescore_note": "Rescored after separating unsupported-inference zero tolerance from missing expected extraction terms.",
+  "rescored_at": "2026-05-08T09:29:33.140330+00:00",
+  "rows": [
+    {
+      "conclusion": "fail",
+      "conclusion_reason": "quality_failure; quality=0.300",
+      "error": null,
+      "estimated_cost_usd": 0.024900000000000002,
+      "expected": {
+        "decision_any": [
+          "commit_success",
+          "commit_with_warning"
+        ],
+        "memory_kinds": [
+          "person_interaction",
+          "person_fact",
+          "open_loop",
+          "source_summary"
+        ],
+        "must_include": [
+          "Point72",
+          "Bill Evans",
+          "early Coltrane",
+          "article"
+        ],
+        "must_not_include": [
+          "hates Bill Evans"
+        ],
+        "source_memory_split": true
+      },
+      "failure_class": "quality_failure",
+      "failure_reason_codes": [],
+      "fixture_id": "conversation_transcript_sam_001",
+      "input_tokens": 420,
+      "latency_ms": 13557,
+      "model": "openai:gpt-5.5",
+      "output_tokens": 760,
+      "parsed_output_path": "artifacts/gpt55_candidate_review/parsed/gpt55_candidate_review_20260508_082419/openai_gpt-5.5__atomic_card_extractor__conversation_transcript_sam_001__0.json",
+      "payload": {
+        "answer": "Extracted durable memory cards from the transcript. The employment update should supersede any prior current-employer memory stating Sam is still at Goldman.",
+        "citations": [
+          "Daniele: Still at Goldman? Sam: No, I left Goldman last month and joined Point72.",
+          "Daniele: Still listening to Bill Evans? Sam: Yes, but lately more early Coltrane.",
+          "Daniele: We should catch up about AI infra. Sam: Definitely, send me that article."
+        ],
+        "conflict_classification": "supersedes_prior_if_any_current_employer_claim_says_Sam_is_at_Goldman",
+        "decision": "commit",
+        "entity_resolution": {
+          "action": "none",
+          "entity_id": null,
+          "reason": "No existing entity IDs were provided; entities are represented by names from the transcript."
+        },
+        "intent": "extract_atomic_memory_cards",
+        "memory_cards": [
+          {
+            "confidence": "high",
+            "entities": [
+              {
+                "name": "Sam",
+                "role": "subject",
+                "type": "person"
+              },
+              {
+                "name": "Goldman",
+                "role": "former_employer",
+                "type": "organization"
+              },
+              {
+                "name": "Point72",
+                "role": "current_employer",
+                "type": "organization"
+              }
+            ],
+            "kind": "employment_current",
+            "relationships": [
+              {
+                "object": "Goldman",
+                "predicate": "left_employer",
+                "subject": "Sam"
+              },
+              {
+                "object": "Point72",
+                "predicate": "joined_employer",
+                "subject": "Sam"
+              }
+            ],
+            "statement": "Sam left Goldman last month and joined Point72."
+          },
+          {
+            "confidence": "high",
+            "entities": [
+              {
+                "name": "Sam",
+                "role": "subject",
+                "type": "person"
+              },
+              {
+                "name": "Bill Evans",
+                "role": "artist",
+                "type": "person"
+              },
+              {
+                "name": "early Coltrane",
+                "role": "recent_preference",
+                "type": "music"
+              }
+            ],
+            "kind": "music_preference",
+            "relationships": [
+              {
+                "object": "Bill Evans",
+                "predicate": "listens_to",
+                "subject": "Sam"
+              },
+              {
+                "object": "early Coltrane",
+                "predicate": "recently_listens_more_to",
+                "subject": "Sam"
+              }
+            ],
+            "statement": "Sam still listens to Bill Evans, but lately has been listening more to early Coltrane."
+          },
+          {
+            "confidence": "medium",
+            "entities": [
+              {
+                "name": "Sam",
+                "role": "subject",
+                "type": "person"
+              },
+              {
+                "name": "Daniele",
+                "role": "conversation_partner",
+                "type": "person"
+              },
+              {
+                "name": "AI infrastructure",
+                "role": "topic",
+                "type": "topic"
+              }
+            ],
+            "kind": "conversation_topic_interest",
+            "relationships": [
+              {
+                "object": "AI infrastructure",
+                "predicate": "wants_to_discuss",
+                "subject": "Sam"
+              },
+              {
+                "object": "Daniele",
+                "predicate": "wants_to_catch_up_with",
+                "subject": "Sam"
+              }
+            ],
+            "statement": "Sam is interested in catching up with Daniele about AI infrastructure."
+          },
+          {
+            "confidence": "medium",
+            "entities": [
+              {
+                "name": "Sam",
+                "role": "requester",
+                "type": "person"
+              },
+              {
+                "name": "Daniele",
+                "role": "recipient",
+                "type": "person"
+              },
+              {
+                "name": "article",
+                "role": "requested_item",
+                "type": "content"
+              }
+            ],
+            "kind": "follow_up_request",
+            "relationships": [
+              {
+                "object": "article",
+                "predicate": "asked_for",
+                "subject": "Sam"
+              },
+              {
+                "object": "article",
+                "predicate": "should_send",
+                "subject": "Daniele"
+              }
+            ],
+            "statement": "Sam asked Daniele to send an article about AI infrastructure or a related topic."
+          }
+        ],
+        "receipt": {
+          "details": [
+            "Committed current employment update: Sam left Goldman last month and joined Point72.",
+            "Committed music preference update: Sam still listens to Bill Evans and lately listens more to early Coltrane.",
+            "Committed interest/follow-up context around discussing AI infrastructure with Daniele."
+          ],
+          "success": true
+        },
+        "repair_options": []
+      },
+      "prompt": "You are evaluating Brain, a personal memory system.\nReturn only JSON matching the requested schema.\nBe strict on committing durable memory, preserve ambiguity, and never present superseded/deleted facts as current.\nRole: atomic_card_extractor\nFixture ID: conversation_transcript_sam_001\nInput:\nDaniele: Still at Goldman? Sam: No, I left Goldman last month and joined Point72. Daniele: Still listening to Bill Evans? Sam: Yes, but lately more early Coltrane. Daniele: We should catch up about AI infra. Sam: Definitely, send me that article.",
+      "quality_score": 0.3000000000000001,
+      "raw_output_path": "artifacts/gpt55_candidate_review/raw/gpt55_candidate_review_20260508_082419/openai_gpt-5.5__atomic_card_extractor__conversation_transcript_sam_001__0.json",
+      "raw_text": "{\"intent\":\"extract_atomic_memory_cards\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"employment_current\",\"statement\":\"Sam left Goldman last month and joined Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former_employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"current_employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"left_employer\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"joined_employer\",\"object\":\"Point72\"}]},{\"kind\":\"music_preference\",\"statement\":\"Sam still listens to Bill Evans, but lately has been listening more to early Coltrane.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"artist\"},{\"name\":\"early Coltrane\",\"type\":\"music\",\"role\":\"recent_preference\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"listens_to\",\"object\":\"Bill Evans\"},{\"subject\":\"Sam\",\"predicate\":\"recently_listens_more_to\",\"object\":\"early Coltrane\"}]},{\"kind\":\"conversation_topic_interest\",\"statement\":\"Sam is interested in catching up with Daniele about AI infrastructure.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Daniele\",\"type\":\"person\",\"role\":\"conversation_partner\"},{\"name\":\"AI infrastructure\",\"type\":\"topic\",\"role\":\"topic\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"wants_to_discuss\",\"object\":\"AI infrastructure\"},{\"subject\":\"Sam\",\"predicate\":\"wants_to_catch_up_with\",\"object\":\"Daniele\"}]},{\"kind\":\"follow_up_request\",\"statement\":\"Sam asked Daniele to send an article about AI infrastructure or a related topic.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"requester\"},{\"name\":\"Daniele\",\"type\":\"person\",\"role\":\"recipient\"},{\"name\":\"article\",\"type\":\"content\",\"role\":\"requested_item\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"asked_for\",\"object\":\"article\"},{\"subject\":\"Daniele\",\"predicate\":\"should_send\",\"object\":\"article\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No existing entity IDs were provided; entities are represented by names from the transcript.\"},\"conflict_classification\":\"supersedes_prior_if_any_current_employer_claim_says_Sam_is_at_Goldman\",\"answer\":\"Extracted durable memory cards from the transcript. The employment update should supersede any prior current-employer memory stating Sam is still at Goldman.\",\"citations\":[\"Daniele: Still at Goldman? Sam: No, I left Goldman last month and joined Point72.\",\"Daniele: Still listening to Bill Evans? Sam: Yes, but lately more early Coltrane.\",\"Daniele: We should catch up about AI infra. Sam: Definitely, send me that article.\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Committed current employment update: Sam left Goldman last month and joined Point72.\",\"Committed music preference update: Sam still listens to Bill Evans and lately listens more to early Coltrane.\",\"Committed interest/follow-up context around discussing AI infrastructure with Daniele.\"]}}",
+      "retrieved_data": "Daniele: Still at Goldman? Sam: No, I left Goldman last month and joined Point72. Daniele: Still listening to Bill Evans? Sam: Yes, but lately more early Coltrane. Daniele: We should catch up about AI infra. Sam: Definitely, send me that article.",
+      "role": "atomic_card_extractor",
+      "scenario_group": "transcript_source_split",
+      "status": "quality_fail",
+      "subscores": {
+        "conflict_safety": 1.0,
+        "decision_correctness": 0.0,
+        "durability_decision": 1.0,
+        "entity_safety": 1.0,
+        "memory_card_quality": 0.0,
+        "recall_quality": 0.0,
+        "repair_quality": 1.0,
+        "source_memory_split": 1.0,
+        "success_receipt_quality": 1.0
+      },
+      "zero_tolerance_checks": [
+        "long_source_as_single_memory_card",
+        "unsupported_inference"
+      ],
+      "zero_tolerance_failure": false,
+      "zero_tolerance_failure_types": []
+    },
+    {
+      "conclusion": "fail",
+      "conclusion_reason": "zero_tolerance_failure; zero tolerance: silent_high_confidence_overwrite; quality=0.200",
+      "error": null,
+      "estimated_cost_usd": 0.0125,
+      "expected": {
+        "conflict_classification": "supersedes",
+        "detection_only": true,
+        "must_include": [
+          "left Goldman",
+          "Point72"
+        ],
+        "must_not_include": [
+          "duplicate"
+        ]
+      },
+      "failure_class": "zero_tolerance_failure",
+      "failure_reason_codes": [
+        "silent_high_confidence_overwrite"
+      ],
+      "fixture_id": "conflict_employment_transition",
+      "input_tokens": 382,
+      "latency_ms": 9327,
+      "model": "openai:gpt-5.5",
+      "output_tokens": 353,
+      "parsed_output_path": "artifacts/gpt55_candidate_review/parsed/gpt55_candidate_review_20260508_082419/openai_gpt-5.5__conflict_candidate_detector__conflict_employment_transition__0.json",
+      "payload": {
+        "answer": "The new fact conflicts with and supersedes the current fact that Sam works at Goldman. Treat Goldman as a former employer and Point72 as Sam's current employer, preserving the employment transition.",
+        "citations": [],
+        "conflict_classification": "supersession_temporal_transition",
+        "decision": "conflict_detected_update_needed",
+        "entity_resolution": {
+          "action": "reuse_existing_entity",
+          "entity_id": null,
+          "reason": "The new fact refers to the same person, Sam, and directly supersedes the existing current employment fact."
+        },
+        "intent": "detect_conflict_candidate",
+        "memory_cards": [
+          {
+            "confidence": "high",
+            "entities": [
+              {
+                "name": "Sam",
+                "role": "subject",
+                "type": "person"
+              },
+              {
+                "name": "Goldman",
+                "role": "former_employer",
+                "type": "organization"
+              },
+              {
+                "name": "Point72",
+                "role": "current_employer",
+                "type": "organization"
+              }
+            ],
+            "kind": "employment_transition",
+            "relationships": [
+              {
+                "object": "Goldman",
+                "predicate": "left_employer",
+                "subject": "Sam"
+              },
+              {
+                "object": "Point72",
+                "predicate": "joined_employer",
+                "subject": "Sam"
+              }
+            ],
+            "statement": "Sam left Goldman and joined Point72."
+          }
+        ],
+        "receipt": {
+          "details": [
+            "Detected employment transition from Goldman to Point72.",
+            "Existing current Goldman employment should not remain current after applying the new fact."
+          ],
+          "success": true
+        },
+        "repair_options": [
+          "Mark 'Sam works at Goldman' as no longer current/superseded.",
+          "Add 'Sam left Goldman' as a past employment transition.",
+          "Add 'Sam joined Point72' as Sam's current employment fact."
+        ]
+      },
+      "prompt": "You are evaluating Brain, a personal memory system.\nReturn only JSON matching the requested schema.\nBe strict on committing durable memory, preserve ambiguity, and never present superseded/deleted facts as current.\nRole: conflict_candidate_detector\nFixture ID: conflict_employment_transition\nInput:\nExisting current fact: Sam works at Goldman. New fact: Sam left Goldman and joined Point72.",
+      "quality_score": 0.2,
+      "raw_output_path": "artifacts/gpt55_candidate_review/raw/gpt55_candidate_review_20260508_082419/openai_gpt-5.5__conflict_candidate_detector__conflict_employment_transition__0.json",
+      "raw_text": "{\"intent\":\"detect_conflict_candidate\",\"decision\":\"conflict_detected_update_needed\",\"memory_cards\":[{\"kind\":\"employment_transition\",\"statement\":\"Sam left Goldman and joined Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former_employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"current_employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"left_employer\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"joined_employer\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"reuse_existing_entity\",\"entity_id\":null,\"reason\":\"The new fact refers to the same person, Sam, and directly supersedes the existing current employment fact.\"},\"conflict_classification\":\"supersession_temporal_transition\",\"answer\":\"The new fact conflicts with and supersedes the current fact that Sam works at Goldman. Treat Goldman as a former employer and Point72 as Sam's current employer, preserving the employment transition.\",\"citations\":[],\"repair_options\":[\"Mark 'Sam works at Goldman' as no longer current/superseded.\",\"Add 'Sam left Goldman' as a past employment transition.\",\"Add 'Sam joined Point72' as Sam's current employment fact.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected employment transition from Goldman to Point72.\",\"Existing current Goldman employment should not remain current after applying the new fact.\"]}}",
+      "retrieved_data": "Existing current fact: Sam works at Goldman. New fact: Sam left Goldman and joined Point72.",
+      "role": "conflict_candidate_detector",
+      "scenario_group": "employment_transition",
+      "status": "zero_tolerance_fail",
+      "subscores": {
+        "conflict_safety": 0.0,
+        "decision_correctness": 1.0,
+        "durability_decision": 1.0,
+        "entity_safety": 1.0,
+        "memory_card_quality": 1.0,
+        "recall_quality": 0.5,
+        "repair_quality": 1.0,
+        "source_memory_split": 1.0,
+        "success_receipt_quality": 1.0
+      },
+      "zero_tolerance_checks": [
+        "silent_high_confidence_overwrite"
+      ],
+      "zero_tolerance_failure": true,
+      "zero_tolerance_failure_types": [
+        "silent_high_confidence_overwrite"
+      ]
+    },
+    {
+      "conclusion": "pass",
+      "conclusion_reason": "quality=1.000",
+      "error": null,
+      "estimated_cost_usd": 0.00734,
+      "expected": {
+        "citations_required": false,
+        "must_include_any": [
+          "no current",
+          "not enough",
+          "do not know",
+          "don't know",
+          "do not have",
+          "don't have",
+          "no memory",
+          "no evidence"
+        ]
+      },
+      "failure_class": "none",
+      "failure_reason_codes": [],
+      "fixture_id": "recall_absence_scoped",
+      "input_tokens": 382,
+      "latency_ms": 3891,
+      "model": "openai:gpt-5.5",
+      "output_tokens": 181,
+      "parsed_output_path": "artifacts/gpt55_candidate_review/parsed/gpt55_candidate_review_20260508_082419/openai_gpt-5.5__recall_synthesizer__recall_absence_scoped__0.json",
+      "payload": {
+        "answer": "I don\u2019t have a current memory indicating whether Sara prefers morning flights.",
+        "citations": [],
+        "conflict_classification": "absence_of_current_fact",
+        "decision": "no_current_memory_found",
+        "entity_resolution": {
+          "action": "not_resolved",
+          "entity_id": null,
+          "reason": "Retrieved facts contain no current travel preferences for Sara."
+        },
+        "intent": "answer_question_from_memory",
+        "memory_cards": [],
+        "receipt": {
+          "details": [
+            "No current travel preference for Sara was found in retrieved facts.",
+            "Did not infer a preference from absence of evidence."
+          ],
+          "success": true
+        },
+        "repair_options": [
+          "Ask Sara whether she prefers morning flights before making travel assumptions.",
+          "If Sara confirms a preference, save it as a current travel preference."
+        ]
+      },
+      "prompt": "You are evaluating Brain, a personal memory system.\nReturn only JSON matching the requested schema.\nBe strict on committing durable memory, preserve ambiguity, and never present superseded/deleted facts as current.\nRole: recall_synthesizer\nFixture ID: recall_absence_scoped\nInput:\nRetrieved facts contain no current travel preferences for Sara. Question: Does Sara prefer morning flights?",
+      "quality_score": 1.0,
+      "raw_output_path": "artifacts/gpt55_candidate_review/raw/gpt55_candidate_review_20260508_082419/openai_gpt-5.5__recall_synthesizer__recall_absence_scoped__0.json",
+      "raw_text": "{\"intent\":\"answer_question_from_memory\",\"decision\":\"no_current_memory_found\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"not_resolved\",\"entity_id\":null,\"reason\":\"Retrieved facts contain no current travel preferences for Sara.\"},\"conflict_classification\":\"absence_of_current_fact\",\"answer\":\"I don\u2019t have a current memory indicating whether Sara prefers morning flights.\",\"citations\":[],\"repair_options\":[\"Ask Sara whether she prefers morning flights before making travel assumptions.\",\"If Sara confirms a preference, save it as a current travel preference.\"],\"receipt\":{\"success\":true,\"details\":[\"No current travel preference for Sara was found in retrieved facts.\",\"Did not infer a preference from absence of evidence.\"]}}",
+      "retrieved_data": "Retrieved facts contain no current travel preferences for Sara. Question: Does Sara prefer morning flights?",
+      "role": "recall_synthesizer",
+      "scenario_group": "absence_claims",
+      "status": "ok",
+      "subscores": {
+        "conflict_safety": 1.0,
+        "decision_correctness": 1.0,
+        "durability_decision": 1.0,
+        "entity_safety": 1.0,
+        "memory_card_quality": 1.0,
+        "recall_quality": 1.0,
+        "repair_quality": 1.0,
+        "source_memory_split": 1.0,
+        "success_receipt_quality": 1.0
+      },
+      "zero_tolerance_checks": [
+        "unsupported_absence_claim"
+      ],
+      "zero_tolerance_failure": false,
+      "zero_tolerance_failure_types": []
+    },
+    {
+      "actual_model": "openai:gpt-5.5",
+      "conclusion": "fail",
+      "conclusion_reason": "quality_failure; quality=0.300",
+      "error": null,
+      "estimated_cost_usd": 0.01461,
+      "expected": {
+        "decision_any": [
+          "commit_success",
+          "commit_with_warning"
+        ],
+        "memory_kinds": [
+          "person_interaction",
+          "person_fact",
+          "open_loop",
+          "source_summary"
+        ],
+        "must_include": [
+          "Point72",
+          "Bill Evans",
+          "early Coltrane",
+          "article"
+        ],
+        "must_not_include": [
+          "hates Bill Evans"
+        ],
+        "source_memory_split": true
+      },
+      "failure_class": "quality_failure",
+      "failure_reason_codes": [],
+      "fixture_id": "conversation_transcript_sam_001",
+      "input_tokens": 522,
+      "latency_ms": 7345,
+      "model": "openai:gpt-5.5 + role contract",
+      "output_tokens": 400,
+      "parsed_output_path": "artifacts/gpt55_candidate_review/parsed/gpt55_contract_review_20260508_092433/openai_gpt-5.5__atomic_card_extractor__conversation_transcript_sam_001__0.json",
+      "payload": {
+        "answer": "",
+        "citations": [
+          "Sam: No, I left Goldman last month and joined Point72.",
+          "Sam: Yes, but lately more early Coltrane."
+        ],
+        "conflict_classification": "none",
+        "decision": "commit_success",
+        "entity_resolution": {
+          "action": "none",
+          "entity_id": null,
+          "reason": "No existing entity IDs were provided; facts are explicitly about Sam in the transcript."
+        },
+        "intent": "extract_atomic_memory_cards",
+        "memory_cards": [
+          {
+            "confidence": "high",
+            "entities": [
+              {
+                "name": "Sam",
+                "role": "subject",
+                "type": "person"
+              },
+              {
+                "name": "Goldman",
+                "role": "former_employer",
+                "type": "organization"
+              },
+              {
+                "name": "Point72",
+                "role": "current_employer",
+                "type": "organization"
+              }
+            ],
+            "kind": "employment",
+            "relationships": [
+              {
+                "object": "Goldman",
+                "predicate": "left",
+                "subject": "Sam"
+              },
+              {
+                "object": "Point72",
+                "predicate": "joined",
+                "subject": "Sam"
+              }
+            ],
+            "statement": "Sam left Goldman last month and joined Point72."
+          },
+          {
+            "confidence": "high",
+            "entities": [
+              {
+                "name": "Sam",
+                "role": "subject",
+                "type": "person"
+              },
+              {
+                "name": "Bill Evans",
+                "role": "artist",
+                "type": "person"
+              }
+            ],
+            "kind": "music_preference",
+            "relationships": [
+              {
+                "object": "Bill Evans",
+                "predicate": "listens_to",
+                "subject": "Sam"
+              }
+            ],
+            "statement": "Sam still listens to Bill Evans."
+          },
+          {
+            "confidence": "high",
+            "entities": [
+              {
+                "name": "Sam",
+                "role": "subject",
+                "type": "person"
+              },
+              {
+                "name": "early Coltrane",
+                "role": "listening_interest",
+                "type": "music"
+              }
+            ],
+            "kind": "music_preference",
+            "relationships": [
+              {
+                "object": "early Coltrane",
+                "predicate": "listens_more_lately_to",
+                "subject": "Sam"
+              }
+            ],
+            "statement": "Sam has lately been listening more to early Coltrane."
+          }
+        ],
+        "receipt": {
+          "details": [
+            "Extracted three atomic memory cards from explicitly supported statements."
+          ],
+          "success": true
+        },
+        "repair_options": []
+      },
+      "prompt": "You are evaluating Brain, a personal memory system.\nReturn only JSON matching the requested schema.\nBe strict on committing durable memory, preserve ambiguity, and never present superseded/deleted facts as current.\nRole: atomic_card_extractor\nFixture ID: conversation_transcript_sam_001\nRole contract:\n- Extract atomic memory cards only from facts explicitly supported by the input; omit or lower confidence on ambiguous references.\n- When extraction succeeds, use decision commit_success or commit_with_warning; do not emit backend conflict-policy decisions.\n- Zero tolerance: do not add unsupported details or attach ambiguous references to nearby topics unless the input explicitly links them.\nInput:\nDaniele: Still at Goldman? Sam: No, I left Goldman last month and joined Point72. Daniele: Still listening to Bill Evans? Sam: Yes, but lately more early Coltrane. Daniele: We should catch up about AI infra. Sam: Definitely, send me that article.",
+      "quality_score": 0.3000000000000001,
+      "raw_output_path": "artifacts/gpt55_candidate_review/raw/gpt55_contract_review_20260508_092433/openai_gpt-5.5__atomic_card_extractor__conversation_transcript_sam_001__0.json",
+      "raw_text": "{\"intent\":\"extract_atomic_memory_cards\",\"decision\":\"commit_success\",\"memory_cards\":[{\"kind\":\"employment\",\"statement\":\"Sam left Goldman last month and joined Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former_employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"current_employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"left\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]},{\"kind\":\"music_preference\",\"statement\":\"Sam still listens to Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"artist\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"listens_to\",\"object\":\"Bill Evans\"}]},{\"kind\":\"music_preference\",\"statement\":\"Sam has lately been listening more to early Coltrane.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"early Coltrane\",\"type\":\"music\",\"role\":\"listening_interest\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"listens_more_lately_to\",\"object\":\"early Coltrane\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No existing entity IDs were provided; facts are explicitly about Sam in the transcript.\"},\"conflict_classification\":\"none\",\"answer\":\"\",\"citations\":[\"Sam: No, I left Goldman last month and joined Point72.\",\"Sam: Yes, but lately more early Coltrane.\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Extracted three atomic memory cards from explicitly supported statements.\"]}}",
+      "retrieved_data": "Daniele: Still at Goldman? Sam: No, I left Goldman last month and joined Point72. Daniele: Still listening to Bill Evans? Sam: Yes, but lately more early Coltrane. Daniele: We should catch up about AI infra. Sam: Definitely, send me that article.",
+      "role": "atomic_card_extractor",
+      "run_id": "gpt55_contract_review_20260508_092433",
+      "scenario_group": "transcript_source_split",
+      "status": "quality_fail",
+      "subscores": {
+        "conflict_safety": 1.0,
+        "decision_correctness": 1.0,
+        "durability_decision": 1.0,
+        "entity_safety": 1.0,
+        "memory_card_quality": 0.0,
+        "recall_quality": 0.75,
+        "repair_quality": 1.0,
+        "source_memory_split": 1.0,
+        "success_receipt_quality": 1.0
+      },
+      "zero_tolerance_checks": [
+        "long_source_as_single_memory_card",
+        "unsupported_inference"
+      ],
+      "zero_tolerance_failure": false,
+      "zero_tolerance_failure_types": []
+    },
+    {
+      "actual_model": "openai:gpt-5.5",
+      "conclusion": "fail",
+      "conclusion_reason": "quality_failure; quality=0.200",
+      "error": null,
+      "estimated_cost_usd": 0.00827,
+      "expected": {
+        "conflict_classification": "supersedes",
+        "detection_only": true,
+        "must_include": [
+          "left Goldman",
+          "Point72"
+        ],
+        "must_not_include": [
+          "duplicate"
+        ]
+      },
+      "failure_class": "quality_failure",
+      "failure_reason_codes": [],
+      "fixture_id": "conflict_employment_transition",
+      "input_tokens": 508,
+      "latency_ms": 4865,
+      "model": "openai:gpt-5.5 + role contract",
+      "output_tokens": 191,
+      "parsed_output_path": "artifacts/gpt55_candidate_review/parsed/gpt55_contract_review_20260508_092433/openai_gpt-5.5__conflict_candidate_detector__conflict_employment_transition__0.json",
+      "payload": {
+        "answer": "Possible conflict candidate detected: the existing current fact says Sam works at Goldman, while the new fact says Sam left Goldman and joined Point72. These statements may indicate an employment transition that affects the current validity of the existing fact.",
+        "citations": [
+          "Existing current fact: Sam works at Goldman.",
+          "New fact: Sam left Goldman and joined Point72."
+        ],
+        "conflict_classification": "employment_transition_conflict_candidate",
+        "decision": "possible_conflict",
+        "entity_resolution": {
+          "action": "matched_existing_entity",
+          "entity_id": null,
+          "reason": "Both facts refer to Sam; no additional disambiguating identifier is provided."
+        },
+        "intent": "detect_conflict_candidate",
+        "memory_cards": [],
+        "receipt": {
+          "details": [],
+          "success": false
+        },
+        "repair_options": []
+      },
+      "prompt": "You are evaluating Brain, a personal memory system.\nReturn only JSON matching the requested schema.\nBe strict on committing durable memory, preserve ambiguity, and never present superseded/deleted facts as current.\nRole: conflict_candidate_detector\nFixture ID: conflict_employment_transition\nRole contract:\n- Detection-only role: identify possible conflict candidates and evidence, but do not decide ask/keep/link/supersede behavior.\n- Do not emit repair options, action buttons, success receipts, memory cards, or policy actions such as commit, overwrite, or mark superseded.\n- If a decision field is necessary, use possible_conflict, conflict_candidate, or needs_policy only.\n- This fixture is detection-only: output classification and supporting evidence, not a final backend policy choice.\nInput:\nExisting current fact: Sam works at Goldman. New fact: Sam left Goldman and joined Point72.",
+      "quality_score": 0.2,
+      "raw_output_path": "artifacts/gpt55_candidate_review/raw/gpt55_contract_review_20260508_092433/openai_gpt-5.5__conflict_candidate_detector__conflict_employment_transition__0.json",
+      "raw_text": "{\"intent\":\"detect_conflict_candidate\",\"decision\":\"possible_conflict\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"matched_existing_entity\",\"entity_id\":null,\"reason\":\"Both facts refer to Sam; no additional disambiguating identifier is provided.\"},\"conflict_classification\":\"employment_transition_conflict_candidate\",\"answer\":\"Possible conflict candidate detected: the existing current fact says Sam works at Goldman, while the new fact says Sam left Goldman and joined Point72. These statements may indicate an employment transition that affects the current validity of the existing fact.\",\"citations\":[\"Existing current fact: Sam works at Goldman.\",\"New fact: Sam left Goldman and joined Point72.\"],\"repair_options\":[],\"receipt\":{\"success\":false,\"details\":[]}}",
+      "retrieved_data": "Existing current fact: Sam works at Goldman. New fact: Sam left Goldman and joined Point72.",
+      "role": "conflict_candidate_detector",
+      "run_id": "gpt55_contract_review_20260508_092433",
+      "scenario_group": "employment_transition",
+      "status": "quality_fail",
+      "subscores": {
+        "conflict_safety": 0.0,
+        "decision_correctness": 1.0,
+        "durability_decision": 1.0,
+        "entity_safety": 1.0,
+        "memory_card_quality": 1.0,
+        "recall_quality": 1.0,
+        "repair_quality": 1.0,
+        "source_memory_split": 1.0,
+        "success_receipt_quality": 1.0
+      },
+      "zero_tolerance_checks": [
+        "silent_high_confidence_overwrite"
+      ],
+      "zero_tolerance_failure": false,
+      "zero_tolerance_failure_types": []
+    },
+    {
+      "actual_model": "openai:gpt-5.5",
+      "conclusion": "pass",
+      "conclusion_reason": "quality=1.000",
+      "error": null,
+      "estimated_cost_usd": 0.006795000000000001,
+      "expected": {
+        "citations_required": false,
+        "must_include_any": [
+          "no current",
+          "not enough",
+          "do not know",
+          "don't know",
+          "do not have",
+          "don't have",
+          "no memory",
+          "no evidence"
+        ]
+      },
+      "failure_class": "none",
+      "failure_reason_codes": [],
+      "fixture_id": "recall_absence_scoped",
+      "input_tokens": 483,
+      "latency_ms": 3709,
+      "model": "openai:gpt-5.5 + role contract",
+      "output_tokens": 146,
+      "parsed_output_path": "artifacts/gpt55_candidate_review/parsed/gpt55_contract_review_20260508_092433/openai_gpt-5.5__recall_synthesizer__recall_absence_scoped__0.json",
+      "payload": {
+        "answer": "I do not know whether Sara prefers morning flights; there is no current evidence for Sara's travel preferences.",
+        "citations": [],
+        "conflict_classification": "absence_of_current_evidence",
+        "decision": "no_current_evidence",
+        "entity_resolution": {
+          "action": "none",
+          "entity_id": null,
+          "reason": "No current travel preference evidence for Sara was provided."
+        },
+        "intent": "answer_question_from_memory",
+        "memory_cards": [],
+        "receipt": {
+          "details": [
+            "Answered only from the provided current evidence scope.",
+            "Did not infer a preference from absence of evidence."
+          ],
+          "success": true
+        },
+        "repair_options": []
+      },
+      "prompt": "You are evaluating Brain, a personal memory system.\nReturn only JSON matching the requested schema.\nBe strict on committing durable memory, preserve ambiguity, and never present superseded/deleted facts as current.\nRole: recall_synthesizer\nFixture ID: recall_absence_scoped\nRole contract:\n- Answer only from already-filtered current evidence; do not return deleted, superseded, stale, or unrelated memories as current.\n- When current evidence is absent, say there is no current evidence or you do not know; do not infer a fact from absence.\n- Zero tolerance: absence of evidence supports only uncertainty/no-current-evidence phrasing, not a positive or negative preference claim.\nInput:\nRetrieved facts contain no current travel preferences for Sara. Question: Does Sara prefer morning flights?",
+      "quality_score": 1.0,
+      "raw_output_path": "artifacts/gpt55_candidate_review/raw/gpt55_contract_review_20260508_092433/openai_gpt-5.5__recall_synthesizer__recall_absence_scoped__0.json",
+      "raw_text": "{\"intent\":\"answer_question_from_memory\",\"decision\":\"no_current_evidence\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No current travel preference evidence for Sara was provided.\"},\"conflict_classification\":\"absence_of_current_evidence\",\"answer\":\"I do not know whether Sara prefers morning flights; there is no current evidence for Sara's travel preferences.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Answered only from the provided current evidence scope.\",\"Did not infer a preference from absence of evidence.\"]}}",
+      "retrieved_data": "Retrieved facts contain no current travel preferences for Sara. Question: Does Sara prefer morning flights?",
+      "role": "recall_synthesizer",
+      "run_id": "gpt55_contract_review_20260508_092433",
+      "scenario_group": "absence_claims",
+      "status": "ok",
+      "subscores": {
+        "conflict_safety": 1.0,
+        "decision_correctness": 1.0,
+        "durability_decision": 1.0,
+        "entity_safety": 1.0,
+        "memory_card_quality": 1.0,
+        "recall_quality": 1.0,
+        "repair_quality": 1.0,
+        "source_memory_split": 1.0,
+        "success_receipt_quality": 1.0
+      },
+      "zero_tolerance_checks": [
+        "unsupported_absence_claim"
+      ],
+      "zero_tolerance_failure": false,
+      "zero_tolerance_failure_types": []
+    }
+  ],
+  "run_id": "gpt55_candidate_review_20260508_082419",
+  "selection_note": "Comparison of baseline GPT-5.5 prompt versus role-specific zero-tolerance contract prompt on three unpromoted fine-grained roles.",
+  "updated_at": "2026-05-08T09:24:49.235539+00:00"
+}

@@ -8,7 +8,7 @@ from typing import Any
 import pytest
 
 from memory_stack.config import Settings
-from memory_stack.evals.model_fixtures import ModelEvalFixture, select_fixtures
+from memory_stack.evals.model_fixtures import ModelEvalFixture, fixture_prompt, select_fixtures
 from memory_stack.evals.model_matrix import load_model_registry, select_model_candidates
 from memory_stack.evals.model_runner import (
     ModelEvalRunConfig,
@@ -24,6 +24,7 @@ from memory_stack.evals.model_runner import (
     write_raw_output,
 )
 from memory_stack.evals.provider_client import LiveProviderClient, ModelCallResult, ProviderCallError, openai_reasoning_effort
+from memory_stack.provider_auth import OpenAICodexCredential, upsert_openai_codex_profile
 from memory_stack.evals.scoring import (
     EvalRecord,
     FailureClass,
@@ -285,17 +286,108 @@ def test_conflict_fine_grained_fixtures_are_backend_policy_bound() -> None:
     )
 
     assert candidate_fixtures
-    assert all(fixture.expected["requires_user_choice"] is True for fixture in candidate_fixtures)
+    assert all(fixture.expected["detection_only"] is True for fixture in candidate_fixtures)
+    assert all("decision" not in fixture.expected for fixture in candidate_fixtures)
+    assert all("decision_any" not in fixture.expected for fixture in candidate_fixtures)
     assert explainer_fixtures
-    assert all(
-        fixture.expected["safe_action_space"] == [
-            "approve_supersession",
-            "keep_both",
-            "reject_new",
-            "edit",
-        ]
+    assert {fixture.context["source_role"] for fixture in explainer_fixtures} == {"conflict_classifier"}
+
+    action_space_by_fixture = {
+        fixture.id: fixture.expected["safe_action_space"]
         for fixture in explainer_fixtures
+    }
+    assert action_space_by_fixture["duplicate_sam_bill_evans_001"] == [
+        "link_duplicate",
+        "keep_existing",
+        "add_anyway",
+        "edit",
+        "cancel",
+    ]
+    assert action_space_by_fixture["additive_sam_preferences_001"] == [
+        "add_new",
+        "keep_existing",
+        "edit",
+        "cancel",
+    ]
+    assert action_space_by_fixture["supersession_sam_job_001"] == [
+        "approve_supersession",
+        "keep_both",
+        "reject_new",
+        "edit",
+    ]
+
+
+def test_entity_candidate_ranker_uses_entity_resolution_fixtures_only() -> None:
+    fixtures = select_fixtures(
+        fixture_set="brain-model-test-v2",
+        roles={"entity_candidate_ranker"},
+        mode="fine-grained",
     )
+
+    assert fixtures
+    assert {fixture.context["source_role"] for fixture in fixtures} == {"entity_resolution"}
+
+
+def test_durability_filter_derives_explicit_expected_durable_value() -> None:
+    fixtures = select_fixtures(
+        fixture_set="brain-model-test-v2",
+        roles={"durability_filter"},
+        mode="fine-grained",
+    )
+
+    assert fixtures
+    assert all("expected_durable" in fixture.expected for fixture in fixtures)
+
+
+def test_success_receipt_generator_is_not_a_fine_grained_model_fixture() -> None:
+    fixtures = select_fixtures(
+        fixture_set="brain-model-test-v2",
+        roles={"success_receipt_generator"},
+        mode="fine-grained",
+    )
+
+    assert fixtures == []
+
+
+def test_fixture_prompt_includes_role_specific_zero_tolerance_contracts() -> None:
+    conflict_fixture = next(
+        fixture
+        for fixture in select_fixtures(
+            fixture_set="brain-model-test-v2",
+            roles={"conflict_candidate_detector"},
+            mode="fine-grained",
+        )
+        if fixture.id == "conflict_employment_transition"
+    )
+    atomic_fixture = next(
+        fixture
+        for fixture in select_fixtures(
+            fixture_set="brain-model-test-v2",
+            roles={"atomic_card_extractor"},
+            mode="fine-grained",
+        )
+        if fixture.id == "conversation_transcript_sam_001"
+    )
+    recall_fixture = next(
+        fixture
+        for fixture in select_fixtures(
+            fixture_set="brain-model-test-v2",
+            roles={"recall_synthesizer"},
+            mode="fine-grained",
+        )
+        if fixture.id == "recall_absence_scoped"
+    )
+
+    conflict_prompt = fixture_prompt(conflict_fixture)
+    atomic_prompt = fixture_prompt(atomic_fixture)
+    recall_prompt = fixture_prompt(recall_fixture)
+
+    assert "Detection-only role" in conflict_prompt
+    assert "do not decide ask/keep/link/supersede behavior" in conflict_prompt
+    assert "do not add unsupported details" in atomic_prompt
+    assert "attach ambiguous references to nearby topics" in atomic_prompt
+    assert "no current evidence" in recall_prompt
+    assert "do not infer a fact from absence" in recall_prompt
 
 
 def test_model_test_initial_model_set_runs_through_config(tmp_path) -> None:
@@ -411,6 +503,171 @@ def test_success_receipt_generator_fails_missing_receipt() -> None:
 
     assert zero is True
     assert "success_receipt_missing" in types
+
+
+def test_memory_kinds_any_accepts_any_expected_kind() -> None:
+    fixture = ModelEvalFixture(
+        id="research_question",
+        role="memory_kind_classifier",
+        scenario_group="kind",
+        input_text="Need to research the relationship between language and intelligence.",
+        expected={"memory_kinds_any": ["research_question", "open_question"]},
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {"memory_cards": [{"kind": "open_question", "statement": "Research language and intelligence."}]},
+        status="ok",
+    )
+
+    assert scores["memory_card_quality"] == 1.0
+    assert zero is False
+    assert types == []
+
+
+def test_recall_daughters_fixture_does_not_require_twins_for_direct_question() -> None:
+    fixture = next(
+        fixture
+        for fixture in select_fixtures(
+            fixture_set="brain-model-test-v2",
+            roles={"recall_synthesizer"},
+        )
+        if fixture.id == "recall_daughters_001"
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {"answer": "Your daughters are Nur and Sara.", "citations": ["mem_family"]},
+        status="ok",
+    )
+
+    assert scores["recall_quality"] == 1.0
+    assert zero is False
+    assert types == []
+
+
+def test_recall_absence_allows_uncertain_repetition_of_query_phrase() -> None:
+    fixture = next(
+        fixture
+        for fixture in select_fixtures(
+            fixture_set="brain-model-test-v2",
+            roles={"recall_synthesizer"},
+        )
+        if fixture.id == "recall_absence_scoped"
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {"answer": "I don’t have any current memory indicating whether Sara prefers morning flights."},
+        status="ok",
+    )
+
+    assert scores["recall_quality"] == 1.0
+    assert zero is False
+    assert types == []
+
+
+def test_recall_irrelevant_dump_zero_tolerance_requires_irrelevant_content() -> None:
+    fixture = ModelEvalFixture(
+        id="recall_relevance",
+        role="recall_synthesizer",
+        scenario_group="recall",
+        input_text="Question: What did I conclude about Brain and Cognee?",
+        expected={
+            "must_include": ["Brain DB", "Cognee"],
+            "must_not_include": ["Bill Evans"],
+        },
+        zero_tolerance_checks=("irrelevant_memory_dump",),
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {"answer": "Cognee should be a rebuildable projection."},
+        status="ok",
+    )
+
+    assert scores["recall_quality"] < 1.0
+    assert zero is False
+    assert types == []
+
+    _bad_scores, bad_zero, bad_types = score_model_output(
+        fixture,
+        {"answer": "Cognee should be rebuildable. Bill Evans is Sam's music preference."},
+        status="ok",
+    )
+
+    assert bad_zero is True
+    assert bad_types == ["irrelevant_memory_dump"]
+
+
+def test_deleted_memory_returned_zero_tolerance_is_enforced_for_recall() -> None:
+    fixture = ModelEvalFixture(
+        id="recall_deleted",
+        role="recall_synthesizer",
+        scenario_group="recall",
+        input_text="Current: Sam likes Bill Evans. Deleted: Sam likes Taylor Swift.",
+        expected={
+            "must_include": ["Bill Evans"],
+            "must_not_include": ["Taylor Swift"],
+        },
+        zero_tolerance_checks=("deleted_memory_returned",),
+    )
+
+    _scores, zero, types = score_model_output(
+        fixture,
+        {"answer": "Sam likes Bill Evans and Taylor Swift."},
+        status="ok",
+    )
+
+    assert zero is True
+    assert types == ["deleted_memory_returned"]
+
+
+def test_unsupported_inference_zero_tolerance_requires_forbidden_content() -> None:
+    fixture = ModelEvalFixture(
+        id="atomic_missing_expected_term",
+        role="atomic_card_extractor",
+        scenario_group="atomic",
+        input_text="Sam still listens to Bill Evans. Sam should be sent an article.",
+        expected={
+            "must_include": ["Bill Evans", "article"],
+            "must_not_include": ["hates Bill Evans"],
+        },
+        zero_tolerance_checks=("unsupported_inference",),
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "memory_cards": [
+                {
+                    "kind": "music_preference",
+                    "statement": "Sam still listens to Bill Evans.",
+                }
+            ],
+        },
+        status="ok",
+    )
+
+    assert scores["memory_card_quality"] < 1.0
+    assert zero is False
+    assert types == []
+
+    _bad_scores, bad_zero, bad_types = score_model_output(
+        fixture,
+        {
+            "memory_cards": [
+                {
+                    "kind": "music_preference",
+                    "statement": "Sam hates Bill Evans.",
+                }
+            ],
+        },
+        status="ok",
+    )
+
+    assert bad_zero is True
+    assert bad_types == ["unsupported_inference"]
 
 
 def test_intent_router_scores_router_aliases_from_source_role() -> None:
@@ -540,6 +797,35 @@ def test_conflict_candidate_detector_rejects_auto_commit_policy_decision() -> No
 
     assert zero is True
     assert types == ["silent_high_confidence_overwrite"]
+
+
+def test_conflict_candidate_detector_classification_miss_is_not_overwrite_zero_tolerance() -> None:
+    fixture = ModelEvalFixture(
+        id="conflict_candidate",
+        role="conflict_candidate_detector",
+        scenario_group="conflict",
+        input_text="Existing: Sam works at Goldman. New: Sam left Goldman and joined Point72.",
+        expected={
+            "conflict_classification": "supersedes",
+            "detection_only": True,
+        },
+        zero_tolerance_checks=("silent_high_confidence_overwrite",),
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "conflict_type": "employment_transition_conflict_candidate",
+            "decision": "possible_conflict",
+            "memory_cards": [],
+            "repair_options": [],
+        },
+        status="ok",
+    )
+
+    assert scores["conflict_safety"] == 0.0
+    assert zero is False
+    assert types == []
 
 
 def test_conflict_explainer_rejects_actions_outside_backend_safe_space() -> None:
@@ -1018,7 +1304,10 @@ def test_live_provider_client_uses_reasoning_effort_override() -> None:
             return Response()
 
     http_client = RecordingClient()
-    client = LiveProviderClient(Settings(openai_api_key="test-key"), http_client=http_client)
+    client = LiveProviderClient(
+        Settings(openai_api_key="test-key", openai_auth_mode="api_key"),
+        http_client=http_client,
+    )
     candidate = select_model_candidates(
         load_model_registry(REGISTRY_PATH),
         model_refs=["openai:gpt-5.5-xhigh"],
@@ -1032,6 +1321,54 @@ def test_live_provider_client_uses_reasoning_effort_override() -> None:
     assert http_client.last_json is not None
     assert http_client.last_json["model"] == "gpt-5.5"
     assert http_client.last_json["reasoning"] == {"effort": "xhigh"}
+
+
+def test_live_provider_client_defaults_openai_text_to_oauth(tmp_path: Path) -> None:
+    class RecordingClient:
+        def __init__(self) -> None:
+            self.last_headers: dict[str, str] | None = None
+            self.last_url: str | None = None
+
+        def post(self, url: str, *, headers: dict[str, str], json: dict[str, Any]) -> Any:
+            self.last_url = url
+            self.last_headers = headers
+
+            class Response:
+                status_code = 200
+
+                @staticmethod
+                def json() -> dict[str, Any]:
+                    return {"output_text": "{}"}
+
+            return Response()
+
+    settings = Settings(
+        openai_api_key="sk-should-not-be-used",
+        brain_provider_auth_profiles_path=str(tmp_path / "profiles.json"),
+        brain_provider_auth_state_dir=str(tmp_path / "state"),
+    )
+    upsert_openai_codex_profile(
+        settings,
+        OpenAICodexCredential(
+            access="oauth-access",
+            refresh="oauth-refresh",
+            expires=int(time.time() * 1000) + 600_000,
+        ),
+    )
+    http_client = RecordingClient()
+    client = LiveProviderClient(settings, http_client=http_client)
+    candidate = select_model_candidates(
+        load_model_registry(REGISTRY_PATH),
+        model_refs=["openai:gpt-5.5"],
+        roles={"eval_judge"},
+        scope="core",
+        include_judge=True,
+    )[0]
+
+    client.complete_json(candidate, prompt="test", schema={})
+
+    assert http_client.last_url == "https://chatgpt.com/backend-api/codex/responses"
+    assert http_client.last_headers == {"Authorization": "Bearer oauth-access"}
 
 
 def test_live_provider_client_maps_google_reasoning_effort_to_thinking_level() -> None:
@@ -1523,7 +1860,7 @@ def test_rescore_rejects_semantic_to_provider_transition(tmp_path) -> None:
 
 
 def test_live_provider_client_retries_transient_provider_error(monkeypatch) -> None:
-    settings = Settings(openai_api_key="test-key")
+    settings = Settings(openai_api_key="test-key", openai_auth_mode="api_key")
     client = LiveProviderClient(
         settings,
         retry_attempts=2,

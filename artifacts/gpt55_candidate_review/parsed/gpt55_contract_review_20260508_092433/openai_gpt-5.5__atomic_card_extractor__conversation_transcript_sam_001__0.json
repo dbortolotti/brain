@@ -1,0 +1,112 @@
+{
+  "fixture_id": "conversation_transcript_sam_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "",
+    "citations": [
+      "Sam: No, I left Goldman last month and joined Point72.",
+      "Sam: Yes, but lately more early Coltrane."
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_success",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No existing entity IDs were provided; facts are explicitly about Sam in the transcript."
+    },
+    "intent": "extract_atomic_memory_cards",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman last month and joined Point72."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "artist",
+            "type": "person"
+          }
+        ],
+        "kind": "music_preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "listens_to",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam still listens to Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "listening_interest",
+            "type": "music"
+          }
+        ],
+        "kind": "music_preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "listens_more_lately_to",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam has lately been listening more to early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted three atomic memory cards from explicitly supported statements."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "atomic_card_extractor",
+  "run_id": "gpt55_contract_review_20260508_092433"
+}

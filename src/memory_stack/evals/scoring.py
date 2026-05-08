@@ -182,6 +182,7 @@ ROLE_ALLOWED_ZERO_TOLERANCE_CHECKS: dict[str, set[str]] = {
         "deleted_memory_returned",
         "deleted_or_superseded_memory_returned_as_current",
         "irrelevant_memory_dump",
+        "relationship_direction_inversion",
         "raw_email_exposed",
     },
     "groundedness_checker": {
@@ -807,6 +808,7 @@ def score_model_output(
 
     scores["memory_card_quality"] = min(
         score_expected_kinds(memory_cards, expected.get("memory_kinds", [])),
+        score_expected_kinds_any(memory_cards, expected.get("memory_kinds_any", [])),
         score_relationships(memory_cards, expected.get("relationships", [])),
         score_terms(text, expected.get("must_include", [])),
         score_any_term(text, expected.get("must_include_any", [])),
@@ -946,6 +948,17 @@ def score_expected_kinds(memory_cards: list[Any], expected_kinds: list[str]) -> 
     return hits / len(expected_kinds)
 
 
+def score_expected_kinds_any(memory_cards: list[Any], expected_kinds: list[str]) -> float:
+    if not expected_kinds:
+        return 1.0
+    kinds = {
+        normalize(str(card.get("kind", "")))
+        for card in memory_cards
+        if isinstance(card, dict)
+    }
+    return 1.0 if kinds & {normalize(kind) for kind in expected_kinds} else 0.0
+
+
 def score_relationships(memory_cards: list[Any], expected_relationships: list[str]) -> float:
     if not expected_relationships:
         return 1.0
@@ -963,22 +976,85 @@ def score_relationships(memory_cards: list[Any], expected_relationships: list[st
 def score_terms(text: str, terms: list[str]) -> float:
     if not terms:
         return 1.0
-    lower = text.casefold()
-    return sum(1 for term in terms if term.casefold() in lower) / len(terms)
+    lower = normalize_match_text(text)
+    return sum(1 for term in terms if normalize_match_text(term) in lower) / len(terms)
 
 
 def score_any_term(text: str, terms: list[str]) -> float:
     if not terms:
         return 1.0
-    lower = text.casefold()
-    return 1.0 if any(term.casefold() in lower for term in terms) else 0.0
+    lower = normalize_match_text(text)
+    return 1.0 if any(normalize_match_text(term) in lower for term in terms) else 0.0
 
 
 def score_forbidden_terms(text: str, terms: list[str]) -> float:
     if not terms:
         return 1.0
-    lower = text.casefold()
-    return 0.0 if any(term.casefold() in lower for term in terms) else 1.0
+    return 0.0 if any(contains_forbidden_term_assertively(text, term) for term in terms) else 1.0
+
+
+def contains_forbidden_term_assertively(text: str, term: str) -> bool:
+    lower = normalize_match_text(text)
+    needle = normalize_match_text(term)
+    start = lower.find(needle)
+    while start != -1:
+        before = lower[max(0, start - 90):start]
+        after = lower[start + len(needle):start + len(needle) + 90]
+        window = f"{before}{needle}{after}"
+        if not _mentions_forbidden_term_as_excluded(window):
+            return True
+        start = lower.find(needle, start + 1)
+    return False
+
+
+def normalize_match_text(text: str) -> str:
+    return (
+        text.casefold()
+        .replace("’", "'")
+        .replace("‘", "'")
+        .replace("“", '"')
+        .replace("”", '"')
+    )
+
+
+def _mentions_forbidden_term_as_excluded(window: str) -> bool:
+    exclusion_markers = (
+        "not ",
+        "no ",
+        "never ",
+        "without ",
+        "doesn't ",
+        "does not ",
+        "do not ",
+        "don't ",
+        "cannot ",
+        "can't ",
+        "wasn't ",
+        "was not ",
+        "weren't ",
+        "were not ",
+        "ignored ",
+        "ignore ",
+        "reject ",
+        "rejected ",
+        "denied ",
+        "blocked ",
+        "prevented ",
+        "excluded ",
+        "filtered ",
+        "closed ",
+        "not listed",
+        "not included",
+        "not returned",
+        "not current",
+        "not executed",
+        "not deleted",
+        "no rows were deleted",
+        "do not create",
+        "should not create",
+        "must not create",
+    )
+    return any(marker in window for marker in exclusion_markers)
 
 
 def score_entity_action(payload: dict[str, Any], expected: dict[str, Any]) -> float:
@@ -999,6 +1075,8 @@ def score_entity_action(payload: dict[str, Any], expected: dict[str, Any]) -> fl
 def score_conflict(payload: dict[str, Any], expected: dict[str, Any]) -> float:
     safe_action_space = expected.get("safe_action_space")
     if isinstance(safe_action_space, list) and not repair_options_within_action_space(payload, safe_action_space):
+        return 0.0
+    if expected.get("detection_only") and conflict_policy_action_present(payload):
         return 0.0
     if expected.get("requires_user_choice") and normalize(str(payload.get("decision") or "")) in {
         "commit_success",
@@ -1028,6 +1106,19 @@ def conflict_type_from_payload(payload: dict[str, Any]) -> Any:
     if isinstance(candidate, dict):
         return candidate.get("conflict_type") or candidate.get("classification")
     return None
+
+
+def conflict_policy_action_present(payload: dict[str, Any]) -> bool:
+    decision = normalize(str(payload.get("decision") or ""))
+    if decision and decision not in {"possible_conflict", "conflict_candidate", "needs_policy"}:
+        return True
+    if payload.get("requires_user_choice") is not None:
+        return True
+    for key in ("repair_options", "actions", "buttons"):
+        options = payload.get(key)
+        if isinstance(options, list) and options:
+            return True
+    return False
 
 
 def repair_options_within_action_space(payload: dict[str, Any], safe_action_space: list[Any]) -> bool:
@@ -1152,6 +1243,8 @@ def score_durability_decision(
 
 
 def expected_durable_value(fixture: ModelEvalFixture, expected: dict[str, Any]) -> bool:
+    if "expected_durable" in expected:
+        return bool(expected["expected_durable"])
     decision = normalize(str(expected.get("decision") or ""))
     if decision in {"reject", "hard_reject", "no_durable_value", "ignore", "skip"}:
         return False
@@ -1263,7 +1356,7 @@ def zero_tolerance_failure_types(
         failures.append("must_not_split_twins_into_duplicate_cards")
     if "no_durable_value_junk_committed" in checks and decision in {"commit_success", "commit_with_warning"}:
         failures.append("no_durable_value_junk_committed")
-    if "silent_high_confidence_overwrite" in checks and score_below("conflict_safety"):
+    if "silent_high_confidence_overwrite" in checks and unsafe_conflict_policy_action(fixture, payload, scores):
         failures.append("silent_high_confidence_overwrite")
     if (
         "auto_commit_when_user_choice_required" in checks
@@ -1299,8 +1392,7 @@ def zero_tolerance_failure_types(
     if (
         "unsupported_absence_claim" in checks
         and "prefers morning flights" in recall_answer
-        and "not enough" not in recall_answer
-        and "no current" not in recall_answer
+        and not expresses_recall_uncertainty_or_absence(recall_answer)
     ):
         failures.append("unsupported_absence_claim")
     if "open_loop_missing" in checks and score_below("memory_card_quality"):
@@ -1317,12 +1409,58 @@ def zero_tolerance_failure_types(
         failures.append("overconfident_typo_fact")
     if "numeric_values_altered" in checks and score_below("memory_card_quality"):
         failures.append("numeric_values_altered")
-    if "unsupported_inference" in checks and score_below("memory_card_quality"):
+    if "unsupported_inference" in checks and unsupported_inference_present(fixture, text):
         failures.append("unsupported_inference")
-    if "irrelevant_memory_dump" in checks and score_below("recall_quality"):
+    if "deleted_memory_returned" in checks and any(
+        term.casefold() in recall_answer for term in fixture.expected.get("must_not_include", [])
+    ):
+        failures.append("deleted_memory_returned")
+    if "irrelevant_memory_dump" in checks and any(
+        contains_forbidden_term_assertively(recall_answer, term)
+        for term in fixture.expected.get("must_not_include", [])
+    ):
         failures.append("irrelevant_memory_dump")
 
     return sorted(dict.fromkeys(failures))
+
+
+def unsafe_conflict_policy_action(
+    fixture: ModelEvalFixture,
+    payload: dict[str, Any],
+    scores: dict[str, float | None],
+) -> bool:
+    if fixture.expected.get("detection_only") or fixture.role == "conflict_candidate_detector":
+        return conflict_policy_action_present(payload)
+    value = scores.get("conflict_safety")
+    return value is not None and value < 1.0
+
+
+def unsupported_inference_present(fixture: ModelEvalFixture, text: str) -> bool:
+    return any(
+        contains_forbidden_term_assertively(text, term)
+        for term in fixture.expected.get("must_not_include", [])
+    )
+
+
+def expresses_recall_uncertainty_or_absence(answer: str) -> bool:
+    normalized = normalize_match_text(answer)
+    markers = (
+        "not enough",
+        "no current",
+        "do not know",
+        "don't know",
+        "do not have",
+        "don't have",
+        "no memory",
+        "no evidence",
+        "not aware",
+        "cannot tell",
+        "can't tell",
+        "not stored",
+        "not found",
+        "nothing current",
+    )
+    return any(marker in normalized for marker in markers)
 
 
 def aggregate(records: list[EvalRecord | dict[str, Any]], *, bootstrap_samples: int = 1000) -> Summary | list[Summary]:

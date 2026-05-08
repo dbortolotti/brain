@@ -82,6 +82,12 @@ class Settings(BaseSettings):
     llm_temperature: float = 0.0
     llm_max_tokens: int = 8192
 
+    openai_auth_mode: Literal["oauth", "api_key"] = "oauth"
+    openai_codex_auth_profile: str = "default"
+    openai_codex_base_url: str = "https://chatgpt.com/backend-api/codex"
+    brain_provider_auth_profiles_path: str = "./secrets/provider-auth-profiles.json"
+    brain_provider_auth_state_dir: str = "./secrets/provider-auth-state"
+
     embedding_provider: str = "gemini"
     embedding_model: str = "gemini/gemini-embedding-001"
     embedding_api_key: str | None = None
@@ -187,9 +193,13 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_profile(self) -> "Settings":
-        self.llm_api_key = self.llm_api_key or self.configured_provider_api_key(
-            self.llm_provider
-        )
+        if not (
+            normalize_provider_name(self.llm_provider) == "openai"
+            and self.openai_auth_mode == "oauth"
+        ):
+            self.llm_api_key = self.llm_api_key or self.configured_provider_api_key(
+                self.llm_provider
+            )
         self.embedding_api_key = (
             self.embedding_api_key
             or self.configured_provider_api_key(self.embedding_provider)
@@ -253,6 +263,9 @@ class Settings(BaseSettings):
         return None
 
     def provider_api_key(self, provider: str | None) -> str | None:
+        if normalize_provider_name(provider) == "openai" and self.openai_auth_mode != "api_key":
+            return None
+
         direct_key = self.configured_provider_api_key(provider)
         if direct_key:
             return direct_key
@@ -414,6 +427,11 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "LLM_MODEL": settings.llm_model,
         "LLM_TEMPERATURE": str(settings.llm_temperature),
         "LLM_MAX_TOKENS": str(settings.llm_max_tokens),
+        "OPENAI_AUTH_MODE": settings.openai_auth_mode,
+        "OPENAI_CODEX_AUTH_PROFILE": settings.openai_codex_auth_profile,
+        "OPENAI_CODEX_BASE_URL": settings.openai_codex_base_url,
+        "BRAIN_PROVIDER_AUTH_PROFILES_PATH": settings.brain_provider_auth_profiles_path,
+        "BRAIN_PROVIDER_AUTH_STATE_DIR": settings.brain_provider_auth_state_dir,
         "EMBEDDING_PROVIDER": settings.embedding_provider,
         "EMBEDDING_MODEL": settings.embedding_model,
         "EMBEDDING_DIMENSIONS": str(settings.embedding_dimensions),

@@ -57,6 +57,7 @@ def test_openai_provider_key_reuses_key_for_llm_and_embeddings(
         "\n".join(
             [
                 "PROFILE=openai",
+                "OPENAI_AUTH_MODE=api_key",
                 "LLM_PROVIDER=openai",
                 "LLM_MODEL=gpt-5.4-mini",
                 "OPENAI_API_KEY=sk-provider",
@@ -78,10 +79,35 @@ def test_openai_provider_key_reuses_key_for_llm_and_embeddings(
     assert env["OPENAI_API_KEY"] == "sk-provider"
 
 
+def test_openai_oauth_is_default_and_does_not_export_text_api_key(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    clear_provider_env(monkeypatch)
+    settings = Settings(
+        profile="openai",
+        llm_provider="openai",
+        llm_model="gpt-5.5",
+        openai_api_key="sk-provider",
+        embedding_provider="openai",
+        embedding_model="text-embedding-3-small",
+        embedding_dimensions=1536,
+    )
+    env = runtime_env(settings)
+
+    assert settings.openai_auth_mode == "oauth"
+    assert settings.llm_api_key is None
+    assert settings.provider_api_key("openai") is None
+    assert env["OPENAI_AUTH_MODE"] == "oauth"
+    assert "LLM_API_KEY" not in env
+    assert env["EMBEDDING_API_KEY"] == "sk-provider"
+    assert "OPENAI_API_KEY" not in env
+
+
 def test_role_api_keys_override_provider_api_key(monkeypatch: pytest.MonkeyPatch) -> None:
     clear_provider_env(monkeypatch)
     settings = Settings(
         profile="openai",
+        openai_auth_mode="api_key",
         llm_provider="openai",
         llm_model="gpt-5.4-mini",
         llm_api_key="sk-llm-role",
@@ -107,6 +133,7 @@ def test_gemini_provider_can_use_google_api_key_alias(
         "\n".join(
             [
                 "PROFILE=gemini",
+                "OPENAI_AUTH_MODE=api_key",
                 "LLM_PROVIDER=gemini",
                 "LLM_MODEL=gemini/gemini-3.1-flash-lite-preview",
                 "GOOGLE_API_KEY=AIza-provider",

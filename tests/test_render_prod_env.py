@@ -75,6 +75,8 @@ def test_render_prod_env_writes_github_secret_values_without_printing_them(tmp_p
     rendered = output.read_text(encoding="utf-8")
     base_rendered = output.with_name("brain.env.last-deployed").read_text(encoding="utf-8")
     assert "BRAIN_CONFIG_RENDER_SHA=abc123" in rendered
+    assert "OPENAI_AUTH_MODE=oauth" in rendered
+    assert "OPENAI_CODEX_AUTH_PROFILE=default" in rendered
     assert "OPENAI_API_KEY=sk-prod-openai" in rendered
     assert "OPENROUTER_API_KEY=sk-prod-openrouter" in rendered
     assert "GRAPH_DATABASE_PASSWORD=prod-graph-password" in rendered
@@ -92,6 +94,34 @@ def test_render_prod_env_writes_github_secret_values_without_printing_them(tmp_p
     assert auth_password_file.stat().st_mode & 0o777 == 0o600
     assert "sk-prod-openai" not in result.stdout
     assert "prod-auth-password" not in result.stdout
+
+
+def test_render_prod_env_allows_blank_openai_key_in_oauth_mode(tmp_path) -> None:
+    _, output, _ = run_renderer(
+        tmp_path,
+        {
+            "OPENAI_AUTH_MODE": "oauth",
+            "OPENAI_API_KEY": "",
+        },
+    )
+
+    rendered = output.read_text(encoding="utf-8")
+    assert "OPENAI_AUTH_MODE=oauth" in rendered
+    assert "OPENAI_API_KEY" not in rendered
+
+
+def test_render_prod_env_requires_openai_key_in_api_key_mode(tmp_path) -> None:
+    result, _, _ = run_renderer(
+        tmp_path,
+        {
+            "OPENAI_AUTH_MODE": "api_key",
+            "OPENAI_API_KEY": "",
+        },
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert "OPENAI_API_KEY" in result.stderr
 
 
 def test_render_prod_env_overwrites_when_prod_matches_last_deployed(tmp_path) -> None:

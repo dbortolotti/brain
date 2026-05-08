@@ -92,6 +92,7 @@ def test_registry_owns_fine_grained_capability_topology() -> None:
     ]
     assert "slack_intake" in mandatory_capabilities(registry)
     assert "debug" not in mandatory_capabilities(registry)
+    assert "success_receipt_generator" not in registry["fine_grained_eval_matrix"]
 
 
 def test_registry_exposes_runtime_deployment_decisions() -> None:

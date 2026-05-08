@@ -14,6 +14,7 @@ import httpx
 
 from memory_stack.config import Settings
 from memory_stack.evals.model_matrix import ModelCandidate
+from memory_stack.provider_auth import resolve_openai_text_bearer
 
 
 MAX_OUTPUT_TOKENS = 2000
@@ -135,6 +136,12 @@ class LiveProviderClient:
             if not has_bearer and not has_sigv4:
                 return "missing AWS_BEARER_TOKEN_BEDROCK or AWS access key credentials"
             return None
+        if candidate.provider == "openai" and getattr(candidate, "kind", "llm") == "embedding":
+            if not self.settings.configured_provider_api_key("openai"):
+                return "missing OPENAI_API_KEY for OpenAI embeddings"
+            return None
+        if candidate.provider == "openai" and self.settings.openai_auth_mode == "oauth":
+            return None
         if not self.settings.provider_api_key(candidate.provider):
             return f"missing provider API key for {candidate.provider}"
         return None
@@ -167,9 +174,15 @@ class LiveProviderClient:
         prompt: str,
         schema: dict[str, Any],
     ) -> str:
+        bearer = resolve_openai_text_bearer(self.settings)
+        base_url = (
+            self.settings.openai_codex_base_url
+            if self.settings.openai_auth_mode == "oauth"
+            else "https://api.openai.com/v1"
+        )
         response = self.client.post(
-            "https://api.openai.com/v1/responses",
-            headers={"Authorization": f"Bearer {self.settings.provider_api_key('openai')}"},
+            f"{base_url.rstrip('/')}/responses",
+            headers={"Authorization": f"Bearer {bearer}"},
             json={
                 "model": candidate.api_model or candidate.model,
                 "input": prompt_with_schema(prompt, schema),
@@ -344,7 +357,9 @@ class LiveProviderClient:
         if candidate.provider == "openai":
             response = self.client.post(
                 "https://api.openai.com/v1/embeddings",
-                headers={"Authorization": f"Bearer {self.settings.provider_api_key('openai')}"},
+                headers={
+                    "Authorization": f"Bearer {self.settings.configured_provider_api_key('openai')}"
+                },
                 json={"model": candidate.api_model or candidate.model, "input": text},
             )
             payload = checked_json(response)
