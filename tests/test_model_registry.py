@@ -35,14 +35,17 @@ def test_brain_model_registry_references_known_models() -> None:
             assert model not in skipped_models, f"{role} core matrix references skipped model {model}"
 
 
-def test_mistral_removed_from_fine_grained_matrix() -> None:
+def test_groq_and_mistral_removed_from_fine_grained_matrix() -> None:
     registry = load_registry()
     matrix = registry["fine_grained_eval_matrix"]
+    blocked_prefixes = (
+        "groq:",
+        "aws-bedrock:mistral.",
+    )
 
     for role, models in matrix.items():
-        assert "aws-bedrock:mistral.ministral-3-14b-instruct" not in models, (
-            f"{role} still references aws-bedrock:mistral.ministral-3-14b-instruct"
-        )
+        for model in models:
+            assert not model.startswith(blocked_prefixes), f"{role} still references blocked provider model {model}"
 
 
 def test_gpt55_high_in_benchmark_roles_only() -> None:

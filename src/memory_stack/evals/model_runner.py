@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import csv
+import html
 import hashlib
 import json
+import re
 from collections import Counter, defaultdict, deque
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -37,6 +39,7 @@ from memory_stack.evals.scoring import (
     aggregate_model_role_records,
     capability_coverage,
     classify_failure_class,
+    normalized_status,
     is_stack_deployable,
     paired_model_comparisons,
     score_model_output,
@@ -362,22 +365,27 @@ def build_eval_record(
     )
 
     operational_success = call.status != "fail"
-    json_parseable = call.status != "schema_fail"
+    json_parseable = operational_success and call.status != "schema_fail"
     schema_valid, schema_failure_message = validate_payload(candidate, call.payload)
-    if call.status == "schema_fail":
+    if not json_parseable:
         schema_valid = False
     semantic_evaluable = operational_success and json_parseable and schema_valid
-
-    evaluation_status = call.status
-    if call.status == "ok" and not schema_valid:
-        evaluation_status = "schema_invalid"
 
     scores, zero_tolerance_failure, notes = score_model_output(
         fixture,
         call.payload,
-        status="ok" if semantic_evaluable else evaluation_status,
+        status="ok" if semantic_evaluable else ("parse_fail" if not json_parseable else "schema_fail" if not schema_valid else "provider_fail"),
     )
     quality_score = semantic_quality_score(scores) if semantic_evaluable else None
+    quality_passed = semantic_evaluable and (not zero_tolerance_failure) and quality_score is not None and quality_score >= 1.0
+    evaluation_status = normalized_status(
+        status=call.status,
+        operational_success=operational_success,
+        json_parseable=json_parseable,
+        schema_valid=schema_valid,
+        zero_tolerance_failure=zero_tolerance_failure,
+        quality_score=quality_score,
+    )
     failure_message = schema_failure_message or call.error
     failure_class = classify_failure_class(
         operational_success=operational_success,
@@ -417,6 +425,7 @@ def build_eval_record(
         schema_valid=schema_valid,
         json_parseable=json_parseable,
         semantic_evaluable=semantic_evaluable,
+        quality_passed=quality_passed,
         zero_tolerance_failure=zero_tolerance_failure,
         zero_tolerance_failure_types=notes if zero_tolerance_failure else [],
         quality_score=quality_score,
@@ -590,10 +599,7 @@ def assign_failure_numbers(records: list[dict[str, Any]]) -> None:
     for record in records:
         failure_class = FailureClass(record.get("failure_class", FailureClass.NONE))
         status = record.get("status")
-        if failure_class == FailureClass.NONE and status not in {"fail", "schema_fail", "schema_invalid", "skipped"}:
-            record["failure_number"] = None
-            continue
-        if failure_class == FailureClass.NONE and status == "ok":
+        if failure_class == FailureClass.NONE and status != "skipped":
             record["failure_number"] = None
             continue
         failure_number += 1
@@ -604,7 +610,7 @@ def failure_records(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
     failures: list[dict[str, Any]] = []
     for record in records:
         failure_class = FailureClass(record.get("failure_class", FailureClass.NONE))
-        if failure_class != FailureClass.NONE or record.get("status") in {"fail", "schema_fail", "schema_invalid", "skipped"}:
+        if failure_class != FailureClass.NONE or record.get("status") == "skipped":
             failures.append(record)
     return failures
 
@@ -614,8 +620,14 @@ def write_run_artifacts(result: dict[str, Any], records: list[dict[str, Any]]) -
     output_dir = output_path.parent
     output_dir.mkdir(parents=True, exist_ok=True)
     report_path = Path(result["report_md_path"])
+    html_report_path = Path(result.get("report_html_path") or report_path.with_suffix(".html"))
     report_path.parent.mkdir(parents=True, exist_ok=True)
-    report_path.write_text(render_markdown_report(result, records), encoding="utf-8")
+    markdown_report = render_markdown_report(result, records)
+    report_path.write_text(markdown_report, encoding="utf-8")
+    html_report_path.write_text(
+        render_html_report(markdown_report, title=f"Brain Eval Summary {result['run_id']}"),
+        encoding="utf-8",
+    )
 
     failed_path = output_dir / "failed_tests.jsonl"
     failed_md_path = output_dir / "failed_tests.md"
@@ -656,6 +668,7 @@ def build_run_result(
         "record_count": len(records),
         "output_path": str(output_path),
         "report_md_path": str(report_path),
+        "report_html_path": str(report_path.with_suffix(".html")),
         "failed_manifest_jsonl_path": str(output_path.parent / "failed_tests.jsonl"),
         "failed_manifest_md_path": str(output_path.parent / "failed_tests.md"),
         "summaries": summaries,
@@ -756,21 +769,27 @@ def rescore_record(
     call = raw_call_for_record(record)
 
     operational_success = call.status != "fail"
-    json_parseable = call.status != "schema_fail"
+    json_parseable = operational_success and call.status != "schema_fail"
     schema_valid, schema_failure_message = validate_payload(candidate, call.payload)
-    if call.status == "schema_fail":
+    if not json_parseable:
         schema_valid = False
     semantic_evaluable = operational_success and json_parseable and schema_valid
-    evaluation_status = call.status
-    if call.status == "ok" and not schema_valid:
-        evaluation_status = "schema_invalid"
 
     scores, zero_tolerance_failure, notes = score_model_output(
         fixture,
         call.payload,
-        status="ok" if semantic_evaluable else evaluation_status,
+        status="ok" if semantic_evaluable else ("parse_fail" if not json_parseable else "schema_fail" if not schema_valid else "provider_fail"),
     )
     quality_score = semantic_quality_score(scores) if semantic_evaluable else None
+    quality_passed = semantic_evaluable and (not zero_tolerance_failure) and quality_score is not None and quality_score >= 1.0
+    evaluation_status = normalized_status(
+        status=str(record.get("status") or call.status),
+        operational_success=operational_success,
+        json_parseable=json_parseable,
+        schema_valid=schema_valid,
+        zero_tolerance_failure=zero_tolerance_failure,
+        quality_score=quality_score,
+    )
     failure_message = schema_failure_message or call.error
     failure_class = classify_failure_class(
         operational_success=operational_success,
@@ -791,6 +810,7 @@ def rescore_record(
             "json_parseable": json_parseable,
             "schema_valid": schema_valid,
             "semantic_evaluable": semantic_evaluable,
+            "quality_passed": quality_passed,
             "status": evaluation_status,
             "failure_message": failure_message,
             "failure_class": failure_class,
@@ -1067,7 +1087,10 @@ def write_model_role_summary_csv(path: Path, summaries: list[Summary]) -> None:
                 "role_category",
                 "records_total",
                 "operational_success_rate",
+                "json_parse_success_rate",
                 "schema_validity_rate",
+                "semantic_evaluable_rate",
+                "quality_pass_rate",
                 "semantic_score_mean",
                 "cost_per_1k_attempted",
                 "cost_per_1k_successful",
@@ -1086,7 +1109,10 @@ def write_model_role_summary_csv(path: Path, summaries: list[Summary]) -> None:
                     summary.role_category,
                     summary.records_total,
                     summary.operational_success_rate,
+                    summary.json_parse_success_rate,
                     summary.schema_validity_rate,
+                    summary.semantic_evaluable_rate,
+                    summary.quality_pass_rate,
                     summary.semantic_score_mean,
                     summary.cost_per_1k_attempted,
                     summary.cost_per_1k_successful,
@@ -1271,6 +1297,7 @@ def render_markdown_report(result: dict[str, Any], records: list[dict[str, Any]]
             f"- Canonical output: `{result['output_path']}`",
             f"- Failed manifest JSONL: `{result.get('failed_manifest_jsonl_path', '')}`",
             f"- Failed manifest markdown: `{result.get('failed_manifest_md_path', '')}`",
+            f"- HTML summary: `{result.get('report_html_path', '')}`",
             f"- Records: `{result['record_count']}`",
             f"- Model-role summaries: `{len(summaries)}`",
             f"- Deployable stack: `{'yes' if deployable_stack else 'no'}`",
@@ -1296,11 +1323,21 @@ def render_markdown_report(result: dict[str, Any], records: list[dict[str, Any]]
             "",
             "## Schema validity",
             "",
-            "| Model | Role | Schema validity | 95% CI | Valid / Operationally successful |",
+            "| Model | Role | JSON parse success | 95% CI | Parseable / Operationally successful |",
+            "|---|---|---:|---:|---:|",
+            *parse_rows(summaries),
+            "",
+            "| Model | Role | Schema validity | 95% CI | Valid / Parseable |",
             "|---|---|---:|---:|---:|",
             *schema_rows(summaries),
             "",
             *schema_failure_summary(eval_records),
+            "",
+            "## Semantic evaluability",
+            "",
+            "| Model | Role | Semantic evaluable | 95% CI | Semantic-evaluable / Schema-valid |",
+            "|---|---|---:|---:|---:|",
+            *semantic_evaluable_rows(summaries),
             "",
             "## Safety / zero-tolerance failures",
             "",
@@ -1310,8 +1347,8 @@ def render_markdown_report(result: dict[str, Any], records: list[dict[str, Any]]
             "",
             "## Quality scores by role",
             "",
-            "| Model | Role | Category | Semantic score | 95% CI | Semantic evals | Eligible | Rejection reasons |",
-            "|---|---|---|---:|---:|---:|---|---|",
+            "| Model | Role | Category | Quality pass | 95% CI | Passes / Semantic evals | Semantic score | 95% CI | Eligible | Rejection reasons |",
+            "|---|---|---|---:|---:|---:|---:|---:|---|---|",
             *quality_rows(summaries),
             "",
             "## Runtime-role recommendations",
@@ -1496,13 +1533,35 @@ def operational_rows(summaries: list[Summary]) -> list[str]:
     ]
 
 
+def parse_rows(summaries: list[Summary]) -> list[str]:
+    return [
+        "| "
+        f"`{summary.model}` | `{summary.role}` | "
+        f"{summary.json_parse_success_rate:.3f} | "
+        f"{summary.json_parse_success_ci_low:.3f}-{summary.json_parse_success_ci_high:.3f} | "
+        f"{summary.records_json_parseable} / {summary.records_operational_success} |"
+        for summary in summaries
+    ]
+
+
 def schema_rows(summaries: list[Summary]) -> list[str]:
     return [
         "| "
         f"`{summary.model}` | `{summary.role}` | "
         f"{summary.schema_validity_rate:.3f} | "
         f"{summary.schema_validity_ci_low:.3f}-{summary.schema_validity_ci_high:.3f} | "
-        f"{summary.records_schema_valid} / {summary.records_operational_success} |"
+        f"{summary.records_schema_valid} / {summary.records_json_parseable} |"
+        for summary in summaries
+    ]
+
+
+def semantic_evaluable_rows(summaries: list[Summary]) -> list[str]:
+    return [
+        "| "
+        f"`{summary.model}` | `{summary.role}` | "
+        f"{summary.semantic_evaluable_rate:.3f} | "
+        f"{summary.semantic_evaluable_ci_low:.3f}-{summary.semantic_evaluable_ci_high:.3f} | "
+        f"{summary.records_semantic_evaluable} / {summary.records_schema_valid} |"
         for summary in summaries
     ]
 
@@ -1531,10 +1590,172 @@ def quality_rows(summaries: list[Summary]) -> list[str]:
         rows.append(
             "| "
             f"`{summary.model}` | `{summary.role}` | `{summary.role_category}` | "
-            f"{semantic_mean} | {semantic_ci} | {summary.records_semantic_evaluable} | "
+            f"{summary.quality_pass_rate:.3f} | {summary.quality_pass_ci_low:.3f}-{summary.quality_pass_ci_high:.3f} | "
+            f"{summary.records_quality_passed} / {summary.records_semantic_evaluable} | "
+            f"{semantic_mean} | {semantic_ci} | "
             f"{summary.eligible} | {reasons} |"
         )
     return rows
+
+
+def render_html_report(markdown_report: str, *, title: str) -> str:
+    body = markdown_to_html(markdown_report)
+    escaped_title = html.escape(title)
+    return "\n".join(
+        [
+            "<!doctype html>",
+            '<html lang="en">',
+            "<head>",
+            '  <meta charset="utf-8">',
+            '  <meta name="viewport" content="width=device-width, initial-scale=1">',
+            f"  <title>{escaped_title}</title>",
+            "  <style>",
+            "    :root { color-scheme: light; --bg: #f5f1e8; --panel: #fffdf8; --ink: #1d1b16; --muted: #635b4f; --line: #d8cdb9; --accent: #0f766e; --accent-soft: #dff3ef; }",
+            "    * { box-sizing: border-box; }",
+            "    body { margin: 0; padding: 32px; background: radial-gradient(circle at top, #fff8eb 0%, var(--bg) 55%, #efe6d5 100%); color: var(--ink); font-family: Georgia, 'Iowan Old Style', serif; line-height: 1.6; }",
+            "    main { max-width: 1180px; margin: 0 auto; background: color-mix(in srgb, var(--panel) 96%, white 4%); border: 1px solid var(--line); border-radius: 24px; padding: 32px; box-shadow: 0 24px 70px rgba(76, 59, 29, 0.12); }",
+            "    h1, h2, h3 { font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif; line-height: 1.2; }",
+            "    h1 { margin-top: 0; font-size: 2.5rem; }",
+            "    h2 { margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--line); font-size: 1.65rem; }",
+            "    h3 { margin-top: 1.5rem; font-size: 1.2rem; }",
+            "    p, li { font-size: 1rem; }",
+            "    ul { padding-left: 1.2rem; }",
+            "    code { font-family: 'SFMono-Regular', Consolas, monospace; background: var(--accent-soft); border-radius: 6px; padding: 0.1rem 0.35rem; font-size: 0.92em; }",
+            "    pre { background: #1f2937; color: #f9fafb; padding: 16px; border-radius: 14px; overflow-x: auto; }",
+            "    pre code { background: transparent; padding: 0; color: inherit; }",
+            "    table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.4rem; font-size: 0.95rem; }",
+            "    th, td { border: 1px solid var(--line); padding: 10px 12px; vertical-align: top; text-align: left; }",
+            "    th { background: #f1e7d7; }",
+            "    tr:nth-child(even) td { background: rgba(241, 231, 215, 0.34); }",
+            "    strong { color: var(--accent); }",
+            "  </style>",
+            "</head>",
+            "<body>",
+            "  <main>",
+            body,
+            "  </main>",
+            "</body>",
+            "</html>",
+        ]
+    )
+
+
+def markdown_to_html(markdown_text: str) -> str:
+    lines = markdown_text.splitlines()
+    html_lines: list[str] = []
+    paragraph_buffer: list[str] = []
+    list_buffer: list[str] = []
+    table_buffer: list[str] = []
+    code_buffer: list[str] = []
+    in_code = False
+
+    def flush_paragraph() -> None:
+        nonlocal paragraph_buffer
+        if not paragraph_buffer:
+            return
+        html_lines.append(f"<p>{format_inline_markdown(' '.join(paragraph_buffer))}</p>")
+        paragraph_buffer = []
+
+    def flush_list() -> None:
+        nonlocal list_buffer
+        if not list_buffer:
+            return
+        html_lines.append("<ul>")
+        for item in list_buffer:
+            html_lines.append(f"<li>{format_inline_markdown(item)}</li>")
+        html_lines.append("</ul>")
+        list_buffer = []
+
+    def flush_table() -> None:
+        nonlocal table_buffer
+        if len(table_buffer) < 2:
+            for line in table_buffer:
+                html_lines.append(f"<p>{format_inline_markdown(line)}</p>")
+            table_buffer = []
+            return
+        rows = [split_markdown_table_row(line) for line in table_buffer if line.strip()]
+        if len(rows) < 2:
+            table_buffer = []
+            return
+        header = rows[0]
+        body_rows = rows[2:] if len(rows) > 2 else []
+        html_lines.append("<table>")
+        html_lines.append("<thead><tr>")
+        for cell in header:
+            html_lines.append(f"<th>{format_inline_markdown(cell)}</th>")
+        html_lines.append("</tr></thead>")
+        html_lines.append("<tbody>")
+        for row in body_rows:
+            html_lines.append("<tr>")
+            for cell in row:
+                html_lines.append(f"<td>{format_inline_markdown(cell)}</td>")
+            html_lines.append("</tr>")
+        html_lines.append("</tbody></table>")
+        table_buffer = []
+
+    def flush_code() -> None:
+        nonlocal code_buffer
+        if not code_buffer:
+            return
+        html_lines.append("<pre><code>")
+        html_lines.append(html.escape("\n".join(code_buffer)))
+        html_lines.append("</code></pre>")
+        code_buffer = []
+
+    def flush_blocks() -> None:
+        flush_paragraph()
+        flush_list()
+        flush_table()
+
+    for line in lines:
+        if line.startswith("```"):
+            if in_code:
+                flush_code()
+            else:
+                flush_blocks()
+            in_code = not in_code
+            continue
+        if in_code:
+            code_buffer.append(line)
+            continue
+        if line.lstrip().startswith("|"):
+            flush_paragraph()
+            flush_list()
+            table_buffer.append(line)
+            continue
+        if not line.strip():
+            flush_blocks()
+            continue
+        if line.startswith("#"):
+            flush_blocks()
+            level = min(6, len(line) - len(line.lstrip("#")))
+            content = line[level:].strip()
+            html_lines.append(f"<h{level}>{format_inline_markdown(content)}</h{level}>")
+            continue
+        if line.startswith("- "):
+            flush_paragraph()
+            flush_table()
+            list_buffer.append(line[2:].strip())
+            continue
+        flush_list()
+        flush_table()
+        paragraph_buffer.append(line.strip())
+
+    if in_code:
+        flush_code()
+    flush_blocks()
+    return "\n".join(html_lines)
+
+
+def split_markdown_table_row(line: str) -> list[str]:
+    return [cell.strip() for cell in line.strip().strip("|").split("|")]
+
+
+def format_inline_markdown(text: str) -> str:
+    escaped = html.escape(text)
+    escaped = re.sub(r"`([^`]+)`", r"<code>\1</code>", escaped)
+    escaped = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", escaped)
+    return escaped
 
 
 def pairwise_rows(comparisons: list[PairwiseComparison]) -> list[str]:

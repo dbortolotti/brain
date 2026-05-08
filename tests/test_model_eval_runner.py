@@ -396,6 +396,55 @@ def test_provider_error_is_not_semantic_zero() -> None:
     assert summary.semantic_score_mean is None
 
 
+def test_zero_tolerance_failure_is_operational_success() -> None:
+    summary = aggregate(
+        [
+            EvalRecord(
+                model="a",
+                role="recall_synthesizer",
+                operational_success=True,
+                json_parseable=True,
+                schema_valid=True,
+                semantic_evaluable=True,
+                zero_tolerance_failure=True,
+                failure_class=FailureClass.ZERO_TOLERANCE_FAILURE,
+                quality_score=0.8,
+            )
+        ],
+        bootstrap_samples=0,
+    )
+
+    assert summary.records_operational_success == 1
+    assert summary.records_json_parseable == 1
+    assert summary.records_schema_valid == 1
+    assert summary.records_semantic_evaluable == 1
+    assert summary.zero_tolerance_failures == 1
+
+
+def test_quality_failure_not_counted_as_provider_failure() -> None:
+    summary = aggregate(
+        [
+            EvalRecord(
+                model="a",
+                role="intent_router",
+                operational_success=True,
+                json_parseable=True,
+                schema_valid=True,
+                semantic_evaluable=True,
+                failure_class=FailureClass.QUALITY_FAILURE,
+                quality_score=0.5,
+            )
+        ],
+        bootstrap_samples=0,
+    )
+
+    assert summary.records_operational_success == 1
+    assert summary.records_json_parseable == 1
+    assert summary.records_schema_valid == 1
+    assert summary.records_semantic_evaluable == 1
+    assert summary.semantic_score_mean == 0.5
+
+
 def test_schema_failure_is_distinct_from_provider_failure() -> None:
     summary = aggregate(
         [
@@ -456,7 +505,9 @@ def test_statistical_aggregation_outputs_ci_and_zero_bound() -> None:
     summary = aggregate_model_role_records(records, bootstrap_samples=100)[0]
 
     assert summary["records_total"] == 2
+    assert summary["records_json_parseable"] == 2
     assert summary["records_semantic_evaluable"] == 2
+    assert summary["records_quality_passed"] == 1
     assert summary["cost_per_1k_attempted"] == pytest.approx(150.0)
     assert summary["cost_per_1k_successful"] == pytest.approx(150.0)
     assert summary["cost_per_1k_semantic"] == pytest.approx(150.0)
@@ -968,7 +1019,7 @@ def test_rerun_failed_replaces_records_by_record_id(tmp_path) -> None:
 
     assert len(before) == len(after)
     assert set(before_by_id) == set(after_by_id)
-    assert any(before_by_id[record_id]["status"] == "fail" for record_id in before_by_id)
+    assert any(before_by_id[record_id]["status"] == "provider_fail" for record_id in before_by_id)
     assert all(after_by_id[record_id]["run_id"] == rerun_failed["run_id"] for record_id in after_by_id)
     assert all(after_by_id[record_id]["rerun_of_run_id"] == initial["run_id"] for record_id in after_by_id)
 
@@ -1072,9 +1123,13 @@ def test_rescore_removes_router_table_failure_and_regenerates_artifacts(tmp_path
 
     assert router["zero_tolerance_failure"] is False
     assert "small_table_must_not_drop_values" not in router["zero_tolerance_failure_types"]
+    assert router["operational_success"] is True
+    assert router["semantic_evaluable"] is True
     assert router["failure_class"] == "quality_failure"
+    assert router["status"] == "quality_fail"
     assert Path(result["failed_manifest_jsonl_path"]).exists()
     assert Path(result["report_md_path"]).exists()
+    assert Path(result["report_html_path"]).exists()
 
 
 def test_live_provider_client_retries_transient_provider_error(monkeypatch) -> None:

@@ -544,6 +544,26 @@ class FailureClass(str, Enum):
     ZERO_TOLERANCE_FAILURE = "zero_tolerance_failure"
 
 
+QUALITY_PASS_THRESHOLD = 1.0
+OPERATIONAL_FAILURE_CLASSES = frozenset(
+    {
+        FailureClass.PROVIDER_ERROR,
+        FailureClass.AUTHENTICATION_ERROR,
+        FailureClass.QUOTA_ERROR,
+        FailureClass.RATE_LIMIT_ERROR,
+        FailureClass.TIMEOUT,
+        FailureClass.UNSUPPORTED_MODEL,
+        FailureClass.TRANSPORT_ERROR,
+    }
+)
+JSON_PARSE_FAILURE_CLASSES = frozenset(
+    {
+        FailureClass.JSON_PARSE_ERROR,
+        FailureClass.STRUCTURED_OUTPUT_INVALID,
+    }
+)
+
+
 class EvalRecord(BaseModel):
     model_config = ConfigDict(extra="allow")
 
@@ -568,6 +588,7 @@ class EvalRecord(BaseModel):
     schema_valid: bool = False
     json_parseable: bool = False
     semantic_evaluable: bool = False
+    quality_passed: bool = False
 
     zero_tolerance_failure: bool = False
     zero_tolerance_failure_types: list[str] = Field(default_factory=list)
@@ -598,16 +619,30 @@ class ModelRoleSummary(BaseModel):
 
     records_total: int = 0
     records_operational_success: int = 0
+    records_json_parseable: int = 0
     records_schema_valid: int = 0
     records_semantic_evaluable: int = 0
+    records_quality_passed: int = 0
 
     operational_success_rate: float = 0.0
     operational_success_ci_low: float = 0.0
     operational_success_ci_high: float = 0.0
 
+    json_parse_success_rate: float = 0.0
+    json_parse_success_ci_low: float = 0.0
+    json_parse_success_ci_high: float = 0.0
+
     schema_validity_rate: float = 0.0
     schema_validity_ci_low: float = 0.0
     schema_validity_ci_high: float = 0.0
+
+    semantic_evaluable_rate: float = 0.0
+    semantic_evaluable_ci_low: float = 0.0
+    semantic_evaluable_ci_high: float = 0.0
+
+    quality_pass_rate: float = 0.0
+    quality_pass_ci_low: float = 0.0
+    quality_pass_ci_high: float = 0.0
 
     semantic_score_mean: float | None = None
     semantic_score_ci_low: float | None = None
@@ -985,19 +1020,38 @@ def aggregate_model_role_records(
     summaries: list[dict[str, Any]] = []
     for (model, provider, role), rows in sorted(grouped.items()):
         records_total = len(rows)
-        records_operational_success = sum(1 for row in rows if row.operational_success)
-        records_schema_valid = sum(1 for row in rows if row.operational_success and row.schema_valid)
         successful_rows = [row for row in rows if row.operational_success]
-        semantic_rows = [row for row in rows if row.semantic_evaluable and row.quality_score is not None]
-        records_semantic_evaluable = len(semantic_rows)
+        parseable_rows = [row for row in successful_rows if row.json_parseable]
+        schema_valid_rows = [row for row in parseable_rows if row.schema_valid]
+        semantic_evaluable_rows = [row for row in schema_valid_rows if row.semantic_evaluable]
+        semantic_rows = [row for row in semantic_evaluable_rows if row.quality_score is not None]
+        quality_pass_rows = [row for row in semantic_rows if row.quality_passed]
+
+        records_operational_success = len(successful_rows)
+        records_json_parseable = len(parseable_rows)
+        records_schema_valid = len(schema_valid_rows)
+        records_semantic_evaluable = len(semantic_evaluable_rows)
+        records_quality_passed = len(quality_pass_rows)
 
         operational_success_rate, operational_success_ci_low, operational_success_ci_high = wilson_rate(
             records_operational_success,
             records_total,
         )
+        json_parse_success_rate, json_parse_success_ci_low, json_parse_success_ci_high = wilson_rate(
+            records_json_parseable,
+            records_operational_success,
+        )
         schema_validity_rate, schema_validity_ci_low, schema_validity_ci_high = wilson_rate(
             records_schema_valid,
-            records_operational_success,
+            records_json_parseable,
+        )
+        semantic_evaluable_rate, semantic_evaluable_ci_low, semantic_evaluable_ci_high = wilson_rate(
+            records_semantic_evaluable,
+            records_schema_valid,
+        )
+        quality_pass_rate, quality_pass_ci_low, quality_pass_ci_high = wilson_rate(
+            records_quality_passed,
+            records_semantic_evaluable,
         )
 
         semantic_summary = bootstrap_metric_summary(
@@ -1030,14 +1084,25 @@ def aggregate_model_role_records(
             role_category=role_category_for(role),
             records_total=records_total,
             records_operational_success=records_operational_success,
+            records_json_parseable=records_json_parseable,
             records_schema_valid=records_schema_valid,
             records_semantic_evaluable=records_semantic_evaluable,
+            records_quality_passed=records_quality_passed,
             operational_success_rate=operational_success_rate,
             operational_success_ci_low=operational_success_ci_low,
             operational_success_ci_high=operational_success_ci_high,
+            json_parse_success_rate=json_parse_success_rate,
+            json_parse_success_ci_low=json_parse_success_ci_low,
+            json_parse_success_ci_high=json_parse_success_ci_high,
             schema_validity_rate=schema_validity_rate,
             schema_validity_ci_low=schema_validity_ci_low,
             schema_validity_ci_high=schema_validity_ci_high,
+            semantic_evaluable_rate=semantic_evaluable_rate,
+            semantic_evaluable_ci_low=semantic_evaluable_ci_low,
+            semantic_evaluable_ci_high=semantic_evaluable_ci_high,
+            quality_pass_rate=quality_pass_rate,
+            quality_pass_ci_low=quality_pass_ci_low,
+            quality_pass_ci_high=quality_pass_ci_high,
             semantic_score_mean=semantic_summary.mean if semantic_summary else None,
             semantic_score_ci_low=semantic_summary.ci_low if semantic_summary else None,
             semantic_score_ci_high=semantic_summary.ci_high if semantic_summary else None,
@@ -1503,15 +1568,7 @@ def comparable_for_semantic_pairwise(a: EvalRecord | dict[str, Any], b: EvalReco
 
 def is_operational_failure(failure_class: FailureClass | str) -> bool:
     normalized = FailureClass(failure_class)
-    return normalized in {
-        FailureClass.PROVIDER_ERROR,
-        FailureClass.AUTHENTICATION_ERROR,
-        FailureClass.QUOTA_ERROR,
-        FailureClass.RATE_LIMIT_ERROR,
-        FailureClass.TIMEOUT,
-        FailureClass.UNSUPPORTED_MODEL,
-        FailureClass.TRANSPORT_ERROR,
-    }
+    return normalized in OPERATIONAL_FAILURE_CLASSES
 
 
 def role_category_for(role: str) -> str:
@@ -1519,10 +1576,7 @@ def role_category_for(role: str) -> str:
 
 
 def normalize_eval_record(record: EvalRecord | dict[str, Any]) -> EvalRecord:
-    if isinstance(record, EvalRecord):
-        return record
-
-    data = dict(record)
+    data = record.model_dump(mode="json") if isinstance(record, EvalRecord) else dict(record)
     subscores = data.get("subscores")
     if not isinstance(subscores, dict):
         legacy_scores = data.get("scores")
@@ -1533,11 +1587,31 @@ def normalize_eval_record(record: EvalRecord | dict[str, Any]) -> EvalRecord:
         numeric_values = [float(value) for value in subscores.values() if value is not None]
         quality_score = mean(numeric_values) if numeric_values else None
 
-    status = data.get("status")
-    operational_success = bool(data.get("operational_success", status != "fail"))
-    json_parseable = bool(data.get("json_parseable", status != "schema_fail"))
-    schema_valid = bool(data.get("schema_valid", operational_success and status == "ok"))
-    semantic_evaluable = bool(data.get("semantic_evaluable", schema_valid and quality_score is not None))
+    status = str(data.get("status") or "")
+    explicit_operational_success = data.get("operational_success")
+    if explicit_operational_success is None:
+        operational_success = status not in {"fail", "provider_fail", "skipped"}
+    else:
+        operational_success = bool(explicit_operational_success)
+
+    explicit_json_parseable = data.get("json_parseable")
+    if explicit_json_parseable is None:
+        json_parseable = status not in {"schema_fail", "parse_fail", "fail", "provider_fail", "skipped"} and operational_success
+    else:
+        json_parseable = bool(explicit_json_parseable)
+
+    explicit_schema_valid = data.get("schema_valid")
+    if explicit_schema_valid is None:
+        schema_valid = status not in {"schema_invalid", "schema_fail", "parse_fail", "fail", "provider_fail", "skipped"} and json_parseable and operational_success
+    else:
+        schema_valid = bool(explicit_schema_valid)
+
+    explicit_semantic_evaluable = data.get("semantic_evaluable")
+    if explicit_semantic_evaluable is None:
+        semantic_evaluable = operational_success and json_parseable and schema_valid
+    else:
+        semantic_evaluable = bool(explicit_semantic_evaluable)
+
     zero_tolerance_failure = bool(data.get("zero_tolerance_failure", False))
     zero_types = data.get("zero_tolerance_failure_types")
     if not isinstance(zero_types, list):
@@ -1546,7 +1620,8 @@ def normalize_eval_record(record: EvalRecord | dict[str, Any]) -> EvalRecord:
     if not isinstance(notes, list):
         notes = []
     failure_message = data.get("failure_message") or data.get("error")
-    failure_class = data.get("failure_class")
+    failure_class_value = data.get("failure_class")
+    failure_class = FailureClass(failure_class_value) if failure_class_value is not None else None
     if failure_class is None:
         failure_class = classify_failure_class(
             operational_success=operational_success,
@@ -1557,6 +1632,26 @@ def normalize_eval_record(record: EvalRecord | dict[str, Any]) -> EvalRecord:
             quality_score=quality_score,
             failure_message=failure_message,
         )
+
+    operational_success = is_operational_success_from_failure_class(failure_class)
+    json_parseable = is_json_parseable_from_failure_class(failure_class)
+    schema_valid = is_schema_valid_from_failure_class(failure_class)
+    semantic_evaluable = operational_success and json_parseable and schema_valid
+    zero_tolerance_failure = zero_tolerance_failure or failure_class == FailureClass.ZERO_TOLERANCE_FAILURE
+    quality_passed = (
+        semantic_evaluable
+        and not zero_tolerance_failure
+        and quality_score is not None
+        and quality_score >= QUALITY_PASS_THRESHOLD
+    )
+    status = normalized_status(
+        status=status,
+        operational_success=operational_success,
+        json_parseable=json_parseable,
+        schema_valid=schema_valid,
+        zero_tolerance_failure=zero_tolerance_failure,
+        quality_score=quality_score,
+    )
 
     variant_id = data.get("variant_id")
     if variant_id is None:
@@ -1581,12 +1676,14 @@ def normalize_eval_record(record: EvalRecord | dict[str, Any]) -> EvalRecord:
             "json_parseable": json_parseable,
             "schema_valid": schema_valid,
             "semantic_evaluable": semantic_evaluable,
+            "quality_passed": quality_passed,
             "zero_tolerance_failure": zero_tolerance_failure,
             "zero_tolerance_failure_types": zero_types,
             "notes": notes,
             "failure_message": failure_message,
             "failure_class": failure_class,
             "variant_id": variant_id,
+            "status": status,
         }
     )
 
@@ -1611,7 +1708,7 @@ def classify_failure_class(
         return FailureClass.STRUCTURED_OUTPUT_INVALID
     if zero_tolerance_failure:
         return FailureClass.ZERO_TOLERANCE_FAILURE
-    if quality_score is not None and quality_score < 1.0:
+    if quality_score is not None and quality_score < QUALITY_PASS_THRESHOLD:
         return FailureClass.QUALITY_FAILURE
     return FailureClass.NONE
 
@@ -1636,13 +1733,60 @@ def classify_operational_failure(failure_message: str | None) -> FailureClass:
 
 
 def failure_note_for_status(status: str) -> str:
-    if status == "schema_fail":
+    if status in {"schema_fail", "parse_fail"}:
         return "json_parse_error"
-    if status == "schema_invalid":
+    if status in {"schema_invalid", "schema_fail"}:
         return "schema_invalid"
     if status == "structured_output_invalid":
         return "structured_output_invalid"
+    if status == "quality_fail":
+        return "quality_failure"
+    if status == "zero_tolerance_fail":
+        return "zero_tolerance_failure"
     return "provider_failure"
+
+
+def is_operational_success_from_failure_class(failure_class: FailureClass | str) -> bool:
+    normalized = FailureClass(failure_class)
+    return normalized not in OPERATIONAL_FAILURE_CLASSES
+
+
+def is_json_parseable_from_failure_class(failure_class: FailureClass | str) -> bool:
+    normalized = FailureClass(failure_class)
+    if normalized in OPERATIONAL_FAILURE_CLASSES:
+        return False
+    return normalized not in JSON_PARSE_FAILURE_CLASSES
+
+
+def is_schema_valid_from_failure_class(failure_class: FailureClass | str) -> bool:
+    normalized = FailureClass(failure_class)
+    if not is_json_parseable_from_failure_class(normalized):
+        return False
+    return normalized != FailureClass.SCHEMA_INVALID
+
+
+def normalized_status(
+    *,
+    status: str | None,
+    operational_success: bool,
+    json_parseable: bool,
+    schema_valid: bool,
+    zero_tolerance_failure: bool,
+    quality_score: float | None,
+) -> str:
+    if status == "skipped":
+        return "skipped"
+    if not operational_success:
+        return "provider_fail"
+    if not json_parseable:
+        return "parse_fail"
+    if not schema_valid:
+        return "schema_fail"
+    if zero_tolerance_failure:
+        return "zero_tolerance_fail"
+    if quality_score is not None and quality_score < QUALITY_PASS_THRESHOLD:
+        return "quality_fail"
+    return "ok"
 
 
 def cheaper_model(
