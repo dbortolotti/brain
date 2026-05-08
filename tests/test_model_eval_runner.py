@@ -861,7 +861,7 @@ def test_router_capability_satisfied_by_intent_router() -> None:
     assert coverage["router"]["status"] == "eligible"
 
 
-def test_slack_intake_missing_component() -> None:
+def test_slack_intake_uses_deterministic_success_receipts() -> None:
     summaries = [
         Summary(role="source_classifier", model="m1", eligible=True),
         Summary(role="durability_filter", model="m1", eligible=True),
@@ -871,8 +871,8 @@ def test_slack_intake_missing_component() -> None:
 
     coverage = capability_coverage(summaries)
 
-    assert coverage["slack_intake"]["status"] == "missing"
-    assert "success_receipt_generator" in coverage["slack_intake"]["missing_roles"]
+    assert coverage["slack_intake"]["status"] == "eligible"
+    assert "success_receipt_template" in coverage["slack_intake"]["deterministic_roles"]
 
 
 def test_embeddings_optional_if_not_tested() -> None:

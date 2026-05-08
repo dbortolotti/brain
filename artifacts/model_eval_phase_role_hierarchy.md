@@ -23,14 +23,14 @@
 ####  <span style="color: red;">repair_option_generator: []</span>
  >    *Brief: Propose safe user-facing repair options when clarification or conflict resolution is required.*
 
-####  <span style="color: red;">success_receipt_generator: []</span>
- >    *Brief: Produce concise user-facing confirmations for successful Slack or memory operations.*
-
 ####  <span style="color: green;">zero_tolerance_validator: [deterministic]</span>
  >    *Brief: Enforce non-negotiable safety checks before any memory commit.*
 
 ####  <span style="color: green;">commit_policy: [deterministic]</span>
  >    *Brief: Decide whether validated intake output can be committed.*
+
+####  <span style="color: green;">success_receipt_template: [deterministic]</span>
+ >    *Brief: Render required success receipt fields from deterministic ingestion data rather than model-authored prose.*
 
 
 ## `memory_compiler`
@@ -106,14 +106,14 @@
 ## `debug`
 *Explain recall plans, filtered candidates, and sync/debug state for operators.*
 
-####  <span style="color: orange;">debug_explainer: [google:gemini-2.5-flash-lite]</span>
+####  <span style="color: green;">debug_explainer: [google:gemini-2.5-flash-lite]</span>
  >    *Brief: Explain internal retrieval, filtering, and sync state for debugging while avoiding exposure of raw private source content.*
 
 
 ## `judge`
 *Offline model-output quality judging; not part of normal runtime.*
 
-####  <span style="color: orange;">eval_judge: [openai:gpt-5.5]</span>
+####  <span style="color: green;">eval_judge: [openai:gpt-5.5]</span>
  >    *Brief: Judge model output quality offline for eval reporting and adjudication; not part of normal runtime.*
 
 

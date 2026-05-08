@@ -220,11 +220,11 @@ COARSE_CAPABILITIES: dict[str, dict[str, Any]] = {
             "durability_filter",
             "memory_kind_classifier",
             "repair_option_generator",
-            "success_receipt_generator",
         ],
         "deterministic_roles": [
             "zero_tolerance_validator",
             "commit_policy",
+            "success_receipt_template",
         ],
     },
     "memory_compiler": {
@@ -1958,6 +1958,7 @@ def capability_coverage(summaries: list[ModelRoleSummary | dict[str, Any]]) -> d
                 "status": "not_tested",
                 "missing_roles": [],
                 "eligible_models_by_role": {},
+                "deterministic_roles": list(cfg.get("deterministic_roles", [])),
             }
             continue
         missing = [role for role in required if not eligible_by_role.get(role)]
@@ -1968,6 +1969,7 @@ def capability_coverage(summaries: list[ModelRoleSummary | dict[str, Any]]) -> d
                 role: sorted(eligible_by_role.get(role, []))
                 for role in required
             },
+            "deterministic_roles": list(cfg.get("deterministic_roles", [])),
         }
     return coverage
 

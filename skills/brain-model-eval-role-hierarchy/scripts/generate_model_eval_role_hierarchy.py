@@ -26,6 +26,7 @@ FINE_BRIEFS = {
     "memory_kind_classifier": "Classify candidate memory kind and avoid unsafe splitting or merging of facts.",
     "repair_option_generator": "Propose safe user-facing repair options when clarification or conflict resolution is required.",
     "success_receipt_generator": "Produce concise user-facing confirmations for successful Slack or memory operations.",
+    "success_receipt_template": "Render required success receipt fields from deterministic ingestion data rather than model-authored prose.",
     "zero_tolerance_validator": "Enforce non-negotiable safety checks before memory output is accepted.",
     "commit_policy": "Decide whether validated intake output can be committed.",
     "atomic_card_extractor": "Extract atomic memory cards from durable source material without inventing unsupported facts or collapsing long sources into one card.",
