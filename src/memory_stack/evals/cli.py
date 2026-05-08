@@ -8,7 +8,7 @@ from rich.console import Console
 
 from memory_stack.config import load_settings
 from memory_stack.evals.model_matrix import REGISTRY_PATH
-from memory_stack.evals.model_runner import ModelEvalRunConfig, run_model_evals, run_rerun_failed
+from memory_stack.evals.model_runner import ModelEvalRunConfig, run_model_evals, run_rescore, run_rerun_failed
 from memory_stack.evals.runner import run_golden_evals
 
 
@@ -115,6 +115,28 @@ def rerun_failed(
         failure_class=failure_class,
         role=role,
         model=model,
+    )
+    console.print(f"[green]updated[/green] {output_json}")
+    console.print(f"[green]wrote[/green] {result['report_md_path']}")
+    console.print(f"[green]wrote[/green] {result['failed_manifest_jsonl_path']}")
+    console.print(f"[green]wrote[/green] {result['failed_manifest_md_path']}")
+    console.print_json(data={"run_id": result["run_id"], "record_count": result["record_count"]})
+
+
+@app.command("rescore")
+def rescore(
+    registry: Path = typer.Option(REGISTRY_PATH, "--registry"),
+    source_json: Path = typer.Option(..., "--source-json"),
+    output_json: Path = typer.Option(..., "--output-json"),
+    bootstrap_samples: int = typer.Option(1000, "--bootstrap-samples", min=0),
+    overwrite: bool = typer.Option(False, "--overwrite"),
+) -> None:
+    result = run_rescore(
+        registry_path=registry,
+        source_path=source_json,
+        output_path=output_json,
+        overwrite=overwrite,
+        bootstrap_samples=bootstrap_samples,
     )
     console.print(f"[green]updated[/green] {output_json}")
     console.print(f"[green]wrote[/green] {result['report_md_path']}")

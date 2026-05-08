@@ -5,6 +5,7 @@ import threading
 import time
 from pathlib import Path
 from typing import Any
+import pytest
 
 from memory_stack.config import Settings
 from memory_stack.evals.model_fixtures import ModelEvalFixture, select_fixtures
@@ -12,8 +13,10 @@ from memory_stack.evals.model_matrix import load_model_registry, select_model_ca
 from memory_stack.evals.model_runner import (
     ModelEvalRunConfig,
     build_work_items,
+    merge_rerun_records,
     read_eval_records,
     render_report,
+    run_rescore,
     run_model_evals,
     run_rerun_failed,
     write_parsed_output,
@@ -26,6 +29,7 @@ from memory_stack.evals.scoring import (
     Summary,
     aggregate,
     aggregate_model_role_records,
+    capability_coverage,
     is_stack_deployable,
     pairwise_quality,
     score_model_output,
@@ -204,7 +208,6 @@ def test_fine_grained_model_matrix_selects_targeted_role_models() -> None:
     assert [candidate.ref for candidate in candidates] == [
         "openai:gpt-5-nano",
         "google:gemini-2.5-flash-lite",
-        "openrouter:qwen/qwen3.5-9b-fp8",
     ]
 
 
@@ -213,7 +216,7 @@ def test_fine_grained_explicit_model_inherits_matrix_roles() -> None:
 
     candidate = select_model_candidates(
         registry,
-        model_refs=["openrouter:qwen/qwen3.5-9b-fp8"],
+        model_refs=["openai:gpt-5.5-high"],
         roles=set(),
         scope="core",
         include_judge=True,
@@ -221,25 +224,12 @@ def test_fine_grained_explicit_model_inherits_matrix_roles() -> None:
     )[0]
 
     assert set(candidate.roles) == {
-        "intent_router",
-        "source_classifier",
-        "durability_filter",
-        "memory_kind_classifier",
         "atomic_card_extractor",
-        "entity_mention_extractor",
         "entity_candidate_ranker",
-        "relationship_extractor",
-        "open_loop_detector",
-        "table_policy_handler",
         "source_takeaway_extractor",
         "conflict_candidate_detector",
-        "conflict_explainer",
-        "repair_option_generator",
-        "success_receipt_generator",
-        "recall_planner",
         "recall_synthesizer",
         "groundedness_checker",
-        "debug_explainer",
         "eval_judge",
     }
 
@@ -301,6 +291,73 @@ def test_fixture_scoring_detects_zero_tolerance_overmerge() -> None:
     assert scores["entity_safety"] == 0.0
     assert zero_tolerance is True
     assert notes == ["entity_overmerge"]
+
+
+def test_intent_router_ignores_table_zero_tolerance_checks() -> None:
+    fixture = ModelEvalFixture(
+        id="router_table_input",
+        role="intent_router",
+        scenario_group="router",
+        input_text="/brain remember | Person | Preference | ...",
+        expected={"intent": "remember"},
+        zero_tolerance_checks=(
+            "small_table_must_not_drop_values",
+            "source_invention",
+            "prompt_injection_followed",
+        ),
+    )
+
+    scores, zero, types = score_model_output(fixture, {"intent": "remember"}, status="ok")
+
+    assert scores["decision_correctness"] == 1.0
+    assert zero is False
+    assert "small_table_must_not_drop_values" not in types
+    assert "source_invention" not in types
+
+
+def test_entity_mention_extractor_ignores_receipt_checks() -> None:
+    fixture = ModelEvalFixture(
+        id="entity_mentions",
+        role="entity_mention_extractor",
+        scenario_group="entities",
+        input_text="Sam from Goldman likes Bill Evans.",
+        expected={"must_include": ["Sam", "Goldman", "Bill Evans"]},
+        zero_tolerance_checks=("success_receipt_missing", "entity_overmerge"),
+    )
+
+    payload = {
+        "memory_cards": [
+            {
+                "kind": "person_interaction",
+                "statement": "Sam from Goldman likes Bill Evans.",
+                "entities": [
+                    {"name": "Sam", "type": "person"},
+                    {"name": "Goldman", "type": "organization"},
+                    {"name": "Bill Evans", "type": "person"},
+                ],
+            }
+        ]
+    }
+
+    _scores, _zero, types = score_model_output(fixture, payload, status="ok")
+
+    assert "success_receipt_missing" not in types
+
+
+def test_success_receipt_generator_fails_missing_receipt() -> None:
+    fixture = ModelEvalFixture(
+        id="receipt",
+        role="success_receipt_generator",
+        scenario_group="receipt",
+        input_text="Stored memory mem_1.",
+        expected={"receipt_terms": ["mem_1", "Undo"]},
+        zero_tolerance_checks=("success_receipt_missing",),
+    )
+
+    _scores, zero, types = score_model_output(fixture, {"decision": "commit_success"}, status="ok")
+
+    assert zero is True
+    assert "success_receipt_missing" in types
 
 
 def test_provider_failure_is_not_counted_as_zero_tolerance() -> None:
@@ -400,6 +457,10 @@ def test_statistical_aggregation_outputs_ci_and_zero_bound() -> None:
 
     assert summary["records_total"] == 2
     assert summary["records_semantic_evaluable"] == 2
+    assert summary["cost_per_1k_attempted"] == pytest.approx(150.0)
+    assert summary["cost_per_1k_successful"] == pytest.approx(150.0)
+    assert summary["cost_per_1k_semantic"] == pytest.approx(150.0)
+    assert summary["latency_p50_ms"] is not None
     assert summary["subscores"]["decision_correctness"]["method"] == "hierarchical_bootstrap_by_scenario_fixture_variant"
     assert zero_tolerance_upper_bound(0, 10) == 0.3
 
@@ -413,6 +474,43 @@ def test_embeddings_do_not_satisfy_runtime_roles() -> None:
 
     assert deployable is False
     assert "slack_intake" in missing
+
+
+def test_router_capability_satisfied_by_intent_router() -> None:
+    summaries = [
+        Summary(role="intent_router", model="openai:gpt-5-nano", eligible=True),
+    ]
+
+    coverage = capability_coverage(summaries)
+
+    assert coverage["router"]["status"] == "eligible"
+
+
+def test_slack_intake_missing_component() -> None:
+    summaries = [
+        Summary(role="source_classifier", model="m1", eligible=True),
+        Summary(role="durability_filter", model="m1", eligible=True),
+        Summary(role="memory_kind_classifier", model="m1", eligible=True),
+        Summary(role="repair_option_generator", model="m1", eligible=True),
+    ]
+
+    coverage = capability_coverage(summaries)
+
+    assert coverage["slack_intake"]["status"] == "missing"
+    assert "success_receipt_generator" in coverage["slack_intake"]["missing_roles"]
+
+
+def test_embeddings_optional_if_not_tested() -> None:
+    summaries = [
+        Summary(role="intent_router", model="m1", eligible=True),
+    ]
+
+    coverage = capability_coverage(summaries)
+    deployable, missing = is_stack_deployable(summaries, mode="fine-grained")
+
+    assert coverage["embeddings"]["status"] == "not_tested"
+    assert "embeddings" not in missing
+    assert deployable is False
 
 
 def test_missing_mandatory_role_marks_stack_non_deployable() -> None:
@@ -728,12 +826,11 @@ def test_build_work_items_interleaves_endpoints_within_repeat() -> None:
 
     items = build_work_items(candidates, {"intent_router"}, fixtures, 1)
 
-    assert len(items) >= 3
-    first_wave = items[:3]
+    assert len(items) >= 2
+    first_wave = items[:2]
     assert {item.candidate.endpoint_key for item in first_wave} == {
         "openai:gpt-5-nano:llm",
         "google:gemini-2.5-flash-lite:llm",
-        "openrouter:qwen/qwen3.5-9b:llm:fp8",
     }
 
 
@@ -874,6 +971,110 @@ def test_rerun_failed_replaces_records_by_record_id(tmp_path) -> None:
     assert any(before_by_id[record_id]["status"] == "fail" for record_id in before_by_id)
     assert all(after_by_id[record_id]["run_id"] == rerun_failed["run_id"] for record_id in after_by_id)
     assert all(after_by_id[record_id]["rerun_of_run_id"] == initial["run_id"] for record_id in after_by_id)
+
+
+def test_merge_rerun_records_replaces_record_by_id() -> None:
+    original = [
+        {"record_id": "abc", "status": "fail", "failure_class": "json_parse_error"},
+        {"record_id": "def", "status": "ok", "failure_class": "none"},
+    ]
+    rerun = [
+        {"record_id": "abc", "status": "ok", "failure_class": "none"},
+    ]
+
+    merged = merge_rerun_records(original, rerun)
+
+    assert len(merged) == 2
+    assert next(row for row in merged if row["record_id"] == "abc")["status"] == "ok"
+
+
+def test_merge_rerun_records_preserves_non_rerun_records() -> None:
+    original = [
+        {"record_id": "abc", "status": "fail"},
+        {"record_id": "def", "status": "ok"},
+    ]
+    rerun = [
+        {"record_id": "abc", "status": "ok"},
+    ]
+
+    merged = merge_rerun_records(original, rerun)
+
+    assert next(row for row in merged if row["record_id"] == "def")["status"] == "ok"
+
+
+def test_rescore_removes_router_table_failure_and_regenerates_artifacts(tmp_path) -> None:
+    raw_dir = tmp_path / "raw" / "eval_1"
+    raw_dir.mkdir(parents=True)
+    raw_path = raw_dir / "openai_gpt-5-nano__intent_router__router_remember_plain__0.json"
+    raw_path.write_text(
+        json.dumps(
+            {
+                "run_id": "eval_1",
+                "model": "openai:gpt-5-nano",
+                "role": "intent_router",
+                "fixture_id": "router_remember_plain",
+                "status": "ok",
+                "error": None,
+                "payload": {"intent": "remember"},
+                "raw_text": '{"intent":"remember"}',
+            }
+        ),
+        encoding="utf-8",
+    )
+    output = tmp_path / "results.json"
+    output.write_text(
+        json.dumps(
+            [
+                {
+                    "record_id": "router-1",
+                    "run_id": "eval_1",
+                    "fixture_set_version": "brain-model-test-v2",
+                    "policy_version": "memory-policy-v1",
+                    "model": "openai:gpt-5-nano",
+                    "provider": "openai",
+                    "role": "intent_router",
+                    "fixture_id": "router_remember_plain",
+                    "variant_id": "base",
+                    "repeat_idx": 0,
+                    "status": "ok",
+                    "failure_class": "zero_tolerance_failure",
+                    "failure_reason_codes": ["small_table_must_not_drop_values"],
+                    "failure_message": None,
+                    "operational_success": True,
+                    "json_parseable": True,
+                    "schema_valid": True,
+                    "semantic_evaluable": True,
+                    "zero_tolerance_failure": True,
+                    "zero_tolerance_failure_types": ["small_table_must_not_drop_values"],
+                    "quality_score": 0.0,
+                    "subscores": {"decision_correctness": 0.0},
+                    "raw_output_path": str(raw_path),
+                    "parsed_output_path": None,
+                    "scenario_group": "router_remember",
+                    "notes": ["small_table_must_not_drop_values"],
+                }
+            ],
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_rescore(
+        registry_path=REGISTRY_PATH,
+        source_path=output,
+        output_path=output,
+        overwrite=True,
+        bootstrap_samples=0,
+    )
+
+    rescored = read_eval_records(output)
+    router = rescored[0]
+
+    assert router["zero_tolerance_failure"] is False
+    assert "small_table_must_not_drop_values" not in router["zero_tolerance_failure_types"]
+    assert router["failure_class"] == "quality_failure"
+    assert Path(result["failed_manifest_jsonl_path"]).exists()
+    assert Path(result["report_md_path"]).exists()
 
 
 def test_live_provider_client_retries_transient_provider_error(monkeypatch) -> None:

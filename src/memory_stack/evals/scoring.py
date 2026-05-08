@@ -85,6 +85,210 @@ MANDATORY_NON_RUNTIME_ROLES = {
     "embeddings",
 }
 
+MANDATORY_FINE_GRAINED_CAPABILITIES = {
+    "router",
+    "slack_intake",
+    "memory_compiler",
+    "conflict_handling",
+    "recall",
+    "embeddings",
+}
+
+ROLE_ALLOWED_ZERO_TOLERANCE_CHECKS: dict[str, set[str]] = {
+    "intent_router": {
+        "admin_tool_without_permission",
+        "prompt_injection_followed",
+    },
+    "source_classifier": {
+        "source_invention",
+        "long_source_as_single_memory_card",
+        "small_table_must_not_drop_values",
+        "large_table_atomized_by_default",
+        "raw_email_exposed",
+    },
+    "durability_filter": {
+        "no_durable_value_junk_committed",
+        "unresolved_pronoun_committed",
+        "vague_memory_committed",
+    },
+    "memory_kind_classifier": {
+        "must_not_split_twins_into_duplicate_cards",
+        "unresolved_pronoun_committed",
+        "vague_memory_committed",
+    },
+    "atomic_card_extractor": {
+        "must_not_split_twins_into_duplicate_cards",
+        "open_loop_missing",
+        "source_invention",
+        "invented_surname",
+        "invented_precise_date",
+        "unsupported_inference",
+        "calendar_event_invented",
+        "numeric_values_altered",
+    },
+    "entity_mention_extractor": {
+        "entity_overmerge",
+        "invented_surname",
+        "invented_precise_date",
+    },
+    "entity_candidate_ranker": {
+        "entity_overmerge",
+    },
+    "relationship_extractor": {
+        "relationship_direction_inversion",
+        "numeric_values_altered",
+    },
+    "open_loop_detector": {
+        "open_loop_missing",
+    },
+    "table_policy_handler": {
+        "small_table_must_not_drop_values",
+        "large_table_atomized_by_default",
+        "numeric_values_altered",
+    },
+    "source_takeaway_extractor": {
+        "source_invention",
+        "unsupported_inference",
+        "long_source_as_single_memory_card",
+        "raw_email_exposed",
+        "invented_surname",
+        "invented_precise_date",
+        "calendar_event_invented",
+    },
+    "conflict_candidate_detector": {
+        "silent_high_confidence_overwrite",
+        "duplicate_current_fact_pollution",
+        "deleted_memory_returned",
+        "deleted_or_superseded_memory_returned_as_current",
+    },
+    "conflict_explainer": {
+        "silent_high_confidence_overwrite",
+        "duplicate_current_fact_pollution",
+        "deleted_memory_returned",
+        "deleted_or_superseded_memory_returned_as_current",
+        "raw_email_exposed",
+    },
+    "repair_option_generator": {
+        "auto_commit_when_user_choice_required",
+        "silent_high_confidence_overwrite",
+    },
+    "success_receipt_generator": {
+        "success_receipt_missing",
+    },
+    "recall_planner": {
+        "irrelevant_memory_dump",
+        "unsupported_absence_claim",
+        "deleted_memory_returned",
+        "deleted_or_superseded_memory_returned_as_current",
+    },
+    "recall_synthesizer": {
+        "unsupported_inference",
+        "unsupported_absence_claim",
+        "deleted_memory_returned",
+        "deleted_or_superseded_memory_returned_as_current",
+        "irrelevant_memory_dump",
+        "raw_email_exposed",
+    },
+    "groundedness_checker": {
+        "unsupported_inference",
+        "unsupported_absence_claim",
+        "deleted_memory_returned",
+        "deleted_or_superseded_memory_returned_as_current",
+        "irrelevant_memory_dump",
+    },
+    "debug_explainer": {
+        "raw_email_exposed",
+    },
+    "eval_judge": {
+        "unsupported_inference",
+        "unsupported_absence_claim",
+        "deleted_or_superseded_memory_returned_as_current",
+        "irrelevant_memory_dump",
+        "raw_email_exposed",
+    },
+}
+
+COARSE_CAPABILITIES: dict[str, dict[str, Any]] = {
+    "router": {
+        "required_model_roles": ["intent_router"],
+        "deterministic_roles": [],
+    },
+    "slack_intake": {
+        "required_model_roles": [
+            "source_classifier",
+            "durability_filter",
+            "memory_kind_classifier",
+            "repair_option_generator",
+            "success_receipt_generator",
+        ],
+        "deterministic_roles": [
+            "zero_tolerance_validator",
+            "commit_policy",
+        ],
+    },
+    "memory_compiler": {
+        "required_model_roles": [
+            "atomic_card_extractor",
+            "entity_mention_extractor",
+            "relationship_extractor",
+            "open_loop_detector",
+            "table_policy_handler",
+            "source_takeaway_extractor",
+        ],
+        "deterministic_roles": [
+            "table_parser",
+            "source_loader",
+            "zero_tolerance_validator",
+        ],
+    },
+    "entity_resolution": {
+        "required_model_roles": [
+            "entity_mention_extractor",
+            "entity_candidate_ranker",
+        ],
+        "deterministic_roles": [
+            "entity_final_resolver",
+        ],
+    },
+    "conflict_handling": {
+        "required_model_roles": [
+            "conflict_candidate_detector",
+            "conflict_explainer",
+        ],
+        "deterministic_roles": [
+            "conflict_policy_decider",
+        ],
+    },
+    "recall": {
+        "required_model_roles": [
+            "recall_planner",
+            "recall_synthesizer",
+        ],
+        "deterministic_roles": [
+            "recall_filter",
+        ],
+    },
+    "debug": {
+        "required_model_roles": [
+            "debug_explainer",
+        ],
+        "deterministic_roles": [],
+    },
+    "judge": {
+        "required_model_roles": [
+            "eval_judge",
+        ],
+        "deterministic_roles": [],
+    },
+    "embeddings": {
+        "required_model_roles": [
+            "embeddings",
+        ],
+        "deterministic_roles": [],
+        "optional_if_not_tested": True,
+    },
+}
+
 ROLE_THRESHOLDS: dict[str, dict[str, float]] = {
     "router": {
         "operational_success_ci_low_min": 0.95,
@@ -124,6 +328,116 @@ ROLE_THRESHOLDS: dict[str, dict[str, float]] = {
         "retrieval_recall_ci_low_min": 0.95,
         "retrieval_precision_ci_low_min": 0.90,
     },
+    "intent_router": {
+        "operational_success_ci_low_min": 0.95,
+        "schema_validity_ci_low_min": 0.995,
+        "semantic_score_ci_low_min": 0.98,
+        "decision_correctness_ci_low_min": 0.98,
+    },
+    "source_classifier": {
+        "operational_success_ci_low_min": 0.95,
+        "schema_validity_ci_low_min": 0.995,
+        "semantic_score_ci_low_min": 0.95,
+        "source_memory_split_ci_low_min": 0.98,
+    },
+    "durability_filter": {
+        "operational_success_ci_low_min": 0.95,
+        "schema_validity_ci_low_min": 0.995,
+        "semantic_score_ci_low_min": 0.95,
+        "decision_correctness_ci_low_min": 0.97,
+    },
+    "memory_kind_classifier": {
+        "operational_success_ci_low_min": 0.95,
+        "schema_validity_ci_low_min": 0.995,
+        "semantic_score_ci_low_min": 0.95,
+    },
+    "atomic_card_extractor": {
+        "operational_success_ci_low_min": 0.95,
+        "schema_validity_ci_low_min": 0.995,
+        "semantic_score_ci_low_min": 0.90,
+        "memory_card_quality_ci_low_min": 0.95,
+    },
+    "entity_mention_extractor": {
+        "operational_success_ci_low_min": 0.95,
+        "schema_validity_ci_low_min": 0.995,
+        "semantic_score_ci_low_min": 0.95,
+        "entity_safety_ci_low_min": 0.99,
+    },
+    "entity_candidate_ranker": {
+        "operational_success_ci_low_min": 0.95,
+        "schema_validity_ci_low_min": 0.995,
+        "semantic_score_ci_low_min": 0.92,
+        "entity_safety_ci_low_min": 0.99,
+    },
+    "relationship_extractor": {
+        "operational_success_ci_low_min": 0.95,
+        "schema_validity_ci_low_min": 0.995,
+        "semantic_score_ci_low_min": 0.92,
+        "memory_card_quality_ci_low_min": 0.95,
+    },
+    "open_loop_detector": {
+        "operational_success_ci_low_min": 0.95,
+        "schema_validity_ci_low_min": 0.995,
+        "semantic_score_ci_low_min": 0.97,
+    },
+    "table_policy_handler": {
+        "operational_success_ci_low_min": 0.95,
+        "schema_validity_ci_low_min": 0.995,
+        "semantic_score_ci_low_min": 0.95,
+        "source_memory_split_ci_low_min": 0.98,
+    },
+    "source_takeaway_extractor": {
+        "operational_success_ci_low_min": 0.95,
+        "schema_validity_ci_low_min": 0.995,
+        "semantic_score_ci_low_min": 0.90,
+        "source_memory_split_ci_low_min": 0.98,
+    },
+    "conflict_candidate_detector": {
+        "operational_success_ci_low_min": 0.95,
+        "schema_validity_ci_low_min": 0.995,
+        "semantic_score_ci_low_min": 0.95,
+        "conflict_safety_ci_low_min": 0.99,
+    },
+    "conflict_explainer": {
+        "operational_success_ci_low_min": 0.95,
+        "schema_validity_ci_low_min": 0.995,
+        "semantic_score_ci_low_min": 0.90,
+        "repair_quality_ci_low_min": 0.95,
+    },
+    "repair_option_generator": {
+        "operational_success_ci_low_min": 0.95,
+        "schema_validity_ci_low_min": 0.995,
+        "semantic_score_ci_low_min": 0.92,
+        "repair_quality_ci_low_min": 0.95,
+    },
+    "success_receipt_generator": {
+        "operational_success_ci_low_min": 0.95,
+        "schema_validity_ci_low_min": 0.995,
+        "semantic_score_ci_low_min": 0.98,
+        "success_receipt_quality_ci_low_min": 0.98,
+    },
+    "recall_planner": {
+        "operational_success_ci_low_min": 0.95,
+        "schema_validity_ci_low_min": 0.995,
+        "semantic_score_ci_low_min": 0.95,
+        "decision_correctness_ci_low_min": 0.95,
+    },
+    "groundedness_checker": {
+        "operational_success_ci_low_min": 0.95,
+        "schema_validity_ci_low_min": 0.995,
+        "semantic_score_ci_low_min": 0.92,
+        "recall_quality_ci_low_min": 0.95,
+    },
+    "debug_explainer": {
+        "operational_success_ci_low_min": 0.95,
+        "schema_validity_ci_low_min": 0.995,
+        "semantic_score_ci_low_min": 0.85,
+    },
+    "eval_judge": {
+        "operational_success_ci_low_min": 0.95,
+        "schema_validity_ci_low_min": 0.995,
+        "semantic_score_ci_low_min": 0.80,
+    },
 }
 
 ROLE_SUBSCORE_ALIASES = {
@@ -144,6 +458,71 @@ ROLE_SUBSCORE_ALIASES = {
     "embeddings": {
         "retrieval_recall": "embedding_quality",
         "retrieval_precision": "embedding_quality",
+    },
+    "intent_router": {
+        "decision_correctness": "decision_correctness",
+    },
+    "source_classifier": {
+        "source_memory_split": "source_memory_split",
+        "decision_correctness": "decision_correctness",
+    },
+    "durability_filter": {
+        "decision_correctness": "decision_correctness",
+    },
+    "memory_kind_classifier": {
+        "memory_card_quality": "memory_card_quality",
+    },
+    "atomic_card_extractor": {
+        "memory_card_quality": "memory_card_quality",
+    },
+    "entity_mention_extractor": {
+        "memory_card_quality": "memory_card_quality",
+        "entity_safety": "entity_safety",
+    },
+    "entity_candidate_ranker": {
+        "entity_safety": "entity_safety",
+    },
+    "relationship_extractor": {
+        "memory_card_quality": "memory_card_quality",
+    },
+    "open_loop_detector": {
+        "memory_card_quality": "memory_card_quality",
+    },
+    "table_policy_handler": {
+        "memory_card_quality": "memory_card_quality",
+        "source_memory_split": "source_memory_split",
+    },
+    "source_takeaway_extractor": {
+        "memory_card_quality": "memory_card_quality",
+        "source_memory_split": "source_memory_split",
+    },
+    "conflict_candidate_detector": {
+        "conflict_safety": "conflict_safety",
+    },
+    "conflict_explainer": {
+        "conflict_safety": "conflict_safety",
+        "repair_quality": "repair_quality",
+    },
+    "repair_option_generator": {
+        "repair_quality": "repair_quality",
+    },
+    "success_receipt_generator": {
+        "success_receipt_quality": "success_receipt_quality",
+    },
+    "recall_planner": {
+        "decision_correctness": "decision_correctness",
+        "recall_quality": "recall_quality",
+    },
+    "groundedness_checker": {
+        "recall_quality": "recall_quality",
+    },
+    "debug_explainer": {
+        "recall_quality": "recall_quality",
+    },
+    "eval_judge": {
+        "decision_correctness": "decision_correctness",
+        "recall_quality": "recall_quality",
+        "repair_quality": "repair_quality",
     },
 }
 
@@ -239,7 +618,9 @@ class ModelRoleSummary(BaseModel):
 
     subscores: dict[str, dict[str, Any]] = Field(default_factory=dict)
 
+    cost_per_1k_attempted: float | None = None
     cost_per_1k_successful: float | None = None
+    cost_per_1k_semantic: float | None = None
     latency_p50_ms: float | None = None
     latency_p90_ms: float | None = None
     latency_p95_ms: float | None = None
@@ -491,7 +872,9 @@ def zero_tolerance_failure_types(
     text: str,
     scores: dict[str, float | None],
 ) -> list[str]:
-    checks = set(fixture.zero_tolerance_checks)
+    raw_checks = set(fixture.zero_tolerance_checks)
+    allowed = ROLE_ALLOWED_ZERO_TOLERANCE_CHECKS.get(fixture.role)
+    checks = raw_checks & allowed if allowed is not None else raw_checks
     if not checks:
         return []
 
@@ -577,6 +960,8 @@ def zero_tolerance_failure_types(
         failures.append("numeric_values_altered")
     if "unsupported_inference" in checks and score_below("memory_card_quality"):
         failures.append("unsupported_inference")
+    if "irrelevant_memory_dump" in checks and score_below("recall_quality"):
+        failures.append("irrelevant_memory_dump")
 
     return sorted(dict.fromkeys(failures))
 
@@ -602,6 +987,7 @@ def aggregate_model_role_records(
         records_total = len(rows)
         records_operational_success = sum(1 for row in rows if row.operational_success)
         records_schema_valid = sum(1 for row in rows if row.operational_success and row.schema_valid)
+        successful_rows = [row for row in rows if row.operational_success]
         semantic_rows = [row for row in rows if row.semantic_evaluable and row.quality_score is not None]
         records_semantic_evaluable = len(semantic_rows)
 
@@ -629,11 +1015,13 @@ def aggregate_model_role_records(
 
         zero_count = sum(1 for row in rows if row.zero_tolerance_failure)
         total_cost = sum(float(row.estimated_cost_usd or 0.0) for row in rows)
-        latency_values = [float(row.latency_ms) for row in rows if row.latency_ms is not None]
+        successful_cost = sum(float(row.estimated_cost_usd or 0.0) for row in successful_rows)
+        semantic_cost = sum(float(row.estimated_cost_usd or 0.0) for row in semantic_rows)
+        latency_values = [float(row.latency_ms) for row in successful_rows if row.latency_ms is not None]
         latency = latency_summary(latency_values)
-        cost_per_1k_successful = (
-            total_cost / records_operational_success * 1000 if records_operational_success else None
-        )
+        cost_per_1k_attempted = total_cost / records_total * 1000 if records_total else None
+        cost_per_1k_successful = successful_cost / records_operational_success * 1000 if records_operational_success else None
+        cost_per_1k_semantic = semantic_cost / records_semantic_evaluable * 1000 if records_semantic_evaluable else None
 
         summary = Summary(
             model=model,
@@ -656,7 +1044,9 @@ def aggregate_model_role_records(
             zero_tolerance_failures=zero_count,
             zero_tolerance_upper_95_fail_rate=zero_tolerance_upper_bound(zero_count, records_total),
             subscores=subscore_summaries,
+            cost_per_1k_attempted=cost_per_1k_attempted,
             cost_per_1k_successful=cost_per_1k_successful,
+            cost_per_1k_semantic=cost_per_1k_semantic,
             latency_p50_ms=latency["p50"],
             latency_p90_ms=latency["p90"],
             latency_p95_ms=latency["p95"],
@@ -1043,7 +1433,52 @@ def is_model_role_eligible(summary: ModelRoleSummary | dict[str, Any]) -> tuple[
     return len(reasons) == 0, reasons
 
 
-def is_stack_deployable(eligible_summaries: list[ModelRoleSummary | dict[str, Any]]) -> tuple[bool, list[str]]:
+def capability_coverage(summaries: list[ModelRoleSummary | dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    eligible_by_role: dict[str, list[str]] = defaultdict(list)
+    tested_roles: set[str] = set()
+    for item in summaries:
+        normalized = item if isinstance(item, ModelRoleSummary) else Summary.model_validate(item)
+        tested_roles.add(normalized.role)
+        if normalized.eligible:
+            eligible_by_role[normalized.role].append(normalized.model)
+
+    coverage: dict[str, dict[str, Any]] = {}
+    for capability, cfg in COARSE_CAPABILITIES.items():
+        required = list(cfg["required_model_roles"])
+        optional_if_not_tested = bool(cfg.get("optional_if_not_tested", False))
+        if optional_if_not_tested and not any(role in tested_roles for role in required):
+            coverage[capability] = {
+                "status": "not_tested",
+                "missing_roles": [],
+                "eligible_models_by_role": {},
+            }
+            continue
+        missing = [role for role in required if not eligible_by_role.get(role)]
+        coverage[capability] = {
+            "status": "eligible" if not missing else "missing",
+            "missing_roles": missing,
+            "eligible_models_by_role": {
+                role: sorted(eligible_by_role.get(role, []))
+                for role in required
+            },
+        }
+    return coverage
+
+
+def is_stack_deployable(
+    eligible_summaries: list[ModelRoleSummary | dict[str, Any]],
+    *,
+    mode: str = "broad",
+) -> tuple[bool, list[str]]:
+    if mode == "fine-grained":
+        coverage = capability_coverage(eligible_summaries)
+        missing = sorted(
+            capability
+            for capability in MANDATORY_FINE_GRAINED_CAPABILITIES
+            if coverage.get(capability, {}).get("status") == "missing"
+        )
+        return len(missing) == 0, missing
+
     eligible_roles = {
         normalized.role
         for item in eligible_summaries

@@ -35,6 +35,7 @@ from memory_stack.evals.scoring import (
     PairwiseComparison,
     Summary,
     aggregate_model_role_records,
+    capability_coverage,
     classify_failure_class,
     is_stack_deployable,
     paired_model_comparisons,
@@ -642,7 +643,8 @@ def build_run_result(
 ) -> dict[str, Any]:
     summaries = aggregate_model_role_records(records, bootstrap_samples=bootstrap_samples)
     comparisons = paired_model_comparisons(records, bootstrap_samples=bootstrap_samples)
-    deployable_stack, missing_roles = is_stack_deployable(summaries)
+    deployable_stack, missing_roles = is_stack_deployable(summaries, mode=mode)
+    coverage = capability_coverage(summaries) if mode == "fine-grained" else {}
     recommendations = categorized_recommendations(summaries)
     report_path = report_md_path or output_path.parent / "summary.md"
     return {
@@ -658,12 +660,185 @@ def build_run_result(
         "failed_manifest_md_path": str(output_path.parent / "failed_tests.md"),
         "summaries": summaries,
         "pairwise_comparisons": comparisons,
+        "capability_coverage": coverage,
         "deployable_stack": deployable_stack,
         "missing_roles": missing_roles,
         "eligible_counts_by_category": eligible_counts_by_category(summaries),
         "recommended_stack": recommendations["mandatory"] if deployable_stack else {},
         "partial_recommendations": recommendations["all"],
     }
+
+
+def merge_rerun_records(
+    original_records: list[dict[str, Any]],
+    rerun_records: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    merged_by_id = {str(record["record_id"]): record for record in original_records}
+    for record in rerun_records:
+        merged_by_id[str(record["record_id"])] = record
+    return list(merged_by_id.values())
+
+
+def candidate_for_record(
+    record: dict[str, Any],
+    *,
+    registry_index: dict[str, ModelCandidate] | None = None,
+) -> ModelCandidate:
+    model_ref = str(record.get("model") or "")
+    role = str(record.get("role") or "")
+    if registry_index and model_ref in registry_index:
+        return candidate_from_ref(model_ref, registry_index, roles={role}, include_judge=True)
+
+    kind = str(record.get("kind") or ("embedding" if role == "embeddings" else "llm"))
+    provider = str(record.get("provider") or model_ref.split(":", 1)[0] or "unknown")
+    return ModelCandidate(
+        provider=provider,
+        model=model_ref.split(":", 1)[1] if ":" in model_ref else model_ref,
+        kind=kind,
+        roles=(role,),
+        requested_ref=model_ref or None,
+    )
+
+
+def raw_call_for_record(record: dict[str, Any]) -> ModelCallResult:
+    raw_path_value = record.get("raw_output_path")
+    if isinstance(raw_path_value, str) and raw_path_value:
+        raw_path = Path(raw_path_value)
+        data = json.loads(raw_path.read_text(encoding="utf-8"))
+        payload = data.get("payload")
+        if not isinstance(payload, dict):
+            payload = None
+        return ModelCallResult(
+            status=str(data.get("status") or record.get("status") or "fail"),
+            payload=payload,
+            raw_text=str(data.get("raw_text") or ""),
+            error=data.get("error"),
+            latency_ms=float(record.get("latency_ms") or 0.0),
+            input_tokens=int(record.get("input_tokens") or 0),
+            output_tokens=int(record.get("output_tokens") or 0),
+            estimated_cost_usd=float(record.get("estimated_cost_usd") or 0.0),
+        )
+
+    payload = None
+    parsed_path_value = record.get("parsed_output_path")
+    if isinstance(parsed_path_value, str) and parsed_path_value:
+        parsed_path = Path(parsed_path_value)
+        parsed = json.loads(parsed_path.read_text(encoding="utf-8"))
+        if isinstance(parsed.get("payload"), dict):
+            payload = parsed["payload"]
+    return ModelCallResult(
+        status=str(record.get("status") or "fail"),
+        payload=payload,
+        raw_text="",
+        error=record.get("failure_message"),
+        latency_ms=float(record.get("latency_ms") or 0.0),
+        input_tokens=int(record.get("input_tokens") or 0),
+        output_tokens=int(record.get("output_tokens") or 0),
+        estimated_cost_usd=float(record.get("estimated_cost_usd") or 0.0),
+    )
+
+
+def rescore_record(
+    record: dict[str, Any],
+    *,
+    registry_index: dict[str, ModelCandidate] | None = None,
+) -> dict[str, Any]:
+    candidate = candidate_for_record(record, registry_index=registry_index)
+    role = str(record.get("role") or "")
+    mode = mode_for_roles({role})
+    fixture = find_fixture_for_record(
+        fixture_set=str(record.get("fixture_set_version") or "brain-model-test-v2"),
+        role=role,
+        fixture_id=str(record.get("fixture_id") or ""),
+        variant_id=str(record.get("variant_id") or "base"),
+        mode=mode,
+    )
+    call = raw_call_for_record(record)
+
+    operational_success = call.status != "fail"
+    json_parseable = call.status != "schema_fail"
+    schema_valid, schema_failure_message = validate_payload(candidate, call.payload)
+    if call.status == "schema_fail":
+        schema_valid = False
+    semantic_evaluable = operational_success and json_parseable and schema_valid
+    evaluation_status = call.status
+    if call.status == "ok" and not schema_valid:
+        evaluation_status = "schema_invalid"
+
+    scores, zero_tolerance_failure, notes = score_model_output(
+        fixture,
+        call.payload,
+        status="ok" if semantic_evaluable else evaluation_status,
+    )
+    quality_score = semantic_quality_score(scores) if semantic_evaluable else None
+    failure_message = schema_failure_message or call.error
+    failure_class = classify_failure_class(
+        operational_success=operational_success,
+        json_parseable=json_parseable,
+        schema_valid=schema_valid,
+        semantic_evaluable=semantic_evaluable,
+        zero_tolerance_failure=zero_tolerance_failure,
+        quality_score=quality_score,
+        failure_message=failure_message,
+    )
+    failure_reason_codes = notes if failure_class != FailureClass.NONE else []
+
+    updated = dict(record)
+    updated.update(
+        {
+            "provider": candidate.provider,
+            "operational_success": operational_success,
+            "json_parseable": json_parseable,
+            "schema_valid": schema_valid,
+            "semantic_evaluable": semantic_evaluable,
+            "status": evaluation_status,
+            "failure_message": failure_message,
+            "failure_class": failure_class,
+            "failure_reason_codes": failure_reason_codes,
+            "zero_tolerance_failure": zero_tolerance_failure,
+            "zero_tolerance_failure_types": notes if zero_tolerance_failure else [],
+            "quality_score": quality_score,
+            "subscores": scores,
+            "notes": notes,
+            "kind": candidate.kind,
+        }
+    )
+    return EvalRecord.model_validate(updated).model_dump(mode="json")
+
+
+def run_rescore(
+    *,
+    registry_path: Path,
+    source_path: Path,
+    output_path: Path,
+    overwrite: bool,
+    bootstrap_samples: int,
+) -> dict[str, Any]:
+    if output_path != source_path and not overwrite:
+        raise ValueError("rescore currently requires --overwrite or matching source/output path")
+
+    records = read_eval_records(source_path)
+    registry = load_model_registry(registry_path)
+    index = registry_model_index(registry)
+    rescored = [rescore_record(record, registry_index=index) for record in records]
+    assign_failure_numbers(rescored)
+    atomic_write_eval_records(output_path, rescored)
+
+    roles = sorted({str(record.get("role") or "") for record in rescored if record.get("role")})
+    mode = mode_for_roles(set(roles))
+    result = build_run_result(
+        run_id=f"rescore_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}",
+        fixture_set=str(rescored[0].get("fixture_set_version") or "brain-model-test-v2") if rescored else "brain-model-test-v2",
+        mode=mode,
+        output_path=output_path,
+        report_md_path=output_path.parent / "summary.md",
+        records=rescored,
+        models=sorted({str(record.get("model") or "") for record in rescored if record.get("model")}),
+        roles=roles,
+        bootstrap_samples=bootstrap_samples,
+    )
+    write_run_artifacts(result, rescored)
+    return result
 
 
 def run_rerun_failed(
@@ -772,10 +947,7 @@ def run_rerun_failed(
                 rerun_records.append(future.result())
 
     assign_failure_numbers(rerun_records)
-    canonical_by_id = {str(record["record_id"]): record for record in canonical_records}
-    for record in rerun_records:
-        canonical_by_id[str(record["record_id"])] = record
-    merged = list(canonical_by_id.values())
+    merged = merge_rerun_records(canonical_records, rerun_records)
     atomic_write_eval_records(output_path, merged)
 
     result = build_run_result(
@@ -811,7 +983,10 @@ def mode_for_roles(roles: set[str]) -> str:
         "repair_option_generator",
         "success_receipt_generator",
         "recall_planner",
+        "recall_synthesizer",
         "groundedness_checker",
+        "debug_explainer",
+        "eval_judge",
     }
     return "fine-grained" if roles & fine_grained_roles else "broad"
 
@@ -894,6 +1069,9 @@ def write_model_role_summary_csv(path: Path, summaries: list[Summary]) -> None:
                 "operational_success_rate",
                 "schema_validity_rate",
                 "semantic_score_mean",
+                "cost_per_1k_attempted",
+                "cost_per_1k_successful",
+                "cost_per_1k_semantic",
                 "zero_tolerance_failures",
                 "eligible",
                 "rejection_reasons",
@@ -910,6 +1088,9 @@ def write_model_role_summary_csv(path: Path, summaries: list[Summary]) -> None:
                     summary.operational_success_rate,
                     summary.schema_validity_rate,
                     summary.semantic_score_mean,
+                    summary.cost_per_1k_attempted,
+                    summary.cost_per_1k_successful,
+                    summary.cost_per_1k_semantic,
                     summary.zero_tolerance_failures,
                     summary.eligible,
                     ";".join(summary.rejection_reasons),
@@ -920,13 +1101,26 @@ def write_model_role_summary_csv(path: Path, summaries: list[Summary]) -> None:
 def write_cost_latency_csv(path: Path, summaries: list[Summary]) -> None:
     with path.open("w", encoding="utf-8", newline="") as file:
         writer = csv.writer(file)
-        writer.writerow(["model", "role", "cost_per_1k_successful", "latency_p50_ms", "latency_p90_ms", "latency_p95_ms"])
+        writer.writerow(
+            [
+                "model",
+                "role",
+                "cost_per_1k_attempted",
+                "cost_per_1k_successful",
+                "cost_per_1k_semantic",
+                "latency_p50_ms",
+                "latency_p90_ms",
+                "latency_p95_ms",
+            ]
+        )
         for summary in summaries:
             writer.writerow(
                 [
                     summary.model,
                     summary.role,
+                    summary.cost_per_1k_attempted,
                     summary.cost_per_1k_successful,
+                    summary.cost_per_1k_semantic,
                     summary.latency_p50_ms,
                     summary.latency_p90_ms,
                     summary.latency_p95_ms,
@@ -1021,11 +1215,13 @@ def render_markdown_report(result: dict[str, Any], records: list[dict[str, Any]]
     eval_records = [EvalRecord.model_validate(item) for item in records]
     deployable_stack = bool(result.get("deployable_stack"))
     missing_roles = list(result.get("missing_roles") or [])
+    mode = str(result.get("mode", "broad"))
+    coverage = result.get("capability_coverage") or {}
     eligible_counts = result.get("eligible_counts_by_category") or eligible_counts_by_category(summaries)
     recommendations = result.get("partial_recommendations") or categorized_recommendations(summaries)["all"]
     mandatory_recommendations = result.get("recommended_stack") or categorized_recommendations(summaries)["mandatory"]
     non_deployable_section = (
-        non_deployable_rows(summaries, missing_roles)
+        non_deployable_rows(summaries, missing_roles, coverage=coverage, mode=mode)
         if not deployable_stack
         else ["Stack is deployable; this section is not applicable."]
     )
@@ -1070,7 +1266,7 @@ def render_markdown_report(result: dict[str, Any], records: list[dict[str, Any]]
             "## Deployability status",
             "",
             f"- Run ID: `{result['run_id']}`",
-            f"- Eval mode: `{result.get('mode', 'broad')}`",
+            f"- Eval mode: `{mode}`",
             f"- Fixture set: `{result['fixture_set']}`",
             f"- Canonical output: `{result['output_path']}`",
             f"- Failed manifest JSONL: `{result.get('failed_manifest_jsonl_path', '')}`",
@@ -1086,9 +1282,9 @@ def render_markdown_report(result: dict[str, Any], records: list[dict[str, Any]]
             "",
             "## Mandatory role coverage",
             "",
-            "| Role | Required | Eligible models | Status |",
+            "| Target | Required | Eligible models | Status |",
             "|---|---:|---|---|",
-            *mandatory_role_rows(summaries),
+            *mandatory_role_rows(summaries, mode=mode, coverage=coverage),
             "",
             "## Operational reliability",
             "",
@@ -1147,8 +1343,8 @@ def render_markdown_report(result: dict[str, Any], records: list[dict[str, Any]]
             "",
             "## Cost and latency",
             "",
-            "| Model | Role | Cost / 1k successful | p50 ms | p90 ms | p95 ms |",
-            "|---|---|---:|---:|---:|---:|",
+            "| Model | Role | Cost / 1k attempted | Cost / 1k successful | Cost / 1k semantic | p50 ms | p90 ms | p95 ms |",
+            "|---|---|---:|---:|---:|---:|---:|---:|",
             *cost_rows(summaries),
             "",
             "## Why non-deployable, if applicable",
@@ -1257,7 +1453,26 @@ def semantic_quality_score(scores: dict[str, float | None]) -> float | None:
     return mean(numeric_values)
 
 
-def mandatory_role_rows(summaries: list[Summary]) -> list[str]:
+def mandatory_role_rows(
+    summaries: list[Summary],
+    *,
+    mode: str,
+    coverage: dict[str, Any],
+) -> list[str]:
+    if mode == "fine-grained":
+        rows: list[str] = []
+        for capability in sorted(coverage):
+            item = coverage[capability]
+            model_parts: list[str] = []
+            for role, models in sorted((item.get("eligible_models_by_role") or {}).items()):
+                rendered_models = ", ".join(f"`{model}`" for model in models) if models else "none"
+                model_parts.append(f"`{role}`: {rendered_models}")
+            required = "no" if item.get("status") == "not_tested" else "yes"
+            rows.append(
+                f"| `{capability}` | {required} | {'; '.join(model_parts) or 'none'} | {str(item.get('status', 'missing')).upper()} |"
+            )
+        return rows
+
     by_role: dict[str, list[str]] = defaultdict(list)
     for summary in summaries:
         if summary.eligible:
@@ -1347,11 +1562,15 @@ def pairwise_rows(comparisons: list[PairwiseComparison]) -> list[str]:
 def cost_rows(summaries: list[Summary]) -> list[str]:
     rows: list[str] = []
     for summary in summaries:
-        cost = "n/a" if summary.cost_per_1k_successful is None else f"${summary.cost_per_1k_successful:.4f}"
+        attempted = "n/a" if summary.cost_per_1k_attempted is None else f"${summary.cost_per_1k_attempted:.4f}"
+        successful = "n/a" if summary.cost_per_1k_successful is None else f"${summary.cost_per_1k_successful:.4f}"
+        semantic = "n/a" if summary.cost_per_1k_semantic is None else f"${summary.cost_per_1k_semantic:.4f}"
         p50 = "n/a" if summary.latency_p50_ms is None else f"{summary.latency_p50_ms:.0f}"
         p90 = "n/a" if summary.latency_p90_ms is None else f"{summary.latency_p90_ms:.0f}"
         p95 = "n/a" if summary.latency_p95_ms is None else f"{summary.latency_p95_ms:.0f}"
-        rows.append(f"| `{summary.model}` | `{summary.role}` | {cost} | {p50} | {p90} | {p95} |")
+        rows.append(
+            f"| `{summary.model}` | `{summary.role}` | {attempted} | {successful} | {semantic} | {p50} | {p90} | {p95} |"
+        )
     return rows
 
 
@@ -1381,9 +1600,30 @@ def schema_failure_summary(records: list[EvalRecord]) -> list[str]:
     ]
 
 
-def non_deployable_rows(summaries: list[Summary], missing_roles: list[str]) -> list[str]:
+def non_deployable_rows(
+    summaries: list[Summary],
+    missing_roles: list[str],
+    *,
+    coverage: dict[str, Any],
+    mode: str,
+) -> list[str]:
     if not missing_roles:
         return ["Mandatory coverage is complete."]
+    if mode == "fine-grained":
+        rows = ["Missing mandatory capabilities:"]
+        rows.extend(format_role_list(missing_roles))
+        rows.append("")
+        rows.append("Observed capability gaps:")
+        for capability in missing_roles:
+            item = coverage.get(capability) or {}
+            missing_model_roles = item.get("missing_roles") or []
+            if missing_model_roles:
+                rows.append(
+                    f"- `{capability}`: missing eligible coverage for {', '.join(f'`{role}`' for role in missing_model_roles)}"
+                )
+            else:
+                rows.append(f"- `{capability}`: capability coverage is incomplete.")
+        return rows
     by_role: dict[str, list[Summary]] = defaultdict(list)
     for summary in summaries:
         by_role[summary.role].append(summary)

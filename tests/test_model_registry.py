@@ -35,6 +35,33 @@ def test_brain_model_registry_references_known_models() -> None:
             assert model not in skipped_models, f"{role} core matrix references skipped model {model}"
 
 
+def test_mistral_removed_from_fine_grained_matrix() -> None:
+    registry = load_registry()
+    matrix = registry["fine_grained_eval_matrix"]
+
+    for role, models in matrix.items():
+        assert "aws-bedrock:mistral.ministral-3-14b-instruct" not in models, (
+            f"{role} still references aws-bedrock:mistral.ministral-3-14b-instruct"
+        )
+
+
+def test_gpt55_high_in_benchmark_roles_only() -> None:
+    matrix = load_registry()["fine_grained_eval_matrix"]
+    allowed_roles = {
+        "atomic_card_extractor",
+        "source_takeaway_extractor",
+        "entity_candidate_ranker",
+        "conflict_candidate_detector",
+        "recall_synthesizer",
+        "groundedness_checker",
+        "eval_judge",
+    }
+
+    for role, models in matrix.items():
+        if "openai:gpt-5.5-high" in models:
+            assert role in allowed_roles
+
+
 def load_registry() -> dict[str, Any]:
     with REGISTRY_PATH.open(encoding="utf-8") as file:
         return yaml.safe_load(file)
