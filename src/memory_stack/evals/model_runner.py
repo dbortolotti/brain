@@ -644,6 +644,11 @@ def write_run_artifacts(result: dict[str, Any], records: list[dict[str, Any]]) -
     write_cost_latency_csv(output_dir / "cost_latency.csv", summaries)
     write_zero_tolerance_csv(output_dir / "zero_tolerance_summary.csv", summaries)
     write_failed_fixture_summary_csv(output_dir / "failed_fixture_summary.csv", summaries, records)
+    write_zero_tolerance_detail_csv(output_dir / "zero_tolerance_failures_detail.csv", records)
+    (output_dir / "targeted_followup_commands.md").write_text(
+        render_targeted_followup_commands(output_path.parent),
+        encoding="utf-8",
+    )
 
 
 def build_run_result(
@@ -1348,6 +1353,110 @@ def format_counter_top(counter: Counter[str], *, limit: int) -> str:
     return "; ".join(f"{key} ({count})" for key, count in counter.most_common(limit))
 
 
+def write_zero_tolerance_detail_csv(path: Path, records: list[dict[str, Any]]) -> None:
+    with path.open("w", encoding="utf-8", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow(
+            [
+                "role",
+                "model",
+                "fixture_id",
+                "variant_id",
+                "repeat_idx",
+                "zero_tolerance_type",
+                "expected",
+                "model_output",
+                "raw_output_path",
+                "parsed_output_path",
+            ]
+        )
+        for record in records:
+            types = record.get("zero_tolerance_failure_types") or []
+            if not types:
+                continue
+            expected = expected_for_record(record)
+            model_output = model_output_for_record(record)
+            for zero_type in types:
+                writer.writerow(
+                    [
+                        record.get("role") or "",
+                        record.get("model") or "",
+                        record.get("fixture_id") or "",
+                        record.get("variant_id") or "",
+                        record.get("repeat_idx") or 0,
+                        zero_type,
+                        json.dumps(expected, ensure_ascii=False, sort_keys=True),
+                        model_output,
+                        record.get("raw_output_path") or "",
+                        record.get("parsed_output_path") or "",
+                    ]
+                )
+
+
+def expected_for_record(record: dict[str, Any]) -> dict[str, Any]:
+    try:
+        fixture = find_fixture_for_record(
+            fixture_set=str(record.get("fixture_set_version") or "brain-model-test-v2"),
+            role=str(record.get("role") or ""),
+            fixture_id=str(record.get("fixture_id") or ""),
+            variant_id=str(record.get("variant_id") or "base"),
+            mode=mode_for_roles({str(record.get("role") or "")}),
+        )
+    except Exception:
+        return {}
+    return fixture.expected
+
+
+def model_output_for_record(record: dict[str, Any]) -> str:
+    try:
+        call = raw_call_for_record(record)
+    except Exception:
+        payload = record.get("payload")
+        return json.dumps(payload, ensure_ascii=False, sort_keys=True) if payload is not None else ""
+    if call.payload is not None:
+        return json.dumps(call.payload, ensure_ascii=False, sort_keys=True)
+    return call.raw_text
+
+
+def render_targeted_followup_commands(output_dir: Path) -> str:
+    output = output_dir / "targeted_followups" / "results.json"
+    raw = output_dir / "targeted_followups" / "raw"
+    return "\n".join(
+        [
+            "# Targeted Follow-Up Eval Commands",
+            "",
+            "Run these only after inspecting current zero-tolerance failures. They intentionally avoid a full matrix rerun.",
+            "",
+            "```bash",
+            "brain eval models \\",
+            "  --fixture-set brain-model-test-v2 \\",
+            "  --mode fine-grained \\",
+            "  --roles atomic_card_extractor,durability_filter,recall_synthesizer,eval_judge,debug_explainer \\",
+            "  --models openai:gpt-5.4-mini,openai:gpt-5.5-high,openai:gpt-5.4-nano,google:gemini-2.5-flash-lite,openai:gpt-5.4-low \\",
+            "  --repeat-runs 1 \\",
+            "  --endpoint-max-concurrency 3 \\",
+            f"  --output-json {output} \\",
+            f"  --raw-output-dir {raw}",
+            "```",
+            "",
+            "Focused source/safety rerun if scorer inspection confirms the current failures are genuine:",
+            "",
+            "```bash",
+            "brain eval models \\",
+            "  --fixture-set brain-model-test-v2 \\",
+            "  --mode fine-grained \\",
+            "  --roles source_classifier,success_receipt_generator,conflict_candidate_detector,conflict_explainer \\",
+            "  --models openai:gpt-5-nano,openai:gpt-5.4-mini,google:gemini-2.5-flash-lite \\",
+            "  --repeat-runs 1 \\",
+            "  --endpoint-max-concurrency 3 \\",
+            f"  --output-json {output_dir / 'targeted_source_safety' / 'results.json'} \\",
+            f"  --raw-output-dir {output_dir / 'targeted_source_safety' / 'raw'}",
+            "```",
+            "",
+        ]
+    )
+
+
 def write_raw_output(
     raw_output_dir: Path,
     *,
@@ -1481,6 +1590,9 @@ def render_markdown_report(result: dict[str, Any], records: list[dict[str, Any]]
             f"- Failed manifest JSONL: `{result.get('failed_manifest_jsonl_path', '')}`",
             f"- Failed manifest markdown: `{result.get('failed_manifest_md_path', '')}`",
             f"- HTML summary: `{result.get('report_html_path', '')}`",
+            f"- Zero-tolerance detail CSV: `{Path(result['output_path']).parent / 'zero_tolerance_failures_detail.csv'}`",
+            f"- Failed fixture summary CSV: `{Path(result['output_path']).parent / 'failed_fixture_summary.csv'}`",
+            f"- Targeted follow-up commands: `{Path(result['output_path']).parent / 'targeted_followup_commands.md'}`",
             f"- Records: `{result['record_count']}`",
             f"- Model-role summaries: `{len(summaries)}`",
             f"- Deployable stack: `{'yes' if deployable_stack else 'no'}`",

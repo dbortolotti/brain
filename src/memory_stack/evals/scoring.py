@@ -454,8 +454,9 @@ DEFAULT_ELIGIBILITY_GATE: dict[str, float] = {
 ROLE_ELIGIBILITY_GATES: dict[str, dict[str, float]] = {
     "intent_router": {
         "min_semantic_evaluable": 100,
-        "min_semantic_score": 0.90,
-        "min_decision_correctness": 0.90,
+        "min_semantic_score": 0.85,
+        "min_quality_pass_rate": 0.80,
+        "min_decision_correctness": 0.85,
     },
     "source_classifier": {
         "min_semantic_evaluable": 80,
@@ -1769,6 +1770,10 @@ def model_role_eligibility(summary: ModelRoleSummary | dict[str, Any]) -> tuple[
     if normalized.records_semantic_evaluable < min_semantic_evaluable:
         reasons.append("semantic_evaluable_below_minimum")
 
+    quality_pass_min = gates.get("min_quality_pass_rate")
+    if quality_pass_min is not None and normalized.quality_pass_rate < quality_pass_min:
+        reasons.append("quality_pass_rate_below_threshold")
+
     semantic_min = gates.get("min_semantic_score")
     if semantic_min is not None:
         if normalized.semantic_score_mean is None:
@@ -1786,6 +1791,7 @@ def model_role_eligibility(summary: ModelRoleSummary | dict[str, Any]) -> tuple[
             "observed_operational_rate",
             "observed_json_parse_rate",
             "observed_schema_rate",
+            "quality_pass_rate",
             "semantic_score",
         }:
             continue

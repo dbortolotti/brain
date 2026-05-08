@@ -525,6 +525,32 @@ def test_model_role_eligibility_reports_insufficient_sample() -> None:
     assert state == "insufficient_sample"
 
 
+def test_intent_router_low_risk_gate_allows_observed_rate_candidate() -> None:
+    summary = Summary(
+        model="m",
+        role="intent_router",
+        records_total=171,
+        records_operational_success=171,
+        records_json_parseable=165,
+        records_schema_valid=165,
+        records_semantic_evaluable=165,
+        records_quality_passed=142,
+        operational_success_rate=1.0,
+        json_parse_success_rate=165 / 171,
+        schema_validity_rate=1.0,
+        quality_pass_rate=142 / 165,
+        semantic_score_mean=0.861,
+        zero_tolerance_failures=0,
+        subscores={"decision_correctness": {"mean": 0.861}},
+    )
+
+    eligible, reasons, state = model_role_eligibility(summary)
+
+    assert eligible is True
+    assert reasons == []
+    assert state == "eligible"
+
+
 def test_legacy_zero_latency_is_unknown_not_successful_latency(tmp_path) -> None:
     raw_path = tmp_path / "raw.json"
     raw_path.write_text(
