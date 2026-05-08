@@ -1,0 +1,169 @@
+{
+  "fixture_id": "conversation_transcript_sam_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Extracted durable memory cards from the transcript. The employment update should supersede any prior current-employer memory stating Sam is still at Goldman.",
+    "citations": [
+      "Daniele: Still at Goldman? Sam: No, I left Goldman last month and joined Point72.",
+      "Daniele: Still listening to Bill Evans? Sam: Yes, but lately more early Coltrane.",
+      "Daniele: We should catch up about AI infra. Sam: Definitely, send me that article."
+    ],
+    "conflict_classification": "supersedes_prior_if_any_current_employer_claim_says_Sam_is_at_Goldman",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No existing entity IDs were provided; entities are represented by names from the transcript."
+    },
+    "intent": "extract_atomic_memory_cards",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_current",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left_employer",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined_employer",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman last month and joined Point72."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "artist",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "recent_preference",
+            "type": "music"
+          }
+        ],
+        "kind": "music_preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "listens_to",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "recently_listens_more_to",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam still listens to Bill Evans, but lately has been listening more to early Coltrane."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "conversation_partner",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "topic",
+            "type": "topic"
+          }
+        ],
+        "kind": "conversation_topic_interest",
+        "relationships": [
+          {
+            "object": "AI infrastructure",
+            "predicate": "wants_to_discuss",
+            "subject": "Sam"
+          },
+          {
+            "object": "Daniele",
+            "predicate": "wants_to_catch_up_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is interested in catching up with Daniele about AI infrastructure."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "requester",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "recipient",
+            "type": "person"
+          },
+          {
+            "name": "article",
+            "role": "requested_item",
+            "type": "content"
+          }
+        ],
+        "kind": "follow_up_request",
+        "relationships": [
+          {
+            "object": "article",
+            "predicate": "asked_for",
+            "subject": "Sam"
+          },
+          {
+            "object": "article",
+            "predicate": "should_send",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Sam asked Daniele to send an article about AI infrastructure or a related topic."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed current employment update: Sam left Goldman last month and joined Point72.",
+        "Committed music preference update: Sam still listens to Bill Evans and lately listens more to early Coltrane.",
+        "Committed interest/follow-up context around discussing AI infrastructure with Daniele."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "atomic_card_extractor",
+  "run_id": "gpt55_candidate_review_20260508_082419"
+}
