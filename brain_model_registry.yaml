@@ -30,6 +30,41 @@ selection_policy:
     For each role, choose the cheapest model with zero zero-tolerance failures
     and no statistically meaningful quality gap versus the next stronger model.
 
+fine_grained_deployment_decisions:
+  source: "fine_grained rescore_20260508_051815"
+  note: >
+    These are current eval-derived deployment decisions, not the full test matrix.
+    Roles marked do_not_use_yet remain in the eval matrix for follow-up testing
+    but should not be promoted into production defaults from the current report.
+
+  use:
+    intent_router:
+      model: openai:gpt-5-nano
+      reason: "Eligible under low-risk router gate; zero zero-tolerance failures."
+    entity_mention_extractor:
+      model: openai:gpt-5.4-mini
+      reason: "Eligible with zero zero-tolerance failures; use only for mention extraction, not final resolution."
+
+  likely_after_more_samples:
+    debug_explainer:
+      model: google:gemini-2.5-flash-lite
+      reason: "Good current quality and zero zero-tolerance failures; currently insufficient sample."
+    eval_judge:
+      model: openai:gpt-5.5
+      reason: "Promising judge quality; currently insufficient sample."
+
+  do_not_use_yet:
+    conflict_candidate_detector:
+      reason: "Current report shows material safety failure rate."
+    conflict_explainer:
+      reason: "Current report shows material safety failure rate; repair options should be backend-bound first."
+    recall_synthesizer:
+      reason: "Current report shows grounding/zero-tolerance failures."
+    atomic_card_extractor:
+      reason: "Current report shows low quality and safety failures; test stronger candidates first."
+    source_classifier:
+      reason: "Current scorer/report shows high semantic score but source/table safety failures; inspect before promotion."
+
 roles:
   router:
     description: "Intent classification for Slack/free-form messages."
