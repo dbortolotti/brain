@@ -38,20 +38,20 @@ def test_datasource_tools_are_listed() -> None:
     assert response.status_code == 200
     tool_names = {tool["name"] for tool in response.json()["result"]["tools"]}
     assert {
-        "brain.remember",
-        "brain.ingest_source",
-        "brain.recall",
-        "brain.profile_entity",
-        "brain.list_open_loops",
-        "brain.get_memory",
-        "brain.get_source",
-        "brain.resolve_conflict",
-        "brain.forget",
-        "brain.review_recent",
-        "brain.undo_last",
-        "brain.sync_cognee",
-        "brain.rebuild_cognee",
-        "brain.merge_entities",
+        "brain_remember",
+        "brain_ingest_source",
+        "brain_recall",
+        "brain_profile_entity",
+        "brain_list_open_loops",
+        "brain_get_memory",
+        "brain_get_source",
+        "brain_resolve_conflict",
+        "brain_forget",
+        "brain_review_recent",
+        "brain_undo_last",
+        "brain_sync_cognee",
+        "brain_rebuild_cognee",
+        "brain_merge_entities",
     } == tool_names
     assert {
         "add",
@@ -70,27 +70,27 @@ def test_memory_tools_expose_node_set_and_search_options() -> None:
     assert response.status_code == 200
     tools = {tool["name"]: tool for tool in response.json()["result"]["tools"]}
     assert {
-        "brain.remember",
-        "brain.recall",
-        "brain.profile_entity",
-        "brain.list_open_loops",
-        "brain.get_memory",
-        "brain.get_source",
-        "brain.resolve_conflict",
-        "brain.forget",
-        "brain.review_recent",
-        "brain.undo_last",
-        "brain.sync_cognee",
-        "brain.rebuild_cognee",
-        "brain.merge_entities",
+        "brain_remember",
+        "brain_recall",
+        "brain_profile_entity",
+        "brain_list_open_loops",
+        "brain_get_memory",
+        "brain_get_source",
+        "brain_resolve_conflict",
+        "brain_forget",
+        "brain_review_recent",
+        "brain_undo_last",
+        "brain_sync_cognee",
+        "brain_rebuild_cognee",
+        "brain_merge_entities",
     } <= set(tools)
 
-    remember_properties = tools["brain.remember"]["inputSchema"]["properties"]
+    remember_properties = tools["brain_remember"]["inputSchema"]["properties"]
     assert "input" in remember_properties
     assert "dataset_name" not in remember_properties
     assert "node_set" not in remember_properties
 
-    recall_properties = tools["brain.recall"]["inputSchema"]["properties"]
+    recall_properties = tools["brain_recall"]["inputSchema"]["properties"]
     assert recall_properties["mode"]["enum"] == [
         "auto",
         "evidence",
@@ -104,7 +104,7 @@ def test_memory_tools_expose_node_set_and_search_options() -> None:
     assert "search_type" not in recall_properties
     assert "node_name" not in recall_properties
 
-    forget_properties = tools["brain.forget"]["inputSchema"]["properties"]
+    forget_properties = tools["brain_forget"]["inputSchema"]["properties"]
     assert forget_properties["object_type"]["enum"] == [
         "memory",
         "source",
@@ -168,7 +168,7 @@ def test_high_level_brain_remember_and_recall_mcp_tools(tmp_path) -> None:
                 "id": 1,
                 "method": "tools/call",
                 "params": {
-                    "name": "brain.remember",
+                    "name": "brain_remember",
                     "arguments": {
                         "input": "Sam from Goldman mentioned that he likes Bill Evans.",
                     },
@@ -182,7 +182,7 @@ def test_high_level_brain_remember_and_recall_mcp_tools(tmp_path) -> None:
                 "id": 2,
                 "method": "tools/call",
                 "params": {
-                    "name": "brain.recall",
+                    "name": "brain_recall",
                     "arguments": {
                         "query": "Tell me everything about Sam from Goldman",
                         "mode": "profile",
@@ -220,7 +220,7 @@ def test_brain_ingest_source_and_get_source_mcp_tools(tmp_path) -> None:
                 "id": 1,
                 "method": "tools/call",
                 "params": {
-                    "name": "brain.ingest_source",
+                    "name": "brain_ingest_source",
                     "arguments": {
                         "source": "# Source\nKnowledge graphs matter for Brain.",
                         "source_kind": "markdown",
@@ -238,7 +238,7 @@ def test_brain_ingest_source_and_get_source_mcp_tools(tmp_path) -> None:
                 "id": 2,
                 "method": "tools/call",
                 "params": {
-                    "name": "brain.get_source",
+                    "name": "brain_get_source",
                     "arguments": {"source_id": source_id, "include_text": True},
                 },
             },
