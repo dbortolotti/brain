@@ -107,7 +107,10 @@ def test_slack_remember_calls_brain_service_and_formats_receipt() -> None:
 
     assert service.calls == [("remember", "Sam likes Bill Evans.")]
     assert "Stored 1 memories" in response["text"]
+    assert "memory_id: mem_1" in response["text"]
+    assert "confidence: medium" in response["text"]
     assert "Entities created/updated" in response["text"]
+    assert "Actions: Inspect | Undo | Mark wrong" in response["text"]
 
 
 def test_slack_article_recall_review_and_undo_delegate_to_service() -> None:

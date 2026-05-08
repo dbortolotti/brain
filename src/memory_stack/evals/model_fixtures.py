@@ -1193,19 +1193,54 @@ def derive_fine_grained_fixtures(
             continue
         for source_role in source_roles:
             for fixture in by_source_role.get(source_role, []):
+                expected = dict(fixture.expected)
+                zero_tolerance_checks = fixture.zero_tolerance_checks
+                if fine_role == "conflict_candidate_detector":
+                    expected = {
+                        **expected,
+                        "requires_user_choice": True,
+                    }
+                elif fine_role == "conflict_explainer":
+                    expected = {
+                        **expected,
+                        "safe_action_space": [
+                            "approve_supersession",
+                            "keep_both",
+                            "reject_new",
+                            "edit",
+                        ],
+                    }
+                elif fine_role == "source_classifier":
+                    zero_tolerance_checks = source_classifier_zero_tolerance_checks(fixture)
                 derived.append(
                     ModelEvalFixture(
                         id=fixture.id,
                         scenario_group=fixture.scenario_group,
                         role=fine_role,
                         input_text=fixture.input_text,
-                        expected=fixture.expected,
+                        expected=expected,
                         fixture_set=fixture.fixture_set,
-                        zero_tolerance_checks=fixture.zero_tolerance_checks,
+                        zero_tolerance_checks=zero_tolerance_checks,
                         context={**fixture.context, "source_role": source_role},
                     )
                 )
     return derived
+
+
+def source_classifier_zero_tolerance_checks(fixture: ModelEvalFixture) -> tuple[str, ...]:
+    text = fixture.input_text.strip()
+    lowered = text.casefold()
+    if text.startswith("|") or "csv table" in lowered:
+        return ("table_not_classified_as_table",)
+    if "from:" in lowered or "subject:" in lowered:
+        return ("email_not_classified_as_email",)
+    if "http://" in lowered or "https://" in lowered or "article" in lowered:
+        return ("article_url_not_classified_as_source",)
+    if len(text.split()) > 30:
+        return ("long_source_classified_as_memory",)
+    if "lol ok sure whatever" in lowered:
+        return ("junk_not_rejected",)
+    return ()
 
 
 def fixture_prompt(fixture: ModelEvalFixture) -> str:

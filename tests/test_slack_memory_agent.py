@@ -6,7 +6,7 @@ from memory_stack.brain_models import RememberRequest
 from memory_stack.brain_service import remember
 from memory_stack.brain_store import BrainStore
 from memory_stack.config import Settings
-from memory_stack.slack_memory_agent import SlackAgentRequest, SlackMemoryAgent
+from memory_stack.slack_memory_agent import SlackAgentRequest, SlackMemoryAgent, receipt_text
 
 
 class FakeLLM:
@@ -59,6 +59,43 @@ def test_confirmation_commits_proposed_memory(tmp_path) -> None:
     assert response.decision == "commit"
     assert len(memories) == 1
     assert memories[0]["metadata_json"]["slack"]["user_id"] == "U1"
+    assert "memory_id:" in response.text
+    assert "confidence:" in response.text
+    assert "Actions: Inspect | Undo | Mark wrong" in response.text
+
+
+def test_agent_receipt_text_satisfies_deterministic_contract() -> None:
+    text = receipt_text(
+        {
+            "source": {"source_id": "src_1"},
+            "memory_cards": [
+                {
+                    "id": "mem_1",
+                    "kind": "person_interaction",
+                    "statement": "Sam likes Bill Evans.",
+                    "confidence": "high",
+                    "status": "current",
+                }
+            ],
+            "entities": [{"canonical_name": "Sam"}],
+            "relationships": [{"predicate": "likes"}],
+            "conflicts": [],
+        }
+    )
+
+    for term in [
+        "Stored",
+        "Source ID: src_1",
+        "person_interaction",
+        "memory_id: mem_1",
+        "confidence: high",
+        "Entities: Sam",
+        "Relationships: 1",
+        "Inspect",
+        "Undo",
+        "Mark wrong",
+    ]:
+        assert term in text
 
 
 def test_ambiguous_pronoun_asks_clarification_and_writes_nothing(tmp_path) -> None:

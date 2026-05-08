@@ -62,6 +62,23 @@ def test_deleted_and_superseded_memories_are_hidden_by_default_from_cognee_hydra
     assert response.facts == []
 
 
+def test_deleted_and_superseded_memories_are_filtered_before_synthesis(tmp_path) -> None:
+    settings = brain_test_settings(tmp_path)
+    current = remember(RememberRequest(input="Sam likes Bill Evans."), settings)
+    deleted = remember(RememberRequest(input="Sam likes Taylor Swift."), settings)
+    old_job = remember(RememberRequest(input="Sam works at Goldman."), settings)
+    store = BrainStore(settings)
+    store.update_memory_status(deleted.memory_cards[0].id, "deleted")
+    store.update_memory_status(old_job.memory_cards[0].id, "superseded")
+
+    response = recall(RecallRequest(query="Sam likes works"), settings)
+
+    assert [fact["memory_id"] for fact in response.facts] == [current.memory_cards[0].id]
+    assert "Bill Evans" in response.answer
+    assert "Taylor Swift" not in response.answer
+    assert "Goldman" not in response.answer
+
+
 def test_fake_cognee_result_memory_id_is_hydrated_from_brain_db(tmp_path) -> None:
     settings = brain_test_settings(tmp_path, brain_cognee_recall_enabled=True)
     receipt = remember(RememberRequest(input="Sam likes Bill Evans."), settings)

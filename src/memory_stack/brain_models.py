@@ -111,6 +111,7 @@ class MemoryReceipt(BaseModel):
     kind: str
     statement: str
     status: str
+    confidence: str = "medium"
     created: bool = True
 
 

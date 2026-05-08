@@ -1,4 +1,4 @@
-.PHONY: setup up down check smoke model-smoke-all ingest-sample recall-sample eval brain-eval tokens reset reset-hard mcp-config mcp-http slack-agent ui-proxy deploy-local-production prod-check slack-agent-check ui-prod-check backup cloudflare-verify model-eval-role-hierarchy pre-commit test lint
+.PHONY: setup up down check smoke model-smoke-all ingest-sample recall-sample eval brain-eval targeted-fine-grained-eval tokens reset reset-hard mcp-config mcp-http slack-agent ui-proxy deploy-local-production prod-check slack-agent-check ui-prod-check backup cloudflare-verify model-eval-role-hierarchy pre-commit test lint
 
 MODEL_SMOKE_OUTPUT ?= eval_runs/live_model_smoke_all.json
 MODEL_SMOKE_ARGS ?=
@@ -32,6 +32,17 @@ eval:
 
 brain-eval:
 	uv run python -m memory_stack.evals.cli --output eval/results/brain-golden.json
+
+targeted-fine-grained-eval:
+	uv run python -m memory_stack.evals.cli models \
+		--mode fine-grained \
+		--fixture-set brain-model-test-v2 \
+		--roles durability_filter,atomic_card_extractor,entity_candidate_ranker,recall_synthesizer,debug_explainer,eval_judge \
+		--models openai:gpt-5.4-nano,openai:gpt-5.4-mini,openai:gpt-5.5,openai:gpt-5.5-high,openai:gpt-5.4-low,google:gemini-2.5-flash-lite,anthropic:claude-haiku-4-5 \
+		--repeat-runs 3 \
+		--endpoint-max-concurrency 10 \
+		--retry-attempts 3 \
+		--output-json eval_runs/targeted_fine_grained/results.json
 
 tokens:
 	uv run python scripts/estimate_tokens.py --input data/samples/synthetic_property_emails.jsonl

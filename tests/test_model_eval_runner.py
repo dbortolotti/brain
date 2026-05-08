@@ -248,6 +248,56 @@ def test_select_fixtures_derives_fine_grained_roles() -> None:
     assert all(fixture.role == "intent_router" for fixture in fixtures)
 
 
+def test_source_classifier_fine_grained_fixtures_use_classifier_only_zero_tolerance() -> None:
+    fixtures = select_fixtures(
+        fixture_set="brain-model-test-v2",
+        roles={"source_classifier"},
+        mode="fine-grained",
+    )
+
+    checks = {
+        check
+        for fixture in fixtures
+        for check in fixture.zero_tolerance_checks
+    }
+
+    assert checks <= {
+        "article_url_not_classified_as_source",
+        "email_not_classified_as_email",
+        "junk_not_rejected",
+        "long_source_classified_as_memory",
+        "table_not_classified_as_table",
+    }
+    assert "small_table_must_not_drop_values" not in checks
+    assert "raw_email_exposed" not in checks
+
+
+def test_conflict_fine_grained_fixtures_are_backend_policy_bound() -> None:
+    candidate_fixtures = select_fixtures(
+        fixture_set="brain-model-test-v2",
+        roles={"conflict_candidate_detector"},
+        mode="fine-grained",
+    )
+    explainer_fixtures = select_fixtures(
+        fixture_set="brain-model-test-v2",
+        roles={"conflict_explainer"},
+        mode="fine-grained",
+    )
+
+    assert candidate_fixtures
+    assert all(fixture.expected["requires_user_choice"] is True for fixture in candidate_fixtures)
+    assert explainer_fixtures
+    assert all(
+        fixture.expected["safe_action_space"] == [
+            "approve_supersession",
+            "keep_both",
+            "reject_new",
+            "edit",
+        ]
+        for fixture in explainer_fixtures
+    )
+
+
 def test_model_test_initial_model_set_runs_through_config(tmp_path) -> None:
     output = tmp_path / "eval.jsonl"
     config = ModelEvalRunConfig(
@@ -391,6 +441,54 @@ def test_source_classifier_semantic_score_uses_source_split_not_downstream_decis
     assert score == 1.0
 
 
+def test_source_classifier_ignores_extraction_zero_tolerance_checks() -> None:
+    fixture = ModelEvalFixture(
+        id="source_classifier_table",
+        role="source_classifier",
+        scenario_group="source",
+        input_text="| Person | Preference |\n| --- | --- |\n| Sam | Bill Evans |",
+        expected={"source_memory_split": True},
+        zero_tolerance_checks=("small_table_must_not_drop_values", "raw_email_exposed"),
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "input_class": "source",
+            "source_kind": "table",
+            "should_create_source": True,
+            "should_extract_memories": True,
+            "memory_cards": [{"statement": "wrong downstream extraction"}],
+        },
+        status="ok",
+    )
+
+    assert scores["source_memory_split"] == 1.0
+    assert zero is False
+    assert types == []
+
+
+def test_source_classifier_catches_classifier_specific_failures() -> None:
+    fixture = ModelEvalFixture(
+        id="source_classifier_table",
+        role="source_classifier",
+        scenario_group="source",
+        input_text="| Person | Preference |\n| --- | --- |\n| Sam | Bill Evans |",
+        expected={"source_memory_split": True},
+        zero_tolerance_checks=("table_not_classified_as_table",),
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {"input_class": "memory", "source_kind": None, "should_create_source": False},
+        status="ok",
+    )
+
+    assert scores["source_memory_split"] < 1.0
+    assert zero is True
+    assert types == ["table_not_classified_as_table"]
+
+
 def test_durability_filter_scores_durable_vs_non_durable_decision() -> None:
     fixture = ModelEvalFixture(
         id="durability_weather",
@@ -414,6 +512,58 @@ def test_durability_filter_scores_durable_vs_non_durable_decision() -> None:
 
     assert bad_scores["durability_decision"] == 0.0
     assert good_scores["durability_decision"] == 1.0
+
+
+def test_conflict_candidate_detector_rejects_auto_commit_policy_decision() -> None:
+    fixture = ModelEvalFixture(
+        id="conflict_candidate",
+        role="conflict_candidate_detector",
+        scenario_group="conflict",
+        input_text="Existing: Sam works at Goldman. New: Sam left Goldman and joined Point72.",
+        expected={
+            "conflict_classification_any": ["supersedes", "possible_supersession"],
+            "requires_user_choice": True,
+        },
+        zero_tolerance_checks=("silent_high_confidence_overwrite",),
+    )
+
+    _scores, zero, types = score_model_output(
+        fixture,
+        {
+            "possible_conflict": True,
+            "conflict_type": "possible_supersession",
+            "requires_user_choice": False,
+            "decision": "commit_success",
+        },
+        status="ok",
+    )
+
+    assert zero is True
+    assert types == ["silent_high_confidence_overwrite"]
+
+
+def test_conflict_explainer_rejects_actions_outside_backend_safe_space() -> None:
+    fixture = ModelEvalFixture(
+        id="conflict_explainer",
+        role="conflict_explainer",
+        scenario_group="conflict",
+        input_text="Explain conflict.",
+        expected={
+            "safe_action_space": ["approve_supersession", "keep_both", "reject_new", "edit"],
+            "repair_terms": ["approve", "keep", "reject", "edit"],
+        },
+        zero_tolerance_checks=("silent_high_confidence_overwrite",),
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {"repair_options": ["approve_supersession", "overwrite_current"]},
+        status="ok",
+    )
+
+    assert scores["repair_quality"] == 0.0
+    assert zero is True
+    assert types == ["silent_high_confidence_overwrite"]
 
 
 def test_provider_failure_is_not_counted_as_zero_tolerance() -> None:

@@ -53,6 +53,7 @@ def remember(
                     kind=str(card.kind),
                     statement=card.statement,
                     status=card.status,
+                    confidence=card.confidence,
                     created=False,
                 )
                 for card in compiled.memory_cards
@@ -127,6 +128,7 @@ def remember(
                 kind=memory["kind"],
                 statement=memory["statement"],
                 status=memory["status"],
+                confidence=memory["confidence"],
                 created=memory_created,
             )
             receipt.memory_cards.append(memory_receipt)

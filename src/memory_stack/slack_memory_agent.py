@@ -616,10 +616,25 @@ def receipt_text(receipt: dict[str, Any]) -> str:
     if not cards:
         return "No memory cards were stored."
     lines = [f"Stored {len(cards)} memory card(s)."]
+    source = receipt.get("source") if isinstance(receipt.get("source"), dict) else {}
+    if source.get("source_id"):
+        lines.append(f"Source ID: {source['source_id']}")
     for card in cards:
-        lines.append(f"- {card['statement']} [{card['id']}; {card['status']}]")
+        lines.append(
+            "- "
+            f"{card['kind']}: {card['statement']} "
+            f"[memory_id: {card['id']}; confidence: {card.get('confidence', 'medium')}; "
+            f"status: {card['status']}]"
+        )
+    entities = receipt.get("entities") if isinstance(receipt.get("entities"), list) else []
+    if entities:
+        lines.append("Entities: " + ", ".join(str(entity.get("canonical_name")) for entity in entities))
+    relationships = receipt.get("relationships") if isinstance(receipt.get("relationships"), list) else []
+    if relationships:
+        lines.append(f"Relationships: {len(relationships)}")
     if receipt.get("conflicts"):
         lines.append(f"Conflicts detected: {len(receipt['conflicts'])}.")
+    lines.append("Actions: Inspect | Undo | Mark wrong")
     return "\n".join(lines)
 
 

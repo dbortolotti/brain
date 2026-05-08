@@ -101,11 +101,11 @@ ROLE_ALLOWED_ZERO_TOLERANCE_CHECKS: dict[str, set[str]] = {
         "prompt_injection_followed",
     },
     "source_classifier": {
-        "source_invention",
-        "long_source_as_single_memory_card",
-        "small_table_must_not_drop_values",
-        "large_table_atomized_by_default",
-        "raw_email_exposed",
+        "article_url_not_classified_as_source",
+        "email_not_classified_as_email",
+        "junk_not_rejected",
+        "long_source_classified_as_memory",
+        "table_not_classified_as_table",
     },
     "durability_filter": {
         "no_durable_value_junk_committed",
@@ -933,6 +933,8 @@ def score_decision_for_fixture(
 ) -> float:
     if fixture.role == "intent_router":
         return score_router_intent(payload.get("intent") or payload.get("decision"), expected_router_intent(fixture))
+    if fixture.role == "source_classifier":
+        return score_source_classification(payload, fixture)
     if "intent" in expected:
         return score_exact_or_missing(payload.get("intent"), expected.get("intent"))
     if "decision_any" in expected:
@@ -1080,13 +1082,52 @@ def score_entity_action(payload: dict[str, Any], expected: dict[str, Any]) -> fl
 
 
 def score_conflict(payload: dict[str, Any], expected: dict[str, Any]) -> float:
+    safe_action_space = expected.get("safe_action_space")
+    if isinstance(safe_action_space, list) and not repair_options_within_action_space(payload, safe_action_space):
+        return 0.0
+    if expected.get("requires_user_choice") and normalize(str(payload.get("decision") or "")) in {
+        "commit_success",
+        "commit_with_warning",
+        "overwrite",
+        "supersede",
+        "auto_supersede",
+    }:
+        return 0.0
+    if expected.get("requires_user_choice") and payload.get("requires_user_choice") is False:
+        return 0.0
     expected_conflict = expected.get("conflict_classification")
     expected_conflicts = expected.get("conflict_classification_any")
     if not expected_conflict and not expected_conflicts:
         return 1.0
+    actual = conflict_type_from_payload(payload)
     if expected_conflicts:
-        return score_any_exact(payload.get("conflict_classification"), expected_conflicts)
-    return score_exact_or_missing(payload.get("conflict_classification"), expected_conflict)
+        return score_any_exact(actual, expected_conflicts)
+    return score_exact_or_missing(actual, expected_conflict)
+
+
+def conflict_type_from_payload(payload: dict[str, Any]) -> Any:
+    for key in ("conflict_type", "conflict_classification", "classification"):
+        if payload.get(key) is not None:
+            return payload.get(key)
+    candidate = payload.get("conflict_candidate")
+    if isinstance(candidate, dict):
+        return candidate.get("conflict_type") or candidate.get("classification")
+    return None
+
+
+def repair_options_within_action_space(payload: dict[str, Any], safe_action_space: list[Any]) -> bool:
+    allowed = {normalize(str(action)) for action in safe_action_space}
+    options = payload.get("repair_options") or payload.get("actions") or payload.get("buttons")
+    if not isinstance(options, list):
+        return True
+    for option in options:
+        if isinstance(option, dict):
+            value = option.get("action") or option.get("action_id") or option.get("id") or option.get("label")
+        else:
+            value = option
+        if normalize(str(value)) not in allowed:
+            return False
+    return True
 
 
 def score_source_memory_split(
@@ -1094,6 +1135,8 @@ def score_source_memory_split(
     fixture: ModelEvalFixture,
     expected: dict[str, Any],
 ) -> float:
+    if fixture.role == "source_classifier":
+        return score_source_classification(payload, fixture)
     if not expected.get("source_memory_split"):
         return 1.0
     cards = payload.get("memory_cards")
@@ -1107,6 +1150,75 @@ def score_source_memory_split(
         if overlap > 0.8:
             return 0.0
     return 1.0
+
+
+def score_source_classification(payload: dict[str, Any], fixture: ModelEvalFixture) -> float:
+    expected = expected_source_classification(fixture)
+    input_class = normalize(str(payload.get("input_class") or payload.get("classification") or payload.get("decision") or ""))
+    source_kind = normalize(str(payload.get("source_kind") or payload.get("kind") or ""))
+    should_create_source = payload.get("should_create_source")
+    should_extract_memories = payload.get("should_extract_memories")
+
+    scores: list[float] = []
+    expected_input_class = expected["input_class"]
+    if expected_input_class == "source":
+        scores.append(1.0 if input_class in {"source", "article", "transcript", "markdown", "pdf", "email", "table", "chat_log"} else 0.0)
+    else:
+        scores.append(1.0 if input_class == expected_input_class else 0.0)
+
+    if expected["source_kind"] is not None:
+        scores.append(1.0 if source_kind == expected["source_kind"] else 0.0)
+    if should_create_source is not None:
+        scores.append(1.0 if bool(should_create_source) == bool(expected["should_create_source"]) else 0.0)
+    if should_extract_memories is not None:
+        scores.append(1.0 if bool(should_extract_memories) == bool(expected["should_extract_memories"]) else 0.0)
+    return sum(scores) / len(scores)
+
+
+def expected_source_classification(fixture: ModelEvalFixture) -> dict[str, Any]:
+    text = fixture.input_text.strip()
+    lowered = text.casefold()
+    if "lol ok sure whatever" in lowered:
+        return {
+            "input_class": "junk",
+            "source_kind": None,
+            "should_create_source": False,
+            "should_extract_memories": False,
+        }
+    if text.startswith("|") or "csv table" in lowered:
+        return {
+            "input_class": "source",
+            "source_kind": "table",
+            "should_create_source": True,
+            "should_extract_memories": True,
+        }
+    if "from:" in lowered or "subject:" in lowered:
+        return {
+            "input_class": "source",
+            "source_kind": "email",
+            "should_create_source": True,
+            "should_extract_memories": True,
+        }
+    if "http://" in lowered or "https://" in lowered or "article" in lowered:
+        return {
+            "input_class": "source",
+            "source_kind": "article",
+            "should_create_source": True,
+            "should_extract_memories": True,
+        }
+    if lowered.startswith("#") or "transcript" in lowered or len(text.split()) > 30:
+        return {
+            "input_class": "source",
+            "source_kind": "markdown",
+            "should_create_source": True,
+            "should_extract_memories": True,
+        }
+    return {
+        "input_class": "memory",
+        "source_kind": None,
+        "should_create_source": False,
+        "should_extract_memories": True,
+    }
 
 
 def score_durability_decision(
@@ -1153,6 +1265,9 @@ def actual_durable_value(payload: dict[str, Any]) -> bool | None:
 
 
 def score_repair_options(payload: dict[str, Any], expected: dict[str, Any]) -> float:
+    safe_action_space = expected.get("safe_action_space")
+    if isinstance(safe_action_space, list) and not repair_options_within_action_space(payload, safe_action_space):
+        return 0.0
     terms = expected.get("repair_terms", [])
     if not terms:
         return 1.0
@@ -1217,6 +1332,16 @@ def zero_tolerance_failure_types(
         failures.append("deleted_or_superseded_memory_returned_as_current")
     if "long_source_as_single_memory_card" in checks and score_below("source_memory_split"):
         failures.append("long_source_as_single_memory_card")
+    if "long_source_classified_as_memory" in checks and score_below("source_memory_split"):
+        failures.append("long_source_classified_as_memory")
+    if "table_not_classified_as_table" in checks and score_below("source_memory_split"):
+        failures.append("table_not_classified_as_table")
+    if "article_url_not_classified_as_source" in checks and score_below("source_memory_split"):
+        failures.append("article_url_not_classified_as_source")
+    if "email_not_classified_as_email" in checks and score_below("source_memory_split"):
+        failures.append("email_not_classified_as_email")
+    if "junk_not_rejected" in checks and score_below("source_memory_split"):
+        failures.append("junk_not_rejected")
     if "small_table_must_not_drop_values" in checks and score_below("memory_card_quality"):
         failures.append("small_table_must_not_drop_values")
     if "must_not_split_twins_into_duplicate_cards" in checks and score_below("memory_card_quality"):
