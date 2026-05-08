@@ -1,4 +1,4 @@
-.PHONY: setup up down check smoke model-smoke-all ingest-sample recall-sample eval brain-eval tokens reset reset-hard mcp-config mcp-http slack-agent ui-proxy deploy-local-production prod-check slack-agent-check ui-prod-check backup cloudflare-verify test lint
+.PHONY: setup up down check smoke model-smoke-all ingest-sample recall-sample eval brain-eval tokens reset reset-hard mcp-config mcp-http slack-agent ui-proxy deploy-local-production prod-check slack-agent-check ui-prod-check backup cloudflare-verify model-eval-role-hierarchy pre-commit test lint
 
 MODEL_SMOKE_OUTPUT ?= eval_runs/live_model_smoke_all.json
 MODEL_SMOKE_ARGS ?=
@@ -71,6 +71,12 @@ backup:
 
 cloudflare-verify:
 	uv run python scripts/verify_cloudflare_mcp.py
+
+model-eval-role-hierarchy:
+	uv run python skills/brain-model-eval-role-hierarchy/scripts/generate_model_eval_role_hierarchy.py --repo . --output artifacts/model_eval_phase_role_hierarchy.md
+
+pre-commit: model-eval-role-hierarchy
+	@git status --short artifacts/model_eval_phase_role_hierarchy.md skills/brain-model-eval-role-hierarchy
 
 test:
 	uv run pytest
