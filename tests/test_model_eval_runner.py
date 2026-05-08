@@ -15,6 +15,7 @@ from memory_stack.evals.model_runner import (
     build_work_items,
     merge_rerun_records,
     read_eval_records,
+    raw_call_for_record,
     render_report,
     run_rescore,
     run_model_evals,
@@ -31,8 +32,10 @@ from memory_stack.evals.scoring import (
     aggregate_model_role_records,
     capability_coverage,
     is_stack_deployable,
+    model_role_eligibility,
     pairwise_quality,
     score_model_output,
+    semantic_quality_score_for_role,
     zero_tolerance_upper_bound,
 )
 
@@ -360,6 +363,59 @@ def test_success_receipt_generator_fails_missing_receipt() -> None:
     assert "success_receipt_missing" in types
 
 
+def test_intent_router_scores_router_aliases_from_source_role() -> None:
+    fixture = ModelEvalFixture(
+        id="router_from_slack",
+        role="intent_router",
+        scenario_group="slack_intake",
+        input_text="/brain remember Sam likes jazz",
+        expected={"decision": "commit_success"},
+        context={"source_role": "slack_intake"},
+    )
+
+    scores, zero, _types = score_model_output(fixture, {"intent": "store_fact"}, status="ok")
+
+    assert zero is False
+    assert scores["decision_correctness"] == 1.0
+
+
+def test_source_classifier_semantic_score_uses_source_split_not_downstream_decision() -> None:
+    score = semantic_quality_score_for_role(
+        "source_classifier",
+        {
+            "decision_correctness": 0.0,
+            "source_memory_split": 1.0,
+        },
+    )
+
+    assert score == 1.0
+
+
+def test_durability_filter_scores_durable_vs_non_durable_decision() -> None:
+    fixture = ModelEvalFixture(
+        id="durability_weather",
+        role="durability_filter",
+        scenario_group="durability",
+        input_text="It is raining outside.",
+        expected={},
+        zero_tolerance_checks=("no_durable_value_junk_committed",),
+    )
+
+    bad_scores, _bad_zero, _bad_types = score_model_output(
+        fixture,
+        {"memory_cards": [{"statement": "It is raining outside."}]},
+        status="ok",
+    )
+    good_scores, _good_zero, _good_types = score_model_output(
+        fixture,
+        {"decision": "reject", "memory_cards": []},
+        status="ok",
+    )
+
+    assert bad_scores["durability_decision"] == 0.0
+    assert good_scores["durability_decision"] == 1.0
+
+
 def test_provider_failure_is_not_counted_as_zero_tolerance() -> None:
     fixture = ModelEvalFixture(
         id="provider_down",
@@ -421,6 +477,73 @@ def test_zero_tolerance_failure_is_operational_success() -> None:
     assert summary.zero_tolerance_failures == 1
 
 
+def test_model_role_eligibility_uses_observed_gate_and_state() -> None:
+    summary = Summary(
+        model="m",
+        role="entity_mention_extractor",
+        records_total=66,
+        records_operational_success=66,
+        records_json_parseable=66,
+        records_schema_valid=66,
+        records_semantic_evaluable=66,
+        records_quality_passed=30,
+        operational_success_rate=1.0,
+        json_parse_success_rate=1.0,
+        schema_validity_rate=1.0,
+        semantic_score_mean=0.903,
+        zero_tolerance_failures=0,
+        subscores={"entity_safety": {"mean": 0.95}},
+    )
+
+    eligible, reasons, state = model_role_eligibility(summary)
+
+    assert eligible is True
+    assert reasons == []
+    assert state == "eligible"
+
+
+def test_model_role_eligibility_reports_insufficient_sample() -> None:
+    summary = Summary(
+        model="m",
+        role="eval_judge",
+        records_total=10,
+        records_operational_success=10,
+        records_json_parseable=10,
+        records_schema_valid=10,
+        records_semantic_evaluable=10,
+        operational_success_rate=1.0,
+        json_parse_success_rate=1.0,
+        schema_validity_rate=1.0,
+        semantic_score_mean=0.95,
+        zero_tolerance_failures=0,
+    )
+
+    eligible, reasons, state = model_role_eligibility(summary)
+
+    assert eligible is False
+    assert "semantic_evaluable_below_minimum" in reasons
+    assert state == "insufficient_sample"
+
+
+def test_legacy_zero_latency_is_unknown_not_successful_latency(tmp_path) -> None:
+    raw_path = tmp_path / "raw.json"
+    raw_path.write_text(
+        json.dumps(
+            {
+                "status": "ok",
+                "payload": {"intent": "remember"},
+                "raw_text": '{"intent":"remember"}',
+                "latency_ms": 0,
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    call = raw_call_for_record({"raw_output_path": str(raw_path), "latency_ms": 0})
+
+    assert call.latency_ms is None
+
+
 def test_quality_failure_not_counted_as_provider_failure() -> None:
     summary = aggregate(
         [
@@ -443,6 +566,31 @@ def test_quality_failure_not_counted_as_provider_failure() -> None:
     assert summary.records_schema_valid == 1
     assert summary.records_semantic_evaluable == 1
     assert summary.semantic_score_mean == 0.5
+
+
+def test_intent_router_semantic_score_uses_role_weighting() -> None:
+    summary = aggregate(
+        [
+            EvalRecord(
+                model="a",
+                role="intent_router",
+                operational_success=True,
+                json_parseable=True,
+                schema_valid=True,
+                semantic_evaluable=True,
+                subscores={
+                    "decision_correctness": 0.0,
+                    "memory_card_quality": 1.0,
+                    "repair_quality": 1.0,
+                    "recall_quality": 1.0,
+                },
+                quality_score=None,
+            )
+        ],
+        bootstrap_samples=0,
+    )
+
+    assert summary.semantic_score_mean == 0.0
 
 
 def test_schema_failure_is_distinct_from_provider_failure() -> None:
@@ -1125,11 +1273,77 @@ def test_rescore_removes_router_table_failure_and_regenerates_artifacts(tmp_path
     assert "small_table_must_not_drop_values" not in router["zero_tolerance_failure_types"]
     assert router["operational_success"] is True
     assert router["semantic_evaluable"] is True
-    assert router["failure_class"] == "quality_failure"
-    assert router["status"] == "quality_fail"
+    assert router["failure_class"] == "none"
+    assert router["status"] == "ok"
     assert Path(result["failed_manifest_jsonl_path"]).exists()
     assert Path(result["report_md_path"]).exists()
     assert Path(result["report_html_path"]).exists()
+
+
+def test_rescore_rejects_semantic_to_provider_transition(tmp_path) -> None:
+    raw_path = tmp_path / "raw_fail.json"
+    raw_path.write_text(
+        json.dumps(
+            {
+                "run_id": "eval_1",
+                "model": "openai:gpt-5-nano",
+                "role": "intent_router",
+                "fixture_id": "router_remember_plain",
+                "status": "fail",
+                "error": "missing provider API key for openai",
+                "payload": None,
+                "raw_text": "",
+            }
+        ),
+        encoding="utf-8",
+    )
+    output = tmp_path / "results.json"
+    output.write_text(
+        json.dumps(
+            [
+                {
+                    "record_id": "router-1",
+                    "run_id": "eval_1",
+                    "fixture_set_version": "brain-model-test-v2",
+                    "policy_version": "memory-policy-v1",
+                    "model": "openai:gpt-5-nano",
+                    "provider": "openai",
+                    "role": "intent_router",
+                    "fixture_id": "router_remember_plain",
+                    "variant_id": "base",
+                    "repeat_idx": 0,
+                    "status": "quality_fail",
+                    "failure_class": "quality_failure",
+                    "failure_reason_codes": ["wrong_intent_for_explicit_command"],
+                    "failure_message": None,
+                    "operational_success": True,
+                    "json_parseable": True,
+                    "schema_valid": True,
+                    "semantic_evaluable": True,
+                    "quality_passed": False,
+                    "zero_tolerance_failure": False,
+                    "zero_tolerance_failure_types": [],
+                    "quality_score": 0.0,
+                    "subscores": {"decision_correctness": 0.0},
+                    "raw_output_path": str(raw_path),
+                    "parsed_output_path": None,
+                    "scenario_group": "router_remember",
+                    "notes": ["wrong_intent_for_explicit_command"],
+                }
+            ],
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="impossible semantic/provider transitions"):
+        run_rescore(
+            registry_path=REGISTRY_PATH,
+            source_path=output,
+            output_path=output,
+            overwrite=True,
+            bootstrap_samples=0,
+        )
 
 
 def test_live_provider_client_retries_transient_provider_error(monkeypatch) -> None:

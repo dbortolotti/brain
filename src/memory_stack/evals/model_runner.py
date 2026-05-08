@@ -39,9 +39,11 @@ from memory_stack.evals.scoring import (
     aggregate_model_role_records,
     capability_coverage,
     classify_failure_class,
+    is_operational_failure,
     normalized_status,
     is_stack_deployable,
     paired_model_comparisons,
+    semantic_quality_score_for_role,
     score_model_output,
 )
 
@@ -365,6 +367,7 @@ def build_eval_record(
     )
 
     operational_success = call.status != "fail"
+    provider_call_succeeded = operational_success
     json_parseable = operational_success and call.status != "schema_fail"
     schema_valid, schema_failure_message = validate_payload(candidate, call.payload)
     if not json_parseable:
@@ -376,7 +379,7 @@ def build_eval_record(
         call.payload,
         status="ok" if semantic_evaluable else ("parse_fail" if not json_parseable else "schema_fail" if not schema_valid else "provider_fail"),
     )
-    quality_score = semantic_quality_score(scores) if semantic_evaluable else None
+    quality_score = semantic_quality_score_for_role(role, scores) if semantic_evaluable else None
     quality_passed = semantic_evaluable and (not zero_tolerance_failure) and quality_score is not None and quality_score >= 1.0
     evaluation_status = normalized_status(
         status=call.status,
@@ -415,6 +418,7 @@ def build_eval_record(
         policy_version=policy_version,
         model=candidate.ref,
         provider=candidate.provider,
+        provider_call_succeeded=provider_call_succeeded,
         role=role,
         fixture_id=str(fixture_id),
         variant_id=variant_id,
@@ -433,7 +437,7 @@ def build_eval_record(
         input_tokens=call.input_tokens,
         output_tokens=call.output_tokens,
         estimated_cost_usd=call.estimated_cost_usd,
-        latency_ms=float(call.latency_ms),
+        latency_ms=None if call.latency_ms is None else float(call.latency_ms),
         raw_output_path=str(raw_output_path),
         parsed_output_path=str(parsed_output_path) if parsed_output_path else None,
         scenario_group=fixture.scenario_group,
@@ -639,6 +643,7 @@ def write_run_artifacts(result: dict[str, Any], records: list[dict[str, Any]]) -
     write_model_role_summary_csv(output_dir / "model_role_summary.csv", summaries)
     write_cost_latency_csv(output_dir / "cost_latency.csv", summaries)
     write_zero_tolerance_csv(output_dir / "zero_tolerance_summary.csv", summaries)
+    write_failed_fixture_summary_csv(output_dir / "failed_fixture_summary.csv", summaries, records)
 
 
 def build_run_result(
@@ -692,6 +697,57 @@ def merge_rerun_records(
     return list(merged_by_id.values())
 
 
+def build_rescore_transition_summary(
+    original_records: list[dict[str, Any]],
+    rescored_records: list[dict[str, Any]],
+) -> dict[str, dict[str, int]]:
+    original_by_id = {str(record["record_id"]): record for record in original_records if record.get("record_id")}
+    rescored_by_id = {str(record["record_id"]): record for record in rescored_records if record.get("record_id")}
+    failure_class_transitions: Counter[str] = Counter()
+    status_transitions: Counter[str] = Counter()
+    operational_transitions: Counter[str] = Counter()
+
+    for record_id, before in original_by_id.items():
+        after = rescored_by_id.get(record_id)
+        if after is None:
+            continue
+        failure_class_transitions[f"{before.get('failure_class')} -> {after.get('failure_class')}"] += 1
+        status_transitions[f"{before.get('status')} -> {after.get('status')}"] += 1
+        operational_transitions[f"{before.get('operational_success')} -> {after.get('operational_success')}"] += 1
+
+    return {
+        "failure_class": dict(sorted(failure_class_transitions.items())),
+        "status": dict(sorted(status_transitions.items())),
+        "operational_success": dict(sorted(operational_transitions.items())),
+    }
+
+
+def impossible_rescore_transitions(
+    original_records: list[dict[str, Any]],
+    rescored_records: list[dict[str, Any]],
+) -> list[str]:
+    original_by_id = {str(record["record_id"]): record for record in original_records if record.get("record_id")}
+    rescored_by_id = {str(record["record_id"]): record for record in rescored_records if record.get("record_id")}
+    impossible: list[str] = []
+
+    for record_id, before in original_by_id.items():
+        after = rescored_by_id.get(record_id)
+        if after is None:
+            continue
+        old_failure_class = FailureClass(str(before.get("failure_class") or FailureClass.NONE))
+        new_failure_class = FailureClass(str(after.get("failure_class") or FailureClass.NONE))
+        if old_failure_class == FailureClass.NONE:
+            continue
+        if is_operational_failure(old_failure_class):
+            continue
+        if not is_operational_failure(new_failure_class):
+            continue
+        impossible.append(
+            f"{old_failure_class.value} -> {new_failure_class.value} ({record_id})"
+        )
+    return impossible
+
+
 def candidate_for_record(
     record: dict[str, Any],
     *,
@@ -721,15 +777,21 @@ def raw_call_for_record(record: dict[str, Any]) -> ModelCallResult:
         payload = data.get("payload")
         if not isinstance(payload, dict):
             payload = None
+        latency_value = data.get("latency_ms", record.get("latency_ms"))
+        if latency_value == 0:
+            latency_value = None
+        input_tokens_value = data.get("input_tokens", record.get("input_tokens"))
+        output_tokens_value = data.get("output_tokens", record.get("output_tokens"))
+        cost_value = data.get("estimated_cost_usd", record.get("estimated_cost_usd"))
         return ModelCallResult(
             status=str(data.get("status") or record.get("status") or "fail"),
             payload=payload,
             raw_text=str(data.get("raw_text") or ""),
             error=data.get("error"),
-            latency_ms=float(record.get("latency_ms") or 0.0),
-            input_tokens=int(record.get("input_tokens") or 0),
-            output_tokens=int(record.get("output_tokens") or 0),
-            estimated_cost_usd=float(record.get("estimated_cost_usd") or 0.0),
+            latency_ms=None if latency_value is None else float(latency_value),
+            input_tokens=int(input_tokens_value or 0),
+            output_tokens=int(output_tokens_value or 0),
+            estimated_cost_usd=float(cost_value or 0.0),
         )
 
     payload = None
@@ -744,7 +806,9 @@ def raw_call_for_record(record: dict[str, Any]) -> ModelCallResult:
         payload=payload,
         raw_text="",
         error=record.get("failure_message"),
-        latency_ms=float(record.get("latency_ms") or 0.0),
+        latency_ms=None
+        if record.get("latency_ms") in (None, 0)
+        else float(record.get("latency_ms")),
         input_tokens=int(record.get("input_tokens") or 0),
         output_tokens=int(record.get("output_tokens") or 0),
         estimated_cost_usd=float(record.get("estimated_cost_usd") or 0.0),
@@ -769,6 +833,7 @@ def rescore_record(
     call = raw_call_for_record(record)
 
     operational_success = call.status != "fail"
+    provider_call_succeeded = operational_success
     json_parseable = operational_success and call.status != "schema_fail"
     schema_valid, schema_failure_message = validate_payload(candidate, call.payload)
     if not json_parseable:
@@ -780,7 +845,7 @@ def rescore_record(
         call.payload,
         status="ok" if semantic_evaluable else ("parse_fail" if not json_parseable else "schema_fail" if not schema_valid else "provider_fail"),
     )
-    quality_score = semantic_quality_score(scores) if semantic_evaluable else None
+    quality_score = semantic_quality_score_for_role(role, scores) if semantic_evaluable else None
     quality_passed = semantic_evaluable and (not zero_tolerance_failure) and quality_score is not None and quality_score >= 1.0
     evaluation_status = normalized_status(
         status=str(record.get("status") or call.status),
@@ -806,6 +871,7 @@ def rescore_record(
     updated.update(
         {
             "provider": candidate.provider,
+            "provider_call_succeeded": provider_call_succeeded,
             "operational_success": operational_success,
             "json_parseable": json_parseable,
             "schema_valid": schema_valid,
@@ -819,6 +885,10 @@ def rescore_record(
             "zero_tolerance_failure_types": notes if zero_tolerance_failure else [],
             "quality_score": quality_score,
             "subscores": scores,
+            "input_tokens": call.input_tokens,
+            "output_tokens": call.output_tokens,
+            "estimated_cost_usd": call.estimated_cost_usd,
+            "latency_ms": call.latency_ms,
             "notes": notes,
             "kind": candidate.kind,
         }
@@ -841,6 +911,14 @@ def run_rescore(
     registry = load_model_registry(registry_path)
     index = registry_model_index(registry)
     rescored = [rescore_record(record, registry_index=index) for record in records]
+    transition_summary = build_rescore_transition_summary(records, rescored)
+    impossible = impossible_rescore_transitions(records, rescored)
+    if impossible:
+        preview = "\n".join(impossible[:20])
+        raise ValueError(
+            "rescore produced impossible semantic/provider transitions:\n"
+            f"{preview}"
+        )
     assign_failure_numbers(rescored)
     atomic_write_eval_records(output_path, rescored)
 
@@ -857,6 +935,7 @@ def run_rescore(
         roles=roles,
         bootstrap_samples=bootstrap_samples,
     )
+    result["rescore_transition_summary"] = transition_summary
     write_run_artifacts(result, rescored)
     return result
 
@@ -1097,6 +1176,7 @@ def write_model_role_summary_csv(path: Path, summaries: list[Summary]) -> None:
                 "cost_per_1k_semantic",
                 "zero_tolerance_failures",
                 "eligible",
+                "eligibility_state",
                 "rejection_reasons",
             ]
         )
@@ -1119,6 +1199,7 @@ def write_model_role_summary_csv(path: Path, summaries: list[Summary]) -> None:
                     summary.cost_per_1k_semantic,
                     summary.zero_tolerance_failures,
                     summary.eligible,
+                    summary.eligibility_state,
                     ";".join(summary.rejection_reasons),
                 ]
             )
@@ -1157,7 +1238,16 @@ def write_cost_latency_csv(path: Path, summaries: list[Summary]) -> None:
 def write_zero_tolerance_csv(path: Path, summaries: list[Summary]) -> None:
     with path.open("w", encoding="utf-8", newline="") as file:
         writer = csv.writer(file)
-        writer.writerow(["model", "role", "zero_tolerance_failures", "zero_tolerance_upper_95_fail_rate", "eligible"])
+        writer.writerow(
+            [
+                "model",
+                "role",
+                "zero_tolerance_failures",
+                "zero_tolerance_upper_95_fail_rate",
+                "eligible",
+                "eligibility_state",
+            ]
+        )
         for summary in summaries:
             writer.writerow(
                 [
@@ -1166,8 +1256,96 @@ def write_zero_tolerance_csv(path: Path, summaries: list[Summary]) -> None:
                     summary.zero_tolerance_failures,
                     summary.zero_tolerance_upper_95_fail_rate,
                     summary.eligible,
+                    summary.eligibility_state,
                 ]
             )
+
+
+def write_failed_fixture_summary_csv(
+    path: Path,
+    summaries: list[Summary],
+    records: list[dict[str, Any]],
+) -> None:
+    with path.open("w", encoding="utf-8", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow(
+            [
+                "role",
+                "model",
+                "semantic_score",
+                "quality_pass_rate",
+                "zero_tolerance_count",
+                "schema_fail_count",
+                "eligibility_state",
+                "rejection_reasons",
+                "top_5_failed_fixture_ids",
+                "top_5_zero_tolerance_reasons",
+            ]
+        )
+        for row in failed_fixture_diagnostic_rows(summaries, records):
+            writer.writerow(
+                [
+                    row["role"],
+                    row["model"],
+                    row["semantic_score"],
+                    row["quality_pass_rate"],
+                    row["zero_tolerance_count"],
+                    row["schema_fail_count"],
+                    row["eligibility_state"],
+                    row["rejection_reasons"],
+                    row["top_5_failed_fixture_ids"],
+                    row["top_5_zero_tolerance_reasons"],
+                ]
+            )
+
+
+def failed_fixture_diagnostic_rows(
+    summaries: list[Summary],
+    records: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    records_by_pair: dict[tuple[str, str], list[dict[str, Any]]] = defaultdict(list)
+    for record in records:
+        records_by_pair[(str(record.get("role") or ""), str(record.get("model") or ""))].append(record)
+
+    rows: list[dict[str, Any]] = []
+    for summary in sorted(summaries, key=lambda item: (item.role, item.model)):
+        pair_records = records_by_pair.get((summary.role, summary.model), [])
+        failed_fixtures: Counter[str] = Counter()
+        zero_reasons: Counter[str] = Counter()
+        schema_fail_count = 0
+
+        for record in pair_records:
+            if bool(record.get("operational_success")) and (
+                not bool(record.get("json_parseable")) or not bool(record.get("schema_valid"))
+            ):
+                schema_fail_count += 1
+            failure_class = str(record.get("failure_class") or FailureClass.NONE.value)
+            if failure_class != FailureClass.NONE.value or record.get("status") == "skipped":
+                failed_fixtures[str(record.get("fixture_id") or "unknown")] += 1
+            for reason in record.get("zero_tolerance_failure_types") or []:
+                zero_reasons[str(reason)] += 1
+
+        rows.append(
+            {
+                "role": summary.role,
+                "model": summary.model,
+                "semantic_score": summary.semantic_score_mean,
+                "quality_pass_rate": summary.quality_pass_rate,
+                "zero_tolerance_count": summary.zero_tolerance_failures,
+                "schema_fail_count": schema_fail_count,
+                "eligibility_state": summary.eligibility_state,
+                "rejection_reasons": ";".join(summary.rejection_reasons),
+                "top_5_failed_fixture_ids": format_counter_top(failed_fixtures, limit=5),
+                "top_5_zero_tolerance_reasons": format_counter_top(zero_reasons, limit=5),
+            }
+        )
+    return rows
+
+
+def format_counter_top(counter: Counter[str], *, limit: int) -> str:
+    if not counter:
+        return "-"
+    return "; ".join(f"{key} ({count})" for key, count in counter.most_common(limit))
 
 
 def write_raw_output(
@@ -1194,6 +1372,10 @@ def write_raw_output(
                 "error": call.error,
                 "payload": call.payload,
                 "raw_text": call.raw_text,
+                "latency_ms": call.latency_ms,
+                "input_tokens": call.input_tokens,
+                "output_tokens": call.output_tokens,
+                "estimated_cost_usd": call.estimated_cost_usd,
             },
             indent=2,
             sort_keys=True,
@@ -1246,6 +1428,7 @@ def render_markdown_report(result: dict[str, Any], records: list[dict[str, Any]]
     eligible_counts = result.get("eligible_counts_by_category") or eligible_counts_by_category(summaries)
     recommendations = result.get("partial_recommendations") or categorized_recommendations(summaries)["all"]
     mandatory_recommendations = result.get("recommended_stack") or categorized_recommendations(summaries)["mandatory"]
+    rescore_transitions = result.get("rescore_transition_summary") or {}
     non_deployable_section = (
         non_deployable_rows(summaries, missing_roles, coverage=coverage, mode=mode)
         if not deployable_stack
@@ -1306,6 +1489,9 @@ def render_markdown_report(result: dict[str, Any], records: list[dict[str, Any]]
             f"- Eligible judge role pairs: `{eligible_counts.get('judge', 0)}`",
             f"- Eligible debug/admin role pairs: `{eligible_counts.get('debug_admin', 0)}`",
             f"- Eligible support role pairs: `{eligible_counts.get('support', 0) + eligible_counts.get('runtime_or_support', 0)}`",
+            f"- Eligibility states: `{format_counter_top(Counter(summary.eligibility_state for summary in summaries), limit=10)}`",
+            "",
+            *rescore_transition_rows(rescore_transitions),
             "",
             "## Mandatory role coverage",
             "",
@@ -1341,15 +1527,21 @@ def render_markdown_report(result: dict[str, Any], records: list[dict[str, Any]]
             "",
             "## Safety / zero-tolerance failures",
             "",
-            "| Model | Role | Zero-tolerance failures | Upper 95% fail rate | Eligible |",
-            "|---|---|---:|---:|---|",
+            "| Model | Role | Zero-tolerance failures | Upper 95% fail rate | Eligible | Eligibility state |",
+            "|---|---|---:|---:|---|---|",
             *zero_tolerance_rows(summaries),
             "",
             "## Quality scores by role",
             "",
-            "| Model | Role | Category | Quality pass | 95% CI | Passes / Semantic evals | Semantic score | 95% CI | Eligible | Rejection reasons |",
-            "|---|---|---|---:|---:|---:|---:|---:|---|---|",
+            "| Model | Role | Category | Quality pass | 95% CI | Passes / Semantic evals | Semantic score | 95% CI | Eligible | Eligibility state | Rejection reasons |",
+            "|---|---|---|---:|---:|---:|---:|---:|---|---|---|",
             *quality_rows(summaries),
+            "",
+            "## Top failed fixtures by role/model",
+            "",
+            "| Role | Model | Semantic score | Quality pass | Zero tolerance | Schema/parse fails | Eligibility state | Rejection reasons | Top failed fixtures | Top zero-tolerance reasons |",
+            "|---|---|---:|---:|---:|---:|---|---|---|---|",
+            *failed_fixture_rows(summaries, records),
             "",
             "## Runtime-role recommendations",
             "",
@@ -1533,6 +1725,24 @@ def operational_rows(summaries: list[Summary]) -> list[str]:
     ]
 
 
+def rescore_transition_rows(transitions: dict[str, Any]) -> list[str]:
+    if not transitions:
+        return []
+    rows = ["## Rescore transition audit", ""]
+    for key in ("failure_class", "operational_success", "status"):
+        mapping = transitions.get(key) or {}
+        rows.append(f"### {key.replace('_', ' ').title()}")
+        rows.append("")
+        if not mapping:
+            rows.append("- none")
+            rows.append("")
+            continue
+        for transition, count in mapping.items():
+            rows.append(f"- `{transition}`: {count}")
+        rows.append("")
+    return rows
+
+
 def parse_rows(summaries: list[Summary]) -> list[str]:
     return [
         "| "
@@ -1572,7 +1782,7 @@ def zero_tolerance_rows(summaries: list[Summary]) -> list[str]:
         f"`{summary.model}` | `{summary.role}` | "
         f"{summary.zero_tolerance_failures} | "
         f"{summary.zero_tolerance_upper_95_fail_rate:.3f} | "
-        f"{summary.eligible} |"
+        f"{summary.eligible} | `{summary.eligibility_state}` |"
         for summary in summaries
     ]
 
@@ -1593,7 +1803,23 @@ def quality_rows(summaries: list[Summary]) -> list[str]:
             f"{summary.quality_pass_rate:.3f} | {summary.quality_pass_ci_low:.3f}-{summary.quality_pass_ci_high:.3f} | "
             f"{summary.records_quality_passed} / {summary.records_semantic_evaluable} | "
             f"{semantic_mean} | {semantic_ci} | "
-            f"{summary.eligible} | {reasons} |"
+            f"{summary.eligible} | `{summary.eligibility_state}` | {reasons} |"
+        )
+    return rows
+
+
+def failed_fixture_rows(summaries: list[Summary], records: list[dict[str, Any]]) -> list[str]:
+    rows: list[str] = []
+    for row in failed_fixture_diagnostic_rows(summaries, records):
+        semantic_score = row["semantic_score"]
+        semantic_display = "n/a" if semantic_score is None else f"{float(semantic_score):.3f}"
+        rows.append(
+            "| "
+            f"`{row['role']}` | `{row['model']}` | "
+            f"{semantic_display} | {float(row['quality_pass_rate']):.3f} | "
+            f"{row['zero_tolerance_count']} | {row['schema_fail_count']} | "
+            f"`{row['eligibility_state']}` | {row['rejection_reasons'] or '-'} | "
+            f"{row['top_5_failed_fixture_ids']} | {row['top_5_zero_tolerance_reasons']} |"
         )
     return rows
 

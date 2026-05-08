@@ -16,6 +16,7 @@ from memory_stack.evals.model_fixtures import ModelEvalFixture
 
 LLM_SCORE_KEYS = (
     "decision_correctness",
+    "durability_decision",
     "memory_card_quality",
     "entity_safety",
     "conflict_safety",
@@ -440,6 +441,81 @@ ROLE_THRESHOLDS: dict[str, dict[str, float]] = {
     },
 }
 
+DEFAULT_ELIGIBILITY_GATE: dict[str, float] = {
+    "min_records_total": 10,
+    "min_semantic_evaluable": 30,
+    "max_zero_tolerance_failures": 0,
+    "min_observed_operational_rate": 0.95,
+    "min_observed_json_parse_rate": 0.95,
+    "min_observed_schema_rate": 0.98,
+    "min_semantic_score": 0.90,
+}
+
+ROLE_ELIGIBILITY_GATES: dict[str, dict[str, float]] = {
+    "intent_router": {
+        "min_semantic_evaluable": 100,
+        "min_semantic_score": 0.90,
+        "min_decision_correctness": 0.90,
+    },
+    "source_classifier": {
+        "min_semantic_evaluable": 80,
+        "min_semantic_score": 0.90,
+        "min_source_memory_split": 0.95,
+    },
+    "durability_filter": {
+        "min_semantic_evaluable": 80,
+        "min_semantic_score": 0.90,
+        "min_durability_decision": 0.90,
+    },
+    "memory_kind_classifier": {
+        "min_semantic_evaluable": 80,
+        "min_semantic_score": 0.90,
+    },
+    "atomic_card_extractor": {
+        "min_semantic_evaluable": 30,
+        "min_semantic_score": 0.85,
+        "min_memory_card_quality": 0.90,
+    },
+    "entity_mention_extractor": {
+        "min_semantic_evaluable": 50,
+        "min_semantic_score": 0.90,
+        "min_entity_safety": 0.90,
+    },
+    "entity_candidate_ranker": {
+        "min_semantic_evaluable": 50,
+        "min_semantic_score": 0.90,
+        "min_entity_safety": 0.90,
+    },
+    "conflict_candidate_detector": {
+        "min_semantic_evaluable": 50,
+        "min_semantic_score": 0.90,
+        "min_conflict_safety": 0.95,
+    },
+    "conflict_explainer": {
+        "min_semantic_evaluable": 50,
+        "min_semantic_score": 0.85,
+        "min_repair_quality": 0.90,
+    },
+    "success_receipt_generator": {
+        "min_semantic_evaluable": 50,
+        "min_semantic_score": 0.90,
+        "min_success_receipt_quality": 0.90,
+    },
+    "recall_synthesizer": {
+        "min_semantic_evaluable": 50,
+        "min_semantic_score": 0.90,
+        "min_recall_quality": 0.90,
+    },
+    "debug_explainer": {
+        "min_semantic_evaluable": 30,
+        "min_semantic_score": 0.85,
+    },
+    "eval_judge": {
+        "min_semantic_evaluable": 30,
+        "min_semantic_score": 0.80,
+    },
+}
+
 ROLE_SUBSCORE_ALIASES = {
     "slack_intake": {
         "decision_correctness": "decision_correctness",
@@ -468,6 +544,7 @@ ROLE_SUBSCORE_ALIASES = {
     },
     "durability_filter": {
         "decision_correctness": "decision_correctness",
+        "durability_decision": "durability_decision",
     },
     "memory_kind_classifier": {
         "memory_card_quality": "memory_card_quality",
@@ -526,6 +603,89 @@ ROLE_SUBSCORE_ALIASES = {
     },
 }
 
+ROLE_SCORE_WEIGHTS: dict[str, dict[str, float]] = {
+    "intent_router": {
+        "decision_correctness": 1.0,
+    },
+    "source_classifier": {
+        "source_memory_split": 1.0,
+    },
+    "durability_filter": {
+        "durability_decision": 1.0,
+    },
+    "memory_kind_classifier": {
+        "memory_card_quality": 1.0,
+    },
+    "atomic_card_extractor": {
+        "memory_card_quality": 0.7,
+        "source_memory_split": 0.2,
+        "entity_safety": 0.1,
+    },
+    "entity_mention_extractor": {
+        "entity_safety": 0.8,
+        "memory_card_quality": 0.2,
+    },
+    "entity_candidate_ranker": {
+        "entity_safety": 0.8,
+        "repair_quality": 0.2,
+    },
+    "relationship_extractor": {
+        "memory_card_quality": 0.7,
+        "entity_safety": 0.3,
+    },
+    "open_loop_detector": {
+        "memory_card_quality": 1.0,
+    },
+    "table_policy_handler": {
+        "source_memory_split": 0.7,
+        "memory_card_quality": 0.3,
+    },
+    "source_takeaway_extractor": {
+        "source_memory_split": 0.5,
+        "memory_card_quality": 0.3,
+        "recall_quality": 0.2,
+    },
+    "conflict_candidate_detector": {
+        "conflict_safety": 0.8,
+        "decision_correctness": 0.2,
+    },
+    "conflict_explainer": {
+        "repair_quality": 0.6,
+        "conflict_safety": 0.4,
+    },
+    "repair_option_generator": {
+        "repair_quality": 1.0,
+    },
+    "success_receipt_generator": {
+        "success_receipt_quality": 1.0,
+    },
+    "recall_planner": {
+        "decision_correctness": 1.0,
+    },
+    "recall_synthesizer": {
+        "recall_quality": 0.8,
+        "source_memory_split": 0.2,
+    },
+    "groundedness_checker": {
+        "recall_quality": 0.7,
+        "conflict_safety": 0.3,
+    },
+    "debug_explainer": {
+        "decision_correctness": 0.4,
+        "repair_quality": 0.3,
+        "source_memory_split": 0.3,
+    },
+    "eval_judge": {
+        "memory_card_quality": 0.4,
+        "recall_quality": 0.3,
+        "conflict_safety": 0.2,
+        "entity_safety": 0.1,
+    },
+    "embeddings": {
+        "embedding_quality": 1.0,
+    },
+}
+
 
 class FailureClass(str, Enum):
     NONE = "none"
@@ -579,6 +739,7 @@ class EvalRecord(BaseModel):
     fixture_id: str = ""
     variant_id: str | None = None
 
+    provider_call_succeeded: bool = False
     operational_success: bool = False
     failure_class: FailureClass = FailureClass.NONE
     failure_number: int | None = None
@@ -661,6 +822,7 @@ class ModelRoleSummary(BaseModel):
     latency_p95_ms: float | None = None
 
     eligible: bool = False
+    eligibility_state: str = "not_tested"
     rejection_reasons: list[str] = Field(default_factory=list)
 
 
@@ -725,21 +887,7 @@ def score_model_output(
     memory_cards = payload.get("memory_cards") if isinstance(payload.get("memory_cards"), list) else []
 
     scores = {key: 1.0 for key in LLM_SCORE_KEYS}
-    if "intent" in expected:
-        scores["decision_correctness"] = score_exact_or_missing(
-            payload.get("intent"),
-            expected.get("intent"),
-        )
-    elif "decision_any" in expected:
-        scores["decision_correctness"] = score_any_exact(
-            payload.get("decision"),
-            expected.get("decision_any", []),
-        )
-    else:
-        scores["decision_correctness"] = score_exact_or_missing(
-            payload.get("decision"),
-            expected.get("decision"),
-        )
+    scores["decision_correctness"] = score_decision_for_fixture(fixture, payload, expected)
 
     scores["memory_card_quality"] = min(
         score_expected_kinds(memory_cards, expected.get("memory_kinds", [])),
@@ -751,6 +899,7 @@ def score_model_output(
     scores["entity_safety"] = score_entity_action(payload, expected)
     scores["conflict_safety"] = score_conflict(payload, expected)
     scores["source_memory_split"] = score_source_memory_split(payload, fixture, expected)
+    scores["durability_decision"] = score_durability_decision(payload, fixture, expected)
     scores["repair_quality"] = score_repair_options(payload, expected)
     scores["success_receipt_quality"] = score_receipt(payload, expected)
     scores["recall_quality"] = score_recall(payload, expected)
@@ -774,6 +923,97 @@ def score_any_exact(actual: Any, expected_values: list[str]) -> float:
         return 0.0
     normalized = normalize(str(actual))
     return 1.0 if normalized in {normalize(value) for value in expected_values} else 0.0
+
+
+def score_decision_for_fixture(
+    fixture: ModelEvalFixture,
+    payload: dict[str, Any],
+    expected: dict[str, Any],
+) -> float:
+    if fixture.role == "intent_router":
+        return score_router_intent(payload.get("intent") or payload.get("decision"), expected_router_intent(fixture))
+    if "intent" in expected:
+        return score_exact_or_missing(payload.get("intent"), expected.get("intent"))
+    if "decision_any" in expected:
+        return score_any_exact(payload.get("decision"), expected.get("decision_any", []))
+    return score_exact_or_missing(payload.get("decision"), expected.get("decision"))
+
+
+def expected_router_intent(fixture: ModelEvalFixture) -> str | None:
+    expected_intent = fixture.expected.get("intent")
+    if expected_intent:
+        return str(expected_intent)
+    context = fixture.context if isinstance(fixture.context, dict) else {}
+    source_role = normalize(str(context.get("source_role") or fixture.scenario_group or ""))
+    if "recall" in source_role:
+        return "recall"
+    if "debug" in source_role or "admin" in source_role:
+        return "debug"
+    if "judge" in source_role or "eval" in source_role:
+        return "judge"
+    return "remember"
+
+
+def score_router_intent(actual: Any, expected: str | None) -> float:
+    if expected is None:
+        return 1.0
+    if actual is None:
+        return 0.0
+    actual_norm = normalize(str(actual))
+    expected_norm = normalize(expected)
+    if actual_norm == expected_norm:
+        return 1.0
+    intent_family_terms = {
+        "remember": {
+            "add",
+            "article",
+            "capture",
+            "classify_memory_source",
+            "commit",
+            "compile",
+            "email",
+            "family",
+            "memory",
+            "preference",
+            "record",
+            "remember",
+            "repair",
+            "resolve",
+            "rewrite",
+            "save",
+            "source",
+            "store",
+            "time_reference",
+            "update",
+        },
+        "recall": {
+            "answer",
+            "daughters",
+            "employment",
+            "open_loop",
+            "open_question",
+            "profile",
+            "query",
+            "recall",
+            "retrieve",
+            "search",
+        },
+        "debug": {
+            "admin",
+            "debug",
+            "explain",
+            "fetch",
+            "inspect",
+            "sql",
+        },
+        "judge": {
+            "eval",
+            "evaluate",
+            "judge",
+        },
+    }
+    accepted_terms = intent_family_terms.get(expected_norm, {expected_norm})
+    return 1.0 if any(term in actual_norm for term in accepted_terms) else 0.0
 
 
 def score_expected_kinds(memory_cards: list[Any], expected_kinds: list[str]) -> float:
@@ -866,6 +1106,49 @@ def score_source_memory_split(
         if overlap > 0.8:
             return 0.0
     return 1.0
+
+
+def score_durability_decision(
+    payload: dict[str, Any],
+    fixture: ModelEvalFixture,
+    expected: dict[str, Any],
+) -> float:
+    if fixture.role != "durability_filter":
+        return 1.0
+
+    expected_durable = expected_durable_value(fixture, expected)
+    actual_durable = actual_durable_value(payload)
+    if actual_durable is None:
+        return 0.0
+    return 1.0 if actual_durable == expected_durable else 0.0
+
+
+def expected_durable_value(fixture: ModelEvalFixture, expected: dict[str, Any]) -> bool:
+    decision = normalize(str(expected.get("decision") or ""))
+    if decision in {"reject", "hard_reject", "no_durable_value", "ignore", "skip"}:
+        return False
+    checks = set(fixture.zero_tolerance_checks)
+    if checks & {"no_durable_value_junk_committed", "unresolved_pronoun_committed", "vague_memory_committed"}:
+        return False
+    text = f"{fixture.id} {fixture.scenario_group} {fixture.input_text}".casefold()
+    if "no durable" in text or "weather" in text or "junk" in text:
+        return False
+    return True
+
+
+def actual_durable_value(payload: dict[str, Any]) -> bool | None:
+    decision = normalize(str(payload.get("decision") or payload.get("durability") or payload.get("action") or ""))
+    if decision in {"reject", "hard_reject", "no_durable_value", "not_durable", "ignore", "skip", "discard"}:
+        return False
+    if decision in {"commit_success", "commit_with_warning", "commit", "store", "save", "durable"}:
+        return True
+    cards = payload.get("memory_cards")
+    if isinstance(cards, list):
+        return bool(cards)
+    durable = payload.get("durable")
+    if isinstance(durable, bool):
+        return durable
+    return None
 
 
 def score_repair_options(payload: dict[str, Any], expected: dict[str, Any]) -> float:
@@ -1116,7 +1399,7 @@ def aggregate_model_role_records(
             latency_p90_ms=latency["p90"],
             latency_p95_ms=latency["p95"],
         )
-        summary.eligible, summary.rejection_reasons = is_model_role_eligible(summary)
+        summary.eligible, summary.rejection_reasons, summary.eligibility_state = model_role_eligibility(summary)
         summaries.append(summary.model_dump(mode="json"))
     return summaries
 
@@ -1455,47 +1738,75 @@ def rejection_reason(
     return None
 
 
-def is_model_role_eligible(summary: ModelRoleSummary | dict[str, Any]) -> tuple[bool, list[str]]:
+def model_role_eligibility(summary: ModelRoleSummary | dict[str, Any]) -> tuple[bool, list[str], str]:
     normalized = summary if isinstance(summary, ModelRoleSummary) else Summary.model_validate(summary)
     reasons: list[str] = []
+    gates = {**DEFAULT_ELIGIBILITY_GATE, **ROLE_ELIGIBILITY_GATES.get(normalized.role, {})}
 
-    if normalized.zero_tolerance_failures > 0:
+    if normalized.records_total <= 0:
+        return False, ["not_tested"], "not_tested"
+
+    max_zero = int(gates.get("max_zero_tolerance_failures", 0))
+    if normalized.zero_tolerance_failures > max_zero:
         reasons.append("zero_tolerance_failures_present")
 
-    thresholds = ROLE_THRESHOLDS.get(normalized.role, {})
+    observed_schema_rate = (
+        normalized.records_schema_valid / normalized.records_json_parseable
+        if normalized.records_json_parseable
+        else 0.0
+    )
+    if normalized.operational_success_rate < gates.get("min_observed_operational_rate", 0.0):
+        reasons.append("observed_operational_success_below_threshold")
+    if normalized.json_parse_success_rate < gates.get("min_observed_json_parse_rate", 0.0):
+        reasons.append("observed_json_parse_success_below_threshold")
+    if observed_schema_rate < gates.get("min_observed_schema_rate", 0.0):
+        reasons.append("observed_schema_validity_below_threshold")
 
-    op_min = thresholds.get("operational_success_ci_low_min")
-    if op_min is not None and normalized.operational_success_ci_low < op_min:
-        reasons.append("operational_success_below_threshold")
+    min_records_total = int(gates.get("min_records_total", 0))
+    min_semantic_evaluable = int(gates.get("min_semantic_evaluable", 0))
+    if normalized.records_total < min_records_total:
+        reasons.append("records_total_below_minimum")
+    if normalized.records_semantic_evaluable < min_semantic_evaluable:
+        reasons.append("semantic_evaluable_below_minimum")
 
-    schema_min = thresholds.get("schema_validity_ci_low_min")
-    if schema_min is not None and normalized.schema_validity_ci_low < schema_min:
-        reasons.append("schema_validity_below_threshold")
-
-    semantic_min = thresholds.get("semantic_score_ci_low_min")
+    semantic_min = gates.get("min_semantic_score")
     if semantic_min is not None:
-        if normalized.semantic_score_ci_low is None:
+        if normalized.semantic_score_mean is None:
             reasons.append("semantic_score_not_evaluated")
-        elif normalized.semantic_score_ci_low < semantic_min:
+        elif normalized.semantic_score_mean < semantic_min:
             reasons.append("semantic_score_below_threshold")
 
-    for key, value in thresholds.items():
-        if key.endswith("_ci_low_min") and key not in {
-            "operational_success_ci_low_min",
-            "schema_validity_ci_low_min",
-            "semantic_score_ci_low_min",
+    for key, value in gates.items():
+        if not key.startswith("min_"):
+            continue
+        metric_name = key.removeprefix("min_")
+        if metric_name in {
+            "records_total",
+            "semantic_evaluable",
+            "observed_operational_rate",
+            "observed_json_parse_rate",
+            "observed_schema_rate",
+            "semantic_score",
         }:
-            metric_name = key.removesuffix("_ci_low_min")
-            metric = normalized.subscores.get(metric_name)
-            if metric and metric.get("ci_low") is not None and float(metric["ci_low"]) < value:
-                reasons.append(f"{metric_name}_below_threshold")
-        if key.endswith("_ci_high_max"):
-            metric_name = key.removesuffix("_ci_high_max")
-            metric = normalized.subscores.get(metric_name)
-            if metric and metric.get("ci_high") is not None and float(metric["ci_high"]) > value:
-                reasons.append(f"{metric_name}_above_threshold")
+            continue
+        metric = normalized.subscores.get(metric_name)
+        if metric and metric.get("mean") is not None and float(metric["mean"]) < value:
+            reasons.append(f"{metric_name}_below_threshold")
 
-    return len(reasons) == 0, reasons
+    if not reasons:
+        return True, [], "eligible"
+    if normalized.zero_tolerance_failures > max_zero:
+        return False, reasons, "failed_safety"
+    if any(reason.startswith("observed_") for reason in reasons):
+        return False, reasons, "failed_schema"
+    if any(reason.endswith("_below_minimum") for reason in reasons):
+        return False, reasons, "insufficient_sample"
+    return False, reasons, "failed_quality"
+
+
+def is_model_role_eligible(summary: ModelRoleSummary | dict[str, Any]) -> tuple[bool, list[str]]:
+    eligible, reasons, _state = model_role_eligibility(summary)
+    return eligible, reasons
 
 
 def capability_coverage(summaries: list[ModelRoleSummary | dict[str, Any]]) -> dict[str, dict[str, Any]]:
@@ -1571,6 +1882,33 @@ def is_operational_failure(failure_class: FailureClass | str) -> bool:
     return normalized in OPERATIONAL_FAILURE_CLASSES
 
 
+def semantic_quality_score(scores: dict[str, float | None]) -> float | None:
+    numeric_values = [float(value) for value in scores.values() if value is not None]
+    if not numeric_values:
+        return None
+    return mean(numeric_values)
+
+
+def semantic_quality_score_for_role(
+    role: str,
+    scores: dict[str, float | None],
+) -> float | None:
+    weights = ROLE_SCORE_WEIGHTS.get(role)
+    if not weights:
+        return semantic_quality_score(scores)
+    numerator = 0.0
+    denominator = 0.0
+    for key, weight in weights.items():
+        value = scores.get(key)
+        if value is None:
+            continue
+        numerator += float(value) * weight
+        denominator += weight
+    if denominator == 0:
+        return None
+    return numerator / denominator
+
+
 def role_category_for(role: str) -> str:
     return ROLE_CATEGORIES.get(role, "support")
 
@@ -1584,15 +1922,19 @@ def normalize_eval_record(record: EvalRecord | dict[str, Any]) -> EvalRecord:
 
     quality_score = data.get("quality_score")
     if quality_score is None and subscores:
-        numeric_values = [float(value) for value in subscores.values() if value is not None]
-        quality_score = mean(numeric_values) if numeric_values else None
+        quality_score = semantic_quality_score_for_role(str(data.get("role") or ""), subscores)
 
     status = str(data.get("status") or "")
+    explicit_provider_call_succeeded = data.get("provider_call_succeeded")
     explicit_operational_success = data.get("operational_success")
     if explicit_operational_success is None:
         operational_success = status not in {"fail", "provider_fail", "skipped"}
     else:
         operational_success = bool(explicit_operational_success)
+    if explicit_provider_call_succeeded is None:
+        provider_call_succeeded = operational_success
+    else:
+        provider_call_succeeded = bool(explicit_provider_call_succeeded)
 
     explicit_json_parseable = data.get("json_parseable")
     if explicit_json_parseable is None:
@@ -1634,6 +1976,7 @@ def normalize_eval_record(record: EvalRecord | dict[str, Any]) -> EvalRecord:
         )
 
     operational_success = is_operational_success_from_failure_class(failure_class)
+    provider_call_succeeded = operational_success
     json_parseable = is_json_parseable_from_failure_class(failure_class)
     schema_valid = is_schema_valid_from_failure_class(failure_class)
     semantic_evaluable = operational_success and json_parseable and schema_valid
@@ -1672,6 +2015,7 @@ def normalize_eval_record(record: EvalRecord | dict[str, Any]) -> EvalRecord:
             **data,
             "subscores": subscores,
             "quality_score": quality_score,
+            "provider_call_succeeded": provider_call_succeeded,
             "operational_success": operational_success,
             "json_parseable": json_parseable,
             "schema_valid": schema_valid,

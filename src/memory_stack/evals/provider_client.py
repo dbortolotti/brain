@@ -26,7 +26,7 @@ class ModelCallResult:
     payload: dict[str, Any] | None
     raw_text: str
     error: str | None
-    latency_ms: int
+    latency_ms: float | None
     input_tokens: int
     output_tokens: int
     estimated_cost_usd: float
