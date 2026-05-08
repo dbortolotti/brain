@@ -1,9 +1,0 @@
-{
-  "error": "Expecting ',' delimiter: line 15 column 9 (char 336)",
-  "fixture_id": "validator_blocks_unresolved_pronoun_001__punctuation",
-  "model": "openai:gpt-5-nano",
-  "payload": null,
-  "raw_text": "{\n  \"intent\": \"evaluate_memory\",\n  \"decision\": \"retain_pronoun_resolution\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"preference\",\n      \"statement\": \"He prefers the other one\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"He\",\n          \"type\": \"pronoun\",\n          \"role\": \"subject\"\n        }\n        // Note: ambiguity preserved; no explicit gender or identity assigned\n      ],\n      \"relationships\": []\n    }\n    // Original input memory_card preserved; no superseding edits\n  ],\n  \"entity_resolution\": {\n    \"action\": \"preserve_ambiguous_pronoun_reference\",\n    \"entity_id\": null,\n    \"reason\": \"The pronoun 'He' lacks sufficient context to resolve to a specific entity within the provided data.\"\n  },\n  \"conflict_classification\": \"ambiguous_pronoun_resolution\",\n  \"answer\": \"The memory entry remains as provided, with pronoun 'He' kept unresolved due to insufficient context.\",\n  \"citations\": [],\n  \"repair_options\": [\n    \"Add explicit entity identifiers to disambiguate 'He' (e.g., 'John' or 'Michael'), or replace with a definite noun (e.g., 'the left option' or 'the second card').\",\n    \"If possible, include contextual sentences linking 'He' to a named entity within the memory source.\",\n    \"Record both possible referents as separate memory cards with clear qualifiers.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Memory card retained without alteration to preserve ambiguity.\",\n      \"No superseded or deleted facts presented as current.\"\n    ]\n  }\n}",
-  "run_id": "eval_20260506_124512",
-  "status": "schema_fail"
-}

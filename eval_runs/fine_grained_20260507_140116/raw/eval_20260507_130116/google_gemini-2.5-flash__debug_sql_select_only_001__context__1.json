@@ -1,9 +1,0 @@
-{
-  "error": "Expecting ',' delimiter: line 46 column 6 (char 1357)",
-  "fixture_id": "debug_sql_select_only_001__context",
-  "model": "google:gemini-2.5-flash",
-  "payload": null,
-  "raw_text": "{\n  \"intent\": \"Understand and record the operational context regarding SQL access permissions.\",\n  \"decision\": \"The system is currently operating under 'Admin SQL select-only mode', which restricts write operations.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"rule\",\n      \"statement\": \"The system is in 'Admin SQL select-only mode'.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Admin SQL select-only mode\",\n          \"type\": \"system mode\",\n          \"role\": \"state\"\n        }\n      ],\n      \"relationships\": []\n    },\n    {\n      \"kind\": \"rule\",\n      \"statement\": \"In 'Admin SQL select-only mode', the SQL operation 'SELECT id FROM memory_cards LIMIT 10' is allowed.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Admin SQL select-only mode\",\n          \"type\": \"system mode\",\n          \"role\": \"context\"\n        },\n        {\n          \"name\": \"SELECT id FROM memory_cards LIMIT 10\",\n          \"type\": \"SQL operation\",\n          \"role\": \"action\"\n        },\n        {\n          \"name\": \"memory_cards\",\n          \"type\": \"database table\",\n          \"role\": \"target\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"SELECT id FROM memory_cards LIMIT 10\",\n          \"predicate\": \"is allowed in\",\n          \"object\": \"Admin SQL select-only mode\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"",
-  "run_id": "eval_20260507_130116",
-  "status": "schema_fail"
-}

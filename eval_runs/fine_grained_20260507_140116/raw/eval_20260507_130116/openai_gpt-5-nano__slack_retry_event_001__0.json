@@ -1,9 +1,0 @@
-{
-  "error": "Expecting ',' delimiter: line 19 column 5 (char 738)",
-  "fixture_id": "slack_retry_event_001",
-  "model": "openai:gpt-5-nano",
-  "payload": null,
-  "raw_text": "{\n  \"intent\": \"record_duplicate_event\",\n  \"decision\": \"preserve_only_one_memory_card for the event; mark the second occurrence as duplicate and not adding a new memory\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"event\",\n      \"statement\": \"Sam from Goldman likes Bill Evans\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\"name\": \"Sam\", \"type\": \"person\", \"role\": \"subject\"},\n        {\"name\": \"Goldman\", \"type\": \"organization\", \"role\": \"affiliation\"},\n        {\"name\": \"Bill Evans\", \"type\": \"person\", \"role\": \"object_of_like\"}\n      ],\n      \"relationships\": [\n        {\"subject\": \"Sam\", \"predicate\": \"likes\", \"object\": \"Bill Evans\"},\n        {\"subject\": \"Sam\", \"predicate\": \"affiliation\", \"object\": \"Goldman\"}\n      ]\n    }\n    // Duplicate event is acknowledged but not stored as a separate memory card\n  ],\n  \"entity_resolution\": {\n    \"action\": \"ignore_duplicate\",\n    \"entity_id\": null,\n    \"reason\": \"the same Slack event ID delivered twice; avoid redundant memory entry\"\n  },\n  \"conflict_classification\": \"duplicate_event_delivery\",\n  \"answer\": \"Duplicate event detected; memory entry preserved once for: Sam from Goldman likes Bill Evans.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\"Duplicate event acknowledged; first occurrence stored as memory, second occurrence not added.\"]\n  }\n}",
-  "run_id": "eval_20260507_130116",
-  "status": "schema_fail"
-}
