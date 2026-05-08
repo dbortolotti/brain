@@ -24,6 +24,7 @@ from memory_stack.evals.model_runner import (
     write_raw_output,
 )
 from memory_stack.evals.provider_client import LiveProviderClient, ModelCallResult, ProviderCallError, openai_reasoning_effort
+from memory_stack.provider_auth import OpenAICodexCredential, upsert_openai_codex_profile
 from memory_stack.evals.scoring import (
     EvalRecord,
     FailureClass,
@@ -1018,7 +1019,10 @@ def test_live_provider_client_uses_reasoning_effort_override() -> None:
             return Response()
 
     http_client = RecordingClient()
-    client = LiveProviderClient(Settings(openai_api_key="test-key"), http_client=http_client)
+    client = LiveProviderClient(
+        Settings(openai_api_key="test-key", openai_auth_mode="api_key"),
+        http_client=http_client,
+    )
     candidate = select_model_candidates(
         load_model_registry(REGISTRY_PATH),
         model_refs=["openai:gpt-5.5-xhigh"],
@@ -1032,6 +1036,54 @@ def test_live_provider_client_uses_reasoning_effort_override() -> None:
     assert http_client.last_json is not None
     assert http_client.last_json["model"] == "gpt-5.5"
     assert http_client.last_json["reasoning"] == {"effort": "xhigh"}
+
+
+def test_live_provider_client_defaults_openai_text_to_oauth(tmp_path: Path) -> None:
+    class RecordingClient:
+        def __init__(self) -> None:
+            self.last_headers: dict[str, str] | None = None
+            self.last_url: str | None = None
+
+        def post(self, url: str, *, headers: dict[str, str], json: dict[str, Any]) -> Any:
+            self.last_url = url
+            self.last_headers = headers
+
+            class Response:
+                status_code = 200
+
+                @staticmethod
+                def json() -> dict[str, Any]:
+                    return {"output_text": "{}"}
+
+            return Response()
+
+    settings = Settings(
+        openai_api_key="sk-should-not-be-used",
+        brain_provider_auth_profiles_path=str(tmp_path / "profiles.json"),
+        brain_provider_auth_state_dir=str(tmp_path / "state"),
+    )
+    upsert_openai_codex_profile(
+        settings,
+        OpenAICodexCredential(
+            access="oauth-access",
+            refresh="oauth-refresh",
+            expires=int(time.time() * 1000) + 600_000,
+        ),
+    )
+    http_client = RecordingClient()
+    client = LiveProviderClient(settings, http_client=http_client)
+    candidate = select_model_candidates(
+        load_model_registry(REGISTRY_PATH),
+        model_refs=["openai:gpt-5.5"],
+        roles={"eval_judge"},
+        scope="core",
+        include_judge=True,
+    )[0]
+
+    client.complete_json(candidate, prompt="test", schema={})
+
+    assert http_client.last_url == "https://chatgpt.com/backend-api/codex/responses"
+    assert http_client.last_headers == {"Authorization": "Bearer oauth-access"}
 
 
 def test_live_provider_client_maps_google_reasoning_effort_to_thinking_level() -> None:
@@ -1523,7 +1575,7 @@ def test_rescore_rejects_semantic_to_provider_transition(tmp_path) -> None:
 
 
 def test_live_provider_client_retries_transient_provider_error(monkeypatch) -> None:
-    settings = Settings(openai_api_key="test-key")
+    settings = Settings(openai_api_key="test-key", openai_auth_mode="api_key")
     client = LiveProviderClient(
         settings,
         retry_attempts=2,

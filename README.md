@@ -205,7 +205,7 @@ Profiles are selected through `PROFILE` and provider-specific environment
 variables:
 
 - `gemini` for the Google lane
-- `openai` for the OpenAI lane
+- `openai` for the OpenAI lane; text calls default to OpenAI Codex OAuth
 - `local` for Ollama/Fastembed no-cloud use
 
 Provider API keys can be stored once and reused across every model for that
@@ -226,6 +226,24 @@ VOYAGE_API_KEY=...
 overrides. If they are unset, the active `LLM_PROVIDER` and
 `EMBEDDING_PROVIDER` use the matching provider key, so benchmarking can switch
 `LLM_MODEL` without duplicating credentials.
+
+OpenAI text-model auth is provider-scoped and OAuth-first:
+
+```env
+OPENAI_AUTH_MODE=oauth
+OPENAI_CODEX_AUTH_PROFILE=default
+```
+
+Sign in with:
+
+```bash
+uv run brain models auth login --provider openai-codex
+```
+
+Set `OPENAI_AUTH_MODE=api_key` to use `OPENAI_API_KEY` for OpenAI text calls.
+OpenAI embeddings still require `OPENAI_API_KEY`; Codex OAuth is not used as an
+embedding credential. Other providers keep their existing API-key or cloud
+credential settings.
 
 ## Legacy Cognee Eval Tools
 

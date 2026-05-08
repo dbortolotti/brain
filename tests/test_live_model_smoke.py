@@ -43,6 +43,7 @@ def test_active_scope_selects_configured_llm_and_embedding(
     clear_provider_env(monkeypatch)
     settings = Settings(
         profile="openai",
+        openai_auth_mode="api_key",
         llm_provider="openai",
         llm_model="openai/gpt-5.4-mini",
         openai_api_key="sk-provider",
@@ -145,6 +146,7 @@ def test_openai_active_probe_makes_live_style_calls_without_leaking_key(
     clear_provider_env(monkeypatch)
     settings = Settings(
         profile="openai",
+        openai_auth_mode="api_key",
         llm_provider="openai",
         llm_model="gpt-5.4-mini",
         openai_api_key="sk-provider-secret",
