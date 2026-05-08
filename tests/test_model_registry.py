@@ -104,6 +104,30 @@ def test_registry_exposes_runtime_deployment_decisions() -> None:
     assert "atomic_card_extractor" in disabled_roles(registry)
 
 
+def test_registry_includes_google_embedding_candidates() -> None:
+    registry = load_registry()
+    embeddings = registry["providers"]["embeddings"]["models"]
+    by_ref = {f"{model['provider']}:{model['id']}": model for model in embeddings}
+
+    assert registry["roles"]["embeddings"]["preferred_models"][0] == (
+        "fastembed:intfloat/multilingual-e5-large"
+    )
+    assert registry["core_eval_matrix"]["embeddings"][0] == (
+        "fastembed:intfloat/multilingual-e5-large"
+    )
+    assert by_ref["fastembed:intfloat/multilingual-e5-large"]["enabled_by_default"] is True
+    assert by_ref["fastembed:intfloat/multilingual-e5-large"]["dimensions"] == 1024
+    assert by_ref["google:gemini-embedding-001"]["price_per_1m"]["input"] == 0.15
+    assert by_ref["google:gemini-embedding-001"]["price_per_1m"]["batch_input"] == 0.075
+    assert by_ref["google:gemini-embedding-2"]["price_per_1m"]["input"] == 0.20
+    assert by_ref["google-vertex:multilingual-e5-small"]["price_per_1m"]["input"] == 0.015
+    assert by_ref["google-vertex:multilingual-e5-large"]["price_per_1m"]["input"] == 0.025
+    assert by_ref["google-vertex:text-embedding-005"]["price_per_1m"]["input_approx"] == 0.10
+    assert by_ref["google-vertex:text-multilingual-embedding-002"]["price_per_1m"]["input_approx"] == 0.10
+    assert by_ref["google-vertex:multimodalembedding"]["price_per_1m"]["input_approx"] == 0.80
+    assert by_ref["google-vertex:multilingual-e5-small"]["skip_reason"]
+
+
 def test_hierarchy_generator_does_not_read_eval_scoring_source() -> None:
     script = (
         REGISTRY_PATH.parent

@@ -14,6 +14,7 @@ import httpx
 
 from memory_stack.config import Settings
 from memory_stack.evals.model_matrix import ModelCandidate
+from memory_stack.local_embeddings import fastembed_vector_size
 from memory_stack.provider_auth import resolve_openai_text_bearer
 
 
@@ -141,6 +142,8 @@ class LiveProviderClient:
                 return "missing OPENAI_API_KEY for OpenAI embeddings"
             return None
         if candidate.provider == "openai" and self.settings.openai_auth_mode == "oauth":
+            return None
+        if candidate.provider == "fastembed" and getattr(candidate, "kind", "llm") == "embedding":
             return None
         if not self.settings.provider_api_key(candidate.provider):
             return f"missing provider API key for {candidate.provider}"
@@ -383,6 +386,8 @@ class LiveProviderClient:
             )
             payload = checked_json(response)
             vector = (payload.get("embedding") or {}).get("values")
+        elif candidate.provider == "fastembed":
+            return fastembed_vector_size(candidate.api_model or candidate.model, text)
         else:
             raise ProviderCallError(f"unsupported embedding provider: {candidate.provider}")
         if not isinstance(vector, list) or not vector:

@@ -11,27 +11,6 @@ on:
         required: false
         default: false
         type: boolean
-      model_smoke_scope:
-        description: "Live model smoke scope"
-        required: false
-        default: active
-        type: choice
-        options:
-          - active
-          - core
-          - enabled
-          - all
-          - none
-      model_smoke_skip_missing_keys:
-        description: "Skip models whose provider credentials are missing"
-        required: false
-        default: false
-        type: boolean
-      model_smoke_include_judge:
-        description: "Include judge_only models in live registry smoke checks"
-        required: false
-        default: false
-        type: boolean
 
 concurrency:
   group: brain-prod
@@ -115,17 +94,5 @@ jobs:
           uv run python scripts/render_prod_env.py "${args[@]}"
 
       - name: Deploy to local LaunchAgents
-        env:
-          CONFIGURED_MODEL_SMOKE_SCOPE: ${{ vars.BRAIN_MODEL_SMOKE_SCOPE }}
-          CONFIGURED_MODEL_SMOKE_SKIP_MISSING_KEYS: ${{ vars.BRAIN_MODEL_SMOKE_SKIP_MISSING_KEYS }}
-          CONFIGURED_MODEL_SMOKE_INCLUDE_JUDGE: ${{ vars.BRAIN_MODEL_SMOKE_INCLUDE_JUDGE }}
         run: |
-          export BRAIN_MODEL_SMOKE_SCOPE="${CONFIGURED_MODEL_SMOKE_SCOPE:-active}"
-          export BRAIN_MODEL_SMOKE_SKIP_MISSING_KEYS="${CONFIGURED_MODEL_SMOKE_SKIP_MISSING_KEYS:-false}"
-          export BRAIN_MODEL_SMOKE_INCLUDE_JUDGE="${CONFIGURED_MODEL_SMOKE_INCLUDE_JUDGE:-false}"
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            export BRAIN_MODEL_SMOKE_SCOPE="${{ inputs.model_smoke_scope }}"
-            export BRAIN_MODEL_SMOKE_SKIP_MISSING_KEYS="${{ inputs.model_smoke_skip_missing_keys }}"
-            export BRAIN_MODEL_SMOKE_INCLUDE_JUDGE="${{ inputs.model_smoke_include_judge }}"
-          fi
           ./scripts/deploy-local-production.sh

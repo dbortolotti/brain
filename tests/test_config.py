@@ -103,6 +103,35 @@ def test_openai_oauth_is_default_and_does_not_export_text_api_key(
     assert "OPENAI_API_KEY" not in env
 
 
+def test_openai_profile_allows_local_embedding_provider(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    clear_provider_env(monkeypatch)
+    settings = Settings(
+        profile="openai",
+        llm_provider="openai",
+        llm_model="gpt-5.4-mini",
+        openai_auth_mode="oauth",
+        openai_api_key="sk-provider",
+        embedding_provider="fastembed",
+        embedding_model="intfloat/multilingual-e5-large",
+        embedding_dimensions=1024,
+    )
+    env = runtime_env(settings)
+
+    assert settings.llm_api_key is None
+    assert settings.embedding_api_key is None
+    assert settings.provider_api_key("fastembed") is None
+    assert env["PROFILE"] == "openai"
+    assert env["LLM_PROVIDER"] == "openai"
+    assert env["EMBEDDING_PROVIDER"] == "fastembed"
+    assert env["EMBEDDING_MODEL"] == "intfloat/multilingual-e5-large"
+    assert env["EMBEDDING_DIMENSIONS"] == "1024"
+    assert "LLM_API_KEY" not in env
+    assert "EMBEDDING_API_KEY" not in env
+    assert "OPENAI_API_KEY" not in env
+
+
 def test_role_api_keys_override_provider_api_key(monkeypatch: pytest.MonkeyPatch) -> None:
     clear_provider_env(monkeypatch)
     settings = Settings(

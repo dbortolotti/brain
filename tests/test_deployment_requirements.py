@@ -15,8 +15,8 @@ def test_github_deploy_action_validates_before_deploying() -> None:
     assert "default: false" in workflow
     assert "--force-config-override" in workflow
     assert 'inputs.force_config_override }}" == "true"' in workflow
-    assert "model_smoke_scope" in workflow
-    assert "BRAIN_MODEL_SMOKE_SCOPE" in workflow
+    assert "model_smoke_scope" not in workflow
+    assert "BRAIN_MODEL_SMOKE_SCOPE" not in workflow
     assert "vars.OPENAI_AUTH_MODE" in workflow
     assert "vars.OPENAI_CODEX_AUTH_PROFILE" in workflow
     assert "secrets.OPENAI_API_KEY" in workflow
@@ -61,6 +61,12 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     assert "uv run python scripts/verify_slack_agent.py" in script
     assert "uv run python scripts/live_model_smoke.py" in script
     assert 'MODEL_SMOKE_SCOPE="${BRAIN_MODEL_SMOKE_SCOPE:-active}"' in script
+    assert script.index("uv run python scripts/live_model_smoke.py") < script.index(
+        'ln -sfn "$RELEASE_DIR" "$CURRENT_LINK"'
+    )
+    assert script.index("uv run python scripts/live_model_smoke.py") < script.index(
+        "waiting for local health"
+    )
 
 
 def test_production_verifier_checks_brain_database_under_shared_data() -> None:

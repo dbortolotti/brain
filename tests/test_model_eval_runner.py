@@ -9,7 +9,7 @@ import pytest
 
 from memory_stack.config import Settings
 from memory_stack.evals.model_fixtures import ModelEvalFixture, fixture_prompt, select_fixtures
-from memory_stack.evals.model_matrix import load_model_registry, select_model_candidates
+from memory_stack.evals.model_matrix import ModelCandidate, load_model_registry, select_model_candidates
 from memory_stack.evals.model_runner import (
     ModelEvalRunConfig,
     build_work_items,
@@ -24,6 +24,7 @@ from memory_stack.evals.model_runner import (
     write_raw_output,
 )
 from memory_stack.evals.provider_client import LiveProviderClient, ModelCallResult, ProviderCallError, openai_reasoning_effort
+from memory_stack.evals import provider_client as provider_client_module
 from memory_stack.provider_auth import OpenAICodexCredential, upsert_openai_codex_profile
 from memory_stack.evals.scoring import (
     EvalRecord,
@@ -408,13 +409,44 @@ def test_model_test_initial_model_set_runs_through_config(tmp_path) -> None:
     result = run_model_evals(Settings(), config, client=FakeEvalClient())
 
     rows = [json.loads(line) for line in output.read_text().splitlines()]
-    assert result["record_count"] == 4
+    assert result["record_count"] == 5
     assert {row["model"] for row in rows} == {
+        "fastembed:intfloat/multilingual-e5-large",
         "openai:text-embedding-3-small",
         "openai:text-embedding-3-large",
         "voyage:voyage-4-lite",
         "voyage:voyage-4",
     }
+
+
+def test_live_provider_client_fastembed_embedding_uses_local_vector_size(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        provider_client_module,
+        "fastembed_vector_size",
+        lambda model, text: 1024,
+    )
+    settings = Settings(
+        profile="local",
+        llm_provider="ollama",
+        llm_model="qwen3:8b",
+        llm_api_key="ollama",
+        embedding_provider="fastembed",
+        embedding_model="intfloat/multilingual-e5-large",
+        embedding_dimensions=1024,
+        allow_cloud_keys_in_local=True,
+    )
+    candidate = ModelCandidate(
+        provider="fastembed",
+        model="intfloat/multilingual-e5-large",
+        kind="embedding",
+    )
+
+    result = LiveProviderClient(settings).embed(candidate, text="brain eval test")
+
+    assert result.status == "ok"
+    assert result.payload == {"embedding_vector_size": 1024}
 
 
 def test_fixture_scoring_detects_zero_tolerance_overmerge() -> None:

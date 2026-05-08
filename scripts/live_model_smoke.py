@@ -21,11 +21,17 @@ from rich.table import Table
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from memory_stack.config import Settings, load_settings, normalize_provider_name
+from memory_stack.local_embeddings import fastembed_vector_size
+from memory_stack.provider_auth import (
+    ProviderAuthError,
+    get_openai_codex_profile,
+    resolve_openai_text_bearer,
+)
 
 
 REGISTRY_PATH = Path(__file__).resolve().parents[1] / "brain_model_registry.yaml"
 LLM_PROVIDERS = {"openai", "openrouter", "google", "gemini", "anthropic", "aws-bedrock", "bedrock", "groq"}
-EMBEDDING_PROVIDERS = {"openai", "google", "gemini", "voyage"}
+EMBEDDING_PROVIDERS = {"openai", "google", "gemini", "voyage", "fastembed"}
 LOCAL_PROVIDERS = {"ollama", "fastembed"}
 SECRET_FIELDS = (
     "llm_api_key",
@@ -399,6 +405,8 @@ def model_skip_reason(model: dict[str, Any]) -> str | None:
 
 
 def missing_credential(settings: Settings, probe: Probe) -> str | None:
+    if probe.provider == "fastembed" and probe.kind == "embedding":
+        return None
     if probe.provider in LOCAL_PROVIDERS:
         return f"provider {probe.provider} is local; no cloud smoke call"
     if probe.provider == "aws-bedrock":
@@ -415,6 +423,12 @@ def missing_credential(settings: Settings, probe: Probe) -> str | None:
     if probe.kind == "embedding" and probe.provider not in EMBEDDING_PROVIDERS:
         return f"unsupported embedding provider for live smoke: {probe.provider}"
     if probe.provider == "openai" and probe.kind == "llm" and settings.openai_auth_mode == "oauth":
+        try:
+            profile = get_openai_codex_profile(settings)
+        except ProviderAuthError as exc:
+            return f"invalid OpenAI OAuth profile {settings.openai_codex_auth_profile}: {exc}"
+        if profile is None:
+            return f"missing OpenAI OAuth profile {settings.openai_codex_auth_profile}"
         return None
     if probe.provider == "openai" and probe.kind == "embedding":
         if not settings.configured_provider_api_key("openai"):
@@ -469,14 +483,21 @@ def run_embedding_probe(settings: Settings, probe: Probe, *, client: httpx.Clien
         post_google_embedding(settings, probe.model, client=client)
     elif probe.provider == "voyage":
         post_voyage_embedding(settings, probe.model, client=client)
+    elif probe.provider == "fastembed":
+        post_fastembed_embedding(probe.model)
     else:
         raise SmokeFailure(f"unsupported embedding provider for live smoke: {probe.provider}")
 
 
 def post_openai_response(settings: Settings, model: str, *, client: httpx.Client) -> None:
+    base_url = (
+        settings.openai_codex_base_url
+        if settings.openai_auth_mode == "oauth"
+        else "https://api.openai.com/v1"
+    )
     response = client.post(
-        "https://api.openai.com/v1/responses",
-        headers={"Authorization": f"Bearer {settings.provider_api_key('openai')}"},
+        f"{base_url.rstrip('/')}/responses",
+        headers={"Authorization": f"Bearer {resolve_openai_text_bearer(settings)}"},
         json={
             "model": model,
             "input": "Reply with exactly: ok",
@@ -491,7 +512,7 @@ def post_openai_response(settings: Settings, model: str, *, client: httpx.Client
 def post_openai_embedding(settings: Settings, model: str, *, client: httpx.Client) -> None:
     response = client.post(
         "https://api.openai.com/v1/embeddings",
-        headers={"Authorization": f"Bearer {settings.provider_api_key('openai')}"},
+        headers={"Authorization": f"Bearer {settings.configured_provider_api_key('openai')}"},
         json={"model": model, "input": "brain smoke test"},
     )
     payload = checked_json(response, settings)
@@ -603,6 +624,12 @@ def post_voyage_embedding(settings: Settings, model: str, *, client: httpx.Clien
     payload = checked_json(response, settings)
     if not vector_present(payload):
         raise SmokeFailure("Voyage embedding response did not include an embedding vector")
+
+
+def post_fastembed_embedding(model: str) -> None:
+    vector_size = fastembed_vector_size(model, "brain smoke test")
+    if vector_size <= 0:
+        raise SmokeFailure("FastEmbed did not return an embedding vector")
 
 
 def post_bedrock_converse(settings: Settings, model: str, *, client: httpx.Client) -> None:

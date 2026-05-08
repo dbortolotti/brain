@@ -52,6 +52,22 @@ def sync_one(
     if row is None:
         raise ValueError(f"Cognee sync row not found: {sync_id}")
 
+    skip_reason = _deleted_projection_reason(row, store=active_store)
+    if skip_reason is not None:
+        active_store.update_cognee_sync_status(
+            sync_id,
+            status="deleted",
+            error_message=skip_reason,
+        )
+        return {
+            "sync_id": sync_id,
+            "object_type": row["object_type"],
+            "object_id": row["object_id"],
+            "dataset": row["dataset"],
+            "status": "skipped",
+            "skip_reason": skip_reason,
+        }
+
     try:
         projection = _project_row(
             row,
@@ -138,14 +154,32 @@ def _project_row(
     raise ValueError(f"Unsupported Cognee object_type: {row['object_type']}")
 
 
+def _deleted_projection_reason(row: dict[str, Any], *, store: BrainStore) -> str | None:
+    if row["object_type"] == "memory":
+        memory = store.get_memory(row["object_id"])
+        if memory is None:
+            return f"Memory not found: {row['object_id']}"
+        if memory.get("status") == "deleted":
+            return f"Memory is deleted: {row['object_id']}"
+        return None
+    if row["object_type"] == "source":
+        source = store.get_source(row["object_id"], include_text=False)
+        if source is None:
+            return f"Source not found: {row['object_id']}"
+        if source.get("status") == "deleted":
+            return f"Source is deleted: {row['object_id']}"
+    return None
+
+
 def _summary(results: list[dict[str, Any]]) -> dict[str, Any]:
     succeeded = len([result for result in results if result.get("status") == "synced"])
     failed = len([result for result in results if result.get("status") == "failed"])
+    skipped = len([result for result in results if result.get("status") == "skipped"])
     return {
         "status": "complete" if failed == 0 else "partial_failure",
         "processed": len(results),
         "succeeded": succeeded,
         "failed": failed,
-        "skipped": 0,
+        "skipped": skipped,
         "results": results,
     }

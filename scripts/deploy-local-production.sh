@@ -75,9 +75,9 @@ OPENAI_CODEX_AUTH_PROFILE=default
 OPENAI_CODEX_BASE_URL=https://chatgpt.com/backend-api/codex
 BRAIN_PROVIDER_AUTH_PROFILES_PATH=$SECRETS_DIR/provider-auth-profiles.json
 BRAIN_PROVIDER_AUTH_STATE_DIR=$SECRETS_DIR/provider-auth-state
-EMBEDDING_PROVIDER=gemini
-EMBEDDING_MODEL=gemini/gemini-embedding-001
-EMBEDDING_DIMENSIONS=768
+EMBEDDING_PROVIDER=fastembed
+EMBEDDING_MODEL=intfloat/multilingual-e5-large
+EMBEDDING_DIMENSIONS=1024
 GEMINI_API_KEY=replace-me
 GRAPH_DATABASE_PROVIDER=neo4j
 GRAPH_DATABASE_URL=bolt://localhost:7687
@@ -211,6 +211,28 @@ log "linking shared mutable state"
 mkdir -p "$RELEASE_DIR/.data"
 ln -sfn "$DATA_DIR" "$RELEASE_DIR/.data/shared"
 
+export ENV_FILE="$SECRETS_DIR/brain.env"
+MODEL_SMOKE_SCOPE="${BRAIN_MODEL_SMOKE_SCOPE:-active}"
+if [[ "$MODEL_SMOKE_SCOPE" != "none" ]]; then
+  log "running pre-promotion live model smoke scope=$MODEL_SMOKE_SCOPE"
+  smoke_args=(--scope "$MODEL_SMOKE_SCOPE")
+  if is_true "${BRAIN_MODEL_SMOKE_SKIP_MISSING_KEYS:-false}"; then
+    smoke_args+=(--skip-missing-keys)
+  fi
+  if is_true "${BRAIN_MODEL_SMOKE_INCLUDE_JUDGE:-false}"; then
+    smoke_args+=(--include-judge)
+  fi
+  if [[ -n "${BRAIN_MODEL_SMOKE_TIMEOUT_SECONDS:-}" ]]; then
+    smoke_args+=(--timeout "$BRAIN_MODEL_SMOKE_TIMEOUT_SECONDS")
+  fi
+  (
+    cd "$RELEASE_DIR"
+    uv run python scripts/live_model_smoke.py "${smoke_args[@]}"
+  )
+else
+  log "pre-promotion live model smoke disabled"
+fi
+
 log "installing launchd plist"
 cp "$PLIST_SRC" "$PLIST_DST"
 plutil -lint "$PLIST_DST" >/dev/null
@@ -273,29 +295,11 @@ for attempt in {1..30}; do
 done
 
 log "running production verifier"
-export ENV_FILE="$SECRETS_DIR/brain.env"
 (
   cd "$RELEASE_DIR"
   uv run python scripts/verify_mcp_production.py --skip-backups
   uv run python scripts/verify_cognee_ui_production.py
   uv run python scripts/verify_slack_agent.py
-  MODEL_SMOKE_SCOPE="${BRAIN_MODEL_SMOKE_SCOPE:-active}"
-  if [[ "$MODEL_SMOKE_SCOPE" != "none" ]]; then
-    log "running live model smoke scope=$MODEL_SMOKE_SCOPE"
-    smoke_args=(--scope "$MODEL_SMOKE_SCOPE")
-    if is_true "${BRAIN_MODEL_SMOKE_SKIP_MISSING_KEYS:-false}"; then
-      smoke_args+=(--skip-missing-keys)
-    fi
-    if is_true "${BRAIN_MODEL_SMOKE_INCLUDE_JUDGE:-false}"; then
-      smoke_args+=(--include-judge)
-    fi
-    if [[ -n "${BRAIN_MODEL_SMOKE_TIMEOUT_SECONDS:-}" ]]; then
-      smoke_args+=(--timeout "$BRAIN_MODEL_SMOKE_TIMEOUT_SECONDS")
-    fi
-    uv run python scripts/live_model_smoke.py "${smoke_args[@]}"
-  else
-    log "live model smoke disabled"
-  fi
 )
 
 log "deployed $APP_NAME $SHA"

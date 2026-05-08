@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import sys
+import time
 from pathlib import Path
 
 import httpx
 import pytest
 
 from memory_stack.config import Settings
+from memory_stack.provider_auth import OpenAICodexCredential, upsert_openai_codex_profile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
@@ -58,6 +60,46 @@ def test_active_scope_selects_configured_llm_and_embedding(
         ("llm", "openai", "gpt-5.4-mini"),
         ("embedding", "openai", "text-embedding-3-small"),
     ]
+
+
+def test_fastembed_embedding_probe_runs_locally(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    clear_provider_env(monkeypatch)
+    calls: list[tuple[str, str]] = []
+
+    def fake_fastembed_vector_size(model: str, text: str) -> int:
+        calls.append((model, text))
+        return 1024
+
+    monkeypatch.setattr(live_model_smoke, "fastembed_vector_size", fake_fastembed_vector_size)
+    settings = Settings(
+        profile="local",
+        llm_provider="ollama",
+        llm_model="qwen3:8b",
+        llm_api_key="ollama",
+        embedding_provider="fastembed",
+        embedding_model="intfloat/multilingual-e5-large",
+        embedding_dimensions=1024,
+        allow_cloud_keys_in_local=True,
+    )
+    probe = live_model_smoke.Probe(
+        provider="fastembed",
+        model="intfloat/multilingual-e5-large",
+        kind="embedding",
+        label="active:embedding",
+    )
+
+    with httpx.Client() as client:
+        results = live_model_smoke.run_probes(
+            settings,
+            [probe],
+            client=client,
+            skip_missing_keys=False,
+        )
+
+    assert results[0].status == "ok"
+    assert calls == [("intfloat/multilingual-e5-large", "brain smoke test")]
 
 
 def test_core_scope_maps_aliases_and_excludes_judges_by_default() -> None:
@@ -219,7 +261,7 @@ def test_missing_key_fails_by_default_and_can_skip(
     assert skip_result.detail == "missing GROQ_API_KEY"
 
 
-def test_openai_oauth_text_smoke_does_not_require_api_key(
+def test_openai_oauth_text_smoke_reports_missing_profile_without_api_key(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     clear_provider_env(monkeypatch)
@@ -233,6 +275,50 @@ def test_openai_oauth_text_smoke_does_not_require_api_key(
         embedding_dimensions=1536,
     )
 
+    assert live_model_smoke.missing_credential(
+        settings,
+        live_model_smoke.Probe(
+            provider="openai",
+            model="gpt-5.4-mini",
+            kind="llm",
+            label="openai:gpt-5.4-mini",
+        ),
+    ) == "missing OpenAI OAuth profile default"
+    assert live_model_smoke.missing_credential(
+        settings,
+        live_model_smoke.Probe(
+            provider="openai",
+            model="text-embedding-3-small",
+            kind="embedding",
+            label="openai:text-embedding-3-small",
+        ),
+    ) == "missing OPENAI_API_KEY for OpenAI embeddings"
+
+
+def test_openai_oauth_text_smoke_uses_codex_bearer(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    clear_provider_env(monkeypatch)
+    settings = Settings(
+        profile="openai",
+        openai_auth_mode="oauth",
+        llm_provider="openai",
+        llm_model="gpt-5.4-mini",
+        embedding_provider="openai",
+        embedding_model="text-embedding-3-small",
+        embedding_dimensions=1536,
+        brain_provider_auth_profiles_path=str(tmp_path / "profiles.json"),
+        brain_provider_auth_state_dir=str(tmp_path / "state"),
+    )
+    upsert_openai_codex_profile(
+        settings,
+        OpenAICodexCredential(
+            access="oauth-access",
+            refresh="oauth-refresh",
+            expires=int(time.time() * 1000) + 600_000,
+        ),
+    )
     assert (
         live_model_smoke.missing_credential(
             settings,
@@ -245,15 +331,34 @@ def test_openai_oauth_text_smoke_does_not_require_api_key(
         )
         is None
     )
-    assert live_model_smoke.missing_credential(
+    seen: list[tuple[str, str]] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen.append((str(request.url), request.headers["authorization"]))
+        return httpx.Response(200, json={"id": "resp_123"})
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    results = live_model_smoke.run_probes(
         settings,
-        live_model_smoke.Probe(
-            provider="openai",
-            model="text-embedding-3-small",
-            kind="embedding",
-            label="openai:text-embedding-3-small",
-        ),
-    ) == "missing OPENAI_API_KEY for OpenAI embeddings"
+        [
+            live_model_smoke.Probe(
+                provider="openai",
+                model="gpt-5.4-mini",
+                kind="llm",
+                label="openai:gpt-5.4-mini",
+            )
+        ],
+        client=client,
+        skip_missing_keys=False,
+    )
+
+    assert [result.status for result in results] == ["ok"]
+    assert seen == [
+        (
+            "https://chatgpt.com/backend-api/codex/responses",
+            "Bearer oauth-access",
+        )
+    ]
 
 
 def test_openrouter_probe_uses_api_model_and_quantization(

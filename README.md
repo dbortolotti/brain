@@ -108,9 +108,10 @@ uv run pytest
 Unit tests use clean SQLite databases under `tmp_path`. They do not require live
 network, live LLM calls, live Slack, or live Cognee.
 
-Production deploys additionally run a live model smoke check. The default scope
-is `active`, which makes tiny provider calls to the configured LLM and embedding
-models after the app health checks pass:
+Production deploys additionally run a pre-promotion live model smoke check. The
+default scope is `active`, which makes tiny provider calls to the configured LLM
+and embedding models from the new release before `current` is updated, launchd is
+restarted, and app health checks can pass:
 
 ```bash
 ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env \
@@ -206,7 +207,8 @@ variables:
 
 - `gemini` for the Google lane
 - `openai` for the OpenAI lane; text calls default to OpenAI Codex OAuth
-- `local` for Ollama/Fastembed no-cloud use
+- `local` for Ollama/Fastembed no-cloud use. The local embedding default is
+  `fastembed:intfloat/multilingual-e5-large` with 1024-dimensional vectors.
 
 Provider API keys can be stored once and reused across every model for that
 provider:

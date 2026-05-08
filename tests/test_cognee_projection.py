@@ -98,6 +98,58 @@ def test_failed_adapter_marks_sync_failed_and_preserves_brain_db(tmp_path) -> No
     assert store.get_memory(receipt.memory_cards[0].id)["statement"] == "Sam likes Bill Evans."
 
 
+def test_deleted_memory_sync_row_is_not_projected(tmp_path) -> None:
+    settings = brain_test_settings(tmp_path)
+    receipt = remember(RememberRequest(input="Sam likes Bill Evans."), settings)
+    store = BrainStore(settings)
+    store.update_memory_status(receipt.memory_cards[0].id, "deleted")
+    adapter = FakeProjectionAdapter()
+
+    result = sync_pending_cognee(settings=settings, adapter=adapter)
+
+    row = store.get_cognee_sync(receipt.memory_cards[0].id)[0]
+    assert result["processed"] == 1
+    assert result["skipped"] == 1
+    assert result["succeeded"] == 0
+    assert result["results"][0]["status"] == "skipped"
+    assert "Memory is deleted" in result["results"][0]["skip_reason"]
+    assert row["status"] == "deleted"
+    assert "Memory is deleted" in row["error_message"]
+    assert adapter.calls == []
+
+
+def test_deleted_source_sync_row_is_not_projected(tmp_path) -> None:
+    settings = brain_test_settings(tmp_path)
+    store = BrainStore(settings)
+    source, _ = store.upsert_source(
+        {
+            "kind": "markdown",
+            "title": "Knowledge graph note",
+            "raw_text": "# Source\nKnowledge graphs matter for Brain.",
+        }
+    )
+    store.mark_cognee_pending(
+        object_type="source",
+        object_id=source["id"],
+        dataset=settings.brain_cognee_sources_dataset,
+        projection_hash="sha256:test",
+    )
+    store.update_source_status(source["id"], "deleted")
+    adapter = FakeProjectionAdapter()
+
+    result = sync_pending_cognee(settings=settings, adapter=adapter)
+
+    row = store.get_cognee_sync(source["id"])[0]
+    assert result["processed"] == 1
+    assert result["skipped"] == 1
+    assert result["succeeded"] == 0
+    assert result["results"][0]["status"] == "skipped"
+    assert "Source is deleted" in result["results"][0]["skip_reason"]
+    assert row["status"] == "deleted"
+    assert "Source is deleted" in row["error_message"]
+    assert adapter.calls == []
+
+
 def test_source_creation_creates_pending_source_sync_row(tmp_path) -> None:
     settings = brain_test_settings(tmp_path)
     receipt = ingest_source(

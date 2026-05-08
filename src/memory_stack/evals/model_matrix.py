@@ -27,6 +27,7 @@ MODEL_TEST_INITIAL_REFS = [
     "anthropic:claude-haiku-4-5",
     "anthropic:claude-sonnet-4-6",
     "anthropic:claude-opus-4-7",
+    "fastembed:intfloat/multilingual-e5-large",
     "openai:text-embedding-3-small",
     "openai:text-embedding-3-large",
     "voyage:voyage-4-lite",

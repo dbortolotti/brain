@@ -215,8 +215,11 @@ roles:
   embeddings:
     description: "Embedding models for retrieval tests."
     preferred_models:
+      - fastembed:intfloat/multilingual-e5-large
       - openai:text-embedding-3-small
       - openai:text-embedding-3-large
+      - google:gemini-embedding-001
+      - google:gemini-embedding-2
       - voyage:voyage-4-lite
       - voyage:voyage-4
       - voyage:voyage-4-large
@@ -973,8 +976,17 @@ providers:
     type: "embedding"
     notes:
       - "Embedding models should be evaluated after memory-card quality is stable."
-      - "Default should probably be text-embedding-3-small."
+      - "Local default should be fastembed:intfloat/multilingual-e5-large."
+      - "Cloud production default should be chosen explicitly after a retrieval eval and reindex."
+      - "Character-billed Vertex prices are approximated at 4 characters per token."
     models:
+      - provider: "fastembed"
+        id: "intfloat/multilingual-e5-large"
+        enabled_by_default: true
+        dimensions: 1024
+        context_window_tokens: 512
+        expected_use: "Local multilingual default embedding model."
+
       - provider: "openai"
         id: "text-embedding-3-small"
         enabled_by_default: true
@@ -988,6 +1000,24 @@ providers:
         price_per_1m:
           input: 0.13
         expected_use: "Retrieval-quality challenger."
+
+      - provider: "google"
+        id: "gemini-embedding-001"
+        enabled_by_default: true
+        dimensions: 3072
+        context_window_tokens: 2048
+        price_per_1m:
+          input: 0.15
+          batch_input: 0.075
+          vertex_batch_input: 0.12
+        expected_use: "Google Gemini text embedding challenger."
+
+      - provider: "google"
+        id: "gemini-embedding-2"
+        enabled_by_default: false
+        price_per_1m:
+          input: 0.20
+        expected_use: "Google multimodal embedding challenger; text input pricing shown."
 
       - provider: "voyage"
         id: "voyage-4-lite"
@@ -1009,6 +1039,58 @@ providers:
         price_per_1m:
           input: 0.12
         expected_use: "High-quality embedding challenger."
+
+      - provider: "google-vertex"
+        id: "text-embedding-005"
+        enabled_by_default: false
+        dimensions: 768
+        context_window_tokens: 2048
+        price_per_1m:
+          input_approx: 0.10
+          batch_input_approx: 0.08
+        expected_use: "Vertex English/code text embedding challenger."
+        skip_reason: "Vertex embedding endpoint is not wired into live smoke/eval clients yet."
+
+      - provider: "google-vertex"
+        id: "text-multilingual-embedding-002"
+        enabled_by_default: false
+        dimensions: 768
+        context_window_tokens: 2048
+        price_per_1m:
+          input_approx: 0.10
+          batch_input_approx: 0.08
+        expected_use: "Vertex multilingual text embedding challenger."
+        skip_reason: "Vertex embedding endpoint is not wired into live smoke/eval clients yet."
+
+      - provider: "google-vertex"
+        id: "multilingual-e5-small"
+        enabled_by_default: false
+        dimensions: 384
+        context_window_tokens: 512
+        price_per_1m:
+          input: 0.015
+          batch_input: 0.0075
+        expected_use: "Low-cost open embedding challenger on Vertex."
+        skip_reason: "Vertex embedding endpoint is not wired into live smoke/eval clients yet."
+
+      - provider: "google-vertex"
+        id: "multilingual-e5-large"
+        enabled_by_default: false
+        dimensions: 1024
+        context_window_tokens: 512
+        price_per_1m:
+          input: 0.025
+          batch_input: 0.0125
+        expected_use: "Higher-quality open embedding challenger on Vertex."
+        skip_reason: "Vertex embedding endpoint is not wired into live smoke/eval clients yet."
+
+      - provider: "google-vertex"
+        id: "multimodalembedding"
+        enabled_by_default: false
+        price_per_1m:
+          input_approx: 0.80
+        expected_use: "Legacy Vertex multimodal embedding text-input reference."
+        skip_reason: "Vertex multimodal embedding endpoint is not wired into live smoke/eval clients yet."
 
 
 core_eval_matrix:
@@ -1047,6 +1129,7 @@ core_eval_matrix:
     - anthropic:claude-opus-4-7
 
   embeddings:
+    - fastembed:intfloat/multilingual-e5-large
     - openai:text-embedding-3-small
     - openai:text-embedding-3-large
     - voyage:voyage-4-lite

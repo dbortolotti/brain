@@ -239,14 +239,10 @@ class Settings(BaseSettings):
         if self.profile == "gemini":
             if self.llm_provider != "gemini":
                 raise ValueError("PROFILE=gemini requires LLM_PROVIDER=gemini")
-            if self.embedding_provider != "gemini":
-                raise ValueError("PROFILE=gemini requires EMBEDDING_PROVIDER=gemini")
 
         if self.profile == "openai":
             if self.llm_provider != "openai":
                 raise ValueError("PROFILE=openai requires LLM_PROVIDER=openai")
-            if self.embedding_provider != "openai":
-                raise ValueError("PROFILE=openai requires EMBEDDING_PROVIDER=openai")
 
         self.brain_mcp_path = normalize_path(self.brain_mcp_path)
         self.brain_public_mcp_path = normalize_path(self.brain_public_mcp_path)
