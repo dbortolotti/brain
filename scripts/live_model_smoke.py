@@ -414,6 +414,12 @@ def missing_credential(settings: Settings, probe: Probe) -> str | None:
         return f"unsupported LLM provider for live smoke: {probe.provider}"
     if probe.kind == "embedding" and probe.provider not in EMBEDDING_PROVIDERS:
         return f"unsupported embedding provider for live smoke: {probe.provider}"
+    if probe.provider == "openai" and probe.kind == "llm" and settings.openai_auth_mode == "oauth":
+        return None
+    if probe.provider == "openai" and probe.kind == "embedding":
+        if not settings.configured_provider_api_key("openai"):
+            return "missing OPENAI_API_KEY for OpenAI embeddings"
+        return None
     if not settings.provider_api_key(probe.provider):
         env_names = {
             "openai": "OPENAI_API_KEY",

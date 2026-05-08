@@ -70,6 +70,11 @@ if [[ ! -f "$SECRETS_DIR/brain.env" ]]; then
 PROFILE=gemini
 LLM_PROVIDER=gemini
 LLM_MODEL=gemini/gemini-3.1-flash-lite-preview
+OPENAI_AUTH_MODE=oauth
+OPENAI_CODEX_AUTH_PROFILE=default
+OPENAI_CODEX_BASE_URL=https://chatgpt.com/backend-api/codex
+BRAIN_PROVIDER_AUTH_PROFILES_PATH=$SECRETS_DIR/provider-auth-profiles.json
+BRAIN_PROVIDER_AUTH_STATE_DIR=$SECRETS_DIR/provider-auth-state
 EMBEDDING_PROVIDER=gemini
 EMBEDDING_MODEL=gemini/gemini-embedding-001
 EMBEDDING_DIMENSIONS=768
@@ -129,6 +134,11 @@ EOF
 fi
 
 ensure_env_var "BRAIN_AUTH_ENABLED" "true"
+ensure_env_var "OPENAI_AUTH_MODE" "oauth"
+ensure_env_var "OPENAI_CODEX_AUTH_PROFILE" "default"
+ensure_env_var "OPENAI_CODEX_BASE_URL" "https://chatgpt.com/backend-api/codex"
+ensure_env_var "BRAIN_PROVIDER_AUTH_PROFILES_PATH" "$SECRETS_DIR/provider-auth-profiles.json"
+ensure_env_var "BRAIN_PROVIDER_AUTH_STATE_DIR" "$SECRETS_DIR/provider-auth-state"
 ensure_env_var "BRAIN_AUTH_PASSWORD_FILE" "$SECRETS_DIR/brain-auth-password"
 ensure_env_var "BRAIN_AUTH_STATE_PATH" "$SECRETS_DIR/brain-oauth.json"
 ensure_env_var "BRAIN_AUTH_SCOPES" '"brain.memory.read brain.memory.write"'

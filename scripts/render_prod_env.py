@@ -25,15 +25,15 @@ METADATA_KEYS = {
     "BRAIN_CONFIG_RENDER_SOURCE",
 }
 REQUIRED_CONFIG_KEYS = {
-    "OPENAI_API_KEY": {
-        "",
-        "replace-me",
-        "sk-...",
-        "...",
-    },
     "GRAPH_DATABASE_PASSWORD": {
         "",
     },
+}
+OPENAI_API_KEY_PLACEHOLDERS = {
+    "",
+    "replace-me",
+    "sk-...",
+    "...",
 }
 REQUIRED_EXTERNAL_SECRET_KEYS = {
     "BRAIN_AUTH_PASSWORD": {
@@ -55,6 +55,11 @@ ORDERED_KEYS = [
     "LLM_ENDPOINT",
     "LLM_TEMPERATURE",
     "LLM_MAX_TOKENS",
+    "OPENAI_AUTH_MODE",
+    "OPENAI_CODEX_AUTH_PROFILE",
+    "OPENAI_CODEX_BASE_URL",
+    "BRAIN_PROVIDER_AUTH_PROFILES_PATH",
+    "BRAIN_PROVIDER_AUTH_STATE_DIR",
     "EMBEDDING_PROVIDER",
     "EMBEDDING_MODEL",
     "EMBEDDING_API_KEY",
@@ -139,6 +144,11 @@ DEFAULTS = {
     "LLM_MODEL": "gpt-5.4-mini",
     "LLM_TEMPERATURE": "0.0",
     "LLM_MAX_TOKENS": "8192",
+    "OPENAI_AUTH_MODE": "oauth",
+    "OPENAI_CODEX_AUTH_PROFILE": "default",
+    "OPENAI_CODEX_BASE_URL": "https://chatgpt.com/backend-api/codex",
+    "BRAIN_PROVIDER_AUTH_PROFILES_PATH": str(SECRETS_DIR / "provider-auth-profiles.json"),
+    "BRAIN_PROVIDER_AUTH_STATE_DIR": str(SECRETS_DIR / "provider-auth-state"),
     "EMBEDDING_PROVIDER": "openai",
     "EMBEDDING_MODEL": "text-embedding-3-small",
     "EMBEDDING_DIMENSIONS": "1536",
@@ -341,6 +351,11 @@ def missing_required_values(values: dict[str, str]) -> set[str]:
         for key, disallowed_values in REQUIRED_CONFIG_KEYS.items()
         if is_placeholder_value(values.get(key, ""), disallowed_values)
     }
+    if values.get("OPENAI_AUTH_MODE") == "api_key" and is_placeholder_value(
+        values.get("OPENAI_API_KEY", ""),
+        OPENAI_API_KEY_PLACEHOLDERS,
+    ):
+        missing.add("OPENAI_API_KEY")
     missing.update(
         key
         for key, disallowed_values in REQUIRED_EXTERNAL_SECRET_KEYS.items()
