@@ -12,6 +12,7 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field
 
 from memory_stack.evals.model_fixtures import ModelEvalFixture
+from memory_stack.model_registry import capability_definitions, mandatory_capabilities
 
 
 LLM_SCORE_KEYS = (
@@ -86,14 +87,7 @@ MANDATORY_NON_RUNTIME_ROLES = {
     "embeddings",
 }
 
-MANDATORY_FINE_GRAINED_CAPABILITIES = {
-    "router",
-    "slack_intake",
-    "memory_compiler",
-    "conflict_handling",
-    "recall",
-    "embeddings",
-}
+MANDATORY_FINE_GRAINED_CAPABILITIES = mandatory_capabilities()
 
 ROLE_ALLOWED_ZERO_TOLERANCE_CHECKS: dict[str, set[str]] = {
     "intent_router": {
@@ -209,86 +203,7 @@ ROLE_ALLOWED_ZERO_TOLERANCE_CHECKS: dict[str, set[str]] = {
     },
 }
 
-COARSE_CAPABILITIES: dict[str, dict[str, Any]] = {
-    "router": {
-        "required_model_roles": ["intent_router"],
-        "deterministic_roles": [],
-    },
-    "slack_intake": {
-        "required_model_roles": [
-            "source_classifier",
-            "durability_filter",
-            "memory_kind_classifier",
-            "repair_option_generator",
-        ],
-        "deterministic_roles": [
-            "zero_tolerance_validator",
-            "commit_policy",
-            "success_receipt_template",
-        ],
-    },
-    "memory_compiler": {
-        "required_model_roles": [
-            "atomic_card_extractor",
-            "entity_mention_extractor",
-            "relationship_extractor",
-            "open_loop_detector",
-            "table_policy_handler",
-            "source_takeaway_extractor",
-        ],
-        "deterministic_roles": [
-            "table_parser",
-            "source_loader",
-            "zero_tolerance_validator",
-        ],
-    },
-    "entity_resolution": {
-        "required_model_roles": [
-            "entity_mention_extractor",
-            "entity_candidate_ranker",
-        ],
-        "deterministic_roles": [
-            "entity_final_resolver",
-        ],
-    },
-    "conflict_handling": {
-        "required_model_roles": [
-            "conflict_candidate_detector",
-            "conflict_explainer",
-        ],
-        "deterministic_roles": [
-            "conflict_policy_decider",
-        ],
-    },
-    "recall": {
-        "required_model_roles": [
-            "recall_planner",
-            "recall_synthesizer",
-        ],
-        "deterministic_roles": [
-            "recall_filter",
-        ],
-    },
-    "debug": {
-        "required_model_roles": [
-            "debug_explainer",
-        ],
-        "deterministic_roles": [],
-    },
-    "judge": {
-        "required_model_roles": [
-            "eval_judge",
-        ],
-        "deterministic_roles": [],
-    },
-    "embeddings": {
-        "required_model_roles": [
-            "embeddings",
-        ],
-        "deterministic_roles": [],
-        "optional_if_not_tested": True,
-    },
-}
+COARSE_CAPABILITIES: dict[str, dict[str, Any]] = capability_definitions()
 
 ROLE_THRESHOLDS: dict[str, dict[str, float]] = {
     "router": {

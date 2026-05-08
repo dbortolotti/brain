@@ -4,10 +4,12 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-import yaml
+from memory_stack import model_registry as registry_source
 
 
-REGISTRY_PATH = Path(__file__).resolve().parents[3] / "brain_model_registry.yaml"
+REGISTRY_PATH = registry_source.REGISTRY_PATH
+
+
 MODEL_TEST_INITIAL_REFS = [
     "openai:gpt-5-nano",
     "openai:gpt-5.4-nano",
@@ -64,9 +66,7 @@ class ModelCandidate:
 
 
 def load_model_registry(path: str | Path = REGISTRY_PATH) -> dict[str, Any]:
-    with Path(path).open(encoding="utf-8") as file:
-        return yaml.safe_load(file) or {}
-
+    return registry_source.load_model_registry(path)
 
 def registry_model_index(registry: dict[str, Any]) -> dict[str, ModelCandidate]:
     index: dict[str, ModelCandidate] = {}

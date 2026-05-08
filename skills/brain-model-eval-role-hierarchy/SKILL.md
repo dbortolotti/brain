@@ -9,7 +9,7 @@ metadata:
 
 Use this skill when asked to create, refresh, or reformat Brain's model eval role hierarchy artifact.
 
-Always run this skill before committing changes in the Brain repo, so the generated hierarchy artifact stays in sync with `COARSE_CAPABILITIES` and `fine_grained_deployment_decisions`.
+Always run this skill before committing changes in the Brain repo, so the generated hierarchy artifact stays in sync with `brain_model_registry.yaml`.
 
 ## Output
 
@@ -44,8 +44,7 @@ Do not include the wording `eligible models` or `close to eligible models` in th
 
 Read from the Brain repo:
 
-- `src/memory_stack/evals/scoring.py`: `COARSE_CAPABILITIES`
-- `brain_model_registry.yaml`: `fine_grained_deployment_decisions`
+- `brain_model_registry.yaml`: `fine_grained_capabilities` and `fine_grained_deployment_decisions`
 
 The same fine role may appear under multiple coarse roles; repeat it under each coarse role.
 

@@ -68,6 +68,82 @@ fine_grained_deployment_decisions:
     source_classifier:
       reason: "Current scorer/report shows high semantic score but source/table safety failures; inspect before promotion."
 
+fine_grained_capabilities:
+  router:
+    required: true
+    required_model_roles:
+      - intent_router
+    deterministic_roles: []
+
+  slack_intake:
+    required: true
+    required_model_roles:
+      - source_classifier
+      - durability_filter
+      - memory_kind_classifier
+      - repair_option_generator
+    deterministic_roles:
+      - zero_tolerance_validator
+      - commit_policy
+      - success_receipt_template
+
+  memory_compiler:
+    required: true
+    required_model_roles:
+      - atomic_card_extractor
+      - entity_mention_extractor
+      - relationship_extractor
+      - open_loop_detector
+      - table_policy_handler
+      - source_takeaway_extractor
+    deterministic_roles:
+      - table_parser
+      - source_loader
+      - zero_tolerance_validator
+
+  entity_resolution:
+    required: true
+    required_model_roles:
+      - entity_mention_extractor
+      - entity_candidate_ranker
+    deterministic_roles:
+      - entity_final_resolver
+
+  conflict_handling:
+    required: true
+    required_model_roles:
+      - conflict_candidate_detector
+      - conflict_explainer
+    deterministic_roles:
+      - conflict_policy_decider
+
+  recall:
+    required: true
+    required_model_roles:
+      - recall_planner
+      - recall_synthesizer
+    deterministic_roles:
+      - recall_filter
+
+  debug:
+    required: false
+    required_model_roles:
+      - debug_explainer
+    deterministic_roles: []
+
+  judge:
+    required: false
+    required_model_roles:
+      - eval_judge
+    deterministic_roles: []
+
+  embeddings:
+    required: true
+    optional_if_not_tested: true
+    required_model_roles:
+      - embeddings
+    deterministic_roles: []
+
 roles:
   router:
     description: "Intent classification for Slack/free-form messages."

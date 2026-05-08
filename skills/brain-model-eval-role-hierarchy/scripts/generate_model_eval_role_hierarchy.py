@@ -2,9 +2,10 @@
 from __future__ import annotations
 
 import argparse
-import ast
 import re
 from pathlib import Path
+
+import yaml
 
 
 COARSE_BRIEFS = {
@@ -56,18 +57,6 @@ FINE_BRIEFS_BY_COARSE = {
 }
 
 
-def load_coarse_capabilities(scoring_py: Path) -> dict:
-    tree = ast.parse(scoring_py.read_text())
-    for node in tree.body:
-        if isinstance(node, ast.AnnAssign) and getattr(node.target, "id", None) == "COARSE_CAPABILITIES":
-            return ast.literal_eval(node.value)
-        if isinstance(node, ast.Assign):
-            for target in node.targets:
-                if getattr(target, "id", None) == "COARSE_CAPABILITIES":
-                    return ast.literal_eval(node.value)
-    raise RuntimeError(f"COARSE_CAPABILITIES not found in {scoring_py}")
-
-
 def extract_decision_section(registry_text: str, section_name: str) -> dict[str, str]:
     pattern = re.compile(rf"^  {re.escape(section_name)}:\n(?P<body>(?:    .+\n|      .+\n)+)", re.MULTILINE)
     match = pattern.search(registry_text)
@@ -96,8 +85,12 @@ def role_row(coarse: str, role: str, value: str, color: str) -> list[str]:
 
 
 def render(repo: Path) -> str:
-    capabilities = load_coarse_capabilities(repo / "src/memory_stack/evals/scoring.py")
-    registry_text = (repo / "brain_model_registry.yaml").read_text()
+    registry_path = repo / "brain_model_registry.yaml"
+    registry_text = registry_path.read_text()
+    registry = yaml.safe_load(registry_text) or {}
+    capabilities = registry.get("fine_grained_capabilities") or {}
+    if not capabilities:
+        raise RuntimeError(f"fine_grained_capabilities not found in {registry_path}")
     eligible = extract_decision_section(registry_text, "use")
     close = extract_decision_section(registry_text, "likely_after_more_samples")
 

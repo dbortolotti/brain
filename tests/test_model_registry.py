@@ -5,6 +5,16 @@ from typing import Any
 
 import yaml
 
+from memory_stack.model_registry import (
+    capability_definitions,
+    deterministic_roles,
+    disabled_roles,
+    eligible_role_models,
+    mandatory_capabilities,
+    role_enabled,
+    role_model,
+)
+
 
 REGISTRY_PATH = Path(__file__).resolve().parents[1] / "brain_model_registry.yaml"
 
@@ -63,6 +73,49 @@ def test_gpt55_high_in_benchmark_roles_only() -> None:
     for role, models in matrix.items():
         if "openai:gpt-5.5-high" in models:
             assert role in allowed_roles
+
+
+def test_registry_owns_fine_grained_capability_topology() -> None:
+    registry = load_registry()
+    capabilities = capability_definitions(registry)
+
+    assert capabilities["slack_intake"]["required_model_roles"] == [
+        "source_classifier",
+        "durability_filter",
+        "memory_kind_classifier",
+        "repair_option_generator",
+    ]
+    assert deterministic_roles("slack_intake", registry) == [
+        "zero_tolerance_validator",
+        "commit_policy",
+        "success_receipt_template",
+    ]
+    assert "slack_intake" in mandatory_capabilities(registry)
+    assert "debug" not in mandatory_capabilities(registry)
+
+
+def test_registry_exposes_runtime_deployment_decisions() -> None:
+    registry = load_registry()
+
+    assert eligible_role_models(registry)["debug_explainer"] == "google:gemini-2.5-flash-lite"
+    assert role_model("eval_judge", registry) == "openai:gpt-5.5"
+    assert role_enabled("recall_synthesizer", registry) is False
+    assert "atomic_card_extractor" in disabled_roles(registry)
+
+
+def test_hierarchy_generator_does_not_read_eval_scoring_source() -> None:
+    script = (
+        REGISTRY_PATH.parent
+        / "skills"
+        / "brain-model-eval-role-hierarchy"
+        / "scripts"
+        / "generate_model_eval_role_hierarchy.py"
+    )
+    text = script.read_text(encoding="utf-8")
+
+    assert "fine_grained_capabilities" in text
+    assert "COARSE_CAPABILITIES" not in text
+    assert "src/memory_stack/evals/scoring.py" not in text
 
 
 def load_registry() -> dict[str, Any]:
