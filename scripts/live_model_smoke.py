@@ -24,7 +24,6 @@ from memory_stack.config import Settings, load_settings, normalize_provider_name
 from memory_stack.local_embeddings import fastembed_vector_size
 from memory_stack.provider_auth import (
     ProviderAuthError,
-    get_openai_codex_profile,
     resolve_openai_text_bearer,
 )
 
@@ -424,11 +423,9 @@ def missing_credential(settings: Settings, probe: Probe) -> str | None:
         return f"unsupported embedding provider for live smoke: {probe.provider}"
     if probe.provider == "openai" and probe.kind == "llm" and settings.openai_auth_mode == "oauth":
         try:
-            profile = get_openai_codex_profile(settings)
+            resolve_openai_text_bearer(settings)
         except ProviderAuthError as exc:
-            return f"invalid OpenAI OAuth profile {settings.openai_codex_auth_profile}: {exc}"
-        if profile is None:
-            return f"missing OpenAI OAuth profile {settings.openai_codex_auth_profile}"
+            return str(exc)
         return None
     if probe.provider == "openai" and probe.kind == "embedding":
         if not settings.configured_provider_api_key("openai"):
@@ -495,15 +492,39 @@ def post_openai_response(settings: Settings, model: str, *, client: httpx.Client
         if settings.openai_auth_mode == "oauth"
         else "https://api.openai.com/v1"
     )
-    response = client.post(
-        f"{base_url.rstrip('/')}/responses",
-        headers={"Authorization": f"Bearer {resolve_openai_text_bearer(settings)}"},
-        json={
+    request_json: dict[str, Any]
+    if settings.openai_auth_mode == "oauth":
+        request_json = {
+            "model": model,
+            "instructions": "Reply with exactly: ok",
+            "input": [
+                {
+                    "role": "user",
+                    "content": [{"type": "input_text", "text": "Reply with exactly: ok"}],
+                }
+            ],
+            "store": False,
+            "stream": True,
+        }
+    else:
+        request_json = {
             "model": model,
             "input": "Reply with exactly: ok",
             "max_output_tokens": SMOKE_MAX_TOKENS,
-        },
+        }
+    response = client.post(
+        f"{base_url.rstrip('/')}/responses",
+        headers={"Authorization": f"Bearer {resolve_openai_text_bearer(settings)}"},
+        json=request_json,
     )
+    if settings.openai_auth_mode == "oauth":
+        if response.status_code >= 400:
+            raise SmokeFailure(
+                f"HTTP {response.status_code}: {redact(response_error_message(response), settings)}"
+            )
+        if "response." not in response.text:
+            raise SmokeFailure("OpenAI Codex response did not include stream events")
+        return
     payload = checked_json(response, settings)
     if not payload.get("id"):
         raise SmokeFailure("OpenAI response did not include an id")

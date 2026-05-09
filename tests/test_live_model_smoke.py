@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import base64
+import json
 import sys
 import time
 from pathlib import Path
+from typing import Any
 
 import httpx
 import pytest
@@ -263,8 +266,12 @@ def test_missing_key_fails_by_default_and_can_skip(
 
 def test_openai_oauth_text_smoke_reports_missing_profile_without_api_key(
     monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
 ) -> None:
     clear_provider_env(monkeypatch)
+    empty_codex_home = tmp_path / "empty-codex"
+    empty_codex_home.mkdir()
+    monkeypatch.setenv("CODEX_HOME", str(empty_codex_home))
     settings = Settings(
         profile="openai",
         openai_auth_mode="oauth",
@@ -283,7 +290,7 @@ def test_openai_oauth_text_smoke_reports_missing_profile_without_api_key(
             kind="llm",
             label="openai:gpt-5.4-mini",
         ),
-    ) == "missing OpenAI OAuth profile default"
+    ) == "OpenAI OAuth credentials are missing. Run `brain models auth login --provider openai-codex`."
     assert live_model_smoke.missing_credential(
         settings,
         live_model_smoke.Probe(
@@ -293,6 +300,45 @@ def test_openai_oauth_text_smoke_reports_missing_profile_without_api_key(
             label="openai:text-embedding-3-small",
         ),
     ) == "missing OPENAI_API_KEY for OpenAI embeddings"
+
+
+def test_openai_oauth_text_smoke_accepts_codex_cli_token_without_brain_profile(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    clear_provider_env(monkeypatch)
+    codex_home = tmp_path / "codex"
+    codex_home.mkdir()
+    cli_access = jwt({"exp": int(time.time()) + 3600})
+    (codex_home / "auth.json").write_text(
+        json.dumps({"tokens": {"access_token": cli_access, "refresh_token": "external-refresh"}}),
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("CODEX_HOME", str(codex_home))
+    settings = Settings(
+        profile="openai",
+        openai_auth_mode="oauth",
+        llm_provider="openai",
+        llm_model="gpt-5.4-mini",
+        embedding_provider="openai",
+        embedding_model="text-embedding-3-small",
+        embedding_dimensions=1536,
+        brain_provider_auth_profiles_path=str(tmp_path / "profiles.json"),
+        brain_provider_auth_state_dir=str(tmp_path / "state"),
+    )
+
+    assert (
+        live_model_smoke.missing_credential(
+            settings,
+            live_model_smoke.Probe(
+                provider="openai",
+                model="gpt-5.4-mini",
+                kind="llm",
+                label="openai:gpt-5.4-mini",
+            ),
+        )
+        is None
+    )
 
 
 def test_openai_oauth_text_smoke_uses_codex_bearer(
@@ -335,10 +381,12 @@ def test_openai_oauth_text_smoke_uses_codex_bearer(
         is None
     )
     seen: list[tuple[str, str]] = []
+    seen_json: list[dict[str, Any]] = []
 
     def handler(request: httpx.Request) -> httpx.Response:
         seen.append((str(request.url), request.headers["authorization"]))
-        return httpx.Response(200, json={"id": "resp_123"})
+        seen_json.append(json.loads(request.content.decode("utf-8")))
+        return httpx.Response(200, text='data: {"type":"response.completed"}\n\n')
 
     client = httpx.Client(transport=httpx.MockTransport(handler))
     results = live_model_smoke.run_probes(
@@ -361,6 +409,20 @@ def test_openai_oauth_text_smoke_uses_codex_bearer(
             "https://chatgpt.com/backend-api/codex/responses",
             "Bearer oauth-access",
         )
+    ]
+    assert seen_json == [
+        {
+            "model": "gpt-5.4-mini",
+            "instructions": "Reply with exactly: ok",
+            "input": [
+                {
+                    "role": "user",
+                    "content": [{"type": "input_text", "text": "Reply with exactly: ok"}],
+                }
+            ],
+            "store": False,
+            "stream": True,
+        }
     ]
 
 
@@ -450,3 +512,18 @@ def test_google_probe_uses_api_model_and_thinking_level(
             "generationConfig": {"maxOutputTokens": live_model_smoke.SMOKE_MAX_TOKENS, "temperature": 0, "thinkingConfig": {"thinkingLevel": "high"}},
         }
     ]
+
+
+def jwt(payload: dict[str, Any]) -> str:
+    header = {"alg": "none"}
+    return ".".join(
+        [
+            b64(json.dumps(header).encode("utf-8")),
+            b64(json.dumps(payload).encode("utf-8")),
+            "",
+        ]
+    )
+
+
+def b64(value: bytes) -> str:
+    return base64.urlsafe_b64encode(value).decode("ascii").rstrip("=")
