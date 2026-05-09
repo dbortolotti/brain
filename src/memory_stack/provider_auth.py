@@ -4,6 +4,7 @@ import base64
 import hashlib
 import http.server
 import json
+import os
 import secrets
 import threading
 import time
@@ -231,12 +232,19 @@ def resolve_openai_text_bearer(settings: Settings) -> str:
 
 
 def resolve_openai_codex_access_token(settings: Settings) -> str:
-    credential = get_openai_codex_profile(settings)
-    if credential and credential.usable():
-        return credential.access
+    cli_access = get_codex_cli_access_token()
+    if cli_access:
+        return cli_access
 
-    refreshed = refresh_openai_codex_profile(settings)
-    return refreshed.access
+    credential = get_openai_codex_profile(settings)
+    if credential:
+        if credential.usable():
+            return credential.access
+        refreshed = refresh_openai_codex_profile(settings)
+        return refreshed.access
+
+    refresh_openai_codex_profile(settings)
+    raise ProviderAuthError("OpenAI OAuth credentials are missing. Run `brain models auth login --provider openai-codex`.")
 
 
 def refresh_openai_codex_profile(settings: Settings) -> OpenAICodexCredential:
@@ -252,6 +260,38 @@ def refresh_openai_codex_profile(settings: Settings) -> OpenAICodexCredential:
         refreshed = exchange_refresh_token(current.refresh)
         upsert_openai_codex_profile(settings, refreshed, profile)
         return refreshed
+
+
+def get_codex_cli_access_token(now_ms: int | None = None) -> str | None:
+    path = codex_cli_auth_path()
+    if not path.exists():
+        return None
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    if not isinstance(payload, dict):
+        return None
+    tokens = payload.get("tokens")
+    if not isinstance(tokens, dict):
+        return None
+    access = string_value(tokens.get("access_token"))
+    if not access:
+        return None
+    exp = int_value(jwt_claim(access, "exp"))
+    if exp is None:
+        return None
+    now = now_ms or int(time.time() * 1000)
+    if exp * 1000 <= now + TOKEN_SAFETY_WINDOW_MS:
+        return None
+    return access
+
+
+def codex_cli_auth_path() -> Path:
+    codex_home = os.environ.get("CODEX_HOME")
+    if codex_home:
+        return Path(codex_home).expanduser() / "auth.json"
+    return Path.home() / ".codex" / "auth.json"
 
 
 def login_openai_codex(

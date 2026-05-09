@@ -1645,7 +1645,7 @@ def test_live_provider_client_uses_reasoning_effort_override() -> None:
     assert http_client.last_json["reasoning"] == {"effort": "xhigh"}
 
 
-def test_live_provider_client_defaults_openai_text_to_oauth(tmp_path: Path) -> None:
+def test_live_provider_client_defaults_openai_text_to_oauth(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     class RecordingClient:
         def __init__(self) -> None:
             self.last_headers: dict[str, str] | None = None
@@ -1667,6 +1667,9 @@ def test_live_provider_client_defaults_openai_text_to_oauth(tmp_path: Path) -> N
 
             return Response()
 
+    empty_codex_home = tmp_path / "empty-codex"
+    empty_codex_home.mkdir()
+    monkeypatch.setenv("CODEX_HOME", str(empty_codex_home))
     settings = Settings(
         openai_api_key="sk-should-not-be-used",
         brain_provider_auth_profiles_path=str(tmp_path / "profiles.json"),

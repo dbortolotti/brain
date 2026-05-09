@@ -19,6 +19,7 @@ from memory_stack.provider_auth import (
     ProviderAuthError,
     build_openai_codex_authorize_url,
     generate_pkce_pair,
+    get_codex_cli_access_token,
     get_openai_codex_profile,
     list_openai_codex_profiles,
     parse_authorization_response,
@@ -119,10 +120,46 @@ def test_refresh_serializes_and_reuses_written_token(tmp_path: Path, monkeypatch
     assert results == ["fresh", "fresh"]
 
 
-def test_resolve_openai_text_bearer_refreshes_near_expiry_token(
+def test_resolve_openai_text_bearer_prefers_usable_codex_cli_before_local_refresh(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
+    codex_home = tmp_path / "codex"
+    codex_home.mkdir()
+    cli_access = jwt({"exp": int(time.time()) + 3600})
+    (codex_home / "auth.json").write_text(
+        json.dumps({"tokens": {"access_token": cli_access, "refresh_token": "external-refresh"}}),
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("CODEX_HOME", str(codex_home))
+    settings = auth_settings(tmp_path, openai_api_key="sk-should-not-be-used")
+    upsert_openai_codex_profile(
+        settings,
+        OpenAICodexCredential(
+            access="near-expiry-access",
+            refresh="near-expiry-refresh",
+            expires=int(time.time() * 1000) + 30_000,
+        ),
+    )
+
+    def fake_exchange(refresh_token: str) -> OpenAICodexCredential:
+        raise AssertionError(f"Brain OAuth profile must not refresh before usable Codex CLI token: {refresh_token}")
+
+    monkeypatch.setattr(provider_auth, "exchange_refresh_token", fake_exchange)
+
+    assert resolve_openai_text_bearer(settings) == cli_access
+    stored = get_openai_codex_profile(settings)
+    assert stored is not None
+    assert stored.access == "near-expiry-access"
+
+
+def test_resolve_openai_text_bearer_refreshes_near_expiry_local_token_when_codex_unavailable(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    empty_codex_home = tmp_path / "empty-codex"
+    empty_codex_home.mkdir()
+    monkeypatch.setenv("CODEX_HOME", str(empty_codex_home))
     settings = auth_settings(tmp_path, openai_api_key="sk-should-not-be-used")
     upsert_openai_codex_profile(
         settings,
@@ -144,9 +181,6 @@ def test_resolve_openai_text_bearer_refreshes_near_expiry_token(
     monkeypatch.setattr(provider_auth, "exchange_refresh_token", fake_exchange)
 
     assert resolve_openai_text_bearer(settings) == "fresh-short-lived-access"
-    stored = get_openai_codex_profile(settings)
-    assert stored is not None
-    assert stored.access == "fresh-short-lived-access"
 
 
 def test_oauth_mode_does_not_fallback_to_openai_api_key_when_profile_missing(
@@ -162,17 +196,18 @@ def test_oauth_mode_does_not_fallback_to_openai_api_key_when_profile_missing(
         resolve_openai_text_bearer(settings)
 
 
-def test_oauth_mode_never_reads_or_bootstraps_codex_cli_auth(
+def test_oauth_mode_uses_usable_codex_cli_access_token_without_bootstrapping(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
     codex_home = tmp_path / "codex"
     codex_home.mkdir()
+    access = jwt({"exp": int(time.time()) + 3600})
     (codex_home / "auth.json").write_text(
         json.dumps(
             {
                 "tokens": {
-                    "access_token": jwt({"exp": int(time.time()) + 3600}),
+                    "access_token": access,
                     "refresh_token": "external-refresh",
                     "account_id": "external",
                 }
@@ -183,9 +218,85 @@ def test_oauth_mode_never_reads_or_bootstraps_codex_cli_auth(
     monkeypatch.setenv("CODEX_HOME", str(codex_home))
     settings = auth_settings(tmp_path, openai_api_key="sk-should-not-be-used")
 
+    assert resolve_openai_text_bearer(settings) == access
+    assert get_openai_codex_profile(settings) is None
+
+
+def test_oauth_mode_does_not_refresh_expired_codex_cli_token(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    codex_home = tmp_path / "codex"
+    codex_home.mkdir()
+    (codex_home / "auth.json").write_text(
+        json.dumps(
+            {
+                "tokens": {
+                    "access_token": jwt({"exp": int(time.time()) - 60}),
+                    "refresh_token": "external-refresh",
+                    "account_id": "external",
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("CODEX_HOME", str(codex_home))
+
+    def fake_exchange(refresh_token: str) -> OpenAICodexCredential:
+        raise AssertionError(f"Codex CLI refresh token must not be refreshed: {refresh_token}")
+
+    monkeypatch.setattr(provider_auth, "exchange_refresh_token", fake_exchange)
+    settings = auth_settings(tmp_path, openai_api_key="sk-should-not-be-used")
+
     with pytest.raises(ProviderAuthError, match="credentials are missing"):
         resolve_openai_text_bearer(settings)
     assert get_openai_codex_profile(settings) is None
+
+
+def test_expired_codex_cli_token_falls_back_to_refreshing_local_profile(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    codex_home = tmp_path / "codex"
+    codex_home.mkdir()
+    (codex_home / "auth.json").write_text(
+        json.dumps({"tokens": {"access_token": jwt({"exp": int(time.time()) - 60}), "refresh_token": "external-refresh"}}),
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("CODEX_HOME", str(codex_home))
+    settings = auth_settings(tmp_path, openai_api_key="sk-should-not-be-used")
+    upsert_openai_codex_profile(
+        settings,
+        OpenAICodexCredential(
+            access="expired-local",
+            refresh="local-refresh",
+            expires=int(time.time() * 1000) - 60_000,
+        ),
+    )
+
+    def fake_exchange(refresh_token: str) -> OpenAICodexCredential:
+        assert refresh_token == "local-refresh"
+        return OpenAICodexCredential(
+            access="fresh-local",
+            refresh="next-local-refresh",
+            expires=int(time.time() * 1000) + 600_000,
+        )
+
+    monkeypatch.setattr(provider_auth, "exchange_refresh_token", fake_exchange)
+
+    assert resolve_openai_text_bearer(settings) == "fresh-local"
+
+
+def test_codex_cli_access_token_requires_unexpired_jwt(tmp_path: Path, monkeypatch) -> None:
+    codex_home = tmp_path / "codex"
+    codex_home.mkdir()
+    (codex_home / "auth.json").write_text(
+        json.dumps({"tokens": {"access_token": "not-a-jwt", "refresh_token": "external-refresh"}}),
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("CODEX_HOME", str(codex_home))
+
+    assert get_codex_cli_access_token() is None
 
 
 def test_api_key_mode_is_explicit(tmp_path: Path) -> None:
