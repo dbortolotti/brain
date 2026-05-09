@@ -1816,6 +1816,30 @@ def role_contract_lines(fixture: ModelEvalFixture) -> list[str]:
         lines.append(
             "When extraction succeeds, use decision commit_success or commit_with_warning; do not emit backend conflict-policy decisions."
         )
+        lines.append(
+            "Use memory kind labels from this taxonomy when possible: " + ", ".join(MEMORY_KIND_VALUES) + "."
+        )
+    elif fixture.role == "entity_candidate_ranker":
+        lines.append(
+            "Rank or choose entity candidates only when the input contains enough disambiguating evidence; preserve ambiguity otherwise."
+        )
+        lines.append(
+            "For ambiguous matches, use entity_resolution.action needs_clarification, ambiguous, or defer; do not merge or pick an entity silently."
+        )
+    elif fixture.role == "table_policy_handler":
+        lines.append(
+            "Handle table policy only: preserve small-table values exactly, avoid altering numeric values, and recommend source/table storage for large tables."
+        )
+        lines.append(
+            "Do not answer recall questions or invent source claims; if extracting from a small table, every expected table value must remain present."
+        )
+    elif fixture.role == "source_takeaway_extractor":
+        lines.append(
+            "Extract source takeaways only from provided source content; if fetching failed or source content is absent, do not create article-content claims."
+        )
+        lines.append(
+            "Preserve cited source details and split distinct takeaways rather than returning an entire long source as one memory card."
+        )
     elif fixture.role == "conflict_candidate_detector":
         lines.append(
             "Detection-only role: identify possible conflict candidates and evidence, but do not decide ask/keep/link/supersede behavior."

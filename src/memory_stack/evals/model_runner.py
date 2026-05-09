@@ -324,6 +324,8 @@ def run_embedding_fixture(
             input_tokens=sum(call.input_tokens for call in calls),
             output_tokens=0,
             estimated_cost_usd=sum(call.estimated_cost_usd for call in calls),
+            attempt_count=sum(call.attempt_count for call in calls),
+            retry_count=sum(call.retry_count for call in calls),
         )
 
     vectors = [call.payload.get("embedding_vector") for call in calls if call.payload]
@@ -337,6 +339,8 @@ def run_embedding_fixture(
             input_tokens=sum(call.input_tokens for call in calls),
             output_tokens=0,
             estimated_cost_usd=sum(call.estimated_cost_usd for call in calls),
+            attempt_count=sum(call.attempt_count for call in calls),
+            retry_count=sum(call.retry_count for call in calls),
         )
 
     query_vector = [float(value) for value in vectors[0]]
@@ -361,6 +365,8 @@ def run_embedding_fixture(
         input_tokens=sum(call.input_tokens for call in calls),
         output_tokens=0,
         estimated_cost_usd=sum(call.estimated_cost_usd for call in calls),
+        attempt_count=sum(call.attempt_count for call in calls),
+        retry_count=sum(call.retry_count for call in calls),
     )
 
 
@@ -400,6 +406,8 @@ def synthetic_failure_record(
         input_tokens=0,
         output_tokens=0,
         estimated_cost_usd=0.0,
+        attempt_count=0,
+        retry_count=0,
     )
     return build_eval_record(
         candidate=candidate,
@@ -520,6 +528,8 @@ def build_eval_record(
         output_tokens=call.output_tokens,
         estimated_cost_usd=call.estimated_cost_usd,
         latency_ms=None if call.latency_ms is None else float(call.latency_ms),
+        attempt_count=call.attempt_count,
+        retry_count=call.retry_count,
         raw_output_path=str(raw_output_path),
         parsed_output_path=str(parsed_output_path) if parsed_output_path else None,
         scenario_group=fixture.scenario_group,
@@ -1709,6 +1719,8 @@ def write_raw_output(
                 "payload": call.payload,
                 "raw_text": call.raw_text,
                 "latency_ms": call.latency_ms,
+                "attempt_count": call.attempt_count,
+                "retry_count": call.retry_count,
                 "input_tokens": call.input_tokens,
                 "output_tokens": call.output_tokens,
                 "estimated_cost_usd": call.estimated_cost_usd,

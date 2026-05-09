@@ -40,10 +40,25 @@ class ModelCallResult:
     input_tokens: int
     output_tokens: int
     estimated_cost_usd: float
+    attempt_count: int = 1
+    retry_count: int = 0
+
+
+@dataclass(frozen=True)
+class RetryCallResult:
+    value: Any
+    attempt_count: int
 
 
 class ProviderCallError(RuntimeError):
     pass
+
+
+class ProviderRetryError(ProviderCallError):
+    def __init__(self, exc: Exception, *, attempt_count: int) -> None:
+        super().__init__(str(exc))
+        self.attempt_count = attempt_count
+        self.original_error = exc
 
 
 class LiveProviderClient:
@@ -72,12 +87,15 @@ class LiveProviderClient:
         started = time.perf_counter()
         input_text = prompt + "\nSchema:\n" + json.dumps(schema, separators=(",", ":"))
         input_tokens = estimate_tokens(input_text)
+        attempt_count = 0
         try:
             if missing := self.missing_credential(candidate):
                 raise ProviderCallError(missing)
-            raw_text = self._retry_call(
+            retry_result = self._retry_call(
                 lambda: self._complete_text(candidate, prompt=prompt, schema=schema)
             )
+            raw_text = str(retry_result.value)
+            attempt_count = retry_result.attempt_count
             try:
                 payload = parse_json_object(raw_text)
             except Exception as exc:
@@ -88,6 +106,7 @@ class LiveProviderClient:
                 status = "ok"
                 error = None
         except Exception as exc:
+            attempt_count = int(getattr(exc, "attempt_count", attempt_count))
             raw_text = ""
             payload = None
             status = "fail"
@@ -103,17 +122,22 @@ class LiveProviderClient:
             input_tokens=input_tokens,
             output_tokens=output_tokens,
             estimated_cost_usd=estimate_cost(candidate, input_tokens, output_tokens),
+            attempt_count=attempt_count,
+            retry_count=max(0, attempt_count - 1),
         )
 
     def embed(self, candidate: ModelCandidate, *, text: str) -> ModelCallResult:
         started = time.perf_counter()
         input_tokens = estimate_tokens(text)
+        attempt_count = 0
         try:
             if missing := self.missing_credential(candidate):
                 raise ProviderCallError(missing)
-            vector = self._retry_call(
+            retry_result = self._retry_call(
                 lambda: self._embedding_vector(candidate, text=text)
             )
+            vector = retry_result.value
+            attempt_count = retry_result.attempt_count
             payload = {
                 "embedding_vector_size": len(vector),
                 "embedding_vector": vector,
@@ -122,6 +146,7 @@ class LiveProviderClient:
             status = "ok"
             error = None
         except Exception as exc:
+            attempt_count = int(getattr(exc, "attempt_count", attempt_count))
             payload = None
             raw_text = ""
             status = "fail"
@@ -136,6 +161,8 @@ class LiveProviderClient:
             input_tokens=input_tokens,
             output_tokens=0,
             estimated_cost_usd=estimate_cost(candidate, input_tokens, 0),
+            attempt_count=attempt_count,
+            retry_count=max(0, attempt_count - 1),
         )
 
     def smoke(self, candidate: ModelCandidate) -> None:
@@ -440,16 +467,16 @@ class LiveProviderClient:
         last_error: Exception | None = None
         for attempt_idx in range(attempts):
             try:
-                return fn()
+                return RetryCallResult(value=fn(), attempt_count=attempt_idx + 1)
             except Exception as exc:
                 last_error = exc
                 if attempt_idx >= attempts - 1 or not is_retryable_provider_error(exc):
-                    raise
+                    raise ProviderRetryError(exc, attempt_count=attempt_idx + 1) from exc
                 delay_seconds = self._retry_backoff_seconds * (2**attempt_idx)
                 if delay_seconds > 0:
                     time.sleep(delay_seconds)
         if last_error is not None:
-            raise last_error
+            raise ProviderRetryError(last_error, attempt_count=attempts) from last_error
         raise ProviderCallError("provider call failed without an error")
 
 

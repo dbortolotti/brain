@@ -28,7 +28,7 @@ Unless the user specifies otherwise:
 
 - Model: `openai:gpt-5.5`
 - Repeats: `3`
-- Endpoint max concurrency: `10`
+- Endpoint max concurrency: `5`
 - Roles: all tested fine-grained roles in the selected fixture set, excluding `embeddings`.
 - Fixture set: `production`
 - Output root: `eval_runs/<chosen-run-folder>` under the repo root

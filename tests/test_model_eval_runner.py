@@ -565,6 +565,31 @@ def test_fixture_scoring_detects_zero_tolerance_overmerge() -> None:
     assert notes == ["entity_overmerge"]
 
 
+def test_entity_candidate_ranker_accepts_ambiguity_preserving_actions() -> None:
+    fixture = ModelEvalFixture(
+        id="ambiguous",
+        scenario_group="ambiguous_sam",
+        role="entity_candidate_ranker",
+        input_text="Existing: Sam A and Sam B. New: Sam likes jazz.",
+        expected={"entity_action": "needs_clarification"},
+        zero_tolerance_checks=("entity_overmerge",),
+    )
+
+    scores, zero_tolerance, notes = score_model_output(
+        fixture,
+        {
+            "decision": "defer",
+            "entity_resolution": {"action": "ambiguous", "entity_id": None},
+            "answer": "Please clarify which Sam this refers to.",
+        },
+        status="ok",
+    )
+
+    assert scores["entity_safety"] == 1.0
+    assert zero_tolerance is False
+    assert notes == []
+
+
 def test_intent_router_ignores_table_zero_tolerance_checks() -> None:
     fixture = ModelEvalFixture(
         id="router_table_input",
@@ -750,6 +775,30 @@ def test_deleted_memory_returned_zero_tolerance_is_enforced_for_recall() -> None
     assert types == ["deleted_memory_returned"]
 
 
+def test_deleted_memory_exclusion_is_not_returned_as_current() -> None:
+    fixture = ModelEvalFixture(
+        id="recall_deleted",
+        role="recall_synthesizer",
+        scenario_group="recall",
+        input_text="Current: Sam likes Bill Evans. Deleted: Sam likes Taylor Swift.",
+        expected={
+            "must_include": ["Bill Evans"],
+            "must_not_include": ["Taylor Swift"],
+        },
+        zero_tolerance_checks=("deleted_memory_returned",),
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {"answer": "Sam likes Bill Evans. There is no current evidence that Sam likes Taylor Swift."},
+        status="ok",
+    )
+
+    assert scores["recall_quality"] == 1.0
+    assert zero is False
+    assert types == []
+
+
 def test_unsupported_inference_zero_tolerance_requires_forbidden_content() -> None:
     fixture = ModelEvalFixture(
         id="atomic_missing_expected_term",
@@ -873,6 +922,124 @@ def test_source_classifier_catches_classifier_specific_failures() -> None:
     assert types == ["table_not_classified_as_table"]
 
 
+def test_source_classifier_zero_tolerance_ignores_downstream_extraction_boolean() -> None:
+    fixture = ModelEvalFixture(
+        id="source_classifier_article",
+        role="source_classifier",
+        scenario_group="source",
+        input_text="Remember this article: https://example.com/a Mock fetched article: Graph memory helps recall.",
+        expected={"source_memory_split": True},
+        zero_tolerance_checks=("article_url_not_classified_as_source",),
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "input_class": "source",
+            "source_kind": "article",
+            "should_create_source": True,
+            "should_extract_memories": False,
+            "answer": "Classified as an article source.",
+            "citations": ["https://example.com/a"],
+        },
+        status="ok",
+    )
+
+    assert scores["source_memory_split"] < 1.0
+    assert zero is False
+    assert types == []
+
+
+def test_source_classifier_long_source_zero_tolerance_allows_source_subtype_miss() -> None:
+    fixture = ModelEvalFixture(
+        id="source_classifier_markdown",
+        role="source_classifier",
+        scenario_group="source",
+        input_text=(
+            "# Chat Summary\n"
+            "Brain DB remains source of truth. Cognee is a rebuildable projection. "
+            "Slack should be a strict intake agent. Telegram may be considered later."
+        ),
+        expected={"source_memory_split": True},
+        zero_tolerance_checks=("long_source_classified_as_memory",),
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "input_class": "source",
+            "source_kind": "article",
+            "should_create_source": True,
+            "should_extract_memories": True,
+            "answer": "Classified as a source, though with the wrong subtype.",
+            "citations": [],
+        },
+        status="ok",
+    )
+
+    assert scores["source_memory_split"] < 1.0
+    assert zero is False
+    assert types == []
+
+
+def test_table_policy_zero_tolerance_checks_expected_values_directly() -> None:
+    fixture = ModelEvalFixture(
+        id="small_table",
+        role="table_policy_handler",
+        scenario_group="small_table",
+        input_text="| Person | Preference |\n| Sam | Bill Evans |\n| Daniele | Knowledge graphs |",
+        expected={
+            "memory_kinds": ["table_note"],
+            "must_include": ["Bill Evans", "Knowledge graphs"],
+            "source_memory_split": True,
+        },
+        zero_tolerance_checks=("small_table_must_not_drop_values",),
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "decision": "commit",
+            "memory_cards": [
+                {"kind": "preference", "statement": "Sam prefers Bill Evans."},
+                {"kind": "preference", "statement": "Daniele prefers Knowledge graphs."},
+            ],
+        },
+        status="ok",
+    )
+
+    assert scores["memory_card_quality"] == 1.0
+    assert zero is False
+    assert types == []
+
+
+def test_numeric_exactness_does_not_match_forbidden_numeric_prefix() -> None:
+    fixture = ModelEvalFixture(
+        id="numeric_table",
+        role="table_policy_handler",
+        scenario_group="numeric_table",
+        input_text="| Run | Reward | Sharpe |\n| PPO-002 | 0.18 | 0.51 |",
+        expected={
+            "must_include": ["0.18", "0.51"],
+            "must_not_include": ["0.5"],
+        },
+        zero_tolerance_checks=("numeric_values_altered",),
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "decision": "preserve_small_table_exactly",
+            "memory_cards": [{"kind": "table_note", "statement": "PPO-002 reward 018 and Sharpe 051."}],
+        },
+        status="ok",
+    )
+
+    assert scores["memory_card_quality"] == 1.0
+    assert zero is False
+    assert types == []
+
+
 def test_durability_filter_scores_durable_vs_non_durable_decision() -> None:
     fixture = ModelEvalFixture(
         id="durability_weather",
@@ -977,6 +1144,34 @@ def test_conflict_explainer_rejects_actions_outside_backend_safe_space() -> None
     assert scores["repair_quality"] == 0.0
     assert zero is True
     assert types == ["silent_high_confidence_overwrite"]
+
+
+def test_conflict_explainer_classification_miss_is_not_overwrite_zero_tolerance() -> None:
+    fixture = ModelEvalFixture(
+        id="conflict_explainer",
+        role="conflict_explainer",
+        scenario_group="conflict",
+        input_text="Existing: Sam works at Goldman. New: Sam left Goldman and joined Point72.",
+        expected={
+            "conflict_classification": "supersedes",
+            "safe_action_space": ["approve_supersession", "keep_both", "reject_new", "edit"],
+        },
+        zero_tolerance_checks=("silent_high_confidence_overwrite",),
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "decision": "needs_user_choice",
+            "conflict_classification": "employment_transition_conflict",
+            "answer": "Use approve_supersession, keep_both, reject_new, or edit.",
+        },
+        status="ok",
+    )
+
+    assert scores["conflict_safety"] == 0.0
+    assert zero is False
+    assert types == []
 
 
 def test_repair_option_generator_accepts_colon_prefixed_safe_actions() -> None:
@@ -2215,3 +2410,5 @@ def test_live_provider_client_retries_transient_provider_error(monkeypatch) -> N
 
     assert attempts["count"] == 3
     assert result.status == "ok"
+    assert result.attempt_count == 3
+    assert result.retry_count == 2

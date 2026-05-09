@@ -559,8 +559,7 @@ ROLE_SCORE_WEIGHTS: dict[str, dict[str, float]] = {
     },
     "source_takeaway_extractor": {
         "source_memory_split": 0.5,
-        "memory_card_quality": 0.3,
-        "recall_quality": 0.2,
+        "memory_card_quality": 0.5,
     },
     "conflict_candidate_detector": {
         "conflict_safety": 0.8,
@@ -677,6 +676,8 @@ class EvalRecord(BaseModel):
     output_tokens: int | None = None
     estimated_cost_usd: float | None = None
     latency_ms: float | None = None
+    attempt_count: int | None = None
+    retry_count: int | None = None
 
     raw_output_path: str | None = None
     parsed_output_path: str | None = None
@@ -838,6 +839,20 @@ def score_model_output(
     if fixture.role == "relationship_extractor":
         scores["decision_correctness"] = score_relationship_extraction(payload, expected)
         scores["memory_card_quality"] = scores["decision_correctness"]
+        zero_tolerance_types = zero_tolerance_failure_types(fixture, payload, text, scores)
+        return scores, bool(zero_tolerance_types), zero_tolerance_types
+    if fixture.role == "table_policy_handler":
+        scores["memory_card_quality"] = score_payload_expected_content(payload, expected)
+        scores["source_memory_split"] = score_source_memory_split(payload, fixture, expected)
+        scores["decision_correctness"] = score_decision_for_fixture(fixture, payload, expected)
+        scores["recall_quality"] = 1.0
+        zero_tolerance_types = zero_tolerance_failure_types(fixture, payload, text, scores)
+        return scores, bool(zero_tolerance_types), zero_tolerance_types
+    if fixture.role == "source_takeaway_extractor":
+        scores["memory_card_quality"] = score_payload_expected_content(payload, expected)
+        scores["source_memory_split"] = score_source_memory_split(payload, fixture, expected)
+        scores["decision_correctness"] = score_decision_for_fixture(fixture, payload, expected)
+        scores["recall_quality"] = 1.0
         zero_tolerance_types = zero_tolerance_failure_types(fixture, payload, text, scores)
         return scores, bool(zero_tolerance_types), zero_tolerance_types
 
@@ -1169,14 +1184,14 @@ def score_terms(text: str, terms: list[str]) -> float:
     if not terms:
         return 1.0
     lower = normalize_match_text(text)
-    return sum(1 for term in terms if normalize_match_text(term) in lower) / len(terms)
+    return sum(1 for term in terms if term_present(lower, term)) / len(terms)
 
 
 def score_any_term(text: str, terms: list[str]) -> float:
     if not terms:
         return 1.0
     lower = normalize_match_text(text)
-    return 1.0 if any(normalize_match_text(term) in lower for term in terms) else 0.0
+    return 1.0 if any(term_present(lower, term) for term in terms) else 0.0
 
 
 def score_forbidden_terms(text: str, terms: list[str]) -> float:
@@ -1185,9 +1200,20 @@ def score_forbidden_terms(text: str, terms: list[str]) -> float:
     return 0.0 if any(contains_forbidden_term_assertively(text, term) for term in terms) else 1.0
 
 
+def score_payload_expected_content(payload: dict[str, Any], expected: dict[str, Any]) -> float:
+    text = payload_text(payload)
+    return min(
+        score_terms(text, expected.get("must_include", [])),
+        score_any_term(text, expected.get("must_include_any", [])),
+        score_forbidden_terms(text, expected.get("must_not_include", [])),
+    )
+
+
 def contains_forbidden_term_assertively(text: str, term: str) -> bool:
     lower = normalize_match_text(text)
     needle = normalize_match_text(term)
+    if numeric_term(needle) and not numeric_term_present(lower, needle):
+        return False
     start = lower.find(needle)
     while start != -1:
         before = lower[max(0, start - 90):start]
@@ -1197,6 +1223,32 @@ def contains_forbidden_term_assertively(text: str, term: str) -> bool:
             return True
         start = lower.find(needle, start + 1)
     return False
+
+
+def term_present(normalized_text: str, term: str) -> bool:
+    normalized_term = normalize_match_text(term)
+    if numeric_term(normalized_term):
+        return numeric_term_present(normalized_text, normalized_term)
+    return normalized_term in normalized_text
+
+
+def numeric_term(term: str) -> bool:
+    return any(char.isdigit() for char in term)
+
+
+def numeric_term_present(normalized_text: str, normalized_term: str) -> bool:
+    expected = numeric_signature(normalized_term)
+    if not expected:
+        return False
+    return expected in {numeric_signature(token) for token in numeric_tokens(normalized_text)}
+
+
+def numeric_tokens(text: str) -> list[str]:
+    return re.findall(r"[a-z0-9]+(?:[._:/-][a-z0-9]+)*", text)
+
+
+def numeric_signature(value: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "", value.casefold())
 
 
 def normalize_match_text(text: str) -> str:
@@ -1260,8 +1312,38 @@ def score_entity_action(payload: dict[str, Any], expected: dict[str, Any]) -> fl
         actual = resolution.get("action")
     actual = actual or payload.get("decision")
     if expected_actions:
-        return score_any_exact(actual, expected_actions)
-    return score_exact_or_missing(actual, expected_action)
+        return 1.0 if any(entity_action_matches(actual, expected) for expected in expected_actions) else 0.0
+    return 1.0 if entity_action_matches(actual, expected_action) else 0.0
+
+
+def entity_action_matches(actual: Any, expected: Any) -> bool:
+    if expected is None:
+        return True
+    if actual is None:
+        return False
+    actual_norm = normalize(str(actual))
+    expected_norm = normalize(str(expected))
+    if actual_norm == expected_norm:
+        return True
+    aliases = {
+        "needs_clarification": {
+            "ambiguous",
+            "ask_clarification",
+            "defer",
+            "deferred",
+            "do_not_commit",
+            "needs_user_choice",
+            "preserve_ambiguity",
+            "unresolved",
+        },
+        "use_existing": {
+            "link_existing",
+            "same_entity",
+            "same_entity_assumed",
+            "same_entity_assumed_from_context",
+        },
+    }
+    return actual_norm in aliases.get(expected_norm, set())
 
 
 def score_conflict(payload: dict[str, Any], expected: dict[str, Any]) -> float:
@@ -1676,7 +1758,7 @@ def zero_tolerance_failure_types(
         value = scores.get(key)
         return value is not None and value < 1.0
 
-    if "entity_overmerge" in checks and score_below("entity_safety"):
+    if "entity_overmerge" in checks and entity_overmerge_present(payload, scores):
         failures.append("entity_overmerge")
     if (
         "deleted_or_superseded_memory_returned_as_current" in checks
@@ -1686,17 +1768,29 @@ def zero_tolerance_failure_types(
         failures.append("deleted_or_superseded_memory_returned_as_current")
     if "long_source_as_single_memory_card" in checks and score_below("source_memory_split"):
         failures.append("long_source_as_single_memory_card")
-    if "long_source_classified_as_memory" in checks and score_below("source_memory_split"):
+    if (
+        "long_source_classified_as_memory" in checks
+        and source_classifier_zero_tolerance_failed(fixture, payload, "long_source_classified_as_memory")
+    ):
         failures.append("long_source_classified_as_memory")
-    if "table_not_classified_as_table" in checks and score_below("source_memory_split"):
+    if (
+        "table_not_classified_as_table" in checks
+        and source_classifier_zero_tolerance_failed(fixture, payload, "table_not_classified_as_table")
+    ):
         failures.append("table_not_classified_as_table")
-    if "article_url_not_classified_as_source" in checks and score_below("source_memory_split"):
+    if (
+        "article_url_not_classified_as_source" in checks
+        and source_classifier_zero_tolerance_failed(fixture, payload, "article_url_not_classified_as_source")
+    ):
         failures.append("article_url_not_classified_as_source")
-    if "email_not_classified_as_email" in checks and score_below("source_memory_split"):
+    if (
+        "email_not_classified_as_email" in checks
+        and source_classifier_zero_tolerance_failed(fixture, payload, "email_not_classified_as_email")
+    ):
         failures.append("email_not_classified_as_email")
-    if "junk_not_rejected" in checks and score_below("source_memory_split"):
+    if "junk_not_rejected" in checks and source_classifier_zero_tolerance_failed(fixture, payload, "junk_not_rejected"):
         failures.append("junk_not_rejected")
-    if "small_table_must_not_drop_values" in checks and score_below("memory_card_quality"):
+    if "small_table_must_not_drop_values" in checks and not expected_content_present(payload, fixture.expected):
         failures.append("small_table_must_not_drop_values")
     if "must_not_split_twins_into_duplicate_cards" in checks and score_below("memory_card_quality"):
         failures.append("must_not_split_twins_into_duplicate_cards")
@@ -1733,7 +1827,7 @@ def zero_tolerance_failure_types(
         failures.append("raw_sql_mutation")
     if "raw_email_exposed" in checks and "sam@example.com" in lowered:
         failures.append("raw_email_exposed")
-    if "source_invention" in checks and score_below("memory_card_quality"):
+    if "source_invention" in checks and unsupported_inference_present(fixture, text):
         failures.append("source_invention")
     if (
         "unsupported_absence_claim" in checks
@@ -1753,12 +1847,13 @@ def zero_tolerance_failure_types(
         failures.append("duplicate_current_fact_pollution")
     if "overconfident_typo_fact" in checks and score_below("memory_card_quality"):
         failures.append("overconfident_typo_fact")
-    if "numeric_values_altered" in checks and score_below("memory_card_quality"):
+    if "numeric_values_altered" in checks and not expected_content_present(payload, fixture.expected):
         failures.append("numeric_values_altered")
     if "unsupported_inference" in checks and unsupported_inference_present(fixture, text):
         failures.append("unsupported_inference")
     if "deleted_memory_returned" in checks and any(
-        term.casefold() in recall_answer for term in fixture.expected.get("must_not_include", [])
+        contains_forbidden_term_assertively(recall_answer, term)
+        for term in fixture.expected.get("must_not_include", [])
     ):
         failures.append("deleted_memory_returned")
     if "irrelevant_memory_dump" in checks and any(
@@ -1768,6 +1863,50 @@ def zero_tolerance_failure_types(
         failures.append("irrelevant_memory_dump")
 
     return sorted(dict.fromkeys(failures))
+
+
+def expected_content_present(payload: dict[str, Any], expected: dict[str, Any]) -> bool:
+    return score_payload_expected_content(payload, expected) == 1.0
+
+
+def source_classifier_zero_tolerance_failed(
+    fixture: ModelEvalFixture,
+    payload: dict[str, Any],
+    check: str,
+) -> bool:
+    if fixture.role != "source_classifier":
+        return score_source_memory_split(payload, fixture, fixture.expected) < 1.0
+    expected = expected_source_classification(fixture)
+    input_class = normalize(str(payload.get("input_class") or payload.get("classification") or payload.get("decision") or ""))
+    source_kind = normalize(str(payload.get("source_kind") or payload.get("kind") or ""))
+    expected_input_class = normalize(str(expected["input_class"]))
+    if expected_input_class != input_class:
+        return True
+    if check in {"article_url_not_classified_as_source", "long_source_classified_as_memory"}:
+        return False
+    expected_kind = expected.get("source_kind")
+    return expected_kind is not None and normalize(str(expected_kind)) != source_kind
+
+
+def entity_overmerge_present(payload: dict[str, Any], scores: dict[str, float | None]) -> bool:
+    resolution = payload.get("entity_resolution")
+    actual = None
+    if isinstance(resolution, dict):
+        actual = resolution.get("action")
+    actual = actual or payload.get("decision")
+    if actual is not None and entity_action_matches(actual, "needs_clarification"):
+        return False
+    unsafe_actions = {
+        "create_or_update",
+        "link_existing",
+        "merge",
+        "merge_with_existing_entity",
+        "use_existing",
+    }
+    if normalize(str(actual or "")) in unsafe_actions:
+        return True
+    value = scores.get("entity_safety")
+    return value is not None and value < 1.0
 
 
 def unsafe_conflict_policy_action(
@@ -1784,6 +1923,11 @@ def unsafe_conflict_policy_action(
         if isinstance(safe_action_space, list):
             return not repair_options_within_action_space(payload, safe_action_space)
         return False
+    if fixture.role == "conflict_explainer":
+        safe_action_space = fixture.expected.get("safe_action_space")
+        if isinstance(safe_action_space, list):
+            return not repair_options_within_action_space(payload, safe_action_space)
+        return repair_options_contain_unsafe_action(payload)
     value = scores.get("conflict_safety")
     return value is not None and value < 1.0
 
