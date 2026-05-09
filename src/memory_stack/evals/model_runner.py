@@ -19,7 +19,6 @@ from typing import Any, Protocol
 
 from memory_stack.config import Settings
 from memory_stack.evals.model_fixtures import (
-    BASE_OUTPUT_SCHEMA,
     ModelEvalFixture,
     fixture_prompt,
     output_schema_for_fixture,
