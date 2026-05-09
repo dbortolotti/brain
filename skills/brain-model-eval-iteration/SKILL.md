@@ -53,6 +53,20 @@ uv run brain eval models --help
 
 Do not require a clean worktree. Do not revert unrelated changes. If existing user changes touch scoring, fixtures, prompts, or model runner code, inspect them before editing and work with them.
 
+## Production Model Secrets
+
+Use the same model/provider secrets as the production deployment. Do not invent ad hoc API keys or switch auth modes for eval convenience.
+
+Before running the eval, load or verify the production deployment environment/secrets used by the local production service. Prefer the repo's existing production deploy/render scripts and generated production env file if present. Redact secret values in all user-facing output and logs.
+
+Confirm the active model-secret source in the status update before starting, for example:
+
+```text
+Using production deployment model secrets from <redacted-source>; values redacted.
+```
+
+If production model secrets are unavailable or ambiguous, stop and ask the user where the production deployment env/secrets should be sourced from. Do not silently fall back to unrelated local shell credentials.
+
 ## Run Command
 
 Create the output directory, then run:
