@@ -300,6 +300,9 @@ def test_openai_oauth_text_smoke_uses_codex_bearer(
     tmp_path: Path,
 ) -> None:
     clear_provider_env(monkeypatch)
+    empty_codex_home = tmp_path / "empty-codex"
+    empty_codex_home.mkdir()
+    monkeypatch.setenv("CODEX_HOME", str(empty_codex_home))
     settings = Settings(
         profile="openai",
         openai_auth_mode="oauth",
