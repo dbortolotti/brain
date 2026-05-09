@@ -1,0 +1,64 @@
+{
+  "fixture_id": "project_state_brain_slack_agent_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Extracted a durable project-state memory: Slack should be the primary guardrailed memory ingestion interface for Brain, while Telegram is deferred.",
+    "citations": [
+      "Brain project state - Slack should be the primary guardrailed memory ingestion interface; Telegram can come later"
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "The input explicitly states current project state for Brain and names Slack and Telegram as related platforms; no existing entity ID was provided."
+    },
+    "intent": "extract_project_state_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "Slack",
+            "role": "primary guardrailed memory ingestion interface",
+            "type": "platform"
+          },
+          {
+            "name": "Telegram",
+            "role": "deferred future interface",
+            "type": "platform"
+          }
+        ],
+        "kind": "project_state",
+        "relationships": [
+          {
+            "object": "Slack",
+            "predicate": "uses_primary_guardrailed_memory_ingestion_interface",
+            "subject": "Brain"
+          },
+          {
+            "object": "Brain",
+            "predicate": "can_come_later_for",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "For the Brain project, Slack should be the primary guardrailed memory ingestion interface; Telegram can come later."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed one project_state memory card.",
+        "Preserved the distinction that Slack is primary now and Telegram is deferred rather than current."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "entity_mention_extractor",
+  "run_id": "eval_20260508_125514"
+}

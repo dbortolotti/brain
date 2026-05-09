@@ -1,0 +1,63 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0019305,
+  "fixture_id": "temporal_status_transition_001__context",
+  "input_tokens": 450,
+  "latency_ms": 3586,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 354,
+  "payload": {
+    "answer": "Approve supersession: retain the implemented state as current. The earlier planned/open state is superseded and should not be presented as current.",
+    "citations": [
+      "Existing project state: The Brain Slack agent is planned, status=open.",
+      "New: The Brain Slack agent MVP is now implemented."
+    ],
+    "conflict_classification": "temporal_status_transition",
+    "decision": "approve_supersession",
+    "entity_resolution": {
+      "action": "keep_both",
+      "entity_id": null,
+      "reason": "The input refers to the same project feature across time, but no backend entity ID was provided. The safest interpretation is that the new implemented state supersedes the earlier planned/open state for the same feature."
+    },
+    "intent": "Resolve a temporal status conflict for the Brain Slack agent by choosing a safe backend action and summarizing the durable memory update.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain Slack agent MVP",
+            "role": "subject",
+            "type": "project feature"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "implemented",
+            "predicate": "status",
+            "subject": "Brain Slack agent MVP"
+          }
+        ],
+        "statement": "The Brain Slack agent MVP is implemented."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict identified as a temporal status transition.",
+        "New implemented state is the durable current fact.",
+        "Earlier planned/open state is superseded for current-memory purposes."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "approve_supersession",
+      "keep_both",
+      "reject_new",
+      "edit"
+    ]
+  },
+  "raw_text": "{\"intent\":\"Resolve a temporal status conflict for the Brain Slack agent by choosing a safe backend action and summarizing the durable memory update.\",\"decision\":\"approve_supersession\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"The Brain Slack agent MVP is implemented.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Brain Slack agent MVP\",\"type\":\"project feature\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"Brain Slack agent MVP\",\"predicate\":\"status\",\"object\":\"implemented\"}]}],\"entity_resolution\":{\"action\":\"keep_both\",\"entity_id\":null,\"reason\":\"The input refers to the same project feature across time, but no backend entity ID was provided. The safest interpretation is that the new implemented state supersedes the earlier planned/open state for the same feature.\"},\"conflict_classification\":\"temporal_status_transition\",\"answer\":\"Approve supersession: retain the implemented state as current. The earlier planned/open state is superseded and should not be presented as current.\",\"citations\":[\"Existing project state: The Brain Slack agent is planned, status=open.\",\"New: The Brain Slack agent MVP is now implemented.\"],\"repair_options\":[\"approve_supersession\",\"keep_both\",\"reject_new\",\"edit\"],\"receipt\":{\"success\":true,\"details\":[\"Conflict identified as a temporal status transition.\",\"New implemented state is the durable current fact.\",\"Earlier planned/open state is superseded for current-memory purposes.\"]}}",
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

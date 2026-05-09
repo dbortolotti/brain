@@ -1,0 +1,75 @@
+{
+  "fixture_id": "large_table_500_rows_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "The input only supports that there is a CSV table with 500 rows and repeated id, name, value columns; it does not specify a storage policy.",
+    "citations": [
+      "For context, CSV table with 500 rows: id,name,value repeated many times."
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_with_warning",
+    "entity_resolution": {
+      "action": "no_resolution",
+      "entity_id": null,
+      "reason": "The input provides only a contextual table description and no uniquely identifiable entity requiring resolution."
+    },
+    "intent": "atomic_card_extractor",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "subject",
+            "type": "dataset"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [],
+        "statement": "There is a CSV table with 500 rows."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "id",
+            "role": "attribute",
+            "type": "column"
+          },
+          {
+            "name": "name",
+            "role": "attribute",
+            "type": "column"
+          },
+          {
+            "name": "value",
+            "role": "attribute",
+            "type": "column"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "id,name,value",
+            "predicate": "has_repeated_columns",
+            "subject": "table"
+          }
+        ],
+        "statement": "The table uses the columns id, name, and value repeatedly."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted two atomic facts from the provided context.",
+        "No unsupported policy inference was committed as durable memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add explicit storage requirements if you want a policy recommendation.",
+      "Provide the target system or constraints (e.g., database, flat file, deduplication) for a more precise answer."
+    ]
+  },
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164405"
+}

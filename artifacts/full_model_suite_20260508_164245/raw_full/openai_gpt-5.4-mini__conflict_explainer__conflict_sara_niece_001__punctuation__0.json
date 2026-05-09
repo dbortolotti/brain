@@ -1,0 +1,98 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00218175,
+  "fixture_id": "conflict_sara_niece_001__punctuation",
+  "input_tokens": 443,
+  "latency_ms": 3582,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 411,
+  "payload": {
+    "answer": "I\u2019m not sure whether to keep the existing family relation or add the new one, since \"my niece\" could conflict with \"Daniele's daughter\" unless there is additional context. Please clarify Sara\u2019s relation to you.",
+    "citations": [
+      "Existing high-confidence memory: Sara is Daniele's daughter and Nur's twin",
+      "New: Sara is my niece"
+    ],
+    "conflict_classification": "relation_conflict",
+    "decision": "ask_clarification",
+    "entity_resolution": {
+      "action": "keep_existing",
+      "entity_id": null,
+      "reason": "The new statement may conflict with the existing high-confidence family relation, and the referent of \"my\" is not explicit enough to safely merge or replace."
+    },
+    "intent": "resolve_relation_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "sibling",
+            "type": "person"
+          }
+        ],
+        "kind": "existing_memory",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "child_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "twin_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin"
+      },
+      {
+        "confidence": "proposed",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "new_memory",
+        "relationships": [
+          {
+            "object": "speaker",
+            "predicate": "niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected a potential relation conflict involving Sara.",
+        "Preserved the existing high-confidence memory without superseding it.",
+        "Requested clarification before committing any new durable memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "ask_clarification",
+      "keep_existing",
+      "add_new",
+      "reject_new",
+      "edit"
+    ]
+  },
+  "raw_text": "{\"intent\":\"resolve_relation_conflict\",\"decision\":\"ask_clarification\",\"memory_cards\":[{\"kind\":\"existing_memory\",\"statement\":\"Sara is Daniele's daughter and Nur's twin\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Daniele\",\"type\":\"person\",\"role\":\"parent\"},{\"name\":\"Nur\",\"type\":\"person\",\"role\":\"sibling\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"child_of\",\"object\":\"Daniele\"},{\"subject\":\"Sara\",\"predicate\":\"twin_of\",\"object\":\"Nur\"}]},{\"kind\":\"new_memory\",\"statement\":\"Sara is my niece\",\"confidence\":\"proposed\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"niece_of\",\"object\":\"speaker\"}]}],\"entity_resolution\":{\"action\":\"keep_existing\",\"entity_id\":null,\"reason\":\"The new statement may conflict with the existing high-confidence family relation, and the referent of \\\"my\\\" is not explicit enough to safely merge or replace.\"},\"conflict_classification\":\"relation_conflict\",\"answer\":\"I\u2019m not sure whether to keep the existing family relation or add the new one, since \\\"my niece\\\" could conflict with \\\"Daniele's daughter\\\" unless there is additional context. Please clarify Sara\u2019s relation to you.\",\"citations\":[\"Existing high-confidence memory: Sara is Daniele's daughter and Nur's twin\",\"New: Sara is my niece\"],\"repair_options\":[\"ask_clarification\",\"keep_existing\",\"add_new\",\"reject_new\",\"edit\"],\"receipt\":{\"success\":true,\"details\":[\"Detected a potential relation conflict involving Sara.\",\"Preserved the existing high-confidence memory without superseding it.\",\"Requested clarification before committing any new durable memory.\"]}}",
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

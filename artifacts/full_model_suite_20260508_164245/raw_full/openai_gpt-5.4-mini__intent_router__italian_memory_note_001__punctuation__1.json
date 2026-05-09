@@ -1,0 +1,73 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0016589999999999999,
+  "fixture_id": "italian_memory_note_001__punctuation",
+  "input_tokens": 370,
+  "latency_ms": 2851,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 307,
+  "payload": {
+    "answer": "Memorizzato: Sam di Goldman preferisce Bill Evans.",
+    "citations": [
+      "input: \"Ricordami che Sam di Goldman preferisce Bill Evans\""
+    ],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "create_or_link_ambiguous",
+      "entity_id": null,
+      "reason": "'Sam of Goldman' is not uniquely resolvable from the input alone; preserve as an affiliated/descriptor-based reference rather than merging into a specific known person."
+    },
+    "intent": "remember_fact",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_or_descriptor",
+            "type": "organization_or_descriptor"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred_entity",
+            "type": "person_or_artist"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam of Goldman prefers Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed as a durable preference memory.",
+        "Preserved ambiguity around the identity of Sam of Goldman."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If 'Sam of Goldman' refers to a specific Sam, provide the full name or more context for a stronger entity link."
+    ]
+  },
+  "raw_text": "{\"intent\":\"remember_fact\",\"decision\":\"store\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam of Goldman prefers Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization_or_descriptor\",\"role\":\"affiliation_or_descriptor\"},{\"name\":\"Bill Evans\",\"type\":\"person_or_artist\",\"role\":\"preferred_entity\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"prefers\",\"object\":\"Bill Evans\"},{\"subject\":\"Sam\",\"predicate\":\"associated_with\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"create_or_link_ambiguous\",\"entity_id\":null,\"reason\":\"'Sam of Goldman' is not uniquely resolvable from the input alone; preserve as an affiliated/descriptor-based reference rather than merging into a specific known person.\"},\"conflict_classification\":\"none\",\"answer\":\"Memorizzato: Sam di Goldman preferisce Bill Evans.\",\"citations\":[\"input: \\\"Ricordami che Sam di Goldman preferisce Bill Evans\\\"\"],\"repair_options\":[\"If 'Sam of Goldman' refers to a specific Sam, provide the full name or more context for a stronger entity link.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed as a durable preference memory.\",\"Preserved ambiguity around the identity of Sam of Goldman.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

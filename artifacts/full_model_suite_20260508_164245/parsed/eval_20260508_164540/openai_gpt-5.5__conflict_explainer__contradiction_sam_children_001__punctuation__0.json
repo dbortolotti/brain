@@ -1,0 +1,84 @@
+{
+  "fixture_id": "contradiction_sam_children_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "The new statement directly conflicts with the existing memory: the existing memory says Sam from Goldman has two children, while the new statement says Sam from Goldman has no children. Safe actions available are: approve_supersession, keep_both, reject_new, or edit.",
+    "citations": [
+      "Existing memory: Sam from Goldman has two children",
+      "New: Sam from Goldman has no children"
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "conflict_detected",
+    "entity_resolution": {
+      "action": "same_entity_assumed",
+      "entity_id": null,
+      "reason": "Both statements refer to Sam from Goldman, but no durable update should be committed without resolving the contradiction."
+    },
+    "intent": "explain_conflict",
+    "memory_cards": [
+      {
+        "confidence": "unknown",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "existing",
+        "relationships": [
+          {
+            "object": "two",
+            "predicate": "has_children_count",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman has two children"
+      },
+      {
+        "confidence": "unknown",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "new",
+        "relationships": [
+          {
+            "object": "zero",
+            "predicate": "has_children_count",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman has no children"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected a direct contradiction about Sam from Goldman's children.",
+        "No durable memory change was committed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "approve_supersession",
+      "keep_both",
+      "reject_new",
+      "edit"
+    ]
+  },
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_164540"
+}

@@ -1,0 +1,111 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00221925,
+  "fixture_id": "recall_profile_sam_001__punctuation",
+  "input_tokens": 409,
+  "latency_ms": 7487,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 425,
+  "payload": {
+    "answer": "Known facts about Sam from Goldman: Sam is associated with Goldman, likes Bill Evans, and is interested in AI infrastructure.",
+    "citations": [
+      "Input Facts: Sam from Goldman likes Bill Evans, is associated with Goldman, is interested in AI infrastructure"
+    ],
+    "conflict_classification": "none",
+    "decision": "answer_with_supported_facts_only",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": "sam_from_goldman_001",
+      "reason": "The query refers to Sam from Goldman, and the input facts describe a single Sam associated with Goldman."
+    },
+    "intent": "retrieve_profile",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "association",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "is_associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is associated with Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_object",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "interest",
+            "type": "topic"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "AI infrastructure",
+            "predicate": "is_interested_in",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is interested in AI infrastructure."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Resolved a single Sam associated with Goldman.",
+        "Returned only facts explicitly supported by the input."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want, I can help draft the AI infrastructure article to send to Sam."
+    ]
+  },
+  "raw_text": "{\"intent\":\"retrieve_profile\",\"decision\":\"answer_with_supported_facts_only\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam is associated with Goldman.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"association\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"is_associated_with\",\"object\":\"Goldman\"}]},{\"kind\":\"fact\",\"statement\":\"Sam likes Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"preference_object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]},{\"kind\":\"fact\",\"statement\":\"Sam is interested in AI infrastructure.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"AI infrastructure\",\"type\":\"topic\",\"role\":\"interest\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"is_interested_in\",\"object\":\"AI infrastructure\"}]}],\"entity_resolution\":{\"action\":\"resolve\",\"entity_id\":\"sam_from_goldman_001\",\"reason\":\"The query refers to Sam from Goldman, and the input facts describe a single Sam associated with Goldman.\"},\"conflict_classification\":\"none\",\"answer\":\"Known facts about Sam from Goldman: Sam is associated with Goldman, likes Bill Evans, and is interested in AI infrastructure.\",\"citations\":[\"Input Facts: Sam from Goldman likes Bill Evans, is associated with Goldman, is interested in AI infrastructure\"],\"repair_options\":[\"If you want, I can help draft the AI infrastructure article to send to Sam.\"],\"receipt\":{\"success\":true,\"details\":[\"Resolved a single Sam associated with Goldman.\",\"Returned only facts explicitly supported by the input.\"]}}",
+  "role": "groundedness_checker",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

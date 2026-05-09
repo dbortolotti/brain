@@ -1,0 +1,84 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0015757500000000001,
+  "fixture_id": "memory_compiler_small_table__punctuation",
+  "input_tokens": 451,
+  "latency_ms": 2480,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 275,
+  "payload": {
+    "answer": "Extracted 2 atomic preference cards from the table.",
+    "citations": [
+      "Input table: Sam -> Bill Evans",
+      "Input table: Daniele -> Knowledge graphs"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_success",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No ambiguous entity references requiring resolution."
+    },
+    "intent": "extract_atomic_memory_cards",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred subject",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam prefers Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Daniele",
+            "type": "person"
+          },
+          {
+            "name": "knowledge graphs",
+            "role": "preferred subject",
+            "type": "concept"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "knowledge graphs",
+            "predicate": "prefers",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Daniele prefers knowledge graphs."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed two explicit person-to-preference rows.",
+        "No ambiguity or conflict present."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"extract_atomic_memory_cards\",\"decision\":\"commit_success\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam prefers Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"preferred subject\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"prefers\",\"object\":\"Bill Evans\"}]},{\"kind\":\"preference\",\"statement\":\"Daniele prefers knowledge graphs.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Daniele\",\"type\":\"person\"},{\"name\":\"knowledge graphs\",\"type\":\"concept\",\"role\":\"preferred subject\"}],\"relationships\":[{\"subject\":\"Daniele\",\"predicate\":\"prefers\",\"object\":\"knowledge graphs\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No ambiguous entity references requiring resolution.\"},\"conflict_classification\":\"none\",\"answer\":\"Extracted 2 atomic preference cards from the table.\",\"citations\":[\"Input table: Sam -> Bill Evans\",\"Input table: Daniele -> Knowledge graphs\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Parsed two explicit person-to-preference rows.\",\"No ambiguity or conflict present.\"]}}",
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

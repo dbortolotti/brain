@@ -1,0 +1,59 @@
+{
+  "fixture_id": "pdf_ocr_noisy_source_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Committed a durable principle from noisy OCR with corrected spelling while preserving the stated meaning.",
+    "citations": [
+      "[OCR noisy] Brain DB remalns source of trvth. Cognee shou1d be rebuildable projection."
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The entities are named explicitly in the input, but no existing entity IDs are provided for resolution."
+    },
+    "intent": "memory_update",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "rebuildable_projection",
+            "type": "system"
+          }
+        ],
+        "kind": "principle",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "remains",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "rebuildable projection",
+            "predicate": "should be",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain DB remains the source of truth. Cognee should be a rebuildable projection."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Normalized OCR noise: 'remalns' to 'remains', 'trvth' to 'truth', and 'shou1d' to 'should'.",
+        "Committed only the explicitly stated relationship between Brain DB and Cognee."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "intent_router",
+  "run_id": "eval_20260508_195937"
+}

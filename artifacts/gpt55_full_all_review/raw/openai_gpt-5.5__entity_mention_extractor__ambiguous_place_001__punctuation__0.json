@@ -1,0 +1,54 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.011315,
+  "fixture_id": "ambiguous_place_001__punctuation",
+  "input_tokens": 385,
+  "latency_ms": 4052,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 313,
+  "payload": {
+    "answer": "Could not safely link the new note to a specific existing Brutto entity because the mention is ambiguous.",
+    "citations": [
+      "New note: Brutto was better than expected",
+      "Existing: Brutto restaurant in London; Brutto article alias"
+    ],
+    "conflict_classification": "none",
+    "decision": "do_not_commit",
+    "entity_resolution": {
+      "action": "ambiguous_no_link",
+      "entity_id": null,
+      "reason": "Existing memory contains at least two possible interpretations for 'Brutto': a restaurant in London and an article alias. The new note lacks context to resolve which entity was better than expected."
+    },
+    "intent": "extract_entity_mention",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Brutto",
+            "role": "mentioned",
+            "type": "ambiguous"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [],
+        "statement": "The new note says: \"Brutto was better than expected.\" It mentions \"Brutto\" ambiguously and does not specify whether it refers to the existing Brutto restaurant in London or the Brutto article alias."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted ambiguous entity mention.",
+        "No durable memory committed due to unresolved entity ambiguity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify whether 'Brutto' refers to the restaurant in London.",
+      "Clarify whether 'Brutto' refers to the article alias."
+    ]
+  },
+  "raw_text": "{\"intent\":\"extract_entity_mention\",\"decision\":\"do_not_commit\",\"memory_cards\":[{\"kind\":\"observation\",\"statement\":\"The new note says: \\\"Brutto was better than expected.\\\" It mentions \\\"Brutto\\\" ambiguously and does not specify whether it refers to the existing Brutto restaurant in London or the Brutto article alias.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Brutto\",\"type\":\"ambiguous\",\"role\":\"mentioned\"}],\"relationships\":[]}],\"entity_resolution\":{\"action\":\"ambiguous_no_link\",\"entity_id\":null,\"reason\":\"Existing memory contains at least two possible interpretations for 'Brutto': a restaurant in London and an article alias. The new note lacks context to resolve which entity was better than expected.\"},\"conflict_classification\":\"none\",\"answer\":\"Could not safely link the new note to a specific existing Brutto entity because the mention is ambiguous.\",\"citations\":[\"New note: Brutto was better than expected\",\"Existing: Brutto restaurant in London; Brutto article alias\"],\"repair_options\":[\"Clarify whether 'Brutto' refers to the restaurant in London.\",\"Clarify whether 'Brutto' refers to the article alias.\"],\"receipt\":{\"success\":true,\"details\":[\"Extracted ambiguous entity mention.\",\"No durable memory committed due to unresolved entity ambiguity.\"]}}",
+  "role": "entity_mention_extractor",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

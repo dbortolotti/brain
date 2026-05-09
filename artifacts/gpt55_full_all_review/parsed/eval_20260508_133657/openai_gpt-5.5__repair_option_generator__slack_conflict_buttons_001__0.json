@@ -1,0 +1,69 @@
+{
+  "fixture_id": "slack_conflict_buttons_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "This appears to update the existing memory 'Sam works at Goldman' to 'Sam left Goldman and joined Point72,' but because 'Sam' is ambiguous, confirmation is needed before replacing the current employment fact.",
+    "citations": [
+      "Existing memory: Sam works at Goldman.",
+      "New request: Sam left Goldman and joined Point72."
+    ],
+    "conflict_classification": "supersedes_existing_employment_if_same_sam",
+    "decision": "needs_repair_confirmation",
+    "entity_resolution": {
+      "action": "match_existing_entity_ambiguous",
+      "entity_id": null,
+      "reason": "The new memory refers to 'Sam', which may match the existing Sam, but the name alone is ambiguous without additional identifiers."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_update",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left_employer",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined_employer",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected a potential conflict with an existing employment memory.",
+        "Did not commit the new memory because entity identity is ambiguous."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Confirm this is the same Sam; then mark 'Sam works at Goldman' as superseded and remember 'Sam left Goldman and joined Point72.'",
+      "Clarify which Sam this refers to; then create or update the correct person record.",
+      "If this is a different Sam, keep the existing Goldman memory and add a new memory for the other Sam who joined Point72."
+    ]
+  },
+  "role": "repair_option_generator",
+  "run_id": "eval_20260508_133657"
+}

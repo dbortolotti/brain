@@ -1,0 +1,35 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.011289999999999998,
+  "fixture_id": "concurrent_conflict_writes_001__context",
+  "input_tokens": 482,
+  "latency_ms": 4616,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 296,
+  "payload": {
+    "answer": "Possible conflict candidate detected: the context contains two concurrent employment facts for Sam\u2014\"Sam works at Goldman\" and \"Sam joined Point72.\" These may conflict if they refer to the same Sam and current primary employment, but the statements could also be additive if Sam has multiple roles or the Goldman fact is historical. Detection only; no backend policy choice is made.",
+    "citations": [
+      "Sam works at Goldman.",
+      "Sam joined Point72."
+    ],
+    "conflict_classification": "contradicts",
+    "decision": "conflict_candidate",
+    "entity_resolution": {
+      "action": "possible_same_entity",
+      "entity_id": null,
+      "reason": "Both facts refer to 'Sam' without additional identifiers, so they are treated as a possible same entity for conflict detection, but identity is not fully resolved."
+    },
+    "evidence": [
+      {
+        "existing_fact": "Sam works at Goldman.",
+        "new_fact": "Sam joined Point72.",
+        "reason": "Both statements appear to describe Sam's employment affiliation. If both are intended as current primary employment for the same person, they are potentially conflicting; ambiguity remains because joining Point72 may supersede, supplement, or not affect the Goldman role."
+      }
+    ],
+    "intent": "detect_conflict_candidate"
+  },
+  "raw_text": "{\"intent\":\"detect_conflict_candidate\",\"decision\":\"conflict_candidate\",\"conflict_classification\":\"contradicts\",\"answer\":\"Possible conflict candidate detected: the context contains two concurrent employment facts for Sam\u2014\\\"Sam works at Goldman\\\" and \\\"Sam joined Point72.\\\" These may conflict if they refer to the same Sam and current primary employment, but the statements could also be additive if Sam has multiple roles or the Goldman fact is historical. Detection only; no backend policy choice is made.\",\"citations\":[\"Sam works at Goldman.\",\"Sam joined Point72.\"],\"evidence\":[{\"existing_fact\":\"Sam works at Goldman.\",\"new_fact\":\"Sam joined Point72.\",\"reason\":\"Both statements appear to describe Sam's employment affiliation. If both are intended as current primary employment for the same person, they are potentially conflicting; ambiguity remains because joining Point72 may supersede, supplement, or not affect the Goldman role.\"}],\"entity_resolution\":{\"action\":\"possible_same_entity\",\"entity_id\":null,\"reason\":\"Both facts refer to 'Sam' without additional identifiers, so they are treated as a possible same entity for conflict detection, but identity is not fully resolved.\"}}",
+  "role": "conflict_candidate_detector",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

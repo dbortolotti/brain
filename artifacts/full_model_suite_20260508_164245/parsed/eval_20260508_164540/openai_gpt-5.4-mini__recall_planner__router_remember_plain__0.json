@@ -1,0 +1,65 @@
+{
+  "fixture_id": "router_remember_plain",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Recorded tentatively: Sam (associated with Goldman) likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit_tentatively",
+    "entity_resolution": {
+      "action": "create_or_update_tentative_entity",
+      "entity_id": null,
+      "reason": "The input identifies Sam and mentions Goldman as an affiliation, but does not uniquely disambiguate which Sam or whether Goldman is a current affiliation; preserve ambiguity."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam, who is associated with Goldman, likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured a tentative preference memory.",
+        "Preserved ambiguity about Sam's identity and the nature of the Goldman affiliation."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If needed, clarify which Sam is meant.",
+      "If needed, specify whether Goldman is an employer, school, or other affiliation."
+    ]
+  },
+  "role": "recall_planner",
+  "run_id": "eval_20260508_164540"
+}

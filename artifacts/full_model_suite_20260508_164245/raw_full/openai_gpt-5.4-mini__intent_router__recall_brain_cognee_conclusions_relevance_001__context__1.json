@@ -1,0 +1,75 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0019252499999999999,
+  "fixture_id": "recall_brain_cognee_conclusions_relevance_001__context",
+  "input_tokens": 437,
+  "latency_ms": 3940,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 355,
+  "payload": {
+    "answer": "You concluded that Brain is the source of truth, and Cognee is a rebuildable projection derived from it.",
+    "citations": [
+      "context: Brain DB source-of-truth conclusion",
+      "context: Cognee rebuildable projection"
+    ],
+    "conflict_classification": "none",
+    "decision": "answered",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": null,
+      "reason": "The query refers to the paired systems Brain and Cognee in the provided context; no finer-grained entity disambiguation is needed."
+    },
+    "intent": "intent_router",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "source-of-truth memory store",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "rebuildable projection",
+            "type": "system"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "is",
+            "subject": "Brain"
+          },
+          {
+            "object": "rebuildable projection",
+            "predicate": "is",
+            "subject": "Cognee"
+          },
+          {
+            "object": "Brain",
+            "predicate": "depends on",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain was concluded to be the source of truth, while Cognee was concluded to be a rebuildable projection rather than the primary durable record."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Scoped to Brain and Cognee only.",
+        "No unrelated memories added.",
+        "Ambiguity preserved where the underlying record details were not provided."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want, I can also restate this as a durable memory card with stricter wording about what should and should not be retained."
+    ]
+  },
+  "raw_text": "{\"intent\":\"intent_router\",\"decision\":\"answered\",\"memory_cards\":[{\"kind\":\"conclusion\",\"statement\":\"Brain was concluded to be the source of truth, while Cognee was concluded to be a rebuildable projection rather than the primary durable record.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Brain\",\"type\":\"system\",\"role\":\"source-of-truth memory store\"},{\"name\":\"Cognee\",\"type\":\"system\",\"role\":\"rebuildable projection\"}],\"relationships\":[{\"subject\":\"Brain\",\"predicate\":\"is\",\"object\":\"source of truth\"},{\"subject\":\"Cognee\",\"predicate\":\"is\",\"object\":\"rebuildable projection\"},{\"subject\":\"Cognee\",\"predicate\":\"depends on\",\"object\":\"Brain\"}]}],\"entity_resolution\":{\"action\":\"resolved\",\"entity_id\":null,\"reason\":\"The query refers to the paired systems Brain and Cognee in the provided context; no finer-grained entity disambiguation is needed.\"},\"conflict_classification\":\"none\",\"answer\":\"You concluded that Brain is the source of truth, and Cognee is a rebuildable projection derived from it.\",\"citations\":[\"context: Brain DB source-of-truth conclusion\",\"context: Cognee rebuildable projection\"],\"repair_options\":[\"If you want, I can also restate this as a durable memory card with stricter wording about what should and should not be retained.\"],\"receipt\":{\"success\":true,\"details\":[\"Scoped to Brain and Cognee only.\",\"No unrelated memories added.\",\"Ambiguity preserved where the underlying record details were not provided.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

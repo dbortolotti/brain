@@ -1,0 +1,89 @@
+{
+  "fixture_id": "numeric_table_exactness_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Extracted two atomic memory cards from the table, preserving the numeric strings exactly as written.",
+    "citations": [
+      "| PPO-001 | 012 | 045 | baseline |",
+      "| PPO-002 | 018 | 051 | entropy tuned |"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_success",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "The input explicitly provides two run identifiers and their associated table values; no existing entity IDs are provided."
+    },
+    "intent": "extract_atomic_memory_cards",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "subject",
+            "type": "run"
+          }
+        ],
+        "kind": "experiment_metric",
+        "relationships": [
+          {
+            "object": "012",
+            "predicate": "has_reward",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "045",
+            "predicate": "has_sharpe",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "baseline",
+            "predicate": "has_notes",
+            "subject": "PPO-001"
+          }
+        ],
+        "statement": "Run PPO-001 has Reward 012, Sharpe 045, and notes \"baseline\"."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "subject",
+            "type": "run"
+          }
+        ],
+        "kind": "experiment_metric",
+        "relationships": [
+          {
+            "object": "018",
+            "predicate": "has_reward",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "051",
+            "predicate": "has_sharpe",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "entropy tuned",
+            "predicate": "has_notes",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "Run PPO-002 has Reward 018, Sharpe 051, and notes \"entropy tuned\"."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed PPO-001 with Reward 012, Sharpe 045, notes baseline.",
+        "Committed PPO-002 with Reward 018, Sharpe 051, notes entropy tuned."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_195937"
+}

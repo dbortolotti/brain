@@ -1,0 +1,67 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.013705,
+  "fixture_id": "recall_brain_cognee_conclusions_relevance_001",
+  "input_tokens": 431,
+  "latency_ms": 4118,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 385,
+  "payload": {
+    "answer": "You concluded that Brain DB is the source of truth, while Cognee is a rebuildable projection.",
+    "citations": [
+      "Brain DB source-of-truth conclusion",
+      "Cognee rebuildable projection"
+    ],
+    "conflict_classification": "none",
+    "decision": "answer_scoped_to_brain_and_cognee_conclusion",
+    "entity_resolution": {
+      "action": "resolved_scope",
+      "entity_id": null,
+      "reason": "The query asks specifically for the remembered conclusion about Brain and Cognee; unrelated Slack, family, and preference records were excluded."
+    },
+    "intent": "recall",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "rebuildable_projection",
+            "type": "system"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "is",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "rebuildable projection",
+            "predicate": "is",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain DB is the source of truth; Cognee is a rebuildable projection."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Returned only the queried Brain/Cognee conclusion.",
+        "Excluded unrelated memories from Slack intake, family facts, and Sam preferences."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"recall\",\n  \"decision\": \"answer_scoped_to_brain_and_cognee_conclusion\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"conclusion\",\n      \"statement\": \"Brain DB is the source of truth; Cognee is a rebuildable projection.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain DB\",\n          \"type\": \"system\",\n          \"role\": \"source_of_truth\"\n        },\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"system\",\n          \"role\": \"rebuildable_projection\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain DB\",\n          \"predicate\": \"is\",\n          \"object\": \"source of truth\"\n        },\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"is\",\n          \"object\": \"rebuildable projection\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolved_scope\",\n    \"entity_id\": null,\n    \"reason\": \"The query asks specifically for the remembered conclusion about Brain and Cognee; unrelated Slack, family, and preference records were excluded.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"You concluded that Brain DB is the source of truth, while Cognee is a rebuildable projection.\",\n  \"citations\": [\n    \"Brain DB source-of-truth conclusion\",\n    \"Cognee rebuildable projection\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Returned only the queried Brain/Cognee conclusion.\",\n      \"Excluded unrelated memories from Slack intake, family facts, and Sam preferences.\"\n    ]\n  }\n}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

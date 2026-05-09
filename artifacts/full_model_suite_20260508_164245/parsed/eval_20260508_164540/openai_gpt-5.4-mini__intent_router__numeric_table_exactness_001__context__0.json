@@ -1,0 +1,92 @@
+{
+  "fixture_id": "numeric_table_exactness_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Context table parsed: PPO-001 = baseline, reward 0.12, Sharpe 0.45; PPO-002 = entropy tuned, reward 0.18, Sharpe 0.51.",
+    "citations": [
+      "PPO-001 | 0.12 | 0.45 | baseline",
+      "PPO-002 | 0.18 | 0.51 | entropy tuned"
+    ],
+    "conflict_classification": "none",
+    "decision": "store_as_context_only",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The table contains two distinct run identifiers with no ambiguity requiring resolution."
+    },
+    "intent": "extract_contextual_table_data",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "subject",
+            "type": "run_id"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "0.12",
+            "predicate": "has_reward",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "0.45",
+            "predicate": "has_sharpe",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "baseline",
+            "predicate": "notes",
+            "subject": "PPO-001"
+          }
+        ],
+        "statement": "PPO-001 is a baseline run with reward 0.12 and Sharpe 0.45."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "subject",
+            "type": "run_id"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "0.18",
+            "predicate": "has_reward",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "0.51",
+            "predicate": "has_sharpe",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "entropy tuned",
+            "predicate": "notes",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "PPO-002 is an entropy-tuned run with reward 0.18 and Sharpe 0.51."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed 2 runs from the table.",
+        "No conflicts or ambiguities detected in the provided context."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If needed, I can normalize the table into structured rows.",
+      "If needed, I can compare PPO-001 vs PPO-002 on reward and Sharpe."
+    ]
+  },
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540"
+}

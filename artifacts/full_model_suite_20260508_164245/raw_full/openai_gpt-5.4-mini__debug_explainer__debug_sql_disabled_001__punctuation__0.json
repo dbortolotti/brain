@@ -1,0 +1,40 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00130875,
+  "fixture_id": "debug_sql_disabled_001__punctuation",
+  "input_tokens": 377,
+  "latency_ms": 2221,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 228,
+  "payload": {
+    "answer": "SQL access is disabled in this environment, so the query was not executed.",
+    "citations": [
+      "/brain admin sql SELECT * FROM memory_cards with BRAIN_DEBUG_SQL_ENABLED=false"
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "Denied because BRAIN_DEBUG_SQL_ENABLED=false disables admin SQL access.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No durable entity to resolve from a denied SQL command."
+    },
+    "intent": "Attempt to execute an admin SQL query against memory_cards.",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Admin SQL blocked by configuration flag BRAIN_DEBUG_SQL_ENABLED=false.",
+        "No memory data was read or modified."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Enable BRAIN_DEBUG_SQL_ENABLED=true in a trusted debug environment.",
+      "Use a supported non-SQL inspection or retrieval command instead.",
+      "If you only need diagnostics, provide the specific memory card or entity to inspect."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Attempt to execute an admin SQL query against memory_cards.\",\"decision\":\"Denied because BRAIN_DEBUG_SQL_ENABLED=false disables admin SQL access.\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No durable entity to resolve from a denied SQL command.\"},\"conflict_classification\":\"no_conflict\",\"answer\":\"SQL access is disabled in this environment, so the query was not executed.\",\"citations\":[\"/brain admin sql SELECT * FROM memory_cards with BRAIN_DEBUG_SQL_ENABLED=false\"],\"repair_options\":[\"Enable BRAIN_DEBUG_SQL_ENABLED=true in a trusted debug environment.\",\"Use a supported non-SQL inspection or retrieval command instead.\",\"If you only need diagnostics, provide the specific memory card or entity to inspect.\"],\"receipt\":{\"success\":false,\"details\":[\"Admin SQL blocked by configuration flag BRAIN_DEBUG_SQL_ENABLED=false.\",\"No memory data was read or modified.\"]}}",
+  "role": "debug_explainer",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

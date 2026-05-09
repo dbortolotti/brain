@@ -1,0 +1,34 @@
+{
+  "fixture_id": "large_table_500_rows_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Do not store the 500 CSV rows as individual durable memory cards. Treat the table as bulk structured data: store it as an attached/file-backed artifact or dataset reference with metadata such as schema `id,name,value`, row count `500`, source, timestamp, and purpose. Only extract memory cards if the table contains explicit durable facts that are personally relevant and worth remembering.",
+    "citations": [
+      "CSV table with 500 rows: id,name,value repeated many times.",
+      "Policy question: how should it be stored?"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_success",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input describes a large repetitive CSV table and asks how it should be stored; it does not provide durable personal facts suitable for atomic memory cards."
+    },
+    "intent": "policy_question",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No atomic memory cards were committed because the input is bulk tabular data, not durable memory content.",
+        "Recommended storage policy is artifact/dataset storage with metadata rather than row-by-row memory extraction."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Store the CSV as a file or dataset artifact rather than atomic memory.",
+      "Create a concise metadata record describing the dataset schema and row count.",
+      "Extract atomic memory cards only if specific rows contain durable, meaningful facts."
+    ]
+  },
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164540"
+}

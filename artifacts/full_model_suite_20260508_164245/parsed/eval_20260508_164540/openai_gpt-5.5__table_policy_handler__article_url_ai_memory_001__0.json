@@ -1,0 +1,104 @@
+{
+  "fixture_id": "article_url_ai_memory_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Remembered the article URL, the user-stated reason, and the provided mock article summary without adding unsupported claims.",
+    "citations": [
+      "https://example.com/ai-memory"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_update_memory_for_url",
+      "entity_id": null,
+      "reason": "No existing entity context was provided; preserve the URL as the source identifier without assuming more metadata."
+    },
+    "intent": "remember_article",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/ai-memory",
+            "role": "article",
+            "type": "url"
+          },
+          {
+            "name": "knowledge graph memory design",
+            "role": "user-stated relevance",
+            "type": "concept"
+          }
+        ],
+        "kind": "article_reference",
+        "relationships": [
+          {
+            "object": "thinking about knowledge graph memory design",
+            "predicate": "is_useful_for",
+            "subject": "https://example.com/ai-memory"
+          }
+        ],
+        "statement": "The user wants to remember the article at https://example.com/ai-memory because it is useful for thinking about knowledge graph memory design."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "graph memory",
+            "role": "article topic",
+            "type": "concept"
+          },
+          {
+            "name": "agents",
+            "role": "beneficiary",
+            "type": "concept"
+          },
+          {
+            "name": "relationships",
+            "role": "preserved information",
+            "type": "concept"
+          },
+          {
+            "name": "provenance",
+            "role": "needed design property",
+            "type": "concept"
+          },
+          {
+            "name": "update semantics",
+            "role": "needed design property",
+            "type": "concept"
+          }
+        ],
+        "kind": "article_summary",
+        "relationships": [
+          {
+            "object": "agents preserve relationships",
+            "predicate": "helps",
+            "subject": "graph memory"
+          },
+          {
+            "object": "provenance",
+            "predicate": "needs",
+            "subject": "graph memory"
+          },
+          {
+            "object": "update semantics",
+            "predicate": "needs",
+            "subject": "graph memory"
+          }
+        ],
+        "statement": "Mock fetched article claims that graph memory helps agents preserve relationships, and that provenance and update semantics are needed."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed article reference: https://example.com/ai-memory",
+        "Stored user-stated reason: useful for thinking about knowledge graph memory design",
+        "Stored provided mock fetched claim: graph memory helps agents preserve relationships; provenance and update semantics are needed"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "table_policy_handler",
+  "run_id": "eval_20260508_164540"
+}

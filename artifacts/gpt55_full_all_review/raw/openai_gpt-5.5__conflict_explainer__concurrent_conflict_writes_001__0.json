@@ -1,0 +1,88 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01589,
+  "fixture_id": "concurrent_conflict_writes_001",
+  "input_tokens": 430,
+  "latency_ms": 5553,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 458,
+  "payload": {
+    "answer": "There are two concurrent memory writes about Sam\u2019s employment: \u201cSam works at Goldman\u201d and \u201cSam joined Point72.\u201d These may conflict if both are intended to describe Sam\u2019s current employer. Safe actions available are: approve_supersession, keep_both, reject_new, or edit. Use approve_supersession if the Point72 statement should replace the Goldman statement; keep_both if both should remain true, for example if one is historical or Sam has multiple roles; reject_new if the Point72 statement should not be saved; or edit to clarify timing, employer status, or wording before saving.",
+    "citations": [],
+    "conflict_classification": "concurrent_conflict_writes",
+    "decision": "needs_user_resolution",
+    "entity_resolution": {
+      "action": "unresolved",
+      "entity_id": null,
+      "reason": "Both writes refer to Sam, but they imply potentially conflicting current employment states unless Sam can simultaneously work at Goldman and have joined Point72, or one statement supersedes the other."
+    },
+    "intent": "explain_concurrent_conflict",
+    "memory_cards": [
+      {
+        "confidence": "ambiguous",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "ambiguous",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict detected between concurrent employment-related writes.",
+        "No durable memory committed because user resolution is required."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "approve_supersession",
+      "keep_both",
+      "reject_new",
+      "edit"
+    ]
+  },
+  "raw_text": "{\"intent\":\"explain_concurrent_conflict\",\"decision\":\"needs_user_resolution\",\"memory_cards\":[{\"kind\":\"employment\",\"statement\":\"Sam works at Goldman.\",\"confidence\":\"ambiguous\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Goldman\"}]},{\"kind\":\"employment\",\"statement\":\"Sam joined Point72.\",\"confidence\":\"ambiguous\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"unresolved\",\"entity_id\":null,\"reason\":\"Both writes refer to Sam, but they imply potentially conflicting current employment states unless Sam can simultaneously work at Goldman and have joined Point72, or one statement supersedes the other.\"},\"conflict_classification\":\"concurrent_conflict_writes\",\"answer\":\"There are two concurrent memory writes about Sam\u2019s employment: \u201cSam works at Goldman\u201d and \u201cSam joined Point72.\u201d These may conflict if both are intended to describe Sam\u2019s current employer. Safe actions available are: approve_supersession, keep_both, reject_new, or edit. Use approve_supersession if the Point72 statement should replace the Goldman statement; keep_both if both should remain true, for example if one is historical or Sam has multiple roles; reject_new if the Point72 statement should not be saved; or edit to clarify timing, employer status, or wording before saving.\",\"citations\":[],\"repair_options\":[\"approve_supersession\",\"keep_both\",\"reject_new\",\"edit\"],\"receipt\":{\"success\":false,\"details\":[\"Conflict detected between concurrent employment-related writes.\",\"No durable memory committed because user resolution is required.\"]}}",
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

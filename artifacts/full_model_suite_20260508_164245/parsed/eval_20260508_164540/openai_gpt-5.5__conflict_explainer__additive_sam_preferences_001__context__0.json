@@ -1,0 +1,94 @@
+{
+  "fixture_id": "additive_sam_preferences_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "This is not a conflict. The existing memory says Sam from Goldman likes Bill Evans, and the new information says Sam from Goldman also likes Sonny Rollins. Since a person can like multiple artists, the safe action is add_new to keep both preferences. Other available safe actions are keep_existing if you do not want to store the new preference, edit if the wording or entity needs correction, or cancel to take no action.",
+    "citations": [
+      "Existing memory: Sam from Goldman likes Bill Evans.",
+      "New: Sam from Goldman also likes Sonny Rollins."
+    ],
+    "conflict_classification": "no_conflict_additive",
+    "decision": "add_new",
+    "entity_resolution": {
+      "action": "same_entity",
+      "entity_id": null,
+      "reason": "Both statements refer to Sam from Goldman; the new preference is additive and does not contradict the existing Bill Evans preference."
+    },
+    "intent": "explain_safe_actions_for_additive_preference",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation/context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked artist",
+            "type": "person"
+          }
+        ],
+        "kind": "existing",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation/context",
+            "type": "organization"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "liked artist",
+            "type": "person"
+          }
+        ],
+        "kind": "new",
+        "relationships": [
+          {
+            "object": "Sonny Rollins",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman also likes Sonny Rollins."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Classified as additive information, not a contradiction.",
+        "Recommended preserving the existing Bill Evans preference and adding the Sonny Rollins preference."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "add_new",
+      "keep_existing",
+      "edit",
+      "cancel"
+    ]
+  },
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_164540"
+}

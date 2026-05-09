@@ -1,0 +1,137 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00290475,
+  "fixture_id": "recall_profile_sam_001__context",
+  "input_tokens": 411,
+  "latency_ms": 4052,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 577,
+  "payload": {
+    "answer": "Sam is associated with Goldman, likes Bill Evans, and is interested in AI infrastructure. There is also an open loop to send Sam an article about AI infrastructure. No further details are provided in the context.",
+    "citations": [
+      "fixture:recall_profile_sam_001__context"
+    ],
+    "conflict_classification": "none",
+    "decision": "grounded_answer",
+    "entity_resolution": {
+      "action": "resolve_to_existing_entity",
+      "entity_id": "Sam_from_Goldman",
+      "reason": "The query matches the provided context describing Sam associated with Goldman."
+    },
+    "intent": "Answer the query about Sam from Goldman using only the provided context, preserving ambiguity and avoiding unsupported details.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "associated organization",
+            "type": "organization"
+          }
+        ],
+        "kind": "profile_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "is associated with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is associated with Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "musician of interest",
+            "type": "person"
+          }
+        ],
+        "kind": "preference_fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "interest",
+            "type": "topic"
+          }
+        ],
+        "kind": "interest_fact",
+        "relationships": [
+          {
+            "object": "AI infrastructure",
+            "predicate": "is interested in",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is interested in AI infrastructure."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "recipient",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "article topic",
+            "type": "topic"
+          }
+        ],
+        "kind": "open_loop",
+        "relationships": [
+          {
+            "object": "Sam article about AI infrastructure",
+            "predicate": "should send",
+            "subject": "assistant"
+          }
+        ],
+        "statement": "There is an open loop to send Sam an article about AI infrastructure."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Used only provided facts.",
+        "No unsupported biographical details added.",
+        "Preserved the open loop as a pending action."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want, I can help draft a short message to Sam with an AI infrastructure article.",
+      "If there are multiple Sams, provide more context to disambiguate."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Answer the query about Sam from Goldman using only the provided context, preserving ambiguity and avoiding unsupported details.\",\"decision\":\"grounded_answer\",\"memory_cards\":[{\"kind\":\"profile_fact\",\"statement\":\"Sam is associated with Goldman.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"associated organization\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"is associated with\",\"object\":\"Goldman\"}]},{\"kind\":\"preference_fact\",\"statement\":\"Sam likes Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"musician of interest\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]},{\"kind\":\"interest_fact\",\"statement\":\"Sam is interested in AI infrastructure.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"AI infrastructure\",\"type\":\"topic\",\"role\":\"interest\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"is interested in\",\"object\":\"AI infrastructure\"}]},{\"kind\":\"open_loop\",\"statement\":\"There is an open loop to send Sam an article about AI infrastructure.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"recipient\"},{\"name\":\"AI infrastructure\",\"type\":\"topic\",\"role\":\"article topic\"}],\"relationships\":[{\"subject\":\"assistant\",\"predicate\":\"should send\",\"object\":\"Sam article about AI infrastructure\"}]}],\"entity_resolution\":{\"action\":\"resolve_to_existing_entity\",\"entity_id\":\"Sam_from_Goldman\",\"reason\":\"The query matches the provided context describing Sam associated with Goldman.\"},\"conflict_classification\":\"none\",\"answer\":\"Sam is associated with Goldman, likes Bill Evans, and is interested in AI infrastructure. There is also an open loop to send Sam an article about AI infrastructure. No further details are provided in the context.\",\"citations\":[\"fixture:recall_profile_sam_001__context\"],\"repair_options\":[\"If you want, I can help draft a short message to Sam with an AI infrastructure article.\",\"If there are multiple Sams, provide more context to disambiguate.\"],\"receipt\":{\"success\":true,\"details\":[\"Used only provided facts.\",\"No unsupported biographical details added.\",\"Preserved the open loop as a pending action.\"]}}",
+  "role": "groundedness_checker",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

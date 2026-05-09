@@ -1,0 +1,83 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01228,
+  "fixture_id": "email_source_meeting_followup_001__context",
+  "input_tokens": 488,
+  "latency_ms": 3842,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 328,
+  "payload": {
+    "answer": "Extracted supported atomic memory cards while avoiding raw private email address exposure.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit_with_warning",
+    "entity_resolution": {
+      "action": "needs_resolution",
+      "entity_id": null,
+      "reason": "Sender identity is inferred only as Sam from the email display/local context; raw email address is not stored."
+    },
+    "intent": "extract_atomic_memory_cards",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "email_sender",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72 last month."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "requester",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure article",
+            "role": "requested_item",
+            "type": "content"
+          }
+        ],
+        "kind": "interest_or_request",
+        "relationships": [
+          {
+            "object": "AI infrastructure article",
+            "predicate": "requested",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam requested an AI infrastructure article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed employment fact with medium confidence because the referenced month is relative to the message date, which is not provided.",
+        "Committed request fact with medium confidence."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"extract_atomic_memory_cards\",\"decision\":\"commit_with_warning\",\"memory_cards\":[{\"kind\":\"employment\",\"statement\":\"Sam joined Point72 last month.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"email_sender\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]},{\"kind\":\"interest_or_request\",\"statement\":\"Sam requested an AI infrastructure article.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"requester\"},{\"name\":\"AI infrastructure article\",\"type\":\"content\",\"role\":\"requested_item\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"requested\",\"object\":\"AI infrastructure article\"}]}],\"entity_resolution\":{\"action\":\"needs_resolution\",\"entity_id\":null,\"reason\":\"Sender identity is inferred only as Sam from the email display/local context; raw email address is not stored.\"},\"conflict_classification\":\"none\",\"answer\":\"Extracted supported atomic memory cards while avoiding raw private email address exposure.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Committed employment fact with medium confidence because the referenced month is relative to the message date, which is not provided.\",\"Committed request fact with medium confidence.\"]}}",
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164255",
+  "status": "ok"
+}

@@ -1,0 +1,75 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.009465,
+  "fixture_id": "recall_daughters_001",
+  "input_tokens": 441,
+  "latency_ms": 4464,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 242,
+  "payload": {
+    "answer": "Your daughters are Nur and Sara.",
+    "citations": [
+      "Nur and Sara are Daniele's twin daughters."
+    ],
+    "conflict_classification": "none",
+    "decision": "answered",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": null,
+      "reason": "The query uses 'my' and the current evidence identifies Daniele as the parent of Nur and Sara."
+    },
+    "intent": "answer_query_from_current_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "current_fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is daughter of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Daniele",
+            "predicate": "is daughter of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Sara",
+            "predicate": "is twin of",
+            "subject": "Nur"
+          }
+        ],
+        "statement": "Nur and Sara are Daniele's twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Answered using only the provided current evidence."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"answer_query_from_current_memory\",\"decision\":\"answered\",\"memory_cards\":[{\"kind\":\"current_fact\",\"statement\":\"Nur and Sara are Daniele's twin daughters.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Daniele\",\"type\":\"person\",\"role\":\"parent\"},{\"name\":\"Nur\",\"type\":\"person\",\"role\":\"daughter\"},{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"daughter\"}],\"relationships\":[{\"subject\":\"Nur\",\"predicate\":\"is daughter of\",\"object\":\"Daniele\"},{\"subject\":\"Sara\",\"predicate\":\"is daughter of\",\"object\":\"Daniele\"},{\"subject\":\"Nur\",\"predicate\":\"is twin of\",\"object\":\"Sara\"}]}],\"entity_resolution\":{\"action\":\"resolved\",\"entity_id\":null,\"reason\":\"The query uses 'my' and the current evidence identifies Daniele as the parent of Nur and Sara.\"},\"conflict_classification\":\"none\",\"answer\":\"Your daughters are Nur and Sara.\",\"citations\":[\"Nur and Sara are Daniele's twin daughters.\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Answered using only the provided current evidence.\"]}}",
+  "role": "recall_synthesizer",
+  "run_id": "eval_20260508_195937",
+  "status": "ok"
+}

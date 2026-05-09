@@ -1,0 +1,58 @@
+{
+  "fixture_id": "debug_sql_select_only_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "SELECT is allowed; DELETE is denied in admin SQL select-only mode.",
+    "citations": [
+      "Input: Admin SQL select-only mode - SELECT id FROM memory_cards LIMIT 10 allowed; DELETE FROM memory_cards denied"
+    ],
+    "conflict_classification": "none",
+    "decision": "allow_select_deny_delete",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No durable entity lookup or merge is required for this routing decision."
+    },
+    "intent": "sql_access_policy",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "memory_cards",
+            "role": "target",
+            "type": "table"
+          }
+        ],
+        "kind": "policy",
+        "relationships": [
+          {
+            "object": "admin select-only mode",
+            "predicate": "allowed_in",
+            "subject": "SELECT id FROM memory_cards LIMIT 10"
+          },
+          {
+            "object": "admin select-only mode",
+            "predicate": "denied_in",
+            "subject": "DELETE FROM memory_cards"
+          }
+        ],
+        "statement": "Admin SQL select-only mode allows SELECT queries such as SELECT id FROM memory_cards LIMIT 10 and denies DELETE FROM memory_cards."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recognized select-only policy",
+        "Detected allowed SELECT query",
+        "Detected denied DELETE query"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If write access is needed, switch out of select-only mode.",
+      "Use SELECT-only queries against memory_cards while in this mode."
+    ]
+  },
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540"
+}

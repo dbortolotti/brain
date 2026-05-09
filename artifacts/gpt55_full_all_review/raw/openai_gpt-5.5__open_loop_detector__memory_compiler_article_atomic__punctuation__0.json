@@ -1,0 +1,140 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0229,
+  "fixture_id": "memory_compiler_article_atomic__punctuation",
+  "input_tokens": 410,
+  "latency_ms": 8752,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 695,
+  "payload": {
+    "answer": "No durable personal memory should be committed. The input contains general design guidance that can be represented as non-personal atomic candidates, but it lacks durable user-specific evidence or lifecycle context.",
+    "citations": [
+      "AI memory systems need durable source evidence",
+      "Atomic memory cards should be small and traceable",
+      "A semantic index can improve recall, but the application database must own lifecycle and conflict state"
+    ],
+    "conflict_classification": "none",
+    "decision": "no_commit",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Input is general article-like guidance with no user-specific durable preference, identity fact, or named entity requiring resolution."
+    },
+    "intent": "extract_atomic_memory_candidates",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "AI memory systems",
+            "role": "subject",
+            "type": "system"
+          },
+          {
+            "name": "durable source evidence",
+            "role": "requirement",
+            "type": "evidence"
+          }
+        ],
+        "kind": "concept",
+        "relationships": [
+          {
+            "object": "durable source evidence",
+            "predicate": "need",
+            "subject": "AI memory systems"
+          }
+        ],
+        "statement": "AI memory systems need durable source evidence."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Atomic memory cards",
+            "role": "subject",
+            "type": "memory_artifact"
+          }
+        ],
+        "kind": "concept",
+        "relationships": [
+          {
+            "object": "small",
+            "predicate": "should_be",
+            "subject": "Atomic memory cards"
+          },
+          {
+            "object": "traceable",
+            "predicate": "should_be",
+            "subject": "Atomic memory cards"
+          }
+        ],
+        "statement": "Atomic memory cards should be small and traceable."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "semantic index",
+            "role": "subject",
+            "type": "index"
+          },
+          {
+            "name": "recall",
+            "role": "object",
+            "type": "capability"
+          },
+          {
+            "name": "application database",
+            "role": "owner",
+            "type": "database"
+          },
+          {
+            "name": "lifecycle",
+            "role": "owned_object",
+            "type": "state"
+          },
+          {
+            "name": "conflict state",
+            "role": "owned_object",
+            "type": "state"
+          }
+        ],
+        "kind": "concept",
+        "relationships": [
+          {
+            "object": "recall",
+            "predicate": "can_improve",
+            "subject": "semantic index"
+          },
+          {
+            "object": "lifecycle",
+            "predicate": "must_own",
+            "subject": "application database"
+          },
+          {
+            "object": "conflict state",
+            "predicate": "must_own",
+            "subject": "application database"
+          }
+        ],
+        "statement": "A semantic index can improve recall, but the application database must own lifecycle and conflict state."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed three atomic article-style claims.",
+        "Did not commit as durable personal memory because the content is generic guidance and lacks source metadata or user-specific scope.",
+        "Preserved modality and ambiguity: 'should', 'can', and 'must' were retained in extracted statements."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If this is intended as a durable project note, provide the source, author, date, and project/context it should attach to.",
+      "If these are system design rules for Brain, mark them explicitly as policy or architecture requirements."
+    ]
+  },
+  "raw_text": "{\"intent\":\"extract_atomic_memory_candidates\",\"decision\":\"no_commit\",\"memory_cards\":[{\"kind\":\"concept\",\"statement\":\"AI memory systems need durable source evidence.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"AI memory systems\",\"type\":\"system\",\"role\":\"subject\"},{\"name\":\"durable source evidence\",\"type\":\"evidence\",\"role\":\"requirement\"}],\"relationships\":[{\"subject\":\"AI memory systems\",\"predicate\":\"need\",\"object\":\"durable source evidence\"}]},{\"kind\":\"concept\",\"statement\":\"Atomic memory cards should be small and traceable.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Atomic memory cards\",\"type\":\"memory_artifact\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"Atomic memory cards\",\"predicate\":\"should_be\",\"object\":\"small\"},{\"subject\":\"Atomic memory cards\",\"predicate\":\"should_be\",\"object\":\"traceable\"}]},{\"kind\":\"concept\",\"statement\":\"A semantic index can improve recall, but the application database must own lifecycle and conflict state.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"semantic index\",\"type\":\"index\",\"role\":\"subject\"},{\"name\":\"recall\",\"type\":\"capability\",\"role\":\"object\"},{\"name\":\"application database\",\"type\":\"database\",\"role\":\"owner\"},{\"name\":\"lifecycle\",\"type\":\"state\",\"role\":\"owned_object\"},{\"name\":\"conflict state\",\"type\":\"state\",\"role\":\"owned_object\"}],\"relationships\":[{\"subject\":\"semantic index\",\"predicate\":\"can_improve\",\"object\":\"recall\"},{\"subject\":\"application database\",\"predicate\":\"must_own\",\"object\":\"lifecycle\"},{\"subject\":\"application database\",\"predicate\":\"must_own\",\"object\":\"conflict state\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"Input is general article-like guidance with no user-specific durable preference, identity fact, or named entity requiring resolution.\"},\"conflict_classification\":\"none\",\"answer\":\"No durable personal memory should be committed. The input contains general design guidance that can be represented as non-personal atomic candidates, but it lacks durable user-specific evidence or lifecycle context.\",\"citations\":[\"AI memory systems need durable source evidence\",\"Atomic memory cards should be small and traceable\",\"A semantic index can improve recall, but the application database must own lifecycle and conflict state\"],\"repair_options\":[\"If this is intended as a durable project note, provide the source, author, date, and project/context it should attach to.\",\"If these are system design rules for Brain, mark them explicitly as policy or architecture requirements.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed three atomic article-style claims.\",\"Did not commit as durable personal memory because the content is generic guidance and lacks source metadata or user-specific scope.\",\"Preserved modality and ambiguity: 'should', 'can', and 'must' were retained in extracted statements.\"]}}",
+  "role": "open_loop_detector",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

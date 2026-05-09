@@ -1,0 +1,64 @@
+{
+  "fixture_id": "idempotent_retry_same_message_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Recorded once as a durable preference report despite repeated delivery of the same input.",
+    "citations": [
+      "Same input delivered three times - Sam from Goldman mentioned that he likes Bill Evans"
+    ],
+    "conflict_classification": "none",
+    "decision": "accept",
+    "entity_resolution": {
+      "action": "needs_clarification",
+      "entity_id": null,
+      "reason": "The mention identifies 'Sam from Goldman' but does not provide enough information to uniquely resolve Sam or Goldman."
+    },
+    "intent": "store_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_entity",
+            "type": "person"
+          }
+        ],
+        "kind": "preference_report",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "is associated with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman mentioned that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Accepted a single memory card for the repeated input.",
+        "Preserved ambiguity around the identity of Sam and Goldman."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "durability_filter",
+  "run_id": "eval_20260508_125514"
+}

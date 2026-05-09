@@ -1,0 +1,91 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.014365,
+  "fixture_id": "contradiction_sam_children_001__context",
+  "input_tokens": 443,
+  "latency_ms": 5177,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 405,
+  "payload": {
+    "answer": "There is a direct conflict: the existing memory says Sam from Goldman has two children, while the new statement says Sam from Goldman has no children. I should not treat either as current without your confirmation. Safe actions available: approve_supersession, keep_both, reject_new, or edit.",
+    "citations": [
+      "Existing memory: Sam from Goldman has two children.",
+      "New: Sam from Goldman has no children."
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "needs_user_resolution",
+    "entity_resolution": {
+      "action": "same_entity_assumed_for_conflict_check",
+      "entity_id": null,
+      "reason": "Both statements refer to 'Sam from Goldman', so they are treated as the same ambiguous person reference for conflict explanation."
+    },
+    "intent": "explain_memory_conflict",
+    "memory_cards": [
+      {
+        "confidence": "unknown",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "existing",
+        "relationships": [
+          {
+            "object": "two",
+            "predicate": "has_children_count",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman has two children."
+      },
+      {
+        "confidence": "unknown",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "new",
+        "relationships": [
+          {
+            "object": "none",
+            "predicate": "has_children_count",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman has no children."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict explained without committing the new memory.",
+        "No supersession, deletion, or overwrite was applied."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "approve_supersession",
+      "keep_both",
+      "reject_new",
+      "edit"
+    ]
+  },
+  "raw_text": "{\"intent\":\"explain_memory_conflict\",\"decision\":\"needs_user_resolution\",\"memory_cards\":[{\"kind\":\"existing\",\"statement\":\"Sam from Goldman has two children.\",\"confidence\":\"unknown\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"}],\"relationships\":[{\"subject\":\"Sam from Goldman\",\"predicate\":\"has_children_count\",\"object\":\"two\"}]},{\"kind\":\"new\",\"statement\":\"Sam from Goldman has no children.\",\"confidence\":\"unknown\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"}],\"relationships\":[{\"subject\":\"Sam from Goldman\",\"predicate\":\"has_children_count\",\"object\":\"none\"}]}],\"entity_resolution\":{\"action\":\"same_entity_assumed_for_conflict_check\",\"entity_id\":null,\"reason\":\"Both statements refer to 'Sam from Goldman', so they are treated as the same ambiguous person reference for conflict explanation.\"},\"conflict_classification\":\"direct_contradiction\",\"answer\":\"There is a direct conflict: the existing memory says Sam from Goldman has two children, while the new statement says Sam from Goldman has no children. I should not treat either as current without your confirmation. Safe actions available: approve_supersession, keep_both, reject_new, or edit.\",\"citations\":[\"Existing memory: Sam from Goldman has two children.\",\"New: Sam from Goldman has no children.\"],\"repair_options\":[\"approve_supersession\",\"keep_both\",\"reject_new\",\"edit\"],\"receipt\":{\"success\":true,\"details\":[\"Conflict explained without committing the new memory.\",\"No supersession, deletion, or overwrite was applied.\"]}}",
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

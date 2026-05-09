@@ -1,0 +1,138 @@
+{
+  "fixture_id": "long_markdown_chat_summary_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Store the architecture preferences; keep Telegram integration and cheapest-saturating model choice as open questions.",
+    "citations": [
+      "Chat Summary: Brain Architecture"
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "Capture the current architecture preferences as durable memory, while preserving open questions about Telegram and model selection.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No entity disambiguation is needed from the summary alone."
+    },
+    "intent": "intent_router",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source of truth",
+            "type": "system"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Brain memory state",
+            "predicate": "is_source_of_truth_for",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB should be the source of truth for memory state."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "semantic projection",
+            "type": "system"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "rebuildable semantic projection",
+            "predicate": "serves_as",
+            "subject": "Cognee"
+          },
+          {
+            "object": "source of truth",
+            "predicate": "is_not",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee should function as a rebuildable semantic projection rather than the primary memory store."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "memory intake agent",
+            "type": "system"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "strict memory intake agent",
+            "predicate": "serves_as",
+            "subject": "Slack"
+          }
+        ],
+        "statement": "Slack should act as a strict memory intake agent."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Telegram",
+            "role": "candidate integration",
+            "type": "system"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [
+          {
+            "object": "under consideration",
+            "predicate": "status",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "Whether Telegram should be added later remains undecided."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "model selection",
+            "role": "optimization question",
+            "type": "topic"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [
+          {
+            "object": "lowest cost with saturated performance",
+            "predicate": "optimizes_for",
+            "subject": "model selection"
+          },
+          {
+            "object": "unresolved",
+            "predicate": "status",
+            "subject": "model selection"
+          }
+        ],
+        "statement": "Which model is cheapest while saturating performance remains unresolved."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted 3 durable preference statements.",
+        "Preserved 2 unresolved questions without forcing a decision."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If needed, split the architecture preferences into separate durable cards per subsystem.",
+      "If future evidence settles Telegram or model choice, update only those open-question cards without overwriting the architecture preferences."
+    ]
+  },
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540"
+}

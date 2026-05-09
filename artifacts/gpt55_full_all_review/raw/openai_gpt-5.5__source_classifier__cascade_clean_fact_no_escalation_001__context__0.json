@@ -1,0 +1,75 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.010935,
+  "fixture_id": "cascade_clean_fact_no_escalation_001__context",
+  "input_tokens": 417,
+  "latency_ms": 4139,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 295,
+  "payload": {
+    "answer": "The input is a user-provided contextual assertion containing a personal memory candidate: Nur and Sara are the user's twin daughters. No downstream extraction or commit decision is evaluated.",
+    "citations": [
+      "For context, Cascade test: cheap/default model handles Nur and Sara are my twin daughters."
+    ],
+    "conflict_classification": "not_evaluated",
+    "decision": "user_asserted_memory_candidate",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Source classification only; no entity resolution required."
+    },
+    "intent": "classify_source",
+    "memory_cards": [
+      {
+        "confidence": "explicit",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "user",
+            "role": "parent",
+            "type": "person"
+          }
+        ],
+        "kind": "personal_fact",
+        "relationships": [
+          {
+            "object": "user",
+            "predicate": "is_daughter_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "user",
+            "predicate": "is_daughter_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Sara",
+            "predicate": "is_twin_of",
+            "subject": "Nur"
+          }
+        ],
+        "statement": "Nur and Sara are the user's twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Classified source as user assertion with boundaries limited to the provided input."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"classify_source\",\"decision\":\"user_asserted_memory_candidate\",\"memory_cards\":[{\"kind\":\"personal_fact\",\"statement\":\"Nur and Sara are the user's twin daughters.\",\"confidence\":\"explicit\",\"entities\":[{\"name\":\"Nur\",\"type\":\"person\",\"role\":\"daughter\"},{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"daughter\"},{\"name\":\"user\",\"type\":\"person\",\"role\":\"parent\"}],\"relationships\":[{\"subject\":\"Nur\",\"predicate\":\"is_daughter_of\",\"object\":\"user\"},{\"subject\":\"Sara\",\"predicate\":\"is_daughter_of\",\"object\":\"user\"},{\"subject\":\"Nur\",\"predicate\":\"is_twin_of\",\"object\":\"Sara\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"Source classification only; no entity resolution required.\"},\"conflict_classification\":\"not_evaluated\",\"answer\":\"The input is a user-provided contextual assertion containing a personal memory candidate: Nur and Sara are the user's twin daughters. No downstream extraction or commit decision is evaluated.\",\"citations\":[\"For context, Cascade test: cheap/default model handles Nur and Sara are my twin daughters.\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Classified source as user assertion with boundaries limited to the provided input.\"]}}",
+  "role": "source_classifier",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

@@ -1,0 +1,77 @@
+{
+  "fixture_id": "personal_routine_morning_reading_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Store as a likely preference: the user usually prefers reading technical papers in the morning before checking email.",
+    "citations": [
+      "Input: \"I usually prefer to read technical papers in the morning before checking email\""
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No existing entity context provided for resolution."
+    },
+    "intent": "intent_router",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "user",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "technical papers",
+            "role": "reading material",
+            "type": "document"
+          },
+          {
+            "name": "morning",
+            "role": "preferred time",
+            "type": "time-of-day"
+          },
+          {
+            "name": "email",
+            "role": "activity to check later",
+            "type": "communication"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "reading technical papers in the morning before checking email",
+            "predicate": "prefers",
+            "subject": "user"
+          },
+          {
+            "object": "checking email",
+            "predicate": "occurs_before",
+            "subject": "reading technical papers"
+          },
+          {
+            "object": "morning",
+            "predicate": "preferred_time",
+            "subject": "reading technical papers"
+          }
+        ],
+        "statement": "The user usually prefers to read technical papers in the morning before checking email."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured a personal routine preference with medium confidence.",
+        "No conflicting memory detected."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want this treated as a hard rule rather than a usual preference, say so explicitly.",
+      "If the routine is only temporary, specify the timeframe to reduce permanence."
+    ]
+  },
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540"
+}

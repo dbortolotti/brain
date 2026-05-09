@@ -1,0 +1,80 @@
+{
+  "fixture_id": "memory_compiler_small_table",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Classified two durable preference memories from the table.",
+    "citations": [
+      "Input table: Sam | Bill Evans",
+      "Input table: Daniele | Knowledge graphs"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_link_if_unambiguous",
+      "entity_id": null,
+      "reason": "The table provides names and preferences but no unique identifiers; avoid over-resolving ambiguous person entities."
+    },
+    "intent": "classify_memory_kind",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference",
+            "type": "person_or_entity"
+          }
+        ],
+        "kind": "semantic_preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam prefers Bill Evans."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Knowledge graphs",
+            "role": "preference",
+            "type": "topic"
+          }
+        ],
+        "kind": "semantic_preference",
+        "relationships": [
+          {
+            "object": "Knowledge graphs",
+            "predicate": "prefers",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Daniele prefers knowledge graphs."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created memory card for Sam's preference: Bill Evans.",
+        "Created memory card for Daniele's preference: knowledge graphs.",
+        "Preserved ambiguity around entity identities."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "memory_kind_classifier",
+  "run_id": "eval_20260508_125514"
+}

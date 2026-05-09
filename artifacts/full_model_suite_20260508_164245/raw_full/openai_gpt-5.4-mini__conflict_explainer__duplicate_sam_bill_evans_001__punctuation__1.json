@@ -1,0 +1,112 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0024285,
+  "fixture_id": "duplicate_sam_bill_evans_001__punctuation",
+  "input_tokens": 448,
+  "latency_ms": 3895,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 465,
+  "payload": {
+    "answer": "These entries are duplicates with only a wording/punctuation difference. Safe action: link_duplicate. If you want to preserve both separately, the available alternative safe actions are keep_existing, add_anyway, edit, or cancel.",
+    "citations": [
+      "Existing memory: \"Sam from Goldman mentioned that he likes Bill Evans\"",
+      "New: \"Sam from Goldman said he likes Bill Evans\""
+    ],
+    "conflict_classification": "duplicate_same_fact_punctuation_variation",
+    "decision": "link_duplicate",
+    "entity_resolution": {
+      "action": "link_duplicate",
+      "entity_id": null,
+      "reason": "The two memories express the same fact about the same Sam from Goldman liking Bill Evans; the difference is only wording/punctuation."
+    },
+    "intent": "duplicate_detection",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_object",
+            "type": "person"
+          }
+        ],
+        "kind": "existing",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "mentioned_like_for",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman mentioned that he likes Bill Evans"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_object",
+            "type": "person"
+          }
+        ],
+        "kind": "new",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman said he likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected same subject (Sam from Goldman) and same preference object (Bill Evans).",
+        "No substantive conflict beyond phrasing."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "link_duplicate",
+      "keep_existing",
+      "add_anyway",
+      "edit",
+      "cancel"
+    ]
+  },
+  "raw_text": "{\"intent\":\"duplicate_detection\",\"decision\":\"link_duplicate\",\"memory_cards\":[{\"kind\":\"existing\",\"statement\":\"Sam from Goldman mentioned that he likes Bill Evans\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"preference_object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"mentioned_like_for\",\"object\":\"Bill Evans\"},{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"}]},{\"kind\":\"new\",\"statement\":\"Sam from Goldman said he likes Bill Evans\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"preference_object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"},{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"link_duplicate\",\"entity_id\":null,\"reason\":\"The two memories express the same fact about the same Sam from Goldman liking Bill Evans; the difference is only wording/punctuation.\"},\"conflict_classification\":\"duplicate_same_fact_punctuation_variation\",\"answer\":\"These entries are duplicates with only a wording/punctuation difference. Safe action: link_duplicate. If you want to preserve both separately, the available alternative safe actions are keep_existing, add_anyway, edit, or cancel.\",\"citations\":[\"Existing memory: \\\"Sam from Goldman mentioned that he likes Bill Evans\\\"\",\"New: \\\"Sam from Goldman said he likes Bill Evans\\\"\"],\"repair_options\":[\"link_duplicate\",\"keep_existing\",\"add_anyway\",\"edit\",\"cancel\"],\"receipt\":{\"success\":true,\"details\":[\"Detected same subject (Sam from Goldman) and same preference object (Bill Evans).\",\"No substantive conflict beyond phrasing.\"]}}",
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

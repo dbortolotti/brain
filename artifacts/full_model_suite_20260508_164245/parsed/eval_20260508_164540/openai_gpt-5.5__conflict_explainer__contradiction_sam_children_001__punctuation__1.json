@@ -1,0 +1,84 @@
+{
+  "fixture_id": "contradiction_sam_children_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "The new statement directly conflicts with the existing memory: the existing memory says Sam from Goldman has two children, while the new statement says Sam from Goldman has no children. Safe actions available: approve_supersession if the new statement should replace the existing one, keep_both if both should be retained due to uncertainty or context differences, reject_new if the new statement is incorrect or should not be saved, or edit to clarify the statement before saving.",
+    "citations": [
+      "Existing memory: Sam from Goldman has two children",
+      "New: Sam from Goldman has no children"
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "needs_user_resolution",
+    "entity_resolution": {
+      "action": "assume_same_entity_for_conflict_review",
+      "entity_id": null,
+      "reason": "Both statements refer to 'Sam from Goldman', so they appear to concern the same person, but no stable entity ID was provided."
+    },
+    "intent": "explain_conflict",
+    "memory_cards": [
+      {
+        "confidence": "unknown",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "existing",
+        "relationships": [
+          {
+            "object": "two",
+            "predicate": "has_children_count",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman has two children"
+      },
+      {
+        "confidence": "unknown",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "new",
+        "relationships": [
+          {
+            "object": "zero",
+            "predicate": "has_children_count",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman has no children"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Identified a direct contradiction between the existing and new child-count statements.",
+        "No durable memory change was committed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "approve_supersession",
+      "keep_both",
+      "reject_new",
+      "edit"
+    ]
+  },
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_164540"
+}

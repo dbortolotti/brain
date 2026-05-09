@@ -1,0 +1,83 @@
+{
+  "fixture_id": "article_url_fetch_failure_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "I recorded that you wanted to remember the article-like link for memory architecture, but the article content was not available because the mock fetch returned a 404 network error.",
+    "citations": [
+      "Input: \"Remember this article - https -//examplecom/missing why - useful for memory architecture\"",
+      "Input: \"Mock fetch result - 404 network error\""
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_with_warning",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The article content could not be fetched, and the URL-like string is malformed, so no durable article entity or content summary can be resolved beyond the user's request and fetch failure."
+    },
+    "intent": "remember_article",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "https -//examplecom/missing",
+            "role": "target_article",
+            "type": "url_like_string"
+          },
+          {
+            "name": "memory architecture",
+            "role": "stated_usefulness_reason",
+            "type": "topic"
+          }
+        ],
+        "kind": "user_request",
+        "relationships": [
+          {
+            "object": "memory architecture",
+            "predicate": "stated_as_useful_for",
+            "subject": "https -//examplecom/missing"
+          }
+        ],
+        "statement": "The user asked to remember an article at the provided malformed URL-like string \"https -//examplecom/missing\" because it is useful for memory architecture."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https -//examplecom/missing",
+            "role": "fetch_target",
+            "type": "url_like_string"
+          },
+          {
+            "name": "404 network error",
+            "role": "fetch_result",
+            "type": "error"
+          }
+        ],
+        "kind": "fetch_status",
+        "relationships": [
+          {
+            "object": "404 network error",
+            "predicate": "mock_fetch_result",
+            "subject": "https -//examplecom/missing"
+          }
+        ],
+        "statement": "A mock fetch result for the provided article returned a 404 network error."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed the user's stated intent and reason with warning.",
+        "Did not extract article claims because the fetch failed with a 404 network error."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide a corrected article URL.",
+      "Paste the article text directly.",
+      "Provide a title or summary to remember instead."
+    ]
+  },
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164255"
+}

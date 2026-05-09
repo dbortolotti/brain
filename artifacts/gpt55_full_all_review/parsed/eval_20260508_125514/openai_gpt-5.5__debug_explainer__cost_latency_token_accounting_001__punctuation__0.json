@@ -1,0 +1,27 @@
+{
+  "fixture_id": "cost_latency_token_accounting_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Required eval accounting fields should capture cost, model attribution, and latency in a consistent way:\n\n- Token counts: Record prompt/input tokens, completion/output tokens, and total tokens. If available, also track cached input tokens, reasoning tokens, tool-call tokens, or multimodal tokens separately so billing and performance analysis are accurate.\n- Provider/model IDs: Store the provider name and exact model identifier used for the run, for example provider='openai' and model='gpt-4.1-mini'. Use the canonical provider/model IDs returned by the API where possible, not display aliases.\n- Estimated price: Compute estimated cost from token counts multiplied by the provider\u2019s current pricing table. Keep currency, pricing version/date, and whether the value is estimated versus final billed cost. Include separate input/output cost components when possible.\n- Latency p50, p90, p95: Report percentile latency across a batch of eval runs, usually in milliseconds. p50 is the median request latency, p90 means 90% of requests completed at or below that duration, and p95 means 95% completed at or below that duration. These should be calculated from comparable measurements, such as end-to-end wall-clock request duration, and should specify whether retries, streaming, tool calls, or queue time are included.\n\nA good eval record therefore includes enough information to answer: which provider/model ran, how many tokens were consumed, what it likely cost, and how fast the run was across common percentile thresholds.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "explain_required_eval_accounting_fields_without_committing_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input asks for an explanation of eval accounting fields, not for storing a durable personal memory."
+    },
+    "intent": "debug_explainer",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No durable memory was created.",
+        "Provided a concise explanation of token accounting, provider/model attribution, estimated price, and latency percentiles."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "debug_explainer",
+  "run_id": "eval_20260508_125514"
+}

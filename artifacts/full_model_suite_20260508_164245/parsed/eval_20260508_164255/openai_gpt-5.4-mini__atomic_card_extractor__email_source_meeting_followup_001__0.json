@@ -1,0 +1,79 @@
+{
+  "fixture_id": "email_source_meeting_followup_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Sam joined Point72 last month and requested the AI infrastructure article.",
+    "citations": [
+      "From: sam@example.com Subject: Follow up. Great seeing you. Yes, I joined Point72 last month. Please send the AI infra article."
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_success",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "The sender is identified only as Sam in the source; no prior entity ID is available from the input."
+    },
+    "intent": "Extract durable memory from the email follow-up: the sender says they joined Point72 last month and asks for the AI infrastructure article.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "sender",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72 last month",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72 last month."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "sender",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure article",
+            "role": "requested_item",
+            "type": "document"
+          }
+        ],
+        "kind": "request",
+        "relationships": [
+          {
+            "object": "AI infrastructure article",
+            "predicate": "requested",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam asked for the AI infrastructure article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted 2 atomic memory cards.",
+        "No raw email address exposed in memory cards.",
+        "No ambiguous facts were promoted beyond the source."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164255"
+}

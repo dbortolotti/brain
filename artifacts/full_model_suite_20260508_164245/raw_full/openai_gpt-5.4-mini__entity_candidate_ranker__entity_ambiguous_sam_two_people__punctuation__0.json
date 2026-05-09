@@ -1,0 +1,61 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0017729999999999998,
+  "fixture_id": "entity_ambiguous_sam_two_people__punctuation",
+  "input_tokens": 390,
+  "latency_ms": 3902,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 329,
+  "payload": {
+    "answer": "Ambiguous: the preference could belong to either existing Sam, so do not attach it to a specific entity yet.",
+    "citations": [
+      "Existing entities: Sam from Goldman (person), Sam from Point72 (person)",
+      "New message: Sam likes early Coltrane"
+    ],
+    "conflict_classification": "ambiguous_reference",
+    "decision": "ambiguous_no_commit",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The message refers to 'Sam' without disambiguating whether it is Sam from Goldman or Sam from Point72, so committing the preference to either entity would be speculative."
+    },
+    "intent": "Evaluate whether the new statement about liking early Coltrane can be durably attached to an existing Sam entity.",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "ambiguous candidate",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected ambiguous reference to 'Sam'.",
+        "Avoided durable entity assignment due to insufficient disambiguation.",
+        "Stored only a low-confidence, non-committal candidate memory card."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask a follow-up to identify which Sam is meant.",
+      "Wait for another message that disambiguates Sam before storing the preference."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Evaluate whether the new statement about liking early Coltrane can be durably attached to an existing Sam entity.\",\"decision\":\"ambiguous_no_commit\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam likes early Coltrane.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"ambiguous candidate\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"early Coltrane\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The message refers to 'Sam' without disambiguating whether it is Sam from Goldman or Sam from Point72, so committing the preference to either entity would be speculative.\"},\"conflict_classification\":\"ambiguous_reference\",\"answer\":\"Ambiguous: the preference could belong to either existing Sam, so do not attach it to a specific entity yet.\",\"citations\":[\"Existing entities: Sam from Goldman (person), Sam from Point72 (person)\",\"New message: Sam likes early Coltrane\"],\"repair_options\":[\"Ask a follow-up to identify which Sam is meant.\",\"Wait for another message that disambiguates Sam before storing the preference.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected ambiguous reference to 'Sam'.\",\"Avoided durable entity assignment due to insufficient disambiguation.\",\"Stored only a low-confidence, non-committal candidate memory card.\"]}}",
+  "role": "entity_candidate_ranker",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

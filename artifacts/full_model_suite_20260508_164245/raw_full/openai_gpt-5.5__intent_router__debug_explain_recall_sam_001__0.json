@@ -1,0 +1,35 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.009085000000000001,
+  "fixture_id": "debug_explain_recall_sam_001",
+  "input_tokens": 371,
+  "latency_ms": 5175,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 241,
+  "payload": {
+    "answer": "Debug recall requested for: \u201cTell me everything about Sam from Goldman\u201d. No new memory was extracted or committed. A recall lookup should search existing memory for an entity named Sam associated with Goldman, preserving ambiguity if multiple Sams or Goldman entities exist.",
+    "citations": [],
+    "conflict_classification": "not_applicable",
+    "decision": "recall_only_no_memory_write",
+    "entity_resolution": {
+      "action": "needs_recall_lookup",
+      "entity_id": null,
+      "reason": "The input is a debug recall request asking to retrieve existing memories about 'Sam from Goldman'; no durable memory should be committed from this command alone."
+    },
+    "intent": "debug_recall",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Classified input as a debug recall request.",
+        "No memory cards created because the user is asking to retrieve, not store, information.",
+        "Entity resolution deferred to recall lookup for possible matches to Sam associated with Goldman."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"debug_recall\",\"decision\":\"recall_only_no_memory_write\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"needs_recall_lookup\",\"entity_id\":null,\"reason\":\"The input is a debug recall request asking to retrieve existing memories about 'Sam from Goldman'; no durable memory should be committed from this command alone.\"},\"conflict_classification\":\"not_applicable\",\"answer\":\"Debug recall requested for: \u201cTell me everything about Sam from Goldman\u201d. No new memory was extracted or committed. A recall lookup should search existing memory for an entity named Sam associated with Goldman, preserving ambiguity if multiple Sams or Goldman entities exist.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Classified input as a debug recall request.\",\"No memory cards created because the user is asking to retrieve, not store, information.\",\"Entity resolution deferred to recall lookup for possible matches to Sam associated with Goldman.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

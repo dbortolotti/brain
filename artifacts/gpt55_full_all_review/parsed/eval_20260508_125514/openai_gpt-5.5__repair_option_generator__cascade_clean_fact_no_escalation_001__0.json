@@ -1,0 +1,71 @@
+{
+  "fixture_id": "cascade_clean_fact_no_escalation_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Got it \u2014 Nur and Sara are your twin daughters.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "The user provided a direct personal relationship fact. No existing entity identifiers were supplied, so Nur and Sara should be resolved to existing matching entities if present or created otherwise."
+    },
+    "intent": "store_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "user",
+            "role": "parent",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship_fact",
+        "relationships": [
+          {
+            "object": "user",
+            "predicate": "is_daughter_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "user",
+            "predicate": "is_daughter_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Sara",
+            "predicate": "is_twin_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Nur and Sara are the user's twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed durable memory: Nur and Sara are the user's twin daughters."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "repair_option_generator",
+  "run_id": "eval_20260508_125514"
+}

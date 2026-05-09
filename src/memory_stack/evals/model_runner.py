@@ -4,6 +4,7 @@ import csv
 import html
 import hashlib
 import json
+import math
 import re
 from collections import Counter, defaultdict, deque
 from collections.abc import Callable
@@ -21,6 +22,7 @@ from memory_stack.evals.model_fixtures import (
     BASE_OUTPUT_SCHEMA,
     ModelEvalFixture,
     fixture_prompt,
+    output_schema_for_fixture,
     select_fixtures,
 )
 from memory_stack.evals.model_matrix import (
@@ -281,9 +283,9 @@ def run_one_fixture(
     rerun_timestamp: str | None = None,
 ) -> dict[str, Any]:
     if candidate.kind == "embedding":
-        call = client.embed(candidate, text=fixture.input_text)
+        call = run_embedding_fixture(client, candidate=candidate, fixture=fixture)
     else:
-        call = client.complete_json(candidate, prompt=fixture_prompt(fixture), schema=BASE_OUTPUT_SCHEMA)
+        call = client.complete_json(candidate, prompt=fixture_prompt(fixture), schema=output_schema_for_fixture(fixture))
     return build_eval_record(
         candidate=candidate,
         fixture=fixture,
@@ -295,6 +297,87 @@ def run_one_fixture(
         rerun_of_run_id=rerun_of_run_id,
         rerun_timestamp=rerun_timestamp,
     )
+
+
+def run_embedding_fixture(
+    client: EvalModelClient,
+    *,
+    candidate: ModelCandidate,
+    fixture: ModelEvalFixture,
+) -> ModelCallResult:
+    probe = fixture.expected.get("embedding_retrieval")
+    if not isinstance(probe, dict):
+        return client.embed(candidate, text=fixture.input_text)
+
+    query = str(probe.get("query") or fixture.input_text)
+    positive = str(probe.get("positive") or "")
+    negatives = [str(value) for value in probe.get("negatives", []) if str(value)]
+    texts = [query, positive, *negatives]
+    calls = [client.embed(candidate, text=text) for text in texts]
+    failed = next((call for call in calls if call.status == "fail" or not call.payload), None)
+    if failed is not None:
+        return ModelCallResult(
+            status="fail",
+            payload=None,
+            raw_text="\n".join(call.raw_text for call in calls if call.raw_text),
+            error=failed.error or "embedding retrieval probe failed",
+            latency_ms=sum(call.latency_ms or 0 for call in calls),
+            input_tokens=sum(call.input_tokens for call in calls),
+            output_tokens=0,
+            estimated_cost_usd=sum(call.estimated_cost_usd for call in calls),
+        )
+
+    vectors = [call.payload.get("embedding_vector") for call in calls if call.payload]
+    if len(vectors) != len(texts) or any(not valid_embedding_vector(vector) for vector in vectors):
+        return ModelCallResult(
+            status="schema_fail",
+            payload={"embedding_vector_size": calls[0].payload.get("embedding_vector_size")} if calls[0].payload else None,
+            raw_text="\n".join(call.raw_text for call in calls if call.raw_text),
+            error="embedding retrieval probe requires embedding_vector payloads",
+            latency_ms=sum(call.latency_ms or 0 for call in calls),
+            input_tokens=sum(call.input_tokens for call in calls),
+            output_tokens=0,
+            estimated_cost_usd=sum(call.estimated_cost_usd for call in calls),
+        )
+
+    query_vector = [float(value) for value in vectors[0]]
+    passage_vectors = [[float(value) for value in vector] for vector in vectors[1:]]
+    scores = [cosine_similarity(query_vector, vector) for vector in passage_vectors]
+    positive_score = scores[0]
+    best_negative_score = max(scores[1:], default=-1.0)
+    positive_rank = 1 + sum(1 for score in scores[1:] if score > positive_score)
+    payload = {
+        "embedding_vector_size": len(query_vector),
+        "retrieval_top_rank": positive_rank,
+        "retrieval_positive_score": positive_score,
+        "retrieval_best_negative_score": best_negative_score,
+        "retrieval_margin": positive_score - best_negative_score,
+    }
+    return ModelCallResult(
+        status="ok",
+        payload=payload,
+        raw_text=json.dumps(payload),
+        error=None,
+        latency_ms=sum(call.latency_ms or 0 for call in calls),
+        input_tokens=sum(call.input_tokens for call in calls),
+        output_tokens=0,
+        estimated_cost_usd=sum(call.estimated_cost_usd for call in calls),
+    )
+
+
+def valid_embedding_vector(vector: Any) -> bool:
+    return isinstance(vector, list) and bool(vector) and all(isinstance(value, int | float) for value in vector)
+
+
+def cosine_similarity(left: list[float], right: list[float]) -> float:
+    if len(left) != len(right) or not left:
+        return -1.0
+    dot = sum(a * b for a, b in zip(left, right, strict=True))
+    left_norm = math.sqrt(sum(a * a for a in left))
+    right_norm = math.sqrt(sum(b * b for b in right))
+    if left_norm == 0.0 or right_norm == 0.0:
+        return -1.0
+    return dot / (left_norm * right_norm)
 
 
 def synthetic_failure_record(
@@ -369,7 +452,7 @@ def build_eval_record(
     operational_success = call.status != "fail"
     provider_call_succeeded = operational_success
     json_parseable = operational_success and call.status != "schema_fail"
-    schema_valid, schema_failure_message = validate_payload(candidate, call.payload)
+    schema_valid, schema_failure_message = validate_payload(candidate, fixture, call.payload)
     if not json_parseable:
         schema_valid = False
     semantic_evaluable = operational_success and json_parseable and schema_valid
@@ -451,6 +534,7 @@ def build_eval_record(
 
 def validate_payload(
     candidate: ModelCandidate,
+    fixture: ModelEvalFixture,
     payload: dict[str, Any] | None,
 ) -> tuple[bool, str | None]:
     if payload is None:
@@ -461,13 +545,19 @@ def validate_payload(
             return True, None
         return False, "embedding payload missing positive integer embedding_vector_size"
 
-    errors = validate_against_schema(payload, BASE_OUTPUT_SCHEMA, path="$")
+    errors = validate_against_schema(payload, output_schema_for_fixture(fixture), path="$")
     if errors:
         return False, errors[0]
     return True, None
 
 
 def validate_against_schema(value: Any, schema: dict[str, Any], *, path: str) -> list[str]:
+    def enum_errors() -> list[str]:
+        enum_values = schema.get("enum")
+        if isinstance(enum_values, list) and value not in enum_values:
+            return [f"{path} must be one of {', '.join(str(item) for item in enum_values)}"]
+        return []
+
     expected_type = schema.get("type")
     if isinstance(expected_type, list):
         branch_errors: list[str] = []
@@ -490,6 +580,10 @@ def validate_against_schema(value: Any, schema: dict[str, Any], *, path: str) ->
         for key, property_schema in properties.items():
             if key in value:
                 errors.extend(validate_against_schema(value[key], property_schema, path=f"{path}.{key}"))
+        if schema.get("additionalProperties") is False:
+            for key in value:
+                if key not in properties:
+                    errors.append(f"{path}.{key} is not allowed")
         return errors
 
     if expected_type == "array":
@@ -504,16 +598,16 @@ def validate_against_schema(value: Any, schema: dict[str, Any], *, path: str) ->
         return errors
 
     if expected_type == "string":
-        return [] if isinstance(value, str) else [f"{path} must be a string"]
+        return enum_errors() if isinstance(value, str) else [f"{path} must be a string"]
     if expected_type == "boolean":
-        return [] if isinstance(value, bool) else [f"{path} must be a boolean"]
+        return enum_errors() if isinstance(value, bool) else [f"{path} must be a boolean"]
     if expected_type == "integer":
-        return [] if isinstance(value, int) and not isinstance(value, bool) else [f"{path} must be an integer"]
+        return enum_errors() if isinstance(value, int) and not isinstance(value, bool) else [f"{path} must be an integer"]
     if expected_type == "number":
-        return [] if isinstance(value, (int, float)) and not isinstance(value, bool) else [f"{path} must be a number"]
+        return enum_errors() if isinstance(value, (int, float)) and not isinstance(value, bool) else [f"{path} must be a number"]
     if expected_type == "null":
-        return [] if value is None else [f"{path} must be null"]
-    return []
+        return enum_errors() if value is None else [f"{path} must be null"]
+    return enum_errors()
 
 
 def roles_for_candidate(
@@ -536,9 +630,9 @@ def roles_for_candidate(
 
 
 def embedding_fixtures(fixtures: list[ModelEvalFixture]) -> list[ModelEvalFixture]:
-    for fixture in fixtures:
-        if fixture.role == "embeddings":
-            return [fixture]
+    embedding_role_fixtures = [fixture for fixture in fixtures if fixture.role == "embeddings"]
+    if embedding_role_fixtures:
+        return embedding_role_fixtures
     for fixture in fixtures:
         if fixture.role == "memory_compiler":
             return [fixture]
@@ -632,6 +726,11 @@ def write_run_artifacts(result: dict[str, Any], records: list[dict[str, Any]]) -
         render_html_report(markdown_report, title=f"Brain Eval Summary {result['run_id']}"),
         encoding="utf-8",
     )
+    detailed_records_path = output_dir / "detailed_records.html"
+    detailed_records_path.write_text(
+        render_detailed_records_html(result, records),
+        encoding="utf-8",
+    )
 
     failed_path = output_dir / "failed_tests.jsonl"
     failed_md_path = output_dir / "failed_tests.md"
@@ -645,6 +744,14 @@ def write_run_artifacts(result: dict[str, Any], records: list[dict[str, Any]]) -
     write_zero_tolerance_csv(output_dir / "zero_tolerance_summary.csv", summaries)
     write_failed_fixture_summary_csv(output_dir / "failed_fixture_summary.csv", summaries, records)
     write_zero_tolerance_detail_csv(output_dir / "zero_tolerance_failures_detail.csv", records)
+    write_fixture_prompt_expected_failure_csv(
+        output_dir / "fixture_prompt_expected_failure_table.csv",
+        records,
+    )
+    (output_dir / "fixture_prompt_expected_failure_table.md").write_text(
+        render_fixture_prompt_expected_failure_markdown(result["run_id"], records),
+        encoding="utf-8",
+    )
     (output_dir / "targeted_followup_commands.md").write_text(
         render_targeted_followup_commands(output_path.parent),
         encoding="utf-8",
@@ -679,6 +786,7 @@ def build_run_result(
         "output_path": str(output_path),
         "report_md_path": str(report_path),
         "report_html_path": str(report_path.with_suffix(".html")),
+        "detailed_records_html_path": str(output_path.parent / "detailed_records.html"),
         "failed_manifest_jsonl_path": str(output_path.parent / "failed_tests.jsonl"),
         "failed_manifest_md_path": str(output_path.parent / "failed_tests.md"),
         "summaries": summaries,
@@ -840,7 +948,7 @@ def rescore_record(
     operational_success = call.status != "fail"
     provider_call_succeeded = operational_success
     json_parseable = operational_success and call.status != "schema_fail"
-    schema_valid, schema_failure_message = validate_payload(candidate, call.payload)
+    schema_valid, schema_failure_message = validate_payload(candidate, fixture, call.payload)
     if not json_parseable:
         schema_valid = False
     semantic_evaluable = operational_success and json_parseable and schema_valid
@@ -1015,19 +1123,37 @@ def run_rerun_failed(
     endpoint_limit = max(1, endpoint_max_concurrency)
     endpoint_keys = {item.candidate.endpoint_key for item in work_items}
     max_parallel_workers = min(len(work_items), max(1, len(endpoint_keys) * endpoint_limit))
+    total_work_items = len(work_items)
+    completed_work_items = 0
+    progress_lock = Lock()
+
+    def log_rerun_progress(record: dict[str, Any]) -> None:
+        nonlocal completed_work_items
+        with progress_lock:
+            completed_work_items += 1
+            print(
+                "[rerun-failed] "
+                f"{completed_work_items}/{total_work_items} "
+                f"role={record.get('role')} "
+                f"fixture={record.get('fixture_id')} "
+                f"status={record.get('status')} "
+                f"score={record.get('quality_score')}",
+                flush=True,
+            )
+
     if max_parallel_workers <= 1:
         for item in work_items:
-            rerun_records.append(
-                evaluate_work_item(
-                    active_client,
-                    item=item,
-                    run_id=rerun_run_id,
-                    raw_output_dir=raw_output_dir,
-                    parsed_output_dir=parsed_output_dir,
-                    rerun_of_run_id=rerun_of_run_id,
-                    rerun_timestamp=rerun_timestamp,
-                )
+            record = evaluate_work_item(
+                active_client,
+                item=item,
+                run_id=rerun_run_id,
+                raw_output_dir=raw_output_dir,
+                parsed_output_dir=parsed_output_dir,
+                rerun_of_run_id=rerun_of_run_id,
+                rerun_timestamp=rerun_timestamp,
             )
+            rerun_records.append(record)
+            log_rerun_progress(record)
     else:
         endpoint_semaphores: dict[str, BoundedSemaphore] = {
             key: BoundedSemaphore(endpoint_limit) for key in {item.candidate.endpoint_key for item in work_items}
@@ -1048,7 +1174,9 @@ def run_rerun_failed(
                 for item in work_items
             ]
             for future in as_completed(futures):
-                rerun_records.append(future.result())
+                record = future.result()
+                rerun_records.append(record)
+                log_rerun_progress(record)
 
     assign_failure_numbers(rerun_records)
     merged = merge_rerun_records(canonical_records, rerun_records)
@@ -1390,6 +1518,107 @@ def write_zero_tolerance_detail_csv(path: Path, records: list[dict[str, Any]]) -
                         record.get("parsed_output_path") or "",
                     ]
                 )
+
+
+def fixture_prompt_expected_failure_rows(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for record in failure_records(records):
+        role = str(record.get("role") or "")
+        fixture = find_fixture_for_record(
+            fixture_set=str(record.get("fixture_set_version") or "brain-model-test-v2"),
+            role=role,
+            fixture_id=str(record.get("fixture_id") or ""),
+            variant_id=str(record.get("variant_id") or "base"),
+            mode=mode_for_roles({role}),
+        )
+        payload = payload_for_record(record)
+        rows.append(
+            {
+                "failure_number": record.get("failure_number") or "",
+                "role": role,
+                "fixture_id": record.get("fixture_id") or "",
+                "variant_id": record.get("variant_id") or "base",
+                "repeat_idx": record.get("repeat_idx") or 0,
+                "status": record.get("status") or "",
+                "failure_class": record.get("failure_class") or "",
+                "quality_score": record.get("quality_score")
+                if record.get("quality_score") is not None
+                else "",
+                "zero_tolerance_failure_types": ";".join(
+                    str(item) for item in (record.get("zero_tolerance_failure_types") or [])
+                ),
+                "scenario_group": fixture.scenario_group,
+                "fixture_input": fixture.input_text,
+                "prompt": fixture_prompt(fixture),
+                "expected": json.dumps(fixture.expected, ensure_ascii=False, sort_keys=True),
+                "failure_description": failure_explanation_for_record(record, fixture, payload),
+                "raw_output_path": record.get("raw_output_path") or "",
+                "parsed_output_path": record.get("parsed_output_path") or "",
+            }
+        )
+    return rows
+
+
+def write_fixture_prompt_expected_failure_csv(path: Path, records: list[dict[str, Any]]) -> None:
+    rows = fixture_prompt_expected_failure_rows(records)
+    fieldnames = [
+        "failure_number",
+        "role",
+        "fixture_id",
+        "variant_id",
+        "repeat_idx",
+        "status",
+        "failure_class",
+        "quality_score",
+        "zero_tolerance_failure_types",
+        "scenario_group",
+        "fixture_input",
+        "prompt",
+        "expected",
+        "failure_description",
+        "raw_output_path",
+        "parsed_output_path",
+    ]
+    with path.open("w", encoding="utf-8", newline="") as file:
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+def render_fixture_prompt_expected_failure_markdown(run_id: str, records: list[dict[str, Any]]) -> str:
+    rows = fixture_prompt_expected_failure_rows(records)
+    lines = [
+        "# Fixture / Prompt / Expected / Failure Description Table",
+        "",
+        f"Source run: `{run_id}`",
+        "",
+        "| # | Role | Fixture | Variant | Status | Expected | Failure description |",
+        "|---:|---|---|---|---|---|---|",
+    ]
+    for row in rows:
+        lines.append(
+            "| {failure_number} | {role} | `{fixture_id}` | {variant_id} | {status} | "
+            "`{expected}` | {failure_description} |".format(
+                failure_number=row["failure_number"],
+                role=markdown_table_cell(str(row["role"]), limit=80),
+                fixture_id=markdown_table_cell(str(row["fixture_id"]), limit=120),
+                variant_id=markdown_table_cell(str(row["variant_id"]), limit=40),
+                status=markdown_table_cell(str(row["status"]), limit=60),
+                expected=markdown_table_cell(str(row["expected"]), limit=240),
+                failure_description=markdown_table_cell(
+                    str(row["failure_description"]),
+                    limit=360,
+                ),
+            )
+        )
+    return "\n".join(lines) + "\n"
+
+
+def markdown_table_cell(value: str, *, limit: int) -> str:
+    text = " ".join(value.split()).replace("|", "\\|")
+    if len(text) <= limit:
+        return text
+    return text[: max(0, limit - 3)] + "..."
 
 
 def expected_for_record(record: dict[str, Any]) -> dict[str, Any]:
@@ -1975,6 +2204,131 @@ def render_html_report(markdown_report: str, *, title: str) -> str:
             "</html>",
         ]
     )
+
+
+def render_detailed_records_html(result: dict[str, Any], records: list[dict[str, Any]]) -> str:
+    run_id = str(result.get("run_id") or "")
+    rows: list[str] = []
+    for record in sorted(records, key=lambda item: (str(item.get("role")), str(item.get("fixture_id")), str(item.get("model")))):
+        role = str(record.get("role") or "")
+        fixture_id = str(record.get("fixture_id") or "")
+        fixture = find_fixture_for_record(
+            fixture_set=str(record.get("fixture_set_version") or "brain-model-test-v2"),
+            role=role,
+            fixture_id=fixture_id,
+            variant_id=str(record.get("variant_id") or "base"),
+            mode=mode_for_roles({role}),
+        )
+        payload = payload_for_record(record)
+        explanation = failure_explanation_for_record(record, fixture, payload)
+        status = str(record.get("status") or "")
+        badge_class = "pass" if status == "ok" else "fail"
+        scoring = {
+            "status": record.get("status"),
+            "failure_class": record.get("failure_class"),
+            "failure_message": record.get("failure_message"),
+            "quality_score": record.get("quality_score"),
+            "schema_valid": record.get("schema_valid"),
+            "subscores": record.get("subscores"),
+            "zero_tolerance_failure": record.get("zero_tolerance_failure"),
+            "zero_tolerance_failure_types": record.get("zero_tolerance_failure_types"),
+            "latency_ms": record.get("latency_ms"),
+            "estimated_cost_usd": record.get("estimated_cost_usd"),
+            "raw_output_path": record.get("raw_output_path"),
+            "parsed_output_path": record.get("parsed_output_path"),
+        }
+        rows.append(
+            "<tr>"
+            f"<td><strong>{html.escape(fixture_id)}</strong><div class='small'>{html.escape(role)}</div><div class='small'>{html.escape(str(record.get('scenario_group') or ''))}</div></td>"
+            f"<td><pre>{html.escape(fixture_prompt(fixture))}</pre></td>"
+            f"<td><pre>{html.escape(json.dumps({'expected': fixture.expected, 'zero_tolerance_checks': fixture.zero_tolerance_checks}, indent=2, sort_keys=True, default=str))}</pre></td>"
+            f"<td class='explain'>{html.escape(explanation)}</td>"
+            f"<td><div class='answer-head'><span class='badge {badge_class}'>{html.escape(status)}</span><span class='small'>{html.escape(str(record.get('failure_class') or ''))}</span></div><pre>{html.escape(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False, default=str))}</pre><details open><summary>Scoring</summary><pre>{html.escape(json.dumps(scoring, indent=2, sort_keys=True, default=str))}</pre></details></td>"
+            "</tr>"
+        )
+    title = f"Brain Eval Detailed Records {run_id}"
+    return "\n".join(
+        [
+            "<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'>",
+            f"<title>{html.escape(title)}</title>",
+            "<style>:root{--bg:#f7f8fa;--panel:#fff;--text:#18202a;--muted:#5d6878;--line:#d8dee8;--pass:#0f766e;--fail:#b42318}*{box-sizing:border-box}body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text)}header{padding:22px 28px 15px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:5}h1{margin:0 0 8px;font-size:22px}.meta{color:var(--muted);font-size:13px;display:flex;flex-wrap:wrap;gap:14px}main{padding:18px 28px 32px;overflow-x:auto}table{min-width:1600px;width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);table-layout:fixed}th,td{border-bottom:1px solid var(--line);border-right:1px solid var(--line);padding:10px;vertical-align:top;font-size:13px;overflow:hidden}th{text-align:left;background:#eef2f7;color:#334155;font-weight:650}th:nth-child(1){width:12%}th:nth-child(2){width:25%}th:nth-child(3){width:18%}th:nth-child(4){width:20%}th:nth-child(5){width:25%}pre{margin:0;white-space:pre-wrap;word-break:break-word;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;line-height:1.42;max-height:420px;overflow:auto;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:8px}.small{color:var(--muted);font-size:12px}.badge{display:inline-block;padding:2px 7px;border-radius:999px;font-size:12px;font-weight:650}.badge.pass{color:var(--pass);background:#d9f7ef}.badge.fail{color:var(--fail);background:#fee4e2}.explain{line-height:1.45;color:#263241}.answer-head{display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;margin-bottom:8px}summary{cursor:pointer;color:#334155;font-size:12px}</style></head><body>",
+            f"<header><h1>{html.escape(title)}</h1><div class='meta'><span>Run: <code>{html.escape(run_id)}</code></span><span>Records: {len(records)}</span><span>Models: <code>{html.escape(', '.join(str(model) for model in result.get('models', [])))}</code></span></div></header>",
+            "<main><table><thead><tr><th>Fixture</th><th>Prompt</th><th>Expected</th><th>Failure explanation</th><th>Model output</th></tr></thead><tbody>",
+            *rows,
+            "</tbody></table></main></body></html>",
+        ]
+    )
+
+
+def payload_for_record(record: dict[str, Any]) -> dict[str, Any] | None:
+    for path_key in ("parsed_output_path", "raw_output_path"):
+        path_value = record.get(path_key)
+        if isinstance(path_value, str) and path_value:
+            path = Path(path_value)
+            if path.exists():
+                data = json.loads(path.read_text(encoding="utf-8"))
+                if isinstance(data.get("payload"), dict):
+                    return data["payload"]
+    return None
+
+
+def failure_explanation_for_record(
+    record: dict[str, Any],
+    fixture: ModelEvalFixture,
+    payload: dict[str, Any] | None,
+) -> str:
+    if record.get("status") == "ok":
+        return "Pass: the response satisfies the expected behavior and has no zero-tolerance failure."
+    if not record.get("schema_valid", True):
+        return f"Schema failure: {record.get('failure_message')}. The response did not match the role-specific output contract."
+    expected = fixture.expected
+    subscores = record.get("subscores") if isinstance(record.get("subscores"), dict) else {}
+    payload_text_value = json.dumps(payload or {}, ensure_ascii=False).casefold()
+    card_text = json.dumps((payload or {}).get("memory_cards") or [], ensure_ascii=False).casefold()
+    parts: list[str] = []
+    role = str(record.get("role") or fixture.role)
+    if role == "atomic_card_extractor":
+        missing_terms = [str(term) for term in expected.get("must_include", []) if str(term).casefold() not in card_text]
+        if missing_terms:
+            parts.append(f"Required content is not represented in extracted memory cards: {', '.join(missing_terms)}.")
+        if expected.get("memory_kinds"):
+            kinds = [
+                str(card.get("kind"))
+                for card in ((payload or {}).get("memory_cards") or [])
+                if isinstance(card, dict) and card.get("kind")
+            ]
+            parts.append(
+                "Expected card kinds include "
+                + ", ".join(str(kind) for kind in expected["memory_kinds"])
+                + "; model emitted "
+                + (", ".join(kinds) if kinds else "no card kinds")
+                + "."
+            )
+    elif role == "conflict_candidate_detector":
+        actual = (payload or {}).get("conflict_classification")
+        expected_class = expected.get("conflict_classification")
+        if expected_class and actual != expected_class:
+            parts.append(f"Conflict classification mismatch: expected {expected_class!r}, got {actual!r}.")
+        if isinstance((payload or {}).get("memory_cards"), list) and (payload or {}).get("memory_cards"):
+            parts.append("Detection-only role emitted memory_cards.")
+    elif role in {"recall_synthesizer", "groundedness_checker"}:
+        missing_any = expected.get("must_include_any")
+        if missing_any and not any(str(term).casefold() in payload_text_value for term in missing_any):
+            parts.append("Response did not include any required uncertainty/current-evidence phrasing.")
+    else:
+        missing_terms = [str(term) for term in expected.get("must_include", []) if str(term).casefold() not in payload_text_value]
+        if missing_terms:
+            parts.append(f"Required terms are missing from the response: {', '.join(missing_terms)}.")
+    if record.get("zero_tolerance_failure"):
+        parts.append("Zero-tolerance failure: " + ", ".join(str(item) for item in record.get("zero_tolerance_failure_types") or []) + ".")
+    limiting = [
+        f"{key}={value:.2f}"
+        for key, value in sorted(subscores.items())
+        if isinstance(value, (int, float)) and value < 1.0
+    ][:3]
+    if limiting:
+        parts.append("Lowest subscores: " + ", ".join(limiting) + ".")
+    return " ".join(parts) or f"Harness status is {record.get('status')} with failure class {record.get('failure_class')}."
 
 
 def markdown_to_html(markdown_text: str) -> str:

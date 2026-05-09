@@ -1,0 +1,79 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0017055,
+  "fixture_id": "recall_profile_sara_001__punctuation",
+  "input_tokens": 378,
+  "latency_ms": 2809,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 316,
+  "payload": {
+    "answer": "Sara is Daniele's daughter and one of a pair of twins; her twin is Nur.",
+    "citations": [
+      "Fact - Nur and Sara are Daniele's twin daughters"
+    ],
+    "conflict_classification": "none",
+    "decision": "supported",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "Sara is referenced directly in the fact, but no persistent identifier is available from the fixture."
+    },
+    "intent": "Retrieve information about Sara from the provided fact.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "twin sister",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_child_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Daniele",
+            "predicate": "is_child_of",
+            "subject": "Nur"
+          }
+        ],
+        "statement": "Sara is one of Daniele's twin daughters, and her twin is Nur."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed the provided fact.",
+        "Created a supported memory card with no extra attributes beyond the fact.",
+        "Preserved ambiguity by not inferring additional details about Sara."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want, I can also state only the directly supported part: Sara is Daniele's daughter."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Retrieve information about Sara from the provided fact.\",\"decision\":\"supported\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sara is one of Daniele's twin daughters, and her twin is Nur.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"daughter\"},{\"name\":\"Daniele\",\"type\":\"person\",\"role\":\"parent\"},{\"name\":\"Nur\",\"type\":\"person\",\"role\":\"twin sister\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"is_child_of\",\"object\":\"Daniele\"},{\"subject\":\"Sara\",\"predicate\":\"is_twin_of\",\"object\":\"Nur\"},{\"subject\":\"Nur\",\"predicate\":\"is_child_of\",\"object\":\"Daniele\"}]}],\"entity_resolution\":{\"action\":\"create\",\"entity_id\":null,\"reason\":\"Sara is referenced directly in the fact, but no persistent identifier is available from the fixture.\"},\"conflict_classification\":\"none\",\"answer\":\"Sara is Daniele's daughter and one of a pair of twins; her twin is Nur.\",\"citations\":[\"Fact - Nur and Sara are Daniele's twin daughters\"],\"repair_options\":[\"If you want, I can also state only the directly supported part: Sara is Daniele's daughter.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed the provided fact.\",\"Created a supported memory card with no extra attributes beyond the fact.\",\"Preserved ambiguity by not inferring additional details about Sara.\"]}}",
+  "role": "groundedness_checker",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

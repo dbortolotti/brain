@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.012095,
+  "fixture_id": "large_table_500_rows_001__punctuation",
+  "input_tokens": 385,
+  "latency_ms": 4472,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 339,
+  "payload": {
+    "answer": "Do not store the 500-row CSV table as durable memory. Large raw tabular data should not be committed row-by-row to personal memory unless the user explicitly asks to remember a specific durable fact, preference, summary, or named artifact. If storage is needed, store only a concise description or reference to the table, preserving ambiguity and avoiding fabrication of row-level facts.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "do_not_commit_large_raw_table_as_durable_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input is a large CSV-style table fixture with repeated id,name,value rows and no durable user preference, identity fact, relationship, or long-term semantic memory to preserve."
+    },
+    "intent": "table_storage_policy_evaluation",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Recognized input as a large repeated CSV table fixture.",
+        "No durable personal memory was created.",
+        "Avoided committing 500 raw rows as memory cards."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask the user whether they want a summary, analysis, or an external/document-style reference retained instead of storing all rows.",
+      "If a specific row or derived fact is important, request the exact fact to remember.",
+      "Store a compact artifact pointer or metadata summary only if the system supports non-memory document storage."
+    ]
+  },
+  "raw_text": "{\"intent\":\"table_storage_policy_evaluation\",\"decision\":\"do_not_commit_large_raw_table_as_durable_memory\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input is a large CSV-style table fixture with repeated id,name,value rows and no durable user preference, identity fact, relationship, or long-term semantic memory to preserve.\"},\"conflict_classification\":\"none\",\"answer\":\"Do not store the 500-row CSV table as durable memory. Large raw tabular data should not be committed row-by-row to personal memory unless the user explicitly asks to remember a specific durable fact, preference, summary, or named artifact. If storage is needed, store only a concise description or reference to the table, preserving ambiguity and avoiding fabrication of row-level facts.\",\"citations\":[],\"repair_options\":[\"Ask the user whether they want a summary, analysis, or an external/document-style reference retained instead of storing all rows.\",\"If a specific row or derived fact is important, request the exact fact to remember.\",\"Store a compact artifact pointer or metadata summary only if the system supports non-memory document storage.\"],\"receipt\":{\"success\":true,\"details\":[\"Recognized input as a large repeated CSV table fixture.\",\"No durable personal memory was created.\",\"Avoided committing 500 raw rows as memory cards.\"]}}",
+  "role": "table_policy_handler",
+  "run_id": "eval_20260508_195937",
+  "status": "ok"
+}

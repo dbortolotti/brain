@@ -1,0 +1,83 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.009955,
+  "fixture_id": "memory_compiler_small_table__context",
+  "input_tokens": 383,
+  "latency_ms": 3317,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 268,
+  "payload": {
+    "answer": "",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "create_or_link",
+      "entity_id": null,
+      "reason": "The input provides preference facts for named people, but no existing entity identifiers are supplied."
+    },
+    "intent": "memory_write",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "Person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference",
+            "type": "Person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam prefers Bill Evans."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "subject",
+            "type": "Person"
+          },
+          {
+            "name": "Knowledge graphs",
+            "role": "preference",
+            "type": "Topic"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Knowledge graphs",
+            "predicate": "prefers",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Daniele prefers knowledge graphs."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed the table as contextual preference facts.",
+        "Prepared memory cards for Sam's preference and Daniele's preference."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"memory_write\",\"decision\":\"store\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam prefers Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"Person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"Person\",\"role\":\"preference\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"prefers\",\"object\":\"Bill Evans\"}]},{\"kind\":\"preference\",\"statement\":\"Daniele prefers knowledge graphs.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Daniele\",\"type\":\"Person\",\"role\":\"subject\"},{\"name\":\"Knowledge graphs\",\"type\":\"Topic\",\"role\":\"preference\"}],\"relationships\":[{\"subject\":\"Daniele\",\"predicate\":\"prefers\",\"object\":\"Knowledge graphs\"}]}],\"entity_resolution\":{\"action\":\"create_or_link\",\"entity_id\":null,\"reason\":\"The input provides preference facts for named people, but no existing entity identifiers are supplied.\"},\"conflict_classification\":\"none\",\"answer\":\"\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Parsed the table as contextual preference facts.\",\"Prepared memory cards for Sam's preference and Daniele's preference.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

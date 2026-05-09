@@ -1,0 +1,35 @@
+{
+  "fixture_id": "validator_blocks_large_table_atomization_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Do not commit the 500 proposed row-level memory cards as durable memory. Treat the CSV as bulk/tabular source data, not as 500 independent personal-memory facts.",
+    "citations": [],
+    "conflict_classification": "not_applicable",
+    "decision": "block_bulk_atomization",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The proposal would create 500 durable memory cards from CSV rows without evidence that each row is independently salient, stable, user-relevant memory. Large-table row atomization should be blocked rather than committed wholesale."
+    },
+    "intent": "repair_option_generator",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Rejected bulk creation of 500 row-level memory cards.",
+        "No durable memories were committed.",
+        "Provided safer repair options for summarization, selective extraction, or external/tabular storage."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Block the proposed 500-card commit and request a higher-level summary of the CSV instead.",
+      "If the CSV contains user-relevant preferences or durable facts, extract only a small number of salient, stable facts with clear provenance.",
+      "Store the CSV externally or as a referenced document/artifact if raw row-level retrieval is needed, rather than converting each row into memory cards.",
+      "Ask the user which rows or fields are important to remember before committing any durable memories.",
+      "Create one contextual memory card noting that the user provided or referenced a CSV, only if that fact itself is useful and durable.",
+      "If table ingestion is required, chunk or index it as non-memory data with row IDs, not as personal memory."
+    ]
+  },
+  "role": "repair_option_generator",
+  "run_id": "eval_20260508_125514"
+}

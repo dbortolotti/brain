@@ -1,0 +1,69 @@
+{
+  "fixture_id": "slack_conflict_buttons_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "This appears to update the existing memory that Sam works at Goldman. Should I replace it with: Sam left Goldman and joined Point72?",
+    "citations": [
+      "Existing: Sam works at Goldman.",
+      "User: Sam left Goldman and joined Point72."
+    ],
+    "conflict_classification": "supersedes_existing_fact",
+    "decision": "needs_repair_confirmation",
+    "entity_resolution": {
+      "action": "link_to_existing_entity",
+      "entity_id": null,
+      "reason": "The new statement appears to refer to the existing Sam, but the identity is not fully disambiguated beyond name match."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_update",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left_employer",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined_employer",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected a conflict with an existing employment memory.",
+        "Repair confirmation is needed before committing the update as durable memory."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Replace the current memory 'Sam works at Goldman' with 'Sam left Goldman and joined Point72.'",
+      "Keep both memories, treating the new statement as historical/current employment context.",
+      "Do not save the new memory."
+    ]
+  },
+  "role": "repair_option_generator",
+  "run_id": "eval_20260508_125514"
+}

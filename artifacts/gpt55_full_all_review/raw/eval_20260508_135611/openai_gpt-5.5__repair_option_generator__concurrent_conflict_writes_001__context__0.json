@@ -1,0 +1,92 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.019295,
+  "fixture_id": "concurrent_conflict_writes_001__context",
+  "input_tokens": 379,
+  "latency_ms": 8514,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 580,
+  "payload": {
+    "answer": "The statements conflict or require clarification: Sam is described as working at Goldman and as having joined Point72. Without timing or supersession information, neither should be stored as Sam's current employer.",
+    "citations": [
+      "For context, Concurrent writes: Sam works at Goldman. Sam joined Point72."
+    ],
+    "conflict_classification": "concurrent_conflict_writes",
+    "decision": "do_not_commit_current_employment_without_resolution",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The input contains two concurrent employment-related writes for Sam with different organizations and no timestamp, source priority, or explicit indication whether one supersedes the other."
+    },
+    "intent": "evaluate_concurrent_conflict_and_generate_repair_options",
+    "memory_cards": [
+      {
+        "confidence": "ambiguous_due_to_concurrent_conflict",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_claim",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "ambiguous_due_to_concurrent_conflict",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_claim",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected concurrent conflicting employment claims involving Sam.",
+        "Preserved ambiguity and avoided asserting either organization as current employer.",
+        "Generated repair options for resolving the conflict."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for clarification: Is Sam currently at Goldman, currently at Point72, or did Sam move from Goldman to Point72?",
+      "If Point72 is confirmed as newer, mark Goldman employment as former and store Point72 as current.",
+      "If Goldman is confirmed as current and Point72 was only an offer, internship, fund, or past role, store the appropriate qualified relationship instead of replacing current employment.",
+      "If both are true concurrently, store both with qualifiers such as dual roles, advisory role, or part-time employment.",
+      "If no clarification is available, retain both only as unresolved claims and avoid committing a durable current-employer memory."
+    ]
+  },
+  "raw_text": "{\"intent\":\"evaluate_concurrent_conflict_and_generate_repair_options\",\"decision\":\"do_not_commit_current_employment_without_resolution\",\"memory_cards\":[{\"kind\":\"employment_claim\",\"statement\":\"Sam works at Goldman.\",\"confidence\":\"ambiguous_due_to_concurrent_conflict\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"employee\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Goldman\"}]},{\"kind\":\"employment_claim\",\"statement\":\"Sam joined Point72.\",\"confidence\":\"ambiguous_due_to_concurrent_conflict\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"employee\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"The input contains two concurrent employment-related writes for Sam with different organizations and no timestamp, source priority, or explicit indication whether one supersedes the other.\"},\"conflict_classification\":\"concurrent_conflict_writes\",\"answer\":\"The statements conflict or require clarification: Sam is described as working at Goldman and as having joined Point72. Without timing or supersession information, neither should be stored as Sam's current employer.\",\"citations\":[\"For context, Concurrent writes: Sam works at Goldman. Sam joined Point72.\"],\"repair_options\":[\"Ask for clarification: Is Sam currently at Goldman, currently at Point72, or did Sam move from Goldman to Point72?\",\"If Point72 is confirmed as newer, mark Goldman employment as former and store Point72 as current.\",\"If Goldman is confirmed as current and Point72 was only an offer, internship, fund, or past role, store the appropriate qualified relationship instead of replacing current employment.\",\"If both are true concurrently, store both with qualifiers such as dual roles, advisory role, or part-time employment.\",\"If no clarification is available, retain both only as unresolved claims and avoid committing a durable current-employer memory.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected concurrent conflicting employment claims involving Sam.\",\"Preserved ambiguity and avoided asserting either organization as current employer.\",\"Generated repair options for resolving the conflict.\"]}}",
+  "role": "repair_option_generator",
+  "run_id": "eval_20260508_135611",
+  "status": "ok"
+}

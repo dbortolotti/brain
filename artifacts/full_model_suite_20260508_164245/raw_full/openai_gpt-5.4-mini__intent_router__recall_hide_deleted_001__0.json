@@ -1,0 +1,65 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00156675,
+  "fixture_id": "recall_hide_deleted_001",
+  "input_tokens": 403,
+  "latency_ms": 3090,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 281,
+  "payload": {
+    "answer": "Current memory indicates that Sam likes Bill Evans. I do not retain the deleted memory about Taylor Swift as current evidence.",
+    "citations": [
+      "current memory: Sam likes Bill Evans",
+      "deleted memory suppressed: Sam likes Taylor Swift"
+    ],
+    "conflict_classification": "deleted_memory_suppressed",
+    "decision": "answer_with_current_memory_only",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": null,
+      "reason": "Sam is referenced in the current memory; no stable entity identifier is provided."
+    },
+    "intent": "retrieve_current_preference",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Used only current memory.",
+        "Did not surface deleted memory as current evidence."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you meant genre, current memory does not specify one.",
+      "If you want, I can keep only the current preference for Bill Evans and ignore the deleted Taylor Swift memory."
+    ]
+  },
+  "raw_text": "{\"intent\":\"retrieve_current_preference\",\"decision\":\"answer_with_current_memory_only\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam likes Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"resolve\",\"entity_id\":null,\"reason\":\"Sam is referenced in the current memory; no stable entity identifier is provided.\"},\"conflict_classification\":\"deleted_memory_suppressed\",\"answer\":\"Current memory indicates that Sam likes Bill Evans. I do not retain the deleted memory about Taylor Swift as current evidence.\",\"citations\":[\"current memory: Sam likes Bill Evans\",\"deleted memory suppressed: Sam likes Taylor Swift\"],\"repair_options\":[\"If you meant genre, current memory does not specify one.\",\"If you want, I can keep only the current preference for Bill Evans and ignore the deleted Taylor Swift memory.\"],\"receipt\":{\"success\":true,\"details\":[\"Used only current memory.\",\"Did not surface deleted memory as current evidence.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

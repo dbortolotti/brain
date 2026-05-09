@@ -1,0 +1,27 @@
+{
+  "fixture_id": "concurrent_conflict_writes_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Possible conflict detected between concurrent employment facts for Sam: one states Sam works at Goldman, while the other states Sam joined Point72. These may conflict if both refer to Sam's current primary employer, but the input does not specify timing, role type, or whether one is historical.",
+    "citations": [
+      "Sam works at Goldman.",
+      "Sam joined Point72."
+    ],
+    "conflict_classification": "contradicts",
+    "decision": "conflict_candidate",
+    "entity_resolution": {
+      "action": "same_entity_candidate",
+      "entity_id": null,
+      "reason": "Both statements refer to 'Sam'; no additional identifiers are provided, so they are treated as a possible same-person candidate without certainty."
+    },
+    "evidence": [
+      {
+        "existing_fact": "Sam works at Goldman.",
+        "new_fact": "Sam joined Point72.",
+        "reason": "Both facts appear to describe Sam's employment affiliation and may be mutually inconsistent as current-employer claims unless clarified by dates or context."
+      }
+    ]
+  },
+  "role": "conflict_candidate_detector",
+  "run_id": "eval_20260508_125514"
+}

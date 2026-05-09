@@ -1,0 +1,76 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00212625,
+  "fixture_id": "conflict_employment_transition__punctuation",
+  "input_tokens": 441,
+  "latency_ms": 6314,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 399,
+  "payload": {
+    "answer": "Approve supersession: the new fact directly updates the prior employment fact. The current memory should no longer present Sam as working at Goldman; instead, it should reflect that Sam left Goldman and joined Point72. If exact timing or current status is uncertain, an edit would be the safer alternative, but the supplied fact reads as a clear transition.",
+    "citations": [
+      "Existing current fact: Sam works at Goldman",
+      "New fact: Sam left Goldman and joined Point72"
+    ],
+    "conflict_classification": "direct_update_employment_transition",
+    "decision": "approve_supersession",
+    "entity_resolution": {
+      "action": "link_existing",
+      "entity_id": null,
+      "reason": "The new fact appears to refer to the same person, Sam, but no backend entity identifier is provided."
+    },
+    "intent": "Resolve an employment-status conflict for Sam between an older current job fact and a newer transition fact.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "new employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam previously worked at Goldman and later left Goldman to join Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected a direct conflict in employment status.",
+        "The newer fact supersedes the older current fact.",
+        "No unsupported assumptions were added about dates or role details."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "approve_supersession",
+      "edit"
+    ]
+  },
+  "raw_text": "{\"intent\":\"Resolve an employment-status conflict for Sam between an older current job fact and a newer transition fact.\",\"decision\":\"approve_supersession\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam previously worked at Goldman and later left Goldman to join Point72.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"new employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"left\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"link_existing\",\"entity_id\":null,\"reason\":\"The new fact appears to refer to the same person, Sam, but no backend entity identifier is provided.\"},\"conflict_classification\":\"direct_update_employment_transition\",\"answer\":\"Approve supersession: the new fact directly updates the prior employment fact. The current memory should no longer present Sam as working at Goldman; instead, it should reflect that Sam left Goldman and joined Point72. If exact timing or current status is uncertain, an edit would be the safer alternative, but the supplied fact reads as a clear transition.\",\"citations\":[\"Existing current fact: Sam works at Goldman\",\"New fact: Sam left Goldman and joined Point72\"],\"repair_options\":[\"approve_supersession\",\"edit\"],\"receipt\":{\"success\":true,\"details\":[\"Detected a direct conflict in employment status.\",\"The newer fact supersedes the older current fact.\",\"No unsupported assumptions were added about dates or role details.\"]}}",
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

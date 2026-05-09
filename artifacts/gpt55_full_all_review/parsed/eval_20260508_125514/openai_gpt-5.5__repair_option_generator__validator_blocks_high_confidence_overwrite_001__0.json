@@ -1,0 +1,33 @@
+{
+  "fixture_id": "validator_blocks_high_confidence_overwrite_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Blocked committing the proposed overwrite. Existing memory says Sara is Daniele's daughter; the proposal says Sara is Daniele's niece. Treat this as a conflict requiring clarification rather than replacing the current fact.",
+    "citations": [],
+    "conflict_classification": "direct_relationship_conflict",
+    "decision": "block_overwrite",
+    "entity_resolution": {
+      "action": "preserve_existing_and_do_not_merge_as_replacement",
+      "entity_id": null,
+      "reason": "The proposed relationship 'niece' conflicts with the existing high-confidence relationship 'daughter' for the same entities. This should not overwrite the existing durable memory without explicit correction evidence."
+    },
+    "intent": "generate_repair_options_for_conflicting_memory",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected direct conflict between existing relationship and proposed relationship.",
+        "Did not create a new durable memory card for the conflicting niece claim.",
+        "Generated repair options for resolving the conflict."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for clarification: Is Sara Daniele's daughter or niece?",
+      "If the new statement is intended as a correction, require explicit confirmation before updating the memory.",
+      "If both can be true in a nonstandard family context, store a clarified relationship with supporting context rather than overwriting.",
+      "Preserve the existing daughter relationship until reliable evidence indicates it is wrong."
+    ]
+  },
+  "role": "repair_option_generator",
+  "run_id": "eval_20260508_125514"
+}

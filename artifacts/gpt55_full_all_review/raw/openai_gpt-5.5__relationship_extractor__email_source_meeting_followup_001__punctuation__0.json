@@ -1,0 +1,84 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.012545,
+  "fixture_id": "email_source_meeting_followup_001__punctuation",
+  "input_tokens": 421,
+  "latency_ms": 6104,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 348,
+  "payload": {
+    "answer": "Extracted durable relationship memories without exposing the raw source identifier.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "needs_resolution",
+      "entity_id": null,
+      "reason": "Only a first name is available; the source identifier should not be exposed, and there is insufficient information to link Sam to an existing entity."
+    },
+    "intent": "extract_relationship_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "source",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_update",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said they joined Point72 last month."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "requester",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure article",
+            "role": "requested_item",
+            "type": "content"
+          }
+        ],
+        "kind": "content_interest_request",
+        "relationships": [
+          {
+            "object": "AI infrastructure article",
+            "predicate": "requested",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam requested that the user send an article about AI infrastructure."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed employment update with temporal ambiguity preserved as 'last month'.",
+        "Committed request to send an AI infrastructure article.",
+        "Did not expose raw private email address or raw source content."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"extract_relationship_memory\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"employment_update\",\"statement\":\"Sam said they joined Point72 last month.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"source\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]},{\"kind\":\"content_interest_request\",\"statement\":\"Sam requested that the user send an article about AI infrastructure.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"requester\"},{\"name\":\"AI infrastructure article\",\"type\":\"content\",\"role\":\"requested_item\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"requested\",\"object\":\"AI infrastructure article\"}]}],\"entity_resolution\":{\"action\":\"needs_resolution\",\"entity_id\":null,\"reason\":\"Only a first name is available; the source identifier should not be exposed, and there is insufficient information to link Sam to an existing entity.\"},\"conflict_classification\":\"none\",\"answer\":\"Extracted durable relationship memories without exposing the raw source identifier.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Committed employment update with temporal ambiguity preserved as 'last month'.\",\"Committed request to send an AI infrastructure article.\",\"Did not expose raw private email address or raw source content.\"]}}",
+  "role": "relationship_extractor",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

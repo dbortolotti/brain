@@ -1,0 +1,159 @@
+{
+  "fixture_id": "long_markdown_chat_summary_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Extracted three durable architecture decisions and two open questions. No conflicts or superseded facts were present in the input.",
+    "citations": [
+      "Brain DB should be the source of truth.",
+      "Cognee should be a rebuildable semantic projection.",
+      "Slack should be a strict memory intake agent.",
+      "Open questions: Should Telegram be added later? Which model is cheapest while saturating performance?"
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "Commit the stated architecture decisions as current; preserve Telegram/model choice items as open questions, not decisions.",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "The summary refers to architectural components and integrations by name but provides no existing entity IDs; resolve by canonical names if present, otherwise create/update corresponding entities."
+    },
+    "intent": "Extract durable architectural decisions and open questions from the chat summary for Brain memory.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system_component"
+          },
+          {
+            "name": "Brain",
+            "role": "owner",
+            "type": "system"
+          }
+        ],
+        "kind": "architecture_decision",
+        "relationships": [
+          {
+            "object": "Brain",
+            "predicate": "is_source_of_truth_for",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB should be the source of truth for the Brain personal memory system."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "semantic_projection",
+            "type": "system_component"
+          },
+          {
+            "name": "Brain DB",
+            "role": "source",
+            "type": "system_component"
+          }
+        ],
+        "kind": "architecture_decision",
+        "relationships": [
+          {
+            "object": "Brain DB",
+            "predicate": "is_rebuildable_projection_of",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee should be a rebuildable semantic projection of Brain DB rather than the source of truth."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "memory_intake_agent",
+            "type": "integration"
+          },
+          {
+            "name": "Brain",
+            "role": "target",
+            "type": "system"
+          }
+        ],
+        "kind": "architecture_decision",
+        "relationships": [
+          {
+            "object": "strict_memory_intake_agent",
+            "predicate": "acts_as",
+            "subject": "Slack"
+          },
+          {
+            "object": "Brain",
+            "predicate": "intakes_memory_for",
+            "subject": "Slack"
+          }
+        ],
+        "statement": "Slack should operate as a strict memory intake agent for Brain."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Telegram",
+            "role": "candidate_future_integration",
+            "type": "integration"
+          },
+          {
+            "name": "Brain",
+            "role": "target",
+            "type": "system"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [
+          {
+            "object": "Brain",
+            "predicate": "is_candidate_integration_for",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "It is unresolved whether Telegram should be added later as a Brain integration."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "model selection",
+            "role": "open_question",
+            "type": "decision_area"
+          },
+          {
+            "name": "Brain",
+            "role": "context",
+            "type": "system"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [
+          {
+            "object": "lowest_cost_while_saturating_performance",
+            "predicate": "optimizes_for",
+            "subject": "model selection"
+          }
+        ],
+        "statement": "It is unresolved which model is cheapest while saturating performance for Brain-related workflows."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed current decisions only.",
+        "Preserved Telegram and model choice as open questions rather than facts.",
+        "No deleted or superseded facts were presented as current."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "source_takeaway_extractor",
+  "run_id": "eval_20260508_125514"
+}

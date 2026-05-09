@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.011834999999999998,
+  "fixture_id": "large_table_500_rows_001__context",
+  "input_tokens": 387,
+  "latency_ms": 5020,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 330,
+  "payload": {
+    "answer": "Do not store the 500-row CSV table as durable memory. Large tabular data should be treated as transient context or stored as an external/document artifact with a concise summary or pointer if needed. Only commit durable memory if the user explicitly asks to remember a stable fact, preference, or reusable summary derived from the table.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "do_not_store_as_durable_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input describes a large CSV table with 500 repeated rows and asks a policy question, but provides no durable user preference, identity fact, relationship, or stable personal memory to commit."
+    },
+    "intent": "table_storage_policy",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No durable memory card was created.",
+        "Large raw tables are not suitable for personal memory storage.",
+        "Ambiguity was preserved because the actual CSV contents and intended use were not provided."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If persistence is required, store the CSV as a file or document artifact and save only a reference plus a brief description.",
+      "If the table has user-relevant meaning, ask the user what summary or durable insight they want remembered.",
+      "If rows are repetitive or generated test data, discard after the session."
+    ]
+  },
+  "raw_text": "{\"intent\":\"table_storage_policy\",\"decision\":\"do_not_store_as_durable_memory\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input describes a large CSV table with 500 repeated rows and asks a policy question, but provides no durable user preference, identity fact, relationship, or stable personal memory to commit.\"},\"conflict_classification\":\"none\",\"answer\":\"Do not store the 500-row CSV table as durable memory. Large tabular data should be treated as transient context or stored as an external/document artifact with a concise summary or pointer if needed. Only commit durable memory if the user explicitly asks to remember a stable fact, preference, or reusable summary derived from the table.\",\"citations\":[],\"repair_options\":[\"If persistence is required, store the CSV as a file or document artifact and save only a reference plus a brief description.\",\"If the table has user-relevant meaning, ask the user what summary or durable insight they want remembered.\",\"If rows are repetitive or generated test data, discard after the session.\"],\"receipt\":{\"success\":true,\"details\":[\"No durable memory card was created.\",\"Large raw tables are not suitable for personal memory storage.\",\"Ambiguity was preserved because the actual CSV contents and intended use were not provided.\"]}}",
+  "role": "table_policy_handler",
+  "run_id": "eval_20260508_195937",
+  "status": "ok"
+}

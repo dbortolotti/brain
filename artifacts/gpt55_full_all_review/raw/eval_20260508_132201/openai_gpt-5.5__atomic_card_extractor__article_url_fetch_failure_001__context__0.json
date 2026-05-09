@@ -1,0 +1,60 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.011625,
+  "fixture_id": "article_url_fetch_failure_001__context",
+  "input_tokens": 483,
+  "latency_ms": 4076,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 307,
+  "payload": {
+    "answer": "Saved the article reference and the stated reason, but the article content could not be fetched because the mock fetch result was a 404 network error.",
+    "citations": [
+      "https://example.com/missing"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_with_warning",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No durable entity resolution was needed; the input only provided a URL reference and a user-supplied reason."
+    },
+    "intent": "remember_article_reference",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "referenced_article",
+            "type": "url"
+          }
+        ],
+        "kind": "reference",
+        "relationships": [
+          {
+            "object": "useful for memory architecture",
+            "predicate": "remembered_for",
+            "subject": "https://example.com/missing"
+          }
+        ],
+        "statement": "The user asked to remember the article at https://example.com/missing for the reason: useful for memory architecture."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed the URL reference and user-stated reason only.",
+        "Did not extract claims from the article content because the fetch failed with a 404 network error."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retry fetching the URL later.",
+      "Provide the article text directly.",
+      "Provide a working URL or archived copy."
+    ]
+  },
+  "raw_text": "{\"intent\":\"remember_article_reference\",\"decision\":\"commit_with_warning\",\"memory_cards\":[{\"kind\":\"reference\",\"statement\":\"The user asked to remember the article at https://example.com/missing for the reason: useful for memory architecture.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"https://example.com/missing\",\"type\":\"url\",\"role\":\"referenced_article\"}],\"relationships\":[{\"subject\":\"https://example.com/missing\",\"predicate\":\"remembered_for\",\"object\":\"useful for memory architecture\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No durable entity resolution was needed; the input only provided a URL reference and a user-supplied reason.\"},\"conflict_classification\":\"none\",\"answer\":\"Saved the article reference and the stated reason, but the article content could not be fetched because the mock fetch result was a 404 network error.\",\"citations\":[\"https://example.com/missing\"],\"repair_options\":[\"Retry fetching the URL later.\",\"Provide the article text directly.\",\"Provide a working URL or archived copy.\"],\"receipt\":{\"success\":true,\"details\":[\"Committed the URL reference and user-stated reason only.\",\"Did not extract claims from the article content because the fetch failed with a 404 network error.\"]}}",
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_132201",
+  "status": "ok"
+}

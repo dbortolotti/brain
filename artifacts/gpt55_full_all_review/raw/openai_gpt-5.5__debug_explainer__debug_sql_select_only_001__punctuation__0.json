@@ -1,0 +1,35 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.008645,
+  "fixture_id": "debug_sql_select_only_001__punctuation",
+  "input_tokens": 385,
+  "latency_ms": 3591,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 224,
+  "payload": {
+    "answer": "In admin SQL select-only mode, read-only SELECT queries such as `SELECT id FROM memory_cards LIMIT 10` are allowed, while destructive operations such as `DELETE FROM memory_cards` are denied. No durable memory should be created from this fixture.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "do_not_commit_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input is a debug/policy fixture describing allowed and denied SQL operations, not a durable user memory fact."
+    },
+    "intent": "debug_explain_sql_policy",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Recognized the input as a debug fixture about SQL permission behavior.",
+        "Did not create memory cards because the content is operational/test context rather than a stable personal memory.",
+        "Preserved the distinction that SELECT is allowed and DELETE is denied."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"debug_explain_sql_policy\",\"decision\":\"do_not_commit_memory\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input is a debug/policy fixture describing allowed and denied SQL operations, not a durable user memory fact.\"},\"conflict_classification\":\"none\",\"answer\":\"In admin SQL select-only mode, read-only SELECT queries such as `SELECT id FROM memory_cards LIMIT 10` are allowed, while destructive operations such as `DELETE FROM memory_cards` are denied. No durable memory should be created from this fixture.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Recognized the input as a debug fixture about SQL permission behavior.\",\"Did not create memory cards because the content is operational/test context rather than a stable personal memory.\",\"Preserved the distinction that SELECT is allowed and DELETE is denied.\"]}}",
+  "role": "debug_explainer",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

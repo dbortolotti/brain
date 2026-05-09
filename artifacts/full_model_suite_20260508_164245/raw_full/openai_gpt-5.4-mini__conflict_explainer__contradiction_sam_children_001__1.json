@@ -1,0 +1,102 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00227625,
+  "fixture_id": "contradiction_sam_children_001",
+  "input_tokens": 437,
+  "latency_ms": 3322,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 433,
+  "payload": {
+    "answer": "The new memory directly conflicts with the existing one. Because the current memory says Sam from Goldman has two children, the safe action is to reject the new claim unless there is separate evidence that it refers to a different Sam.",
+    "citations": [
+      "Existing memory: Sam from Goldman has two children.",
+      "New: Sam from Goldman has no children."
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "reject_new",
+    "entity_resolution": {
+      "action": "match_existing",
+      "entity_id": null,
+      "reason": "The new statement appears to refer to the same Sam associated with Goldman, but it directly conflicts with the existing children count."
+    },
+    "intent": "Explain the contradiction between the existing memory and the new claim, and recommend a safe backend action.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "existing_memory",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "two",
+            "predicate": "has_children_count",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman has two children."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "new_memory",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "zero",
+            "predicate": "has_children_count",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman has no children."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict identified as a direct contradiction.",
+        "Recommended safe action: reject_new.",
+        "No supersession applied."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "reject_new",
+      "keep_both",
+      "edit",
+      "approve_supersession"
+    ]
+  },
+  "raw_text": "{\"intent\":\"Explain the contradiction between the existing memory and the new claim, and recommend a safe backend action.\",\"decision\":\"reject_new\",\"memory_cards\":[{\"kind\":\"existing_memory\",\"statement\":\"Sam from Goldman has two children.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"has_children_count\",\"object\":\"two\"}]},{\"kind\":\"new_memory\",\"statement\":\"Sam from Goldman has no children.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"has_children_count\",\"object\":\"zero\"}]}],\"entity_resolution\":{\"action\":\"match_existing\",\"entity_id\":null,\"reason\":\"The new statement appears to refer to the same Sam associated with Goldman, but it directly conflicts with the existing children count.\"},\"conflict_classification\":\"direct_contradiction\",\"answer\":\"The new memory directly conflicts with the existing one. Because the current memory says Sam from Goldman has two children, the safe action is to reject the new claim unless there is separate evidence that it refers to a different Sam.\",\"citations\":[\"Existing memory: Sam from Goldman has two children.\",\"New: Sam from Goldman has no children.\"],\"repair_options\":[\"reject_new\",\"keep_both\",\"edit\",\"approve_supersession\"],\"receipt\":{\"success\":true,\"details\":[\"Conflict identified as a direct contradiction.\",\"Recommended safe action: reject_new.\",\"No supersession applied.\"]}}",
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

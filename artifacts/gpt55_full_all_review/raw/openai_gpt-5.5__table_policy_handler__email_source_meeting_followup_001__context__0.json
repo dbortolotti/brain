@@ -1,0 +1,84 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.012440000000000001,
+  "fixture_id": "email_source_meeting_followup_001__context",
+  "input_tokens": 424,
+  "latency_ms": 4123,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 344,
+  "payload": {
+    "answer": "Captured a likely employment update for Sam and a follow-up request for an AI infrastructure article, without storing or exposing the raw email address.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Only a first name and email context are available; avoid exposing raw email address and avoid over-resolving identity."
+    },
+    "intent": "extract_memory_from_email_context",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "source/sender",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_update",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72 last month."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "requester",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure article",
+            "role": "requested_item",
+            "type": "content"
+          }
+        ],
+        "kind": "interest_or_request",
+        "relationships": [
+          {
+            "object": "AI infrastructure article",
+            "predicate": "requested",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam asked to be sent an AI infrastructure article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed durable memory with medium confidence due to limited identity context.",
+        "Raw private email address was not exposed.",
+        "No superseded or conflicting facts detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"extract_memory_from_email_context\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"employment_update\",\"statement\":\"Sam joined Point72 last month.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"source/sender\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]},{\"kind\":\"interest_or_request\",\"statement\":\"Sam asked to be sent an AI infrastructure article.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"requester\"},{\"name\":\"AI infrastructure article\",\"type\":\"content\",\"role\":\"requested_item\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"requested\",\"object\":\"AI infrastructure article\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"Only a first name and email context are available; avoid exposing raw email address and avoid over-resolving identity.\"},\"conflict_classification\":\"none_detected\",\"answer\":\"Captured a likely employment update for Sam and a follow-up request for an AI infrastructure article, without storing or exposing the raw email address.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Committed durable memory with medium confidence due to limited identity context.\",\"Raw private email address was not exposed.\",\"No superseded or conflicting facts detected.\"]}}",
+  "role": "table_policy_handler",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

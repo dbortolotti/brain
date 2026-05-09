@@ -1,0 +1,61 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00858,
+  "fixture_id": "recall_hide_deleted_001__punctuation",
+  "input_tokens": 408,
+  "latency_ms": 2812,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 218,
+  "payload": {
+    "answer": "Sam likes Bill Evans.",
+    "citations": [
+      "Current memory: Sam likes Bill Evans"
+    ],
+    "conflict_classification": "no_current_conflict_deleted_memory_excluded",
+    "decision": "answer_with_current_memory_excluding_deleted",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": null,
+      "reason": "The query refers to Sam, matching the current memory subject. Deleted memory was excluded."
+    },
+    "intent": "answer_query_from_current_memory_only",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "musician"
+          }
+        ],
+        "kind": "current_memory",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Used only current memory as evidence.",
+        "Deleted memory was not returned as current evidence."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"answer_query_from_current_memory_only\",\"decision\":\"answer_with_current_memory_excluding_deleted\",\"memory_cards\":[{\"kind\":\"current_memory\",\"statement\":\"Sam likes Bill Evans\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"musician\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"resolved\",\"entity_id\":null,\"reason\":\"The query refers to Sam, matching the current memory subject. Deleted memory was excluded.\"},\"conflict_classification\":\"no_current_conflict_deleted_memory_excluded\",\"answer\":\"Sam likes Bill Evans.\",\"citations\":[\"Current memory: Sam likes Bill Evans\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Used only current memory as evidence.\",\"Deleted memory was not returned as current evidence.\"]}}",
+  "role": "groundedness_checker",
+  "run_id": "eval_20260508_195937",
+  "status": "ok"
+}

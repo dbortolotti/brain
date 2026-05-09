@@ -1,0 +1,44 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.014745000000000001,
+  "fixture_id": "contradiction_sam_children_001",
+  "input_tokens": 381,
+  "latency_ms": 5959,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 428,
+  "payload": {
+    "answer": "The new claim that Sam from Goldman has no children directly conflicts with the existing memory that Sam from Goldman has two children. Do not commit either as current without clarification.",
+    "citations": [
+      "Existing memory: Sam from Goldman has two children.",
+      "New input: Sam from Goldman has no children."
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "defer_commit_due_to_direct_contradiction",
+    "entity_resolution": {
+      "action": "match_existing_but_ambiguous",
+      "entity_id": null,
+      "reason": "The new statement refers to 'Sam from Goldman', which appears to match the existing memory subject, but the child-count claim directly contradicts the stored fact."
+    },
+    "intent": "repair_option_generator",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected a direct contradiction between existing and new child-count claims.",
+        "No durable current memory was committed.",
+        "Generated repair options that preserve ambiguity and avoid presenting superseded or disputed facts as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for clarification: Is this the same Sam from Goldman previously described as having two children?",
+      "If the new statement is confirmed and more recent, supersede the old memory and store that Sam from Goldman has no children.",
+      "If the existing memory is confirmed, reject the new claim as incorrect.",
+      "If these refer to different people named Sam associated with Goldman, split them into separate entities and store each child-count claim under the correct entity.",
+      "If uncertainty remains, store a conflict note rather than a durable current fact."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"repair_option_generator\",\n  \"decision\": \"defer_commit_due_to_direct_contradiction\",\n  \"memory_cards\": [],\n  \"entity_resolution\": {\n    \"action\": \"match_existing_but_ambiguous\",\n    \"entity_id\": null,\n    \"reason\": \"The new statement refers to 'Sam from Goldman', which appears to match the existing memory subject, but the child-count claim directly contradicts the stored fact.\"\n  },\n  \"conflict_classification\": \"direct_contradiction\",\n  \"answer\": \"The new claim that Sam from Goldman has no children directly conflicts with the existing memory that Sam from Goldman has two children. Do not commit either as current without clarification.\",\n  \"citations\": [\n    \"Existing memory: Sam from Goldman has two children.\",\n    \"New input: Sam from Goldman has no children.\"\n  ],\n  \"repair_options\": [\n    \"Ask for clarification: Is this the same Sam from Goldman previously described as having two children?\",\n    \"If the new statement is confirmed and more recent, supersede the old memory and store that Sam from Goldman has no children.\",\n    \"If the existing memory is confirmed, reject the new claim as incorrect.\",\n    \"If these refer to different people named Sam associated with Goldman, split them into separate entities and store each child-count claim under the correct entity.\",\n    \"If uncertainty remains, store a conflict note rather than a durable current fact.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Detected a direct contradiction between existing and new child-count claims.\",\n      \"No durable current memory was committed.\",\n      \"Generated repair options that preserve ambiguity and avoid presenting superseded or disputed facts as current.\"\n    ]\n  }\n}",
+  "role": "repair_option_generator",
+  "run_id": "eval_20260508_135905",
+  "status": "ok"
+}

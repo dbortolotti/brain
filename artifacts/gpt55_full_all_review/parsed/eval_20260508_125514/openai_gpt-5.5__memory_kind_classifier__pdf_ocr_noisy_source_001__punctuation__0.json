@@ -1,0 +1,62 @@
+{
+  "fixture_id": "pdf_ocr_noisy_source_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Classified as a durable system architecture principle with medium confidence because the source text is OCR-noisy.",
+    "citations": [
+      "[OCR noisy] Brain DB remalns source of trvth Cognee shou1d be rebuildable projection"
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "commit_with_low_confidence_due_to_ocr_noise",
+    "entity_resolution": {
+      "action": "provisional_match",
+      "entity_id": null,
+      "reason": "Input is OCR-noisy but appears to refer to Brain DB and Cognee; no existing entity identifier provided."
+    },
+    "intent": "classify_memory_kind",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "rebuildable_projection",
+            "type": "system"
+          }
+        ],
+        "kind": "system_architecture_principle",
+        "relationships": [
+          {
+            "object": "Cognee projection",
+            "predicate": "remains_source_of_truth_for",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "rebuildable projection",
+            "predicate": "should_be",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain DB remains the source of truth; Cognee should be a rebuildable projection."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed a provisional memory card preserving the apparent meaning of the noisy OCR input.",
+        "Did not add unsupported details beyond the explicit Brain DB and Cognee relationship."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Verify OCR text against the original source.",
+      "Confirm whether 'remalns' means 'remains', 'trvth' means 'truth', and 'shou1d' means 'should'."
+    ]
+  },
+  "role": "memory_kind_classifier",
+  "run_id": "eval_20260508_125514"
+}

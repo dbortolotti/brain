@@ -1,0 +1,101 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.019425,
+  "fixture_id": "debug_explain_recall_sam",
+  "input_tokens": 381,
+  "latency_ms": 6237,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 584,
+  "payload": {
+    "answer": "Recall returned mem_new because it is the current memory for the query context involving Sam from Goldman. mem_old was filtered out because it has been superseded by mem_new, so returning mem_old as current would risk presenting outdated information.",
+    "citations": [
+      "mem_new",
+      "mem_old"
+    ],
+    "conflict_classification": "superseded_memory_filtered",
+    "decision": "Recall returned mem_new because it is the current, non-superseded memory for Sam from Goldman; mem_old was filtered because its supersession metadata marks it as replaced by mem_new.",
+    "entity_resolution": {
+      "action": "preserve_existing_resolution",
+      "entity_id": null,
+      "reason": "The prompt identifies Sam from Goldman and the relevant memory IDs directly; no additional entity merge or split decision is required."
+    },
+    "intent": "debug_explain_recall",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "queried entity",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation/source context",
+            "type": "organization"
+          },
+          {
+            "name": "mem_new",
+            "role": "returned result",
+            "type": "memory"
+          }
+        ],
+        "kind": "debug_explanation",
+        "relationships": [
+          {
+            "object": "Sam from Goldman",
+            "predicate": "matches_query",
+            "subject": "mem_new"
+          },
+          {
+            "object": "mem_old",
+            "predicate": "supersedes",
+            "subject": "mem_new"
+          }
+        ],
+        "statement": "mem_new is the active memory matching the recall query for Sam from Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "mem_old",
+            "role": "filtered result",
+            "type": "memory"
+          },
+          {
+            "name": "mem_new",
+            "role": "superseding memory",
+            "type": "memory"
+          }
+        ],
+        "kind": "debug_explanation",
+        "relationships": [
+          {
+            "object": "mem_new",
+            "predicate": "is_superseded_by",
+            "subject": "mem_old"
+          }
+        ],
+        "statement": "mem_old was not returned because it is superseded and should not be presented as current."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Explained why mem_new was returned.",
+        "Explained why mem_old was filtered as superseded.",
+        "Did not present mem_old as a current fact."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If mem_old is still appearing in current recall results, ensure its superseded_by field points to mem_new and that recall excludes superseded records by default.",
+      "If mem_new is incorrect, review the supersession link and either restore mem_old or create a corrected replacement memory.",
+      "If both memories should be retained for audit history, keep mem_old accessible only through historical/debug recall, not normal current recall."
+    ]
+  },
+  "raw_text": "{\"intent\":\"debug_explain_recall\",\"decision\":\"Recall returned mem_new because it is the current, non-superseded memory for Sam from Goldman; mem_old was filtered because its supersession metadata marks it as replaced by mem_new.\",\"memory_cards\":[{\"kind\":\"debug_explanation\",\"statement\":\"mem_new is the active memory matching the recall query for Sam from Goldman.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"queried entity\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation/source context\"},{\"name\":\"mem_new\",\"type\":\"memory\",\"role\":\"returned result\"}],\"relationships\":[{\"subject\":\"mem_new\",\"predicate\":\"matches_query\",\"object\":\"Sam from Goldman\"},{\"subject\":\"mem_new\",\"predicate\":\"supersedes\",\"object\":\"mem_old\"}]},{\"kind\":\"debug_explanation\",\"statement\":\"mem_old was not returned because it is superseded and should not be presented as current.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"mem_old\",\"type\":\"memory\",\"role\":\"filtered result\"},{\"name\":\"mem_new\",\"type\":\"memory\",\"role\":\"superseding memory\"}],\"relationships\":[{\"subject\":\"mem_old\",\"predicate\":\"is_superseded_by\",\"object\":\"mem_new\"}]}],\"entity_resolution\":{\"action\":\"preserve_existing_resolution\",\"entity_id\":null,\"reason\":\"The prompt identifies Sam from Goldman and the relevant memory IDs directly; no additional entity merge or split decision is required.\"},\"conflict_classification\":\"superseded_memory_filtered\",\"answer\":\"Recall returned mem_new because it is the current memory for the query context involving Sam from Goldman. mem_old was filtered out because it has been superseded by mem_new, so returning mem_old as current would risk presenting outdated information.\",\"citations\":[\"mem_new\",\"mem_old\"],\"repair_options\":[\"If mem_old is still appearing in current recall results, ensure its superseded_by field points to mem_new and that recall excludes superseded records by default.\",\"If mem_new is incorrect, review the supersession link and either restore mem_old or create a corrected replacement memory.\",\"If both memories should be retained for audit history, keep mem_old accessible only through historical/debug recall, not normal current recall.\"],\"receipt\":{\"success\":true,\"details\":[\"Explained why mem_new was returned.\",\"Explained why mem_old was filtered as superseded.\",\"Did not present mem_old as a current fact.\"]}}",
+  "role": "debug_explainer",
+  "run_id": "eval_20260508_195937",
+  "status": "ok"
+}

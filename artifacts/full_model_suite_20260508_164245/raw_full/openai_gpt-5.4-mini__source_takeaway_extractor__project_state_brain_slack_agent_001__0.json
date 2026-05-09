@@ -1,0 +1,75 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.002244,
+  "fixture_id": "project_state_brain_slack_agent_001",
+  "input_tokens": 388,
+  "latency_ms": 3047,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 434,
+  "payload": {
+    "answer": "Recorded the project state that Slack is the primary guardrailed memory ingestion interface for Brain, with Telegram as a later possibility.",
+    "citations": [
+      "\"Slack should be the primary guardrailed memory ingestion interface; Telegram can come later.\""
+    ],
+    "conflict_classification": "none",
+    "decision": "Slack is the primary guardrailed memory ingestion interface for Brain; Telegram may be added later.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No ambiguous entity names requiring resolution were present beyond the explicit project/platform references."
+    },
+    "intent": "Extract a durable project-state memory from the provided Brain project state, preserving ambiguity and avoiding overcommitment.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "system",
+            "type": "project"
+          },
+          {
+            "name": "Slack",
+            "role": "primary ingestion interface",
+            "type": "platform"
+          },
+          {
+            "name": "Telegram",
+            "role": "future option",
+            "type": "platform"
+          }
+        ],
+        "kind": "project_state",
+        "relationships": [
+          {
+            "object": "Slack",
+            "predicate": "uses as primary memory ingestion interface",
+            "subject": "Brain"
+          },
+          {
+            "object": "Telegram",
+            "predicate": "may add later",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "Brain should treat Slack as the primary guardrailed memory ingestion interface, with Telegram deferred to later."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured one high-confidence project-state memory.",
+        "No conflicts detected.",
+        "Ambiguity preserved by using \"may be added later\" / \"future option\" framing."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If this should be treated as a temporary preference rather than a durable project rule, mark it as provisional.",
+      "If Telegram should be excluded entirely rather than deferred, revise the statement to remove the later option."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Extract a durable project-state memory from the provided Brain project state, preserving ambiguity and avoiding overcommitment.\",\"decision\":\"Slack is the primary guardrailed memory ingestion interface for Brain; Telegram may be added later.\",\"memory_cards\":[{\"kind\":\"project_state\",\"statement\":\"Brain should treat Slack as the primary guardrailed memory ingestion interface, with Telegram deferred to later.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Brain\",\"type\":\"project\",\"role\":\"system\"},{\"name\":\"Slack\",\"type\":\"platform\",\"role\":\"primary ingestion interface\"},{\"name\":\"Telegram\",\"type\":\"platform\",\"role\":\"future option\"}],\"relationships\":[{\"subject\":\"Brain\",\"predicate\":\"uses as primary memory ingestion interface\",\"object\":\"Slack\"},{\"subject\":\"Brain\",\"predicate\":\"may add later\",\"object\":\"Telegram\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No ambiguous entity names requiring resolution were present beyond the explicit project/platform references.\"},\"conflict_classification\":\"none\",\"answer\":\"Recorded the project state that Slack is the primary guardrailed memory ingestion interface for Brain, with Telegram as a later possibility.\",\"citations\":[\"\\\"Slack should be the primary guardrailed memory ingestion interface; Telegram can come later.\\\"\"],\"repair_options\":[\"If this should be treated as a temporary preference rather than a durable project rule, mark it as provisional.\",\"If Telegram should be excluded entirely rather than deferred, revise the statement to remove the later option.\"],\"receipt\":{\"success\":true,\"details\":[\"Captured one high-confidence project-state memory.\",\"No conflicts detected.\",\"Ambiguity preserved by using \\\"may be added later\\\" / \\\"future option\\\" framing.\"]}}",
+  "role": "source_takeaway_extractor",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

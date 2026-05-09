@@ -1,0 +1,78 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.010785000000000001,
+  "fixture_id": "email_source_meeting_followup_001",
+  "input_tokens": 483,
+  "latency_ms": 4104,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 279,
+  "payload": {
+    "answer": "Extracted 2 supported memory cards while omitting the raw private email address.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit_success",
+    "entity_resolution": {
+      "action": "needs_resolution",
+      "entity_id": null,
+      "reason": "Sender is identified only as Sam with no durable identifier exposed; raw email address omitted."
+    },
+    "intent": "extract_atomic_memory_cards",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_update",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72 last month."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "requester",
+            "type": "person"
+          }
+        ],
+        "kind": "content_request",
+        "relationships": [
+          {
+            "object": "AI infrastructure article",
+            "predicate": "requested",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam requested an AI infrastructure article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed explicit facts from the email follow-up.",
+        "Preserved sender identity ambiguity as Sam only."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"extract_atomic_memory_cards\",\"decision\":\"commit_success\",\"memory_cards\":[{\"kind\":\"employment_update\",\"statement\":\"Sam joined Point72 last month.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]},{\"kind\":\"content_request\",\"statement\":\"Sam requested an AI infrastructure article.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"requester\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"requested\",\"object\":\"AI infrastructure article\"}]}],\"entity_resolution\":{\"action\":\"needs_resolution\",\"entity_id\":null,\"reason\":\"Sender is identified only as Sam with no durable identifier exposed; raw email address omitted.\"},\"conflict_classification\":\"none\",\"answer\":\"Extracted 2 supported memory cards while omitting the raw private email address.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Committed explicit facts from the email follow-up.\",\"Preserved sender identity ambiguity as Sam only.\"]}}",
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

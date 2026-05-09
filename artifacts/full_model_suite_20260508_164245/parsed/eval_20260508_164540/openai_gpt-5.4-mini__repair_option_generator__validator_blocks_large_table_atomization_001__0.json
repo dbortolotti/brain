@@ -1,0 +1,17 @@
+{
+  "fixture_id": "validator_blocks_large_table_atomization_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "The proposed output appears to atomize a large CSV into 500 separate memory cards. Suggested repair paths: treat as a bulk ingestion request, split into smaller batches, or collapse repeated rows into a single structured record if the data are identical. I am not deciding any commit or merge here.",
+    "citations": [],
+    "conflict_classification": "none",
+    "repair_options": [
+      "Process the CSV in smaller batches of memory cards rather than 500 at once.",
+      "If multiple rows express the same fact, present them as duplicate candidates and let the user choose whether to keep both or consolidate externally.",
+      "If each row is a distinct fact, keep them separate but request batch-sized output to reduce risk of over-atomization.",
+      "If the intent is a table-like dataset, ask whether a single structured memory record is preferred instead of one card per row."
+    ]
+  },
+  "role": "repair_option_generator",
+  "run_id": "eval_20260508_164540"
+}

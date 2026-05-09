@@ -1,0 +1,86 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0021015,
+  "fixture_id": "project_state_brain_slack_agent_001",
+  "input_tokens": 456,
+  "latency_ms": 3368,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 391,
+  "payload": {
+    "answer": "Committed atomic memory cards for the stated project state: Slack is the primary guardrailed ingestion interface, and Telegram may be added later.",
+    "citations": [
+      "Brain project state: Slack should be the primary guardrailed memory ingestion interface; Telegram can come later."
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_success",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No entity disambiguation required from the provided input."
+    },
+    "intent": "atomic_card_extractor",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "primary interface",
+            "type": "product"
+          },
+          {
+            "name": "memory ingestion interface",
+            "role": "target capability",
+            "type": "system capability"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "guardrailed memory ingestion interface",
+            "predicate": "should_be_primary_for",
+            "subject": "Slack"
+          }
+        ],
+        "statement": "Slack should be the primary guardrailed memory ingestion interface."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Telegram",
+            "role": "secondary or future interface",
+            "type": "product"
+          },
+          {
+            "name": "memory ingestion interface",
+            "role": "target capability",
+            "type": "system capability"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Slack",
+            "predicate": "can_come_after",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "Telegram can come later as a memory ingestion interface."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted 2 atomic memory cards from explicitly supported facts.",
+        "Preserved ordering/priority between Slack and Telegram.",
+        "No ambiguous or superseded facts were promoted as current."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"atomic_card_extractor\",\"decision\":\"commit_success\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Slack should be the primary guardrailed memory ingestion interface.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Slack\",\"type\":\"product\",\"role\":\"primary interface\"},{\"name\":\"memory ingestion interface\",\"type\":\"system capability\",\"role\":\"target capability\"}],\"relationships\":[{\"subject\":\"Slack\",\"predicate\":\"should_be_primary_for\",\"object\":\"guardrailed memory ingestion interface\"}]},{\"kind\":\"preference\",\"statement\":\"Telegram can come later as a memory ingestion interface.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Telegram\",\"type\":\"product\",\"role\":\"secondary or future interface\"},{\"name\":\"memory ingestion interface\",\"type\":\"system capability\",\"role\":\"target capability\"}],\"relationships\":[{\"subject\":\"Telegram\",\"predicate\":\"can_come_after\",\"object\":\"Slack\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No entity disambiguation required from the provided input.\"},\"conflict_classification\":\"none\",\"answer\":\"Committed atomic memory cards for the stated project state: Slack is the primary guardrailed ingestion interface, and Telegram may be added later.\",\"citations\":[\"Brain project state: Slack should be the primary guardrailed memory ingestion interface; Telegram can come later.\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Extracted 2 atomic memory cards from explicitly supported facts.\",\"Preserved ordering/priority between Slack and Telegram.\",\"No ambiguous or superseded facts were promoted as current.\"]}}",
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164255",
+  "status": "ok"
+}

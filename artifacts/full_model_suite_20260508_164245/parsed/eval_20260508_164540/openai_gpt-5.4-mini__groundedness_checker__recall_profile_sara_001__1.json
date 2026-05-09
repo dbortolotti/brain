@@ -1,0 +1,66 @@
+{
+  "fixture_id": "recall_profile_sara_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Sara is one of Daniele's twin daughters, along with Nur.",
+    "citations": [
+      "Fact: Nur and Sara are Daniele's twin daughters."
+    ],
+    "conflict_classification": "none",
+    "decision": "answer_with_limited_supported_facts",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": null,
+      "reason": "Sara is identified only through the provided fact; there is not enough information to assign a durable unique entity ID."
+    },
+    "intent": "answer_about_entity",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "twin daughter",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Nur",
+            "predicate": "is_twin_sibling_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Daniele",
+            "predicate": "is_daughter_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is one of Daniele's twin daughters, alongside Nur."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Answer is grounded only in the provided fact.",
+        "No additional personal details were inferred."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want, I can store Sara as Daniele's twin daughter, but I should not infer anything else about her."
+    ]
+  },
+  "role": "groundedness_checker",
+  "run_id": "eval_20260508_164540"
+}

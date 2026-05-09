@@ -1,0 +1,63 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.001422,
+  "fixture_id": "recall_hide_deleted_001__context",
+  "input_tokens": 408,
+  "latency_ms": 2095,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 248,
+  "payload": {
+    "answer": "Sam likes Bill Evans.",
+    "citations": [
+      "current memory: Sam likes Bill Evans"
+    ],
+    "conflict_classification": "deleted_superseded",
+    "decision": "answer_from_current_memory",
+    "entity_resolution": {
+      "action": "resolve_to_current_entity",
+      "entity_id": null,
+      "reason": "The query refers to Sam; the only current preference memory links Sam to Bill Evans, while the Taylor Swift memory is deleted and must not be used as current evidence."
+    },
+    "intent": "retrieve_preference",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object_of_preference",
+            "type": "person"
+          }
+        ],
+        "kind": "current",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ignored deleted memory: Sam likes Taylor Swift.",
+        "Used only current memory evidence."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If needed, confirm whether Sam has any additional music preferences beyond Bill Evans."
+    ]
+  },
+  "raw_text": "{\"intent\":\"retrieve_preference\",\"decision\":\"answer_from_current_memory\",\"memory_cards\":[{\"kind\":\"current\",\"statement\":\"Sam likes Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"object_of_preference\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"resolve_to_current_entity\",\"entity_id\":null,\"reason\":\"The query refers to Sam; the only current preference memory links Sam to Bill Evans, while the Taylor Swift memory is deleted and must not be used as current evidence.\"},\"conflict_classification\":\"deleted_superseded\",\"answer\":\"Sam likes Bill Evans.\",\"citations\":[\"current memory: Sam likes Bill Evans\"],\"repair_options\":[\"If needed, confirm whether Sam has any additional music preferences beyond Bill Evans.\"],\"receipt\":{\"success\":true,\"details\":[\"Ignored deleted memory: Sam likes Taylor Swift.\",\"Used only current memory evidence.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

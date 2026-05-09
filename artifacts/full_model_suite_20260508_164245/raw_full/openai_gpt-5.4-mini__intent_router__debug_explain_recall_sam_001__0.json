@@ -1,0 +1,65 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0018262500000000002,
+  "fixture_id": "debug_explain_recall_sam_001",
+  "input_tokens": 371,
+  "latency_ms": 2945,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 344,
+  "payload": {
+    "answer": "I can\u2019t reliably tell which Sam from Goldman you mean from this prompt alone. I should not invent or merge facts across different people. If you want, provide a fuller name, role, timeframe, or a previous reference so I can retrieve the correct person.",
+    "citations": [],
+    "conflict_classification": "ambiguous_identity",
+    "decision": "ambiguous_query",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The request is too ambiguous to safely resolve to a specific stored person without additional context or evidence."
+    },
+    "intent": "recall",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "mentioned person",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "associated organization",
+            "type": "organization"
+          }
+        ],
+        "kind": "candidate_entity",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "The query refers to a person named Sam associated with Goldman, but the exact identity is not uniquely resolved from the input alone."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed as a recall request.",
+        "Identity not resolved with sufficient confidence.",
+        "No durable memory committed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Specify Sam\u2019s full name or title.",
+      "Add a timeframe, team, or location.",
+      "Provide a prior message or known detail to disambiguate.",
+      "Ask for all Sams associated with Goldman and I can list candidate matches."
+    ]
+  },
+  "raw_text": "{\"intent\":\"recall\",\"decision\":\"ambiguous_query\",\"memory_cards\":[{\"kind\":\"candidate_entity\",\"statement\":\"The query refers to a person named Sam associated with Goldman, but the exact identity is not uniquely resolved from the input alone.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"mentioned person\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"associated organization\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"associated_with\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"The request is too ambiguous to safely resolve to a specific stored person without additional context or evidence.\"},\"conflict_classification\":\"ambiguous_identity\",\"answer\":\"I can\u2019t reliably tell which Sam from Goldman you mean from this prompt alone. I should not invent or merge facts across different people. If you want, provide a fuller name, role, timeframe, or a previous reference so I can retrieve the correct person.\",\"citations\":[],\"repair_options\":[\"Specify Sam\u2019s full name or title.\",\"Add a timeframe, team, or location.\",\"Provide a prior message or known detail to disambiguate.\",\"Ask for all Sams associated with Goldman and I can list candidate matches.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed as a recall request.\",\"Identity not resolved with sufficient confidence.\",\"No durable memory committed.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

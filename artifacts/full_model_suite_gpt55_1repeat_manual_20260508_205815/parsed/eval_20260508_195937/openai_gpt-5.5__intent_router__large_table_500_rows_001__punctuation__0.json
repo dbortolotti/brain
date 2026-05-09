@@ -1,0 +1,31 @@
+{
+  "fixture_id": "large_table_500_rows_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Do not commit the 500-row CSV as durable memory. Large tabular data should be treated as source/document data or an attachment/reference, not converted into personal memory cards. If storage is needed, store only concise metadata such as the table title, schema summary, provenance, and retrieval pointer, preserving the raw CSV externally.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "do_not_store_as_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input describes a large CSV table and asks a storage policy question; it does not contain durable personal facts or preferences suitable for memory."
+    },
+    "intent": "policy_question",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Classified as a policy/storage question rather than a memory write request.",
+        "No durable memory cards created."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Store the CSV as an external document or file attachment with an identifier.",
+      "Create a brief metadata record: columns are id, name, value; approximately 500 rows; repeated many times.",
+      "Only extract durable memory if the user explicitly identifies stable personal facts or preferences from the table."
+    ]
+  },
+  "role": "intent_router",
+  "run_id": "eval_20260508_195937"
+}

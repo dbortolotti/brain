@@ -1,0 +1,68 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01273,
+  "fixture_id": "typos_shorthand_person_interaction_001__context",
+  "input_tokens": 374,
+  "latency_ms": 5714,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 362,
+  "payload": {
+    "answer": "I interpreted this as: \u201cSam from Goldman apparently likes Bill Evans,\u201d but it is too ambiguous and secondhand to store as a durable memory without clarification.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "defer_or_needs_clarification",
+    "entity_resolution": {
+      "action": "needs_clarification",
+      "entity_id": null,
+      "reason": "The input contains typos/shorthand ('sam frm goldmn', 'bill evns') and ambiguous entities. It is unclear which Sam, which Goldman entity, and whether Bill Evans refers to the jazz musician or another person."
+    },
+    "intent": "memory_write",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "disambiguator",
+            "type": "organization_or_affiliation"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person_or_artist"
+          }
+        ],
+        "kind": "possible_preference_or_social_fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "apparently_likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman apparently likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Did not commit durable memory due to ambiguity, typos, and hedging with 'apparently'."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Confirm the corrected names: Sam from Goldman likes Bill Evans.",
+      "Specify which Goldman entity Sam is associated with, e.g. Goldman Sachs.",
+      "Specify which Bill Evans you mean, e.g. the jazz pianist.",
+      "Clarify whether this is a reliable fact or just something you heard secondhand."
+    ]
+  },
+  "raw_text": "{\"intent\":\"memory_write\",\"decision\":\"defer_or_needs_clarification\",\"memory_cards\":[{\"kind\":\"possible_preference_or_social_fact\",\"statement\":\"Sam from Goldman apparently likes Bill Evans.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization_or_affiliation\",\"role\":\"disambiguator\"},{\"name\":\"Bill Evans\",\"type\":\"person_or_artist\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"apparently_likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"needs_clarification\",\"entity_id\":null,\"reason\":\"The input contains typos/shorthand ('sam frm goldmn', 'bill evns') and ambiguous entities. It is unclear which Sam, which Goldman entity, and whether Bill Evans refers to the jazz musician or another person.\"},\"conflict_classification\":\"none_detected\",\"answer\":\"I interpreted this as: \u201cSam from Goldman apparently likes Bill Evans,\u201d but it is too ambiguous and secondhand to store as a durable memory without clarification.\",\"citations\":[],\"repair_options\":[\"Confirm the corrected names: Sam from Goldman likes Bill Evans.\",\"Specify which Goldman entity Sam is associated with, e.g. Goldman Sachs.\",\"Specify which Bill Evans you mean, e.g. the jazz pianist.\",\"Clarify whether this is a reliable fact or just something you heard secondhand.\"],\"receipt\":{\"success\":false,\"details\":[\"Did not commit durable memory due to ambiguity, typos, and hedging with 'apparently'.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

@@ -1,0 +1,93 @@
+{
+  "fixture_id": "small_table_preferences_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Extracted two preference facts from the table as candidate memories.",
+    "citations": [
+      "Dinner 2026-05-05",
+      "Lunch 2026-05-01"
+    ],
+    "conflict_classification": "none",
+    "decision": "store_candidate_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No existing entity graph or duplicate identifiers were provided for reconciliation."
+    },
+    "intent": "preference_extraction",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "type": "firm"
+          },
+          {
+            "name": "Bill Evans",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (Goldman) likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Anna",
+            "type": "person"
+          },
+          {
+            "name": "JPM",
+            "type": "firm"
+          },
+          {
+            "name": "Barolo",
+            "type": "wine"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "JPM",
+            "predicate": "works_at",
+            "subject": "Anna"
+          },
+          {
+            "object": "Barolo",
+            "predicate": "likes",
+            "subject": "Anna"
+          }
+        ],
+        "statement": "Anna (JPM) likes Barolo."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed Sam -> Goldman -> Likes Bill Evans",
+        "Parsed Anna -> JPM -> Likes Barolo"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540"
+}

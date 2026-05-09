@@ -1,0 +1,91 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00201375,
+  "fixture_id": "memory_compiler_small_table__punctuation",
+  "input_tokens": 381,
+  "latency_ms": 3048,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 384,
+  "payload": {
+    "answer": "Committed two tentative preference memories from the table: Sam -> Bill Evans, Daniele -> knowledge graphs.",
+    "citations": [
+      "Input table row: Sam | Bill Evans",
+      "Input table row: Daniele | Knowledge graphs"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The table provides only names and stated preferences; no existing entity linkage or disambiguation is available."
+    },
+    "intent": "extract_preference_memories",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam appears to prefer Bill Evans."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "knowledge graphs",
+            "role": "preference object",
+            "type": "topic"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "knowledge graphs",
+            "predicate": "prefers",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Daniele appears to prefer knowledge graphs."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted 2 preference statements.",
+        "No conflicts detected.",
+        "No entity resolution performed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If Sam refers to a different Sam, provide disambiguating context.",
+      "If Bill Evans is not a preference but a different relation, clarify the intended meaning.",
+      "If Daniele's entry should be normalized differently, specify the preferred canonical form."
+    ]
+  },
+  "raw_text": "{\"intent\":\"extract_preference_memories\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam appears to prefer Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"preference object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"prefers\",\"object\":\"Bill Evans\"}]},{\"kind\":\"preference\",\"statement\":\"Daniele appears to prefer knowledge graphs.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Daniele\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"knowledge graphs\",\"type\":\"topic\",\"role\":\"preference object\"}],\"relationships\":[{\"subject\":\"Daniele\",\"predicate\":\"prefers\",\"object\":\"knowledge graphs\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The table provides only names and stated preferences; no existing entity linkage or disambiguation is available.\"},\"conflict_classification\":\"none\",\"answer\":\"Committed two tentative preference memories from the table: Sam -> Bill Evans, Daniele -> knowledge graphs.\",\"citations\":[\"Input table row: Sam | Bill Evans\",\"Input table row: Daniele | Knowledge graphs\"],\"repair_options\":[\"If Sam refers to a different Sam, provide disambiguating context.\",\"If Bill Evans is not a preference but a different relation, clarify the intended meaning.\",\"If Daniele's entry should be normalized differently, specify the preferred canonical form.\"],\"receipt\":{\"success\":true,\"details\":[\"Extracted 2 preference statements.\",\"No conflicts detected.\",\"No entity resolution performed.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

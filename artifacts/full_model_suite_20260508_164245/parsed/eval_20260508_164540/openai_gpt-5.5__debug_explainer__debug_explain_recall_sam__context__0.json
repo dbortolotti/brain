@@ -1,0 +1,69 @@
+{
+  "fixture_id": "debug_explain_recall_sam__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Recall returned mem_new because it is the current active memory for Sam from Goldman. It filtered mem_old because that older memory is superseded, so it should not be shown as a current fact.",
+    "citations": [
+      "mem_new",
+      "mem_old"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "Recall returned mem_new because it is the current, non-superseded memory for Sam from Goldman. mem_old was filtered out because it has been superseded and should not be presented as current.",
+    "entity_resolution": {
+      "action": "preserve_existing",
+      "entity_id": null,
+      "reason": "The prompt only asks to explain recall behavior for the provided fixture; no new entity resolution or durable memory commit is needed."
+    },
+    "intent": "Explain recall filtering behavior for Sam's affiliation memory.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "debug_explanation",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "from",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "mem_new was selected for recall because it represents the active/current memory indicating Sam is from Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "filtered_memory",
+        "relationships": [],
+        "statement": "mem_old was not returned because it is marked as superseded by newer memory and therefore is not current."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Explained that mem_new is current.",
+        "Explained that mem_old was filtered due to supersession.",
+        "Did not present superseded memory as current."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "debug_explainer",
+  "run_id": "eval_20260508_164540"
+}

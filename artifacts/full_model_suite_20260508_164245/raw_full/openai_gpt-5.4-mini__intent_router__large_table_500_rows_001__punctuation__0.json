@@ -1,0 +1,77 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0025822500000000003,
+  "fixture_id": "large_table_500_rows_001__punctuation",
+  "input_tokens": 383,
+  "latency_ms": 11766,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 510,
+  "payload": {
+    "answer": "Store it as compact structured data or a schema summary, not as a verbatim durable memory. Since the rows are repetitive and no unique row-level facts are indicated, preserve only the table pattern (id, name, value) unless a specific row is important enough to merit retention.",
+    "citations": [
+      "input: CSV table with 500 rows - id,name,value repeated many times",
+      "input: Policy question - how should it be stored?"
+    ],
+    "conflict_classification": "none",
+    "decision": "Do not commit the 500-row CSV contents as durable memory. Store only the high-level schema/format if needed (repeated columns id, name, value) and avoid preserving row-level data unless explicitly requested or uniquely important.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No specific persistent entity is identified; the input is a generic table-format policy question."
+    },
+    "intent": "policy_question",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "source",
+            "type": "data_format"
+          },
+          {
+            "name": "500 rows",
+            "role": "scale",
+            "type": "quantity"
+          },
+          {
+            "name": "id,name,value",
+            "role": "repeated columns",
+            "type": "schema"
+          }
+        ],
+        "kind": "policy",
+        "relationships": [
+          {
+            "object": "500 rows",
+            "predicate": "has_scale",
+            "subject": "CSV table"
+          },
+          {
+            "object": "id,name,value",
+            "predicate": "contains_columns",
+            "subject": "CSV table"
+          }
+        ],
+        "statement": "A large CSV table with 500 repeated rows should generally not be stored verbatim as durable memory; prefer storing only the table schema or a compact summary when the content is repetitive and low-uniqueness."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Classified as a policy question about storage.",
+        "Avoided committing row-level dataset contents to memory.",
+        "Preserved only the generic schema-level information."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If the exact rows matter, extract only the minimal unique facts and store them separately.",
+      "If this is a transient dataset, keep it outside durable memory and reference it as an external table artifact.",
+      "If a summary is desired, store the schema and a note that the dataset is repetitive."
+    ]
+  },
+  "raw_text": "{\"intent\":\"policy_question\",\"decision\":\"Do not commit the 500-row CSV contents as durable memory. Store only the high-level schema/format if needed (repeated columns id, name, value) and avoid preserving row-level data unless explicitly requested or uniquely important.\",\"memory_cards\":[{\"kind\":\"policy\",\"statement\":\"A large CSV table with 500 repeated rows should generally not be stored verbatim as durable memory; prefer storing only the table schema or a compact summary when the content is repetitive and low-uniqueness.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"CSV table\",\"type\":\"data_format\",\"role\":\"source\"},{\"name\":\"500 rows\",\"type\":\"quantity\",\"role\":\"scale\"},{\"name\":\"id,name,value\",\"type\":\"schema\",\"role\":\"repeated columns\"}],\"relationships\":[{\"subject\":\"CSV table\",\"predicate\":\"has_scale\",\"object\":\"500 rows\"},{\"subject\":\"CSV table\",\"predicate\":\"contains_columns\",\"object\":\"id,name,value\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No specific persistent entity is identified; the input is a generic table-format policy question.\"},\"conflict_classification\":\"none\",\"answer\":\"Store it as compact structured data or a schema summary, not as a verbatim durable memory. Since the rows are repetitive and no unique row-level facts are indicated, preserve only the table pattern (id, name, value) unless a specific row is important enough to merit retention.\",\"citations\":[\"input: CSV table with 500 rows - id,name,value repeated many times\",\"input: Policy question - how should it be stored?\"],\"repair_options\":[\"If the exact rows matter, extract only the minimal unique facts and store them separately.\",\"If this is a transient dataset, keep it outside durable memory and reference it as an external table artifact.\",\"If a summary is desired, store the schema and a note that the dataset is repetitive.\"],\"receipt\":{\"success\":true,\"details\":[\"Classified as a policy question about storage.\",\"Avoided committing row-level dataset contents to memory.\",\"Preserved only the generic schema-level information.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

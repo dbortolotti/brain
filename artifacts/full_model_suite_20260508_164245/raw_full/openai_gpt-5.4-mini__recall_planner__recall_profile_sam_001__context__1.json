@@ -1,0 +1,137 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0031867500000000003,
+  "fixture_id": "recall_profile_sam_001__context",
+  "input_tokens": 409,
+  "latency_ms": 4297,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 640,
+  "payload": {
+    "answer": "Sam is associated with Goldman, likes Bill Evans, and is interested in AI infrastructure. There\u2019s also an open follow-up to send Sam an article about AI infrastructure.",
+    "citations": [
+      "context facts provided in fixture recall_profile_sam_001__context"
+    ],
+    "conflict_classification": "none",
+    "decision": "Provide a concise profile of Sam with the known facts only; do not infer additional details or mark any uncertain attribute as confirmed.",
+    "entity_resolution": {
+      "action": "identify_or_retain_ambiguous",
+      "entity_id": null,
+      "reason": "The context refers to 'Sam from Goldman' but provides no stable unique identifier beyond the description; preserve ambiguity rather than over-committing to a specific person record."
+    },
+    "intent": "Answer the query about Sam from Goldman using only the provided context, while preserving ambiguity and avoiding over-commitment beyond the stated facts.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "associated organization",
+            "type": "organization"
+          }
+        ],
+        "kind": "profile_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is associated with Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "music preference",
+            "type": "person"
+          }
+        ],
+        "kind": "preference_fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "interest",
+            "type": "topic"
+          }
+        ],
+        "kind": "interest_fact",
+        "relationships": [
+          {
+            "object": "AI infrastructure",
+            "predicate": "interested_in",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is interested in AI infrastructure."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "recipient",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure article",
+            "role": "follow-up item",
+            "type": "content"
+          }
+        ],
+        "kind": "open_loop",
+        "relationships": [
+          {
+            "object": "AI infrastructure article to Sam",
+            "predicate": "should_send",
+            "subject": "system"
+          }
+        ],
+        "statement": "A follow-up action is to send Sam an article about AI infrastructure."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed three durable facts from context.",
+        "Preserved the open loop as a follow-up action.",
+        "Avoided inferring any additional biographical details."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want, I can turn this into a compact CRM-style note.",
+      "If you have a unique Sam identifier, I can link these facts to the correct profile more confidently."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Answer the query about Sam from Goldman using only the provided context, while preserving ambiguity and avoiding over-commitment beyond the stated facts.\",\"decision\":\"Provide a concise profile of Sam with the known facts only; do not infer additional details or mark any uncertain attribute as confirmed.\",\"memory_cards\":[{\"kind\":\"profile_fact\",\"statement\":\"Sam is associated with Goldman.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"associated organization\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"associated_with\",\"object\":\"Goldman\"}]},{\"kind\":\"preference_fact\",\"statement\":\"Sam likes Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"music preference\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]},{\"kind\":\"interest_fact\",\"statement\":\"Sam is interested in AI infrastructure.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"AI infrastructure\",\"type\":\"topic\",\"role\":\"interest\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"interested_in\",\"object\":\"AI infrastructure\"}]},{\"kind\":\"open_loop\",\"statement\":\"A follow-up action is to send Sam an article about AI infrastructure.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"recipient\"},{\"name\":\"AI infrastructure article\",\"type\":\"content\",\"role\":\"follow-up item\"}],\"relationships\":[{\"subject\":\"system\",\"predicate\":\"should_send\",\"object\":\"AI infrastructure article to Sam\"}]}],\"entity_resolution\":{\"action\":\"identify_or_retain_ambiguous\",\"entity_id\":null,\"reason\":\"The context refers to 'Sam from Goldman' but provides no stable unique identifier beyond the description; preserve ambiguity rather than over-committing to a specific person record.\"},\"conflict_classification\":\"none\",\"answer\":\"Sam is associated with Goldman, likes Bill Evans, and is interested in AI infrastructure. There\u2019s also an open follow-up to send Sam an article about AI infrastructure.\",\"citations\":[\"context facts provided in fixture recall_profile_sam_001__context\"],\"repair_options\":[\"If you want, I can turn this into a compact CRM-style note.\",\"If you have a unique Sam identifier, I can link these facts to the correct profile more confidently.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed three durable facts from context.\",\"Preserved the open loop as a follow-up action.\",\"Avoided inferring any additional biographical details.\"]}}",
+  "role": "recall_planner",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

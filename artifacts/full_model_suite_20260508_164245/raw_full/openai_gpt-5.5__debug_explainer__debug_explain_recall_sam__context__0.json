@@ -1,0 +1,76 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.017380000000000003,
+  "fixture_id": "debug_explain_recall_sam__context",
+  "input_tokens": 386,
+  "latency_ms": 6648,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 515,
+  "payload": {
+    "answer": "Recall returned mem_new because it is the current active memory for Sam from Goldman. It filtered mem_old because that older memory is superseded, so it should not be shown as a current fact.",
+    "citations": [
+      "mem_new",
+      "mem_old"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "Recall returned mem_new because it is the current, non-superseded memory for Sam from Goldman. mem_old was filtered out because it has been superseded and should not be presented as current.",
+    "entity_resolution": {
+      "action": "preserve_existing",
+      "entity_id": null,
+      "reason": "The prompt only asks to explain recall behavior for the provided fixture; no new entity resolution or durable memory commit is needed."
+    },
+    "intent": "Explain recall filtering behavior for Sam's affiliation memory.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "debug_explanation",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "from",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "mem_new was selected for recall because it represents the active/current memory indicating Sam is from Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "filtered_memory",
+        "relationships": [],
+        "statement": "mem_old was not returned because it is marked as superseded by newer memory and therefore is not current."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Explained that mem_new is current.",
+        "Explained that mem_old was filtered due to supersession.",
+        "Did not present superseded memory as current."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"Explain recall filtering behavior for Sam's affiliation memory.\",\n  \"decision\": \"Recall returned mem_new because it is the current, non-superseded memory for Sam from Goldman. mem_old was filtered out because it has been superseded and should not be presented as current.\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"debug_explanation\",\n      \"statement\": \"mem_new was selected for recall because it represents the active/current memory indicating Sam is from Goldman.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"from\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"filtered_memory\",\n      \"statement\": \"mem_old was not returned because it is marked as superseded by newer memory and therefore is not current.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        }\n      ],\n      \"relationships\": []\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"preserve_existing\",\n    \"entity_id\": null,\n    \"reason\": \"The prompt only asks to explain recall behavior for the provided fixture; no new entity resolution or durable memory commit is needed.\"\n  },\n  \"conflict_classification\": \"supersession\",\n  \"answer\": \"Recall returned mem_new because it is the current active memory for Sam from Goldman. It filtered mem_old because that older memory is superseded, so it should not be shown as a current fact.\",\n  \"citations\": [\n    \"mem_new\",\n    \"mem_old\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Explained that mem_new is current.\",\n      \"Explained that mem_old was filtered due to supersession.\",\n      \"Did not present superseded memory as current.\"\n    ]\n  }\n}",
+  "role": "debug_explainer",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

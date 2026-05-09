@@ -1,0 +1,61 @@
+{
+  "fixture_id": "contradiction_sam_children_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "These memories conflict directly: one says Sam from Goldman has two children, the other says Sam from Goldman has no children. Because the system should preserve ambiguity and avoid auto-supersession, the safest action is keep_both until a later source resolves the discrepancy.",
+    "citations": [
+      "Existing memory - Sam from Goldman has two children",
+      "New - Sam from Goldman has no children"
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "keep_both",
+    "entity_resolution": {
+      "action": "entity_id",
+      "entity_id": null,
+      "reason": "The two statements appear to refer to the same person, but there is not enough backend context to resolve the identity beyond the shared name/affiliation."
+    },
+    "intent": "Explain a direct contradiction between an existing memory and a new memory about Sam from Goldman\u2019s children, while preserving ambiguity and not auto-overwriting either claim.",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "conflict",
+        "relationships": [
+          {
+            "object": "two",
+            "predicate": "has_children_count",
+            "subject": "Sam from Goldman"
+          },
+          {
+            "object": "none",
+            "predicate": "has_children_count",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Existing memory: Sam from Goldman has two children. New memory: Sam from Goldman has no children."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected a direct contradiction about the same entity.",
+        "No safe evidence was provided to determine which statement is correct.",
+        "Recommended safe action: keep_both."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "keep_both: retain both statements as conflicting and unresolved",
+      "reject_new: keep the existing memory and discard the new one",
+      "approve_supersession: accept the new statement only if later evidence confirms the old memory is wrong",
+      "edit: revise one or both statements only when a precise, supported correction is available"
+    ]
+  },
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_164540"
+}

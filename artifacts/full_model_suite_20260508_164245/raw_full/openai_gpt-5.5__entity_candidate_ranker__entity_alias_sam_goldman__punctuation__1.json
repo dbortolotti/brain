@@ -1,0 +1,61 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.008225,
+  "fixture_id": "entity_alias_sam_goldman__punctuation",
+  "input_tokens": 385,
+  "latency_ms": 3281,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 210,
+  "payload": {
+    "answer": "Noted that Sam G likes Bill Evans.",
+    "citations": [
+      "Sam G likes Bill Evans"
+    ],
+    "conflict_classification": "none",
+    "decision": "accept",
+    "entity_resolution": {
+      "action": "link_existing",
+      "entity_id": "Sam from Goldman",
+      "reason": "The new message refers to 'Sam G', which exactly matches an existing alias for the entity 'Sam from Goldman'."
+    },
+    "intent": "commit_preference",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam G",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam G"
+          }
+        ],
+        "statement": "Sam G likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Linked 'Sam G' to existing entity 'Sam from Goldman' via alias match.",
+        "Committed preference: Sam G likes Bill Evans."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"commit_preference\",\"decision\":\"accept\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam G likes Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam G\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"Sam G\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"link_existing\",\"entity_id\":\"Sam from Goldman\",\"reason\":\"The new message refers to 'Sam G', which exactly matches an existing alias for the entity 'Sam from Goldman'.\"},\"conflict_classification\":\"none\",\"answer\":\"Noted that Sam G likes Bill Evans.\",\"citations\":[\"Sam G likes Bill Evans\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Linked 'Sam G' to existing entity 'Sam from Goldman' via alias match.\",\"Committed preference: Sam G likes Bill Evans.\"]}}",
+  "role": "entity_candidate_ranker",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

@@ -1,0 +1,88 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00224175,
+  "fixture_id": "email_source_meeting_followup_001__punctuation",
+  "input_tokens": 421,
+  "latency_ms": 3789,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 428,
+  "payload": {
+    "answer": "The sender says they joined Point72 last month and asks for the AI infra article.",
+    "citations": [
+      "source_email_followup_001"
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "commit_with_caution",
+    "entity_resolution": {
+      "action": "create_or_update_generic_contact",
+      "entity_id": null,
+      "reason": "The source identifies a person by email, but the policy requires avoiding raw private email exposure; the contact can be represented generically without firm identity resolution."
+    },
+    "intent": "Extract durable memory from a follow-up email: the sender says they joined Point72 last month and requests an AI infrastructure article.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "contact",
+            "role": "requester",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure article",
+            "role": "requested_item",
+            "type": "document"
+          }
+        ],
+        "kind": "preference_or_request",
+        "relationships": [
+          {
+            "object": "AI infrastructure article",
+            "predicate": "requested",
+            "subject": "contact"
+          }
+        ],
+        "statement": "A contact requested an AI infrastructure article to be sent to them."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "contact",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "career_update",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "contact"
+          }
+        ],
+        "statement": "A contact reported that they joined Point72 last month."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted a career update and a document request.",
+        "Avoided storing raw private email address."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If needed, store the contact as a generic person without email address.",
+      "If a richer contact record already exists, merge only the employment update and article request without adding raw email details."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Extract durable memory from a follow-up email: the sender says they joined Point72 last month and requests an AI infrastructure article.\",\"decision\":\"commit_with_caution\",\"memory_cards\":[{\"kind\":\"preference_or_request\",\"statement\":\"A contact requested an AI infrastructure article to be sent to them.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"contact\",\"type\":\"person\",\"role\":\"requester\"},{\"name\":\"AI infrastructure article\",\"type\":\"document\",\"role\":\"requested_item\"}],\"relationships\":[{\"subject\":\"contact\",\"predicate\":\"requested\",\"object\":\"AI infrastructure article\"}]},{\"kind\":\"career_update\",\"statement\":\"A contact reported that they joined Point72 last month.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"contact\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"contact\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"create_or_update_generic_contact\",\"entity_id\":null,\"reason\":\"The source identifies a person by email, but the policy requires avoiding raw private email exposure; the contact can be represented generically without firm identity resolution.\"},\"conflict_classification\":\"no_conflict\",\"answer\":\"The sender says they joined Point72 last month and asks for the AI infra article.\",\"citations\":[\"source_email_followup_001\"],\"repair_options\":[\"If needed, store the contact as a generic person without email address.\",\"If a richer contact record already exists, merge only the employment update and article request without adding raw email details.\"],\"receipt\":{\"success\":true,\"details\":[\"Extracted a career update and a document request.\",\"Avoided storing raw private email address.\"]}}",
+  "role": "table_policy_handler",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

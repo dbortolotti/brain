@@ -1,0 +1,43 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0124,
+  "fixture_id": "large_table_500_rows_001__context",
+  "input_tokens": 386,
+  "latency_ms": 6282,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 349,
+  "payload": {
+    "answer": "A 500-row repeated CSV table should not be stored as durable memory row-by-row. Treat it as bulk/ephemeral context or an attached artifact. If needed, store only a concise summary, schema, provenance, and retrieval pointer, not every repeated id/name/value row.",
+    "citations": [
+      "Input: CSV table with 500 rows: id,name,value repeated many times.",
+      "Policy question: how should it be stored?"
+    ],
+    "conflict_classification": "none",
+    "decision": "do_not_commit_bulk_table_as_durable_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input describes a generic 500-row CSV fixture and asks a storage policy question; it does not provide durable personal facts or stable user preferences worth committing as memory."
+    },
+    "intent": "policy_decision_for_large_repetitive_csv_storage",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No durable memory cards were created.",
+        "Bulk repetitive tabular data was classified as unsuitable for personal memory storage.",
+        "Recommended artifact/reference-based storage instead of memory ingestion."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Store the CSV externally and keep only a reference or file identifier.",
+      "Store a compact summary such as schema, row count, and notable aggregates.",
+      "Deduplicate repeated rows before any indexing.",
+      "If the table is needed for a specific task only, keep it in transient working context and discard after the task."
+    ]
+  },
+  "raw_text": "{\"intent\":\"policy_decision_for_large_repetitive_csv_storage\",\"decision\":\"do_not_commit_bulk_table_as_durable_memory\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input describes a generic 500-row CSV fixture and asks a storage policy question; it does not provide durable personal facts or stable user preferences worth committing as memory.\"},\"conflict_classification\":\"none\",\"answer\":\"A 500-row repeated CSV table should not be stored as durable memory row-by-row. Treat it as bulk/ephemeral context or an attached artifact. If needed, store only a concise summary, schema, provenance, and retrieval pointer, not every repeated id/name/value row.\",\"citations\":[\"Input: CSV table with 500 rows: id,name,value repeated many times.\",\"Policy question: how should it be stored?\"],\"repair_options\":[\"Store the CSV externally and keep only a reference or file identifier.\",\"Store a compact summary such as schema, row count, and notable aggregates.\",\"Deduplicate repeated rows before any indexing.\",\"If the table is needed for a specific task only, keep it in transient working context and discard after the task.\"],\"receipt\":{\"success\":true,\"details\":[\"No durable memory cards were created.\",\"Bulk repetitive tabular data was classified as unsuitable for personal memory storage.\",\"Recommended artifact/reference-based storage instead of memory ingestion.\"]}}",
+  "role": "open_loop_detector",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

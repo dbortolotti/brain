@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.011695,
+  "fixture_id": "large_table_500_rows_001__context",
+  "input_tokens": 455,
+  "latency_ms": 4593,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 314,
+  "payload": {
+    "answer": "Do not store the 500-row CSV as individual memory cards. Treat it as bulk/tabular data: store it as an attachment or external artifact with lightweight metadata, and optionally extract only durable, user-relevant summary facts if explicitly requested and supported by the table.",
+    "citations": [
+      "Input: \"For context, CSV table with 500 rows: id,name,value repeated many times. Policy question: how should it be stored?\""
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_success",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input asks a storage policy question about a large repeated CSV table but provides no durable personal-memory fact to commit."
+    },
+    "intent": "policy_guidance_for_large_csv_storage",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No atomic durable memory cards were extracted because the CSV contents are described only generically and no specific durable personal facts are provided.",
+        "Recommended bulk storage/attachment handling rather than row-by-row memory commitment."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask whether the user wants the CSV preserved as an attachment/artifact rather than committed to memory.",
+      "Ask for the specific durable facts or summaries the user wants extracted from the table."
+    ]
+  },
+  "raw_text": "{\"intent\":\"policy_guidance_for_large_csv_storage\",\"decision\":\"commit_success\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input asks a storage policy question about a large repeated CSV table but provides no durable personal-memory fact to commit.\"},\"conflict_classification\":\"none\",\"answer\":\"Do not store the 500-row CSV as individual memory cards. Treat it as bulk/tabular data: store it as an attachment or external artifact with lightweight metadata, and optionally extract only durable, user-relevant summary facts if explicitly requested and supported by the table.\",\"citations\":[\"Input: \\\"For context, CSV table with 500 rows: id,name,value repeated many times. Policy question: how should it be stored?\\\"\"],\"repair_options\":[\"Ask whether the user wants the CSV preserved as an attachment/artifact rather than committed to memory.\",\"Ask for the specific durable facts or summaries the user wants extracted from the table.\"],\"receipt\":{\"success\":true,\"details\":[\"No atomic durable memory cards were extracted because the CSV contents are described only generically and no specific durable personal facts are provided.\",\"Recommended bulk storage/attachment handling rather than row-by-row memory commitment.\"]}}",
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

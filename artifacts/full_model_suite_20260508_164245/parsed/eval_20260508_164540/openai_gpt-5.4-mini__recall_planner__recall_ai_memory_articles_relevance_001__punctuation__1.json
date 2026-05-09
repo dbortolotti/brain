@@ -1,0 +1,54 @@
+{
+  "fixture_id": "recall_ai_memory_articles_relevance_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "You have at least one saved article about AI memory, but the prompt doesn\u2019t include the article\u2019s title or other identifying details.",
+    "citations": [
+      "input prompt: 'Query - What articles have I saved about AI memory?'",
+      "input prompt: 'Records include ... an AI memory article ...'"
+    ],
+    "conflict_classification": "none",
+    "decision": "answer_from_record_scope_with_high_caution",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The prompt references an AI memory article but does not provide a uniquely identifying title or ID to resolve."
+    },
+    "intent": "recall_saved_articles_about_ai_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "AI memory article",
+            "role": "saved item",
+            "type": "article"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "AI memory",
+            "predicate": "has_saved_article_about",
+            "subject": "user"
+          }
+        ],
+        "statement": "There is at least one saved article about AI memory in the records, but the provided prompt does not include the article title or full details."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Scoped to saved articles about AI memory only.",
+        "No unrelated memories included.",
+        "No superseded facts asserted as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide the article titles or record excerpts so I can enumerate the saved AI memory articles precisely.",
+      "If you want, I can also help distinguish the AI memory article from unrelated records once the record list is available."
+    ]
+  },
+  "role": "recall_planner",
+  "run_id": "eval_20260508_164540"
+}

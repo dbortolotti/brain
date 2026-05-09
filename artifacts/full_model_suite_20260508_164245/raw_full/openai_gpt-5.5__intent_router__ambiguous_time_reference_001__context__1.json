@@ -1,0 +1,38 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00932,
+  "fixture_id": "ambiguous_time_reference_001__context",
+  "input_tokens": 376,
+  "latency_ms": 3786,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 248,
+  "payload": {
+    "answer": "I need the date of 'last Friday' or the current date context before storing this as durable memory. The claim is that Sam said he is leaving Goldman next month, but the actual month is ambiguous.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "needs_clarification",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The referenced timing is ambiguous: 'last Friday' and 'next month' require an anchor date to determine the actual departure month/date. Sam is also not uniquely identified."
+    },
+    "intent": "memory_write",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Did not commit durable memory due to ambiguous time reference.",
+        "Preserved the reported statement without converting 'next month' into a specific month."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide the calendar date when Sam said this.",
+      "Provide the current date/context so 'last Friday' and 'next month' can be resolved.",
+      "Identify which Sam is being referred to if there may be multiple Sams."
+    ]
+  },
+  "raw_text": "{\"intent\":\"memory_write\",\"decision\":\"needs_clarification\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"The referenced timing is ambiguous: 'last Friday' and 'next month' require an anchor date to determine the actual departure month/date. Sam is also not uniquely identified.\"},\"conflict_classification\":\"none\",\"answer\":\"I need the date of 'last Friday' or the current date context before storing this as durable memory. The claim is that Sam said he is leaving Goldman next month, but the actual month is ambiguous.\",\"citations\":[],\"repair_options\":[\"Provide the calendar date when Sam said this.\",\"Provide the current date/context so 'last Friday' and 'next month' can be resolved.\",\"Identify which Sam is being referred to if there may be multiple Sams.\"],\"receipt\":{\"success\":false,\"details\":[\"Did not commit durable memory due to ambiguous time reference.\",\"Preserved the reported statement without converting 'next month' into a specific month.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

@@ -1,0 +1,27 @@
+{
+  "fixture_id": "slack_retry_event_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Duplicate Slack event delivery detected; no new memory committed.",
+    "citations": [],
+    "conflict_classification": "duplicate_event",
+    "decision": "ignore_duplicate",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input indicates the same Slack event ID was delivered twice; duplicate delivery should not create an additional durable memory. The underlying fact is ambiguous without prior event state in this fixture."
+    },
+    "intent": "deduplicate_event",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Ignored duplicate delivery for the same Slack event ID.",
+        "No memory card created to avoid duplicating the fact: Sam from Goldman likes Bill Evans."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "intent_router",
+  "run_id": "eval_20260508_195937"
+}

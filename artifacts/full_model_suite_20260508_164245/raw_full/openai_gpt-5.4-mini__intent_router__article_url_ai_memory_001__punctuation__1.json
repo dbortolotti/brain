@@ -1,0 +1,77 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0020759999999999997,
+  "fixture_id": "article_url_ai_memory_001__punctuation",
+  "input_tokens": 440,
+  "latency_ms": 3601,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 388,
+  "payload": {
+    "answer": "Stored as a tentative article-related memory with preserved ambiguity about the malformed URL.",
+    "citations": [
+      "Input provided by user"
+    ],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "create_placeholder",
+      "entity_id": null,
+      "reason": "The source provides a malformed URL and no stable canonical identifier to resolve to a durable entity."
+    },
+    "intent": "remember_article",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "https -//examplecom/ai-memory",
+            "role": "article",
+            "type": "url"
+          }
+        ],
+        "kind": "note",
+        "relationships": [],
+        "statement": "An article at https -//examplecom/ai-memory was described as useful for thinking about knowledge graph memory design."
+      },
+      {
+        "confidence": "high",
+        "entities": [],
+        "kind": "note",
+        "relationships": [
+          {
+            "object": "agents preserve relationships",
+            "predicate": "helps",
+            "subject": "graph memory"
+          },
+          {
+            "object": "provenance",
+            "predicate": "needs",
+            "subject": "graph memory"
+          },
+          {
+            "object": "update semantics",
+            "predicate": "needs",
+            "subject": "graph memory"
+          }
+        ],
+        "statement": "The mock fetched article says graph memory helps agents preserve relationships, and that provenance and update semantics are needed."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Accepted as a new memory candidate.",
+        "No superseded facts were present.",
+        "Malformed URL preserved as given without normalization."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you later provide a canonical URL or title, I can consolidate this into a more durable article entity.",
+      "If you want, I can split the note into separate claims about graph memory, provenance, and update semantics."
+    ]
+  },
+  "raw_text": "{\"intent\":\"remember_article\",\"decision\":\"store\",\"memory_cards\":[{\"kind\":\"note\",\"statement\":\"An article at https -//examplecom/ai-memory was described as useful for thinking about knowledge graph memory design.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"https -//examplecom/ai-memory\",\"type\":\"url\",\"role\":\"article\"}],\"relationships\":[]},{\"kind\":\"note\",\"statement\":\"The mock fetched article says graph memory helps agents preserve relationships, and that provenance and update semantics are needed.\",\"confidence\":\"high\",\"entities\":[],\"relationships\":[{\"subject\":\"graph memory\",\"predicate\":\"helps\",\"object\":\"agents preserve relationships\"},{\"subject\":\"graph memory\",\"predicate\":\"needs\",\"object\":\"provenance\"},{\"subject\":\"graph memory\",\"predicate\":\"needs\",\"object\":\"update semantics\"}]}],\"entity_resolution\":{\"action\":\"create_placeholder\",\"entity_id\":null,\"reason\":\"The source provides a malformed URL and no stable canonical identifier to resolve to a durable entity.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored as a tentative article-related memory with preserved ambiguity about the malformed URL.\",\"citations\":[\"Input provided by user\"],\"repair_options\":[\"If you later provide a canonical URL or title, I can consolidate this into a more durable article entity.\",\"If you want, I can split the note into separate claims about graph memory, provenance, and update semantics.\"],\"receipt\":{\"success\":true,\"details\":[\"Accepted as a new memory candidate.\",\"No superseded facts were present.\",\"Malformed URL preserved as given without normalization.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

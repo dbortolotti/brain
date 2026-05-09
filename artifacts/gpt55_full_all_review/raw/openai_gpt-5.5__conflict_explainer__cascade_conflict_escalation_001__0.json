@@ -1,0 +1,81 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.015015,
+  "fixture_id": "cascade_conflict_escalation_001",
+  "input_tokens": 429,
+  "latency_ms": 5580,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 429,
+  "payload": {
+    "answer": "There is a conflict between the existing memory \u201cSara is my daughter\u201d and the new input \u201cSara is my niece.\u201d I cannot decide which relationship is correct without your confirmation. You can choose one of the safe actions: approve_supersession to replace the existing daughter relationship with the niece relationship, keep_both if both statements should remain because they refer to different Saras or there is another explanation, reject_new to keep only the existing daughter relationship and not save the niece statement, or edit to clarify the correct relationship or distinguish between people.",
+    "citations": [
+      "Existing: Sara is my daughter.",
+      "Input: Sara is my niece."
+    ],
+    "conflict_classification": "direct_relationship_conflict",
+    "decision": "needs_user_choice",
+    "entity_resolution": {
+      "action": "ambiguous_same_name_conflict",
+      "entity_id": null,
+      "reason": "The new input refers to Sara, which may be the same person as the existing Sara, but the relationship conflicts: daughter versus niece."
+    },
+    "intent": "explain_conflict",
+    "memory_cards": [
+      {
+        "confidence": "unknown",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "related_person",
+            "type": "person"
+          }
+        ],
+        "kind": "existing",
+        "relationships": [
+          {
+            "object": "user",
+            "predicate": "is_daughter_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my daughter."
+      },
+      {
+        "confidence": "unknown",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "related_person",
+            "type": "person"
+          }
+        ],
+        "kind": "new_input",
+        "relationships": [
+          {
+            "object": "user",
+            "predicate": "is_niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No durable memory was changed.",
+        "Conflict requires user choice before committing the new relationship."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "approve_supersession",
+      "keep_both",
+      "reject_new",
+      "edit"
+    ]
+  },
+  "raw_text": "{\"intent\":\"explain_conflict\",\"decision\":\"needs_user_choice\",\"memory_cards\":[{\"kind\":\"existing\",\"statement\":\"Sara is my daughter.\",\"confidence\":\"unknown\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"related_person\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"is_daughter_of\",\"object\":\"user\"}]},{\"kind\":\"new_input\",\"statement\":\"Sara is my niece.\",\"confidence\":\"unknown\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"related_person\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"is_niece_of\",\"object\":\"user\"}]}],\"entity_resolution\":{\"action\":\"ambiguous_same_name_conflict\",\"entity_id\":null,\"reason\":\"The new input refers to Sara, which may be the same person as the existing Sara, but the relationship conflicts: daughter versus niece.\"},\"conflict_classification\":\"direct_relationship_conflict\",\"answer\":\"There is a conflict between the existing memory \u201cSara is my daughter\u201d and the new input \u201cSara is my niece.\u201d I cannot decide which relationship is correct without your confirmation. You can choose one of the safe actions: approve_supersession to replace the existing daughter relationship with the niece relationship, keep_both if both statements should remain because they refer to different Saras or there is another explanation, reject_new to keep only the existing daughter relationship and not save the niece statement, or edit to clarify the correct relationship or distinguish between people.\",\"citations\":[\"Existing: Sara is my daughter.\",\"Input: Sara is my niece.\"],\"repair_options\":[\"approve_supersession\",\"keep_both\",\"reject_new\",\"edit\"],\"receipt\":{\"success\":false,\"details\":[\"No durable memory was changed.\",\"Conflict requires user choice before committing the new relationship.\"]}}",
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

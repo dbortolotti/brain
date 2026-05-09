@@ -1,0 +1,59 @@
+{
+  "fixture_id": "unresolved_pronoun_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Ambiguous reference: unable to resolve who \"He\" is or which item is \"the other one\" without more context.",
+    "citations": [
+      "Input: \"He prefers the other one.\""
+    ],
+    "conflict_classification": "unresolved_pronoun",
+    "decision": "ambiguous_reference",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The pronoun \"He\" and the phrase \"the other one\" are underspecified; there is no antecedent or comparison set in the input, so a durable entity resolution would be speculative."
+    },
+    "intent": "route_intent",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "He",
+            "role": "subject",
+            "type": "pronoun"
+          },
+          {
+            "name": "the other one",
+            "role": "object",
+            "type": "indefinite_reference"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "He"
+          }
+        ],
+        "statement": "The input says: \"He prefers the other one.\""
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured only the surface observation.",
+        "No durable memory committed for the unresolved pronoun.",
+        "No entity was resolved."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide the antecedent for \"He\".",
+      "Specify the set being compared so \"the other one\" can be identified.",
+      "Rewrite the sentence with explicit names or objects."
+    ]
+  },
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540"
+}

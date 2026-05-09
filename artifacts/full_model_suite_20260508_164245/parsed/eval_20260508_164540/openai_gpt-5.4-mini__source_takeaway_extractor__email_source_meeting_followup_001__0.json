@@ -1,0 +1,71 @@
+{
+  "fixture_id": "email_source_meeting_followup_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "The sender reported joining Point72 last month and requested the AI infrastructure article.",
+    "citations": [
+      "source_email_followup_001"
+    ],
+    "conflict_classification": "none",
+    "decision": "Commit a low-to-medium confidence memory that the sender said they joined Point72 last month; also note the request for the AI infra article as a transient communication intent.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The sender is only identifiable from the source email context; no durable person identity should be inferred from the available information alone."
+    },
+    "intent": "Extract durable personal-memory takeaways from a follow-up email, preserving ambiguity and avoiding unnecessary private details.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_update",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "sender"
+          }
+        ],
+        "statement": "The sender said they joined Point72 last month."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "AI infrastructure article",
+            "role": "requested item",
+            "type": "document"
+          }
+        ],
+        "kind": "request",
+        "relationships": [
+          {
+            "object": "AI infrastructure article",
+            "predicate": "requested",
+            "subject": "sender"
+          }
+        ],
+        "statement": "The sender asked to be sent the AI infrastructure article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted one durable employment update with moderate confidence.",
+        "Captured a transient content request without exposing private email details."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If the sender identity is known elsewhere, link this employment update to that person profile.",
+      "If you have a stored article list, attach the requested AI infrastructure article to the conversation context."
+    ]
+  },
+  "role": "source_takeaway_extractor",
+  "run_id": "eval_20260508_164540"
+}

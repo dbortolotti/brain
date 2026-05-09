@@ -1,0 +1,73 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01018,
+  "fixture_id": "personal_routine_morning_reading_001__punctuation",
+  "input_tokens": 380,
+  "latency_ms": 3064,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 276,
+  "payload": {
+    "answer": "Noted: you usually prefer to read technical papers in the morning before checking email.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No specific named entity requires resolution."
+    },
+    "intent": "store_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "technical papers",
+            "role": "preferred reading material",
+            "type": "content"
+          },
+          {
+            "name": "morning",
+            "role": "preferred time",
+            "type": "time"
+          },
+          {
+            "name": "email",
+            "role": "subsequent activity",
+            "type": "activity"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "technical papers",
+            "predicate": "prefers_to_read",
+            "subject": "user"
+          },
+          {
+            "object": "morning",
+            "predicate": "prefers_time_for_reading",
+            "subject": "user"
+          },
+          {
+            "object": "checking email",
+            "predicate": "usually_occurs_before",
+            "subject": "reading technical papers"
+          }
+        ],
+        "statement": "The user usually prefers to read technical papers in the morning before checking email."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed a routine/preference memory about morning technical paper reading before email."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"store_memory\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"The user usually prefers to read technical papers in the morning before checking email.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"technical papers\",\"type\":\"content\",\"role\":\"preferred reading material\"},{\"name\":\"morning\",\"type\":\"time\",\"role\":\"preferred time\"},{\"name\":\"email\",\"type\":\"activity\",\"role\":\"subsequent activity\"}],\"relationships\":[{\"subject\":\"user\",\"predicate\":\"prefers_to_read\",\"object\":\"technical papers\"},{\"subject\":\"user\",\"predicate\":\"prefers_time_for_reading\",\"object\":\"morning\"},{\"subject\":\"reading technical papers\",\"predicate\":\"usually_occurs_before\",\"object\":\"checking email\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No specific named entity requires resolution.\"},\"conflict_classification\":\"none\",\"answer\":\"Noted: you usually prefer to read technical papers in the morning before checking email.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Committed a routine/preference memory about morning technical paper reading before email.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_195937",
+  "status": "ok"
+}

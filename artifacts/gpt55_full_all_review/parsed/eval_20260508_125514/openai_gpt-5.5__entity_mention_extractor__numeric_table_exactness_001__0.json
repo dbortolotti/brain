@@ -1,0 +1,101 @@
+{
+  "fixture_id": "numeric_table_exactness_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Extracted entities and exact numeric relationships from the table; no durable memory should be committed.",
+    "citations": [
+      "| PPO-001 | 0.12 | 0.45 | baseline |",
+      "| PPO-002 | 0.18 | 0.51 | entropy tuned |"
+    ],
+    "conflict_classification": "none",
+    "decision": "no_durable_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input is a standalone numeric table of experiment runs with no indication that these are durable personal-memory entities."
+    },
+    "intent": "extract_entities_from_numeric_table",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "table_row_subject",
+            "type": "run"
+          },
+          {
+            "name": "PPO-002",
+            "role": "table_row_subject",
+            "type": "run"
+          },
+          {
+            "name": "Reward",
+            "role": "column",
+            "type": "metric"
+          },
+          {
+            "name": "Sharpe",
+            "role": "column",
+            "type": "metric"
+          },
+          {
+            "name": "baseline",
+            "role": "annotation",
+            "type": "note"
+          },
+          {
+            "name": "entropy tuned",
+            "role": "annotation",
+            "type": "note"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "0.12",
+            "predicate": "has_reward",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "0.45",
+            "predicate": "has_sharpe",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "baseline",
+            "predicate": "has_note",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "0.18",
+            "predicate": "has_reward",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "0.51",
+            "predicate": "has_sharpe",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "entropy tuned",
+            "predicate": "has_note",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "A table lists two PPO runs with metrics: PPO-001 has Reward 0.12, Sharpe 0.45, Notes 'baseline'; PPO-002 has Reward 0.18, Sharpe 0.51, Notes 'entropy tuned'."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preserved exact numeric values as strings.",
+        "No superseded or deleted facts present.",
+        "No durable memory committed."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "entity_mention_extractor",
+  "run_id": "eval_20260508_125514"
+}

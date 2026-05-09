@@ -1,0 +1,81 @@
+{
+  "fixture_id": "numeric_table_exactness_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Extracted exact table values while preserving leading zeros and punctuation ambiguity in the header separator.",
+    "citations": [
+      "| PPO-001 | 012 | 045 | baseline |",
+      "| PPO-002 | 018 | 051 | entropy tuned |"
+    ],
+    "conflict_classification": "none",
+    "decision": "do_not_commit_durable_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The table contains run identifiers and metrics but no durable user memory entity to resolve or commit."
+    },
+    "intent": "extract_takeaways_from_structured_input",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "table_row_subject",
+            "type": "run"
+          },
+          {
+            "name": "PPO-002",
+            "role": "table_row_subject",
+            "type": "run"
+          }
+        ],
+        "kind": "source_table_observation",
+        "relationships": [
+          {
+            "object": "012",
+            "predicate": "has_reward",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "045",
+            "predicate": "has_sharpe",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "baseline",
+            "predicate": "has_notes",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "018",
+            "predicate": "has_reward",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "051",
+            "predicate": "has_sharpe",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "entropy tuned",
+            "predicate": "has_notes",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "The input table lists two PPO runs: PPO-001 with Reward 012, Sharpe 045, Notes 'baseline'; and PPO-002 with Reward 018, Sharpe 051, Notes 'entropy tuned'."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preserved numeric strings exactly as shown: 012, 045, 018, 051.",
+        "Did not infer arithmetic or normalize leading zeros.",
+        "No durable personal memory committed."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "source_takeaway_extractor",
+  "run_id": "eval_20260508_164540"
+}

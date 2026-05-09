@@ -1,0 +1,97 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.017345,
+  "fixture_id": "article_url_ai_memory_001__context",
+  "input_tokens": 445,
+  "latency_ms": 5345,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 504,
+  "payload": {
+    "answer": "Stored the article URL and its stated takeaway for future thinking about knowledge graph memory design.",
+    "citations": [
+      "https://example.com/ai-memory"
+    ],
+    "conflict_classification": "none",
+    "decision": "store_memory_card",
+    "entity_resolution": {
+      "action": "create_or_update_source_memory",
+      "entity_id": null,
+      "reason": "The input provides a URL and a mocked article takeaway, but no existing entity identifier to resolve against."
+    },
+    "intent": "remember_source_takeaway",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/ai-memory",
+            "role": "source",
+            "type": "url"
+          },
+          {
+            "name": "Graph memory",
+            "role": "article_topic",
+            "type": "concept"
+          },
+          {
+            "name": "agents",
+            "role": "beneficiary",
+            "type": "concept"
+          },
+          {
+            "name": "provenance",
+            "role": "design_requirement",
+            "type": "concept"
+          },
+          {
+            "name": "update semantics",
+            "role": "design_requirement",
+            "type": "concept"
+          },
+          {
+            "name": "knowledge graph memory design",
+            "role": "user_relevance",
+            "type": "concept"
+          }
+        ],
+        "kind": "source_takeaway",
+        "relationships": [
+          {
+            "object": "Graph memory helps agents preserve relationships",
+            "predicate": "has_takeaway",
+            "subject": "https://example.com/ai-memory"
+          },
+          {
+            "object": "provenance",
+            "predicate": "mentions_requirement",
+            "subject": "https://example.com/ai-memory"
+          },
+          {
+            "object": "update semantics",
+            "predicate": "mentions_requirement",
+            "subject": "https://example.com/ai-memory"
+          },
+          {
+            "object": "knowledge graph memory design",
+            "predicate": "user_says_useful_for",
+            "subject": "https://example.com/ai-memory"
+          }
+        ],
+        "statement": "Article at https://example.com/ai-memory is useful for thinking about knowledge graph memory design; its mocked fetched content says graph memory helps agents preserve relationships and that provenance and update semantics are needed."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured source URL: https://example.com/ai-memory",
+        "Captured user-provided reason: useful for thinking about knowledge graph memory design",
+        "Captured mocked fetched article takeaway: Graph memory helps agents preserve relationships; provenance and update semantics are needed."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"remember_source_takeaway\",\"decision\":\"store_memory_card\",\"memory_cards\":[{\"kind\":\"source_takeaway\",\"statement\":\"Article at https://example.com/ai-memory is useful for thinking about knowledge graph memory design; its mocked fetched content says graph memory helps agents preserve relationships and that provenance and update semantics are needed.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"https://example.com/ai-memory\",\"type\":\"url\",\"role\":\"source\"},{\"name\":\"Graph memory\",\"type\":\"concept\",\"role\":\"article_topic\"},{\"name\":\"agents\",\"type\":\"concept\",\"role\":\"beneficiary\"},{\"name\":\"provenance\",\"type\":\"concept\",\"role\":\"design_requirement\"},{\"name\":\"update semantics\",\"type\":\"concept\",\"role\":\"design_requirement\"},{\"name\":\"knowledge graph memory design\",\"type\":\"concept\",\"role\":\"user_relevance\"}],\"relationships\":[{\"subject\":\"https://example.com/ai-memory\",\"predicate\":\"has_takeaway\",\"object\":\"Graph memory helps agents preserve relationships\"},{\"subject\":\"https://example.com/ai-memory\",\"predicate\":\"mentions_requirement\",\"object\":\"provenance\"},{\"subject\":\"https://example.com/ai-memory\",\"predicate\":\"mentions_requirement\",\"object\":\"update semantics\"},{\"subject\":\"https://example.com/ai-memory\",\"predicate\":\"user_says_useful_for\",\"object\":\"knowledge graph memory design\"}]}],\"entity_resolution\":{\"action\":\"create_or_update_source_memory\",\"entity_id\":null,\"reason\":\"The input provides a URL and a mocked article takeaway, but no existing entity identifier to resolve against.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored the article URL and its stated takeaway for future thinking about knowledge graph memory design.\",\"citations\":[\"https://example.com/ai-memory\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Captured source URL: https://example.com/ai-memory\",\"Captured user-provided reason: useful for thinking about knowledge graph memory design\",\"Captured mocked fetched article takeaway: Graph memory helps agents preserve relationships; provenance and update semantics are needed.\"]}}",
+  "role": "source_takeaway_extractor",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

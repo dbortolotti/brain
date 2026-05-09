@@ -1,0 +1,68 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00157725,
+  "fixture_id": "slack_success_receipt_001__punctuation",
+  "input_tokens": 375,
+  "latency_ms": 4674,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 288,
+  "payload": {
+    "answer": "Stored as a preference note with moderate confidence.",
+    "citations": [
+      "/brain remember Sam from Goldman mentioned that he likes Bill Evans"
+    ],
+    "conflict_classification": "none",
+    "decision": "accept",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "The input refers to 'Sam from Goldman' as a contextual identifier, but there is not enough information to resolve a durable unique entity ID with confidence."
+    },
+    "intent": "store_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "mentioned person",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation/context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "music preference object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "mentioned_likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman mentioned that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured a preference memory about Bill Evans.",
+        "Preserved ambiguity around the identity of Sam from Goldman."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If needed, provide Sam's full name or more context for Goldman to improve entity resolution."
+    ]
+  },
+  "raw_text": "{\"intent\":\"store_memory\",\"decision\":\"accept\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman mentioned that he likes Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"mentioned person\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation/context\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"music preference object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"mentioned_likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"create_or_update\",\"entity_id\":null,\"reason\":\"The input refers to 'Sam from Goldman' as a contextual identifier, but there is not enough information to resolve a durable unique entity ID with confidence.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored as a preference note with moderate confidence.\",\"citations\":[\"/brain remember Sam from Goldman mentioned that he likes Bill Evans\"],\"repair_options\":[\"If needed, provide Sam's full name or more context for Goldman to improve entity resolution.\"],\"receipt\":{\"success\":true,\"details\":[\"Captured a preference memory about Bill Evans.\",\"Preserved ambiguity around the identity of Sam from Goldman.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

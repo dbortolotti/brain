@@ -1,0 +1,157 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.024365,
+  "fixture_id": "long_markdown_chat_summary_001",
+  "input_tokens": 427,
+  "latency_ms": 6970,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 741,
+  "payload": {
+    "answer": "Extracted durable architecture decisions and preserved Telegram/model-selection items as open questions rather than current decisions.",
+    "citations": [
+      "Brain DB should be the source of truth.",
+      "Cognee should be a rebuildable semantic projection.",
+      "Slack should be a strict memory intake agent.",
+      "Open questions: Should Telegram be added later? Which model is cheapest while saturating performance?"
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "commit_durable_architecture_decisions;preserve_open_questions_as_non_decisions",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No existing entity IDs or competing aliases were provided; extracted mentions should remain as named entities."
+    },
+    "intent": "extract_entity_mentions_and_memory_candidates",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system_component"
+          },
+          {
+            "name": "Brain",
+            "role": "context",
+            "type": "system"
+          }
+        ],
+        "kind": "architecture_decision",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "should_be",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB should be the source of truth for the Brain architecture."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "semantic_projection",
+            "type": "system_component"
+          },
+          {
+            "name": "Brain DB",
+            "role": "contrasted_source_of_truth",
+            "type": "system_component"
+          }
+        ],
+        "kind": "architecture_decision",
+        "relationships": [
+          {
+            "object": "rebuildable semantic projection",
+            "predicate": "should_be",
+            "subject": "Cognee"
+          },
+          {
+            "object": "source of truth",
+            "predicate": "should_not_be",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee should be a rebuildable semantic projection rather than the source of truth."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "memory_intake_agent",
+            "type": "integration"
+          }
+        ],
+        "kind": "architecture_decision",
+        "relationships": [
+          {
+            "object": "strict memory intake agent",
+            "predicate": "should_be",
+            "subject": "Slack"
+          }
+        ],
+        "statement": "Slack should be a strict memory intake agent."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Telegram",
+            "role": "possible_future_addition",
+            "type": "integration"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [
+          {
+            "object": "undecided",
+            "predicate": "may_be_added_later",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "It remains undecided whether Telegram should be added later."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "model",
+            "role": "selection_candidate",
+            "type": "ai_model"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [
+          {
+            "object": "cheapest while saturating performance",
+            "predicate": "optimization_goal",
+            "subject": "model selection"
+          },
+          {
+            "object": "undecided",
+            "predicate": "status",
+            "subject": "model selection"
+          }
+        ],
+        "statement": "It remains undecided which model is cheapest while saturating performance."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed Brain DB as source of truth decision.",
+        "Committed Cognee as rebuildable semantic projection decision.",
+        "Committed Slack as strict memory intake agent decision.",
+        "Recorded Telegram and model-selection items as open questions only."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"extract_entity_mentions_and_memory_candidates\",\"decision\":\"commit_durable_architecture_decisions;preserve_open_questions_as_non_decisions\",\"memory_cards\":[{\"kind\":\"architecture_decision\",\"statement\":\"Brain DB should be the source of truth for the Brain architecture.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Brain DB\",\"type\":\"system_component\",\"role\":\"source_of_truth\"},{\"name\":\"Brain\",\"type\":\"system\",\"role\":\"context\"}],\"relationships\":[{\"subject\":\"Brain DB\",\"predicate\":\"should_be\",\"object\":\"source of truth\"}]},{\"kind\":\"architecture_decision\",\"statement\":\"Cognee should be a rebuildable semantic projection rather than the source of truth.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Cognee\",\"type\":\"system_component\",\"role\":\"semantic_projection\"},{\"name\":\"Brain DB\",\"type\":\"system_component\",\"role\":\"contrasted_source_of_truth\"}],\"relationships\":[{\"subject\":\"Cognee\",\"predicate\":\"should_be\",\"object\":\"rebuildable semantic projection\"},{\"subject\":\"Cognee\",\"predicate\":\"should_not_be\",\"object\":\"source of truth\"}]},{\"kind\":\"architecture_decision\",\"statement\":\"Slack should be a strict memory intake agent.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Slack\",\"type\":\"integration\",\"role\":\"memory_intake_agent\"}],\"relationships\":[{\"subject\":\"Slack\",\"predicate\":\"should_be\",\"object\":\"strict memory intake agent\"}]},{\"kind\":\"open_question\",\"statement\":\"It remains undecided whether Telegram should be added later.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Telegram\",\"type\":\"integration\",\"role\":\"possible_future_addition\"}],\"relationships\":[{\"subject\":\"Telegram\",\"predicate\":\"may_be_added_later\",\"object\":\"undecided\"}]},{\"kind\":\"open_question\",\"statement\":\"It remains undecided which model is cheapest while saturating performance.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"model\",\"type\":\"ai_model\",\"role\":\"selection_candidate\"}],\"relationships\":[{\"subject\":\"model selection\",\"predicate\":\"optimization_goal\",\"object\":\"cheapest while saturating performance\"},{\"subject\":\"model selection\",\"predicate\":\"status\",\"object\":\"undecided\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No existing entity IDs or competing aliases were provided; extracted mentions should remain as named entities.\"},\"conflict_classification\":\"none_detected\",\"answer\":\"Extracted durable architecture decisions and preserved Telegram/model-selection items as open questions rather than current decisions.\",\"citations\":[\"Brain DB should be the source of truth.\",\"Cognee should be a rebuildable semantic projection.\",\"Slack should be a strict memory intake agent.\",\"Open questions: Should Telegram be added later? Which model is cheapest while saturating performance?\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Committed Brain DB as source of truth decision.\",\"Committed Cognee as rebuildable semantic projection decision.\",\"Committed Slack as strict memory intake agent decision.\",\"Recorded Telegram and model-selection items as open questions only.\"]}}",
+  "role": "entity_mention_extractor",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

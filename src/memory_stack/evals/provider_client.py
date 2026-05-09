@@ -14,7 +14,7 @@ import httpx
 
 from memory_stack.config import Settings
 from memory_stack.evals.model_matrix import ModelCandidate
-from memory_stack.local_embeddings import fastembed_vector_size
+from memory_stack.local_embeddings import fastembed_vector
 from memory_stack.provider_auth import resolve_openai_text_bearer
 
 
@@ -103,10 +103,13 @@ class LiveProviderClient:
         try:
             if missing := self.missing_credential(candidate):
                 raise ProviderCallError(missing)
-            vector_size = self._retry_call(
-                lambda: self._embedding_vector_size(candidate, text=text)
+            vector = self._retry_call(
+                lambda: self._embedding_vector(candidate, text=text)
             )
-            payload = {"embedding_vector_size": vector_size}
+            payload = {
+                "embedding_vector_size": len(vector),
+                "embedding_vector": vector,
+            }
             raw_text = json.dumps(payload)
             status = "ok"
             error = None
@@ -183,27 +186,29 @@ class LiveProviderClient:
             if self.settings.openai_auth_mode == "oauth"
             else "https://api.openai.com/v1"
         )
+        request_payload: dict[str, Any] = {
+            "model": candidate.api_model or candidate.model,
+            "instructions": "Return only one JSON object matching the requested schema. Do not wrap it in Markdown.",
+            "input": [{"role": "user", "content": prompt_with_schema(prompt, schema)}],
+            "store": False,
+            "stream": self.settings.openai_auth_mode == "oauth",
+            "reasoning": {"effort": candidate.reasoning_effort or openai_reasoning_effort(candidate.api_model or candidate.model)},
+        }
+        if self.settings.openai_auth_mode != "oauth":
+            request_payload["max_output_tokens"] = MAX_OUTPUT_TOKENS
         response = self.client.post(
             f"{base_url.rstrip('/')}/responses",
             headers={"Authorization": f"Bearer {bearer}"},
-            json={
-                "model": candidate.api_model or candidate.model,
-                "input": prompt_with_schema(prompt, schema),
-                "max_output_tokens": MAX_OUTPUT_TOKENS,
-                "reasoning": {"effort": candidate.reasoning_effort or openai_reasoning_effort(candidate.api_model or candidate.model)},
-            },
+            json=request_payload,
         )
-        payload = checked_json(response)
-        text = payload.get("output_text")
-        if isinstance(text, str) and text.strip():
-            return text
-        chunks: list[str] = []
-        for item in payload.get("output") or []:
-            for content in item.get("content") or []:
-                if content.get("type") in {"output_text", "text"} and content.get("text"):
-                    chunks.append(str(content["text"]))
-        if chunks:
-            return "\n".join(chunks)
+        if self.settings.openai_auth_mode == "oauth":
+            text = openai_stream_response_text(response)
+            if text:
+                return text
+        else:
+            text = openai_response_text(checked_json(response))
+            if text:
+                return text
         raise ProviderCallError("OpenAI response did not include text")
 
     def _google_generate_content(
@@ -356,7 +361,7 @@ class LiveProviderClient:
             return "\n".join(chunks)
         raise ProviderCallError("Bedrock response did not include message text")
 
-    def _embedding_vector_size(self, candidate: ModelCandidate, *, text: str) -> int:
+    def _embedding_vector(self, candidate: ModelCandidate, *, text: str) -> list[float]:
         if candidate.provider == "openai":
             response = self.client.post(
                 "https://api.openai.com/v1/embeddings",
@@ -387,12 +392,12 @@ class LiveProviderClient:
             payload = checked_json(response)
             vector = (payload.get("embedding") or {}).get("values")
         elif candidate.provider == "fastembed":
-            return fastembed_vector_size(candidate.api_model or candidate.model, text)
+            return fastembed_vector(candidate.api_model or candidate.model, text)
         else:
             raise ProviderCallError(f"unsupported embedding provider: {candidate.provider}")
         if not isinstance(vector, list) or not vector:
             raise ProviderCallError("embedding response did not include a vector")
-        return len(vector)
+        return [float(value) for value in vector]
 
     @property
     def client(self) -> httpx.Client:
@@ -465,6 +470,48 @@ def checked_json(response: httpx.Response) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise ProviderCallError("provider returned unexpected JSON response")
     return payload
+
+
+def openai_response_text(payload: dict[str, Any]) -> str | None:
+    text = payload.get("output_text")
+    if isinstance(text, str) and text.strip():
+        return text
+    chunks: list[str] = []
+    for item in payload.get("output") or []:
+        for content in item.get("content") or []:
+            if content.get("type") in {"output_text", "text"} and content.get("text"):
+                chunks.append(str(content["text"]))
+    return "\n".join(chunks) if chunks else None
+
+
+def openai_stream_response_text(response: httpx.Response) -> str | None:
+    if response.status_code >= 400:
+        raise ProviderCallError(f"HTTP {response.status_code}: {response_error_message(response)}")
+    chunks: list[str] = []
+    final_text: str | None = None
+    for line in response.text.splitlines():
+        line = line.strip()
+        if not line.startswith("data:"):
+            continue
+        data = line.removeprefix("data:").strip()
+        if not data or data == "[DONE]":
+            continue
+        try:
+            event = json.loads(data)
+        except ValueError:
+            continue
+        if not isinstance(event, dict):
+            continue
+        event_type = str(event.get("type") or "")
+        if event_type in {"response.output_text.delta", "response.refusal.delta"} and isinstance(event.get("delta"), str):
+            chunks.append(event["delta"])
+        elif event_type == "response.completed" and isinstance(event.get("response"), dict):
+            final_text = openai_response_text(event["response"])
+        elif isinstance(event.get("output_text"), str):
+            final_text = event["output_text"]
+    if chunks:
+        return "".join(chunks)
+    return final_text
 
 
 def is_retryable_provider_error(exc: Exception) -> bool:

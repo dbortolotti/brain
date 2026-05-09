@@ -1,0 +1,78 @@
+{
+  "fixture_id": "project_state_brain_slack_agent_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Extracted two atomic project-state memory cards: Slack as the primary guardrailed memory ingestion interface for Brain, and Telegram as a possible later option.",
+    "citations": [
+      "Brain project state: Slack should be the primary guardrailed memory ingestion interface; Telegram can come later."
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_success",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No ambiguous entity resolution required; Brain, Slack, and Telegram are explicitly named."
+    },
+    "intent": "extract_memory_cards",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "Slack",
+            "role": "primary guardrailed memory ingestion interface",
+            "type": "product"
+          }
+        ],
+        "kind": "project_state",
+        "relationships": [
+          {
+            "object": "Slack",
+            "predicate": "has_primary_guardrailed_memory_ingestion_interface",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "For the Brain project, Slack should be the primary guardrailed memory ingestion interface."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "Telegram",
+            "role": "potential future memory ingestion interface",
+            "type": "product"
+          }
+        ],
+        "kind": "project_state",
+        "relationships": [
+          {
+            "object": "Telegram",
+            "predicate": "may_consider_later",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "For the Brain project, Telegram can be considered later as a memory ingestion interface."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed explicitly supported project-state facts only.",
+        "Preserved lower confidence for Telegram because its future role is less specific than Slack's current priority."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164540"
+}

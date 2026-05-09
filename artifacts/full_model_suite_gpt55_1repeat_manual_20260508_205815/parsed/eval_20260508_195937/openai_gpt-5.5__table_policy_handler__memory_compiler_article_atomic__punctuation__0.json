@@ -1,0 +1,120 @@
+{
+  "fixture_id": "memory_compiler_article_atomic__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Extracted three atomic policy memory cards from the input text.",
+    "citations": [
+      "AI memory systems need durable source evidence",
+      "Atomic memory cards should be small and traceable",
+      "A semantic index can improve recall, but the application database must own lifecycle and conflict state"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_memory_cards",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Input contains general policy concepts rather than a specific user or named entity requiring resolution."
+    },
+    "intent": "extract_atomic_memory_from_policy_text",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "AI memory systems",
+            "role": "subject",
+            "type": "concept"
+          },
+          {
+            "name": "durable source evidence",
+            "role": "requirement",
+            "type": "concept"
+          }
+        ],
+        "kind": "principle",
+        "relationships": [
+          {
+            "object": "durable source evidence",
+            "predicate": "need",
+            "subject": "AI memory systems"
+          }
+        ],
+        "statement": "AI memory systems need durable source evidence."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Atomic memory cards",
+            "role": "subject",
+            "type": "concept"
+          },
+          {
+            "name": "small and traceable",
+            "role": "attribute",
+            "type": "quality"
+          }
+        ],
+        "kind": "principle",
+        "relationships": [
+          {
+            "object": "small and traceable",
+            "predicate": "should_be",
+            "subject": "Atomic memory cards"
+          }
+        ],
+        "statement": "Atomic memory cards should be small and traceable."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "semantic index",
+            "role": "subject",
+            "type": "concept"
+          },
+          {
+            "name": "recall",
+            "role": "object",
+            "type": "concept"
+          },
+          {
+            "name": "application database",
+            "role": "owner",
+            "type": "system_component"
+          },
+          {
+            "name": "lifecycle and conflict state",
+            "role": "owned_state",
+            "type": "concept"
+          }
+        ],
+        "kind": "principle",
+        "relationships": [
+          {
+            "object": "recall",
+            "predicate": "can_improve",
+            "subject": "semantic index"
+          },
+          {
+            "object": "lifecycle and conflict state",
+            "predicate": "must_own",
+            "subject": "application database"
+          }
+        ],
+        "statement": "A semantic index can improve recall, but the application database must own lifecycle and conflict state."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed only durable, general policy statements present in the source text.",
+        "Split the input into small, traceable atomic memory cards.",
+        "No conflicts, supersessions, or deletions were detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "table_policy_handler",
+  "run_id": "eval_20260508_195937"
+}

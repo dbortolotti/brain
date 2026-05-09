@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00160125,
+  "fixture_id": "preference_jazz_001",
+  "input_tokens": 371,
+  "latency_ms": 3460,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 294,
+  "payload": {
+    "answer": "Committed as a preference memory: Sonny Rollins is preferred over John Coltrane for relaxed Sunday listening.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "No existing entity identifiers were provided; the preference is a new durable memory candidate tied to named public figures and a listening context."
+    },
+    "intent": "store_preference",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sonny Rollins",
+            "role": "preferred artist",
+            "type": "person"
+          },
+          {
+            "name": "John Coltrane",
+            "role": "comparative artist",
+            "type": "person"
+          },
+          {
+            "name": "relaxed Sunday listening",
+            "role": "listening context",
+            "type": "context"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Sonny Rollins over John Coltrane",
+            "predicate": "prefers_for_context",
+            "subject": "user"
+          },
+          {
+            "object": "relaxed Sunday listening",
+            "predicate": "applies_in_context",
+            "subject": "preference"
+          }
+        ],
+        "statement": "The user prefers Sonny Rollins over John Coltrane for relaxed Sunday listening."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored a context-specific jazz preference.",
+        "No ambiguity requiring repair detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"store_preference\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"The user prefers Sonny Rollins over John Coltrane for relaxed Sunday listening.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sonny Rollins\",\"type\":\"person\",\"role\":\"preferred artist\"},{\"name\":\"John Coltrane\",\"type\":\"person\",\"role\":\"comparative artist\"},{\"name\":\"relaxed Sunday listening\",\"type\":\"context\",\"role\":\"listening context\"}],\"relationships\":[{\"subject\":\"user\",\"predicate\":\"prefers_for_context\",\"object\":\"Sonny Rollins over John Coltrane\"},{\"subject\":\"preference\",\"predicate\":\"applies_in_context\",\"object\":\"relaxed Sunday listening\"}]}],\"entity_resolution\":{\"action\":\"create\",\"entity_id\":null,\"reason\":\"No existing entity identifiers were provided; the preference is a new durable memory candidate tied to named public figures and a listening context.\"},\"conflict_classification\":\"no_conflict\",\"answer\":\"Committed as a preference memory: Sonny Rollins is preferred over John Coltrane for relaxed Sunday listening.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Stored a context-specific jazz preference.\",\"No ambiguity requiring repair detected.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

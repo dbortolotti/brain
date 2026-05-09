@@ -1,0 +1,40 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.012450000000000001,
+  "fixture_id": "contradiction_sam_children_001__punctuation",
+  "input_tokens": 384,
+  "latency_ms": 5106,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 351,
+  "payload": {
+    "answer": "The new statement directly contradicts the existing memory. Do not commit either as current without clarification.",
+    "citations": [],
+    "conflict_classification": "direct_contradiction",
+    "decision": "needs_clarification",
+    "entity_resolution": {
+      "action": "same_entity_assumed",
+      "entity_id": null,
+      "reason": "Both statements refer to 'Sam from Goldman'; punctuation differences do not indicate a distinct entity."
+    },
+    "intent": "generate_repair_options_for_conflicting_memory",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected direct contradiction between existing and new memory.",
+        "Generated repair options without committing a durable factual update.",
+        "Preserved ambiguity and did not present superseded/deleted facts as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark the existing memory 'Sam from Goldman has two children' as superseded and store the new statement 'Sam from Goldman has no children' as current only if the new source is trusted or confirmed.",
+      "Keep the existing memory as current and reject the new statement if the existing memory is more reliable or the new statement is unverified.",
+      "Store an unresolved conflict note: 'There is conflicting information about whether Sam from Goldman has children: one source says he has two children; another says he has no children.'",
+      "Ask for clarification: 'Should I update Sam from Goldman\u2019s children information from two children to no children?'"
+    ]
+  },
+  "raw_text": "{\"intent\":\"generate_repair_options_for_conflicting_memory\",\"decision\":\"needs_clarification\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"same_entity_assumed\",\"entity_id\":null,\"reason\":\"Both statements refer to 'Sam from Goldman'; punctuation differences do not indicate a distinct entity.\"},\"conflict_classification\":\"direct_contradiction\",\"answer\":\"The new statement directly contradicts the existing memory. Do not commit either as current without clarification.\",\"citations\":[],\"repair_options\":[\"Mark the existing memory 'Sam from Goldman has two children' as superseded and store the new statement 'Sam from Goldman has no children' as current only if the new source is trusted or confirmed.\",\"Keep the existing memory as current and reject the new statement if the existing memory is more reliable or the new statement is unverified.\",\"Store an unresolved conflict note: 'There is conflicting information about whether Sam from Goldman has children: one source says he has two children; another says he has no children.'\",\"Ask for clarification: 'Should I update Sam from Goldman\u2019s children information from two children to no children?'\"],\"receipt\":{\"success\":true,\"details\":[\"Detected direct contradiction between existing and new memory.\",\"Generated repair options without committing a durable factual update.\",\"Preserved ambiguity and did not present superseded/deleted facts as current.\"]}}",
+  "role": "repair_option_generator",
+  "run_id": "eval_20260508_135611",
+  "status": "ok"
+}

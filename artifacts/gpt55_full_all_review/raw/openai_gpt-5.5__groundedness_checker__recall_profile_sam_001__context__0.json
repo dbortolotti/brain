@@ -1,0 +1,107 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.022755,
+  "fixture_id": "recall_profile_sam_001__context",
+  "input_tokens": 411,
+  "latency_ms": 17512,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 690,
+  "payload": {
+    "answer": "Sam from Goldman is associated with Goldman. He likes Bill Evans and is interested in AI infrastructure. There is also an open loop to send Sam an article about AI infrastructure.",
+    "citations": [
+      "Facts: Sam from Goldman likes Bill Evans, is associated with Goldman, is interested in AI infrastructure.",
+      "Open loop: send Sam article about AI infra."
+    ],
+    "conflict_classification": "none",
+    "decision": "answer_from_context",
+    "entity_resolution": {
+      "action": "resolved_from_query_descriptor",
+      "entity_id": null,
+      "reason": "The query identifies Sam using the descriptor 'from Goldman', matching the provided context facts about Sam associated with Goldman."
+    },
+    "intent": "recall_profile",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_or_association",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "music_interest",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "interest",
+            "type": "topic"
+          }
+        ],
+        "kind": "person_profile",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "AI infrastructure",
+            "predicate": "interested_in",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans, is associated with Goldman, and is interested in AI infrastructure."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "recipient",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "article_topic",
+            "type": "topic"
+          }
+        ],
+        "kind": "open_loop",
+        "relationships": [
+          {
+            "object": "send article about AI infrastructure",
+            "predicate": "has_open_loop",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Send Sam an article about AI infrastructure."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Answered using only the provided facts and open loop.",
+        "Preserved the ambiguity of Sam's association with Goldman rather than inferring a specific employer or role.",
+        "Included the open loop as a pending action, not as a completed fact."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"recall_profile\",\n  \"decision\": \"answer_from_context\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"person_profile\",\n      \"statement\": \"Sam from Goldman likes Bill Evans, is associated with Goldman, and is interested in AI infrastructure.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation_or_association\"\n        },\n        {\n          \"name\": \"Bill Evans\",\n          \"type\": \"person\",\n          \"role\": \"music_interest\"\n        },\n        {\n          \"name\": \"AI infrastructure\",\n          \"type\": \"topic\",\n          \"role\": \"interest\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"associated_with\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"likes\",\n          \"object\": \"Bill Evans\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"interested_in\",\n          \"object\": \"AI infrastructure\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"open_loop\",\n      \"statement\": \"Send Sam an article about AI infrastructure.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"recipient\"\n        },\n        {\n          \"name\": \"AI infrastructure\",\n          \"type\": \"topic\",\n          \"role\": \"article_topic\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"has_open_loop\",\n          \"object\": \"send article about AI infrastructure\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolved_from_query_descriptor\",\n    \"entity_id\": null,\n    \"reason\": \"The query identifies Sam using the descriptor 'from Goldman', matching the provided context facts about Sam associated with Goldman.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Sam from Goldman is associated with Goldman. He likes Bill Evans and is interested in AI infrastructure. There is also an open loop to send Sam an article about AI infrastructure.\",\n  \"citations\": [\n    \"Facts: Sam from Goldman likes Bill Evans, is associated with Goldman, is interested in AI infrastructure.\",\n    \"Open loop: send Sam article about AI infra.\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Answered using only the provided facts and open loop.\",\n      \"Preserved the ambiguity of Sam's association with Goldman rather than inferring a specific employer or role.\",\n      \"Included the open loop as a pending action, not as a completed fact.\"\n    ]\n  }\n}",
+  "role": "groundedness_checker",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

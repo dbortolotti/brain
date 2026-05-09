@@ -1,0 +1,84 @@
+{
+  "fixture_id": "debug_explain_recall_sam",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Recall returned mem_new because it is the durable current memory for Sam from Goldman. mem_old was not returned as current because it is marked superseded by mem_new. This is not a live conflict between two current facts; the supersession metadata makes mem_old historical/obsolete for recall purposes.",
+    "citations": [
+      "mem_new",
+      "mem_old"
+    ],
+    "conflict_classification": "supersession_not_conflict",
+    "decision": "Recall returned mem_new because it is the current non-superseded memory matching Sam from Goldman; mem_old was filtered because it has been superseded and should not be presented as current.",
+    "entity_resolution": {
+      "action": "resolved_to_existing_current_memory",
+      "entity_id": "mem_new",
+      "reason": "The query target, Sam from Goldman, matched both records, but the older record is marked superseded, so only the current replacement memory is eligible for recall."
+    },
+    "intent": "explain_recall_filtering",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "recall_result",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "from",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "mem_new is the active memory for Sam from Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "filtered_memory",
+        "relationships": [
+          {
+            "object": "mem_new",
+            "predicate": "superseded_by",
+            "subject": "mem_old"
+          }
+        ],
+        "statement": "mem_old matched the query but was excluded because it is superseded by mem_new."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Explained why mem_new was returned.",
+        "Explained why mem_old was filtered.",
+        "Did not present the superseded mem_old as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If mem_old was incorrectly marked superseded, remove or revise its supersession link.",
+      "If mem_new is incorrect, update or delete mem_new and restore the correct current memory.",
+      "If both records should remain visible, mark mem_old as historical context rather than a current recall candidate."
+    ]
+  },
+  "role": "debug_explainer",
+  "run_id": "eval_20260508_125514"
+}

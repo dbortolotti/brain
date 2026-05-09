@@ -1,0 +1,56 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.011365,
+  "fixture_id": "recall_open_questions_knowledge_graphs_001__context",
+  "input_tokens": 401,
+  "latency_ms": 3625,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 312,
+  "payload": {
+    "answer": "You have one open idea about knowledge graphs: learn more about knowledge graphs.",
+    "citations": [
+      "Open question: learn more about knowledge graphs."
+    ],
+    "conflict_classification": "none",
+    "decision": "answer_current_open_question_only",
+    "entity_resolution": {
+      "action": "resolved_to_topic",
+      "entity_id": null,
+      "reason": "The query asks about open ideas related to knowledge graphs, matching the current open question in context."
+    },
+    "intent": "answer_query_from_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "knowledge graphs",
+            "role": "subject",
+            "type": "topic"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [
+          {
+            "object": "knowledge graphs",
+            "predicate": "has_open_question_about",
+            "subject": "user"
+          }
+        ],
+        "statement": "Learn more about knowledge graphs."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Returned the open question about knowledge graphs.",
+        "Excluded the closed loop about learning basic Python because it is closed and unrelated to knowledge graphs."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"answer_query_from_memory\",\n  \"decision\": \"answer_current_open_question_only\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"open_question\",\n      \"statement\": \"Learn more about knowledge graphs.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"knowledge graphs\",\n          \"type\": \"topic\",\n          \"role\": \"subject\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"user\",\n          \"predicate\": \"has_open_question_about\",\n          \"object\": \"knowledge graphs\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolved_to_topic\",\n    \"entity_id\": null,\n    \"reason\": \"The query asks about open ideas related to knowledge graphs, matching the current open question in context.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"You have one open idea about knowledge graphs: learn more about knowledge graphs.\",\n  \"citations\": [\n    \"Open question: learn more about knowledge graphs.\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Returned the open question about knowledge graphs.\",\n      \"Excluded the closed loop about learning basic Python because it is closed and unrelated to knowledge graphs.\"\n    ]\n  }\n}",
+  "role": "groundedness_checker",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

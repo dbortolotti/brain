@@ -1,0 +1,61 @@
+{
+  "fixture_id": "groundedness_metadata_claims_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Identity - Person; confidence medium. Aliases: Sam, Sam from Goldman. Grounded by the entity row and alias row.",
+    "citations": [
+      "entity row",
+      "alias row"
+    ],
+    "conflict_classification": "none",
+    "decision": "pass",
+    "entity_resolution": {
+      "action": "link_or_create_person",
+      "entity_id": null,
+      "reason": "Evidence contains an entity row indicating identity type Person and an alias row supporting the aliases; no stable entity_id provided in the input."
+    },
+    "intent": "evaluate_groundedness",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "alias",
+            "type": "Person"
+          },
+          {
+            "name": "Sam from Goldman",
+            "role": "alias",
+            "type": "Person"
+          }
+        ],
+        "kind": "identity",
+        "relationships": [
+          {
+            "object": "person entity",
+            "predicate": "alias_of",
+            "subject": "Sam"
+          },
+          {
+            "object": "person entity",
+            "predicate": "alias_of",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "The entity is a person with aliases \u201cSam\u201d and \u201cSam from Goldman.\u201d"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Evaluated groundedness for identity and aliases.",
+        "Preserved medium confidence.",
+        "Did not infer additional facts beyond the provided evidence."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "eval_judge",
+  "run_id": "eval_20260508_164540"
+}

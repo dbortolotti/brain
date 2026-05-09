@@ -1,0 +1,81 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00227925,
+  "fixture_id": "slack_conflict_buttons_001__context",
+  "input_tokens": 381,
+  "latency_ms": 13559,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 443,
+  "payload": {
+    "answer": "I found a conflict with existing memory: Sam is currently remembered as working at Goldman, while this request says Sam left Goldman and joined Point72. I am not committing the new employment as definitive without confirmation.",
+    "citations": [
+      "Existing: Sam works at Goldman.",
+      "Request: /brain remember Sam left Goldman and joined Point72."
+    ],
+    "conflict_classification": "direct_contradiction_current_employment",
+    "decision": "conflict_detected_needs_confirmation",
+    "entity_resolution": {
+      "action": "merge_candidate",
+      "entity_id": null,
+      "reason": "The request likely refers to the same Sam as the existing memory, but the employment information conflicts and should not be committed as a definitive update without confirmation."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_or_current_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "possible_new_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "employment_status_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "may_have_left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "may_have_joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam may have left Goldman and joined Point72; this conflicts with an existing memory that Sam works at Goldman."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict with existing memory about Sam's employer.",
+        "Update withheld pending confirmation to preserve ambiguity and avoid superseding facts incorrectly."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Confirm whether this is the same Sam.",
+      "If yes, update the current employer from Goldman to Point72 and mark Goldman as former employer.",
+      "If no, create a separate Sam entity with disambiguation."
+    ]
+  },
+  "raw_text": "{\"intent\":\"remember\",\"decision\":\"conflict_detected_needs_confirmation\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam may have left Goldman and joined Point72; this conflicts with an existing memory that Sam works at Goldman.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former_or_current_employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"possible_new_employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"employment_status_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"may_have_left\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"may_have_joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"merge_candidate\",\"entity_id\":null,\"reason\":\"The request likely refers to the same Sam as the existing memory, but the employment information conflicts and should not be committed as a definitive update without confirmation.\"},\"conflict_classification\":\"direct_contradiction_current_employment\",\"answer\":\"I found a conflict with existing memory: Sam is currently remembered as working at Goldman, while this request says Sam left Goldman and joined Point72. I am not committing the new employment as definitive without confirmation.\",\"citations\":[\"Existing: Sam works at Goldman.\",\"Request: /brain remember Sam left Goldman and joined Point72.\"],\"repair_options\":[\"Confirm whether this is the same Sam.\",\"If yes, update the current employer from Goldman to Point72 and mark Goldman as former employer.\",\"If no, create a separate Sam entity with disambiguation.\"],\"receipt\":{\"success\":false,\"details\":[\"Conflict with existing memory about Sam's employer.\",\"Update withheld pending confirmation to preserve ambiguity and avoid superseding facts incorrectly.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

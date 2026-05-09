@@ -1,0 +1,68 @@
+{
+  "fixture_id": "recall_hide_superseded__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Sam works at Point72 now.",
+    "citations": [
+      "Current facts - Sam left Goldman and joined Point72",
+      "Superseded facts - Sam works at Goldman"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "answer_with_current_fact",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": null,
+      "reason": "Sam is identified from the provided facts; no durable entity ID is available."
+    },
+    "intent": "intent_router",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ignored superseded fact that Sam works at Goldman.",
+        "Used current fact that Sam joined Point72."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark 'Sam works at Goldman' as superseded/deleted in memory.",
+      "Retain only 'Sam left Goldman and joined Point72' as current."
+    ]
+  },
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540"
+}

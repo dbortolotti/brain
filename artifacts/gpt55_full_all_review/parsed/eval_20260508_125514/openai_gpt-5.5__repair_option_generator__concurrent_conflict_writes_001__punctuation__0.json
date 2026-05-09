@@ -1,0 +1,71 @@
+{
+  "fixture_id": "concurrent_conflict_writes_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "The text appears to contain two employment-related claims: 'Sam works at Goldman' and 'Sam joined Point72.' Without punctuation or timing, it is unclear whether Point72 supersedes Goldman, whether one fact is stale, or whether both are intended to be true in different senses. Do not commit either as a current durable employment fact without clarification.",
+    "citations": [
+      "Concurrent writes - Sam works at Goldman Sam joined Point72"
+    ],
+    "conflict_classification": "concurrent_conflict_or_sequence_ambiguous_punctuation",
+    "decision": "needs_clarification",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The input mentions 'Sam' without enough context to resolve to an existing person entity, and the employment claims may be concurrent, sequential, or conflicting."
+    },
+    "intent": "repair_option_generation",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "possible_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "possible_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_ambiguous",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at_or_worked_at_possible",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined_possible",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is associated with both Goldman and Point72 in the input, but the relationship between the two employment claims is ambiguous due to missing punctuation/context."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Generated repair options rather than committing a current employment fact.",
+        "Preserved ambiguity caused by missing punctuation and concurrent conflicting writes.",
+        "Avoided presenting either Goldman or Point72 as Sam's confirmed current employer."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for clarification: Does Sam currently work at Goldman, currently work at Point72, or did Sam leave Goldman to join Point72?",
+      "If the intended meaning is sequential, store: 'Sam previously worked at Goldman and joined Point72.'",
+      "If the intended meaning is concurrent and accurate, store both with context: 'Sam works at Goldman' and 'Sam joined Point72,' noting potential dual affiliation only if confirmed.",
+      "If Point72 supersedes Goldman, mark the Goldman employment as former/superseded and store Point72 as current.",
+      "If Goldman is the correct current employer and Point72 is erroneous or unrelated, discard or quarantine the Point72 claim."
+    ]
+  },
+  "role": "repair_option_generator",
+  "run_id": "eval_20260508_125514"
+}

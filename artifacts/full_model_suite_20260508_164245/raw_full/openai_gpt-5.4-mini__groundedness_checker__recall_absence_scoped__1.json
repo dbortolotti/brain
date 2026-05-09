@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00160275,
+  "fixture_id": "recall_absence_scoped",
+  "input_tokens": 421,
+  "latency_ms": 2240,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 286,
+  "payload": {
+    "answer": "No current evidence indicates whether Sara prefers morning flights.",
+    "citations": [],
+    "conflict_classification": "absence_of_evidence",
+    "decision": "no_current_evidence",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": "Sara",
+      "reason": "The question refers to Sara, and the retrieved facts mention Sara with no current travel preferences."
+    },
+    "intent": "groundedness_check",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "evidence",
+        "relationships": [
+          {
+            "object": "none",
+            "predicate": "has_current_travel_preference_evidence_for",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "No current travel preferences for Sara were found in the retrieved facts, so there is no basis to determine whether she prefers morning flights."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Retrieved facts contain no current travel preferences for Sara.",
+        "Answer constrained to uncertainty rather than a positive or negative preference claim."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Search for explicit travel preference statements for Sara.",
+      "Check older memories only if recency is not required, while treating them as potentially superseded."
+    ]
+  },
+  "raw_text": "{\"intent\":\"groundedness_check\",\"decision\":\"no_current_evidence\",\"memory_cards\":[{\"kind\":\"evidence\",\"statement\":\"No current travel preferences for Sara were found in the retrieved facts, so there is no basis to determine whether she prefers morning flights.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"has_current_travel_preference_evidence_for\",\"object\":\"none\"}]}],\"entity_resolution\":{\"action\":\"resolved\",\"entity_id\":\"Sara\",\"reason\":\"The question refers to Sara, and the retrieved facts mention Sara with no current travel preferences.\"},\"conflict_classification\":\"absence_of_evidence\",\"answer\":\"No current evidence indicates whether Sara prefers morning flights.\",\"citations\":[],\"repair_options\":[\"Search for explicit travel preference statements for Sara.\",\"Check older memories only if recency is not required, while treating them as potentially superseded.\"],\"receipt\":{\"success\":true,\"details\":[\"Retrieved facts contain no current travel preferences for Sara.\",\"Answer constrained to uncertainty rather than a positive or negative preference claim.\"]}}",
+  "role": "groundedness_checker",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

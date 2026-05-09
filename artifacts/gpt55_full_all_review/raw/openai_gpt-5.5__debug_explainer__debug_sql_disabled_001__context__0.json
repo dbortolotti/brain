@@ -1,0 +1,40 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.010745000000000001,
+  "fixture_id": "debug_sql_disabled_001__context",
+  "input_tokens": 379,
+  "latency_ms": 4787,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 295,
+  "payload": {
+    "answer": "With BRAIN_DEBUG_SQL_ENABLED=false, the `/brain admin sql SELECT * FROM memory_cards` request should not execute raw SQL or expose database rows. Treat it as a disabled debug/admin operation. No memory should be committed from this input.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "no_memory_commit",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input is a debug/admin SQL request context, not a durable user memory fact. No user entity or stable personal preference should be created or updated."
+    },
+    "intent": "debug_explainer",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Recognized the input as an admin SQL debug request.",
+        "Did not create memory cards.",
+        "Did not present any database contents as available or current.",
+        "Explained expected behavior when debug SQL is disabled."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Enable the appropriate debug SQL flag only in a safe development environment if raw SQL inspection is intended.",
+      "Use a sanctioned admin/debug endpoint that respects permissions and redaction instead of executing raw SQL directly.",
+      "Return a clear refusal or disabled-feature message when BRAIN_DEBUG_SQL_ENABLED=false."
+    ]
+  },
+  "raw_text": "{\"intent\":\"debug_explainer\",\"decision\":\"no_memory_commit\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input is a debug/admin SQL request context, not a durable user memory fact. No user entity or stable personal preference should be created or updated.\"},\"conflict_classification\":\"none\",\"answer\":\"With BRAIN_DEBUG_SQL_ENABLED=false, the `/brain admin sql SELECT * FROM memory_cards` request should not execute raw SQL or expose database rows. Treat it as a disabled debug/admin operation. No memory should be committed from this input.\",\"citations\":[],\"repair_options\":[\"Enable the appropriate debug SQL flag only in a safe development environment if raw SQL inspection is intended.\",\"Use a sanctioned admin/debug endpoint that respects permissions and redaction instead of executing raw SQL directly.\",\"Return a clear refusal or disabled-feature message when BRAIN_DEBUG_SQL_ENABLED=false.\"],\"receipt\":{\"success\":true,\"details\":[\"Recognized the input as an admin SQL debug request.\",\"Did not create memory cards.\",\"Did not present any database contents as available or current.\",\"Explained expected behavior when debug SQL is disabled.\"]}}",
+  "role": "debug_explainer",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

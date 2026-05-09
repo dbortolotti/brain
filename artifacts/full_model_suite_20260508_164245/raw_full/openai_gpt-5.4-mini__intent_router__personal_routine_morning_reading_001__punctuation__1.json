@@ -1,0 +1,84 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0019815,
+  "fixture_id": "personal_routine_morning_reading_001__punctuation",
+  "input_tokens": 380,
+  "latency_ms": 3892,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 377,
+  "payload": {
+    "answer": "Store as a likely preference: the user usually prefers reading technical papers in the morning before checking email.",
+    "citations": [
+      "Input: \"I usually prefer to read technical papers in the morning before checking email\""
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No existing entity context provided for resolution."
+    },
+    "intent": "intent_router",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "user",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "technical papers",
+            "role": "reading material",
+            "type": "document"
+          },
+          {
+            "name": "morning",
+            "role": "preferred time",
+            "type": "time-of-day"
+          },
+          {
+            "name": "email",
+            "role": "activity to check later",
+            "type": "communication"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "reading technical papers in the morning before checking email",
+            "predicate": "prefers",
+            "subject": "user"
+          },
+          {
+            "object": "checking email",
+            "predicate": "occurs_before",
+            "subject": "reading technical papers"
+          },
+          {
+            "object": "morning",
+            "predicate": "preferred_time",
+            "subject": "reading technical papers"
+          }
+        ],
+        "statement": "The user usually prefers to read technical papers in the morning before checking email."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured a personal routine preference with medium confidence.",
+        "No conflicting memory detected."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want this treated as a hard rule rather than a usual preference, say so explicitly.",
+      "If the routine is only temporary, specify the timeframe to reduce permanence."
+    ]
+  },
+  "raw_text": "{\"intent\":\"intent_router\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"The user usually prefers to read technical papers in the morning before checking email.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"user\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"technical papers\",\"type\":\"document\",\"role\":\"reading material\"},{\"name\":\"morning\",\"type\":\"time-of-day\",\"role\":\"preferred time\"},{\"name\":\"email\",\"type\":\"communication\",\"role\":\"activity to check later\"}],\"relationships\":[{\"subject\":\"user\",\"predicate\":\"prefers\",\"object\":\"reading technical papers in the morning before checking email\"},{\"subject\":\"reading technical papers\",\"predicate\":\"occurs_before\",\"object\":\"checking email\"},{\"subject\":\"reading technical papers\",\"predicate\":\"preferred_time\",\"object\":\"morning\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No existing entity context provided for resolution.\"},\"conflict_classification\":\"none\",\"answer\":\"Store as a likely preference: the user usually prefers reading technical papers in the morning before checking email.\",\"citations\":[\"Input: \\\"I usually prefer to read technical papers in the morning before checking email\\\"\"],\"repair_options\":[\"If you want this treated as a hard rule rather than a usual preference, say so explicitly.\",\"If the routine is only temporary, specify the timeframe to reduce permanence.\"],\"receipt\":{\"success\":true,\"details\":[\"Captured a personal routine preference with medium confidence.\",\"No conflicting memory detected.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

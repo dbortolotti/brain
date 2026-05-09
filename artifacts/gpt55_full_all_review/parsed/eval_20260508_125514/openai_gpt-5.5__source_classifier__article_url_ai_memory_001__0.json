@@ -1,0 +1,65 @@
+{
+  "fixture_id": "article_url_ai_memory_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Input classified as an external article URL with provided mock fetched article content and a user-supplied reason for remembering it.",
+    "citations": [
+      "https://example.com/ai-memory"
+    ],
+    "conflict_classification": "not_applicable",
+    "decision": "classify_source",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "This role only classifies the input/source type and source boundaries; no durable entity resolution is required."
+    },
+    "intent": "remember_external_source",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/ai-memory",
+            "role": "source",
+            "type": "url"
+          },
+          {
+            "name": "Mock fetched article",
+            "role": "source_content",
+            "type": "article"
+          },
+          {
+            "name": "knowledge graph memory design",
+            "role": "user_stated_reason",
+            "type": "topic"
+          }
+        ],
+        "kind": "source_boundary",
+        "relationships": [
+          {
+            "object": "Graph memory helps agents preserve relationships; provenance and update semantics are needed.",
+            "predicate": "has_mock_fetched_content",
+            "subject": "https://example.com/ai-memory"
+          },
+          {
+            "object": "useful for thinking about knowledge graph memory design",
+            "predicate": "stated_reason_for_remembering",
+            "subject": "user"
+          }
+        ],
+        "statement": "The user asked to remember an article at https://example.com/ai-memory, with the user's stated reason: useful for thinking about knowledge graph memory design. The source content boundary includes the provided mock fetched article text: \"Graph memory helps agents preserve relationships; provenance and update semantics are needed.\""
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Classified source type as article URL.",
+        "Captured source boundary as the URL plus the provided mock fetched article text.",
+        "Captured the user's stated reason separately from article content."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "source_classifier",
+  "run_id": "eval_20260508_125514"
+}

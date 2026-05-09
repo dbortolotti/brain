@@ -1,0 +1,87 @@
+{
+  "fixture_id": "recall_brain_cognee_conclusions_relevance_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "You concluded that Brain DB is the source-of-truth conclusion, and Cognee is the rebuildable projection.",
+    "citations": [
+      "Input query: 'What did I conclude about Brain and Cognee?'",
+      "Input context: 'Brain DB source-of-truth conclusion, Cognee rebuildable projection'"
+    ],
+    "conflict_classification": "no_conflict_detected",
+    "decision": "answer_with_high_confidence_from_query_scope_only",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": null,
+      "reason": "The query references Brain and Cognee generically, and the available scope only supports their functional relationship, not a stable external entity ID."
+    },
+    "intent": "groundedness_check",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source of truth",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "rebuildable projection",
+            "type": "system"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "conclusions",
+            "predicate": "is source of truth for",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "Brain DB",
+            "predicate": "is rebuildable from",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain DB is the source-of-truth conclusion store, while Cognee is a rebuildable projection derived from it."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source of truth",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "projection",
+            "type": "system"
+          }
+        ],
+        "kind": "constraint",
+        "relationships": [
+          {
+            "object": "claims about Brain and Cognee",
+            "predicate": "limits",
+            "subject": "query scope"
+          }
+        ],
+        "statement": "The available query scope does not support any stronger claim about additional differences or hierarchy beyond source-of-truth versus rebuildable projection."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Answered only the queried scope.",
+        "Preserved the Brain DB vs Cognee distinction without adding unsupported facts."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want, I can also restate the conclusion as a one-line memory card.",
+      "If you intended a different specific comparison, provide the record excerpt and I will re-evaluate."
+    ]
+  },
+  "role": "groundedness_checker",
+  "run_id": "eval_20260508_164540"
+}

@@ -1,0 +1,68 @@
+{
+  "fixture_id": "typos_shorthand_person_interaction_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Provisional read: Sam, apparently from Goldman, likes Bill Evans.",
+    "citations": [
+      "input: \"sam frm goldmn likes bill evns apparently\""
+    ],
+    "conflict_classification": "ambiguous",
+    "decision": "provisionally_record",
+    "entity_resolution": {
+      "action": "partial",
+      "entity_id": null,
+      "reason": "The input uses shorthand/abbreviation and the affiliation of Sam with Goldman is unclear; Bill Evans may refer to the musician, but that is not certain enough to resolve definitively."
+    },
+    "intent": "store_personal_association",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_or_origin",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object_of_liking",
+            "type": "person"
+          }
+        ],
+        "kind": "assertion",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "A person identified as Sam, apparently from Goldman, is said to like Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed shorthand into a tentative person-to-person preference statement.",
+        "Recorded with low confidence due to abbreviation and ambiguity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm whether \"Goldman\" means Goldman Sachs or another Goldman.",
+      "Confirm whether \"Bill Evans\" refers to the jazz pianist or another person.",
+      "Confirm whether the statement is about liking the person Bill Evans or something else."
+    ]
+  },
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540"
+}

@@ -1,0 +1,107 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.014764999999999999,
+  "fixture_id": "small_table_preferences_001__context",
+  "input_tokens": 403,
+  "latency_ms": 6450,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 425,
+  "payload": {
+    "answer": "Committed two table-derived preference memories while preserving source context and ambiguity in entity resolution.",
+    "citations": [
+      "Dinner 2026-05-05",
+      "Lunch 2026-05-01"
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Names and firm labels are insufficient to uniquely resolve Sam, Anna, Goldman, or JPM to existing durable entities."
+    },
+    "intent": "store_memory_from_table",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "firm"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_object",
+            "type": "artist"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam, who is associated with Goldman, likes Bill Evans. Source: Dinner 2026-05-05."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Anna",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "JPM",
+            "role": "affiliation",
+            "type": "firm"
+          },
+          {
+            "name": "Barolo",
+            "role": "preference_object",
+            "type": "wine"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "JPM",
+            "predicate": "associated_with",
+            "subject": "Anna"
+          },
+          {
+            "object": "Barolo",
+            "predicate": "likes",
+            "subject": "Anna"
+          }
+        ],
+        "statement": "Anna, who is associated with JPM, likes Barolo. Source: Lunch 2026-05-01."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored preference: Sam associated with Goldman likes Bill Evans, sourced from Dinner 2026-05-05.",
+        "Stored preference: Anna associated with JPM likes Barolo, sourced from Lunch 2026-05-01.",
+        "Entity resolution deferred due to insufficient unique identifiers."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"store_memory_from_table\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam, who is associated with Goldman, likes Bill Evans. Source: Dinner 2026-05-05.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"firm\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"artist\",\"role\":\"preference_object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"associated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]},{\"kind\":\"preference\",\"statement\":\"Anna, who is associated with JPM, likes Barolo. Source: Lunch 2026-05-01.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Anna\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"JPM\",\"type\":\"firm\",\"role\":\"affiliation\"},{\"name\":\"Barolo\",\"type\":\"wine\",\"role\":\"preference_object\"}],\"relationships\":[{\"subject\":\"Anna\",\"predicate\":\"associated_with\",\"object\":\"JPM\"},{\"subject\":\"Anna\",\"predicate\":\"likes\",\"object\":\"Barolo\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"Names and firm labels are insufficient to uniquely resolve Sam, Anna, Goldman, or JPM to existing durable entities.\"},\"conflict_classification\":\"none_detected\",\"answer\":\"Committed two table-derived preference memories while preserving source context and ambiguity in entity resolution.\",\"citations\":[\"Dinner 2026-05-05\",\"Lunch 2026-05-01\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Stored preference: Sam associated with Goldman likes Bill Evans, sourced from Dinner 2026-05-05.\",\"Stored preference: Anna associated with JPM likes Barolo, sourced from Lunch 2026-05-01.\",\"Entity resolution deferred due to insufficient unique identifiers.\"]}}",
+  "role": "table_policy_handler",
+  "run_id": "eval_20260508_133657",
+  "status": "ok"
+}

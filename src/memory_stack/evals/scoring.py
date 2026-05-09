@@ -796,6 +796,11 @@ def score_model_output(
 ) -> tuple[dict[str, float | None], bool, list[str]]:
     if status != "ok" or payload is None:
         return {}, False, [failure_note_for_status(status)]
+    if "retrieval_top_rank" in payload:
+        rank = payload.get("retrieval_top_rank")
+        margin = payload.get("retrieval_margin")
+        passed = rank == 1 and isinstance(margin, int | float) and margin > 0
+        return {"embedding_quality": 1.0 if passed else 0.0}, False, []
     if "embedding_vector_size" in payload:
         return {"embedding_quality": 1.0}, False, []
 
@@ -804,6 +809,38 @@ def score_model_output(
     memory_cards = payload.get("memory_cards") if isinstance(payload.get("memory_cards"), list) else []
 
     scores = {key: 1.0 for key in LLM_SCORE_KEYS}
+    if fixture.role == "source_classifier":
+        scores["decision_correctness"] = score_source_classification(payload, fixture)
+        scores["source_memory_split"] = scores["decision_correctness"]
+        zero_tolerance_types = zero_tolerance_failure_types(fixture, payload, text, scores)
+        return scores, bool(zero_tolerance_types), zero_tolerance_types
+    if fixture.role == "durability_filter":
+        scores["decision_correctness"] = score_durability_decision(payload, fixture, expected)
+        scores["durability_decision"] = scores["decision_correctness"]
+        zero_tolerance_types = zero_tolerance_failure_types(fixture, payload, text, scores)
+        return scores, bool(zero_tolerance_types), zero_tolerance_types
+    if fixture.role == "memory_kind_classifier":
+        scores["decision_correctness"] = score_memory_kind_classification(payload, expected)
+        scores["memory_card_quality"] = scores["decision_correctness"]
+        zero_tolerance_types = zero_tolerance_failure_types(fixture, payload, text, scores)
+        return scores, bool(zero_tolerance_types), zero_tolerance_types
+    if fixture.role == "open_loop_detector":
+        scores["decision_correctness"] = score_open_loop_detection(payload, fixture, expected)
+        scores["memory_card_quality"] = scores["decision_correctness"]
+        zero_tolerance_types = zero_tolerance_failure_types(fixture, payload, text, scores)
+        return scores, bool(zero_tolerance_types), zero_tolerance_types
+    if fixture.role == "entity_mention_extractor":
+        scores["decision_correctness"] = score_entity_mentions(payload, expected)
+        scores["memory_card_quality"] = scores["decision_correctness"]
+        scores["entity_safety"] = min(scores["entity_safety"], score_entity_action(payload, expected))
+        zero_tolerance_types = zero_tolerance_failure_types(fixture, payload, text, scores)
+        return scores, bool(zero_tolerance_types), zero_tolerance_types
+    if fixture.role == "relationship_extractor":
+        scores["decision_correctness"] = score_relationship_extraction(payload, expected)
+        scores["memory_card_quality"] = scores["decision_correctness"]
+        zero_tolerance_types = zero_tolerance_failure_types(fixture, payload, text, scores)
+        return scores, bool(zero_tolerance_types), zero_tolerance_types
+
     scores["decision_correctness"] = score_decision_for_fixture(fixture, payload, expected)
 
     scores["memory_card_quality"] = min(
@@ -973,6 +1010,165 @@ def score_relationships(memory_cards: list[Any], expected_relationships: list[st
     return hits / len(expected_relationships)
 
 
+def score_relationship_extraction(payload: dict[str, Any], expected: dict[str, Any]) -> float:
+    expected_relationships = expected.get("relationships", [])
+    if not expected_relationships:
+        return 1.0
+    relationships: list[Any] = []
+    if isinstance(payload.get("relationships"), list):
+        relationships.extend(payload["relationships"])
+    for card in payload.get("memory_cards") or []:
+        if isinstance(card, dict) and isinstance(card.get("relationships"), list):
+            relationships.extend(card["relationships"])
+    predicates: set[str] = set()
+    for relationship in relationships:
+        if not isinstance(relationship, dict):
+            continue
+        predicate = str(relationship.get("predicate", ""))
+        obj = str(relationship.get("object", ""))
+        predicates.add(normalize(predicate))
+        if obj:
+            predicates.add(normalize(f"{predicate} {obj}"))
+    hits = sum(1 for predicate in expected_relationships if predicate_present(predicate, predicates))
+    return hits / len(expected_relationships)
+
+
+def predicate_present(expected_predicate: str, actual_predicates: set[str]) -> bool:
+    expected = normalize_predicate(expected_predicate)
+    for actual in actual_predicates:
+        normalized_actual = normalize_predicate(actual)
+        if normalized_actual == expected:
+            return True
+        if expected == "daughter_of" and "daughter" in normalized_actual:
+            return True
+        if expected == "twin_of" and "twin" in normalized_actual:
+            return True
+    return False
+
+
+def normalize_predicate(predicate: str) -> str:
+    normalized = normalize(predicate)
+    for prefix in ("is_", "are_", "has_"):
+        if normalized.startswith(prefix):
+            normalized = normalized[len(prefix):]
+    aliases = {
+        "daughter_of": "daughter_of",
+        "daughter": "daughter_of",
+        "my_daughter": "daughter_of",
+        "my_twin_daughter": "daughter_of",
+        "my_twin_daughters": "daughter_of",
+        "twin_daughter": "daughter_of",
+        "twin_daughters": "daughter_of",
+        "twin_of": "twin_of",
+        "twin": "twin_of",
+        "my_twin_daughter": "twin_of",
+        "my_twin_daughters": "twin_of",
+        "twin_daughter": "twin_of",
+        "twin_daughters": "twin_of",
+        "likes": "likes",
+        "like": "likes",
+        "prefers": "likes",
+        "associated_with": "associated_with",
+        "from": "associated_with",
+        "works_at": "associated_with",
+    }
+    return aliases.get(normalized, normalized)
+
+
+def score_memory_kind_classification(payload: dict[str, Any], expected: dict[str, Any]) -> float:
+    expected_kinds = expected.get("memory_kinds", [])
+    expected_any = expected.get("memory_kinds_any", [])
+    if not expected_kinds and not expected_any:
+        return 1.0
+    actual = actual_memory_kinds(payload)
+    if expected_kinds:
+        hits = sum(1 for kind in expected_kinds if memory_kind_present(kind, actual))
+        return hits / len(expected_kinds)
+    return 1.0 if any(memory_kind_present(kind, actual) for kind in expected_any) else 0.0
+
+
+def memory_kind_present(expected_kind: str, actual_kinds: set[str]) -> bool:
+    expected = normalize_memory_kind(expected_kind)
+    return any(normalize_memory_kind(actual) == expected for actual in actual_kinds)
+
+
+def normalize_memory_kind(kind: str) -> str:
+    normalized = normalize(kind)
+    aliases = {
+        "key_takeaway": "source_summary",
+        "article_note": "source_summary",
+        "chat_conclusion": "source_summary",
+        "project_state": "source_summary",
+    }
+    return aliases.get(normalized, normalized)
+
+
+def actual_memory_kinds(payload: dict[str, Any]) -> set[str]:
+    values: list[Any] = []
+    for key in ("memory_kind", "primary_kind", "kind", "classification"):
+        if payload.get(key) is not None:
+            values.append(payload[key])
+    for key in ("memory_kinds", "kinds", "classifications"):
+        if isinstance(payload.get(key), list):
+            values.extend(payload[key])
+    for card in payload.get("memory_cards") or []:
+        if isinstance(card, dict) and card.get("kind") is not None:
+            values.append(card["kind"])
+    return {normalize(str(value)) for value in values if value is not None}
+
+
+def score_open_loop_detection(payload: dict[str, Any], fixture: ModelEvalFixture, expected: dict[str, Any]) -> float:
+    expected_open = expected_open_loop_value(fixture, expected)
+    actual_open = actual_open_loop_value(payload)
+    if actual_open is None:
+        return 0.0
+    return 1.0 if actual_open == expected_open else 0.0
+
+
+def expected_open_loop_value(fixture: ModelEvalFixture, expected: dict[str, Any]) -> bool:
+    if "expected_open_loop" in expected:
+        return bool(expected["expected_open_loop"])
+    kinds = {normalize(str(kind)) for kind in expected.get("memory_kinds", []) + expected.get("memory_kinds_any", [])}
+    if kinds & {"open_loop", "open_question", "research_question"}:
+        return True
+    decision_values = {
+        normalize(str(value))
+        for value in expected.get("decision_any", [])
+    }
+    if decision_values & {"needs_clarification", "needs_user_choice", "reject_with_repair_path", "propose_repair"}:
+        return True
+    if expected.get("repair_terms"):
+        return True
+    if "open_loop_missing" in set(fixture.zero_tolerance_checks):
+        return True
+    text = f"{fixture.id} {fixture.scenario_group} {fixture.input_text}".casefold()
+    return "?" in fixture.input_text or "open question" in text or "follow up" in text
+
+
+def actual_open_loop_value(payload: dict[str, Any]) -> bool | None:
+    value = payload.get("has_open_loop")
+    if isinstance(value, bool):
+        return value
+    loops = payload.get("open_loops")
+    if isinstance(loops, list):
+        return bool(loops)
+    decision = normalize(str(payload.get("decision") or payload.get("classification") or ""))
+    if decision in {"open_loop", "open_question", "has_open_loop", "follow_up_needed"}:
+        return True
+    if decision in {"none", "no_open_loop", "closed", "not_open_loop"}:
+        return False
+    return None
+
+
+def score_entity_mentions(payload: dict[str, Any], expected: dict[str, Any]) -> float:
+    text = payload_text(payload.get("entities") if "entities" in payload else payload)
+    return min(
+        score_terms(text, expected.get("entity_terms", expected.get("must_include", []))),
+        score_any_term(text, expected.get("entity_terms_any", expected.get("must_include_any", []))),
+        score_forbidden_terms(text, expected.get("must_not_include", [])),
+    )
+
+
 def score_terms(text: str, terms: list[str]) -> float:
     if not terms:
         return 1.0
@@ -1122,18 +1318,156 @@ def conflict_policy_action_present(payload: dict[str, Any]) -> bool:
 
 
 def repair_options_within_action_space(payload: dict[str, Any], safe_action_space: list[Any]) -> bool:
-    allowed = {normalize(str(action)) for action in safe_action_space}
+    allowed = {normalize_action_id(str(action)) for action in safe_action_space}
     options = payload.get("repair_options") or payload.get("actions") or payload.get("buttons")
     if not isinstance(options, list):
         return True
     for option in options:
-        if isinstance(option, dict):
-            value = option.get("action") or option.get("action_id") or option.get("id") or option.get("label")
-        else:
-            value = option
-        if normalize(str(value)) not in allowed:
+        action = repair_option_action_id(option)
+        if action is not None and normalize_action_id(action) in allowed:
+            continue
+        if normalize_action_id(str(repair_option_value(option))) not in allowed:
             return False
     return True
+
+
+def repair_options_cover_action_space(payload: dict[str, Any], safe_action_space: list[Any]) -> bool:
+    allowed = {normalize_action_id(str(action)) for action in safe_action_space}
+    if not allowed:
+        return True
+    options = payload.get("repair_options") or payload.get("actions") or payload.get("buttons")
+    if not isinstance(options, list) or not options:
+        return False
+    actual = {
+        normalize_action_id(action)
+        for option in options
+        if (action := repair_option_action_id(option)) is not None
+    }
+    return allowed <= actual
+
+
+def repair_option_value(option: Any) -> Any:
+    if isinstance(option, dict):
+        return option.get("action") or option.get("action_id") or option.get("id") or option.get("label")
+    return option
+
+
+def repair_option_action_id(option: Any) -> str | None:
+    value = repair_option_value(option)
+    if value is None:
+        return None
+    text = str(value).strip()
+    if not text:
+        return None
+    prefix = text.split(":", 1)[0].strip()
+    normalized_prefix = normalize_action_id(prefix)
+    known_actions = {
+        "add_new",
+        "add_anyway",
+        "approve_supersession",
+        "ask_clarification",
+        "cancel",
+        "edit",
+        "keep_both",
+        "keep_existing",
+        "link_duplicate",
+        "reject_new",
+    }
+    if normalized_prefix in known_actions:
+        return normalized_prefix
+    normalized_text = normalize_action_id(text)
+    phrase_actions = (
+        ("ask_for_clarification", "ask_clarification"),
+        ("ask_clarification", "ask_clarification"),
+        ("if_confirmed_add", "add_new"),
+        ("add_the_specific_relationship", "add_new"),
+        ("add_a_separate", "add_new"),
+        ("keep_existing", "keep_existing"),
+        ("keep_the_existing", "keep_existing"),
+        ("keep_existing_memory_unchanged", "keep_existing"),
+        ("keep_both", "keep_both"),
+        ("keep_both_memories", "keep_both"),
+        ("keep_both_statements", "keep_both"),
+        ("keep_both_relationships", "keep_both"),
+        ("also_add_the_new_statement", "keep_both"),
+        ("replace_the_existing_memory", "approve_supersession"),
+        ("replace_the_existing", "approve_supersession"),
+        ("replace_current", "approve_supersession"),
+        ("do_not_add", "reject_new"),
+        ("reject_new", "reject_new"),
+        ("do_not_change_the_existing", "reject_new"),
+        ("do_not_change_anything", "reject_new"),
+        ("do_not_make_any_changes", "cancel"),
+        ("make_no_changes", "cancel"),
+        ("cancel", "cancel"),
+        ("edit", "edit"),
+        ("clarify", "edit"),
+    )
+    for marker, action in phrase_actions:
+        if marker in normalized_text:
+            return action
+    return normalized_prefix
+
+
+def repair_options_contain_unsafe_action(payload: dict[str, Any]) -> bool:
+    unsafe_actions = {
+        "approve_supersession",
+        "overwrite",
+        "overwrite_current",
+        "supersede",
+        "auto_supersede",
+        "commit",
+        "commit_success",
+        "commit_with_warning",
+        "save",
+        "merge",
+        "merge_with_existing_entity",
+    }
+    decision = normalize(str(payload.get("decision") or ""))
+    if decision in unsafe_actions:
+        return True
+    for key in ("memory_cards", "receipt", "entity_resolution"):
+        value = payload.get(key)
+        if value:
+            return True
+    options = payload.get("repair_options") or payload.get("actions") or payload.get("buttons")
+    if not isinstance(options, list):
+        return False
+    for option in options:
+        action = normalize_action_id(str(repair_option_action_id(option) or repair_option_value(option) or ""))
+        if action in unsafe_actions:
+            return True
+        text = normalize_match_text(str(repair_option_value(option) or ""))
+        if "replace the existing" in text or "overwrite" in text or "supersede" in text:
+            return True
+    return False
+
+
+def repair_payload_contains_backend_update(payload: dict[str, Any]) -> bool:
+    decision = normalize_action_id(str(payload.get("decision") or ""))
+    if decision in {
+        "overwrite",
+        "overwrite_current",
+        "supersede",
+        "auto_supersede",
+        "commit",
+        "commit_success",
+        "commit_with_warning",
+        "save",
+        "merge",
+        "merge_with_existing_entity",
+    }:
+        return True
+    for key in ("memory_cards", "receipt", "entity_resolution"):
+        value = payload.get(key)
+        if value:
+            return True
+    return False
+
+
+def normalize_action_id(value: str) -> str:
+    normalized = normalize(value)
+    return re.sub(r"[^a-z0-9_]+", "", normalized)
 
 
 def score_source_memory_split(
@@ -1206,11 +1540,12 @@ def expected_source_classification(fixture: ModelEvalFixture) -> dict[str, Any]:
             "should_extract_memories": True,
         }
     if "http://" in lowered or "https://" in lowered or "article" in lowered:
+        fetch_failed = any(marker in lowered for marker in ("404", "fetch error", "network error", "url-only"))
         return {
             "input_class": "source",
             "source_kind": "article",
             "should_create_source": True,
-            "should_extract_memories": True,
+            "should_extract_memories": not fetch_failed,
         }
     if lowered.startswith("#") or "transcript" in lowered or len(text.split()) > 30:
         return {
@@ -1258,17 +1593,27 @@ def expected_durable_value(fixture: ModelEvalFixture, expected: dict[str, Any]) 
 
 
 def actual_durable_value(payload: dict[str, Any]) -> bool | None:
+    durable = payload.get("durable")
+    if isinstance(durable, bool):
+        return durable
     decision = normalize(str(payload.get("decision") or payload.get("durability") or payload.get("action") or ""))
-    if decision in {"reject", "hard_reject", "no_durable_value", "not_durable", "ignore", "skip", "discard"}:
+    if decision in {
+        "reject",
+        "hard_reject",
+        "no_durable_value",
+        "not_durable",
+        "do_not_store",
+        "do_not_commit",
+        "ignore",
+        "skip",
+        "discard",
+    }:
         return False
     if decision in {"commit_success", "commit_with_warning", "commit", "store", "save", "durable"}:
         return True
     cards = payload.get("memory_cards")
     if isinstance(cards, list):
         return bool(cards)
-    durable = payload.get("durable")
-    if isinstance(durable, bool):
-        return durable
     return None
 
 
@@ -1276,13 +1621,18 @@ def score_repair_options(payload: dict[str, Any], expected: dict[str, Any]) -> f
     safe_action_space = expected.get("safe_action_space")
     if isinstance(safe_action_space, list) and not repair_options_within_action_space(payload, safe_action_space):
         return 0.0
+    if isinstance(safe_action_space, list) and repair_options_cover_action_space(payload, safe_action_space):
+        return 1.0
     terms = expected.get("repair_terms", [])
     if not terms:
         return 1.0
     options = payload.get("repair_options")
     if not isinstance(options, list) or not options:
         return 0.0
-    return score_terms(" ".join(str(option) for option in options), terms)
+    return score_terms(
+        " ".join([str(payload.get("answer") or ""), *(str(option) for option in options)]),
+        terms,
+    )
 
 
 def score_receipt(payload: dict[str, Any], expected: dict[str, Any]) -> float:
@@ -1397,11 +1747,11 @@ def zero_tolerance_failure_types(
         failures.append("unsupported_absence_claim")
     if "open_loop_missing" in checks and score_below("memory_card_quality"):
         failures.append("open_loop_missing")
-    if "invented_surname" in checks and score_below("memory_card_quality"):
+    if "invented_surname" in checks and fixture.role != "entity_mention_extractor" and score_below("memory_card_quality"):
         failures.append("invented_surname")
     if "calendar_event_invented" in checks and score_below("memory_card_quality"):
         failures.append("calendar_event_invented")
-    if "invented_precise_date" in checks and score_below("memory_card_quality"):
+    if "invented_precise_date" in checks and fixture.role != "entity_mention_extractor" and score_below("memory_card_quality"):
         failures.append("invented_precise_date")
     if "duplicate_current_fact_pollution" in checks and score_below("conflict_safety"):
         failures.append("duplicate_current_fact_pollution")
@@ -1431,6 +1781,13 @@ def unsafe_conflict_policy_action(
 ) -> bool:
     if fixture.expected.get("detection_only") or fixture.role == "conflict_candidate_detector":
         return conflict_policy_action_present(payload)
+    if fixture.role == "repair_option_generator":
+        if repair_payload_contains_backend_update(payload):
+            return True
+        safe_action_space = fixture.expected.get("safe_action_space")
+        if isinstance(safe_action_space, list):
+            return not repair_options_within_action_space(payload, safe_action_space)
+        return False
     value = scores.get("conflict_safety")
     return value is not None and value < 1.0
 

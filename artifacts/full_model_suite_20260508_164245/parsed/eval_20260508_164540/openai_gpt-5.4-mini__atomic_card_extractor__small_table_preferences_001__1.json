@@ -1,0 +1,85 @@
+{
+  "fixture_id": "small_table_preferences_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Extracted 2 atomic preference cards from the table.",
+    "citations": [
+      "Dinner 2026-05-05",
+      "Lunch 2026-05-01"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_success",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No prior entity context provided; names and firms are kept as stated in the input."
+    },
+    "intent": "atomic_card_extractor",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "type": "firm"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam at Goldman likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Anna",
+            "type": "person"
+          },
+          {
+            "name": "JPM",
+            "type": "firm"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "JPM",
+            "predicate": "works_at",
+            "subject": "Anna"
+          },
+          {
+            "object": "Barolo",
+            "predicate": "likes",
+            "subject": "Anna"
+          }
+        ],
+        "statement": "Anna at JPM likes Barolo."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed 2 preference cards.",
+        "No ambiguity beyond preserving stated associations."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164540"
+}

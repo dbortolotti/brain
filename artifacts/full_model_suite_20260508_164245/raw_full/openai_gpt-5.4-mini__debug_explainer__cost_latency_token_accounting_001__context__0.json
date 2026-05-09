@@ -1,0 +1,95 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0026242500000000003,
+  "fixture_id": "cost_latency_token_accounting_001__context",
+  "input_tokens": 391,
+  "latency_ms": 3451,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 518,
+  "payload": {
+    "answer": "Required eval accounting fields are: token counts, provider/model IDs, estimated price, and latency percentiles (p50, p90, p95).",
+    "citations": [
+      "Input: \"Explain required eval accounting fields: token counts, provider/model IDs, estimated price, latency p50 p90 p95.\""
+    ],
+    "conflict_classification": "none",
+    "decision": "Store as contextual instruction: evaluations should report token counts, provider/model IDs, estimated price, and latency percentiles (p50, p90, p95).",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No durable entity to resolve; this is a context instruction only."
+    },
+    "intent": "Explain required eval accounting fields for cost/latency tracking in an evaluation context.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "evaluation accounting",
+            "role": "subject",
+            "type": "process"
+          },
+          {
+            "name": "token counts",
+            "role": "required field",
+            "type": "metric"
+          },
+          {
+            "name": "provider/model IDs",
+            "role": "required field",
+            "type": "identifier"
+          },
+          {
+            "name": "estimated price",
+            "role": "required field",
+            "type": "metric"
+          },
+          {
+            "name": "latency p50/p90/p95",
+            "role": "required field",
+            "type": "metric"
+          }
+        ],
+        "kind": "instruction",
+        "relationships": [
+          {
+            "object": "token counts",
+            "predicate": "includes",
+            "subject": "evaluation accounting"
+          },
+          {
+            "object": "provider/model IDs",
+            "predicate": "includes",
+            "subject": "evaluation accounting"
+          },
+          {
+            "object": "estimated price",
+            "predicate": "includes",
+            "subject": "evaluation accounting"
+          },
+          {
+            "object": "latency p50/p90/p95",
+            "predicate": "includes",
+            "subject": "evaluation accounting"
+          }
+        ],
+        "statement": "Evaluation accounting should include token counts, provider/model IDs, estimated price, and latency percentiles p50, p90, and p95."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed required accounting fields from the fixture context.",
+        "No conflicts or deletions detected.",
+        "Recorded as contextual instruction rather than a durable personal preference."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want a checklist, I can format these into a table with units and example values.",
+      "If you want guidance on how to estimate price or compute latency percentiles, I can provide that too."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Explain required eval accounting fields for cost/latency tracking in an evaluation context.\",\"decision\":\"Store as contextual instruction: evaluations should report token counts, provider/model IDs, estimated price, and latency percentiles (p50, p90, p95).\",\"memory_cards\":[{\"kind\":\"instruction\",\"statement\":\"Evaluation accounting should include token counts, provider/model IDs, estimated price, and latency percentiles p50, p90, and p95.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"evaluation accounting\",\"type\":\"process\",\"role\":\"subject\"},{\"name\":\"token counts\",\"type\":\"metric\",\"role\":\"required field\"},{\"name\":\"provider/model IDs\",\"type\":\"identifier\",\"role\":\"required field\"},{\"name\":\"estimated price\",\"type\":\"metric\",\"role\":\"required field\"},{\"name\":\"latency p50/p90/p95\",\"type\":\"metric\",\"role\":\"required field\"}],\"relationships\":[{\"subject\":\"evaluation accounting\",\"predicate\":\"includes\",\"object\":\"token counts\"},{\"subject\":\"evaluation accounting\",\"predicate\":\"includes\",\"object\":\"provider/model IDs\"},{\"subject\":\"evaluation accounting\",\"predicate\":\"includes\",\"object\":\"estimated price\"},{\"subject\":\"evaluation accounting\",\"predicate\":\"includes\",\"object\":\"latency p50/p90/p95\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No durable entity to resolve; this is a context instruction only.\"},\"conflict_classification\":\"none\",\"answer\":\"Required eval accounting fields are: token counts, provider/model IDs, estimated price, and latency percentiles (p50, p90, p95).\",\"citations\":[\"Input: \\\"Explain required eval accounting fields: token counts, provider/model IDs, estimated price, latency p50 p90 p95.\\\"\"],\"repair_options\":[\"If you want a checklist, I can format these into a table with units and example values.\",\"If you want guidance on how to estimate price or compute latency percentiles, I can provide that too.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed required accounting fields from the fixture context.\",\"No conflicts or deletions detected.\",\"Recorded as contextual instruction rather than a durable personal preference.\"]}}",
+  "role": "debug_explainer",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

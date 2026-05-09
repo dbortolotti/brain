@@ -1,0 +1,71 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.010440000000000001,
+  "fixture_id": "person_interaction_sam_bill_evans_001",
+  "input_tokens": 372,
+  "latency_ms": 4999,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 286,
+  "payload": {
+    "answer": "Recorded that Sam from Goldman mentioned he likes Bill Evans, with ambiguous identity preserved.",
+    "citations": [
+      "Sam from Goldman mentioned that he likes Bill Evans."
+    ],
+    "conflict_classification": "none",
+    "decision": "accept",
+    "entity_resolution": {
+      "action": "create_or_link_ambiguous",
+      "entity_id": null,
+      "reason": "Sam is identified only by first name plus Goldman affiliation; insufficient information to confidently resolve to an existing unique person."
+    },
+    "intent": "store_person_preference",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "source/subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation/context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked artist/person",
+            "type": "person"
+          }
+        ],
+        "kind": "person_preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman mentioned that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Accepted as a durable interpersonal preference memory.",
+        "Preserved ambiguity around Sam's exact identity."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"store_person_preference\",\"decision\":\"accept\",\"memory_cards\":[{\"kind\":\"person_preference\",\"statement\":\"Sam from Goldman mentioned that he likes Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"source/subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation/context\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked artist/person\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"create_or_link_ambiguous\",\"entity_id\":null,\"reason\":\"Sam is identified only by first name plus Goldman affiliation; insufficient information to confidently resolve to an existing unique person.\"},\"conflict_classification\":\"none\",\"answer\":\"Recorded that Sam from Goldman mentioned he likes Bill Evans, with ambiguous identity preserved.\",\"citations\":[\"Sam from Goldman mentioned that he likes Bill Evans.\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Accepted as a durable interpersonal preference memory.\",\"Preserved ambiguity around Sam's exact identity.\"]}}",
+  "role": "durability_filter",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

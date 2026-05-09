@@ -8,7 +8,7 @@ from typing import Any
 import pytest
 
 from memory_stack.config import Settings
-from memory_stack.evals.model_fixtures import ModelEvalFixture, fixture_prompt, select_fixtures
+from memory_stack.evals.model_fixtures import ModelEvalFixture, fixture_prompt, output_schema_for_fixture, select_fixtures
 from memory_stack.evals.model_matrix import ModelCandidate, load_model_registry, select_model_candidates
 from memory_stack.evals.model_runner import (
     ModelEvalRunConfig,
@@ -20,6 +20,7 @@ from memory_stack.evals.model_runner import (
     run_rescore,
     run_model_evals,
     run_rerun_failed,
+    validate_against_schema,
     write_parsed_output,
     write_raw_output,
 )
@@ -83,6 +84,29 @@ class FakeEvalClient:
             raw_text='{"embedding_vector_size":1536}',
             error=None,
             latency_ms=7,
+            input_tokens=5,
+            output_tokens=0,
+            estimated_cost_usd=0.00001,
+        )
+
+
+class SemanticEmbeddingEvalClient(FakeEvalClient):
+    def embed(self, candidate: Any, *, text: str) -> ModelCallResult:
+        lowered = text.casefold()
+        if any(term in lowered for term in ("goldman", "bill evans", "jazz piano")):
+            vector = [1.0, 0.0, 0.0]
+        elif any(term in lowered for term in ("cognee", "article", "semantic projection")):
+            vector = [0.0, 1.0, 0.0]
+        elif any(term in lowered for term in ("hijas", "gemelas", "daniele", "twin daughters")):
+            vector = [0.0, 0.0, 1.0]
+        else:
+            vector = [0.05, 0.05, 0.05]
+        return ModelCallResult(
+            status="ok",
+            payload={"embedding_vector_size": len(vector), "embedding_vector": vector},
+            raw_text=json.dumps({"embedding_vector_size": len(vector), "embedding_vector": vector}),
+            error=None,
+            latency_ms=3,
             input_tokens=5,
             output_tokens=0,
             estimated_cost_usd=0.00001,
@@ -385,10 +409,52 @@ def test_fixture_prompt_includes_role_specific_zero_tolerance_contracts() -> Non
 
     assert "Detection-only role" in conflict_prompt
     assert "do not decide ask/keep/link/supersede behavior" in conflict_prompt
+    assert "allowed values are: supersedes" in conflict_prompt
+    assert "A supersedes classification is not a backend policy action." in conflict_prompt
     assert "do not add unsupported details" in atomic_prompt
     assert "attach ambiguous references to nearby topics" in atomic_prompt
     assert "no current evidence" in recall_prompt
     assert "do not infer a fact from absence" in recall_prompt
+
+
+def test_conflict_candidate_detector_schema_is_detection_only() -> None:
+    fixture = next(
+        fixture
+        for fixture in select_fixtures(
+            fixture_set="brain-model-test-v2",
+            roles={"conflict_candidate_detector"},
+            mode="fine-grained",
+        )
+        if fixture.id == "conflict_employment_transition"
+    )
+
+    schema = output_schema_for_fixture(fixture)
+
+    assert "memory_cards" not in schema["properties"]
+    assert schema["properties"]["conflict_classification"]["enum"]
+    assert "supersedes" in schema["properties"]["conflict_classification"]["enum"]
+    assert schema["additionalProperties"] is False
+    assert validate_against_schema(
+        {
+            "decision": "possible_conflict",
+            "conflict_classification": "supersedes",
+            "answer": "Existing current employer conflicts with the new employer transition.",
+            "citations": ["Existing current fact: Sam works at Goldman."],
+            "memory_cards": [{"kind": "conflict_evidence", "statement": "Sam moved."}],
+        },
+        schema,
+        path="$",
+    ) == ["$.memory_cards is not allowed"]
+    assert validate_against_schema(
+        {
+            "decision": "possible_conflict",
+            "conflict_classification": "employment_transition_conflict_candidate",
+            "answer": "Possible conflict.",
+            "citations": ["New fact: Sam left Goldman and joined Point72."],
+        },
+        schema,
+        path="$",
+    ) == ["$.conflict_classification must be one of supersedes, contradicts, duplicate, additive, correction, project_state_update, none"]
 
 
 def test_model_test_initial_model_set_runs_through_config(tmp_path) -> None:
@@ -409,7 +475,7 @@ def test_model_test_initial_model_set_runs_through_config(tmp_path) -> None:
     result = run_model_evals(Settings(), config, client=FakeEvalClient())
 
     rows = [json.loads(line) for line in output.read_text().splitlines()]
-    assert result["record_count"] == 5
+    assert result["record_count"] == 15
     assert {row["model"] for row in rows} == {
         "fastembed:intfloat/multilingual-e5-large",
         "openai:text-embedding-3-small",
@@ -419,13 +485,42 @@ def test_model_test_initial_model_set_runs_through_config(tmp_path) -> None:
     }
 
 
+def test_embedding_retrieval_probes_rank_positive_passage(tmp_path: Path) -> None:
+    output = tmp_path / "eval.jsonl"
+    config = ModelEvalRunConfig(
+        registry_path=REGISTRY_PATH,
+        fixture_set="development",
+        roles={"embeddings"},
+        model_refs=["fastembed:intfloat/multilingual-e5-large"],
+        model_set=None,
+        scope="core",
+        include_judge=False,
+        repeat_runs=1,
+        bootstrap_samples=0,
+        output_path=output,
+    )
+
+    result = run_model_evals(Settings(), config, client=SemanticEmbeddingEvalClient())
+
+    rows = [json.loads(line) for line in output.read_text().splitlines()]
+    retrieval_rows = [
+        row
+        for row in rows
+        if str(row["fixture_id"]).startswith("embedding_") and row["fixture_id"] != "embedding_retrieval_probe_001"
+    ]
+    assert result["record_count"] == 12
+    assert len(retrieval_rows) == 9
+    assert {row["status"] for row in retrieval_rows} == {"ok"}
+    assert all(row["subscores"] == {"embedding_quality": 1.0} for row in retrieval_rows)
+
+
 def test_live_provider_client_fastembed_embedding_uses_local_vector_size(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
         provider_client_module,
-        "fastembed_vector_size",
-        lambda model, text: 1024,
+        "fastembed_vector",
+        lambda model, text: [0.1] * 1024,
     )
     settings = Settings(
         profile="local",
@@ -446,7 +541,7 @@ def test_live_provider_client_fastembed_embedding_uses_local_vector_size(
     result = LiveProviderClient(settings).embed(candidate, text="brain eval test")
 
     assert result.status == "ok"
-    assert result.payload == {"embedding_vector_size": 1024}
+    assert result.payload == {"embedding_vector_size": 1024, "embedding_vector": [0.1] * 1024}
 
 
 def test_fixture_scoring_detects_zero_tolerance_overmerge() -> None:
@@ -876,6 +971,197 @@ def test_conflict_explainer_rejects_actions_outside_backend_safe_space() -> None
     scores, zero, types = score_model_output(
         fixture,
         {"repair_options": ["approve_supersession", "overwrite_current"]},
+        status="ok",
+    )
+
+    assert scores["repair_quality"] == 0.0
+    assert zero is True
+    assert types == ["silent_high_confidence_overwrite"]
+
+
+def test_repair_option_generator_accepts_colon_prefixed_safe_actions() -> None:
+    fixture = ModelEvalFixture(
+        id="additive_sam_preferences_001",
+        role="repair_option_generator",
+        scenario_group="additive_preference",
+        input_text="Existing memory: Sam from Goldman likes Bill Evans. New: Sam from Goldman also likes Sonny Rollins.",
+        expected={
+            "safe_action_space": ["add_new", "keep_existing", "edit", "cancel"],
+            "must_include": ["Bill Evans", "Sonny Rollins"],
+        },
+        zero_tolerance_checks=("silent_high_confidence_overwrite",),
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "answer": "The new fact is additive.",
+            "repair_options": [
+                "add_new: Add Sonny Rollins as an additional liked artist.",
+                "keep_existing: Keep only the existing Bill Evans preference.",
+                "edit: Revise the preference wording manually.",
+                "cancel: Do not make changes.",
+            ],
+        },
+        status="ok",
+    )
+
+    assert scores["repair_quality"] == 1.0
+    assert zero is False
+    assert types == []
+
+
+def test_repair_option_generator_scores_action_id_coverage() -> None:
+    fixture = ModelEvalFixture(
+        id="supersession_sam_job_001",
+        role="repair_option_generator",
+        scenario_group="employment_transition",
+        input_text="Existing memory: Sam works at Goldman. New memory: Sam left Goldman and joined Point72.",
+        expected={
+            "safe_action_space": ["approve_supersession", "keep_both", "reject_new", "edit"],
+            "repair_terms": ["approve", "keep both", "reject", "edit"],
+        },
+        zero_tolerance_checks=("silent_high_confidence_overwrite",),
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "answer": "Choose one repair option.",
+            "repair_options": ["approve_supersession", "keep_both", "reject_new", "edit"],
+        },
+        status="ok",
+    )
+
+    assert scores["repair_quality"] == 1.0
+    assert zero is False
+    assert types == []
+
+
+def test_repair_option_generator_uses_base_fixture_terms_for_variants() -> None:
+    fixture = next(
+        fixture
+        for fixture in select_fixtures(
+            fixture_set="brain-model-test-v2",
+            roles={"repair_option_generator"},
+            mode="fine-grained",
+        )
+        if fixture.id == "vague_memory_001__punctuation" and fixture.context.get("variant") == "punctuation"
+    )
+
+    assert fixture.context["base_fixture_id"] == "vague_memory_001"
+    assert fixture.expected["repair_terms"] == ["specif"]
+
+
+def test_repair_option_generator_accepts_pronoun_specific_rewrite_options() -> None:
+    fixture = ModelEvalFixture(
+        id="unresolved_pronoun_001",
+        role="repair_option_generator",
+        scenario_group="ambiguous_reference",
+        input_text="Remember he prefers the other one.",
+        expected={"repair_terms": ["he", "other one"]},
+        zero_tolerance_checks=("unresolved_pronoun_committed",),
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "answer": "Ask for a self-contained rewrite because “he” and “the other one” are ambiguous.",
+            "repair_options": [
+                "Specify who “he” refers to.",
+                "Specify the two options/items being compared.",
+                "Rewrite the full preference as a complete statement.",
+            ],
+        },
+        status="ok",
+    )
+
+    assert scores["repair_quality"] == 1.0
+    assert zero is False
+    assert types == []
+
+
+def test_repair_option_generator_accepts_validator_pronoun_repair_options() -> None:
+    fixture = ModelEvalFixture(
+        id="validator_blocks_unresolved_pronoun_001",
+        role="repair_option_generator",
+        scenario_group="validator_blocks_pronoun",
+        input_text='LLM proposal: {"memory_cards":[{"statement":"He prefers the other one."}]}',
+        expected={"repair_terms": ["he", "other one"]},
+        zero_tolerance_checks=("unresolved_pronoun_committed",),
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "answer": "The proposed memory is too ambiguous to save because the pronoun and comparison target are unresolved.",
+            "repair_options": [
+                "Ask the user who “he” refers to before saving anything.",
+                "Ask the user what “the other one” refers to before saving anything.",
+                "Ask the user to restate the preference with explicit names or items.",
+            ],
+        },
+        status="ok",
+    )
+
+    assert scores["repair_quality"] == 1.0
+    assert zero is False
+    assert types == []
+
+
+def test_repair_option_generator_accepts_clarification_prose_for_sara_niece() -> None:
+    fixture = ModelEvalFixture(
+        id="conflict_sara_niece_001",
+        role="repair_option_generator",
+        scenario_group="high_confidence_family_conflict",
+        input_text="Existing high-confidence memory: Sara is Daniele's daughter and Nur's twin. New: Sara is my niece.",
+        expected={
+            "safe_action_space": ["ask_clarification", "add_new", "keep_existing", "reject_new", "edit"],
+            "must_include": ["daughter", "niece"],
+        },
+        zero_tolerance_checks=("silent_high_confidence_overwrite",),
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "answer": "Ask for clarification before changing the existing memory.",
+            "repair_options": [
+                "Ask for clarification: when you say Sara is your niece, how are you related?",
+                "If confirmed, add: Sara is the user's niece.",
+                "Keep existing memory unchanged: Sara is Daniele's daughter and Nur's twin.",
+            ],
+        },
+        status="ok",
+    )
+
+    assert scores["repair_quality"] == 1.0
+    assert zero is False
+    assert types == []
+
+
+def test_repair_option_generator_rejects_supersession_for_sara_niece() -> None:
+    fixture = ModelEvalFixture(
+        id="conflict_sara_niece_001",
+        role="repair_option_generator",
+        scenario_group="high_confidence_family_conflict",
+        input_text="Existing high-confidence memory: Sara is Daniele's daughter and Nur's twin. New: Sara is my niece.",
+        expected={
+            "safe_action_space": ["ask_clarification", "add_new", "keep_existing", "reject_new", "edit"],
+            "must_include": ["daughter", "niece"],
+        },
+        zero_tolerance_checks=("silent_high_confidence_overwrite",),
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "answer": "Choose a repair option.",
+            "repair_options": [
+                "approve_supersession: Replace the existing Sara relationship memory with Sara is my niece.",
+                "edit: Clarify the relationship.",
+            ],
+        },
         status="ok",
     )
 
@@ -1352,6 +1638,10 @@ def test_live_provider_client_uses_reasoning_effort_override() -> None:
 
     assert http_client.last_json is not None
     assert http_client.last_json["model"] == "gpt-5.5"
+    assert "instructions" in http_client.last_json
+    assert http_client.last_json["input"][0]["role"] == "user"
+    assert http_client.last_json["store"] is False
+    assert http_client.last_json["stream"] is False
     assert http_client.last_json["reasoning"] == {"effort": "xhigh"}
 
 
@@ -1360,13 +1650,16 @@ def test_live_provider_client_defaults_openai_text_to_oauth(tmp_path: Path) -> N
         def __init__(self) -> None:
             self.last_headers: dict[str, str] | None = None
             self.last_url: str | None = None
+            self.last_json: dict[str, Any] | None = None
 
         def post(self, url: str, *, headers: dict[str, str], json: dict[str, Any]) -> Any:
             self.last_url = url
             self.last_headers = headers
+            self.last_json = json
 
             class Response:
                 status_code = 200
+                text = 'data: {"type":"response.output_text.delta","delta":"{}"}\n\ndata: [DONE]\n\n'
 
                 @staticmethod
                 def json() -> dict[str, Any]:
@@ -1401,6 +1694,10 @@ def test_live_provider_client_defaults_openai_text_to_oauth(tmp_path: Path) -> N
 
     assert http_client.last_url == "https://chatgpt.com/backend-api/codex/responses"
     assert http_client.last_headers == {"Authorization": "Bearer oauth-access"}
+    assert http_client.last_json is not None
+    assert http_client.last_json["store"] is False
+    assert http_client.last_json["stream"] is True
+    assert "max_output_tokens" not in http_client.last_json
 
 
 def test_live_provider_client_maps_google_reasoning_effort_to_thinking_level() -> None:

@@ -1,0 +1,78 @@
+{
+  "fixture_id": "article_url_fetch_failure_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "I can remember the URL and your stated reason, but I cannot extract article content because the fetch failed with a 404 network error.",
+    "citations": [
+      "https://example.com/missing"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_with_warning",
+    "entity_resolution": {
+      "action": "create_or_update_source_reference",
+      "entity_id": null,
+      "reason": "The URL is explicit, but the article contents were unavailable due to the 404 network error; only the user-stated reason and fetch failure can be stored."
+    },
+    "intent": "remember_article",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "source",
+            "type": "url"
+          },
+          {
+            "name": "memory architecture",
+            "role": "reason",
+            "type": "topic"
+          }
+        ],
+        "kind": "source_reference",
+        "relationships": [
+          {
+            "object": "useful for memory architecture",
+            "predicate": "has_user_stated_relevance",
+            "subject": "https://example.com/missing"
+          }
+        ],
+        "statement": "The user asked to remember the article at https://example.com/missing because it is useful for memory architecture."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "source",
+            "type": "url"
+          }
+        ],
+        "kind": "fetch_status",
+        "relationships": [
+          {
+            "object": "404 network error",
+            "predicate": "fetch_result",
+            "subject": "https://example.com/missing"
+          }
+        ],
+        "statement": "Fetching https://example.com/missing failed with a 404 network error in the provided mock fetch result."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored the article URL as a source reference.",
+        "Stored the user-stated reason: useful for memory architecture.",
+        "Did not store any article claims because the mock fetch result was a 404 network error."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide the article text directly.",
+      "Provide a working URL or archived copy.",
+      "Retry fetching the URL later."
+    ]
+  },
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164405"
+}

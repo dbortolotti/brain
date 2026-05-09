@@ -1,0 +1,143 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.021765,
+  "fixture_id": "conversation_transcript_sam_001__punctuation",
+  "input_tokens": 459,
+  "latency_ms": 8008,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 649,
+  "payload": {
+    "answer": "Committed durable memories for Sam's employment change, music interests, and the planned AI infra catch-up. The prior fact that Sam is still at Goldman should be treated as superseded if it exists.",
+    "citations": [
+      "Sam: \"No, I left Goldman last month and joined Point72\"",
+      "Sam: \"Yes, but lately more early Coltrane\"",
+      "Daniele: \"We should catch up about AI infra\"",
+      "Sam: \"Definitely, send me that article\""
+    ],
+    "conflict_classification": "potential_supersession_for_employment",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "link_or_create",
+      "entity_id": null,
+      "reason": "The transcript identifies Sam and Daniele by name but provides no stable identifiers; link to existing entities only if unambiguous matches already exist, otherwise create or leave unresolved."
+    },
+    "intent": "memory_update",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman last month and joined Point72."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "music interest",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "recent increased interest",
+            "type": "music interest"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "listens_to",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "listens_more_lately_to",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam still listens to Bill Evans and has lately been listening more to early Coltrane."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "participant",
+            "type": "person"
+          },
+          {
+            "name": "Sam",
+            "role": "participant",
+            "type": "person"
+          },
+          {
+            "name": "AI infra",
+            "role": "catch-up topic",
+            "type": "topic"
+          }
+        ],
+        "kind": "conversation_topic",
+        "relationships": [
+          {
+            "object": "AI infra",
+            "predicate": "plan_to_catch_up_about",
+            "subject": "Daniele and Sam"
+          },
+          {
+            "object": "that article",
+            "predicate": "asked_Daniele_to_send",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Daniele and Sam plan to catch up about AI infra; Sam asked Daniele to send an article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured Sam left Goldman last month and joined Point72.",
+        "Captured Sam still listens to Bill Evans and has recently been listening more to early Coltrane.",
+        "Captured that Daniele and Sam discussed catching up about AI infra and Sam asked for an article."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"memory_update\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"employment\",\"statement\":\"Sam left Goldman last month and joined Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"current employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"left\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]},{\"kind\":\"preference\",\"statement\":\"Sam still listens to Bill Evans and has lately been listening more to early Coltrane.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"music interest\"},{\"name\":\"early Coltrane\",\"type\":\"music interest\",\"role\":\"recent increased interest\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"listens_to\",\"object\":\"Bill Evans\"},{\"subject\":\"Sam\",\"predicate\":\"listens_more_lately_to\",\"object\":\"early Coltrane\"}]},{\"kind\":\"conversation_topic\",\"statement\":\"Daniele and Sam plan to catch up about AI infra; Sam asked Daniele to send an article.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Daniele\",\"type\":\"person\",\"role\":\"participant\"},{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"participant\"},{\"name\":\"AI infra\",\"type\":\"topic\",\"role\":\"catch-up topic\"}],\"relationships\":[{\"subject\":\"Daniele and Sam\",\"predicate\":\"plan_to_catch_up_about\",\"object\":\"AI infra\"},{\"subject\":\"Sam\",\"predicate\":\"asked_Daniele_to_send\",\"object\":\"that article\"}]}],\"entity_resolution\":{\"action\":\"link_or_create\",\"entity_id\":null,\"reason\":\"The transcript identifies Sam and Daniele by name but provides no stable identifiers; link to existing entities only if unambiguous matches already exist, otherwise create or leave unresolved.\"},\"conflict_classification\":\"potential_supersession_for_employment\",\"answer\":\"Committed durable memories for Sam's employment change, music interests, and the planned AI infra catch-up. The prior fact that Sam is still at Goldman should be treated as superseded if it exists.\",\"citations\":[\"Sam: \\\"No, I left Goldman last month and joined Point72\\\"\",\"Sam: \\\"Yes, but lately more early Coltrane\\\"\",\"Daniele: \\\"We should catch up about AI infra\\\"\",\"Sam: \\\"Definitely, send me that article\\\"\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Captured Sam left Goldman last month and joined Point72.\",\"Captured Sam still listens to Bill Evans and has recently been listening more to early Coltrane.\",\"Captured that Daniele and Sam discussed catching up about AI infra and Sam asked for an article.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

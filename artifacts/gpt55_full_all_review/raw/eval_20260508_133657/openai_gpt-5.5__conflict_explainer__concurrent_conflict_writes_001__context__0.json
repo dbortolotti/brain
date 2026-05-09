@@ -1,0 +1,92 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.016995,
+  "fixture_id": "concurrent_conflict_writes_001__context",
+  "input_tokens": 435,
+  "latency_ms": 7169,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 494,
+  "payload": {
+    "answer": "There is a potential conflict: the existing context says Sam works at Goldman, while the new context says Sam joined Point72. This could mean Sam changed jobs, has multiple roles, or the new statement is incorrect or incomplete. Safe actions available are: approve_supersession if Point72 should replace Goldman as Sam\u2019s current employer; keep_both if both facts should remain because they are not contradictory or need more context; reject_new if the Point72 statement should not be saved; edit if the new memory should be clarified before saving.",
+    "citations": [
+      "Concurrent writes: Sam works at Goldman.",
+      "Sam joined Point72."
+    ],
+    "conflict_classification": "possible_employment_conflict",
+    "decision": "needs_user_resolution",
+    "entity_resolution": {
+      "action": "unresolved",
+      "entity_id": null,
+      "reason": "Both statements refer to Sam, but the backend-supplied context does not state whether joining Point72 supersedes working at Goldman or whether both can be true."
+    },
+    "intent": "explain_conflict_safe_actions",
+    "memory_cards": [
+      {
+        "confidence": "backend-supplied context",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "existing_context",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "backend-supplied context",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "new_context",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Explained only the backend-supplied safe actions.",
+        "Did not treat either employment statement as definitively current beyond the supplied context.",
+        "Preserved ambiguity about whether the new Point72 statement supersedes the Goldman statement."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "approve_supersession",
+      "keep_both",
+      "reject_new",
+      "edit"
+    ]
+  },
+  "raw_text": "{\"intent\":\"explain_conflict_safe_actions\",\"decision\":\"needs_user_resolution\",\"memory_cards\":[{\"kind\":\"existing_context\",\"statement\":\"Sam works at Goldman.\",\"confidence\":\"backend-supplied context\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Goldman\"}]},{\"kind\":\"new_context\",\"statement\":\"Sam joined Point72.\",\"confidence\":\"backend-supplied context\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"unresolved\",\"entity_id\":null,\"reason\":\"Both statements refer to Sam, but the backend-supplied context does not state whether joining Point72 supersedes working at Goldman or whether both can be true.\"},\"conflict_classification\":\"possible_employment_conflict\",\"answer\":\"There is a potential conflict: the existing context says Sam works at Goldman, while the new context says Sam joined Point72. This could mean Sam changed jobs, has multiple roles, or the new statement is incorrect or incomplete. Safe actions available are: approve_supersession if Point72 should replace Goldman as Sam\u2019s current employer; keep_both if both facts should remain because they are not contradictory or need more context; reject_new if the Point72 statement should not be saved; edit if the new memory should be clarified before saving.\",\"citations\":[\"Concurrent writes: Sam works at Goldman.\",\"Sam joined Point72.\"],\"repair_options\":[\"approve_supersession\",\"keep_both\",\"reject_new\",\"edit\"],\"receipt\":{\"success\":true,\"details\":[\"Explained only the backend-supplied safe actions.\",\"Did not treat either employment statement as definitively current beyond the supplied context.\",\"Preserved ambiguity about whether the new Point72 statement supersedes the Goldman statement.\"]}}",
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_133657",
+  "status": "ok"
+}

@@ -1,0 +1,37 @@
+{
+  "fixture_id": "conflict_sara_niece_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "I would not overwrite or alter the existing memory. The new claim can be kept only as an uncommitted/needs-clarification candidate unless the speaker's relationship to Sara is established.",
+    "citations": [
+      "Existing high-confidence memory: Sara is Daniele's daughter and Nur's twin.",
+      "New claim: Sara is my niece."
+    ],
+    "conflict_classification": "ambiguous_relationship_context",
+    "decision": "do_not_commit_as_current_fact",
+    "entity_resolution": {
+      "action": "defer_or_clarify",
+      "entity_id": null,
+      "reason": "The new statement 'Sara is my niece' may refer to the same Sara, but existing high-confidence memory identifies Sara as Daniele's daughter and Nur's twin. Without knowing who 'my' refers to relative to Daniele/Nur, the niece relationship cannot be safely merged or treated as conflicting/current."
+    },
+    "intent": "evaluate_new_memory_against_existing",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No durable memory was committed.",
+        "Existing high-confidence facts were preserved.",
+        "Ambiguity in the pronoun 'my' was retained."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask who 'my' refers to and how they are related to Sara, Daniele, or Nur.",
+      "If the speaker is Daniele's sibling or Daniele's sibling-in-law, commit: Sara is the speaker's niece, while preserving that Sara is Daniele's daughter and Nur's twin.",
+      "If the new Sara is a different person, create a separate Sara entity with a disambiguating attribute before storing the niece relationship.",
+      "If the speaker is Daniele or Sara's parent, reject the niece claim as inconsistent or likely erroneous.",
+      "Store the claim only as low-confidence pending clarification: 'A user said Sara is their niece,' not as durable current fact."
+    ]
+  },
+  "role": "repair_option_generator",
+  "run_id": "eval_20260508_125514"
+}

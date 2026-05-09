@@ -1,0 +1,89 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.015025,
+  "fixture_id": "supersession_sam_job_001",
+  "input_tokens": 377,
+  "latency_ms": 5998,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 438,
+  "payload": {
+    "answer": "Updated Sam's employment: Sam left Goldman and joined Point72. The prior Goldman employment should be retained only as former employment, not as current.",
+    "citations": [],
+    "conflict_classification": "supersession",
+    "decision": "accept_new_fact_and_supersede_prior_employment",
+    "entity_resolution": {
+      "action": "reuse_or_merge_existing_person_entity",
+      "entity_id": null,
+      "reason": "The new fact refers to the same named person, Sam, and directly supersedes the existing employment memory."
+    },
+    "intent": "update_memory_with_supersession",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_current",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam currently works at Point72."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "former_employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_former",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "formerly_worked_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam formerly worked at Goldman."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected supersession between existing current-employment memory and new employment update.",
+        "Generated repair option to preserve Goldman only as former employment.",
+        "Generated durable current memory for Point72."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark the existing memory 'Sam works at Goldman' as superseded or historical.",
+      "Create a new current employment memory: 'Sam currently works at Point72.'",
+      "Optionally create or preserve a former employment memory: 'Sam formerly worked at Goldman.'",
+      "Do not present 'Sam works at Goldman' as current after this update."
+    ]
+  },
+  "raw_text": "{\"intent\":\"update_memory_with_supersession\",\"decision\":\"accept_new_fact_and_supersede_prior_employment\",\"memory_cards\":[{\"kind\":\"employment_current\",\"statement\":\"Sam currently works at Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"employee\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Point72\"}]},{\"kind\":\"employment_former\",\"statement\":\"Sam formerly worked at Goldman.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"former_employee\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former_employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"formerly_worked_at\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"reuse_or_merge_existing_person_entity\",\"entity_id\":null,\"reason\":\"The new fact refers to the same named person, Sam, and directly supersedes the existing employment memory.\"},\"conflict_classification\":\"supersession\",\"answer\":\"Updated Sam's employment: Sam left Goldman and joined Point72. The prior Goldman employment should be retained only as former employment, not as current.\",\"citations\":[],\"repair_options\":[\"Mark the existing memory 'Sam works at Goldman' as superseded or historical.\",\"Create a new current employment memory: 'Sam currently works at Point72.'\",\"Optionally create or preserve a former employment memory: 'Sam formerly worked at Goldman.'\",\"Do not present 'Sam works at Goldman' as current after this update.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected supersession between existing current-employment memory and new employment update.\",\"Generated repair option to preserve Goldman only as former employment.\",\"Generated durable current memory for Point72.\"]}}",
+  "role": "repair_option_generator",
+  "run_id": "eval_20260508_132201",
+  "status": "ok"
+}

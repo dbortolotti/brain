@@ -1,0 +1,58 @@
+{
+  "fixture_id": "article_url_fetch_failure_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Extracted two atomic cards from the input: the fetch failure for the referenced URL and the stated usefulness of the article for memory architecture.",
+    "citations": [
+      "Input context: \"Remember this article: https://example.com/missing why: useful for memory architecture. Mock fetch result: 404 network error.\""
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_with_warning",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No unique person or persistent entity requires resolution from the provided input."
+    },
+    "intent": "extract_atomic_memory_cards",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "referenced_article",
+            "type": "url"
+          }
+        ],
+        "kind": "event",
+        "statement": "A referenced article at https://example.com/missing could not be fetched due to a 404 network error."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "memory architecture",
+            "role": "stated_reason",
+            "type": "topic"
+          }
+        ],
+        "kind": "preference",
+        "statement": "The article was marked as useful for memory architecture."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Supported by input: referenced URL",
+        "Supported by input: 404 network error",
+        "Supported by input: stated reason 'useful for memory architecture'"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If the article becomes available later, re-run extraction on the fetched content.",
+      "If the memory architecture rationale was meant to describe the article itself, confirm that interpretation before committing it as a durable fact."
+    ]
+  },
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164405"
+}

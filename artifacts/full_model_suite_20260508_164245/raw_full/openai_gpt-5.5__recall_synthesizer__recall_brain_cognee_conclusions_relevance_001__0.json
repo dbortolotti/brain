@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.014294999999999999,
+  "fixture_id": "recall_brain_cognee_conclusions_relevance_001",
+  "input_tokens": 495,
+  "latency_ms": 4447,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 394,
+  "payload": {
+    "answer": "You concluded that Brain should be treated as the source-of-truth memory database, and Cognee should be treated as a rebuildable projection derived from Brain\u2014not as an independent durable source of truth.",
+    "citations": [
+      "Brain DB source-of-truth conclusion",
+      "Cognee rebuildable projection"
+    ],
+    "conflict_classification": "none",
+    "decision": "Answer only from current evidence about Brain and Cognee; exclude unrelated Slack, family, and preference records.",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": null,
+      "reason": "The query scope is the systems Brain and Cognee; current filtered evidence directly identifies their roles."
+    },
+    "intent": "Recall the current conclusion about the relationship between Brain and Cognee.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "source_of_truth",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "rebuildable_projection",
+            "type": "system"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "personal_memory",
+            "predicate": "is_source_of_truth_for",
+            "subject": "Brain"
+          },
+          {
+            "object": "Brain",
+            "predicate": "is_rebuildable_projection_of",
+            "subject": "Cognee"
+          },
+          {
+            "object": "independent_durable_source_of_truth",
+            "predicate": "is_not",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain is the source-of-truth personal memory database, while Cognee is a rebuildable projection derived from Brain rather than an independent durable source of truth."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Returned only current evidence relevant to Brain and Cognee.",
+        "Excluded unrelated Slack intake, family facts, and Sam preference records."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"Recall the current conclusion about the relationship between Brain and Cognee.\",\"decision\":\"Answer only from current evidence about Brain and Cognee; exclude unrelated Slack, family, and preference records.\",\"memory_cards\":[{\"kind\":\"conclusion\",\"statement\":\"Brain is the source-of-truth personal memory database, while Cognee is a rebuildable projection derived from Brain rather than an independent durable source of truth.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Brain\",\"type\":\"system\",\"role\":\"source_of_truth\"},{\"name\":\"Cognee\",\"type\":\"system\",\"role\":\"rebuildable_projection\"}],\"relationships\":[{\"subject\":\"Brain\",\"predicate\":\"is_source_of_truth_for\",\"object\":\"personal_memory\"},{\"subject\":\"Cognee\",\"predicate\":\"is_rebuildable_projection_of\",\"object\":\"Brain\"},{\"subject\":\"Cognee\",\"predicate\":\"is_not\",\"object\":\"independent_durable_source_of_truth\"}]}],\"entity_resolution\":{\"action\":\"resolved\",\"entity_id\":null,\"reason\":\"The query scope is the systems Brain and Cognee; current filtered evidence directly identifies their roles.\"},\"conflict_classification\":\"none\",\"answer\":\"You concluded that Brain should be treated as the source-of-truth memory database, and Cognee should be treated as a rebuildable projection derived from Brain\u2014not as an independent durable source of truth.\",\"citations\":[\"Brain DB source-of-truth conclusion\",\"Cognee rebuildable projection\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Returned only current evidence relevant to Brain and Cognee.\",\"Excluded unrelated Slack intake, family facts, and Sam preference records.\"]}}",
+  "role": "recall_synthesizer",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

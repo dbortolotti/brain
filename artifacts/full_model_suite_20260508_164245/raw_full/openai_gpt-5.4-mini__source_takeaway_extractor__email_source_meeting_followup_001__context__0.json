@@ -1,0 +1,92 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0018982500000000002,
+  "fixture_id": "email_source_meeting_followup_001__context",
+  "input_tokens": 425,
+  "latency_ms": 2787,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 351,
+  "payload": {
+    "answer": "Sam recently joined Point72 and wants the AI infra article sent.",
+    "citations": [
+      "fixture: email_source_meeting_followup_001__context"
+    ],
+    "conflict_classification": "none",
+    "decision": "create_memory_cards",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "The sender is identified only as Sam in the provided context; no stable internal entity mapping can be confirmed from this fixture alone."
+    },
+    "intent": "extract_takeaways",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "email sender",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          },
+          {
+            "object": "last month",
+            "predicate": "joined_time",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said they joined Point72 last month."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "requester",
+            "type": "person"
+          },
+          {
+            "name": "AI infra article",
+            "role": "requested item",
+            "type": "document"
+          }
+        ],
+        "kind": "request",
+        "relationships": [
+          {
+            "object": "AI infra article",
+            "predicate": "requested",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam asked for the AI infra article to be sent."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted one factual update and one request.",
+        "Avoided including the raw email address."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want, I can also normalize this into a contact update for Sam without storing the email address."
+    ]
+  },
+  "raw_text": "{\"intent\":\"extract_takeaways\",\"decision\":\"create_memory_cards\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam said they joined Point72 last month.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"email sender\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"},{\"subject\":\"Sam\",\"predicate\":\"joined_time\",\"object\":\"last month\"}]},{\"kind\":\"request\",\"statement\":\"Sam asked for the AI infra article to be sent.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"requester\"},{\"name\":\"AI infra article\",\"type\":\"document\",\"role\":\"requested item\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"requested\",\"object\":\"AI infra article\"}]}],\"entity_resolution\":{\"action\":\"create_or_update\",\"entity_id\":null,\"reason\":\"The sender is identified only as Sam in the provided context; no stable internal entity mapping can be confirmed from this fixture alone.\"},\"conflict_classification\":\"none\",\"answer\":\"Sam recently joined Point72 and wants the AI infra article sent.\",\"citations\":[\"fixture: email_source_meeting_followup_001__context\"],\"repair_options\":[\"If you want, I can also normalize this into a contact update for Sam without storing the email address.\"],\"receipt\":{\"success\":true,\"details\":[\"Extracted one factual update and one request.\",\"Avoided including the raw email address.\"]}}",
+  "role": "source_takeaway_extractor",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

@@ -1,0 +1,68 @@
+{
+  "fixture_id": "groundedness_metadata_claims_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "The answer is grounded: the evidence contains an entity row identifying the person and an alias row supporting the aliases \u201cSam\u201d and \u201cSam from Goldman.\u201d",
+    "citations": [
+      "entity row",
+      "alias row"
+    ],
+    "conflict_classification": "none",
+    "decision": "grounded",
+    "entity_resolution": {
+      "action": "accept",
+      "entity_id": null,
+      "reason": "Evidence contains both an entity row for the person and an alias row supporting the stated aliases."
+    },
+    "intent": "evaluate_groundedness",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "Person"
+          }
+        ],
+        "kind": "identity",
+        "relationships": [],
+        "statement": "Person identity: Sam."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "Person"
+          },
+          {
+            "name": "Sam from Goldman",
+            "role": "alias",
+            "type": "Alias"
+          }
+        ],
+        "kind": "alias",
+        "relationships": [
+          {
+            "object": "Sam from Goldman",
+            "predicate": "has_alias",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam has aliases: Sam, Sam from Goldman."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Verified punctuation-sensitive aliases are preserved as stated.",
+        "No superseded or deleted facts were presented as current."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "eval_judge",
+  "run_id": "eval_20260508_133657"
+}

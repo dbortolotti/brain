@@ -1,0 +1,63 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0015105,
+  "fixture_id": "italian_memory_note_001__punctuation",
+  "input_tokens": 370,
+  "latency_ms": 2929,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 274,
+  "payload": {
+    "answer": "Memorizzato in modo ambiguo: Sam di Goldman preferisce Bill Evans.",
+    "citations": [
+      "input: Ricordami che Sam di Goldman preferisce Bill Evans"
+    ],
+    "conflict_classification": "none",
+    "decision": "accept_with_ambiguity",
+    "entity_resolution": {
+      "action": "create_ambiguous_entity",
+      "entity_id": null,
+      "reason": "\"Sam di Goldman\" is ambiguous: it may refer to a specific Sam associated with Goldman, but the input does not uniquely identify the person or confirm the exact affiliation."
+    },
+    "intent": "store_preference_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "context",
+            "type": "organization_or_affiliation"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "A person referred to as \"Sam of Goldman\" prefers Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured a preference memory.",
+        "Preserved ambiguity for the entity \"Sam di Goldman\"."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want, specify which Sam at Goldman you mean to disambiguate the memory."
+    ]
+  },
+  "raw_text": "{\"intent\":\"store_preference_memory\",\"decision\":\"accept_with_ambiguity\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"A person referred to as \\\"Sam of Goldman\\\" prefers Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization_or_affiliation\",\"role\":\"context\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"prefers\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"create_ambiguous_entity\",\"entity_id\":null,\"reason\":\"\\\"Sam di Goldman\\\" is ambiguous: it may refer to a specific Sam associated with Goldman, but the input does not uniquely identify the person or confirm the exact affiliation.\"},\"conflict_classification\":\"none\",\"answer\":\"Memorizzato in modo ambiguo: Sam di Goldman preferisce Bill Evans.\",\"citations\":[\"input: Ricordami che Sam di Goldman preferisce Bill Evans\"],\"repair_options\":[\"If you want, specify which Sam at Goldman you mean to disambiguate the memory.\"],\"receipt\":{\"success\":true,\"details\":[\"Captured a preference memory.\",\"Preserved ambiguity for the entity \\\"Sam di Goldman\\\".\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

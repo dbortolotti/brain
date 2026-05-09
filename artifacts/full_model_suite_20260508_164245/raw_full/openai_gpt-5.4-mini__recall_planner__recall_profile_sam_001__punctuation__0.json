@@ -1,0 +1,136 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00275325,
+  "fixture_id": "recall_profile_sam_001__punctuation",
+  "input_tokens": 407,
+  "latency_ms": 4574,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 544,
+  "payload": {
+    "answer": "Sam is associated with Goldman, likes Bill Evans, and is interested in AI infrastructure. There is also an open loop to send Sam an article about AI infrastructure.",
+    "citations": [
+      "Input fixture: facts and open loop provided by user"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": null,
+      "reason": "Sam appears to be a distinct person in the Goldman context, but no stable unique identifier is provided. Preserve as unresolved."
+    },
+    "intent": "Recall and summarize known durable facts about Sam from Goldman, while avoiding over-commitment beyond the fixture.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "associated organization",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "is associated with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is associated with Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "musical preference",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "interest",
+            "type": "topic"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "AI infrastructure",
+            "predicate": "is interested in",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is interested in AI infrastructure."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "recipient",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure article",
+            "role": "to-send",
+            "type": "artifact"
+          }
+        ],
+        "kind": "task",
+        "relationships": [
+          {
+            "object": "Sam an article about AI infrastructure",
+            "predicate": "should send",
+            "subject": "User"
+          }
+        ],
+        "statement": "There is an open loop to send Sam an article about AI infrastructure."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured three durable facts about Sam.",
+        "Recorded one open task without marking it as completed.",
+        "No conflicts detected."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want, I can help draft or choose an article about AI infrastructure to send to Sam."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Recall and summarize known durable facts about Sam from Goldman, while avoiding over-commitment beyond the fixture.\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam is associated with Goldman.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"associated organization\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"is associated with\",\"object\":\"Goldman\"}]},{\"kind\":\"fact\",\"statement\":\"Sam likes Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"musical preference\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]},{\"kind\":\"fact\",\"statement\":\"Sam is interested in AI infrastructure.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"AI infrastructure\",\"type\":\"topic\",\"role\":\"interest\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"is interested in\",\"object\":\"AI infrastructure\"}]},{\"kind\":\"task\",\"statement\":\"There is an open loop to send Sam an article about AI infrastructure.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"recipient\"},{\"name\":\"AI infrastructure article\",\"type\":\"artifact\",\"role\":\"to-send\"}],\"relationships\":[{\"subject\":\"User\",\"predicate\":\"should send\",\"object\":\"Sam an article about AI infrastructure\"}]}],\"entity_resolution\":{\"action\":\"resolve\",\"entity_id\":null,\"reason\":\"Sam appears to be a distinct person in the Goldman context, but no stable unique identifier is provided. Preserve as unresolved.\"},\"conflict_classification\":\"none\",\"answer\":\"Sam is associated with Goldman, likes Bill Evans, and is interested in AI infrastructure. There is also an open loop to send Sam an article about AI infrastructure.\",\"citations\":[\"Input fixture: facts and open loop provided by user\"],\"repair_options\":[\"If you want, I can help draft or choose an article about AI infrastructure to send to Sam.\"],\"receipt\":{\"success\":true,\"details\":[\"Captured three durable facts about Sam.\",\"Recorded one open task without marking it as completed.\",\"No conflicts detected.\"]}}",
+  "role": "recall_planner",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

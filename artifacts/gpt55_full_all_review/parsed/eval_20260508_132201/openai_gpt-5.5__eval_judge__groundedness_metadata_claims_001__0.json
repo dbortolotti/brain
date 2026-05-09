@@ -1,0 +1,60 @@
+{
+  "fixture_id": "groundedness_metadata_claims_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Grounded: the claim that the identity is a Person with medium confidence and aliases 'Sam' and 'Sam from Goldman' is supported by the entity row and alias row.",
+    "citations": [
+      "entity row",
+      "alias row"
+    ],
+    "conflict_classification": "none",
+    "decision": "grounded",
+    "entity_resolution": {
+      "action": "accept",
+      "entity_id": null,
+      "reason": "Evidence contains both an entity row and alias row supporting the identity classification as Person and the listed aliases, with medium confidence."
+    },
+    "intent": "evaluate_groundedness",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "alias",
+            "type": "Person"
+          },
+          {
+            "name": "Sam from Goldman",
+            "role": "alias",
+            "type": "Person"
+          }
+        ],
+        "kind": "identity",
+        "relationships": [
+          {
+            "object": "Person entity",
+            "predicate": "is_alias_of",
+            "subject": "Sam"
+          },
+          {
+            "object": "Person entity",
+            "predicate": "is_alias_of",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Identity - Person; confidence medium. Aliases: Sam, Sam from Goldman."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Evaluated groundedness only; no durable memory committed.",
+        "Preserved medium confidence and alias ambiguity."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "eval_judge",
+  "run_id": "eval_20260508_132201"
+}

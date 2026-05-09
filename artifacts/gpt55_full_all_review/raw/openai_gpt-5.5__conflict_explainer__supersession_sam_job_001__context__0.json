@@ -1,0 +1,102 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.022625,
+  "fixture_id": "supersession_sam_job_001__context",
+  "input_tokens": 439,
+  "latency_ms": 7617,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 681,
+  "payload": {
+    "answer": "The new memory may supersede the existing one: the existing memory says Sam currently works at Goldman, while the new memory says Sam left Goldman and joined Point72. Safe actions available are: approve_supersession to treat the new job information as replacing the old current-employer memory; keep_both if both should be retained, for example if more context is needed or they might refer to different Sams; reject_new if the new information should not be saved; or edit to modify the new memory before saving.",
+    "citations": [
+      "Existing memory: Sam works at Goldman.",
+      "New memory: Sam left Goldman and joined Point72."
+    ],
+    "conflict_classification": "possible_supersession",
+    "decision": "requires_user_choice",
+    "entity_resolution": {
+      "action": "ambiguous_same_person",
+      "entity_id": null,
+      "reason": "Both memories refer to 'Sam', but no backend-supplied entity identifier is provided. The conflict can be explained without assuming more identity detail than supplied."
+    },
+    "intent": "explain_conflict",
+    "memory_cards": [
+      {
+        "confidence": "backend_supplied",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "existing_memory",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "backend_supplied",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "new_memory",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Explained the conflict using only backend-supplied safe actions.",
+        "Did not commit the new memory or mark the existing memory as superseded.",
+        "Preserved ambiguity around Sam's identity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "approve_supersession",
+      "keep_both",
+      "reject_new",
+      "edit"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"explain_conflict\",\n  \"decision\": \"requires_user_choice\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"existing_memory\",\n      \"statement\": \"Sam works at Goldman.\",\n      \"confidence\": \"backend_supplied\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"employee\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"works_at\",\n          \"object\": \"Goldman\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"new_memory\",\n      \"statement\": \"Sam left Goldman and joined Point72.\",\n      \"confidence\": \"backend_supplied\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"employee\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"former_employer\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"left\",\n          \"object\": \"Goldman\"\n        },\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"ambiguous_same_person\",\n    \"entity_id\": null,\n    \"reason\": \"Both memories refer to 'Sam', but no backend-supplied entity identifier is provided. The conflict can be explained without assuming more identity detail than supplied.\"\n  },\n  \"conflict_classification\": \"possible_supersession\",\n  \"answer\": \"The new memory may supersede the existing one: the existing memory says Sam currently works at Goldman, while the new memory says Sam left Goldman and joined Point72. Safe actions available are: approve_supersession to treat the new job information as replacing the old current-employer memory; keep_both if both should be retained, for example if more context is needed or they might refer to different Sams; reject_new if the new information should not be saved; or edit to modify the new memory before saving.\",\n  \"citations\": [\n    \"Existing memory: Sam works at Goldman.\",\n    \"New memory: Sam left Goldman and joined Point72.\"\n  ],\n  \"repair_options\": [\n    \"approve_supersession\",\n    \"keep_both\",\n    \"reject_new\",\n    \"edit\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Explained the conflict using only backend-supplied safe actions.\",\n      \"Did not commit the new memory or mark the existing memory as superseded.\",\n      \"Preserved ambiguity around Sam's identity.\"\n    ]\n  }\n}",
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

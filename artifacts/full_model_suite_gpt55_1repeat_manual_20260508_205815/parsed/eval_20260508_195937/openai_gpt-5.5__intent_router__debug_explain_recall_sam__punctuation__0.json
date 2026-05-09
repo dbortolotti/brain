@@ -1,0 +1,31 @@
+{
+  "fixture_id": "debug_explain_recall_sam__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Recall returned mem_new for Sam from Goldman because it is the current, non-superseded memory matching the query. It filtered mem_old because that memory has been superseded by mem_new, so mem_old should not be presented as current. This is expected behavior: superseded memories may be retained for history/debugging, but recall should prefer the active replacement and exclude the older superseded fact from current results.",
+    "citations": [
+      "mem_new",
+      "mem_old"
+    ],
+    "conflict_classification": "supersession_filtering",
+    "decision": "answer_only",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The request asks for an explanation of recall behavior, not to create or update a durable memory."
+    },
+    "intent": "debug_explain_recall",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Classified input as a debug/explanation request.",
+        "No durable memory was committed.",
+        "Preserved supersession semantics: mem_new is current; mem_old is superseded and filtered."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "intent_router",
+  "run_id": "eval_20260508_195937"
+}

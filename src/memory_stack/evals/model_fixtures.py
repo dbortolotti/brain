@@ -80,6 +80,234 @@ BASE_OUTPUT_SCHEMA: dict[str, Any] = {
     "additionalProperties": True,
 }
 
+CONFLICT_CLASSIFICATION_VALUES = [
+    "supersedes",
+    "contradicts",
+    "duplicate",
+    "additive",
+    "correction",
+    "project_state_update",
+    "none",
+]
+
+CONFLICT_DETECTOR_OUTPUT_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "intent": {"type": "string"},
+        "decision": {
+            "type": "string",
+            "enum": ["possible_conflict", "conflict_candidate", "needs_policy"],
+        },
+        "conflict_classification": {
+            "type": "string",
+            "enum": CONFLICT_CLASSIFICATION_VALUES,
+        },
+        "answer": {"type": "string"},
+        "citations": {"type": "array", "items": {"type": "string"}},
+        "evidence": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "existing_fact": {"type": "string"},
+                    "new_fact": {"type": "string"},
+                    "reason": {"type": "string"},
+                },
+                "additionalProperties": True,
+            },
+        },
+        "entity_resolution": {
+            "type": "object",
+            "properties": {
+                "action": {"type": "string"},
+                "entity_id": {"type": ["string", "null"]},
+                "reason": {"type": "string"},
+            },
+        },
+    },
+    "required": ["decision", "conflict_classification", "answer", "citations"],
+    "additionalProperties": False,
+}
+
+SOURCE_CLASSIFIER_OUTPUT_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "input_class": {
+            "type": "string",
+            "enum": ["memory", "source", "junk"],
+        },
+        "source_kind": {
+            "type": ["string", "null"],
+            "enum": ["article", "chat_log", "email", "markdown", "pdf", "table", "transcript", None],
+        },
+        "should_create_source": {"type": "boolean"},
+        "should_extract_memories": {"type": "boolean"},
+        "answer": {"type": "string"},
+        "citations": {"type": "array", "items": {"type": "string"}},
+    },
+    "required": ["input_class", "source_kind", "should_create_source", "should_extract_memories", "answer", "citations"],
+    "additionalProperties": False,
+}
+
+DURABILITY_FILTER_OUTPUT_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "durable": {"type": "boolean"},
+        "decision": {
+            "type": "string",
+            "enum": ["store", "do_not_store", "needs_clarification"],
+        },
+        "reason": {"type": "string"},
+        "answer": {"type": "string"},
+        "citations": {"type": "array", "items": {"type": "string"}},
+    },
+    "required": ["durable", "decision", "reason", "answer", "citations"],
+    "additionalProperties": False,
+}
+
+MEMORY_KIND_VALUES = [
+    "article_note",
+    "basic_fact",
+    "chat_conclusion",
+    "decision",
+    "family_fact",
+    "key_takeaway",
+    "open_loop",
+    "open_question",
+    "person_fact",
+    "person_interaction",
+    "preference",
+    "project_state",
+    "research_question",
+    "source_summary",
+    "table_note",
+]
+
+MEMORY_KIND_CLASSIFIER_OUTPUT_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "memory_kinds": {
+            "type": "array",
+            "items": {"type": "string", "enum": MEMORY_KIND_VALUES},
+        },
+        "primary_kind": {"type": "string", "enum": MEMORY_KIND_VALUES},
+        "answer": {"type": "string"},
+        "citations": {"type": "array", "items": {"type": "string"}},
+    },
+    "required": ["memory_kinds", "primary_kind", "answer", "citations"],
+    "additionalProperties": False,
+}
+
+OPEN_LOOP_DETECTOR_OUTPUT_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "has_open_loop": {"type": "boolean"},
+        "open_loops": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "kind": {"type": "string", "enum": ["open_loop", "open_question"]},
+                    "description": {"type": "string"},
+                    "evidence": {"type": "string"},
+                },
+                "required": ["kind", "description", "evidence"],
+                "additionalProperties": False,
+            },
+        },
+        "answer": {"type": "string"},
+        "citations": {"type": "array", "items": {"type": "string"}},
+    },
+    "required": ["has_open_loop", "open_loops", "answer", "citations"],
+    "additionalProperties": False,
+}
+
+ENTITY_MENTION_EXTRACTOR_OUTPUT_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "entities": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "type": {"type": "string"},
+                    "role": {"type": "string"},
+                },
+                "required": ["name", "type"],
+                "additionalProperties": False,
+            },
+        },
+        "answer": {"type": "string"},
+        "citations": {"type": "array", "items": {"type": "string"}},
+    },
+    "required": ["entities", "answer", "citations"],
+    "additionalProperties": False,
+}
+
+RELATIONSHIP_EXTRACTOR_OUTPUT_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "relationships": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "subject": {"type": "string"},
+                    "predicate": {"type": "string"},
+                    "object": {"type": "string"},
+                    "evidence": {"type": "string"},
+                },
+                "required": ["subject", "predicate", "object"],
+                "additionalProperties": False,
+            },
+        },
+        "answer": {"type": "string"},
+        "citations": {"type": "array", "items": {"type": "string"}},
+    },
+    "required": ["relationships", "answer", "citations"],
+    "additionalProperties": False,
+}
+
+REPAIR_OPTION_GENERATOR_OUTPUT_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "intent": {"type": "string"},
+        "answer": {"type": "string"},
+        "citations": {"type": "array", "items": {"type": "string"}},
+        "conflict_classification": {
+            "type": ["string", "null"],
+            "enum": CONFLICT_CLASSIFICATION_VALUES + [None],
+        },
+        "repair_options": {
+            "type": "array",
+            "items": {"type": "string"},
+        },
+    },
+    "required": ["repair_options", "answer", "citations"],
+    "additionalProperties": False,
+}
+
+
+def output_schema_for_fixture(fixture: "ModelEvalFixture") -> dict[str, Any]:
+    if fixture.role == "source_classifier":
+        return SOURCE_CLASSIFIER_OUTPUT_SCHEMA
+    if fixture.role == "durability_filter":
+        return DURABILITY_FILTER_OUTPUT_SCHEMA
+    if fixture.role == "memory_kind_classifier":
+        return MEMORY_KIND_CLASSIFIER_OUTPUT_SCHEMA
+    if fixture.role == "open_loop_detector":
+        return OPEN_LOOP_DETECTOR_OUTPUT_SCHEMA
+    if fixture.role == "entity_mention_extractor":
+        return ENTITY_MENTION_EXTRACTOR_OUTPUT_SCHEMA
+    if fixture.role == "relationship_extractor":
+        return RELATIONSHIP_EXTRACTOR_OUTPUT_SCHEMA
+    if fixture.role == "repair_option_generator":
+        return REPAIR_OPTION_GENERATOR_OUTPUT_SCHEMA
+    if fixture.role == "conflict_candidate_detector":
+        return CONFLICT_DETECTOR_OUTPUT_SCHEMA
+    return BASE_OUTPUT_SCHEMA
+
 
 MODEL_EVAL_FIXTURES: list[ModelEvalFixture] = [
     ModelEvalFixture(
@@ -535,6 +763,7 @@ MODEL_EVAL_FIXTURES.extend(
                 "decision": "needs_user_choice",
                 "conflict_classification_any": ["contradicts", "high_confidence_conflict"],
                 "must_include": ["daughter", "niece", "conflict"],
+                "safe_action_space": ["ask_clarification", "add_new", "keep_existing", "reject_new", "edit"],
             },
             zero_tolerance_checks=("silent_high_confidence_overwrite",),
         ),
@@ -1102,6 +1331,60 @@ MODEL_EVAL_FIXTURES.extend(
             {"must_include": ["embedding_vector_size"]},
             fixture_set="smoke",
         ),
+        _fixture(
+            "embedding_entity_disambiguation_001",
+            "embedding_retrieval_entity_disambiguation",
+            "embeddings",
+            "Query should retrieve the Goldman Sam music preference over other Sam facts.",
+            {
+                "embedding_retrieval": {
+                    "query": "Which remembered Sam from Goldman likes jazz piano?",
+                    "positive": "Sam from Goldman likes Bill Evans and other jazz piano recordings.",
+                    "negatives": [
+                        "Sam from Point72 prefers trail running and early meetings.",
+                        "Sara is Daniele's daughter and Nur's twin.",
+                        "Cognee is a rebuildable semantic projection used for memory retrieval.",
+                    ],
+                }
+            },
+            fixture_set="development",
+        ),
+        _fixture(
+            "embedding_source_boundary_001",
+            "embedding_retrieval_source_boundary",
+            "embeddings",
+            "Query should retrieve the article/source note rather than an unrelated personal memory.",
+            {
+                "embedding_retrieval": {
+                    "query": "Find the note about an article saying Cognee can be rebuilt from canonical memory cards.",
+                    "positive": "Article note: Cognee is a rebuildable semantic projection from canonical Brain memory cards.",
+                    "negatives": [
+                        "The user prefers concise Slack confirmations after a memory is saved.",
+                        "Sam from Goldman likes Bill Evans.",
+                        "Sara is the user's niece through Daniele's side of the family.",
+                    ],
+                }
+            },
+            fixture_set="development",
+        ),
+        _fixture(
+            "embedding_multilingual_family_001",
+            "embedding_retrieval_multilingual_family",
+            "embeddings",
+            "Multilingual query should retrieve the family relationship memory.",
+            {
+                "embedding_retrieval": {
+                    "query": "¿Quiénes son las hijas gemelas de Daniele?",
+                    "positive": "Nur and Sara are Daniele's twin daughters.",
+                    "negatives": [
+                        "Sam from Goldman likes Bill Evans.",
+                        "The user wants Brain debug output to include latency and token cost.",
+                        "Cognee can be regenerated from the canonical memory database.",
+                    ],
+                }
+            },
+            fixture_set="development",
+        ),
     ]
 )
 
@@ -1219,6 +1502,18 @@ def derive_fine_grained_fixtures(
                         **expected,
                         "expected_durable": expected_durable_for_fixture(fixture, expected),
                     }
+                elif fine_role == "memory_kind_classifier":
+                    expected = memory_kind_classifier_expected(expected)
+                elif fine_role == "entity_mention_extractor":
+                    expected = entity_mention_extractor_expected(expected)
+                elif fine_role == "relationship_extractor":
+                    expected = relationship_extractor_expected(expected)
+                elif fine_role == "open_loop_detector":
+                    expected = {
+                        "expected_open_loop": expected_open_loop_for_fixture(fixture, expected),
+                    }
+                elif fine_role == "repair_option_generator":
+                    expected = repair_option_generator_expected(fixture, expected)
                 derived.append(
                     ModelEvalFixture(
                         id=fixture.id,
@@ -1262,7 +1557,145 @@ def conflict_explainer_expected(expected: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def repair_option_generator_expected(fixture: ModelEvalFixture, expected: dict[str, Any]) -> dict[str, Any]:
+    keys = (
+        "conflict_classification",
+        "conflict_classification_any",
+        "must_include",
+        "must_include_any",
+        "must_not_include",
+        "repair_terms",
+    )
+    narrowed = {key: expected[key] for key in keys if key in expected}
+    if "conflict_classification" in expected or "conflict_classification_any" in expected:
+        narrowed["safe_action_space"] = safe_action_space_for_conflict(expected)
+    narrowed["repair_terms"] = repair_terms_for_repair_fixture(fixture, expected)
+    return narrowed
+
+
+def repair_terms_for_repair_fixture(fixture: ModelEvalFixture, expected: dict[str, Any]) -> list[str]:
+    fixture_id = str(fixture.context.get("base_fixture_id", fixture.id))
+    if fixture_id == "validator_reject_junk":
+        return ["memory"]
+    if fixture_id in {"vague_memory_001", "overly_broad_memory_001"}:
+        return ["specif"]
+    if fixture_id in {"no_durable_value_weather_001", "slack_no_durable_value_repair_001"}:
+        return ["do not save"]
+    if fixture_id in {"ambiguous_sam_001", "slack_ambiguous_entity_buttons_001"}:
+        return ["Sam from Goldman", "Sam from Point72"]
+    if fixture_id in {"unresolved_pronoun_001", "validator_blocks_unresolved_pronoun_001"}:
+        return ["he", "other one"]
+    if fixture_id == "slack_rewrite_modal_001":
+        return ["clarif"]
+    if fixture_id in {"validator_blocks_high_confidence_overwrite_001", "cascade_conflict_escalation_001"}:
+        return ["keep"]
+    if fixture_id == "slack_conflict_buttons_001":
+        return ["Goldman", "Point72"]
+    if repair_terms := expected.get("repair_terms"):
+        return repair_terms
+    text = " ".join(
+        str(value)
+        for key in ("must_include", "must_include_any")
+        for value in expected.get(key, [])
+    ).casefold()
+    checks = " ".join(str(value) for value in expected.get("zero_tolerance_checks", ())).casefold()
+    if "sam from goldman" in text and "sam from point72" in text:
+        return ["Sam from Goldman", "Sam from Point72"]
+    if "unresolved_pronoun" in text or "choose person" in text:
+        return ["clarify", "rewrite"]
+    if "no durable" in text or "weather" in text:
+        return ["do not save", "durable"]
+    if "overly broad" in text or "open question" in text:
+        return ["specific", "do not store"]
+    if "high_confidence_conflict" in text or "conflict" in text:
+        return ["keep", "clarify"]
+    if checks:
+        return ["clarify"]
+    return []
+
+
+def memory_kind_classifier_expected(expected: dict[str, Any]) -> dict[str, Any]:
+    keys = ("memory_kinds", "memory_kinds_any")
+    return {key: expected[key] for key in keys if key in expected}
+
+
+def entity_mention_extractor_expected(expected: dict[str, Any]) -> dict[str, Any]:
+    entity_terms = explicit_entity_terms(expected.get("must_include", []))
+    entity_terms_any = explicit_entity_terms(expected.get("must_include_any", []))
+    narrowed: dict[str, Any] = {}
+    if entity_terms:
+        narrowed["entity_terms"] = entity_terms
+    if entity_terms_any:
+        narrowed["entity_terms_any"] = entity_terms_any
+    if must_not_include := expected.get("must_not_include"):
+        narrowed["must_not_include"] = must_not_include
+    return narrowed
+
+
+def explicit_entity_terms(terms: list[str]) -> list[str]:
+    non_entity_terms = {
+        "article",
+        "cancel",
+        "choose",
+        "choose person",
+        "cannot",
+        "confidence",
+        "context",
+        "date",
+        "daughter",
+        "duplicate",
+        "family_fact",
+        "morning",
+        "new sam",
+        "open",
+        "person",
+        "policy",
+        "reject",
+        "rewrite",
+        "sunday",
+        "technical papers",
+        "twin",
+        "unresolved_pronoun",
+    }
+    normalized_non_entities = {
+        value.casefold().replace("-", "_").replace(" ", "_")
+        for value in non_entity_terms
+    }
+    return [
+        term
+        for term in terms
+        if str(term).casefold().replace("-", "_").replace(" ", "_") not in normalized_non_entities
+    ]
+
+
+def relationship_extractor_expected(expected: dict[str, Any]) -> dict[str, Any]:
+    return {"relationships": expected["relationships"]} if "relationships" in expected else {}
+
+
+def expected_open_loop_for_fixture(fixture: ModelEvalFixture, expected: dict[str, Any]) -> bool:
+    kinds = {
+        str(kind).casefold().replace("-", "_").replace(" ", "_")
+        for kind in expected.get("memory_kinds", []) + expected.get("memory_kinds_any", [])
+    }
+    if kinds & {"open_loop", "open_question", "research_question"}:
+        return True
+    decision_values = {
+        str(value).casefold().replace("-", "_").replace(" ", "_")
+        for value in expected.get("decision_any", [])
+    }
+    if decision_values & {"needs_clarification", "needs_user_choice", "reject_with_repair_path", "propose_repair"}:
+        return True
+    if expected.get("repair_terms"):
+        return True
+    if "open_loop_missing" in set(fixture.zero_tolerance_checks):
+        return True
+    text = f"{fixture.id} {fixture.scenario_group} {fixture.input_text}".casefold()
+    return "?" in fixture.input_text or "open question" in text or "follow up" in text
+
+
 def safe_action_space_for_conflict(expected: dict[str, Any]) -> list[str]:
+    if safe_action_space := expected.get("safe_action_space"):
+        return [str(action) for action in safe_action_space]
     labels = set()
     if classification := expected.get("conflict_classification"):
         labels.add(str(classification))
@@ -1280,6 +1713,19 @@ def expected_durable_for_fixture(fixture: ModelEvalFixture, expected: dict[str, 
         return bool(expected["expected_durable"])
     decision = str(expected.get("decision") or "").casefold().replace("-", "_").replace(" ", "_")
     if decision in {"reject", "hard_reject", "no_durable_value", "ignore", "skip"}:
+        return False
+    decision_values = {
+        str(value).casefold().replace("-", "_").replace(" ", "_")
+        for value in expected.get("decision_any", [])
+    }
+    if decision_values & {
+        "reject",
+        "hard_reject",
+        "reject_with_repair_path",
+        "needs_clarification",
+        "needs_user_choice",
+        "propose_repair",
+    }:
         return False
     checks = set(fixture.zero_tolerance_checks)
     if checks & {"no_durable_value_junk_committed", "unresolved_pronoun_committed", "vague_memory_committed"}:
@@ -1336,6 +1782,33 @@ def role_contract_lines(fixture: ModelEvalFixture) -> list[str]:
         lines.append(
             "Classify only the input/source type and source boundaries; ignore downstream extraction, commit, and receipt quality."
         )
+        lines.append(
+            "Return input_class as one of memory, source, or junk; source_kind as article, chat_log, email, markdown, pdf, table, transcript, or null."
+        )
+        lines.append(
+            "Return should_create_source and should_extract_memories booleans; do not emit memory cards, receipts, repair options, entity resolution, or conflict classifications."
+        )
+    elif fixture.role == "durability_filter":
+        lines.append(
+            "Decide only whether the input is durable enough to store; return durable plus decision store, do_not_store, or needs_clarification."
+        )
+        lines.append(
+            "Do not extract memory cards, classify entities, produce repair options, or generate receipts."
+        )
+    elif fixture.role == "memory_kind_classifier":
+        lines.append(
+            "Classify only the memory kind taxonomy; do not extract memory cards, entities, relationships, receipts, or backend actions."
+        )
+        lines.append(
+            "Allowed memory kinds are: " + ", ".join(MEMORY_KIND_VALUES) + "."
+        )
+    elif fixture.role == "open_loop_detector":
+        lines.append(
+            "Detect only whether the input contains an open loop or open question; do not store facts or emit memory cards."
+        )
+        lines.append(
+            "Return has_open_loop and an open_loops array; use an empty array when there is no open loop."
+        )
     elif fixture.role == "atomic_card_extractor":
         lines.append(
             "Extract atomic memory cards only from facts explicitly supported by the input; omit or lower confidence on ambiguous references."
@@ -1348,6 +1821,11 @@ def role_contract_lines(fixture: ModelEvalFixture) -> list[str]:
             "Detection-only role: identify possible conflict candidates and evidence, but do not decide ask/keep/link/supersede behavior."
         )
         lines.append(
+            "Use conflict_classification for the relation type only; allowed values are: "
+            + ", ".join(CONFLICT_CLASSIFICATION_VALUES)
+            + ". A supersedes classification is not a backend policy action."
+        )
+        lines.append(
             "Do not emit repair options, action buttons, success receipts, memory cards, or policy actions such as commit, overwrite, or mark superseded."
         )
         lines.append(
@@ -1357,12 +1835,36 @@ def role_contract_lines(fixture: ModelEvalFixture) -> list[str]:
         lines.append(
             "Explain only the backend-supplied safe actions; do not invent new buttons, actions, overwrite behavior, or auto-supersession."
         )
+    elif fixture.role == "repair_option_generator":
+        lines.append(
+            "Generate repair/user-choice options only; do not decide, commit, append, merge, overwrite, supersede, or mark anything as saved."
+        )
+        lines.append(
+            "Return repair_options as candidate actions or user choices; do not emit memory_cards, entity_resolution, success receipts, backend decisions, or completed updates."
+        )
+        lines.append(
+            "For additive facts, offer options such as add separately or keep both; do not perform the add or merge in the output."
+        )
     elif fixture.role == "recall_synthesizer":
         lines.append(
             "Answer only from already-filtered current evidence; do not return deleted, superseded, stale, or unrelated memories as current."
         )
         lines.append(
             "When current evidence is absent, say there is no current evidence or you do not know; do not infer a fact from absence."
+        )
+    elif fixture.role == "entity_mention_extractor":
+        lines.append(
+            "Extract only explicit entity mentions from the input; preserve ambiguity and do not invent surnames, dates, or identities."
+        )
+        lines.append(
+            "Return entities only; do not emit memory cards, relationships, receipts, conflict classifications, or backend actions."
+        )
+    elif fixture.role == "relationship_extractor":
+        lines.append(
+            "Extract only explicit subject-predicate-object relationships from the input; preserve direction and numeric values."
+        )
+        lines.append(
+            "Return relationships only; do not emit memory cards, receipts, conflict classifications, or backend actions."
         )
 
     if expected.get("detection_only"):

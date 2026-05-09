@@ -1,0 +1,66 @@
+{
+  "fixture_id": "recall_brain_cognee_conclusions_relevance_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "You concluded that Brain should be the source of truth for durable personal memory, while Cognee should be a rebuildable projection or index derived from Brain. Cognee should not be treated as the durable authority for memory.",
+    "citations": [
+      "Brain DB source-of-truth conclusion",
+      "Cognee rebuildable projection"
+    ],
+    "conflict_classification": "no_current_conflict",
+    "decision": "Current evidence says Brain should be the source of truth and Cognee should be treated as a rebuildable projection/index, not a durable memory authority.",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": null,
+      "reason": "The query refers to the systems Brain and Cognee; filtered evidence directly includes the current source-of-truth conclusion and Cognee projection role."
+    },
+    "intent": "Recall the current conclusion about Brain and Cognee only from filtered current evidence.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "source_of_truth",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "rebuildable_projection",
+            "type": "system"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "personal_memory",
+            "predicate": "is_source_of_truth_for",
+            "subject": "Brain"
+          },
+          {
+            "object": "Brain",
+            "predicate": "is_rebuildable_projection_of",
+            "subject": "Cognee"
+          },
+          {
+            "object": "durable_memory_authority",
+            "predicate": "is_not",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain is the durable source of truth for personal memory; Cognee is a rebuildable projection/index derived from Brain rather than an independent source of truth."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Answered only the queried Brain/Cognee scope.",
+        "Excluded unrelated Slack intake, family facts, and Sam preferences.",
+        "Did not present deleted, superseded, stale, or unrelated memories as current."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "recall_synthesizer",
+  "run_id": "eval_20260508_195937"
+}

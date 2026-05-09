@@ -1,0 +1,113 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.002457,
+  "fixture_id": "duplicate_sam_bill_evans_001__context",
+  "input_tokens": 450,
+  "latency_ms": 3943,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 471,
+  "payload": {
+    "answer": "Safe action: link_duplicate. The new memory is a paraphrase of the existing one, so it should be linked as the same fact rather than stored as a separate durable memory. Other safe actions available: keep_existing, add_anyway, edit, cancel.",
+    "citations": [
+      "Existing memory: Sam from Goldman mentioned that he likes Bill Evans.",
+      "New: Sam from Goldman said he likes Bill Evans."
+    ],
+    "conflict_classification": "duplicate",
+    "decision": "link_duplicate",
+    "entity_resolution": {
+      "action": "link_duplicate",
+      "entity_id": null,
+      "reason": "The new statement repeats the same claim with only minor wording differences; no new durable fact is introduced."
+    },
+    "intent": "The new memory is a duplicate/paraphrase of the existing memory about Sam from Goldman liking Bill Evans.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "likes",
+            "type": "person"
+          }
+        ],
+        "kind": "existing",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman mentioned that he likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "likes",
+            "type": "person"
+          }
+        ],
+        "kind": "new",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman said he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected duplicate/paraphrase relation.",
+        "No supersession or contradiction present.",
+        "Recommended action is to link the memories as duplicates."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "link_duplicate",
+      "keep_existing",
+      "add_anyway",
+      "edit",
+      "cancel"
+    ]
+  },
+  "raw_text": "{\"intent\":\"The new memory is a duplicate/paraphrase of the existing memory about Sam from Goldman liking Bill Evans.\",\"decision\":\"link_duplicate\",\"memory_cards\":[{\"kind\":\"existing\",\"statement\":\"Sam from Goldman mentioned that he likes Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"speaker\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"likes\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]},{\"kind\":\"new\",\"statement\":\"Sam from Goldman said he likes Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"speaker\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"likes\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"link_duplicate\",\"entity_id\":null,\"reason\":\"The new statement repeats the same claim with only minor wording differences; no new durable fact is introduced.\"},\"conflict_classification\":\"duplicate\",\"answer\":\"Safe action: link_duplicate. The new memory is a paraphrase of the existing one, so it should be linked as the same fact rather than stored as a separate durable memory. Other safe actions available: keep_existing, add_anyway, edit, cancel.\",\"citations\":[\"Existing memory: Sam from Goldman mentioned that he likes Bill Evans.\",\"New: Sam from Goldman said he likes Bill Evans.\"],\"repair_options\":[\"link_duplicate\",\"keep_existing\",\"add_anyway\",\"edit\",\"cancel\"],\"receipt\":{\"success\":true,\"details\":[\"Detected duplicate/paraphrase relation.\",\"No supersession or contradiction present.\",\"Recommended action is to link the memories as duplicates.\"]}}",
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

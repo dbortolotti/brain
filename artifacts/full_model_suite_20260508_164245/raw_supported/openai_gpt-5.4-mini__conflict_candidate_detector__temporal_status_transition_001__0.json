@@ -1,0 +1,35 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0013859999999999999,
+  "fixture_id": "temporal_status_transition_001",
+  "input_tokens": 492,
+  "latency_ms": 2040,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 226,
+  "payload": {
+    "answer": "The new fact appears to update the project state from planned/open to implemented, which may supersede the prior status.",
+    "citations": [
+      "Existing project state: The Brain Slack agent is planned, status=open.",
+      "New: The Brain Slack agent MVP is now implemented."
+    ],
+    "conflict_classification": "project_state_update",
+    "decision": "possible_conflict",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The same project appears to be referenced, but no explicit entity mapping is needed for detection-only output."
+    },
+    "evidence": [
+      {
+        "existing_fact": "The Brain Slack agent is planned, status=open.",
+        "new_fact": "The Brain Slack agent MVP is now implemented.",
+        "reason": "The new fact changes the project from planned/open to implemented, indicating a state transition rather than a separate unrelated fact."
+      }
+    ],
+    "intent": "Detect conflict candidate between existing project state and new project update"
+  },
+  "raw_text": "{\"intent\":\"Detect conflict candidate between existing project state and new project update\",\"decision\":\"possible_conflict\",\"conflict_classification\":\"project_state_update\",\"answer\":\"The new fact appears to update the project state from planned/open to implemented, which may supersede the prior status.\",\"citations\":[\"Existing project state: The Brain Slack agent is planned, status=open.\",\"New: The Brain Slack agent MVP is now implemented.\"],\"evidence\":[{\"existing_fact\":\"The Brain Slack agent is planned, status=open.\",\"new_fact\":\"The Brain Slack agent MVP is now implemented.\",\"reason\":\"The new fact changes the project from planned/open to implemented, indicating a state transition rather than a separate unrelated fact.\"}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The same project appears to be referenced, but no explicit entity mapping is needed for detection-only output.\"}}",
+  "role": "conflict_candidate_detector",
+  "run_id": "eval_20260508_164405",
+  "status": "ok"
+}

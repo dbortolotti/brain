@@ -1,0 +1,75 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0018029999999999997,
+  "fixture_id": "person_interaction_sam_bill_evans_001__context",
+  "input_tokens": 376,
+  "latency_ms": 3530,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 338,
+  "payload": {
+    "answer": "Stored as a low-confidence preference: Sam from Goldman likes Bill Evans.",
+    "citations": [
+      "Input: \"For context, Sam from Goldman mentioned that he likes Bill Evans.\""
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_with_low_confidence",
+    "entity_resolution": {
+      "action": "create_or_update_ambiguous_entity",
+      "entity_id": null,
+      "reason": "'Sam from Goldman' is not uniquely identified in the input, so the entity cannot be resolved to a specific existing person with confidence."
+    },
+    "intent": "store_preference",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_entity",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured a tentative preference statement.",
+        "Did not assert a durable identity beyond the provided context.",
+        "Preserved ambiguity due to insufficient disambiguation."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If available, provide Sam's full name or role at Goldman to disambiguate the person.",
+      "If intended as a music preference, confirm whether Bill Evans refers to the jazz pianist."
+    ]
+  },
+  "raw_text": "{\"intent\":\"store_preference\",\"decision\":\"commit_with_low_confidence\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman likes Bill Evans.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked_entity\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"create_or_update_ambiguous_entity\",\"entity_id\":null,\"reason\":\"'Sam from Goldman' is not uniquely identified in the input, so the entity cannot be resolved to a specific existing person with confidence.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored as a low-confidence preference: Sam from Goldman likes Bill Evans.\",\"citations\":[\"Input: \\\"For context, Sam from Goldman mentioned that he likes Bill Evans.\\\"\"],\"repair_options\":[\"If available, provide Sam's full name or role at Goldman to disambiguate the person.\",\"If intended as a music preference, confirm whether Bill Evans refers to the jazz pianist.\"],\"receipt\":{\"success\":true,\"details\":[\"Captured a tentative preference statement.\",\"Did not assert a durable identity beyond the provided context.\",\"Preserved ambiguity due to insufficient disambiguation.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

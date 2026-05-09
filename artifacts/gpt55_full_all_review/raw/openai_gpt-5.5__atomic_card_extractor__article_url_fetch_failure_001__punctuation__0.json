@@ -1,0 +1,89 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.017285000000000002,
+  "fixture_id": "article_url_fetch_failure_001__punctuation",
+  "input_tokens": 481,
+  "latency_ms": 5968,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 496,
+  "payload": {
+    "answer": "I could not fetch the article due to the mock 404 network error, but I stored the unresolved malformed article reference and the user's stated reason that it is useful for memory architecture.",
+    "citations": [
+      "User input: \"Remember this article - https -//examplecom/missing why - useful for memory architecture\"",
+      "Mock fetch result: \"404 network error\""
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_with_warning",
+    "entity_resolution": {
+      "action": "create_or_store_as_unresolved_reference",
+      "entity_id": null,
+      "reason": "The referenced article could not be fetched and the URL-like text is malformed, so only the user's stated reference and purpose can be stored."
+    },
+    "intent": "remember_article",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "https -//examplecom/missing",
+            "role": "referenced_resource",
+            "type": "url_like_text"
+          },
+          {
+            "name": "memory architecture",
+            "role": "stated_usefulness",
+            "type": "topic"
+          }
+        ],
+        "kind": "resource_reference",
+        "relationships": [
+          {
+            "object": "memory architecture",
+            "predicate": "stated_as_useful_for",
+            "subject": "https -//examplecom/missing"
+          }
+        ],
+        "statement": "The user asked to remember an article at the malformed URL-like text \"https -//examplecom/missing\" because it is useful for memory architecture."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https -//examplecom/missing",
+            "role": "fetch_target",
+            "type": "url_like_text"
+          },
+          {
+            "name": "404 network error",
+            "role": "status",
+            "type": "fetch_result"
+          }
+        ],
+        "kind": "fetch_status",
+        "relationships": [
+          {
+            "object": "404 network error",
+            "predicate": "mock_fetch_result",
+            "subject": "https -//examplecom/missing"
+          }
+        ],
+        "statement": "A mock fetch attempt for the referenced article resulted in a 404 network error."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored only the explicit user-stated article reference and purpose.",
+        "Recorded the mock fetch failure as a status, not as article content."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide a corrected URL for the article.",
+      "Provide the article title, author, or text to remember more specific facts."
+    ]
+  },
+  "raw_text": "{\"intent\":\"remember_article\",\"decision\":\"commit_with_warning\",\"memory_cards\":[{\"kind\":\"resource_reference\",\"statement\":\"The user asked to remember an article at the malformed URL-like text \\\"https -//examplecom/missing\\\" because it is useful for memory architecture.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"https -//examplecom/missing\",\"type\":\"url_like_text\",\"role\":\"referenced_resource\"},{\"name\":\"memory architecture\",\"type\":\"topic\",\"role\":\"stated_usefulness\"}],\"relationships\":[{\"subject\":\"https -//examplecom/missing\",\"predicate\":\"stated_as_useful_for\",\"object\":\"memory architecture\"}]},{\"kind\":\"fetch_status\",\"statement\":\"A mock fetch attempt for the referenced article resulted in a 404 network error.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"https -//examplecom/missing\",\"type\":\"url_like_text\",\"role\":\"fetch_target\"},{\"name\":\"404 network error\",\"type\":\"fetch_result\",\"role\":\"status\"}],\"relationships\":[{\"subject\":\"https -//examplecom/missing\",\"predicate\":\"mock_fetch_result\",\"object\":\"404 network error\"}]}],\"entity_resolution\":{\"action\":\"create_or_store_as_unresolved_reference\",\"entity_id\":null,\"reason\":\"The referenced article could not be fetched and the URL-like text is malformed, so only the user's stated reference and purpose can be stored.\"},\"conflict_classification\":\"none\",\"answer\":\"I could not fetch the article due to the mock 404 network error, but I stored the unresolved malformed article reference and the user's stated reason that it is useful for memory architecture.\",\"citations\":[\"User input: \\\"Remember this article - https -//examplecom/missing why - useful for memory architecture\\\"\",\"Mock fetch result: \\\"404 network error\\\"\"],\"repair_options\":[\"Provide a corrected URL for the article.\",\"Provide the article title, author, or text to remember more specific facts.\"],\"receipt\":{\"success\":true,\"details\":[\"Stored only the explicit user-stated article reference and purpose.\",\"Recorded the mock fetch failure as a status, not as article content.\"]}}",
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

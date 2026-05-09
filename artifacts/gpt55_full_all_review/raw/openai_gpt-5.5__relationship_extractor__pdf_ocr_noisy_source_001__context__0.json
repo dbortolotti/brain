@@ -1,0 +1,66 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01156,
+  "fixture_id": "pdf_ocr_noisy_source_001__context",
+  "input_tokens": 422,
+  "latency_ms": 4027,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 315,
+  "payload": {
+    "answer": "Extracted one durable architectural principle: Brain DB is the source of truth, and Cognee should be rebuildable from it as a projection.",
+    "citations": [
+      "Brain DB remalns source of trvth. Cognee shou1d be rebuildable projection."
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "The input explicitly names Brain DB and Cognee and states their architectural relationship, despite OCR noise. No existing entity ID was provided."
+    },
+    "intent": "extract_relationships_from_noisy_context",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "rebuildable_projection",
+            "type": "system"
+          }
+        ],
+        "kind": "preference_or_architecture_principle",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "remains",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "rebuildable projection",
+            "predicate": "should_be",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain DB remains the source of truth. Cognee should be a rebuildable projection."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Normalized OCR noise: 'remalns' to 'remains', 'trvth' to 'truth', and 'shou1d' to 'should'.",
+        "No unsupported details were added."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"extract_relationships_from_noisy_context\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"preference_or_architecture_principle\",\"statement\":\"Brain DB remains the source of truth. Cognee should be a rebuildable projection.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Brain DB\",\"type\":\"system\",\"role\":\"source_of_truth\"},{\"name\":\"Cognee\",\"type\":\"system\",\"role\":\"rebuildable_projection\"}],\"relationships\":[{\"subject\":\"Brain DB\",\"predicate\":\"remains\",\"object\":\"source of truth\"},{\"subject\":\"Cognee\",\"predicate\":\"should_be\",\"object\":\"rebuildable projection\"}]}],\"entity_resolution\":{\"action\":\"create_or_update\",\"entity_id\":null,\"reason\":\"The input explicitly names Brain DB and Cognee and states their architectural relationship, despite OCR noise. No existing entity ID was provided.\"},\"conflict_classification\":\"none_detected\",\"answer\":\"Extracted one durable architectural principle: Brain DB is the source of truth, and Cognee should be rebuildable from it as a projection.\",\"citations\":[\"Brain DB remalns source of trvth. Cognee shou1d be rebuildable projection.\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Normalized OCR noise: 'remalns' to 'remains', 'trvth' to 'truth', and 'shou1d' to 'should'.\",\"No unsupported details were added.\"]}}",
+  "role": "relationship_extractor",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

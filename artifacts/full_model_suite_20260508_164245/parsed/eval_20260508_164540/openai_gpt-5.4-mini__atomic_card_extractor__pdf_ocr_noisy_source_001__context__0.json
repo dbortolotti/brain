@@ -1,0 +1,68 @@
+{
+  "fixture_id": "pdf_ocr_noisy_source_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "",
+    "citations": [
+      "For context, [OCR noisy] Brain DB remalns source of trvth. Cognee shou1d be rebuildable projection."
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_with_warning",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input contains two explicit system references, but no need for cross-entity resolution beyond the stated relationships."
+    },
+    "intent": "extract_atomic_memory_cards",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source of truth",
+            "type": "system"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "remains",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB remains the source of truth."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "projection",
+            "type": "system"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "rebuildable projection",
+            "predicate": "should be",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee should be a rebuildable projection."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted 2 atomic memory cards from explicit text only.",
+        "Preserved OCR noise by normalizing obvious character substitutions without adding unsupported meaning."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164540"
+}

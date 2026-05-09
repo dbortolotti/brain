@@ -1,0 +1,75 @@
+{
+  "fixture_id": "recall_source_backed_article_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Current source-backed facts about graph memory: it preserves relationships, and it needs provenance.",
+    "citations": [
+      "source article: graph memory preserves relationships and needs provenance"
+    ],
+    "conflict_classification": "none",
+    "decision": "Return the current source-backed facts only; do not infer beyond the article.",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": null,
+      "reason": "The query refers to the concept graph memory, but no stable external entity identifier is provided in the current evidence."
+    },
+    "intent": "recall_synthesizer: extract source-backed current facts about graph memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "graph memory",
+            "role": "subject",
+            "type": "concept"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "relationships",
+            "predicate": "preserves",
+            "subject": "graph memory"
+          }
+        ],
+        "statement": "Graph memory preserves relationships."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "graph memory",
+            "role": "subject",
+            "type": "concept"
+          },
+          {
+            "name": "provenance",
+            "role": "requirement",
+            "type": "concept"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "provenance",
+            "predicate": "needs",
+            "subject": "graph memory"
+          }
+        ],
+        "statement": "Graph memory needs provenance."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted 2 current source-backed facts.",
+        "No deleted, superseded, or unrelated facts included."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want, I can separate these into a compact fact list or a provenance-focused summary."
+    ]
+  },
+  "role": "recall_synthesizer",
+  "run_id": "eval_20260508_164540"
+}

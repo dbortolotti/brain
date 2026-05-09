@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00946,
+  "fixture_id": "person_interaction_sam_bill_evans_001__punctuation",
+  "input_tokens": 374,
+  "latency_ms": 3556,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 253,
+  "payload": {
+    "answer": "",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "needs_resolution",
+      "entity_id": null,
+      "reason": "The input identifies 'Sam' only by first name and affiliation/context 'Goldman'; this may not be sufficient to uniquely resolve an existing person entity."
+    },
+    "intent": "memory_capture",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation/context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked entity",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman mentioned that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured a preference attributed to Sam from Goldman with medium confidence.",
+        "Preserved ambiguity around Sam's identity pending entity resolution."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"memory_capture\",\"decision\":\"store\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman mentioned that he likes Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation/context\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked entity\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"},{\"subject\":\"Sam\",\"predicate\":\"associated_with\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"needs_resolution\",\"entity_id\":null,\"reason\":\"The input identifies 'Sam' only by first name and affiliation/context 'Goldman'; this may not be sufficient to uniquely resolve an existing person entity.\"},\"conflict_classification\":\"none\",\"answer\":\"\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Captured a preference attributed to Sam from Goldman with medium confidence.\",\"Preserved ambiguity around Sam's identity pending entity resolution.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

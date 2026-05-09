@@ -1,0 +1,28 @@
+{
+  "fixture_id": "cascade_conflict_escalation_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "The new statement may conflict with the existing memory because Sara is described as the user's daughter in the existing fact and as the user's niece in the new input. These are different family relationships for the same named person, assuming both refer to the same Sara.",
+    "citations": [
+      "Existing: Sara is my daughter",
+      "Input: Sara is my niece"
+    ],
+    "conflict_classification": "contradicts",
+    "decision": "conflict_candidate",
+    "entity_resolution": {
+      "action": "possible_same_entity",
+      "entity_id": null,
+      "reason": "Both facts refer to a person named Sara, but no additional identifiers are provided to confirm whether they are the same individual."
+    },
+    "evidence": [
+      {
+        "existing_fact": "Sara is my daughter",
+        "new_fact": "Sara is my niece",
+        "reason": "The same named person, Sara, is assigned two different kinship roles relative to the user: daughter versus niece."
+      }
+    ],
+    "intent": "detect_memory_conflict"
+  },
+  "role": "conflict_candidate_detector",
+  "run_id": "eval_20260508_195937"
+}

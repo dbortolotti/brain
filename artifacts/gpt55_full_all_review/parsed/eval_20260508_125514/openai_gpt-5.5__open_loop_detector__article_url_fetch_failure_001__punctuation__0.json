@@ -1,0 +1,32 @@
+{
+  "fixture_id": "article_url_fetch_failure_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "I could not remember the article because the URL could not be fetched and no article content was available. I will not store unsupported claims about the article.",
+    "citations": [],
+    "conflict_classification": "no_conflict",
+    "decision": "defer_memory_commit",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The provided article URL appears malformed and the mock fetch result indicates a 404/network error, so no durable article content can be verified or stored."
+    },
+    "intent": "remember_article",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Input requested remembering an article from a malformed URL-like string: https -//examplecom/missing.",
+        "Mock fetch result was 404/network error.",
+        "No durable memory was committed because article content and claims could not be verified from the provided input."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide a working article URL.",
+      "Paste the article text or a summary you want remembered.",
+      "Clarify whether you want to remember only the failed URL attempt and your note that it was intended to be useful for memory architecture."
+    ]
+  },
+  "role": "open_loop_detector",
+  "run_id": "eval_20260508_125514"
+}

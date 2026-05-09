@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0011175,
+  "fixture_id": "debug_inspect_memory_001",
+  "input_tokens": 362,
+  "latency_ms": 2040,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 188,
+  "payload": {
+    "answer": "Inspection requested for memory mem_123, but no underlying memory record was provided to inspect.",
+    "citations": [
+      "/brain inspect memory mem_123"
+    ],
+    "conflict_classification": "none",
+    "decision": "route_to_memory_inspection",
+    "entity_resolution": {
+      "action": "resolve_reference",
+      "entity_id": "mem_123",
+      "reason": "Input explicitly requests inspection of a specific memory identifier; no memory content was provided in the prompt."
+    },
+    "intent": "inspect_memory",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Intent classified as inspect_memory.",
+        "No retrievable memory data present in input."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide the contents of memory mem_123 for inspection.",
+      "Retry with a valid accessible memory identifier in a connected memory store."
+    ]
+  },
+  "raw_text": "{\"intent\":\"inspect_memory\",\"decision\":\"route_to_memory_inspection\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"resolve_reference\",\"entity_id\":\"mem_123\",\"reason\":\"Input explicitly requests inspection of a specific memory identifier; no memory content was provided in the prompt.\"},\"conflict_classification\":\"none\",\"answer\":\"Inspection requested for memory mem_123, but no underlying memory record was provided to inspect.\",\"citations\":[\"/brain inspect memory mem_123\"],\"repair_options\":[\"Provide the contents of memory mem_123 for inspection.\",\"Retry with a valid accessible memory identifier in a connected memory store.\"],\"receipt\":{\"success\":false,\"details\":[\"Intent classified as inspect_memory.\",\"No retrievable memory data present in input.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

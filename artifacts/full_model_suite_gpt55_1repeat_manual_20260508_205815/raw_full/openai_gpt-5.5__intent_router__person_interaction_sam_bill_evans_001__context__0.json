@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00923,
+  "fixture_id": "person_interaction_sam_bill_evans_001__context",
+  "input_tokens": 376,
+  "latency_ms": 2971,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 245,
+  "payload": {
+    "answer": "",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "needs_resolution",
+      "entity_id": null,
+      "reason": "The name 'Sam from Goldman' is not sufficient to uniquely identify an existing person entity without additional context."
+    },
+    "intent": "memory_write",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "preference_holder",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_entity",
+            "type": "person"
+          }
+        ],
+        "kind": "person_preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman mentioned that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured a contextual preference attributed to Sam from Goldman.",
+        "Preserved ambiguity around Sam's identity and Goldman affiliation."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"memory_write\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"person_preference\",\"statement\":\"Sam from Goldman mentioned that he likes Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"preference_holder\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation_context\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked_entity\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"},{\"subject\":\"Sam\",\"predicate\":\"associated_with\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"needs_resolution\",\"entity_id\":null,\"reason\":\"The name 'Sam from Goldman' is not sufficient to uniquely identify an existing person entity without additional context.\"},\"conflict_classification\":\"none\",\"answer\":\"\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Captured a contextual preference attributed to Sam from Goldman.\",\"Preserved ambiguity around Sam's identity and Goldman affiliation.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_195937",
+  "status": "ok"
+}

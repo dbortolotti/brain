@@ -1,0 +1,56 @@
+{
+  "fixture_id": "recall_hide_deleted_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Sam likes Bill Evans.",
+    "citations": [
+      "current memory: Sam likes Bill Evans"
+    ],
+    "conflict_classification": "deleted_memory_superseded_by_current_memory",
+    "decision": "answer_with_current_memory_only",
+    "entity_resolution": {
+      "action": "resolve_to_existing_entity",
+      "entity_id": null,
+      "reason": "The query refers to Sam, which matches the current memory subject. No unique entity ID is available in the provided context."
+    },
+    "intent": "retrieve_current_preference",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred_artist",
+            "type": "person"
+          }
+        ],
+        "kind": "current",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ignored deleted memory as current evidence.",
+        "Used only the current memory statement to answer the query."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want, I can infer a broader music genre from Bill Evans, but the current memory only supports that Sam likes Bill Evans."
+    ]
+  },
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540"
+}

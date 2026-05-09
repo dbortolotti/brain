@@ -1,0 +1,103 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.002481,
+  "fixture_id": "conflict_sara_niece_001",
+  "input_tokens": 440,
+  "latency_ms": 3986,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 478,
+  "payload": {
+    "answer": "I can\u2019t safely treat this as a direct conflict: Sara being Daniele\u2019s daughter and Nur\u2019s twin can still be compatible with Sara being the speaker\u2019s niece, depending on who the speaker is. Please clarify who 'my' refers to, or whether you want to store Sara as your niece as a separate relationship.",
+    "citations": [
+      "Existing high-confidence memory: Sara is Daniele's daughter and Nur's twin.",
+      "New: Sara is my niece."
+    ],
+    "conflict_classification": "ambiguous_relation_possible_compatibility",
+    "decision": "ask_clarification",
+    "entity_resolution": {
+      "action": "ask_clarification",
+      "entity_id": null,
+      "reason": "The new statement may be compatible with the existing memory, but it depends on who 'my' refers to and whether that relation is meant to be durable. The backend should clarify rather than overwrite or assume supersession."
+    },
+    "intent": "Resolve whether the new statement about Sara can be added without contradicting the existing family relationship memory.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "twin",
+            "type": "person"
+          }
+        ],
+        "kind": "existing_memory",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "child_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "twin_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "speaker",
+            "role": "relative",
+            "type": "person"
+          }
+        ],
+        "kind": "new_statement",
+        "relationships": [
+          {
+            "object": "speaker",
+            "predicate": "niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No supersession applied.",
+        "No durable memory committed beyond the clarified ambiguity.",
+        "Existing high-confidence memory preserved as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "ask_clarification",
+      "add_new",
+      "keep_existing",
+      "reject_new",
+      "edit"
+    ]
+  },
+  "raw_text": "{\"intent\":\"Resolve whether the new statement about Sara can be added without contradicting the existing family relationship memory.\",\"decision\":\"ask_clarification\",\"memory_cards\":[{\"kind\":\"existing_memory\",\"statement\":\"Sara is Daniele's daughter and Nur's twin.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Daniele\",\"type\":\"person\",\"role\":\"parent\"},{\"name\":\"Nur\",\"type\":\"person\",\"role\":\"twin\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"child_of\",\"object\":\"Daniele\"},{\"subject\":\"Sara\",\"predicate\":\"twin_of\",\"object\":\"Nur\"}]},{\"kind\":\"new_statement\",\"statement\":\"Sara is my niece.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"speaker\",\"type\":\"person\",\"role\":\"relative\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"niece_of\",\"object\":\"speaker\"}]}],\"entity_resolution\":{\"action\":\"ask_clarification\",\"entity_id\":null,\"reason\":\"The new statement may be compatible with the existing memory, but it depends on who 'my' refers to and whether that relation is meant to be durable. The backend should clarify rather than overwrite or assume supersession.\"},\"conflict_classification\":\"ambiguous_relation_possible_compatibility\",\"answer\":\"I can\u2019t safely treat this as a direct conflict: Sara being Daniele\u2019s daughter and Nur\u2019s twin can still be compatible with Sara being the speaker\u2019s niece, depending on who the speaker is. Please clarify who 'my' refers to, or whether you want to store Sara as your niece as a separate relationship.\",\"citations\":[\"Existing high-confidence memory: Sara is Daniele's daughter and Nur's twin.\",\"New: Sara is my niece.\"],\"repair_options\":[\"ask_clarification\",\"add_new\",\"keep_existing\",\"reject_new\",\"edit\"],\"receipt\":{\"success\":true,\"details\":[\"No supersession applied.\",\"No durable memory committed beyond the clarified ambiguity.\",\"Existing high-confidence memory preserved as current.\"]}}",
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

@@ -1,0 +1,136 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0032625,
+  "fixture_id": "long_markdown_chat_summary_001__punctuation",
+  "input_tokens": 498,
+  "latency_ms": 8100,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 642,
+  "payload": {
+    "answer": "Extracted 5 atomic cards from the summary, with open questions preserved as questions rather than facts.",
+    "citations": [
+      "Chat Summary - Brain Architecture: 'Brain DB should be the source of truth Cognee should be a rebuildable semantic projection Slack should be a strict memory intake agent Open questions - Should Telegram be added later? Which model is cheapest while saturating performance?'"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_with_warning",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No disambiguation needed from the provided summary."
+    },
+    "intent": "extract_atomic_memory_cards",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source of truth",
+            "type": "system"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "should be",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB should be the source of truth."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "semantic projection",
+            "type": "system"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "rebuildable semantic projection",
+            "predicate": "should be",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee should be a rebuildable semantic projection."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "memory intake agent",
+            "type": "system"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "strict memory intake agent",
+            "predicate": "should be",
+            "subject": "Slack"
+          }
+        ],
+        "statement": "Slack should be a strict memory intake agent."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Telegram",
+            "role": "possible future addition",
+            "type": "system"
+          }
+        ],
+        "kind": "question",
+        "relationships": [
+          {
+            "object": "later addition",
+            "predicate": "is an open question for",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "There is an open question about whether Telegram should be added later."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "model selection",
+            "role": "optimization question",
+            "type": "topic"
+          }
+        ],
+        "kind": "question",
+        "relationships": [
+          {
+            "object": "which model is cheapest while saturating performance",
+            "predicate": "asks",
+            "subject": "model selection"
+          }
+        ],
+        "statement": "There is an open question about which model is cheapest while saturating performance."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed 3 high-confidence preference cards.",
+        "Preserved 2 open questions with medium confidence.",
+        "No conflicting or superseded facts detected."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If needed, split the open questions into separate tracked TODOs rather than durable memory cards.",
+      "If later context resolves Telegram or model choice, supersede these question cards with concrete decisions."
+    ]
+  },
+  "raw_text": "{\"intent\":\"extract_atomic_memory_cards\",\"decision\":\"commit_with_warning\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Brain DB should be the source of truth.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Brain DB\",\"type\":\"system\",\"role\":\"source of truth\"}],\"relationships\":[{\"subject\":\"Brain DB\",\"predicate\":\"should be\",\"object\":\"source of truth\"}]},{\"kind\":\"preference\",\"statement\":\"Cognee should be a rebuildable semantic projection.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Cognee\",\"type\":\"system\",\"role\":\"semantic projection\"}],\"relationships\":[{\"subject\":\"Cognee\",\"predicate\":\"should be\",\"object\":\"rebuildable semantic projection\"}]},{\"kind\":\"preference\",\"statement\":\"Slack should be a strict memory intake agent.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Slack\",\"type\":\"system\",\"role\":\"memory intake agent\"}],\"relationships\":[{\"subject\":\"Slack\",\"predicate\":\"should be\",\"object\":\"strict memory intake agent\"}]},{\"kind\":\"question\",\"statement\":\"There is an open question about whether Telegram should be added later.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Telegram\",\"type\":\"system\",\"role\":\"possible future addition\"}],\"relationships\":[{\"subject\":\"Telegram\",\"predicate\":\"is an open question for\",\"object\":\"later addition\"}]},{\"kind\":\"question\",\"statement\":\"There is an open question about which model is cheapest while saturating performance.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"model selection\",\"type\":\"topic\",\"role\":\"optimization question\"}],\"relationships\":[{\"subject\":\"model selection\",\"predicate\":\"asks\",\"object\":\"which model is cheapest while saturating performance\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No disambiguation needed from the provided summary.\"},\"conflict_classification\":\"none\",\"answer\":\"Extracted 5 atomic cards from the summary, with open questions preserved as questions rather than facts.\",\"citations\":[\"Chat Summary - Brain Architecture: 'Brain DB should be the source of truth Cognee should be a rebuildable semantic projection Slack should be a strict memory intake agent Open questions - Should Telegram be added later? Which model is cheapest while saturating performance?'\"],\"repair_options\":[\"If needed, split the open questions into separate tracked TODOs rather than durable memory cards.\",\"If later context resolves Telegram or model choice, supersede these question cards with concrete decisions.\"],\"receipt\":{\"success\":true,\"details\":[\"Committed 3 high-confidence preference cards.\",\"Preserved 2 open questions with medium confidence.\",\"No conflicting or superseded facts detected.\"]}}",
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

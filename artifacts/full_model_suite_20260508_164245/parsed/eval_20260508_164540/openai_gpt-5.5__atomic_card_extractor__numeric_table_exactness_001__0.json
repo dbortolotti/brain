@@ -1,0 +1,89 @@
+{
+  "fixture_id": "numeric_table_exactness_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Extracted two atomic run result memory cards from the table.",
+    "citations": [
+      "| PPO-001 | 0.12 | 0.45 | baseline |",
+      "| PPO-002 | 0.18 | 0.51 | entropy tuned |"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_success",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "The input explicitly lists two distinct run identifiers with associated numeric metrics and notes."
+    },
+    "intent": "extract_atomic_memory_cards",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "subject",
+            "type": "run"
+          }
+        ],
+        "kind": "experiment_result",
+        "relationships": [
+          {
+            "object": "0.12",
+            "predicate": "had_reward",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "0.45",
+            "predicate": "had_sharpe",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "baseline",
+            "predicate": "had_notes",
+            "subject": "PPO-001"
+          }
+        ],
+        "statement": "Run PPO-001 had Reward 0.12, Sharpe 0.45, and Notes \"baseline\"."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "subject",
+            "type": "run"
+          }
+        ],
+        "kind": "experiment_result",
+        "relationships": [
+          {
+            "object": "0.18",
+            "predicate": "had_reward",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "0.51",
+            "predicate": "had_sharpe",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "entropy tuned",
+            "predicate": "had_notes",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "Run PPO-002 had Reward 0.18, Sharpe 0.51, and Notes \"entropy tuned\"."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed exact numeric values for Reward and Sharpe for PPO-001 and PPO-002.",
+        "Preserved notes exactly as provided."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164540"
+}

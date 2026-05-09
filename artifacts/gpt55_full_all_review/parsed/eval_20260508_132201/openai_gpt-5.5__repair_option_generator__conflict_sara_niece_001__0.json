@@ -1,0 +1,95 @@
+{
+  "fixture_id": "conflict_sara_niece_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "The new claim 'Sara is my niece' is not a direct conflict with the existing high-confidence memory that Sara is Daniele's daughter and Nur's twin. Treat it as a low-confidence candidate or ask for clarification about how the user is related to Sara/Daniele before committing it as durable memory.",
+    "citations": [
+      "Existing high-confidence memory: Sara is Daniele's daughter and Nur's twin.",
+      "New input: Sara is my niece."
+    ],
+    "conflict_classification": "compatible_but_requires_kinship_context",
+    "decision": "do_not_commit_as_replacement; preserve as potentially compatible relationship pending identity/kinship clarification",
+    "entity_resolution": {
+      "action": "link_to_existing_entity_with_caution",
+      "entity_id": null,
+      "reason": "The new statement uses the same name Sara and does not inherently contradict Sara being Daniele's daughter and Nur's twin; a person can be both Daniele's daughter and the user's niece. However, the user's relationship to Daniele or Sara is not specified, so the niece relationship should not be committed as high-confidence without clarification."
+    },
+    "intent": "evaluate_new_memory_against_existing_relationships",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "possible_niece",
+            "type": "person"
+          },
+          {
+            "name": "user",
+            "role": "possible_aunt_or_uncle",
+            "type": "person"
+          }
+        ],
+        "kind": "candidate_memory",
+        "relationships": [
+          {
+            "object": "user",
+            "predicate": "possibly_is_niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara may be the user's niece."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "daughter; twin",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "twin",
+            "type": "person"
+          }
+        ],
+        "kind": "existing_memory",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_daughter_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No durable replacement made.",
+        "Existing high-confidence facts preserved.",
+        "New niece relationship treated as compatible but under-specified."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add a low-confidence candidate memory: 'Sara may be the user's niece.'",
+      "Ask the user to clarify: 'Is Sara, Daniele's daughter and Nur's twin, your niece?'",
+      "If confirmed, add: 'Sara is the user's niece' while retaining the existing facts that Sara is Daniele's daughter and Nur's twin.",
+      "Do not delete or supersede the existing high-confidence memory, because the new statement is compatible with it."
+    ]
+  },
+  "role": "repair_option_generator",
+  "run_id": "eval_20260508_132201"
+}

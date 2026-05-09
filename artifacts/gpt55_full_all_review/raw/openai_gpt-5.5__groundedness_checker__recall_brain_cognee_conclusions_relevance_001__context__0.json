@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01344,
+  "fixture_id": "recall_brain_cognee_conclusions_relevance_001__context",
+  "input_tokens": 438,
+  "latency_ms": 4459,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 375,
+  "payload": {
+    "answer": "You concluded that Brain DB should be treated as the source of truth for durable personal memory, and Cognee should be treated as a rebuildable projection from Brain\u2014not as the authoritative memory store.",
+    "citations": [
+      "Brain DB source-of-truth conclusion",
+      "Cognee rebuildable projection"
+    ],
+    "conflict_classification": "none",
+    "decision": "recall_answer",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": null,
+      "reason": "The query refers to the known systems Brain/Brain DB and Cognee in the provided context; no merge or new entity is needed."
+    },
+    "intent": "Answer the scoped recall query: what the user concluded about Brain and Cognee.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "rebuildable_projection",
+            "type": "system"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "durable personal memory",
+            "predicate": "is_source_of_truth_for",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "Brain DB",
+            "predicate": "is_rebuildable_projection_of",
+            "subject": "Cognee"
+          },
+          {
+            "object": "durable personal memory",
+            "predicate": "is_not_authoritative_store_for",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain DB is the source of truth for durable personal memory, while Cognee is a rebuildable projection derived from Brain rather than an authoritative store."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Answered only the queried Brain/Cognee conclusion scope.",
+        "Did not include unrelated Slack, family, or Sam preference memories."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"Answer the scoped recall query: what the user concluded about Brain and Cognee.\",\"decision\":\"recall_answer\",\"memory_cards\":[{\"kind\":\"conclusion\",\"statement\":\"Brain DB is the source of truth for durable personal memory, while Cognee is a rebuildable projection derived from Brain rather than an authoritative store.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Brain DB\",\"type\":\"system\",\"role\":\"source_of_truth\"},{\"name\":\"Cognee\",\"type\":\"system\",\"role\":\"rebuildable_projection\"}],\"relationships\":[{\"subject\":\"Brain DB\",\"predicate\":\"is_source_of_truth_for\",\"object\":\"durable personal memory\"},{\"subject\":\"Cognee\",\"predicate\":\"is_rebuildable_projection_of\",\"object\":\"Brain DB\"},{\"subject\":\"Cognee\",\"predicate\":\"is_not_authoritative_store_for\",\"object\":\"durable personal memory\"}]}],\"entity_resolution\":{\"action\":\"resolved\",\"entity_id\":null,\"reason\":\"The query refers to the known systems Brain/Brain DB and Cognee in the provided context; no merge or new entity is needed.\"},\"conflict_classification\":\"none\",\"answer\":\"You concluded that Brain DB should be treated as the source of truth for durable personal memory, and Cognee should be treated as a rebuildable projection from Brain\u2014not as the authoritative memory store.\",\"citations\":[\"Brain DB source-of-truth conclusion\",\"Cognee rebuildable projection\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Answered only the queried Brain/Cognee conclusion scope.\",\"Did not include unrelated Slack, family, or Sam preference memories.\"]}}",
+  "role": "groundedness_checker",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

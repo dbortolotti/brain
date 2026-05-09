@@ -1,0 +1,54 @@
+{
+  "fixture_id": "recall_ai_memory_articles_relevance_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "You have one saved article about AI memory: \u201cAI memory article.\u201d",
+    "citations": [
+      "AI memory article"
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "answer_from_relevant_memory_only",
+    "entity_resolution": {
+      "action": "no_merge",
+      "entity_id": null,
+      "reason": "The query asks for saved articles about AI memory; only the AI memory article record is in scope. Other records such as family facts, Sam preferences, knowledge graph open loop, Brain/Cognee chat, and table data are unrelated or not clearly saved articles about AI memory."
+    },
+    "intent": "Answer the user\u2019s query about saved articles specifically related to AI memory.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "AI memory article",
+            "role": "saved item",
+            "type": "article"
+          }
+        ],
+        "kind": "saved_article",
+        "relationships": [
+          {
+            "object": "AI memory article",
+            "predicate": "saved",
+            "subject": "user"
+          },
+          {
+            "object": "AI memory",
+            "predicate": "is_about",
+            "subject": "AI memory article"
+          }
+        ],
+        "statement": "You saved an article about AI memory titled or described as \u201cAI memory article.\u201d"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Returned only saved article records relevant to AI memory.",
+        "Excluded unrelated memories and non-article records."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "groundedness_checker",
+  "run_id": "eval_20260508_164540"
+}

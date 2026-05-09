@@ -1,0 +1,72 @@
+{
+  "fixture_id": "recall_daughters_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Nur and Sara are Daniele's twin daughters. If you are Daniele, then they are your daughters.",
+    "citations": [
+      "Fact - Nur and Sara are Daniele's twin daughters"
+    ],
+    "conflict_classification": "none",
+    "decision": "answer_with_ambiguity",
+    "entity_resolution": {
+      "action": "unresolved",
+      "entity_id": null,
+      "reason": "The query uses the first-person possessive 'my', but the input only states that Nur and Sara are Daniele's daughters; it does not explicitly establish that the speaker is Daniele."
+    },
+    "intent": "identify_daughters",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_child_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Daniele",
+            "predicate": "is_child_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Sara",
+            "predicate": "is_twin_of",
+            "subject": "Nur"
+          }
+        ],
+        "statement": "Nur and Sara are Daniele's twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted daughter relationship from the provided fact.",
+        "Preserved ambiguity about the referent of 'my'."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want a direct answer, confirm that you are Daniele.",
+      "If 'my' refers to someone else, provide the speaker's identity."
+    ]
+  },
+  "role": "groundedness_checker",
+  "run_id": "eval_20260508_164540"
+}

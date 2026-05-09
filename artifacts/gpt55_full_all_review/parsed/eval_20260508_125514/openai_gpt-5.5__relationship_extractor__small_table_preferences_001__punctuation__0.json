@@ -1,0 +1,99 @@
+{
+  "fixture_id": "small_table_preferences_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Extracted two preference relationships from the table.",
+    "citations": [
+      "Dinner 2026-05-05",
+      "Lunch 2026-05-01"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_link_if_unambiguous",
+      "entity_id": null,
+      "reason": "Names and firms are provided but no stable unique identifiers are available; preserve ambiguity for Sam/Anna and Goldman/JPM."
+    },
+    "intent": "extract_relationships_from_table",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "firm"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_object",
+            "type": "music_artist"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at_or_is_associated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam at Goldman likes Bill Evans, according to Dinner on 2026-05-05."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Anna",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "JPM",
+            "role": "affiliation",
+            "type": "firm"
+          },
+          {
+            "name": "Barolo",
+            "role": "preference_object",
+            "type": "wine"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "JPM",
+            "predicate": "works_at_or_is_associated_with",
+            "subject": "Anna"
+          },
+          {
+            "object": "Barolo",
+            "predicate": "likes",
+            "subject": "Anna"
+          }
+        ],
+        "statement": "Anna at JPM likes Barolo, according to Lunch on 2026-05-01."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed preference: Sam at Goldman likes Bill Evans from Dinner 2026-05-05.",
+        "Committed preference: Anna at JPM likes Barolo from Lunch 2026-05-01."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "relationship_extractor",
+  "run_id": "eval_20260508_125514"
+}

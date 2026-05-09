@@ -1,0 +1,141 @@
+{
+  "fixture_id": "conversation_transcript_sam_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Committed supported facts: Sam is now at Point72 after leaving Goldman last month; Sam still listens to Bill Evans, lately more early Coltrane; Sam is open to catching up about AI infra and wants the article Daniele mentioned.",
+    "citations": [
+      "For context, Daniele: Still at Goldman? Sam: No, I left Goldman last month and joined Point72.",
+      "Daniele: Still listening to Bill Evans? Sam: Yes, but lately more early Coltrane.",
+      "Daniele: We should catch up about AI infra. Sam: Definitely, send me that article."
+    ],
+    "conflict_classification": "supersession_none",
+    "decision": "commit_supported_facts",
+    "entity_resolution": {
+      "action": "no_merge",
+      "entity_id": null,
+      "reason": "No ambiguous entity references requiring resolution; names and topics are explicit in the transcript."
+    },
+    "intent": "extract_and_classify_memories",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "new employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman last month and joined Point72."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "musician",
+            "type": "person"
+          },
+          {
+            "name": "Coltrane",
+            "role": "musician",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "listens to",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "also listens more lately to",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam still listens to Bill Evans, but lately more early Coltrane."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "other participant",
+            "type": "person"
+          },
+          {
+            "name": "AI infra",
+            "role": "discussion topic",
+            "type": "topic"
+          },
+          {
+            "name": "article",
+            "role": "requested item",
+            "type": "document"
+          }
+        ],
+        "kind": "intent",
+        "relationships": [
+          {
+            "object": "AI infra",
+            "predicate": "agreed to catch up about",
+            "subject": "Sam"
+          },
+          {
+            "object": "article",
+            "predicate": "asked for",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam agreed to catch up about AI infra and asked to receive the article Daniele mentioned."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted 3 supported memory cards.",
+        "No unsupported or conflicting durable facts added."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "None needed."
+    ]
+  },
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540"
+}

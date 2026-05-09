@@ -1,0 +1,100 @@
+{
+  "fixture_id": "recall_profile_sam_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Sam from Goldman is associated with Goldman. He likes Bill Evans and is interested in AI infrastructure. There is also an open loop to send Sam an article about AI infrastructure.",
+    "citations": [
+      "Facts: Sam from Goldman likes Bill Evans, is associated with Goldman, is interested in AI infrastructure.",
+      "Open loop: send Sam article about AI infra."
+    ],
+    "conflict_classification": "none",
+    "decision": "answer_with_recalled_facts",
+    "entity_resolution": {
+      "action": "resolved_from_query_descriptor",
+      "entity_id": null,
+      "reason": "The query identifies Sam by the descriptor 'from Goldman', matching the stored association with Goldman. No durable unique entity ID was provided."
+    },
+    "intent": "recall_profile",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_or_association",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_entity",
+            "type": "person_or_artist"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "interest",
+            "type": "topic"
+          }
+        ],
+        "kind": "person_profile",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "is associated with",
+            "subject": "Sam"
+          },
+          {
+            "object": "AI infrastructure",
+            "predicate": "is interested in",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans, is associated with Goldman, and is interested in AI infrastructure."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "recipient",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "article_topic",
+            "type": "topic"
+          }
+        ],
+        "kind": "open_loop",
+        "relationships": [
+          {
+            "object": "AI infrastructure to Sam",
+            "predicate": "should send article about",
+            "subject": "User"
+          }
+        ],
+        "statement": "Send Sam an article about AI infrastructure."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recalled profile facts for Sam from Goldman.",
+        "Included relevant open loop.",
+        "No conflicts or superseded facts detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "recall_planner",
+  "run_id": "eval_20260508_164540"
+}

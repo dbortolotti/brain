@@ -1,0 +1,65 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01547,
+  "fixture_id": "recall_ai_memory_articles_relevance_001__context",
+  "input_tokens": 436,
+  "latency_ms": 4880,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 443,
+  "payload": {
+    "answer": "I found one saved item in scope: an article about AI memory. I don\u2019t have enough detail here to name the title, URL, or author.",
+    "citations": [
+      "Context: Records include ... an AI memory article ..."
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "answer_from_relevant_memory_only",
+    "entity_resolution": {
+      "action": "preserve_ambiguity",
+      "entity_id": null,
+      "reason": "The context indicates an AI memory article exists, but does not provide a title, URL, author, or enough detail to identify a specific article."
+    },
+    "intent": "Recall saved articles about AI memory.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "AI memory article",
+            "role": "saved item",
+            "type": "article"
+          },
+          {
+            "name": "AI memory",
+            "role": "article subject",
+            "type": "topic"
+          }
+        ],
+        "kind": "saved_article",
+        "relationships": [
+          {
+            "object": "AI memory",
+            "predicate": "is_about",
+            "subject": "AI memory article"
+          }
+        ],
+        "statement": "You saved an article about AI memory."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Answered only the queried scope: saved articles about AI memory.",
+        "Excluded unrelated family facts, Sam preferences, knowledge graph open loop, Brain/Cognee chat, and table records.",
+        "Preserved ambiguity because the fixture context does not expose article metadata."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide the article title, URL, author, or source if you want this memory made more specific.",
+      "Ask to list all saved articles only if additional article records are available."
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"Recall saved articles about AI memory.\",\n  \"decision\": \"answer_from_relevant_memory_only\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"saved_article\",\n      \"statement\": \"You saved an article about AI memory.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"AI memory article\",\n          \"type\": \"article\",\n          \"role\": \"saved item\"\n        },\n        {\n          \"name\": \"AI memory\",\n          \"type\": \"topic\",\n          \"role\": \"article subject\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"AI memory article\",\n          \"predicate\": \"is_about\",\n          \"object\": \"AI memory\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"preserve_ambiguity\",\n    \"entity_id\": null,\n    \"reason\": \"The context indicates an AI memory article exists, but does not provide a title, URL, author, or enough detail to identify a specific article.\"\n  },\n  \"conflict_classification\": \"none_detected\",\n  \"answer\": \"I found one saved item in scope: an article about AI memory. I don\u2019t have enough detail here to name the title, URL, or author.\",\n  \"citations\": [\n    \"Context: Records include ... an AI memory article ...\"\n  ],\n  \"repair_options\": [\n    \"Provide the article title, URL, author, or source if you want this memory made more specific.\",\n    \"Ask to list all saved articles only if additional article records are available.\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Answered only the queried scope: saved articles about AI memory.\",\n      \"Excluded unrelated family facts, Sam preferences, knowledge graph open loop, Brain/Cognee chat, and table records.\",\n      \"Preserved ambiguity because the fixture context does not expose article metadata.\"\n    ]\n  }\n}",
+  "role": "groundedness_checker",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

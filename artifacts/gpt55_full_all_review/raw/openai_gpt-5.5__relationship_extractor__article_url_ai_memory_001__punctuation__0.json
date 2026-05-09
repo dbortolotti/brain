@@ -1,0 +1,108 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01946,
+  "fixture_id": "article_url_ai_memory_001__punctuation",
+  "input_tokens": 442,
+  "latency_ms": 5451,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 575,
+  "payload": {
+    "answer": "Remembered the article reference and its stated relevance to knowledge graph memory design.",
+    "citations": [
+      "Input: Remember this article - https -//examplecom/ai-memory why - useful for thinking about knowledge graph memory design",
+      "Mock fetched article - Graph memory helps agents preserve relationships; provenance and update semantics are needed"
+    ],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "No existing entity context was provided; preserve the punctuated URL-like string exactly as supplied rather than normalizing or repairing it."
+    },
+    "intent": "remember_article",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "https -//examplecom/ai-memory",
+            "role": "source",
+            "type": "article_url"
+          },
+          {
+            "name": "knowledge graph memory design",
+            "role": "user_stated_relevance",
+            "type": "topic"
+          },
+          {
+            "name": "graph memory",
+            "role": "article_subject",
+            "type": "concept"
+          },
+          {
+            "name": "agents",
+            "role": "beneficiary",
+            "type": "concept"
+          },
+          {
+            "name": "relationships",
+            "role": "preserved_by_graph_memory",
+            "type": "concept"
+          },
+          {
+            "name": "provenance",
+            "role": "needed_semantic",
+            "type": "concept"
+          },
+          {
+            "name": "update semantics",
+            "role": "needed_semantic",
+            "type": "concept"
+          }
+        ],
+        "kind": "article_reference",
+        "relationships": [
+          {
+            "object": "knowledge graph memory design",
+            "predicate": "is_relevant_to",
+            "subject": "https -//examplecom/ai-memory"
+          },
+          {
+            "object": "relationships",
+            "predicate": "helps_preserve",
+            "subject": "graph memory"
+          },
+          {
+            "object": "agents",
+            "predicate": "helps",
+            "subject": "graph memory"
+          },
+          {
+            "object": "graph memory",
+            "predicate": "is_needed_for",
+            "subject": "provenance"
+          },
+          {
+            "object": "graph memory",
+            "predicate": "is_needed_for",
+            "subject": "update semantics"
+          }
+        ],
+        "statement": "The user asked to remember an article at https -//examplecom/ai-memory because it is useful for thinking about knowledge graph memory design. The provided mock article says graph memory helps agents preserve relationships, and that provenance and update semantics are needed."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored article reference with supplied URL-like string unchanged.",
+        "Stored user-stated reason: useful for thinking about knowledge graph memory design.",
+        "Stored mock article claims only: graph memory helps agents preserve relationships; provenance and update semantics are needed."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"remember_article\",\"decision\":\"store\",\"memory_cards\":[{\"kind\":\"article_reference\",\"statement\":\"The user asked to remember an article at https -//examplecom/ai-memory because it is useful for thinking about knowledge graph memory design. The provided mock article says graph memory helps agents preserve relationships, and that provenance and update semantics are needed.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"https -//examplecom/ai-memory\",\"type\":\"article_url\",\"role\":\"source\"},{\"name\":\"knowledge graph memory design\",\"type\":\"topic\",\"role\":\"user_stated_relevance\"},{\"name\":\"graph memory\",\"type\":\"concept\",\"role\":\"article_subject\"},{\"name\":\"agents\",\"type\":\"concept\",\"role\":\"beneficiary\"},{\"name\":\"relationships\",\"type\":\"concept\",\"role\":\"preserved_by_graph_memory\"},{\"name\":\"provenance\",\"type\":\"concept\",\"role\":\"needed_semantic\"},{\"name\":\"update semantics\",\"type\":\"concept\",\"role\":\"needed_semantic\"}],\"relationships\":[{\"subject\":\"https -//examplecom/ai-memory\",\"predicate\":\"is_relevant_to\",\"object\":\"knowledge graph memory design\"},{\"subject\":\"graph memory\",\"predicate\":\"helps_preserve\",\"object\":\"relationships\"},{\"subject\":\"graph memory\",\"predicate\":\"helps\",\"object\":\"agents\"},{\"subject\":\"provenance\",\"predicate\":\"is_needed_for\",\"object\":\"graph memory\"},{\"subject\":\"update semantics\",\"predicate\":\"is_needed_for\",\"object\":\"graph memory\"}]}],\"entity_resolution\":{\"action\":\"create\",\"entity_id\":null,\"reason\":\"No existing entity context was provided; preserve the punctuated URL-like string exactly as supplied rather than normalizing or repairing it.\"},\"conflict_classification\":\"none\",\"answer\":\"Remembered the article reference and its stated relevance to knowledge graph memory design.\",\"citations\":[\"Input: Remember this article - https -//examplecom/ai-memory why - useful for thinking about knowledge graph memory design\",\"Mock fetched article - Graph memory helps agents preserve relationships; provenance and update semantics are needed\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Stored article reference with supplied URL-like string unchanged.\",\"Stored user-stated reason: useful for thinking about knowledge graph memory design.\",\"Stored mock article claims only: graph memory helps agents preserve relationships; provenance and update semantics are needed.\"]}}",
+  "role": "relationship_extractor",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

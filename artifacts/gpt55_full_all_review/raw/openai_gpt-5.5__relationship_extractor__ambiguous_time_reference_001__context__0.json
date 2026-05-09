@@ -1,0 +1,71 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.015449999999999998,
+  "fixture_id": "ambiguous_time_reference_001__context",
+  "input_tokens": 378,
+  "latency_ms": 6808,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 452,
+  "payload": {
+    "answer": "Not committing as durable memory because the timing is ambiguous: 'last Friday' and 'next month' depend on an unspecified reference date. The safest extracted fact is that Sam reportedly said he is leaving Goldman in the month after the relevant statement date.",
+    "citations": [
+      "For context, Sam said last Friday that he is leaving Goldman next month."
+    ],
+    "conflict_classification": "none",
+    "decision": "do_not_commit",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Only the name 'Sam' and organization 'Goldman' are provided; no stable identifiers or disambiguating context are available. The time references are relative and cannot be resolved from the input alone."
+    },
+    "intent": "extract_relationship_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker/subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer or affiliated organization",
+            "type": "organization"
+          }
+        ],
+        "kind": "event_report",
+        "relationships": [
+          {
+            "object": "he is leaving Goldman next month",
+            "predicate": "said",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "plans_or_reports_leaving",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said last Friday that he is leaving Goldman next month; the exact calendar dates are ambiguous without knowing the reference date for 'last Friday' and 'next month'."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted ambiguous event report.",
+        "Deferred durable memory commitment due to unresolved relative dates and entity ambiguity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide the date on which this note was written or heard so 'last Friday' and 'next month' can be resolved.",
+      "Clarify which Sam is meant.",
+      "Clarify whether 'Goldman' refers to Goldman Sachs or another Goldman entity.",
+      "Confirm whether Sam has already left, is scheduled to leave, or merely said he planned to leave."
+    ]
+  },
+  "raw_text": "{\"intent\":\"extract_relationship_memory\",\"decision\":\"do_not_commit\",\"memory_cards\":[{\"kind\":\"event_report\",\"statement\":\"Sam said last Friday that he is leaving Goldman next month; the exact calendar dates are ambiguous without knowing the reference date for 'last Friday' and 'next month'.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"speaker/subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"employer or affiliated organization\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"said\",\"object\":\"he is leaving Goldman next month\"},{\"subject\":\"Sam\",\"predicate\":\"plans_or_reports_leaving\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"Only the name 'Sam' and organization 'Goldman' are provided; no stable identifiers or disambiguating context are available. The time references are relative and cannot be resolved from the input alone.\"},\"conflict_classification\":\"none\",\"answer\":\"Not committing as durable memory because the timing is ambiguous: 'last Friday' and 'next month' depend on an unspecified reference date. The safest extracted fact is that Sam reportedly said he is leaving Goldman in the month after the relevant statement date.\",\"citations\":[\"For context, Sam said last Friday that he is leaving Goldman next month.\"],\"repair_options\":[\"Provide the date on which this note was written or heard so 'last Friday' and 'next month' can be resolved.\",\"Clarify which Sam is meant.\",\"Clarify whether 'Goldman' refers to Goldman Sachs or another Goldman entity.\",\"Confirm whether Sam has already left, is scheduled to leave, or merely said he planned to leave.\"],\"receipt\":{\"success\":true,\"details\":[\"Extracted ambiguous event report.\",\"Deferred durable memory commitment due to unresolved relative dates and entity ambiguity.\"]}}",
+  "role": "relationship_extractor",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

@@ -1,0 +1,63 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00147825,
+  "fixture_id": "unresolved_pronoun_001__punctuation",
+  "input_tokens": 363,
+  "latency_ms": 3546,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 268,
+  "payload": {
+    "answer": "Ambiguous: unable to resolve who \"He\" refers to or what \"the other one\" is.",
+    "citations": [],
+    "conflict_classification": "unresolved_pronoun",
+    "decision": "ambiguous",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The pronoun \"He\" and phrase \"the other one\" are unresolved without additional context; no durable entity can be safely committed."
+    },
+    "intent": "intent_router",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "He",
+            "role": "subject",
+            "type": "pronoun"
+          },
+          {
+            "name": "the other one",
+            "role": "object",
+            "type": "indefinite_reference"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "the other one",
+            "predicate": "prefers",
+            "subject": "He"
+          }
+        ],
+        "statement": "The input says: \"He prefers the other one\"."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed a single ambiguous preference statement.",
+        "No durable memory committed due to unresolved references."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide the prior sentence or list of candidate entities for \"He\".",
+      "Clarify what \"the other one\" refers to.",
+      "Restate the message with explicit names or nouns."
+    ]
+  },
+  "raw_text": "{\"intent\":\"intent_router\",\"decision\":\"ambiguous\",\"memory_cards\":[{\"kind\":\"observation\",\"statement\":\"The input says: \\\"He prefers the other one\\\".\",\"confidence\":\"high\",\"entities\":[{\"name\":\"He\",\"type\":\"pronoun\",\"role\":\"subject\"},{\"name\":\"the other one\",\"type\":\"indefinite_reference\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"He\",\"predicate\":\"prefers\",\"object\":\"the other one\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"The pronoun \\\"He\\\" and phrase \\\"the other one\\\" are unresolved without additional context; no durable entity can be safely committed.\"},\"conflict_classification\":\"unresolved_pronoun\",\"answer\":\"Ambiguous: unable to resolve who \\\"He\\\" refers to or what \\\"the other one\\\" is.\",\"citations\":[],\"repair_options\":[\"Provide the prior sentence or list of candidate entities for \\\"He\\\".\",\"Clarify what \\\"the other one\\\" refers to.\",\"Restate the message with explicit names or nouns.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed a single ambiguous preference statement.\",\"No durable memory committed due to unresolved references.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

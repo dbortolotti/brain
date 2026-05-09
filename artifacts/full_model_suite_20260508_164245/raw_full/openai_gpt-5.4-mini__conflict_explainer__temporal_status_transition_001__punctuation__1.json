@@ -1,0 +1,63 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0018299999999999998,
+  "fixture_id": "temporal_status_transition_001__punctuation",
+  "input_tokens": 448,
+  "latency_ms": 3896,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 332,
+  "payload": {
+    "answer": "Approve supersession: the new statement indicates the Brain Slack agent has moved from planned/open to implemented, so the implemented status should be treated as current and the planned/open status as superseded.",
+    "citations": [
+      "Existing project state: The Brain Slack agent is planned, status=open",
+      "New: The Brain Slack agent MVP is now implemented"
+    ],
+    "conflict_classification": "status_transition_supersession",
+    "decision": "approve_supersession",
+    "entity_resolution": {
+      "action": "keep_both",
+      "entity_id": null,
+      "reason": "The existing and new statements refer to the same project entity; the new information is a status transition for that entity rather than a different entity."
+    },
+    "intent": "resolve_status_transition_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain Slack agent",
+            "role": "subject",
+            "type": "project"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "implemented",
+            "predicate": "has_status",
+            "subject": "Brain Slack agent"
+          }
+        ],
+        "statement": "The Brain Slack agent is implemented."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recognized a direct status transition for the same project.",
+        "Marked the newer implementation status as current.",
+        "Preserved the older planned/open status only as superseded context, not current memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "approve_supersession",
+      "keep_both",
+      "reject_new",
+      "edit"
+    ]
+  },
+  "raw_text": "{\"intent\":\"resolve_status_transition_conflict\",\"decision\":\"approve_supersession\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"The Brain Slack agent is implemented.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Brain Slack agent\",\"type\":\"project\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"Brain Slack agent\",\"predicate\":\"has_status\",\"object\":\"implemented\"}]}],\"entity_resolution\":{\"action\":\"keep_both\",\"entity_id\":null,\"reason\":\"The existing and new statements refer to the same project entity; the new information is a status transition for that entity rather than a different entity.\"},\"conflict_classification\":\"status_transition_supersession\",\"answer\":\"Approve supersession: the new statement indicates the Brain Slack agent has moved from planned/open to implemented, so the implemented status should be treated as current and the planned/open status as superseded.\",\"citations\":[\"Existing project state: The Brain Slack agent is planned, status=open\",\"New: The Brain Slack agent MVP is now implemented\"],\"repair_options\":[\"approve_supersession\",\"keep_both\",\"reject_new\",\"edit\"],\"receipt\":{\"success\":true,\"details\":[\"Recognized a direct status transition for the same project.\",\"Marked the newer implementation status as current.\",\"Preserved the older planned/open status only as superseded context, not current memory.\"]}}",
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

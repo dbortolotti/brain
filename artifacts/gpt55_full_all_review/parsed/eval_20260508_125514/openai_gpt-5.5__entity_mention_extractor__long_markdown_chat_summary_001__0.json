@@ -1,0 +1,150 @@
+{
+  "fixture_id": "long_markdown_chat_summary_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Extracted durable architecture decisions and preserved Telegram/model-selection items as open questions rather than current decisions.",
+    "citations": [
+      "Brain DB should be the source of truth.",
+      "Cognee should be a rebuildable semantic projection.",
+      "Slack should be a strict memory intake agent.",
+      "Open questions: Should Telegram be added later? Which model is cheapest while saturating performance?"
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "commit_durable_architecture_decisions;preserve_open_questions_as_non_decisions",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No existing entity IDs or competing aliases were provided; extracted mentions should remain as named entities."
+    },
+    "intent": "extract_entity_mentions_and_memory_candidates",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system_component"
+          },
+          {
+            "name": "Brain",
+            "role": "context",
+            "type": "system"
+          }
+        ],
+        "kind": "architecture_decision",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "should_be",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB should be the source of truth for the Brain architecture."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "semantic_projection",
+            "type": "system_component"
+          },
+          {
+            "name": "Brain DB",
+            "role": "contrasted_source_of_truth",
+            "type": "system_component"
+          }
+        ],
+        "kind": "architecture_decision",
+        "relationships": [
+          {
+            "object": "rebuildable semantic projection",
+            "predicate": "should_be",
+            "subject": "Cognee"
+          },
+          {
+            "object": "source of truth",
+            "predicate": "should_not_be",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee should be a rebuildable semantic projection rather than the source of truth."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "memory_intake_agent",
+            "type": "integration"
+          }
+        ],
+        "kind": "architecture_decision",
+        "relationships": [
+          {
+            "object": "strict memory intake agent",
+            "predicate": "should_be",
+            "subject": "Slack"
+          }
+        ],
+        "statement": "Slack should be a strict memory intake agent."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Telegram",
+            "role": "possible_future_addition",
+            "type": "integration"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [
+          {
+            "object": "undecided",
+            "predicate": "may_be_added_later",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "It remains undecided whether Telegram should be added later."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "model",
+            "role": "selection_candidate",
+            "type": "ai_model"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [
+          {
+            "object": "cheapest while saturating performance",
+            "predicate": "optimization_goal",
+            "subject": "model selection"
+          },
+          {
+            "object": "undecided",
+            "predicate": "status",
+            "subject": "model selection"
+          }
+        ],
+        "statement": "It remains undecided which model is cheapest while saturating performance."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed Brain DB as source of truth decision.",
+        "Committed Cognee as rebuildable semantic projection decision.",
+        "Committed Slack as strict memory intake agent decision.",
+        "Recorded Telegram and model-selection items as open questions only."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "entity_mention_extractor",
+  "run_id": "eval_20260508_125514"
+}

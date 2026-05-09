@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.009875000000000002,
+  "fixture_id": "debug_sql_disabled_001__context",
+  "input_tokens": 379,
+  "latency_ms": 3628,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 266,
+  "payload": {
+    "answer": "The command `/brain admin sql SELECT * FROM memory_cards` cannot be executed because `BRAIN_DEBUG_SQL_ENABLED=false`. With SQL debugging disabled, direct admin SQL access should be refused rather than run or exposed. No memory cards should be created from this request.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "do_not_commit_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input is an admin/debug SQL request and does not contain durable user memory to store."
+    },
+    "intent": "debug_explainer",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "SQL execution blocked because BRAIN_DEBUG_SQL_ENABLED=false.",
+        "No durable memory committed.",
+        "No current memory facts exposed or inferred."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Enable SQL debugging only in an appropriate non-production/debug environment before attempting admin SQL inspection.",
+      "Use a supported non-SQL memory inspection/debug endpoint if available.",
+      "Check configuration for BRAIN_DEBUG_SQL_ENABLED and restart/reload the service if changes are intended."
+    ]
+  },
+  "raw_text": "{\"intent\":\"debug_explainer\",\"decision\":\"do_not_commit_memory\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input is an admin/debug SQL request and does not contain durable user memory to store.\"},\"conflict_classification\":\"none\",\"answer\":\"The command `/brain admin sql SELECT * FROM memory_cards` cannot be executed because `BRAIN_DEBUG_SQL_ENABLED=false`. With SQL debugging disabled, direct admin SQL access should be refused rather than run or exposed. No memory cards should be created from this request.\",\"citations\":[],\"repair_options\":[\"Enable SQL debugging only in an appropriate non-production/debug environment before attempting admin SQL inspection.\",\"Use a supported non-SQL memory inspection/debug endpoint if available.\",\"Check configuration for BRAIN_DEBUG_SQL_ENABLED and restart/reload the service if changes are intended.\"],\"receipt\":{\"success\":false,\"details\":[\"SQL execution blocked because BRAIN_DEBUG_SQL_ENABLED=false.\",\"No durable memory committed.\",\"No current memory facts exposed or inferred.\"]}}",
+  "role": "debug_explainer",
+  "run_id": "eval_20260508_195937",
+  "status": "ok"
+}

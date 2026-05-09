@@ -1,0 +1,32 @@
+{
+  "fixture_id": "large_table_500_rows_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "A 500-row CSV table of repeated id,name,value rows should not be committed into durable personal memory as individual facts. Treat it as transient context or an external artifact. If it must be retained, store only a compact reference or summary, such as: file/table name if known, purpose, schema columns, row count, source, and where the full data lives. Do not expand every row into memory cards unless the user explicitly asks to preserve specific rows as durable facts and they are meaningful long-term.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "do_not_store_as_durable_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input describes a large CSV-like table used as context for a storage policy question, not a durable personal memory fact about the user."
+    },
+    "intent": "policy_question",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Classified as a storage policy question.",
+        "No durable memory cards created.",
+        "Recommended transient handling or metadata-only retention."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask the user whether they want the dataset retained as an external document/reference rather than memory.",
+      "Store only metadata: schema=id,name,value; approximate row count=500; repeated CSV table; purpose unknown.",
+      "If specific rows are important, ask the user to identify which rows should be remembered."
+    ]
+  },
+  "role": "intent_router",
+  "run_id": "eval_20260508_195937"
+}

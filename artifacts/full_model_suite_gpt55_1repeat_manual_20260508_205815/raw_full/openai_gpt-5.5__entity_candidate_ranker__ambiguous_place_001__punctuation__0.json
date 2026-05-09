@@ -1,0 +1,61 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.013055,
+  "fixture_id": "ambiguous_place_001__punctuation",
+  "input_tokens": 385,
+  "latency_ms": 4243,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 371,
+  "payload": {
+    "answer": "Linked the new note to the existing Brutto restaurant entity, preserving ambiguity about location because the note only says 'Brutto'.",
+    "citations": [
+      "Existing: Brutto restaurant in London; Brutto article alias",
+      "New note: Brutto was better than expected"
+    ],
+    "conflict_classification": "none",
+    "decision": "link_to_existing_with_ambiguity",
+    "entity_resolution": {
+      "action": "link",
+      "entity_id": "Brutto restaurant in London",
+      "reason": "The new note mentions 'Brutto' and the existing memory contains a matching restaurant entity in London plus an alias-like note. No conflicting place/entity candidate is provided, but the statement itself does not explicitly specify London, so link with moderate confidence rather than creating a new entity."
+    },
+    "intent": "rank_entity_candidate_for_new_note",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brutto",
+            "role": "subject",
+            "type": "restaurant"
+          }
+        ],
+        "kind": "preference_or_experience",
+        "relationships": [
+          {
+            "object": "Brutto",
+            "predicate": "found_better_than_expected",
+            "subject": "User"
+          }
+        ],
+        "statement": "Brutto was better than expected."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No durable conflicting fact detected.",
+        "Stored an experience/preference-style memory with medium confidence.",
+        "Did not infer additional details beyond the provided note."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If this referred to a different Brutto, create a separate entity for that place.",
+      "If 'Brutto article alias' was not intended as a restaurant alias, remove or revise that alias."
+    ]
+  },
+  "raw_text": "{\"intent\":\"rank_entity_candidate_for_new_note\",\"decision\":\"link_to_existing_with_ambiguity\",\"memory_cards\":[{\"kind\":\"preference_or_experience\",\"statement\":\"Brutto was better than expected.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Brutto\",\"type\":\"restaurant\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"User\",\"predicate\":\"found_better_than_expected\",\"object\":\"Brutto\"}]}],\"entity_resolution\":{\"action\":\"link\",\"entity_id\":\"Brutto restaurant in London\",\"reason\":\"The new note mentions 'Brutto' and the existing memory contains a matching restaurant entity in London plus an alias-like note. No conflicting place/entity candidate is provided, but the statement itself does not explicitly specify London, so link with moderate confidence rather than creating a new entity.\"},\"conflict_classification\":\"none\",\"answer\":\"Linked the new note to the existing Brutto restaurant entity, preserving ambiguity about location because the note only says 'Brutto'.\",\"citations\":[\"Existing: Brutto restaurant in London; Brutto article alias\",\"New note: Brutto was better than expected\"],\"repair_options\":[\"If this referred to a different Brutto, create a separate entity for that place.\",\"If 'Brutto article alias' was not intended as a restaurant alias, remove or revise that alias.\"],\"receipt\":{\"success\":true,\"details\":[\"No durable conflicting fact detected.\",\"Stored an experience/preference-style memory with medium confidence.\",\"Did not infer additional details beyond the provided note.\"]}}",
+  "role": "entity_candidate_ranker",
+  "run_id": "eval_20260508_195937",
+  "status": "ok"
+}

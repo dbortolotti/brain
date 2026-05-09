@@ -1,0 +1,145 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0027254999999999996,
+  "fixture_id": "numeric_table_exactness_001__context",
+  "input_tokens": 394,
+  "latency_ms": 5202,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 540,
+  "payload": {
+    "answer": "The context contains a small table comparing PPO-001 and PPO-002. PPO-001: Reward 0.12, Sharpe 0.45, Notes baseline. PPO-002: Reward 0.18, Sharpe 0.51, Notes entropy tuned.",
+    "citations": [
+      "provided context table"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No ambiguous entity references requiring resolution were present."
+    },
+    "intent": "extract_and_preserve_numeric_table_facts",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "row identifier",
+            "type": "run"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "0.12",
+            "predicate": "has_reward",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "0.45",
+            "predicate": "has_sharpe",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "baseline",
+            "predicate": "has_notes",
+            "subject": "PPO-001"
+          }
+        ],
+        "statement": "In the provided table, PPO-001 has Reward 0.12 and Sharpe 0.45, with Notes listed as baseline."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "row identifier",
+            "type": "run"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "0.18",
+            "predicate": "has_reward",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "0.51",
+            "predicate": "has_sharpe",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "entropy tuned",
+            "predicate": "has_notes",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "In the provided table, PPO-002 has Reward 0.18 and Sharpe 0.51, with Notes listed as entropy tuned."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Run",
+            "role": "table column",
+            "type": "column"
+          },
+          {
+            "name": "Reward",
+            "role": "table column",
+            "type": "column"
+          },
+          {
+            "name": "Sharpe",
+            "role": "table column",
+            "type": "column"
+          },
+          {
+            "name": "Notes",
+            "role": "table column",
+            "type": "column"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Run",
+            "predicate": "has_column",
+            "subject": "table"
+          },
+          {
+            "object": "Reward",
+            "predicate": "has_column",
+            "subject": "table"
+          },
+          {
+            "object": "Sharpe",
+            "predicate": "has_column",
+            "subject": "table"
+          },
+          {
+            "object": "Notes",
+            "predicate": "has_column",
+            "subject": "table"
+          }
+        ],
+        "statement": "The context shows a comparison table with columns Run, Reward, Sharpe, and Notes."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed 2 runs from the table.",
+        "Captured exact numeric values and notes without normalization.",
+        "No conflicts or deletions detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"extract_and_preserve_numeric_table_facts\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"In the provided table, PPO-001 has Reward 0.12 and Sharpe 0.45, with Notes listed as baseline.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"PPO-001\",\"type\":\"run\",\"role\":\"row identifier\"}],\"relationships\":[{\"subject\":\"PPO-001\",\"predicate\":\"has_reward\",\"object\":\"0.12\"},{\"subject\":\"PPO-001\",\"predicate\":\"has_sharpe\",\"object\":\"0.45\"},{\"subject\":\"PPO-001\",\"predicate\":\"has_notes\",\"object\":\"baseline\"}]},{\"kind\":\"fact\",\"statement\":\"In the provided table, PPO-002 has Reward 0.18 and Sharpe 0.51, with Notes listed as entropy tuned.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"PPO-002\",\"type\":\"run\",\"role\":\"row identifier\"}],\"relationships\":[{\"subject\":\"PPO-002\",\"predicate\":\"has_reward\",\"object\":\"0.18\"},{\"subject\":\"PPO-002\",\"predicate\":\"has_sharpe\",\"object\":\"0.51\"},{\"subject\":\"PPO-002\",\"predicate\":\"has_notes\",\"object\":\"entropy tuned\"}]},{\"kind\":\"fact\",\"statement\":\"The context shows a comparison table with columns Run, Reward, Sharpe, and Notes.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Run\",\"type\":\"column\",\"role\":\"table column\"},{\"name\":\"Reward\",\"type\":\"column\",\"role\":\"table column\"},{\"name\":\"Sharpe\",\"type\":\"column\",\"role\":\"table column\"},{\"name\":\"Notes\",\"type\":\"column\",\"role\":\"table column\"}],\"relationships\":[{\"subject\":\"table\",\"predicate\":\"has_column\",\"object\":\"Run\"},{\"subject\":\"table\",\"predicate\":\"has_column\",\"object\":\"Reward\"},{\"subject\":\"table\",\"predicate\":\"has_column\",\"object\":\"Sharpe\"},{\"subject\":\"table\",\"predicate\":\"has_column\",\"object\":\"Notes\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No ambiguous entity references requiring resolution were present.\"},\"conflict_classification\":\"none\",\"answer\":\"The context contains a small table comparing PPO-001 and PPO-002. PPO-001: Reward 0.12, Sharpe 0.45, Notes baseline. PPO-002: Reward 0.18, Sharpe 0.51, Notes entropy tuned.\",\"citations\":[\"provided context table\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Parsed 2 runs from the table.\",\"Captured exact numeric values and notes without normalization.\",\"No conflicts or deletions detected.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

@@ -1,0 +1,107 @@
+{
+  "fixture_id": "article_url_ai_memory_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Remembered the article reference and its stated relevance to knowledge graph memory design, preserving the URL exactly as provided.",
+    "citations": [
+      "User input: Remember this article - https -//examplecom/ai-memory why - useful for thinking about knowledge graph memory design",
+      "Mock fetched article: Graph memory helps agents preserve relationships; provenance and update semantics are needed"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "No existing entity context is provided; preserve the URL exactly as supplied because it is malformed/ambiguous."
+    },
+    "intent": "remember_article",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "https -//examplecom/ai-memory",
+            "role": "source",
+            "type": "url"
+          },
+          {
+            "name": "knowledge graph memory design",
+            "role": "user-stated relevance",
+            "type": "concept"
+          }
+        ],
+        "kind": "source_reference",
+        "relationships": [
+          {
+            "object": "knowledge graph memory design",
+            "predicate": "is_relevant_to",
+            "subject": "https -//examplecom/ai-memory"
+          }
+        ],
+        "statement": "User asked to remember an article at the provided malformed URL string \"https -//examplecom/ai-memory\" because it is useful for thinking about knowledge graph memory design."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "graph memory",
+            "role": "article topic",
+            "type": "concept"
+          },
+          {
+            "name": "agents",
+            "role": "beneficiary",
+            "type": "concept"
+          },
+          {
+            "name": "relationships",
+            "role": "preserved information",
+            "type": "concept"
+          },
+          {
+            "name": "provenance",
+            "role": "needed feature",
+            "type": "concept"
+          },
+          {
+            "name": "update semantics",
+            "role": "needed feature",
+            "type": "concept"
+          }
+        ],
+        "kind": "article_claim",
+        "relationships": [
+          {
+            "object": "relationships",
+            "predicate": "helps_preserve",
+            "subject": "graph memory"
+          },
+          {
+            "object": "provenance",
+            "predicate": "needs",
+            "subject": "graph memory"
+          },
+          {
+            "object": "update semantics",
+            "predicate": "needs",
+            "subject": "graph memory"
+          }
+        ],
+        "statement": "The mocked fetched article says graph memory helps agents preserve relationships, and that provenance and update semantics are needed."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed a source reference for the article request.",
+        "Committed only the claims present in the mocked fetched article.",
+        "Preserved ambiguity and punctuation in the provided URL."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm the intended URL if \"https -//examplecom/ai-memory\" was meant to be a normalized web address such as \"https://example.com/ai-memory\"."
+    ]
+  },
+  "role": "intent_router",
+  "run_id": "eval_20260508_195937"
+}

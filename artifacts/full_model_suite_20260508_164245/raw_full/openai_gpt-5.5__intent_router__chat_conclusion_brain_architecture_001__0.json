@@ -1,0 +1,73 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.010595,
+  "fixture_id": "chat_conclusion_brain_architecture_001",
+  "input_tokens": 391,
+  "latency_ms": 5574,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 288,
+  "payload": {
+    "answer": "Stored the architecture decision: Cognee is a rebuildable semantic projection, and Brain DB is the source of truth.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input names clear system components and does not require resolving to an existing entity ID."
+    },
+    "intent": "commit_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "system under design",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "semantic projection",
+            "type": "system"
+          },
+          {
+            "name": "Brain DB",
+            "role": "source of truth",
+            "type": "database"
+          }
+        ],
+        "kind": "architecture_decision",
+        "relationships": [
+          {
+            "object": "Cognee as a rebuildable semantic projection",
+            "predicate": "treats",
+            "subject": "Brain"
+          },
+          {
+            "object": "source of truth",
+            "predicate": "remains",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "Brain DB",
+            "predicate": "is_projection_of",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain should treat Cognee as a rebuildable semantic projection, while Brain DB remains the source of truth."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed one durable architecture decision memory card."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"commit_memory\",\"decision\":\"store\",\"memory_cards\":[{\"kind\":\"architecture_decision\",\"statement\":\"Brain should treat Cognee as a rebuildable semantic projection, while Brain DB remains the source of truth.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Brain\",\"type\":\"system\",\"role\":\"system under design\"},{\"name\":\"Cognee\",\"type\":\"system\",\"role\":\"semantic projection\"},{\"name\":\"Brain DB\",\"type\":\"database\",\"role\":\"source of truth\"}],\"relationships\":[{\"subject\":\"Brain\",\"predicate\":\"treats\",\"object\":\"Cognee as a rebuildable semantic projection\"},{\"subject\":\"Brain DB\",\"predicate\":\"remains\",\"object\":\"source of truth\"},{\"subject\":\"Cognee\",\"predicate\":\"is_projection_of\",\"object\":\"Brain DB\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input names clear system components and does not require resolving to an existing entity ID.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored the architecture decision: Cognee is a rebuildable semantic projection, and Brain DB is the source of truth.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Committed one durable architecture decision memory card.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

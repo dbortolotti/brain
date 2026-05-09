@@ -1,0 +1,77 @@
+{
+  "fixture_id": "email_source_meeting_followup_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Extracted a durable employment update and a follow-up request while avoiding exposure of the raw email address.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "commit_memory",
+    "entity_resolution": {
+      "action": "needs_resolution",
+      "entity_id": null,
+      "reason": "Sender is identified only as Sam; raw email address is not exposed and no stable existing person entity was provided."
+    },
+    "intent": "extract_source_takeaways",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "sender",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_update",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72 last month."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "requester",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure article",
+            "role": "requested_item",
+            "type": "content"
+          }
+        ],
+        "kind": "follow_up_request",
+        "relationships": [
+          {
+            "object": "AI infrastructure article",
+            "predicate": "requested",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam asked to be sent the AI infrastructure article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed employment update: Sam joined Point72 last month.",
+        "Captured follow-up request: send Sam the AI infrastructure article.",
+        "Did not include raw private email address."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "source_takeaway_extractor",
+  "run_id": "eval_20260508_125514"
+}

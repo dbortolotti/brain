@@ -1,0 +1,84 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01637,
+  "fixture_id": "email_source_meeting_followup_001__context",
+  "input_tokens": 424,
+  "latency_ms": 5535,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 475,
+  "payload": {
+    "answer": "Captured Sam's employment update and follow-up request without exposing the raw email address.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Only a first name is available from the email context; raw email address is not exposed. More context is needed to resolve the person confidently."
+    },
+    "intent": "extract_memory_from_email_context",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "email_sender",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_update",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72 last month."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "requester",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure article",
+            "role": "requested_item",
+            "type": "content"
+          }
+        ],
+        "kind": "follow_up_request",
+        "relationships": [
+          {
+            "object": "AI infrastructure article",
+            "predicate": "requested",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam requested that the AI infrastructure article be sent."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed durable memory that Sam joined Point72 last month.",
+        "Committed follow-up request to send the AI infrastructure article.",
+        "Did not expose the raw private email address."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"extract_memory_from_email_context\",\n  \"decision\": \"commit\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"employment_update\",\n      \"statement\": \"Sam joined Point72 last month.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"email_sender\"\n        },\n        {\n          \"name\": \"Point72\",\n          \"type\": \"organization\",\n          \"role\": \"employer\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"joined\",\n          \"object\": \"Point72\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"follow_up_request\",\n      \"statement\": \"Sam requested that the AI infrastructure article be sent.\",\n      \"confidence\": \"medium\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"requester\"\n        },\n        {\n          \"name\": \"AI infrastructure article\",\n          \"type\": \"content\",\n          \"role\": \"requested_item\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam\",\n          \"predicate\": \"requested\",\n          \"object\": \"AI infrastructure article\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"defer\",\n    \"entity_id\": null,\n    \"reason\": \"Only a first name is available from the email context; raw email address is not exposed. More context is needed to resolve the person confidently.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"Captured Sam's employment update and follow-up request without exposing the raw email address.\",\n  \"citations\": [],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Committed durable memory that Sam joined Point72 last month.\",\n      \"Committed follow-up request to send the AI infrastructure article.\",\n      \"Did not expose the raw private email address.\"\n    ]\n  }\n}",
+  "role": "table_policy_handler",
+  "run_id": "eval_20260508_132201",
+  "status": "ok"
+}

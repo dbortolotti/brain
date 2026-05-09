@@ -1,0 +1,75 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01023,
+  "fixture_id": "recall_profile_sara_001__punctuation",
+  "input_tokens": 444,
+  "latency_ms": 3416,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 267,
+  "payload": {
+    "answer": "Sara is one of Daniele's twin daughters. Her twin sister is Nur.",
+    "citations": [
+      "Fact - Nur and Sara are Daniele's twin daughters"
+    ],
+    "conflict_classification": "none",
+    "decision": "answer_from_current_evidence",
+    "entity_resolution": {
+      "action": "resolved_to_named_person",
+      "entity_id": null,
+      "reason": "The query asks about Sara, and current evidence identifies Sara as Daniele's twin daughter alongside Nur."
+    },
+    "intent": "recall information about Sara",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is daughter of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Daniele",
+            "predicate": "is daughter of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is twin of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is one of Daniele's twin daughters; Nur is the other twin daughter."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Answered only from current evidence."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"recall information about Sara\",\"decision\":\"answer_from_current_evidence\",\"memory_cards\":[{\"kind\":\"relationship\",\"statement\":\"Sara is one of Daniele's twin daughters; Nur is the other twin daughter.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"daughter\"},{\"name\":\"Nur\",\"type\":\"person\",\"role\":\"daughter\"},{\"name\":\"Daniele\",\"type\":\"person\",\"role\":\"parent\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"is daughter of\",\"object\":\"Daniele\"},{\"subject\":\"Nur\",\"predicate\":\"is daughter of\",\"object\":\"Daniele\"},{\"subject\":\"Sara\",\"predicate\":\"is twin of\",\"object\":\"Nur\"}]}],\"entity_resolution\":{\"action\":\"resolved_to_named_person\",\"entity_id\":null,\"reason\":\"The query asks about Sara, and current evidence identifies Sara as Daniele's twin daughter alongside Nur.\"},\"conflict_classification\":\"none\",\"answer\":\"Sara is one of Daniele's twin daughters. Her twin sister is Nur.\",\"citations\":[\"Fact - Nur and Sara are Daniele's twin daughters\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Answered only from current evidence.\"]}}",
+  "role": "recall_synthesizer",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

@@ -1,0 +1,78 @@
+{
+  "fixture_id": "recall_source_backed_article_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Source-backed facts about graph memory: it preserves relationships, and it needs provenance for the stored facts or relationships.",
+    "citations": [
+      "source article context: graph memory preserves relationships and needs provenance"
+    ],
+    "conflict_classification": "none",
+    "decision": "answer",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The query refers to graph memory in the source article context; no separate entity disambiguation is needed."
+    },
+    "intent": "retrieve_source_backed_facts",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "graph memory",
+            "role": "memory system",
+            "type": "concept"
+          },
+          {
+            "name": "relationships",
+            "role": "preserved structure",
+            "type": "concept"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "relationships",
+            "predicate": "preserves",
+            "subject": "graph memory"
+          }
+        ],
+        "statement": "Graph memory preserves relationships between remembered items."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "graph memory",
+            "role": "memory system",
+            "type": "concept"
+          },
+          {
+            "name": "provenance",
+            "role": "source attribution",
+            "type": "concept"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "provenance",
+            "predicate": "needs",
+            "subject": "graph memory"
+          }
+        ],
+        "statement": "Graph memory needs provenance for the facts or relationships it stores."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted two source-backed facts from the provided context.",
+        "No conflicting or superseding facts were present."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540"
+}

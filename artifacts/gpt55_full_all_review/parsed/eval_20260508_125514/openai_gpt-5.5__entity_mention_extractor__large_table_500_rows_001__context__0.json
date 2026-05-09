@@ -1,0 +1,31 @@
+{
+  "fixture_id": "large_table_500_rows_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Do not store the 500-row CSV table as durable memory. Treat it as transient context or attach it as an external/document artifact if needed. If any specific durable fact, preference, or entity relationship is extracted from the table, store only that concise derived fact with provenance, not the repeated raw rows.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "do_not_store_as_durable_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input describes a large CSV table fixture and asks a storage policy question; it does not contain durable personal-memory facts or stable user preferences to commit."
+    },
+    "intent": "policy_question",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No memory cards created.",
+        "Large repeated tabular context is not appropriate for durable personal memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask the user which specific rows or facts, if any, should be remembered.",
+      "Store the CSV as a temporary file or document reference rather than personal memory.",
+      "Summarize the table only if it contains durable user-relevant information."
+    ]
+  },
+  "role": "entity_mention_extractor",
+  "run_id": "eval_20260508_125514"
+}

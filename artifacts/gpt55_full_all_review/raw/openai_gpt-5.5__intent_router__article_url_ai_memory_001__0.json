@@ -1,0 +1,92 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01601,
+  "fixture_id": "article_url_ai_memory_001",
+  "input_tokens": 436,
+  "latency_ms": 4806,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 461,
+  "payload": {
+    "answer": "Remembered the article and why it matters: useful for thinking about knowledge graph memory design.",
+    "citations": [
+      "https://example.com/ai-memory"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_update_saved_article",
+      "entity_id": null,
+      "reason": "The user explicitly asked to remember a specific article URL with a stated reason and supplied article content summary."
+    },
+    "intent": "remember_article",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/ai-memory",
+            "role": "source",
+            "type": "url"
+          },
+          {
+            "name": "knowledge graph memory design",
+            "role": "user_stated_reason",
+            "type": "concept"
+          },
+          {
+            "name": "graph memory",
+            "role": "article_topic",
+            "type": "concept"
+          },
+          {
+            "name": "provenance",
+            "role": "article_claim",
+            "type": "concept"
+          },
+          {
+            "name": "update semantics",
+            "role": "article_claim",
+            "type": "concept"
+          }
+        ],
+        "kind": "saved_article",
+        "relationships": [
+          {
+            "object": "thinking about knowledge graph memory design",
+            "predicate": "saved_for",
+            "subject": "https://example.com/ai-memory"
+          },
+          {
+            "object": "relationships",
+            "predicate": "helps_preserve",
+            "subject": "graph memory"
+          },
+          {
+            "object": "provenance",
+            "predicate": "needs",
+            "subject": "graph memory"
+          },
+          {
+            "object": "update semantics",
+            "predicate": "needs",
+            "subject": "graph memory"
+          }
+        ],
+        "statement": "User wants to remember the article at https://example.com/ai-memory because it is useful for thinking about knowledge graph memory design. The provided mock article says: graph memory helps agents preserve relationships; provenance and update semantics are needed."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Saved article URL: https://example.com/ai-memory",
+        "Saved user-stated reason: useful for thinking about knowledge graph memory design",
+        "Saved provided article claims only: graph memory helps agents preserve relationships; provenance and update semantics are needed"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"remember_article\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"saved_article\",\"statement\":\"User wants to remember the article at https://example.com/ai-memory because it is useful for thinking about knowledge graph memory design. The provided mock article says: graph memory helps agents preserve relationships; provenance and update semantics are needed.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"https://example.com/ai-memory\",\"type\":\"url\",\"role\":\"source\"},{\"name\":\"knowledge graph memory design\",\"type\":\"concept\",\"role\":\"user_stated_reason\"},{\"name\":\"graph memory\",\"type\":\"concept\",\"role\":\"article_topic\"},{\"name\":\"provenance\",\"type\":\"concept\",\"role\":\"article_claim\"},{\"name\":\"update semantics\",\"type\":\"concept\",\"role\":\"article_claim\"}],\"relationships\":[{\"subject\":\"https://example.com/ai-memory\",\"predicate\":\"saved_for\",\"object\":\"thinking about knowledge graph memory design\"},{\"subject\":\"graph memory\",\"predicate\":\"helps_preserve\",\"object\":\"relationships\"},{\"subject\":\"graph memory\",\"predicate\":\"needs\",\"object\":\"provenance\"},{\"subject\":\"graph memory\",\"predicate\":\"needs\",\"object\":\"update semantics\"}]}],\"entity_resolution\":{\"action\":\"create_or_update_saved_article\",\"entity_id\":null,\"reason\":\"The user explicitly asked to remember a specific article URL with a stated reason and supplied article content summary.\"},\"conflict_classification\":\"none\",\"answer\":\"Remembered the article and why it matters: useful for thinking about knowledge graph memory design.\",\"citations\":[\"https://example.com/ai-memory\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Saved article URL: https://example.com/ai-memory\",\"Saved user-stated reason: useful for thinking about knowledge graph memory design\",\"Saved provided article claims only: graph memory helps agents preserve relationships; provenance and update semantics are needed\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

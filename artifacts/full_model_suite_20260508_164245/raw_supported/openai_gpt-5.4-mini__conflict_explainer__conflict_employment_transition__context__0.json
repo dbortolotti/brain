@@ -1,0 +1,78 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00219975,
+  "fixture_id": "conflict_employment_transition__context",
+  "input_tokens": 443,
+  "latency_ms": 4093,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 415,
+  "payload": {
+    "answer": "The new fact conflicts with the existing current fact because it describes a job change. The durable record should reflect the transition: Sam left Goldman and joined Point72. If the backend permits supersession, approve_supersession is the appropriate safe action. Do not keep the old employment fact as current.",
+    "citations": [
+      "Existing current fact: Sam works at Goldman.",
+      "New fact: Sam left Goldman and joined Point72."
+    ],
+    "conflict_classification": "direct_employment_transition",
+    "decision": "approve_supersession",
+    "entity_resolution": {
+      "action": "keep_both",
+      "entity_id": null,
+      "reason": "The entities appear to refer to the same person, Sam, with a career transition. No separate entity split is indicated."
+    },
+    "intent": "Explain that the new employment update conflicts with the existing current fact and should replace it if the system is allowed to supersede the older record.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "new employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_transition",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected a direct conflict between current employment and a transition update.",
+        "Recommended superseding the older employment fact with the new transition fact.",
+        "No extra assumptions added beyond the supplied facts."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "approve_supersession",
+      "keep_both",
+      "reject_new",
+      "edit"
+    ]
+  },
+  "raw_text": "{\"intent\":\"Explain that the new employment update conflicts with the existing current fact and should replace it if the system is allowed to supersede the older record.\",\"decision\":\"approve_supersession\",\"memory_cards\":[{\"kind\":\"employment_transition\",\"statement\":\"Sam left Goldman and joined Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"new employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"left\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"keep_both\",\"entity_id\":null,\"reason\":\"The entities appear to refer to the same person, Sam, with a career transition. No separate entity split is indicated.\"},\"conflict_classification\":\"direct_employment_transition\",\"answer\":\"The new fact conflicts with the existing current fact because it describes a job change. The durable record should reflect the transition: Sam left Goldman and joined Point72. If the backend permits supersession, approve_supersession is the appropriate safe action. Do not keep the old employment fact as current.\",\"citations\":[\"Existing current fact: Sam works at Goldman.\",\"New fact: Sam left Goldman and joined Point72.\"],\"repair_options\":[\"approve_supersession\",\"keep_both\",\"reject_new\",\"edit\"],\"receipt\":{\"success\":true,\"details\":[\"Detected a direct conflict between current employment and a transition update.\",\"Recommended superseding the older employment fact with the new transition fact.\",\"No extra assumptions added beyond the supplied facts.\"]}}",
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_164405",
+  "status": "ok"
+}

@@ -1,0 +1,35 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.013595,
+  "fixture_id": "cost_latency_token_accounting_001",
+  "input_tokens": 385,
+  "latency_ms": 6666,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 389,
+  "payload": {
+    "answer": "Required eval accounting fields typically include:\n\n- token counts: Record prompt/input tokens, completion/output tokens, total tokens, and if available cached/read/write or reasoning tokens. These support reproducibility, cost estimation, and efficiency analysis.\n- provider/model IDs: Record the LLM provider and exact model identifier/version used for each run. This is needed because behavior, pricing, latency, and tokenization vary by provider and model.\n- estimated price: Calculate estimated cost from token counts and the provider/model pricing schedule in effect at run time. Include currency and, ideally, pricing version/date because prices can change.\n- latency p50 p90 p95: Report percentile latencies across requests or eval cases. p50 is median latency, p90 is the latency below which 90% of requests completed, and p95 is the latency below which 95% completed. These summarize typical and tail performance better than an average alone.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "answer_only_no_memory_commit",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The user asks for an explanation of evaluation accounting fields; no durable personal memory should be created."
+    },
+    "intent": "explain_eval_accounting_fields",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Classified as an explanation request.",
+        "No memory cards were committed.",
+        "Provided concise definitions for token accounting, model/provider identification, price estimation, and latency percentiles."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"explain_eval_accounting_fields\",\"decision\":\"answer_only_no_memory_commit\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The user asks for an explanation of evaluation accounting fields; no durable personal memory should be created.\"},\"conflict_classification\":\"none\",\"answer\":\"Required eval accounting fields typically include:\\n\\n- token counts: Record prompt/input tokens, completion/output tokens, total tokens, and if available cached/read/write or reasoning tokens. These support reproducibility, cost estimation, and efficiency analysis.\\n- provider/model IDs: Record the LLM provider and exact model identifier/version used for each run. This is needed because behavior, pricing, latency, and tokenization vary by provider and model.\\n- estimated price: Calculate estimated cost from token counts and the provider/model pricing schedule in effect at run time. Include currency and, ideally, pricing version/date because prices can change.\\n- latency p50 p90 p95: Report percentile latencies across requests or eval cases. p50 is median latency, p90 is the latency below which 90% of requests completed, and p95 is the latency below which 95% completed. These summarize typical and tail performance better than an average alone.\" ,\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Classified as an explanation request.\",\"No memory cards were committed.\",\"Provided concise definitions for token accounting, model/provider identification, price estimation, and latency percentiles.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

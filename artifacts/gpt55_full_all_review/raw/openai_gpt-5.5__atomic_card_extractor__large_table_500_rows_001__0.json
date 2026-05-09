@@ -1,0 +1,40 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01227,
+  "fixture_id": "large_table_500_rows_001",
+  "input_tokens": 450,
+  "latency_ms": 4569,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 334,
+  "payload": {
+    "answer": "Do not store the 500-row CSV as individual memory cards. Large tabular data should be stored as an external file/artifact or structured dataset, with at most a concise index/summary card if it contains durable user-relevant context. Since no specific durable facts from the table are provided, no memory cards are committed.",
+    "citations": [
+      "Input: CSV table with 500 rows: id,name,value repeated many times. Policy question: how should it be stored?"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_success",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input describes a large CSV table and asks a storage policy question, but provides no durable personal-memory facts to extract as atomic memory cards."
+    },
+    "intent": "storage_policy_guidance",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No atomic memory cards were extracted because the input contains no explicit durable personal-memory facts.",
+        "Provided storage policy guidance for large tabular data."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Store the CSV as an attachment or external artifact and create a single reference/index card if needed.",
+      "If specific rows contain durable user-relevant facts, extract only those rows into atomic memory cards.",
+      "Ask the user which subset or meaning of the table should be remembered before committing any facts."
+    ]
+  },
+  "raw_text": "{\"intent\":\"storage_policy_guidance\",\"decision\":\"commit_success\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input describes a large CSV table and asks a storage policy question, but provides no durable personal-memory facts to extract as atomic memory cards.\"},\"conflict_classification\":\"none\",\"answer\":\"Do not store the 500-row CSV as individual memory cards. Large tabular data should be stored as an external file/artifact or structured dataset, with at most a concise index/summary card if it contains durable user-relevant context. Since no specific durable facts from the table are provided, no memory cards are committed.\",\"citations\":[\"Input: CSV table with 500 rows: id,name,value repeated many times. Policy question: how should it be stored?\"],\"repair_options\":[\"Store the CSV as an attachment or external artifact and create a single reference/index card if needed.\",\"If specific rows contain durable user-relevant facts, extract only those rows into atomic memory cards.\",\"Ask the user which subset or meaning of the table should be remembered before committing any facts.\"],\"receipt\":{\"success\":true,\"details\":[\"No atomic memory cards were extracted because the input contains no explicit durable personal-memory facts.\",\"Provided storage policy guidance for large tabular data.\"]}}",
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

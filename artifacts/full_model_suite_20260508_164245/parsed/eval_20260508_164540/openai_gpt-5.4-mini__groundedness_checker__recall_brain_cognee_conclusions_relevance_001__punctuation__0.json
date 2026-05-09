@@ -1,0 +1,91 @@
+{
+  "fixture_id": "recall_brain_cognee_conclusions_relevance_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "You concluded that Brain is the source-of-truth conclusion, while Cognee is a rebuildable projection of it, not the authoritative record.",
+    "citations": [
+      "fixture:recall_brain_cognee_conclusions_relevance_001__punctuation"
+    ],
+    "conflict_classification": "none",
+    "decision": "Return a scoped summary of the conclusion, preserving uncertainty where the record may distinguish source-of-truth versus rebuildable projection.",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": null,
+      "reason": "The query refers to the general Brain vs. Cognee conclusion, not a uniquely identified personal entity beyond those system names."
+    },
+    "intent": "Answer the user's conclusion about the relationship between Brain and Cognee.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "source-of-truth conclusion",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "rebuildable projection",
+            "type": "system"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "source-of-truth conclusion",
+            "predicate": "is",
+            "subject": "Brain"
+          },
+          {
+            "object": "rebuildable projection",
+            "predicate": "is",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain was treated as the source-of-truth conclusion, while Cognee was treated as a rebuildable projection rather than the authoritative record."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "authoritative layer",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "derivative layer",
+            "type": "system"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "source material",
+            "predicate": "derives from",
+            "subject": "Cognee"
+          },
+          {
+            "object": "source material",
+            "predicate": "can be regenerated from",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "The distinction implies Brain is the durable authoritative layer, and Cognee is derivative and can be regenerated from the source material."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Scoped to Brain and Cognee only.",
+        "No unrelated memories included."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want, I can restate this as a one-line comparison.",
+      "I can also separate what is explicitly stated versus what is implied."
+    ]
+  },
+  "role": "groundedness_checker",
+  "run_id": "eval_20260508_164540"
+}

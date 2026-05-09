@@ -1,0 +1,83 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.011695,
+  "fixture_id": "email_source_meeting_followup_001",
+  "input_tokens": 419,
+  "latency_ms": 12346,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 320,
+  "payload": {
+    "answer": "Extracted durable takeaways: Sam joined Point72 last month, and Sam requested the AI infrastructure article.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "needs_resolution",
+      "entity_id": null,
+      "reason": "Sender is identified only as Sam from an email header; raw email address is not exposed, and there is insufficient information to link to an existing person entity."
+    },
+    "intent": "extract_durable_memory_from_email",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "email_sender",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_update",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72 last month."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "requester",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure article",
+            "role": "requested_item",
+            "type": "content"
+          }
+        ],
+        "kind": "interest_or_request",
+        "relationships": [
+          {
+            "object": "AI infrastructure article",
+            "predicate": "requested",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam asked to be sent an AI infrastructure article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Raw email address omitted.",
+        "No conflicting or superseded facts detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"extract_durable_memory_from_email\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"employment_update\",\"statement\":\"Sam joined Point72 last month.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"email_sender\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]},{\"kind\":\"interest_or_request\",\"statement\":\"Sam asked to be sent an AI infrastructure article.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"requester\"},{\"name\":\"AI infrastructure article\",\"type\":\"content\",\"role\":\"requested_item\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"requested\",\"object\":\"AI infrastructure article\"}]}],\"entity_resolution\":{\"action\":\"needs_resolution\",\"entity_id\":null,\"reason\":\"Sender is identified only as Sam from an email header; raw email address is not exposed, and there is insufficient information to link to an existing person entity.\"},\"conflict_classification\":\"none\",\"answer\":\"Extracted durable takeaways: Sam joined Point72 last month, and Sam requested the AI infrastructure article.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Raw email address omitted.\",\"No conflicting or superseded facts detected.\"]}}",
+  "role": "source_takeaway_extractor",
+  "run_id": "eval_20260508_132201",
+  "status": "ok"
+}

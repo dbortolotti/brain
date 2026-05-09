@@ -1,0 +1,104 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00248625,
+  "fixture_id": "recall_brain_cognee_conclusions_relevance_001__punctuation",
+  "input_tokens": 435,
+  "latency_ms": 5366,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 480,
+  "payload": {
+    "answer": "You concluded that Brain is the source of truth, and Cognee is only a rebuildable projection/derivative layer, not the authoritative record.",
+    "citations": [
+      "Brain DB source-of-truth conclusion",
+      "Cognee rebuildable projection"
+    ],
+    "conflict_classification": "none",
+    "decision": "Answer with the remembered conclusion only, preserving source distinctions and ambiguity.",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": null,
+      "reason": "Brain and Cognee appear as distinct systems in the query; no further disambiguation is needed."
+    },
+    "intent": "recall_planner",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "source of truth",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "rebuildable projection",
+            "type": "system"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "is",
+            "subject": "Brain"
+          },
+          {
+            "object": "rebuildable projection",
+            "predicate": "is",
+            "subject": "Cognee"
+          },
+          {
+            "object": "source of truth",
+            "predicate": "is not",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain was treated as the source of truth, while Cognee was treated as a rebuildable projection rather than the authoritative record."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "canonical memory",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "derived memory layer",
+            "type": "system"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "canonical record",
+            "predicate": "should be trusted as",
+            "subject": "Brain"
+          },
+          {
+            "object": "derived/rebuildable layer",
+            "predicate": "should be used as",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "The practical conclusion was to trust Brain for canonical conclusions and use Cognee only as something that can be regenerated or rebuilt."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Scoped to Brain and Cognee only.",
+        "No unrelated memories added."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want, I can restate the conclusion as a one-line policy.",
+      "If you want, I can separate what was explicit vs implied in the conclusion."
+    ]
+  },
+  "raw_text": "{\"intent\":\"recall_planner\",\"decision\":\"Answer with the remembered conclusion only, preserving source distinctions and ambiguity.\",\"memory_cards\":[{\"kind\":\"conclusion\",\"statement\":\"Brain was treated as the source of truth, while Cognee was treated as a rebuildable projection rather than the authoritative record.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Brain\",\"type\":\"system\",\"role\":\"source of truth\"},{\"name\":\"Cognee\",\"type\":\"system\",\"role\":\"rebuildable projection\"}],\"relationships\":[{\"subject\":\"Brain\",\"predicate\":\"is\",\"object\":\"source of truth\"},{\"subject\":\"Cognee\",\"predicate\":\"is\",\"object\":\"rebuildable projection\"},{\"subject\":\"Cognee\",\"predicate\":\"is not\",\"object\":\"source of truth\"}]},{\"kind\":\"conclusion\",\"statement\":\"The practical conclusion was to trust Brain for canonical conclusions and use Cognee only as something that can be regenerated or rebuilt.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Brain\",\"type\":\"system\",\"role\":\"canonical memory\"},{\"name\":\"Cognee\",\"type\":\"system\",\"role\":\"derived memory layer\"}],\"relationships\":[{\"subject\":\"Brain\",\"predicate\":\"should be trusted as\",\"object\":\"canonical record\"},{\"subject\":\"Cognee\",\"predicate\":\"should be used as\",\"object\":\"derived/rebuildable layer\"}]}],\"entity_resolution\":{\"action\":\"resolved\",\"entity_id\":null,\"reason\":\"Brain and Cognee appear as distinct systems in the query; no further disambiguation is needed.\"},\"conflict_classification\":\"none\",\"answer\":\"You concluded that Brain is the source of truth, and Cognee is only a rebuildable projection/derivative layer, not the authoritative record.\",\"citations\":[\"Brain DB source-of-truth conclusion\",\"Cognee rebuildable projection\"],\"repair_options\":[\"If you want, I can restate the conclusion as a one-line policy.\",\"If you want, I can separate what was explicit vs implied in the conclusion.\"],\"receipt\":{\"success\":true,\"details\":[\"Scoped to Brain and Cognee only.\",\"No unrelated memories added.\"]}}",
+  "role": "recall_planner",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

@@ -1,0 +1,80 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01705,
+  "fixture_id": "supersession_sam_job_001__punctuation",
+  "input_tokens": 380,
+  "latency_ms": 6412,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 505,
+  "payload": {
+    "answer": "Do not preserve 'Sam works at Goldman New' as current. Treat it as superseded/malformed and retain the newer durable fact that Sam left Goldman and joined Point72.",
+    "citations": [
+      "Existing memory: Sam works at Goldman New",
+      "Existing memory: Sam left Goldman and joined Point72"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "generate_repair_options",
+    "entity_resolution": {
+      "action": "use_existing_or_create_if_needed",
+      "entity_id": null,
+      "reason": "The input refers to Sam, Goldman, and Point72. 'Goldman New' appears to be a malformed or truncated prior memory and is superseded by the later statement that Sam left Goldman and joined Point72."
+    },
+    "intent": "repair_option_generator",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Generated repair options for a supersession conflict.",
+        "Avoided presenting the superseded Goldman employment as current.",
+        "Preserved ambiguity caused by punctuation/truncation in 'Goldman New'."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark 'Sam works at Goldman New' as superseded by 'Sam left Goldman and joined Point72'.",
+      "If entity cleanup is supported, normalize or remove the malformed organization string 'Goldman New' rather than treating it as a current employer.",
+      "Keep the current employment memory as: 'Sam left Goldman and joined Point72.'",
+      "Represent Goldman only as Sam's former employer, not current employer.",
+      "Represent Point72 as Sam's current employer if the system infers current employment from 'joined Point72'.",
+      "Preserve ambiguity around 'Goldman New' by not asserting a specific full organization name beyond 'Goldman' unless separately confirmed."
+    ]
+  },
+  "raw_text": "{\"intent\":\"repair_option_generator\",\"decision\":\"generate_repair_options\",\"memory_cards\":[{\"kind\":\"employment\",\"statement\":\"Sam left Goldman and joined Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former_employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"current_employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"left\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"use_existing_or_create_if_needed\",\"entity_id\":null,\"reason\":\"The input refers to Sam, Goldman, and Point72. 'Goldman New' appears to be a malformed or truncated prior memory and is superseded by the later statement that Sam left Goldman and joined Point72.\"},\"conflict_classification\":\"supersession\",\"answer\":\"Do not preserve 'Sam works at Goldman New' as current. Treat it as superseded/malformed and retain the newer durable fact that Sam left Goldman and joined Point72.\",\"citations\":[\"Existing memory: Sam works at Goldman New\",\"Existing memory: Sam left Goldman and joined Point72\"],\"repair_options\":[\"Mark 'Sam works at Goldman New' as superseded by 'Sam left Goldman and joined Point72'.\",\"If entity cleanup is supported, normalize or remove the malformed organization string 'Goldman New' rather than treating it as a current employer.\",\"Keep the current employment memory as: 'Sam left Goldman and joined Point72.'\",\"Represent Goldman only as Sam's former employer, not current employer.\",\"Represent Point72 as Sam's current employer if the system infers current employment from 'joined Point72'.\",\"Preserve ambiguity around 'Goldman New' by not asserting a specific full organization name beyond 'Goldman' unless separately confirmed.\"],\"receipt\":{\"success\":true,\"details\":[\"Generated repair options for a supersession conflict.\",\"Avoided presenting the superseded Goldman employment as current.\",\"Preserved ambiguity caused by punctuation/truncation in 'Goldman New'.\"]}}",
+  "role": "repair_option_generator",
+  "run_id": "eval_20260508_133657",
+  "status": "ok"
+}

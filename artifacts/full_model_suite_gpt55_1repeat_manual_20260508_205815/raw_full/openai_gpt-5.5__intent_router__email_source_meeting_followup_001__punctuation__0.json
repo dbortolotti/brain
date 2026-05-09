@@ -1,0 +1,78 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.010494999999999999,
+  "fixture_id": "email_source_meeting_followup_001__punctuation",
+  "input_tokens": 419,
+  "latency_ms": 3790,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 280,
+  "payload": {
+    "answer": "",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "needs_resolution",
+      "entity_id": null,
+      "reason": "Sender appears to be Sam, but the address is malformed/ambiguous and no durable unique identity can be safely inferred."
+    },
+    "intent": "memory_write",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "source",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "person_update",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said they joined Point72 last month."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "requester",
+            "type": "person"
+          }
+        ],
+        "kind": "follow_up_request",
+        "relationships": [
+          {
+            "object": "AI infrastructure article",
+            "predicate": "requested",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam asked to be sent the AI infrastructure article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed non-sensitive meeting follow-up details without exposing the raw email address.",
+        "Preserved ambiguity around Sam's identity and the timing of 'last month'."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"memory_write\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"person_update\",\"statement\":\"Sam said they joined Point72 last month.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"source\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]},{\"kind\":\"follow_up_request\",\"statement\":\"Sam asked to be sent the AI infrastructure article.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"requester\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"requested\",\"object\":\"AI infrastructure article\"}]}],\"entity_resolution\":{\"action\":\"needs_resolution\",\"entity_id\":null,\"reason\":\"Sender appears to be Sam, but the address is malformed/ambiguous and no durable unique identity can be safely inferred.\"},\"conflict_classification\":\"none\",\"answer\":\"\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Committed non-sensitive meeting follow-up details without exposing the raw email address.\",\"Preserved ambiguity around Sam's identity and the timing of 'last month'.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_195937",
+  "status": "ok"
+}

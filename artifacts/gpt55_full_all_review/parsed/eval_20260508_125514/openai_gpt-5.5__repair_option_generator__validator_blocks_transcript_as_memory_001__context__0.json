@@ -1,0 +1,37 @@
+{
+  "fixture_id": "validator_blocks_transcript_as_memory_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Reject the proposed memory card. A full transcript should not be committed as durable memory. Instead, extract only specific, durable, non-superseded facts, preferences, decisions, or ongoing commitments, preserving uncertainty and omitting ephemeral dialogue.",
+    "citations": [],
+    "conflict_classification": "not_applicable",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The proposal is not a durable, atomic memory and contains an entire transcript rather than extracted stable facts or preferences."
+    },
+    "intent": "Generate repair options for an invalid memory proposal that attempts to store an entire transcript as a single conversation_summary card.",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Blocked transcript-as-memory proposal.",
+        "Returned repair guidance instead of committing a conversation_summary card.",
+        "No durable memory cards were created."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Discard the transcript-sized conversation_summary card entirely.",
+      "Extract atomic durable facts from the transcript, if any, into separate memory cards.",
+      "Store user preferences only when explicitly stated or strongly evidenced.",
+      "Store decisions, commitments, or ongoing projects only if they remain current and are not contradicted later in the transcript.",
+      "Preserve ambiguity using cautious wording such as 'may prefer' or 'appears to be working on' when evidence is incomplete.",
+      "Do not store raw dialogue, full transcripts, long summaries, temporary task context, or one-off requests as durable memory.",
+      "If the transcript includes superseded or corrected information, retain only the latest valid state and do not present deleted or superseded facts as current.",
+      "If no durable facts can be confidently extracted, commit no memory cards."
+    ]
+  },
+  "role": "repair_option_generator",
+  "run_id": "eval_20260508_125514"
+}

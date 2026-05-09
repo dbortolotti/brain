@@ -1,0 +1,74 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.001674,
+  "fixture_id": "slack_success_receipt_001",
+  "input_tokens": 372,
+  "latency_ms": 2643,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 310,
+  "payload": {
+    "answer": "Stored as an ambiguous memory about Sam from Goldman liking Bill Evans.",
+    "citations": [
+      "input:/brain remember Sam from Goldman mentioned that he likes Bill Evans."
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_link_ambiguous",
+      "entity_id": null,
+      "reason": "'Sam from Goldman' is insufficient to uniquely identify a person, so preserve as an ambiguous entity rather than resolving to a specific individual."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker/subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "music preference object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman mentioned that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured an ambiguous preference memory.",
+        "No prior conflicting memory found."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want, I can later refine who 'Sam from Goldman' refers to.",
+      "If you meant a different Sam or a different Bill Evans, you can correct it."
+    ]
+  },
+  "raw_text": "{\"intent\":\"remember\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman mentioned that he likes Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"speaker/subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"music preference object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"create_or_link_ambiguous\",\"entity_id\":null,\"reason\":\"'Sam from Goldman' is insufficient to uniquely identify a person, so preserve as an ambiguous entity rather than resolving to a specific individual.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored as an ambiguous memory about Sam from Goldman liking Bill Evans.\",\"citations\":[\"input:/brain remember Sam from Goldman mentioned that he likes Bill Evans.\"],\"repair_options\":[\"If you want, I can later refine who 'Sam from Goldman' refers to.\",\"If you meant a different Sam or a different Bill Evans, you can correct it.\"],\"receipt\":{\"success\":true,\"details\":[\"Captured an ambiguous preference memory.\",\"No prior conflicting memory found.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

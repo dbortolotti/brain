@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.012185,
+  "fixture_id": "large_table_500_rows_001__punctuation",
+  "input_tokens": 385,
+  "latency_ms": 5557,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 342,
+  "payload": {
+    "answer": "A 500-row CSV table with repeated id,name,value rows should not be committed to durable personal memory as individual memory cards. It should be treated as transient bulk data or an attachment/document for the current task. If storage is needed, store only a concise summary, schema, provenance, and any user-explicit durable preference about how such tables should be handled in the future.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "do_not_store_as_durable_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input describes a large repeated CSV table and asks a storage policy question; it does not contain stable personal facts, preferences, relationships, or durable user-specific information suitable for memory."
+    },
+    "intent": "policy_question",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No durable memory extracted.",
+        "Bulk repeated table data rejected for memory-card creation.",
+        "Ambiguity preserved: no assumptions made about the table contents beyond the provided description."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Store the CSV externally as a file or dataset reference rather than memory cards.",
+      "Create a short summary of the table if the user asks for one.",
+      "Commit only durable user preferences, such as 'User prefers large CSVs to be stored as attachments, not extracted into memory.' if explicitly stated."
+    ]
+  },
+  "raw_text": "{\"intent\":\"policy_question\",\"decision\":\"do_not_store_as_durable_memory\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input describes a large repeated CSV table and asks a storage policy question; it does not contain stable personal facts, preferences, relationships, or durable user-specific information suitable for memory.\"},\"conflict_classification\":\"none\",\"answer\":\"A 500-row CSV table with repeated id,name,value rows should not be committed to durable personal memory as individual memory cards. It should be treated as transient bulk data or an attachment/document for the current task. If storage is needed, store only a concise summary, schema, provenance, and any user-explicit durable preference about how such tables should be handled in the future.\",\"citations\":[],\"repair_options\":[\"Store the CSV externally as a file or dataset reference rather than memory cards.\",\"Create a short summary of the table if the user asks for one.\",\"Commit only durable user preferences, such as 'User prefers large CSVs to be stored as attachments, not extracted into memory.' if explicitly stated.\"],\"receipt\":{\"success\":true,\"details\":[\"No durable memory extracted.\",\"Bulk repeated table data rejected for memory-card creation.\",\"Ambiguity preserved: no assumptions made about the table contents beyond the provided description.\"]}}",
+  "role": "relationship_extractor",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

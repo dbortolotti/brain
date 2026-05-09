@@ -1,0 +1,65 @@
+{
+  "fixture_id": "ambiguous_sam_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Do not commit this as a durable memory for either Sam. The referent is ambiguous between Sam from Goldman and Sam from Point72.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "do_not_commit",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The message only says 'Sam' while existing context contains at least two possible Sam entities: Sam from Goldman and Sam from Point72. The preference cannot be safely attached to either durable profile."
+    },
+    "intent": "classify_memory_kind",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "ambiguous_subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_entity",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "disambiguating_context",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "disambiguating_context",
+            "type": "organization"
+          }
+        ],
+        "kind": "ambiguous_preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "A person named Sam mentioned that he likes Bill Evans, but it is ambiguous whether this refers to Sam from Goldman or Sam from Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected ambiguous entity reference.",
+        "No durable entity-specific memory committed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask which Sam likes Bill Evans: Sam from Goldman or Sam from Point72.",
+      "Store only as an unresolved note if the system supports ambiguous/unlinked memories."
+    ]
+  },
+  "role": "memory_kind_classifier",
+  "run_id": "eval_20260508_125514"
+}

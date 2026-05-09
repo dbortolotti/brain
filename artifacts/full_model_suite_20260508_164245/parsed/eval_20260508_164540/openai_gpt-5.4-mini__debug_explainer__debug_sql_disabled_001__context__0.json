@@ -1,0 +1,58 @@
+{
+  "fixture_id": "debug_sql_disabled_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Access denied: /brain admin sql is unavailable because BRAIN_DEBUG_SQL_ENABLED=false.",
+    "citations": [
+      "fixture: debug_sql_disabled_001__context",
+      "input: /brain admin sql SELECT * FROM memory_cards with BRAIN_DEBUG_SQL_ENABLED=false"
+    ],
+    "conflict_classification": "none",
+    "decision": "Denied: BRAIN_DEBUG_SQL_ENABLED=false prevents executing /brain admin sql queries.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No durable entity should be created from a blocked debug/admin query."
+    },
+    "intent": "Attempt to inspect memory_cards via admin SQL while debug SQL is disabled.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "BRAIN_DEBUG_SQL_ENABLED",
+            "role": "guardrail",
+            "type": "setting"
+          },
+          {
+            "name": "memory_cards",
+            "role": "target",
+            "type": "table"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "/brain admin sql",
+            "predicate": "disables",
+            "subject": "BRAIN_DEBUG_SQL_ENABLED"
+          }
+        ],
+        "statement": "The requested SQL query was blocked because debug SQL is disabled in the current context."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Blocked admin SQL execution due to disabled debug SQL.",
+        "No memory cards were retrieved or modified."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Enable BRAIN_DEBUG_SQL_ENABLED for debug SQL access.",
+      "Use a non-admin supported inspection or export path if available."
+    ]
+  },
+  "role": "debug_explainer",
+  "run_id": "eval_20260508_164540"
+}

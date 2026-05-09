@@ -1,0 +1,91 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01963,
+  "fixture_id": "contradiction_sam_children_001__punctuation",
+  "input_tokens": 440,
+  "latency_ms": 6564,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 581,
+  "payload": {
+    "answer": "These two memories conflict: the existing memory says Sam from Goldman has two children, while the new memory says Sam from Goldman has no children. Safe options are: approve_supersession if the new statement should replace the existing one, keep_both if both should be retained despite the contradiction, reject_new if the new statement should not be saved, or edit if the new statement needs clarification or correction before saving.",
+    "citations": [
+      "Existing memory: Sam from Goldman has two children",
+      "New memory: Sam from Goldman has no children"
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "needs_user_choice",
+    "entity_resolution": {
+      "action": "same_entity_assumed",
+      "entity_id": null,
+      "reason": "Both statements refer to 'Sam from Goldman'; no additional distinguishing details were provided."
+    },
+    "intent": "explain_conflict",
+    "memory_cards": [
+      {
+        "confidence": "unknown",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "existing",
+        "relationships": [
+          {
+            "object": "two",
+            "predicate": "has_children_count",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman has two children"
+      },
+      {
+        "confidence": "unknown",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "new",
+        "relationships": [
+          {
+            "object": "zero",
+            "predicate": "has_children_count",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman has no children"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected a direct contradiction about Sam from Goldman's number of children.",
+        "No memory was changed because a safe action choice is required."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "approve_supersession",
+      "keep_both",
+      "reject_new",
+      "edit"
+    ]
+  },
+  "raw_text": "{\n  \"intent\": \"explain_conflict\",\n  \"decision\": \"needs_user_choice\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"existing\",\n      \"statement\": \"Sam from Goldman has two children\",\n      \"confidence\": \"unknown\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam from Goldman\",\n          \"predicate\": \"has_children_count\",\n          \"object\": \"two\"\n        }\n      ]\n    },\n    {\n      \"kind\": \"new\",\n      \"statement\": \"Sam from Goldman has no children\",\n      \"confidence\": \"unknown\",\n      \"entities\": [\n        {\n          \"name\": \"Sam\",\n          \"type\": \"person\",\n          \"role\": \"subject\"\n        },\n        {\n          \"name\": \"Goldman\",\n          \"type\": \"organization\",\n          \"role\": \"affiliation\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Sam from Goldman\",\n          \"predicate\": \"has_children_count\",\n          \"object\": \"zero\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"same_entity_assumed\",\n    \"entity_id\": null,\n    \"reason\": \"Both statements refer to 'Sam from Goldman'; no additional distinguishing details were provided.\"\n  },\n  \"conflict_classification\": \"direct_contradiction\",\n  \"answer\": \"These two memories conflict: the existing memory says Sam from Goldman has two children, while the new memory says Sam from Goldman has no children. Safe options are: approve_supersession if the new statement should replace the existing one, keep_both if both should be retained despite the contradiction, reject_new if the new statement should not be saved, or edit if the new statement needs clarification or correction before saving.\",\n  \"citations\": [\n    \"Existing memory: Sam from Goldman has two children\",\n    \"New memory: Sam from Goldman has no children\"\n  ],\n  \"repair_options\": [\n    \"approve_supersession\",\n    \"keep_both\",\n    \"reject_new\",\n    \"edit\"\n  ],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Detected a direct contradiction about Sam from Goldman's number of children.\",\n      \"No memory was changed because a safe action choice is required.\"\n    ]\n  }\n}",
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_133657",
+  "status": "ok"
+}

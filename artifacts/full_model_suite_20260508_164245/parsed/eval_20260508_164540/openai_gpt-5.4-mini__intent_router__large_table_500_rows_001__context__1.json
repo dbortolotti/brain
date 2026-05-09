@@ -1,0 +1,64 @@
+{
+  "fixture_id": "large_table_500_rows_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Store this as contextual/ephemeral data rather than durable memory. Because it is a large repeating table, avoid extracting every row into memory; keep only a compact note that a 500-row CSV context exists if needed for traceability.",
+    "citations": [
+      "Input: \"For context, CSV table with 500 rows: id,name,value repeated many times. Policy question: how should it be stored?\""
+    ],
+    "conflict_classification": "none",
+    "decision": "do_not_store_durably",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No durable entity should be created from this contextual table alone."
+    },
+    "intent": "policy_question",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "context",
+            "type": "document"
+          },
+          {
+            "name": "500 rows",
+            "role": "scale",
+            "type": "quantity"
+          }
+        ],
+        "kind": "ephemeral_context",
+        "relationships": [
+          {
+            "object": "500",
+            "predicate": "has_rows",
+            "subject": "CSV table"
+          },
+          {
+            "object": "id, name, value",
+            "predicate": "contains_fields",
+            "subject": "CSV table"
+          }
+        ],
+        "statement": "The input is a contextual CSV table with 500 rows and repeated fields (id, name, value); it is not a stable personal memory fact."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Classified as a policy question.",
+        "Chose not to commit row-level durable memory.",
+        "Preserved ambiguity by only noting the table exists as context."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If the user wants persistence, store a summarized representation with schema/shape only.",
+      "If row-level retrieval is needed, keep the CSV in an external document store and reference it by location.",
+      "If only the pattern matters, record a brief note that the dataset is repetitive and 500 rows long."
+    ]
+  },
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540"
+}

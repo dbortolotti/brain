@@ -1,0 +1,82 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.002061,
+  "fixture_id": "cascade_conflict_escalation_001__punctuation",
+  "input_tokens": 432,
+  "latency_ms": 3774,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 386,
+  "payload": {
+    "answer": "There is a direct conflict about Sara\u2019s relationship to the speaker: one memory says daughter, the new input says niece. The safe handling is to keep both claims or edit for clarification; do not treat either as superseding the other without confirmation.",
+    "citations": [
+      "Existing: Sara is my daughter",
+      "Input: Sara is my niece"
+    ],
+    "conflict_classification": "direct_relationship_conflict",
+    "decision": "keep_both",
+    "entity_resolution": {
+      "action": "edit",
+      "entity_id": null,
+      "reason": "The new input conflicts with the existing relationship for the same person name, so the safest handling is to preserve both claims for review rather than overwrite either one."
+    },
+    "intent": "Explain a relationship conflict between an existing memory and a new input while preserving ambiguity.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "conflicting_claim",
+        "relationships": [
+          {
+            "object": "speaker",
+            "predicate": "is_child_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my daughter."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "conflicting_claim",
+        "relationships": [
+          {
+            "object": "speaker",
+            "predicate": "is_niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected a direct contradiction for the same named person.",
+        "Preserved ambiguity instead of committing a single definitive relationship.",
+        "Returned only backend-allowed safe actions."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "approve_supersession",
+      "keep_both",
+      "reject_new",
+      "edit"
+    ]
+  },
+  "raw_text": "{\"intent\":\"Explain a relationship conflict between an existing memory and a new input while preserving ambiguity.\",\"decision\":\"keep_both\",\"memory_cards\":[{\"kind\":\"conflicting_claim\",\"statement\":\"Sara is my daughter.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"is_child_of\",\"object\":\"speaker\"}]},{\"kind\":\"conflicting_claim\",\"statement\":\"Sara is my niece.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"is_niece_of\",\"object\":\"speaker\"}]}],\"entity_resolution\":{\"action\":\"edit\",\"entity_id\":null,\"reason\":\"The new input conflicts with the existing relationship for the same person name, so the safest handling is to preserve both claims for review rather than overwrite either one.\"},\"conflict_classification\":\"direct_relationship_conflict\",\"answer\":\"There is a direct conflict about Sara\u2019s relationship to the speaker: one memory says daughter, the new input says niece. The safe handling is to keep both claims or edit for clarification; do not treat either as superseding the other without confirmation.\",\"citations\":[\"Existing: Sara is my daughter\",\"Input: Sara is my niece\"],\"repair_options\":[\"approve_supersession\",\"keep_both\",\"reject_new\",\"edit\"],\"receipt\":{\"success\":true,\"details\":[\"Detected a direct contradiction for the same named person.\",\"Preserved ambiguity instead of committing a single definitive relationship.\",\"Returned only backend-allowed safe actions.\"]}}",
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

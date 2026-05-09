@@ -1,0 +1,71 @@
+{
+  "fixture_id": "email_source_meeting_followup_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Extracted supported atomic memory cards with ambiguity preserved.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit_with_warning",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Sender identity is inferred from the message header local part and not fully verified; no raw email address retained."
+    },
+    "intent": "extract_atomic_memory_cards",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72 last month."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "requester",
+            "type": "person"
+          }
+        ],
+        "kind": "request",
+        "relationships": [
+          {
+            "object": "AI infrastructure article",
+            "predicate": "requested",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam asked to be sent the AI infrastructure article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed 2 memory cards.",
+        "Raw private email address was not retained."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164255"
+}

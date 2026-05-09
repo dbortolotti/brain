@@ -1,0 +1,67 @@
+{
+  "fixture_id": "typos_shorthand_person_interaction_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "I parsed this as: Sam from/associated with Goldman apparently likes Bill Evans. Because the wording is abbreviated and uncertain, I would not commit it as durable memory without clarification.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "needs_clarification",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Input contains shorthand/typos ('frm goldmn') and ambiguity about whether Goldman is an employer, school, surname, or other affiliation. 'Apparently' also weakens certainty."
+    },
+    "intent": "memory_candidate",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "possible_affiliation",
+            "type": "organization_or_affiliation"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "person_interaction_observation",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "possibly_affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "apparently_likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Someone named or referred to as Sam, possibly associated with Goldman, apparently likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected a possible memory candidate but deferred due to ambiguity and low confidence.",
+        "No durable memory should be committed yet."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Confirm whether 'sam frm goldmn' means 'Sam from Goldman'.",
+      "Clarify whether Goldman refers to Goldman Sachs, a place, a school, or someone\u2019s surname.",
+      "Confirm whether Bill Evans refers to the jazz musician or another person.",
+      "Clarify whether this is a durable preference worth remembering or just a casual observation."
+    ]
+  },
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540"
+}

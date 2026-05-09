@@ -1,0 +1,59 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.010010000000000002,
+  "fixture_id": "router_recall_question",
+  "input_tokens": 364,
+  "latency_ms": 4180,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 273,
+  "payload": {
+    "answer": "I should look up memories for a person named Sam associated with Goldman. No durable facts are provided in the input itself beyond the query wording.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "retrieve_memory",
+    "entity_resolution": {
+      "action": "needs_lookup",
+      "entity_id": null,
+      "reason": "The query contains an ambiguous person reference: \u201cSam from Goldman.\u201d Need to search memory for entities named Sam with an association to Goldman before answering."
+    },
+    "intent": "recall",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "query_subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_context",
+            "type": "organization"
+          }
+        ],
+        "kind": "query",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "User is asking what is known about \u201cSam from Goldman,\u201d likely referring to a person named Sam associated with Goldman."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Planned recall for ambiguous entity: Sam associated with Goldman.",
+        "No current facts asserted without memory lookup."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"recall\",\"decision\":\"retrieve_memory\",\"memory_cards\":[{\"kind\":\"query\",\"statement\":\"User is asking what is known about \u201cSam from Goldman,\u201d likely referring to a person named Sam associated with Goldman.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"query_subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation_context\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"associated_with\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"needs_lookup\",\"entity_id\":null,\"reason\":\"The query contains an ambiguous person reference: \u201cSam from Goldman.\u201d Need to search memory for entities named Sam with an association to Goldman before answering.\"},\"conflict_classification\":\"none_detected\",\"answer\":\"I should look up memories for a person named Sam associated with Goldman. No durable facts are provided in the input itself beyond the query wording.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Planned recall for ambiguous entity: Sam associated with Goldman.\",\"No current facts asserted without memory lookup.\"]}}",
+  "role": "recall_planner",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

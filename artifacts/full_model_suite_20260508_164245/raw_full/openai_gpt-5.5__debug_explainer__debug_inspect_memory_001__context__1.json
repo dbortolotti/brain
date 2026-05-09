@@ -1,0 +1,41 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00979,
+  "fixture_id": "debug_inspect_memory_001__context",
+  "input_tokens": 368,
+  "latency_ms": 5744,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 265,
+  "payload": {
+    "answer": "Inspection requested for memory ID mem_123. No durable memory should be committed from this debug/inspection command alone. The actual stored content for mem_123 was not provided in the input, so no current facts can be asserted.",
+    "citations": [
+      "/brain inspect memory mem_123"
+    ],
+    "conflict_classification": "none",
+    "decision": "no_memory_commit",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The user requested inspection of an existing memory record (mem_123), not creation or update of durable memory."
+    },
+    "intent": "inspect_memory",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Recognized command as a memory inspection/debug request.",
+        "Did not infer or commit any new durable memory.",
+        "Preserved ambiguity because the contents of mem_123 were not included."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide the stored content or metadata for mem_123 to inspect it.",
+      "If mem_123 is missing, verify the memory ID or list available memories.",
+      "If mem_123 contains incorrect or superseded information, request an explicit update, deletion, or repair."
+    ]
+  },
+  "raw_text": "{\"intent\":\"inspect_memory\",\"decision\":\"no_memory_commit\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The user requested inspection of an existing memory record (mem_123), not creation or update of durable memory.\"},\"conflict_classification\":\"none\",\"answer\":\"Inspection requested for memory ID mem_123. No durable memory should be committed from this debug/inspection command alone. The actual stored content for mem_123 was not provided in the input, so no current facts can be asserted.\",\"citations\":[\"/brain inspect memory mem_123\"],\"repair_options\":[\"Provide the stored content or metadata for mem_123 to inspect it.\",\"If mem_123 is missing, verify the memory ID or list available memories.\",\"If mem_123 contains incorrect or superseded information, request an explicit update, deletion, or repair.\"],\"receipt\":{\"success\":true,\"details\":[\"Recognized command as a memory inspection/debug request.\",\"Did not infer or commit any new durable memory.\",\"Preserved ambiguity because the contents of mem_123 were not included.\"]}}",
+  "role": "debug_explainer",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

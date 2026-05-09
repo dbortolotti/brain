@@ -1,0 +1,37 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00105525,
+  "fixture_id": "debug_sql_select_only_001",
+  "input_tokens": 381,
+  "latency_ms": 2144,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 171,
+  "payload": {
+    "answer": "Admin SQL select-only mode permits `SELECT id FROM memory_cards LIMIT 10` and denies `DELETE FROM memory_cards`.",
+    "citations": [
+      "Input: \"Admin SQL select-only mode: SELECT id FROM memory_cards LIMIT 10 allowed; DELETE FROM memory_cards denied.\""
+    ],
+    "conflict_classification": "none",
+    "decision": "SELECT is allowed; DELETE is denied in select-only mode.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No persistent entity identified or required."
+    },
+    "intent": "interpret_admin_sql_permissions",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Parsed mode as select-only.",
+        "Recognized SELECT as allowed.",
+        "Recognized DELETE as denied."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"interpret_admin_sql_permissions\",\"decision\":\"SELECT is allowed; DELETE is denied in select-only mode.\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No persistent entity identified or required.\"},\"conflict_classification\":\"none\",\"answer\":\"Admin SQL select-only mode permits `SELECT id FROM memory_cards LIMIT 10` and denies `DELETE FROM memory_cards`.\",\"citations\":[\"Input: \\\"Admin SQL select-only mode: SELECT id FROM memory_cards LIMIT 10 allowed; DELETE FROM memory_cards denied.\\\"\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Parsed mode as select-only.\",\"Recognized SELECT as allowed.\",\"Recognized DELETE as denied.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

@@ -1,0 +1,38 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.009115,
+  "fixture_id": "debug_explain_recall_sam__punctuation",
+  "input_tokens": 383,
+  "latency_ms": 4616,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 240,
+  "payload": {
+    "answer": "Recall returned mem_new for Sam from Goldman because mem_new is the current, non-superseded memory matching the query. mem_old was filtered out because it has been superseded, so it should not be presented as a current fact. Superseded memories may be retained for provenance or history, but they are excluded from normal recall results when a newer replacement exists.",
+    "citations": [
+      "mem_new",
+      "mem_old"
+    ],
+    "conflict_classification": "supersession_filtering",
+    "decision": "explain_only_no_memory_write",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input asks for an explanation of recall behavior, not to store or update a durable memory."
+    },
+    "intent": "debug_explain_recall",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Identified request as a debug/explanation intent.",
+        "No durable memory was committed.",
+        "Preserved supersession semantics: mem_new is current; mem_old is filtered because superseded."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"debug_explain_recall\",\"decision\":\"explain_only_no_memory_write\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input asks for an explanation of recall behavior, not to store or update a durable memory.\"},\"conflict_classification\":\"supersession_filtering\",\"answer\":\"Recall returned mem_new for Sam from Goldman because mem_new is the current, non-superseded memory matching the query. mem_old was filtered out because it has been superseded, so it should not be presented as a current fact. Superseded memories may be retained for provenance or history, but they are excluded from normal recall results when a newer replacement exists.\",\"citations\":[\"mem_new\",\"mem_old\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Identified request as a debug/explanation intent.\",\"No durable memory was committed.\",\"Preserved supersession semantics: mem_new is current; mem_old is filtered because superseded.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

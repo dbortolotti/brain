@@ -1,0 +1,74 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01165,
+  "fixture_id": "typos_shorthand_person_interaction_001__punctuation",
+  "input_tokens": 374,
+  "latency_ms": 4387,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 326,
+  "payload": {
+    "answer": "Extracted a low-confidence relationship: Sam from Goldman apparently likes Bill Evans.",
+    "citations": [
+      "sam frm goldmn likes bill evns apparently"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_memory",
+    "entity_resolution": {
+      "action": "create_or_update_ambiguous",
+      "entity_id": null,
+      "reason": "Input uses typos/shorthand ('sam frm goldmn', 'bill evns') and no existing entity context is provided; preserve ambiguity while normalizing likely names."
+    },
+    "intent": "extract_relationship",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "apparently_likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "from",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman apparently likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed as low-confidence due to typos and the hedge 'apparently'."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm whether 'sam' refers to Sam and whether 'goldmn' means Goldman or Goldman Sachs.",
+      "Confirm whether 'bill evns' means Bill Evans.",
+      "Clarify whether 'likes' means personal affinity, professional preference, or something else."
+    ]
+  },
+  "raw_text": "{\"intent\":\"extract_relationship\",\"decision\":\"commit_memory\",\"memory_cards\":[{\"kind\":\"relationship\",\"statement\":\"Sam from Goldman apparently likes Bill Evans.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation_context\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"apparently_likes\",\"object\":\"Bill Evans\"},{\"subject\":\"Sam\",\"predicate\":\"from\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"create_or_update_ambiguous\",\"entity_id\":null,\"reason\":\"Input uses typos/shorthand ('sam frm goldmn', 'bill evns') and no existing entity context is provided; preserve ambiguity while normalizing likely names.\"},\"conflict_classification\":\"none\",\"answer\":\"Extracted a low-confidence relationship: Sam from Goldman apparently likes Bill Evans.\",\"citations\":[\"sam frm goldmn likes bill evns apparently\"],\"repair_options\":[\"Confirm whether 'sam' refers to Sam and whether 'goldmn' means Goldman or Goldman Sachs.\",\"Confirm whether 'bill evns' means Bill Evans.\",\"Clarify whether 'likes' means personal affinity, professional preference, or something else.\"],\"receipt\":{\"success\":true,\"details\":[\"Committed as low-confidence due to typos and the hedge 'apparently'.\"]}}",
+  "role": "relationship_extractor",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

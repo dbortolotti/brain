@@ -1,0 +1,59 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00167925,
+  "fixture_id": "article_url_fetch_failure_001__punctuation",
+  "input_tokens": 481,
+  "latency_ms": 3355,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 293,
+  "payload": {
+    "answer": "No article content could be extracted because the mock fetch result was a 404 network error.",
+    "citations": [
+      "Mock fetch result - 404 network error"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_with_warning",
+    "entity_resolution": {
+      "action": "no_resolution",
+      "entity_id": null,
+      "reason": "The source article content was not available due to the fetch failure, so no durable article entity or content-specific resolution can be established."
+    },
+    "intent": "Attempted article memory extraction from a URL fetch failure with a 404 network error.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https -//examplecom/missing",
+            "role": "target",
+            "type": "url"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "404 network error",
+            "predicate": "returned",
+            "subject": "https -//examplecom/missing"
+          }
+        ],
+        "statement": "The attempted fetch for the article at https -//examplecom/missing returned a 404 network error."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Fetch failed with 404 network error.",
+        "No content-based memory cards were extracted."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Retry fetching the URL after correcting the URL formatting.",
+      "Provide the article text directly for extraction."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Attempted article memory extraction from a URL fetch failure with a 404 network error.\",\"decision\":\"commit_with_warning\",\"memory_cards\":[{\"kind\":\"observation\",\"statement\":\"The attempted fetch for the article at https -//examplecom/missing returned a 404 network error.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"https -//examplecom/missing\",\"type\":\"url\",\"role\":\"target\"}],\"relationships\":[{\"subject\":\"https -//examplecom/missing\",\"predicate\":\"returned\",\"object\":\"404 network error\"}]}],\"entity_resolution\":{\"action\":\"no_resolution\",\"entity_id\":null,\"reason\":\"The source article content was not available due to the fetch failure, so no durable article entity or content-specific resolution can be established.\"},\"conflict_classification\":\"none\",\"answer\":\"No article content could be extracted because the mock fetch result was a 404 network error.\",\"citations\":[\"Mock fetch result - 404 network error\"],\"repair_options\":[\"Retry fetching the URL after correcting the URL formatting.\",\"Provide the article text directly for extraction.\"],\"receipt\":{\"success\":false,\"details\":[\"Fetch failed with 404 network error.\",\"No content-based memory cards were extracted.\"]}}",
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164405",
+  "status": "ok"
+}

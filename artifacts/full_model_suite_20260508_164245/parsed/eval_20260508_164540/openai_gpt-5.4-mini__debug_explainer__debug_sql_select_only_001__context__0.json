@@ -1,0 +1,72 @@
+{
+  "fixture_id": "debug_sql_select_only_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Admin SQL is in select-only mode: SELECT queries are allowed and DELETE queries on memory_cards are denied.",
+    "citations": [
+      "Input: \"Admin SQL select-only mode: SELECT id FROM memory_cards LIMIT 10 allowed; DELETE FROM memory_cards denied.\""
+    ],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No entity disambiguation is needed for this context-only rule."
+    },
+    "intent": "Record the current Admin SQL permissions in select-only mode for the fixture context.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Admin SQL",
+            "role": "context",
+            "type": "system"
+          },
+          {
+            "name": "memory_cards",
+            "role": "target",
+            "type": "table"
+          },
+          {
+            "name": "SELECT id FROM memory_cards LIMIT 10",
+            "role": "allowed example",
+            "type": "query"
+          },
+          {
+            "name": "DELETE FROM memory_cards",
+            "role": "denied example",
+            "type": "query"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "SELECT queries on memory_cards",
+            "predicate": "allows",
+            "subject": "Admin SQL select-only mode"
+          },
+          {
+            "object": "DELETE FROM memory_cards",
+            "predicate": "denies",
+            "subject": "Admin SQL select-only mode"
+          }
+        ],
+        "statement": "In Admin SQL select-only mode, SELECT queries such as SELECT id FROM memory_cards LIMIT 10 are allowed, while DELETE FROM memory_cards is denied."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recorded select-only permission context.",
+        "Preserved the denied DELETE restriction as current for this fixture."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If the permission model changes, update this note to reflect the new allowed and denied SQL operations.",
+      "If a broader SQL policy is provided, replace the example-based rule with the authoritative policy statement."
+    ]
+  },
+  "role": "debug_explainer",
+  "run_id": "eval_20260508_164540"
+}

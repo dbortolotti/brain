@@ -1,0 +1,84 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.015615,
+  "fixture_id": "article_url_fetch_failure_001__context",
+  "input_tokens": 483,
+  "latency_ms": 4693,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 440,
+  "payload": {
+    "answer": "I can remember the URL and the user's stated reason, but the article content was not fetched due to a 404 network error, so I cannot store any claims from the article itself.",
+    "citations": [
+      "https://example.com/missing"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_with_warning",
+    "entity_resolution": {
+      "action": "create_or_attach_url_reference",
+      "entity_id": null,
+      "reason": "The URL is explicitly provided, but article content could not be fetched; store only the user's reference and fetch failure status."
+    },
+    "intent": "remember_article",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "referenced_article",
+            "type": "url"
+          },
+          {
+            "name": "memory architecture",
+            "role": "reason",
+            "type": "topic"
+          }
+        ],
+        "kind": "reference",
+        "relationships": [
+          {
+            "object": "memory architecture",
+            "predicate": "was_requested_to_be_remembered_for",
+            "subject": "https://example.com/missing"
+          }
+        ],
+        "statement": "The user wanted to remember the article at https://example.com/missing because it may be useful for memory architecture."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "fetch_target",
+            "type": "url"
+          }
+        ],
+        "kind": "source_status",
+        "relationships": [
+          {
+            "object": "404 network error",
+            "predicate": "fetch_result",
+            "subject": "https://example.com/missing"
+          }
+        ],
+        "statement": "Fetching https://example.com/missing failed with a 404 network error, so no article content was available to extract or verify."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored the article URL reference and the reason: useful for memory architecture.",
+        "Did not extract article claims because the fetch failed with a 404 network error."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retry fetching the URL later.",
+      "Provide the article text directly.",
+      "Provide a working URL or archived copy."
+    ]
+  },
+  "raw_text": "{\"intent\":\"remember_article\",\"decision\":\"commit_with_warning\",\"memory_cards\":[{\"kind\":\"reference\",\"statement\":\"The user wanted to remember the article at https://example.com/missing because it may be useful for memory architecture.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"https://example.com/missing\",\"type\":\"url\",\"role\":\"referenced_article\"},{\"name\":\"memory architecture\",\"type\":\"topic\",\"role\":\"reason\"}],\"relationships\":[{\"subject\":\"https://example.com/missing\",\"predicate\":\"was_requested_to_be_remembered_for\",\"object\":\"memory architecture\"}]},{\"kind\":\"source_status\",\"statement\":\"Fetching https://example.com/missing failed with a 404 network error, so no article content was available to extract or verify.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"https://example.com/missing\",\"type\":\"url\",\"role\":\"fetch_target\"}],\"relationships\":[{\"subject\":\"https://example.com/missing\",\"predicate\":\"fetch_result\",\"object\":\"404 network error\"}]}],\"entity_resolution\":{\"action\":\"create_or_attach_url_reference\",\"entity_id\":null,\"reason\":\"The URL is explicitly provided, but article content could not be fetched; store only the user's reference and fetch failure status.\"},\"conflict_classification\":\"none\",\"answer\":\"I can remember the URL and the user's stated reason, but the article content was not fetched due to a 404 network error, so I cannot store any claims from the article itself.\",\"citations\":[\"https://example.com/missing\"],\"repair_options\":[\"Retry fetching the URL later.\",\"Provide the article text directly.\",\"Provide a working URL or archived copy.\"],\"receipt\":{\"success\":true,\"details\":[\"Stored the article URL reference and the reason: useful for memory architecture.\",\"Did not extract article claims because the fetch failed with a 404 network error.\"]}}",
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

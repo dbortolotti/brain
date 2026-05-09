@@ -1,0 +1,64 @@
+{
+  "fixture_id": "typos_shorthand_person_interaction_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Detected ambiguous mentions: \u201csam frm goldmn\u201d and \u201cbill evns,\u201d with a tentative relationship that Sam apparently likes Bill Evns. Not committing as durable memory due to typos/shorthand and uncertainty.",
+    "citations": [
+      "For context, sam frm goldmn likes bill evns apparently"
+    ],
+    "conflict_classification": "none",
+    "decision": "no_durable_memory_commit",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Names appear abbreviated or misspelled, and the statement is hedged with \u201capparently,\u201d so no durable identity or preference should be committed without clarification."
+    },
+    "intent": "extract_entity_mentions",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "sam frm goldmn",
+            "role": "subject_mention",
+            "type": "person_or_person_reference"
+          },
+          {
+            "name": "goldmn",
+            "role": "possible_affiliation",
+            "type": "organization_or_affiliation_mention"
+          },
+          {
+            "name": "bill evns",
+            "role": "object_mention",
+            "type": "person_or_entity_reference"
+          }
+        ],
+        "kind": "entity_mention",
+        "relationships": [
+          {
+            "object": "bill evns",
+            "predicate": "apparently likes",
+            "subject": "sam frm goldmn"
+          }
+        ],
+        "statement": "The input mentions a person written as \u201csam frm goldmn,\u201d likely shorthand/typo for someone named Sam from Goldman, and says this person apparently likes \u201cbill evns.\u201d"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted entity mentions and tentative relationship.",
+        "Deferred durable memory commitment because entity identities and confidence are ambiguous."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify whether \u201csam frm goldmn\u201d means Sam from Goldman or a specific full name.",
+      "Clarify whether \u201cgoldmn\u201d refers to Goldman Sachs or another entity.",
+      "Clarify whether \u201cbill evns\u201d refers to Bill Evans or someone else.",
+      "Confirm whether the liking relationship is reliable or just hearsay."
+    ]
+  },
+  "role": "entity_mention_extractor",
+  "run_id": "eval_20260508_125514"
+}

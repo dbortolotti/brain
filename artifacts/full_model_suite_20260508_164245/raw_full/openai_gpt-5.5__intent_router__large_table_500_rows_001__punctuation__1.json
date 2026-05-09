@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.012775,
+  "fixture_id": "large_table_500_rows_001__punctuation",
+  "input_tokens": 383,
+  "latency_ms": 4844,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 362,
+  "payload": {
+    "answer": "Do not commit the 500-row CSV table as durable personal memory. Treat it as transient document/data content unless the user explicitly asks to save a concise summary, a stable preference about handling such tables, or a specific durable fact extracted from it. Large tabular data should be stored as an attached document, external file, or transient context with metadata, not expanded into hundreds of memory cards. If storage is needed, preserve only a brief description such as: 'User provided a CSV table with 500 rows containing repeated id, name, and value columns,' plus a pointer to the original artifact if available.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "do_not_store_as_durable_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input is a large CSV/table payload and a policy question about storage, not a durable personal memory fact about the user."
+    },
+    "intent": "policy_question",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Classified as a policy/storage question.",
+        "No durable memory cards created.",
+        "Recommended transient or document-style storage for large CSV content."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask the user whether they want the table saved as a file/document rather than personal memory.",
+      "Offer to summarize the table and store only the summary if it contains durable relevance.",
+      "Extract and store only explicit user preferences or stable facts, not every row."
+    ]
+  },
+  "raw_text": "{\"intent\":\"policy_question\",\"decision\":\"do_not_store_as_durable_memory\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input is a large CSV/table payload and a policy question about storage, not a durable personal memory fact about the user.\"},\"conflict_classification\":\"none\",\"answer\":\"Do not commit the 500-row CSV table as durable personal memory. Treat it as transient document/data content unless the user explicitly asks to save a concise summary, a stable preference about handling such tables, or a specific durable fact extracted from it. Large tabular data should be stored as an attached document, external file, or transient context with metadata, not expanded into hundreds of memory cards. If storage is needed, preserve only a brief description such as: 'User provided a CSV table with 500 rows containing repeated id, name, and value columns,' plus a pointer to the original artifact if available.\",\"citations\":[],\"repair_options\":[\"Ask the user whether they want the table saved as a file/document rather than personal memory.\",\"Offer to summarize the table and store only the summary if it contains durable relevance.\",\"Extract and store only explicit user preferences or stable facts, not every row.\"],\"receipt\":{\"success\":true,\"details\":[\"Classified as a policy/storage question.\",\"No durable memory cards created.\",\"Recommended transient or document-style storage for large CSV content.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

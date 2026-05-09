@@ -1,0 +1,66 @@
+{
+  "fixture_id": "recall_brain_cognee_conclusions_relevance_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "You concluded that Brain DB is the durable source of truth, and Cognee should be treated only as a rebuildable projection/index derived from Brain\u2014not as the authoritative memory store.",
+    "citations": [
+      "Brain DB source-of-truth conclusion",
+      "Cognee rebuildable projection"
+    ],
+    "conflict_classification": "none",
+    "decision": "answer_from_relevant_memory_only",
+    "entity_resolution": {
+      "action": "resolved_existing_concepts",
+      "entity_id": null,
+      "reason": "The query explicitly concerns the Brain/Cognee conclusion; unrelated Slack, family, and Sam preference records are out of scope."
+    },
+    "intent": "Recall the user's conclusion about Brain and Cognee, limited to that topic.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "rebuildable_projection",
+            "type": "system"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "memory",
+            "predicate": "is_source_of_truth_for",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "Brain DB",
+            "predicate": "is_rebuildable_projection_of",
+            "subject": "Cognee"
+          },
+          {
+            "object": "authoritative_source",
+            "predicate": "is_not",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain DB is the source of truth for memory, while Cognee is treated as a rebuildable projection derived from Brain rather than an authoritative store."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Answered only the queried Brain/Cognee conclusion.",
+        "Excluded unrelated Slack intake, family facts, and Sam preference records.",
+        "Did not promote Cognee projection data to source-of-truth status."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "recall_planner",
+  "run_id": "eval_20260508_164540"
+}

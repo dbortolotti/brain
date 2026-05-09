@@ -1,0 +1,73 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0014160000000000002,
+  "fixture_id": "router_remember_plain__context",
+  "input_tokens": 370,
+  "latency_ms": 2387,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 253,
+  "payload": {
+    "answer": "Stored as a tentative preference with affiliation context.",
+    "citations": [
+      "For context, remember Sam from Goldman likes Bill Evans"
+    ],
+    "conflict_classification": "none",
+    "decision": "accept",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "No existing entity context was provided to resolve Sam or Goldman to a known record."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created one memory card.",
+        "No conflicts detected."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If Sam or Goldman should map to an existing entity, provide the identifier or more context."
+    ]
+  },
+  "raw_text": "{\"intent\":\"remember\",\"decision\":\"accept\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman likes Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"preferred artist\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"create\",\"entity_id\":null,\"reason\":\"No existing entity context was provided to resolve Sam or Goldman to a known record.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored as a tentative preference with affiliation context.\",\"citations\":[\"For context, remember Sam from Goldman likes Bill Evans\"],\"repair_options\":[\"If Sam or Goldman should map to an existing entity, provide the identifier or more context.\"],\"receipt\":{\"success\":true,\"details\":[\"Created one memory card.\",\"No conflicts detected.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

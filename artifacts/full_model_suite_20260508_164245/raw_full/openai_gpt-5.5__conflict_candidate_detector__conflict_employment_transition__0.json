@@ -1,0 +1,35 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0095,
+  "fixture_id": "conflict_employment_transition",
+  "input_tokens": 484,
+  "latency_ms": 3548,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 236,
+  "payload": {
+    "answer": "The new fact is a possible employment transition conflict candidate: it indicates Sam no longer works at Goldman and has joined Point72, which would supersede the existing current fact if referring to the same Sam.",
+    "citations": [
+      "Existing current fact: Sam works at Goldman.",
+      "New fact: Sam left Goldman and joined Point72."
+    ],
+    "conflict_classification": "supersedes",
+    "decision": "conflict_candidate",
+    "entity_resolution": {
+      "action": "same_entity_assumed_for_detection",
+      "entity_id": null,
+      "reason": "Both facts refer to 'Sam'; no additional disambiguating information is provided, so same-entity treatment is assumed only for conflict detection."
+    },
+    "evidence": [
+      {
+        "existing_fact": "Sam works at Goldman.",
+        "new_fact": "Sam left Goldman and joined Point72.",
+        "reason": "The new fact explicitly states Sam left Goldman, which conflicts with the existing current employment fact, and adds a new employer, Point72."
+      }
+    ],
+    "intent": "detect_conflict_candidate"
+  },
+  "raw_text": "{\"intent\":\"detect_conflict_candidate\",\"decision\":\"conflict_candidate\",\"conflict_classification\":\"supersedes\",\"answer\":\"The new fact is a possible employment transition conflict candidate: it indicates Sam no longer works at Goldman and has joined Point72, which would supersede the existing current fact if referring to the same Sam.\",\"citations\":[\"Existing current fact: Sam works at Goldman.\",\"New fact: Sam left Goldman and joined Point72.\"],\"evidence\":[{\"existing_fact\":\"Sam works at Goldman.\",\"new_fact\":\"Sam left Goldman and joined Point72.\",\"reason\":\"The new fact explicitly states Sam left Goldman, which conflicts with the existing current employment fact, and adds a new employer, Point72.\"}],\"entity_resolution\":{\"action\":\"same_entity_assumed_for_detection\",\"entity_id\":null,\"reason\":\"Both facts refer to 'Sam'; no additional disambiguating information is provided, so same-entity treatment is assumed only for conflict detection.\"}}",
+  "role": "conflict_candidate_detector",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

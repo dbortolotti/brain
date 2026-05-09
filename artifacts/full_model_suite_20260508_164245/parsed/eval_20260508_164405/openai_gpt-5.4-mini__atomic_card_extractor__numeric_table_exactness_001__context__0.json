@@ -1,0 +1,109 @@
+{
+  "fixture_id": "numeric_table_exactness_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Extracted 2 atomic facts from the table.",
+    "citations": [
+      "PPO-001 | 0.12 | 0.45 | baseline",
+      "PPO-002 | 0.18 | 0.51 | entropy tuned"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_success",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No ambiguous entity references requiring resolution."
+    },
+    "intent": "Extract atomic memory cards from the provided table context",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "run identifier",
+            "type": "run"
+          },
+          {
+            "name": "reward",
+            "role": "performance metric",
+            "type": "metric"
+          },
+          {
+            "name": "Sharpe",
+            "role": "risk-adjusted performance metric",
+            "type": "metric"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "0.12",
+            "predicate": "has_reward",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "0.45",
+            "predicate": "has_Sharpe",
+            "subject": "PPO-001"
+          }
+        ],
+        "statement": "PPO-001 had reward 0.12 and Sharpe 0.45."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "run identifier",
+            "type": "run"
+          },
+          {
+            "name": "reward",
+            "role": "performance metric",
+            "type": "metric"
+          },
+          {
+            "name": "Sharpe",
+            "role": "risk-adjusted performance metric",
+            "type": "metric"
+          },
+          {
+            "name": "entropy tuned",
+            "role": "run note",
+            "type": "note"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "0.18",
+            "predicate": "has_reward",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "0.51",
+            "predicate": "has_Sharpe",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "entropy tuned",
+            "predicate": "has_note",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "PPO-002 had reward 0.18, Sharpe 0.51, and note \"entropy tuned\"."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed two rows from the table.",
+        "No ambiguities or conflicts detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164405"
+}

@@ -1,0 +1,53 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01378,
+  "fixture_id": "debug_inspect_memory_001",
+  "input_tokens": 362,
+  "latency_ms": 5734,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 399,
+  "payload": {
+    "answer": "I can\u2019t inspect mem_123 from the provided input because no memory record, metadata, history, or store lookup result was included. I will not treat any fact from mem_123 as current unless its active, non-deleted, non-superseded contents are provided.",
+    "citations": [],
+    "conflict_classification": "unknown_not_enough_information",
+    "decision": "explain_existing_memory",
+    "entity_resolution": {
+      "action": "no_resolution_possible",
+      "entity_id": "mem_123",
+      "reason": "The request directly references a memory identifier, but no backing memory record was provided to resolve or inspect."
+    },
+    "intent": "inspect_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "mem_123",
+            "role": "target",
+            "type": "memory_id"
+          }
+        ],
+        "kind": "debug_inspection",
+        "relationships": [],
+        "statement": "Inspection requested for memory ID mem_123. No memory store contents or metadata were provided in the prompt, so the current fact, status, provenance, and deletion/supersession state of mem_123 cannot be determined from available input."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Received inspect request for memory ID mem_123.",
+        "No durable memory contents were available in the prompt.",
+        "No current facts were committed or asserted."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide the stored record for mem_123, including statement/content, status, timestamps, provenance, and supersession/deletion metadata.",
+      "Run the inspect command against a connected memory backend and return the lookup result for explanation.",
+      "If mem_123 was deleted or superseded, include the replacement memory ID or tombstone metadata so it is not presented as current."
+    ]
+  },
+  "raw_text": "{\"intent\":\"inspect_memory\",\"decision\":\"explain_existing_memory\",\"memory_cards\":[{\"kind\":\"debug_inspection\",\"statement\":\"Inspection requested for memory ID mem_123. No memory store contents or metadata were provided in the prompt, so the current fact, status, provenance, and deletion/supersession state of mem_123 cannot be determined from available input.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"mem_123\",\"type\":\"memory_id\",\"role\":\"target\"}],\"relationships\":[]}],\"entity_resolution\":{\"action\":\"no_resolution_possible\",\"entity_id\":\"mem_123\",\"reason\":\"The request directly references a memory identifier, but no backing memory record was provided to resolve or inspect.\"},\"conflict_classification\":\"unknown_not_enough_information\",\"answer\":\"I can\u2019t inspect mem_123 from the provided input because no memory record, metadata, history, or store lookup result was included. I will not treat any fact from mem_123 as current unless its active, non-deleted, non-superseded contents are provided.\",\"citations\":[],\"repair_options\":[\"Provide the stored record for mem_123, including statement/content, status, timestamps, provenance, and supersession/deletion metadata.\",\"Run the inspect command against a connected memory backend and return the lookup result for explanation.\",\"If mem_123 was deleted or superseded, include the replacement memory ID or tombstone metadata so it is not presented as current.\"],\"receipt\":{\"success\":false,\"details\":[\"Received inspect request for memory ID mem_123.\",\"No durable memory contents were available in the prompt.\",\"No current facts were committed or asserted.\"]}}",
+  "role": "debug_explainer",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

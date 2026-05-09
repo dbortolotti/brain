@@ -1,0 +1,66 @@
+{
+  "fixture_id": "ambiguous_place_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Ambiguous: Brutto could refer to the London restaurant or the article alias; do not resolve yet.",
+    "citations": [],
+    "conflict_classification": "ambiguous_reference",
+    "decision": "defer",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The new note lacks enough context to confidently choose between the restaurant and the article alias, so no durable entity linkage should be committed."
+    },
+    "intent": "rank entity candidates for an ambiguous memory note",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Brutto",
+            "role": "ambiguous mention",
+            "type": "entity"
+          },
+          {
+            "name": "Brutto restaurant in London",
+            "role": "existing candidate",
+            "type": "place/restaurant"
+          },
+          {
+            "name": "Brutto article alias",
+            "role": "existing candidate",
+            "type": "alias"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "Brutto restaurant in London",
+            "predicate": "may_refer_to",
+            "subject": "Brutto"
+          },
+          {
+            "object": "Brutto article alias",
+            "predicate": "may_refer_to",
+            "subject": "Brutto"
+          }
+        ],
+        "statement": "A note says Brutto was better than expected, but it is ambiguous which existing Brutto entity it refers to."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Did not overwrite existing entity mappings.",
+        "Preserved ambiguity instead of committing a durable link."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for more context about which Brutto was evaluated.",
+      "If future notes mention food, dining, or London, link to the restaurant.",
+      "If future notes mention writing, a post, or an alias, link to the article alias."
+    ]
+  },
+  "role": "entity_candidate_ranker",
+  "run_id": "eval_20260508_164540"
+}

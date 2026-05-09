@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0014415,
+  "fixture_id": "groundedness_metadata_claims_001",
+  "input_tokens": 392,
+  "latency_ms": 3209,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 255,
+  "payload": {
+    "answer": "Identity: Person; confidence medium. Aliases: Sam, Sam from Goldman. Grounded by entity row and alias row.",
+    "citations": [
+      "entity row",
+      "alias row"
+    ],
+    "conflict_classification": "none",
+    "decision": "grounded",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "The evidence mentions an entity row and an alias row supporting a person identity with an alias, but no stable unique identifier is provided."
+    },
+    "intent": "Evaluate whether the provided identity and aliases are grounded in the evidence",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "entity",
+            "type": "person"
+          },
+          {
+            "name": "Sam from Goldman",
+            "role": "alias",
+            "type": "person"
+          }
+        ],
+        "kind": "identity",
+        "relationships": [
+          {
+            "object": "Sam from Goldman",
+            "predicate": "has_alias",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "The entity is a person."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recorded a person identity with medium confidence.",
+        "Recorded aliases Sam and Sam from Goldman as grounded by the provided evidence."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"Evaluate whether the provided identity and aliases are grounded in the evidence\",\"decision\":\"grounded\",\"memory_cards\":[{\"kind\":\"identity\",\"statement\":\"The entity is a person.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"entity\"},{\"name\":\"Sam from Goldman\",\"type\":\"person\",\"role\":\"alias\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"has_alias\",\"object\":\"Sam from Goldman\"}]}],\"entity_resolution\":{\"action\":\"create_or_update\",\"entity_id\":null,\"reason\":\"The evidence mentions an entity row and an alias row supporting a person identity with an alias, but no stable unique identifier is provided.\"},\"conflict_classification\":\"none\",\"answer\":\"Identity: Person; confidence medium. Aliases: Sam, Sam from Goldman. Grounded by entity row and alias row.\",\"citations\":[\"entity row\",\"alias row\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Recorded a person identity with medium confidence.\",\"Recorded aliases Sam and Sam from Goldman as grounded by the provided evidence.\"]}}",
+  "role": "eval_judge",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

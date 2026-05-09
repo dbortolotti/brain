@@ -1,0 +1,75 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01131,
+  "fixture_id": "personal_routine_morning_reading_001__context",
+  "input_tokens": 384,
+  "latency_ms": 4011,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 313,
+  "payload": {
+    "answer": "Noted: you usually prefer to read technical papers in the morning before checking email.",
+    "citations": [
+      "For context, I usually prefer to read technical papers in the morning before checking email."
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No stable named entity needs resolution; this is a routine/preference about the user."
+    },
+    "intent": "capture_user_preference",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "technical papers",
+            "role": "preferred_morning_reading",
+            "type": "activity_or_content"
+          },
+          {
+            "name": "morning",
+            "role": "preferred_time",
+            "type": "time_period"
+          },
+          {
+            "name": "email",
+            "role": "subsequent_activity",
+            "type": "activity"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "email",
+            "predicate": "prefers_before_checking",
+            "subject": "user"
+          },
+          {
+            "object": "technical papers",
+            "predicate": "usually_reads",
+            "subject": "user"
+          },
+          {
+            "object": "morning",
+            "predicate": "preferred_time",
+            "subject": "technical papers"
+          }
+        ],
+        "statement": "The user usually prefers to read technical papers in the morning before checking email."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed a durable user routine/preference with medium confidence due to wording 'usually prefer.'"
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"capture_user_preference\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"The user usually prefers to read technical papers in the morning before checking email.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"technical papers\",\"type\":\"activity_or_content\",\"role\":\"preferred_morning_reading\"},{\"name\":\"morning\",\"type\":\"time_period\",\"role\":\"preferred_time\"},{\"name\":\"email\",\"type\":\"activity\",\"role\":\"subsequent_activity\"}],\"relationships\":[{\"subject\":\"user\",\"predicate\":\"prefers_before_checking\",\"object\":\"email\"},{\"subject\":\"user\",\"predicate\":\"usually_reads\",\"object\":\"technical papers\"},{\"subject\":\"technical papers\",\"predicate\":\"preferred_time\",\"object\":\"morning\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No stable named entity needs resolution; this is a routine/preference about the user.\"},\"conflict_classification\":\"none\",\"answer\":\"Noted: you usually prefer to read technical papers in the morning before checking email.\",\"citations\":[\"For context, I usually prefer to read technical papers in the morning before checking email.\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Committed a durable user routine/preference with medium confidence due to wording 'usually prefer.'\"]}}",
+  "role": "open_loop_detector",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

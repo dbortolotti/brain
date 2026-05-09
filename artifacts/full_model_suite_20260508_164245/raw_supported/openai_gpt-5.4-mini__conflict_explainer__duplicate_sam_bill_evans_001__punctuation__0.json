@@ -1,0 +1,112 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.002829,
+  "fixture_id": "duplicate_sam_bill_evans_001__punctuation",
+  "input_tokens": 448,
+  "latency_ms": 4088,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 554,
+  "payload": {
+    "answer": "These two memories appear to say the same thing: Sam from Goldman likes Bill Evans. The difference is only wording/punctuation, so this is best treated as a duplicate.\n\nSafe actions:\n- link_duplicate: connect the new item to the existing memory\n- keep_existing: retain the current memory and do not add a separate duplicate\n- add_anyway: store both as separate memories if you want redundancy\n- edit: adjust the new wording before saving\n- cancel: take no action",
+    "citations": [
+      "Existing memory: \"Sam from Goldman mentioned that he likes Bill Evans\"",
+      "New memory: \"Sam from Goldman said he likes Bill Evans\""
+    ],
+    "conflict_classification": "duplicate_same_fact_punctuation_variation",
+    "decision": "link_duplicate",
+    "entity_resolution": {
+      "action": "link_duplicate",
+      "entity_id": null,
+      "reason": "The new statement expresses the same fact as the existing memory; the difference is only phrasing/punctuation, so it should be linked as a duplicate rather than treated as a conflicting update."
+    },
+    "intent": "Explain that the new fact is a duplicate of the existing memory with only punctuation/wording variation.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked artist",
+            "type": "person"
+          }
+        ],
+        "kind": "existing",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman mentioned that he likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked artist",
+            "type": "person"
+          }
+        ],
+        "kind": "new",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman said he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected no substantive conflict.",
+        "Identified as duplicate/same fact with punctuation or wording variation."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "link_duplicate",
+      "keep_existing",
+      "add_anyway",
+      "edit",
+      "cancel"
+    ]
+  },
+  "raw_text": "{\"intent\":\"Explain that the new fact is a duplicate of the existing memory with only punctuation/wording variation.\",\"decision\":\"link_duplicate\",\"memory_cards\":[{\"kind\":\"existing\",\"statement\":\"Sam from Goldman mentioned that he likes Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked artist\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]},{\"kind\":\"new\",\"statement\":\"Sam from Goldman said he likes Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked artist\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"link_duplicate\",\"entity_id\":null,\"reason\":\"The new statement expresses the same fact as the existing memory; the difference is only phrasing/punctuation, so it should be linked as a duplicate rather than treated as a conflicting update.\"},\"conflict_classification\":\"duplicate_same_fact_punctuation_variation\",\"answer\":\"These two memories appear to say the same thing: Sam from Goldman likes Bill Evans. The difference is only wording/punctuation, so this is best treated as a duplicate.\\n\\nSafe actions:\\n- link_duplicate: connect the new item to the existing memory\\n- keep_existing: retain the current memory and do not add a separate duplicate\\n- add_anyway: store both as separate memories if you want redundancy\\n- edit: adjust the new wording before saving\\n- cancel: take no action\",\"citations\":[\"Existing memory: \\\"Sam from Goldman mentioned that he likes Bill Evans\\\"\",\"New memory: \\\"Sam from Goldman said he likes Bill Evans\\\"\"],\"repair_options\":[\"link_duplicate\",\"keep_existing\",\"add_anyway\",\"edit\",\"cancel\"],\"receipt\":{\"success\":true,\"details\":[\"Detected no substantive conflict.\",\"Identified as duplicate/same fact with punctuation or wording variation.\"]}}",
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_164405",
+  "status": "ok"
+}

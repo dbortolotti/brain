@@ -1,0 +1,91 @@
+{
+  "fixture_id": "conflict_sara_niece_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "I found an ambiguity: the existing high-confidence memory says Sara is Daniele's daughter and Nur's twin, while the new information says Sara is your niece. These can both be true, but I need clarification to know whether this is the same Sara and how she is related to you. Safe actions available: ask_clarification, add_new, keep_existing, reject_new, or edit.",
+    "citations": [
+      "Existing high-confidence memory: Sara is Daniele's daughter and Nur's twin.",
+      "New claim: Sara is my niece."
+    ],
+    "conflict_classification": "ambiguous_relationship_or_entity_identity",
+    "decision": "needs_clarification",
+    "entity_resolution": {
+      "action": "ask_clarification",
+      "entity_id": null,
+      "reason": "The new claim may refer to the same Sara, but it introduces a family relationship to the user that is not established by the existing high-confidence memory. It is ambiguous whether Sara is both Daniele's daughter and the user's niece, or whether the new claim refers to a different Sara."
+    },
+    "intent": "explain_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "twin",
+            "type": "person"
+          }
+        ],
+        "kind": "existing_memory",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is daughter of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is twin of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin."
+      },
+      {
+        "confidence": "unknown",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "new_claim",
+        "relationships": [
+          {
+            "object": "user",
+            "predicate": "is niece of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No durable memory was committed.",
+        "The ambiguity was preserved.",
+        "No existing memory was superseded or deleted."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "ask_clarification",
+      "add_new",
+      "keep_existing",
+      "reject_new",
+      "edit"
+    ]
+  },
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_164540"
+}

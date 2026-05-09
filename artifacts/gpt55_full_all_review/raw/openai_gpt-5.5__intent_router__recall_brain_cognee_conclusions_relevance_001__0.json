@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.015955,
+  "fixture_id": "recall_brain_cognee_conclusions_relevance_001",
+  "input_tokens": 431,
+  "latency_ms": 5233,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 460,
+  "payload": {
+    "answer": "You concluded that Brain should be treated as the source-of-truth personal memory database, and Cognee should be treated as a rebuildable projection derived from Brain\u2014not as the authoritative memory store.",
+    "citations": [
+      "Brain DB source-of-truth conclusion",
+      "Cognee rebuildable projection"
+    ],
+    "conflict_classification": "none",
+    "decision": "answer_scoped_to_brain_and_cognee_conclusions",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": null,
+      "reason": "Query explicitly references Brain and Cognee; no additional entity disambiguation needed."
+    },
+    "intent": "recall",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "source_of_truth",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "rebuildable_projection",
+            "type": "system"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "source-of-truth personal memory database",
+            "predicate": "is",
+            "subject": "Brain"
+          },
+          {
+            "object": "rebuildable projection derived from Brain",
+            "predicate": "is",
+            "subject": "Cognee"
+          },
+          {
+            "object": "authoritative source of durable memory",
+            "predicate": "is_not",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain is the source-of-truth personal memory database, while Cognee is a rebuildable projection derived from Brain rather than an authoritative store."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Returned only the queried Brain/Cognee conclusion.",
+        "Excluded unrelated Slack, family, and Sam preference facts."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"recall\",\n  \"decision\": \"answer_scoped_to_brain_and_cognee_conclusions\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"conclusion\",\n      \"statement\": \"Brain is the source-of-truth personal memory database, while Cognee is a rebuildable projection derived from Brain rather than an authoritative store.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain\",\n          \"type\": \"system\",\n          \"role\": \"source_of_truth\"\n        },\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"system\",\n          \"role\": \"rebuildable_projection\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain\",\n          \"predicate\": \"is\",\n          \"object\": \"source-of-truth personal memory database\"\n        },\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"is\",\n          \"object\": \"rebuildable projection derived from Brain\"\n        },\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"is_not\",\n          \"object\": \"authoritative source of durable memory\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolved\",\n    \"entity_id\": null,\n    \"reason\": \"Query explicitly references Brain and Cognee; no additional entity disambiguation needed.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"You concluded that Brain should be treated as the source-of-truth personal memory database, and Cognee should be treated as a rebuildable projection derived from Brain\u2014not as the authoritative memory store.\",\n  \"citations\": [\n    \"Brain DB source-of-truth conclusion\",\n    \"Cognee rebuildable projection\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Returned only the queried Brain/Cognee conclusion.\",\n      \"Excluded unrelated Slack, family, and Sam preference facts.\"\n    ]\n  }\n}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

@@ -1,0 +1,28 @@
+{
+  "fixture_id": "temporal_status_transition_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "The new statement appears to update the project status of the same Brain Slack agent from planned/open to implemented MVP. This is a temporal project state change candidate, not a final policy decision.",
+    "citations": [
+      "Existing project state: The Brain Slack agent is planned, status=open.",
+      "New: The Brain Slack agent MVP is now implemented."
+    ],
+    "conflict_classification": "project_state_update",
+    "decision": "conflict_candidate",
+    "entity_resolution": {
+      "action": "link_candidate",
+      "entity_id": null,
+      "reason": "The existing and new facts likely refer to the same project/entity, but no explicit entity ID is provided."
+    },
+    "evidence": [
+      {
+        "existing_fact": "The Brain Slack agent is planned, status=open.",
+        "new_fact": "The Brain Slack agent MVP is now implemented.",
+        "reason": "Both facts refer to the Brain Slack agent, and the new fact indicates implementation progress that may change the previous planned/open project state."
+      }
+    ],
+    "intent": "detect_conflict_candidate"
+  },
+  "role": "conflict_candidate_detector",
+  "run_id": "eval_20260508_164540"
+}

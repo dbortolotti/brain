@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.014765,
+  "fixture_id": "ambiguous_sam_001__punctuation",
+  "input_tokens": 385,
+  "latency_ms": 9833,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 428,
+  "payload": {
+    "answer": "I can\u2019t safely attach this preference to either existing Sam yet. Please clarify whether this was Sam from Goldman or Sam from Point72.",
+    "citations": [
+      "Existing entities: Sam from Goldman; Sam from Point72",
+      "New message: Sam mentioned that he likes Bill Evans"
+    ],
+    "conflict_classification": "ambiguous_entity_reference",
+    "decision": "do_not_commit_durable_memory_until_entity_resolved",
+    "entity_resolution": {
+      "action": "needs_clarification",
+      "entity_id": null,
+      "reason": "The new message identifies the subject only as 'Sam', while two existing entities match: Sam from Goldman and Sam from Point72. The punctuation/context does not disambiguate which Sam likes Bill Evans."
+    },
+    "intent": "capture_preference_with_ambiguous_entity",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "candidate_subject",
+            "type": "person"
+          },
+          {
+            "name": "Sam from Point72",
+            "role": "candidate_subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_artist",
+            "type": "person"
+          }
+        ],
+        "kind": "ambiguous_candidate_memory",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Unresolved Sam"
+          }
+        ],
+        "statement": "A person named Sam mentioned that he likes Bill Evans, but it is unclear whether this refers to Sam from Goldman or Sam from Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No durable person-specific memory was committed because the referenced 'Sam' is ambiguous.",
+        "Generated repair options for resolving the ambiguous entity reference."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Attach 'likes Bill Evans' to Sam from Goldman.",
+      "Attach 'likes Bill Evans' to Sam from Point72.",
+      "Create a temporary unresolved note: 'Sam likes Bill Evans' pending clarification.",
+      "Ignore this memory until the subject is clarified."
+    ]
+  },
+  "raw_text": "{\"intent\":\"capture_preference_with_ambiguous_entity\",\"decision\":\"do_not_commit_durable_memory_until_entity_resolved\",\"memory_cards\":[{\"kind\":\"ambiguous_candidate_memory\",\"statement\":\"A person named Sam mentioned that he likes Bill Evans, but it is unclear whether this refers to Sam from Goldman or Sam from Point72.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam from Goldman\",\"type\":\"person\",\"role\":\"candidate_subject\"},{\"name\":\"Sam from Point72\",\"type\":\"person\",\"role\":\"candidate_subject\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked_artist\"}],\"relationships\":[{\"subject\":\"Unresolved Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"needs_clarification\",\"entity_id\":null,\"reason\":\"The new message identifies the subject only as 'Sam', while two existing entities match: Sam from Goldman and Sam from Point72. The punctuation/context does not disambiguate which Sam likes Bill Evans.\"},\"conflict_classification\":\"ambiguous_entity_reference\",\"answer\":\"I can\u2019t safely attach this preference to either existing Sam yet. Please clarify whether this was Sam from Goldman or Sam from Point72.\",\"citations\":[\"Existing entities: Sam from Goldman; Sam from Point72\",\"New message: Sam mentioned that he likes Bill Evans\"],\"repair_options\":[\"Attach 'likes Bill Evans' to Sam from Goldman.\",\"Attach 'likes Bill Evans' to Sam from Point72.\",\"Create a temporary unresolved note: 'Sam likes Bill Evans' pending clarification.\",\"Ignore this memory until the subject is clarified.\"],\"receipt\":{\"success\":false,\"details\":[\"No durable person-specific memory was committed because the referenced 'Sam' is ambiguous.\",\"Generated repair options for resolving the ambiguous entity reference.\"]}}",
+  "role": "repair_option_generator",
+  "run_id": "eval_20260508_133657",
+  "status": "ok"
+}

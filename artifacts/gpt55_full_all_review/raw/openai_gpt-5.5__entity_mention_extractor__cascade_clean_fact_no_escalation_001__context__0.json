@@ -1,0 +1,80 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.010235,
+  "fixture_id": "cascade_clean_fact_no_escalation_001__context",
+  "input_tokens": 385,
+  "latency_ms": 3955,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 277,
+  "payload": {
+    "answer": "Identified Nur and Sara as the user's twin daughters.",
+    "citations": [
+      "cheap/default model handles Nur and Sara are my twin daughters"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_memory",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "The input explicitly states Nur and Sara are the user's twin daughters; no conflicting or superseding information is present."
+    },
+    "intent": "extract_entity_mentions",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "user",
+            "role": "parent",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship",
+        "relationships": [
+          {
+            "object": "user",
+            "predicate": "is_daughter_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "user",
+            "predicate": "is_daughter_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Sara",
+            "predicate": "is_twin_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Nur and Sara are the user's twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted durable family relationship memory for Nur and Sara."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"extract_entity_mentions\",\"decision\":\"commit_memory\",\"memory_cards\":[{\"kind\":\"relationship\",\"statement\":\"Nur and Sara are the user's twin daughters.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Nur\",\"type\":\"person\",\"role\":\"daughter\"},{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"daughter\"},{\"name\":\"user\",\"type\":\"person\",\"role\":\"parent\"}],\"relationships\":[{\"subject\":\"Nur\",\"predicate\":\"is_daughter_of\",\"object\":\"user\"},{\"subject\":\"Sara\",\"predicate\":\"is_daughter_of\",\"object\":\"user\"},{\"subject\":\"Nur\",\"predicate\":\"is_twin_of\",\"object\":\"Sara\"},{\"subject\":\"Sara\",\"predicate\":\"is_twin_of\",\"object\":\"Nur\"}]}],\"entity_resolution\":{\"action\":\"create_or_update\",\"entity_id\":null,\"reason\":\"The input explicitly states Nur and Sara are the user's twin daughters; no conflicting or superseding information is present.\"},\"conflict_classification\":\"none\",\"answer\":\"Identified Nur and Sara as the user's twin daughters.\",\"citations\":[\"cheap/default model handles Nur and Sara are my twin daughters\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Extracted durable family relationship memory for Nur and Sara.\"]}}",
+  "role": "entity_mention_extractor",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

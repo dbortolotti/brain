@@ -1,0 +1,80 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01032,
+  "fixture_id": "cascade_clean_fact_no_escalation_001__context",
+  "input_tokens": 384,
+  "latency_ms": 6919,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 280,
+  "payload": {
+    "answer": "Noted: Nur and Sara are your twin daughters.",
+    "citations": [
+      "For context, Cascade test: cheap/default model handles Nur and Sara are my twin daughters."
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "The input states a durable family relationship involving named individuals, but no existing entity IDs are provided."
+    },
+    "intent": "extract_relationship",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "user",
+            "role": "parent",
+            "type": "person"
+          }
+        ],
+        "kind": "relationship",
+        "relationships": [
+          {
+            "object": "user",
+            "predicate": "is daughter of",
+            "subject": "Nur"
+          },
+          {
+            "object": "user",
+            "predicate": "is daughter of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Sara",
+            "predicate": "is twin of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is twin of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Nur and Sara are the user's twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted durable relationship: Nur and Sara are the user's twin daughters."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"extract_relationship\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"relationship\",\"statement\":\"Nur and Sara are the user's twin daughters.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Nur\",\"type\":\"person\",\"role\":\"daughter\"},{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"daughter\"},{\"name\":\"user\",\"type\":\"person\",\"role\":\"parent\"}],\"relationships\":[{\"subject\":\"Nur\",\"predicate\":\"is daughter of\",\"object\":\"user\"},{\"subject\":\"Sara\",\"predicate\":\"is daughter of\",\"object\":\"user\"},{\"subject\":\"Nur\",\"predicate\":\"is twin of\",\"object\":\"Sara\"},{\"subject\":\"Sara\",\"predicate\":\"is twin of\",\"object\":\"Nur\"}]}],\"entity_resolution\":{\"action\":\"create_or_update\",\"entity_id\":null,\"reason\":\"The input states a durable family relationship involving named individuals, but no existing entity IDs are provided.\"},\"conflict_classification\":\"none\",\"answer\":\"Noted: Nur and Sara are your twin daughters.\",\"citations\":[\"For context, Cascade test: cheap/default model handles Nur and Sara are my twin daughters.\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Extracted durable relationship: Nur and Sara are the user's twin daughters.\"]}}",
+  "role": "relationship_extractor",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

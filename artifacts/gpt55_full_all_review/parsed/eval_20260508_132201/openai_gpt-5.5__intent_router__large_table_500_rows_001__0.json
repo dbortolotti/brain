@@ -1,0 +1,33 @@
+{
+  "fixture_id": "large_table_500_rows_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Do not store the 500-row CSV table as durable memory. Treat it as transient working data or an attached document/dataset. If needed, store only a concise user-approved summary, schema description, provenance, or durable preference about how the user wants similar CSV tables handled.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "do_not_store_as_durable_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "A large repeated CSV table is bulk data, not a durable personal memory fact or preference. It should not be committed to memory unless the user identifies a stable fact, preference, or recurring need derived from it."
+    },
+    "intent": "policy_question",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Classified input as a storage policy question about bulk tabular data.",
+        "No durable memory cards created.",
+        "Preserved ambiguity by not inferring facts from the unspecified 500 rows."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Store the CSV externally as a file or dataset reference rather than memory.",
+      "Extract and store only stable, user-relevant facts if explicitly requested.",
+      "Store a brief summary such as: 'User provided a CSV with columns id, name, value for temporary analysis' only if useful for the current task.",
+      "Ask the user what long-term fact or preference, if any, should be remembered."
+    ]
+  },
+  "role": "intent_router",
+  "run_id": "eval_20260508_132201"
+}

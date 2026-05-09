@@ -1,0 +1,60 @@
+{
+  "fixture_id": "ambiguous_time_reference_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Do not commit as durable memory yet. The statement contains ambiguous relative dates: \u201clast Friday\u201d and \u201cnext month.\u201d Ask for or retain the original capture date before converting this into a durable dated memory.",
+    "citations": [
+      "Input: Sam said last Friday that he is leaving Goldman next month"
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "defer_commit_due_to_ambiguous_relative_dates",
+    "entity_resolution": {
+      "action": "needs_clarification",
+      "entity_id": null,
+      "reason": "\u201cSam\u201d and \u201cGoldman\u201d are under-specified, and the relative dates require the date of capture to resolve accurately."
+    },
+    "intent": "evaluate_memory_commit_candidate",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker/subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer or affiliated organization",
+            "type": "organization"
+          }
+        ],
+        "kind": "candidate_event",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "said_he_is_leaving",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said that he is leaving Goldman next month, but both \u201clast Friday\u201d and \u201cnext month\u201d are relative time references that cannot be resolved without the capture date."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No durable memory committed because the relative dates cannot be resolved from the provided input.",
+        "Ambiguity was preserved rather than converting relative dates into potentially incorrect absolute facts."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask: What date was this note captured?",
+      "Store only as an undated raw note with preserved wording: \u201cSam said last Friday that he is leaving Goldman next month.\u201d",
+      "If the capture date is known, resolve \u201clast Friday\u201d to a calendar date and \u201cnext month\u201d to the corresponding month before committing.",
+      "Clarify whether \u201cGoldman\u201d refers to Goldman Sachs or another Goldman entity.",
+      "Clarify whether Sam currently works at Goldman or is otherwise affiliated with Goldman."
+    ]
+  },
+  "role": "repair_option_generator",
+  "run_id": "eval_20260508_125514"
+}

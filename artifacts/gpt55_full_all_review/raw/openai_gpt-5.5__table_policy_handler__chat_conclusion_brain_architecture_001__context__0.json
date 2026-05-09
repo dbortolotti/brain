@@ -1,0 +1,77 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01315,
+  "fixture_id": "chat_conclusion_brain_architecture_001__context",
+  "input_tokens": 398,
+  "latency_ms": 5341,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 372,
+  "payload": {
+    "answer": "Committed the architecture conclusion: Cognee is a rebuildable semantic projection, and Brain DB is the source of truth.",
+    "citations": [
+      "Input conclusion: Brain should treat Cognee as a rebuildable semantic projection, while Brain DB remains the source of truth."
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The provided conclusion defines roles among known architecture components and does not require entity merging or disambiguation."
+    },
+    "intent": "record_architecture_conclusion",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "overall personal memory system",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "rebuildable semantic projection",
+            "type": "system"
+          },
+          {
+            "name": "Brain DB",
+            "role": "source of truth",
+            "type": "database"
+          }
+        ],
+        "kind": "architecture_principle",
+        "relationships": [
+          {
+            "object": "Cognee as a rebuildable semantic projection",
+            "predicate": "treats",
+            "subject": "Brain"
+          },
+          {
+            "object": "source of truth for Brain",
+            "predicate": "is",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "Brain DB",
+            "predicate": "is_projection_of",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain should treat Cognee as a rebuildable semantic projection, while Brain DB remains the source of truth."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored one durable architecture principle.",
+        "Preserved source-of-truth relationship in favor of Brain DB.",
+        "Recorded Cognee as rebuildable/projection rather than authoritative state."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"record_architecture_conclusion\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"architecture_principle\",\"statement\":\"Brain should treat Cognee as a rebuildable semantic projection, while Brain DB remains the source of truth.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Brain\",\"type\":\"system\",\"role\":\"overall personal memory system\"},{\"name\":\"Cognee\",\"type\":\"system\",\"role\":\"rebuildable semantic projection\"},{\"name\":\"Brain DB\",\"type\":\"database\",\"role\":\"source of truth\"}],\"relationships\":[{\"subject\":\"Brain\",\"predicate\":\"treats\",\"object\":\"Cognee as a rebuildable semantic projection\"},{\"subject\":\"Brain DB\",\"predicate\":\"is\",\"object\":\"source of truth for Brain\"},{\"subject\":\"Cognee\",\"predicate\":\"is_projection_of\",\"object\":\"Brain DB\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The provided conclusion defines roles among known architecture components and does not require entity merging or disambiguation.\"},\"conflict_classification\":\"none\",\"answer\":\"Committed the architecture conclusion: Cognee is a rebuildable semantic projection, and Brain DB is the source of truth.\",\"citations\":[\"Input conclusion: Brain should treat Cognee as a rebuildable semantic projection, while Brain DB remains the source of truth.\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Stored one durable architecture principle.\",\"Preserved source-of-truth relationship in favor of Brain DB.\",\"Recorded Cognee as rebuildable/projection rather than authoritative state.\"]}}",
+  "role": "table_policy_handler",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

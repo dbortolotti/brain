@@ -1,0 +1,68 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00893,
+  "fixture_id": "slack_success_receipt_001__punctuation",
+  "input_tokens": 376,
+  "latency_ms": 4431,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 235,
+  "payload": {
+    "answer": "Remembered that Sam from Goldman mentioned he likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_link_ambiguous",
+      "entity_id": null,
+      "reason": "Sam is identified only by first name and affiliation with Goldman, which is insufficient for a definitive entity match."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman mentioned that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored preference: Sam from Goldman likes Bill Evans."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"remember\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman mentioned that he likes Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked_artist\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"create_or_link_ambiguous\",\"entity_id\":null,\"reason\":\"Sam is identified only by first name and affiliation with Goldman, which is insufficient for a definitive entity match.\"},\"conflict_classification\":\"none\",\"answer\":\"Remembered that Sam from Goldman mentioned he likes Bill Evans.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Stored preference: Sam from Goldman likes Bill Evans.\"]}}",
+  "role": "durability_filter",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

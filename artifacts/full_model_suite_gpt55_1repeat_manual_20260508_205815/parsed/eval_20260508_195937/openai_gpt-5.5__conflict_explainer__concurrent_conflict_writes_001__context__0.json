@@ -1,0 +1,84 @@
+{
+  "fixture_id": "concurrent_conflict_writes_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "There is a possible conflict: \u201cSam works at Goldman\u201d and \u201cSam joined Point72\u201d may describe the same person\u2019s employment, but it is unclear whether Point72 replaces Goldman or whether both should be retained. Safe actions available are: approve_supersession, keep_both, reject_new, or edit.",
+    "citations": [
+      "Concurrent writes: Sam works at Goldman. Sam joined Point72."
+    ],
+    "conflict_classification": "potential_employment_conflict",
+    "decision": "needs_user_resolution",
+    "entity_resolution": {
+      "action": "unresolved",
+      "entity_id": null,
+      "reason": "Both statements appear to refer to Sam, but the current employment status is ambiguous because joining Point72 may supersede or coexist with working at Goldman."
+    },
+    "intent": "explain_conflict",
+    "memory_cards": [
+      {
+        "confidence": "backend_context",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "backend_context",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Explained only the backend-supplied safe actions.",
+        "Did not commit either employment fact as the current durable memory.",
+        "Preserved ambiguity about whether the Point72 statement supersedes the Goldman statement."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "approve_supersession",
+      "keep_both",
+      "reject_new",
+      "edit"
+    ]
+  },
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_195937"
+}

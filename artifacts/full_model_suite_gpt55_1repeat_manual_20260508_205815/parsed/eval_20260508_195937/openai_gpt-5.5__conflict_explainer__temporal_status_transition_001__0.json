@@ -1,0 +1,89 @@
+{
+  "fixture_id": "temporal_status_transition_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "There is a possible temporal status conflict. Existing memory says the Brain Slack agent is planned and open. The new update says the Brain Slack agent MVP is now implemented. This could mean the existing project status should be superseded, or it could mean the MVP milestone is implemented while the broader project remains open. Please choose one of the safe actions: approve_supersession, keep_both, reject_new, or edit.",
+    "citations": [
+      "Existing project state: The Brain Slack agent is planned, status=open.",
+      "New: The Brain Slack agent MVP is now implemented."
+    ],
+    "conflict_classification": "temporal_status_transition",
+    "decision": "needs_user_decision",
+    "entity_resolution": {
+      "action": "ambiguous",
+      "entity_id": null,
+      "reason": "The new update may refer to the same project moving from planned/open to implemented, or it may refer specifically to an MVP milestone related to the broader Brain Slack agent project. This should not be auto-merged without confirmation."
+    },
+    "intent": "explain_conflict",
+    "memory_cards": [
+      {
+        "confidence": "backend_supplied",
+        "entities": [
+          {
+            "name": "Brain Slack agent",
+            "role": "subject",
+            "type": "project"
+          }
+        ],
+        "kind": "existing_project_state",
+        "relationships": [
+          {
+            "object": "open",
+            "predicate": "status",
+            "subject": "Brain Slack agent"
+          },
+          {
+            "object": "planned",
+            "predicate": "phase",
+            "subject": "Brain Slack agent"
+          }
+        ],
+        "statement": "The Brain Slack agent is planned, status=open."
+      },
+      {
+        "confidence": "backend_supplied",
+        "entities": [
+          {
+            "name": "Brain Slack agent MVP",
+            "role": "subject",
+            "type": "project_or_milestone"
+          },
+          {
+            "name": "Brain Slack agent",
+            "role": "related_project",
+            "type": "project"
+          }
+        ],
+        "kind": "new_project_update",
+        "relationships": [
+          {
+            "object": "implemented",
+            "predicate": "implementation_status",
+            "subject": "Brain Slack agent MVP"
+          },
+          {
+            "object": "Brain Slack agent",
+            "predicate": "part_of_or_related_to",
+            "subject": "Brain Slack agent MVP"
+          }
+        ],
+        "statement": "The Brain Slack agent MVP is now implemented."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No durable memory was committed.",
+        "User decision is required because the new statement may supersede or coexist with the existing project state."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "approve_supersession",
+      "keep_both",
+      "reject_new",
+      "edit"
+    ]
+  },
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_195937"
+}

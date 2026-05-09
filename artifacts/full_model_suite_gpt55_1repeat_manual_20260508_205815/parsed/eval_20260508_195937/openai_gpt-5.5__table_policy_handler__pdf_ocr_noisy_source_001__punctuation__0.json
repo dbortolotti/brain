@@ -1,0 +1,65 @@
+{
+  "fixture_id": "pdf_ocr_noisy_source_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Accepted as a low-confidence memory candidate preserving OCR ambiguity: Brain DB appears to remain the source of truth, and Cognee appears intended to be a rebuildable projection.",
+    "citations": [
+      "[OCR noisy] Brain DB remalns source of trvth Cognee shou1d be rebuildable projection"
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "accept_with_low_confidence_due_to_ocr_noise",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The text is OCR-noisy but the intended entities appear to be Brain DB and Cognee; however, no existing entity IDs are provided and ambiguity remains."
+    },
+    "intent": "evaluate_ocr_noisy_memory_candidate",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system_or_database"
+          },
+          {
+            "name": "Cognee",
+            "role": "rebuildable_projection",
+            "type": "system"
+          }
+        ],
+        "kind": "policy_or_architecture_note",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "remains",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "rebuildable projection",
+            "predicate": "should_be",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "The input appears to state that Brain DB remains the source of truth and Cognee should be a rebuildable projection."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Created one low-confidence memory card from OCR-noisy input.",
+        "Did not add unsupported details beyond the apparent statement.",
+        "Entity resolution deferred due to lack of explicit IDs and OCR noise."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm whether 'remalns' means 'remains'.",
+      "Confirm whether 'trvth' means 'truth'.",
+      "Confirm whether 'shou1d' means 'should'.",
+      "Confirm that Brain DB and Cognee are the intended entities."
+    ]
+  },
+  "role": "table_policy_handler",
+  "run_id": "eval_20260508_195937"
+}

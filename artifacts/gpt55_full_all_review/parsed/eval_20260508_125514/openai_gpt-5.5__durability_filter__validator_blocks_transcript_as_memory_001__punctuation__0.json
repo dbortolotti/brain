@@ -1,0 +1,32 @@
+{
+  "fixture_id": "validator_blocks_transcript_as_memory_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Rejected. A whole 8000-word transcript should not be committed as durable memory. It is not atomic, likely contains ephemeral context, and may include ambiguous, superseded, or non-durable information. Extract only specific durable facts if explicitly supported and useful for future personalization.",
+    "citations": [],
+    "conflict_classification": "not_applicable",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The proposal attempts to store an entire transcript as a single conversation_summary card rather than extracting durable, atomic, user-relevant facts."
+    },
+    "intent": "evaluate_memory_commit",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Rejected bulk transcript-as-memory proposal.",
+        "No memory cards committed."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Do not store the transcript verbatim as memory.",
+      "Extract a small number of atomic durable facts from the transcript, if any are clearly stated and useful.",
+      "Preserve uncertainty and source context for any extracted facts.",
+      "Avoid storing temporary conversation details, reasoning traces, or bulk summaries as durable memory."
+    ]
+  },
+  "role": "durability_filter",
+  "run_id": "eval_20260508_125514"
+}

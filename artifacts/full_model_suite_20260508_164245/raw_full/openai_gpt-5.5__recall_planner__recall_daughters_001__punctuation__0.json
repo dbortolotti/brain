@@ -1,0 +1,75 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00896,
+  "fixture_id": "recall_daughters_001__punctuation",
+  "input_tokens": 376,
+  "latency_ms": 4507,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 236,
+  "payload": {
+    "answer": "Your daughters are Nur and Sara.",
+    "citations": [
+      "Nur and Sara are Daniele's twin daughters."
+    ],
+    "conflict_classification": "none",
+    "decision": "recall",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": null,
+      "reason": "The query uses first person, and the provided fact identifies Daniele as the parent, so 'my' resolves to Daniele in context."
+    },
+    "intent": "answer_query",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "daughter_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Daniele",
+            "predicate": "daughter_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Sara",
+            "predicate": "twin_of",
+            "subject": "Nur"
+          }
+        ],
+        "statement": "Nur and Sara are Daniele's twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Answered using the provided fact."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"answer_query\",\"decision\":\"recall\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Nur and Sara are Daniele's twin daughters.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Nur\",\"type\":\"person\",\"role\":\"daughter\"},{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"daughter\"},{\"name\":\"Daniele\",\"type\":\"person\",\"role\":\"parent\"}],\"relationships\":[{\"subject\":\"Nur\",\"predicate\":\"daughter_of\",\"object\":\"Daniele\"},{\"subject\":\"Sara\",\"predicate\":\"daughter_of\",\"object\":\"Daniele\"},{\"subject\":\"Nur\",\"predicate\":\"twin_of\",\"object\":\"Sara\"}]}],\"entity_resolution\":{\"action\":\"resolved\",\"entity_id\":null,\"reason\":\"The query uses first person, and the provided fact identifies Daniele as the parent, so 'my' resolves to Daniele in context.\"},\"conflict_classification\":\"none\",\"answer\":\"Your daughters are Nur and Sara.\",\"citations\":[\"Nur and Sara are Daniele's twin daughters.\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Answered using the provided fact.\"]}}",
+  "role": "recall_planner",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

@@ -1,0 +1,135 @@
+{
+  "fixture_id": "conversation_transcript_sam_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Committed only explicitly supported facts: Sam no longer works at Goldman, joined Point72, still listens to Bill Evans, is lately more into early Coltrane, and is open to discussing AI infra with Daniele.",
+    "citations": [
+      "Daniele: Still at Goldman? Sam: No, I left Goldman last month and joined Point72.",
+      "Daniele: Still listening to Bill Evans? Sam: Yes, but lately more early Coltrane.",
+      "Daniele: We should catch up about AI infra. Sam: Definitely, send me that article."
+    ],
+    "conflict_classification": "supersedes_prior_employment_if_any",
+    "decision": "commit_supported_facts",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No existing entity identifiers were provided; facts are attributed only to explicitly named speakers and entities."
+    },
+    "intent": "memory_update",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_status",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "formerly_worked_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "currently_works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman last month and joined Point72."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "music_artist",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "music_interest",
+            "type": "music_artist_or_period"
+          }
+        ],
+        "kind": "music_preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "listens_to",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "has_recent_music_interest_in",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam still listens to Bill Evans and lately has been listening more to early Coltrane."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "conversation_partner",
+            "type": "person"
+          },
+          {
+            "name": "AI infra",
+            "role": "discussion_topic",
+            "type": "topic"
+          }
+        ],
+        "kind": "conversation_interest",
+        "relationships": [
+          {
+            "object": "AI infra",
+            "predicate": "is_open_to_discussing",
+            "subject": "Sam"
+          },
+          {
+            "object": "Daniele to send an article",
+            "predicate": "asked",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is open to catching up with Daniele about AI infra and asked Daniele to send an article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Employment update should supersede any prior current-employer memory stating Sam is still at Goldman.",
+        "No unsupported details were added about the article or the AI infra discussion.",
+        "Ambiguous reference 'that article' was not resolved to a specific article."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "table_policy_handler",
+  "run_id": "eval_20260508_195937"
+}

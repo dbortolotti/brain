@@ -1,0 +1,60 @@
+{
+  "fixture_id": "recall_brain_cognee_conclusions_relevance_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "You concluded that Brain is the source of truth for durable memory, and Cognee is only a rebuildable projection of that memory\u2014not the authoritative store.",
+    "citations": [
+      "Brain DB source-of-truth conclusion",
+      "Cognee rebuildable projection"
+    ],
+    "conflict_classification": "none",
+    "decision": "answer_from_relevant_memory_only",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": null,
+      "reason": "The query refers to the systems Brain and Cognee, not a person or ambiguous entity."
+    },
+    "intent": "recall conclusion about Brain and Cognee only",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "source_of_truth",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "rebuildable_projection",
+            "type": "system"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "durable memory",
+            "predicate": "is_source_of_truth_for",
+            "subject": "Brain"
+          },
+          {
+            "object": "Brain memory",
+            "predicate": "is_rebuildable_projection_of",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain should remain the source of truth for durable memory, while Cognee should be treated as a rebuildable projection rather than an authoritative store."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Answered only the queried Brain/Cognee conclusion.",
+        "Excluded unrelated Slack, family, and Sam preference records."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "recall_planner",
+  "run_id": "eval_20260508_164540"
+}

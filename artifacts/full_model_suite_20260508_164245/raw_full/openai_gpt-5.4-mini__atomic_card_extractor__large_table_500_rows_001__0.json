@@ -1,0 +1,117 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0026100000000000003,
+  "fixture_id": "large_table_500_rows_001",
+  "input_tokens": 450,
+  "latency_ms": 4692,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 505,
+  "payload": {
+    "answer": "Insufficient information to determine a specific storage policy; the input only establishes that the data is a 500-row CSV table with repeated id, name, and value columns.",
+    "citations": [
+      "Input: \"CSV table with 500 rows: id,name,value repeated many times. Policy question: how should it be stored?\""
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_with_warning",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No durable entity identity is established beyond the described CSV table and columns."
+    },
+    "intent": "Extract atomic memory cards from the provided input while preserving ambiguity.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "document",
+            "type": "data_format"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "500",
+            "predicate": "has_row_count",
+            "subject": "CSV table"
+          }
+        ],
+        "statement": "The input describes a CSV table with 500 rows."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "id",
+            "role": "field",
+            "type": "column"
+          },
+          {
+            "name": "name",
+            "role": "field",
+            "type": "column"
+          },
+          {
+            "name": "value",
+            "role": "field",
+            "type": "column"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "id",
+            "predicate": "has_column",
+            "subject": "table"
+          },
+          {
+            "object": "name",
+            "predicate": "has_column",
+            "subject": "table"
+          },
+          {
+            "object": "value",
+            "predicate": "has_column",
+            "subject": "table"
+          }
+        ],
+        "statement": "The input says the table has repeated occurrences of the columns id, name, and value."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "subject",
+            "type": "data_format"
+          }
+        ],
+        "kind": "question",
+        "relationships": [
+          {
+            "object": "storage of CSV table",
+            "predicate": "asks_about",
+            "subject": "user"
+          }
+        ],
+        "statement": "The user asks how the CSV table should be stored."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted 3 atomic cards from explicitly stated facts.",
+        "No unsupported storage recommendation was committed as fact."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify whether the goal is durable memory storage, database normalization, or file-format storage.",
+      "Provide the exact schema and whether repeated rows are duplicates or intended repeats."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Extract atomic memory cards from the provided input while preserving ambiguity.\",\"decision\":\"commit_with_warning\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"The input describes a CSV table with 500 rows.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"CSV table\",\"type\":\"data_format\",\"role\":\"document\"}],\"relationships\":[{\"subject\":\"CSV table\",\"predicate\":\"has_row_count\",\"object\":\"500\"}]},{\"kind\":\"fact\",\"statement\":\"The input says the table has repeated occurrences of the columns id, name, and value.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"id\",\"type\":\"column\",\"role\":\"field\"},{\"name\":\"name\",\"type\":\"column\",\"role\":\"field\"},{\"name\":\"value\",\"type\":\"column\",\"role\":\"field\"}],\"relationships\":[{\"subject\":\"table\",\"predicate\":\"has_column\",\"object\":\"id\"},{\"subject\":\"table\",\"predicate\":\"has_column\",\"object\":\"name\"},{\"subject\":\"table\",\"predicate\":\"has_column\",\"object\":\"value\"}]},{\"kind\":\"question\",\"statement\":\"The user asks how the CSV table should be stored.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"CSV table\",\"type\":\"data_format\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"user\",\"predicate\":\"asks_about\",\"object\":\"storage of CSV table\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No durable entity identity is established beyond the described CSV table and columns.\"},\"conflict_classification\":\"none\",\"answer\":\"Insufficient information to determine a specific storage policy; the input only establishes that the data is a 500-row CSV table with repeated id, name, and value columns.\",\"citations\":[\"Input: \\\"CSV table with 500 rows: id,name,value repeated many times. Policy question: how should it be stored?\\\"\"],\"repair_options\":[\"Clarify whether the goal is durable memory storage, database normalization, or file-format storage.\",\"Provide the exact schema and whether repeated rows are duplicates or intended repeats.\"],\"receipt\":{\"success\":true,\"details\":[\"Extracted 3 atomic cards from explicitly stated facts.\",\"No unsupported storage recommendation was committed as fact.\"]}}",
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

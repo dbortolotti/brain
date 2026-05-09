@@ -1,0 +1,75 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.011535,
+  "fixture_id": "pdf_ocr_noisy_source_001__punctuation",
+  "input_tokens": 483,
+  "latency_ms": 3636,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 304,
+  "payload": {
+    "answer": "Extracted two atomic memory cards from the noisy OCR input with medium confidence.",
+    "citations": [
+      "[OCR noisy] Brain DB remalns source of trvth Cognee shou1d be rebuildable projection"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_with_warning",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "OCR noise was corrected where unambiguous, but confidence is reduced due to noisy source text."
+    },
+    "intent": "extract_atomic_memory_cards",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system"
+          }
+        ],
+        "kind": "principle",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "remains",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB remains the source of truth."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "projection",
+            "type": "system"
+          }
+        ],
+        "kind": "principle",
+        "relationships": [
+          {
+            "object": "rebuildable projection",
+            "predicate": "should_be",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee should be a rebuildable projection."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Corrected likely OCR noise: 'remalns' to 'remains', 'trvth' to 'truth', and 'shou1d' to 'should'.",
+        "Committed only facts explicitly supported by the input."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"extract_atomic_memory_cards\",\"decision\":\"commit_with_warning\",\"memory_cards\":[{\"kind\":\"principle\",\"statement\":\"Brain DB remains the source of truth.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Brain DB\",\"type\":\"system\",\"role\":\"source_of_truth\"}],\"relationships\":[{\"subject\":\"Brain DB\",\"predicate\":\"remains\",\"object\":\"source of truth\"}]},{\"kind\":\"principle\",\"statement\":\"Cognee should be a rebuildable projection.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Cognee\",\"type\":\"system\",\"role\":\"projection\"}],\"relationships\":[{\"subject\":\"Cognee\",\"predicate\":\"should_be\",\"object\":\"rebuildable projection\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"OCR noise was corrected where unambiguous, but confidence is reduced due to noisy source text.\"},\"conflict_classification\":\"none\",\"answer\":\"Extracted two atomic memory cards from the noisy OCR input with medium confidence.\",\"citations\":[\"[OCR noisy] Brain DB remalns source of trvth Cognee shou1d be rebuildable projection\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Corrected likely OCR noise: 'remalns' to 'remains', 'trvth' to 'truth', and 'shou1d' to 'should'.\",\"Committed only facts explicitly supported by the input.\"]}}",
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

@@ -1,0 +1,157 @@
+{
+  "fixture_id": "conversation_transcript_sam_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Extracted supported atomic memory cards from the transcript.",
+    "citations": [
+      "Sam: No, I left Goldman last month and joined Point72.",
+      "Daniele: Still listening to Bill Evans? Sam: Yes, but lately more early Coltrane.",
+      "Daniele: We should catch up about AI infra. Sam: Definitely, send me that article."
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_success",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No existing entity identifiers were provided; entities are named explicitly in the transcript."
+    },
+    "intent": "extract_atomic_memory_cards",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_status",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left_employer",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman last month."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_status",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined_employer",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "artist",
+            "type": "person"
+          }
+        ],
+        "kind": "music_preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "listens_to",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam still listens to Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "preference",
+            "type": "music"
+          }
+        ],
+        "kind": "music_preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "recently_listens_more_to",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam has lately been listening more to early Coltrane."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "conversation_partner",
+            "type": "person"
+          },
+          {
+            "name": "AI infra",
+            "role": "topic",
+            "type": "topic"
+          }
+        ],
+        "kind": "conversation_topic",
+        "relationships": [
+          {
+            "object": "AI infra with Daniele",
+            "predicate": "agreed_to_discuss",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is interested in catching up about AI infra with Daniele."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed only facts explicitly supported by the transcript.",
+        "Preserved that Goldman is a former employer and Point72 is the current employer based on Sam's statement."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164540"
+}

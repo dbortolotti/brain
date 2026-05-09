@@ -1,0 +1,146 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0037762499999999997,
+  "fixture_id": "memory_compiler_article_atomic__context",
+  "input_tokens": 415,
+  "latency_ms": 5711,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 770,
+  "payload": {
+    "answer": "The source says AI memory systems should keep durable source evidence; atomic memory cards should stay small and traceable; and while a semantic index may help recall, the application database should own lifecycle and conflict state.",
+    "citations": [
+      "For context, AI memory systems need durable source evidence.",
+      "Atomic memory cards should be small and traceable.",
+      "A semantic index can improve recall, but the application database must own lifecycle and conflict state."
+    ],
+    "conflict_classification": "none",
+    "decision": "Commit the source-backed design principles as tentative memory cards with low-to-moderate specificity, preserving the distinction between recall support and lifecycle ownership.",
+    "entity_resolution": {
+      "action": "no_match",
+      "entity_id": null,
+      "reason": "No existing entity identifier was provided; the content is general guidance rather than a reference to a known persistent entity."
+    },
+    "intent": "Extract durable, source-traceable takeaways about AI memory system design from the provided context.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "AI memory systems",
+            "role": "subject",
+            "type": "system"
+          },
+          {
+            "name": "durable source evidence",
+            "role": "evidence requirement",
+            "type": "requirement"
+          }
+        ],
+        "kind": "principle",
+        "relationships": [
+          {
+            "object": "durable source evidence",
+            "predicate": "need",
+            "subject": "AI memory systems"
+          }
+        ],
+        "statement": "AI memory systems need durable source evidence for stored memories."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "atomic memory cards",
+            "role": "memory unit",
+            "type": "data structure"
+          },
+          {
+            "name": "traceability",
+            "role": "quality",
+            "type": "property"
+          },
+          {
+            "name": "small size",
+            "role": "quality",
+            "type": "property"
+          }
+        ],
+        "kind": "principle",
+        "relationships": [
+          {
+            "object": "small",
+            "predicate": "should be",
+            "subject": "atomic memory cards"
+          },
+          {
+            "object": "traceable",
+            "predicate": "should be",
+            "subject": "atomic memory cards"
+          }
+        ],
+        "statement": "Atomic memory cards should be small and traceable."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "semantic index",
+            "role": "recall aid",
+            "type": "index"
+          },
+          {
+            "name": "application database",
+            "role": "system of record",
+            "type": "database"
+          },
+          {
+            "name": "lifecycle",
+            "role": "owned concern",
+            "type": "state management"
+          },
+          {
+            "name": "conflict state",
+            "role": "owned concern",
+            "type": "state management"
+          }
+        ],
+        "kind": "principle",
+        "relationships": [
+          {
+            "object": "recall",
+            "predicate": "can improve",
+            "subject": "semantic index"
+          },
+          {
+            "object": "lifecycle",
+            "predicate": "must own",
+            "subject": "application database"
+          },
+          {
+            "object": "conflict state",
+            "predicate": "must own",
+            "subject": "application database"
+          }
+        ],
+        "statement": "A semantic index can improve recall, but the application database must own lifecycle and conflict state."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted three source-backed takeaways.",
+        "Preserved ambiguity by not inferring any additional system design details beyond the text.",
+        "Avoided promoting the semantic index to system-of-record status."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Store the three statements as separate atomic cards.",
+      "Attach source text or provenance metadata to each card.",
+      "Treat the semantic index as a retrieval aid, not the source of lifecycle/conflict truth."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Extract durable, source-traceable takeaways about AI memory system design from the provided context.\",\"decision\":\"Commit the source-backed design principles as tentative memory cards with low-to-moderate specificity, preserving the distinction between recall support and lifecycle ownership.\",\"memory_cards\":[{\"kind\":\"principle\",\"statement\":\"AI memory systems need durable source evidence for stored memories.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"AI memory systems\",\"type\":\"system\",\"role\":\"subject\"},{\"name\":\"durable source evidence\",\"type\":\"requirement\",\"role\":\"evidence requirement\"}],\"relationships\":[{\"subject\":\"AI memory systems\",\"predicate\":\"need\",\"object\":\"durable source evidence\"}]},{\"kind\":\"principle\",\"statement\":\"Atomic memory cards should be small and traceable.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"atomic memory cards\",\"type\":\"data structure\",\"role\":\"memory unit\"},{\"name\":\"traceability\",\"type\":\"property\",\"role\":\"quality\"},{\"name\":\"small size\",\"type\":\"property\",\"role\":\"quality\"}],\"relationships\":[{\"subject\":\"atomic memory cards\",\"predicate\":\"should be\",\"object\":\"small\"},{\"subject\":\"atomic memory cards\",\"predicate\":\"should be\",\"object\":\"traceable\"}]},{\"kind\":\"principle\",\"statement\":\"A semantic index can improve recall, but the application database must own lifecycle and conflict state.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"semantic index\",\"type\":\"index\",\"role\":\"recall aid\"},{\"name\":\"application database\",\"type\":\"database\",\"role\":\"system of record\"},{\"name\":\"lifecycle\",\"type\":\"state management\",\"role\":\"owned concern\"},{\"name\":\"conflict state\",\"type\":\"state management\",\"role\":\"owned concern\"}],\"relationships\":[{\"subject\":\"semantic index\",\"predicate\":\"can improve\",\"object\":\"recall\"},{\"subject\":\"application database\",\"predicate\":\"must own\",\"object\":\"lifecycle\"},{\"subject\":\"application database\",\"predicate\":\"must own\",\"object\":\"conflict state\"}]}],\"entity_resolution\":{\"action\":\"no_match\",\"entity_id\":null,\"reason\":\"No existing entity identifier was provided; the content is general guidance rather than a reference to a known persistent entity.\"},\"conflict_classification\":\"none\",\"answer\":\"The source says AI memory systems should keep durable source evidence; atomic memory cards should stay small and traceable; and while a semantic index may help recall, the application database should own lifecycle and conflict state.\",\"citations\":[\"For context, AI memory systems need durable source evidence.\",\"Atomic memory cards should be small and traceable.\",\"A semantic index can improve recall, but the application database must own lifecycle and conflict state.\"],\"repair_options\":[\"Store the three statements as separate atomic cards.\",\"Attach source text or provenance metadata to each card.\",\"Treat the semantic index as a retrieval aid, not the source of lifecycle/conflict truth.\"],\"receipt\":{\"success\":true,\"details\":[\"Extracted three source-backed takeaways.\",\"Preserved ambiguity by not inferring any additional system design details beyond the text.\",\"Avoided promoting the semantic index to system-of-record status.\"]}}",
+  "role": "source_takeaway_extractor",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

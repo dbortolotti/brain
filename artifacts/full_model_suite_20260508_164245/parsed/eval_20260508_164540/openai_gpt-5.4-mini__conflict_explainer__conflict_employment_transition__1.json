@@ -1,0 +1,94 @@
+{
+  "fixture_id": "conflict_employment_transition",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "The new fact appears to supersede the old one: Sam is no longer at Goldman and has joined Point72. The durable memory should treat Goldman as a former employer and Point72 as the current employer.",
+    "citations": [
+      "Existing current fact: Sam works at Goldman.",
+      "New fact: Sam left Goldman and joined Point72."
+    ],
+    "conflict_classification": "direct_temporal_update",
+    "decision": "approve_supersession",
+    "entity_resolution": {
+      "action": "keep_both",
+      "entity_id": null,
+      "reason": "The facts refer to the same person, Sam, with an employment transition; the organization names suggest a change rather than a different entity."
+    },
+    "intent": "Resolve a factual conflict about Sam's employment transition by selecting a safe backend action.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "current_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "new_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "new_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict identified between current employment and updated employment transition.",
+        "Selected approve_supersession as the safest supported action."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "approve_supersession",
+      "keep_both",
+      "reject_new",
+      "edit"
+    ]
+  },
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_164540"
+}

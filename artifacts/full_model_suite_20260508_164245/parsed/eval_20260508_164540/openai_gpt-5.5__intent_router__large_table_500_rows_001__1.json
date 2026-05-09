@@ -1,0 +1,33 @@
+{
+  "fixture_id": "large_table_500_rows_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "A 500-row CSV table should not be stored as durable personal memory row-by-row. Treat it as external/source data or an attachment/document. If needed, store only a concise summary, schema/metadata, provenance, and a pointer/reference to the full table. Do not create individual memory cards for repeated rows unless the user explicitly identifies specific durable facts worth remembering.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "do_not_commit_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input describes a large CSV/table fixture and asks a storage policy question, not a durable user memory fact."
+    },
+    "intent": "policy_question",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Classified as a storage policy question.",
+        "No durable memory committed.",
+        "Recommended document/attachment storage plus optional concise metadata or summary."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Store the CSV as a document/blob with metadata such as filename, schema, row count, and upload date.",
+      "Create a short summary memory only if the table contains durable user-relevant preferences or facts.",
+      "Ask the user which specific rows or facts, if any, should be remembered.",
+      "Avoid duplicating hundreds of transient tabular records into long-term memory."
+    ]
+  },
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540"
+}

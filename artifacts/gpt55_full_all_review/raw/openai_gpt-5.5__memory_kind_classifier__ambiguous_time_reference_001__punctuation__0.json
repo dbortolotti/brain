@@ -1,0 +1,63 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.010815,
+  "fixture_id": "ambiguous_time_reference_001__punctuation",
+  "input_tokens": 375,
+  "latency_ms": 4515,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 298,
+  "payload": {
+    "answer": "Not committing as durable memory because the statement depends on ambiguous relative time references.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "do_not_commit",
+    "entity_resolution": {
+      "action": "needs_clarification",
+      "entity_id": null,
+      "reason": "The reference date for 'last Friday' and 'next month' is not provided, so the timing of the claimed departure cannot be resolved durably. 'Sam' and 'Goldman' may also require disambiguation."
+    },
+    "intent": "classify_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer_or_affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "event_claim",
+        "relationships": [
+          {
+            "object": "he is leaving Goldman next month",
+            "predicate": "said",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said last Friday that he is leaving Goldman next month."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected ambiguous temporal references: 'last Friday' and 'next month'.",
+        "No durable memory committed."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide the actual date when Sam said this.",
+      "Provide the specific month or date Sam is expected to leave Goldman.",
+      "Clarify which Sam and which Goldman entity are meant."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_memory\",\"decision\":\"do_not_commit\",\"memory_cards\":[{\"kind\":\"event_claim\",\"statement\":\"Sam said last Friday that he is leaving Goldman next month.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"speaker\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"employer_or_affiliation\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"said\",\"object\":\"he is leaving Goldman next month\"}]}],\"entity_resolution\":{\"action\":\"needs_clarification\",\"entity_id\":null,\"reason\":\"The reference date for 'last Friday' and 'next month' is not provided, so the timing of the claimed departure cannot be resolved durably. 'Sam' and 'Goldman' may also require disambiguation.\"},\"conflict_classification\":\"none\",\"answer\":\"Not committing as durable memory because the statement depends on ambiguous relative time references.\",\"citations\":[],\"repair_options\":[\"Provide the actual date when Sam said this.\",\"Provide the specific month or date Sam is expected to leave Goldman.\",\"Clarify which Sam and which Goldman entity are meant.\"],\"receipt\":{\"success\":false,\"details\":[\"Detected ambiguous temporal references: 'last Friday' and 'next month'.\",\"No durable memory committed.\"]}}",
+  "role": "memory_kind_classifier",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

@@ -1,0 +1,81 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01263,
+  "fixture_id": "cascade_conflict_escalation_001__punctuation",
+  "input_tokens": 432,
+  "latency_ms": 5205,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 349,
+  "payload": {
+    "answer": "There is a conflict: the existing memory says Sara is your daughter, while the new input says Sara is your niece. Safe actions available are: approve_supersession, keep_both, reject_new, or edit.",
+    "citations": [
+      "Existing: Sara is my daughter",
+      "Input: Sara is my niece"
+    ],
+    "conflict_classification": "direct_relationship_conflict",
+    "decision": "needs_user_resolution",
+    "entity_resolution": {
+      "action": "ambiguous_same_name_conflict",
+      "entity_id": null,
+      "reason": "The existing memory and new input both refer to Sara, but describe incompatible family relationships: daughter versus niece. The system should not assume one replaces the other without user confirmation."
+    },
+    "intent": "explain_conflict",
+    "memory_cards": [
+      {
+        "confidence": "previously_stored",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "related_person",
+            "type": "person"
+          }
+        ],
+        "kind": "existing",
+        "relationships": [
+          {
+            "object": "daughter",
+            "predicate": "is_my",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my daughter"
+      },
+      {
+        "confidence": "user_provided_new_input",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "related_person",
+            "type": "person"
+          }
+        ],
+        "kind": "new_input",
+        "relationships": [
+          {
+            "object": "niece",
+            "predicate": "is_my",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No durable memory change was committed.",
+        "Conflict requires one of the backend-supplied safe actions."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "approve_supersession",
+      "keep_both",
+      "reject_new",
+      "edit"
+    ]
+  },
+  "raw_text": "{\"intent\":\"explain_conflict\",\"decision\":\"needs_user_resolution\",\"memory_cards\":[{\"kind\":\"existing\",\"statement\":\"Sara is my daughter\",\"confidence\":\"previously_stored\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"related_person\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"is_my\",\"object\":\"daughter\"}]},{\"kind\":\"new_input\",\"statement\":\"Sara is my niece\",\"confidence\":\"user_provided_new_input\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"related_person\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"is_my\",\"object\":\"niece\"}]}],\"entity_resolution\":{\"action\":\"ambiguous_same_name_conflict\",\"entity_id\":null,\"reason\":\"The existing memory and new input both refer to Sara, but describe incompatible family relationships: daughter versus niece. The system should not assume one replaces the other without user confirmation.\"},\"conflict_classification\":\"direct_relationship_conflict\",\"answer\":\"There is a conflict: the existing memory says Sara is your daughter, while the new input says Sara is your niece. Safe actions available are: approve_supersession, keep_both, reject_new, or edit.\",\"citations\":[\"Existing: Sara is my daughter\",\"Input: Sara is my niece\"],\"repair_options\":[\"approve_supersession\",\"keep_both\",\"reject_new\",\"edit\"],\"receipt\":{\"success\":false,\"details\":[\"No durable memory change was committed.\",\"Conflict requires one of the backend-supplied safe actions.\"]}}",
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

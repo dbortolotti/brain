@@ -1,0 +1,59 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01247,
+  "fixture_id": "recall_ai_memory_articles_relevance_001__context",
+  "input_tokens": 436,
+  "latency_ms": 4460,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 343,
+  "payload": {
+    "answer": "I found one saved item in scope: an article about AI memory. I don\u2019t have its title, URL, author, or publication details in the provided context.",
+    "citations": [
+      "context: Records include ... an AI memory article"
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "answer_scope_limited",
+    "entity_resolution": {
+      "action": "preserve_ambiguity",
+      "entity_id": null,
+      "reason": "The context mentions an AI memory article but does not expose enough identifying metadata to resolve a specific article entity."
+    },
+    "intent": "answer saved articles about AI memory only",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "AI memory article",
+            "role": "saved_item",
+            "type": "article"
+          }
+        ],
+        "kind": "saved_article",
+        "relationships": [
+          {
+            "object": "AI memory article",
+            "predicate": "saved",
+            "subject": "user"
+          }
+        ],
+        "statement": "You saved an article about AI memory. The available context does not provide the article title, URL, author, or publication details."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Returned only memories relevant to saved articles about AI memory.",
+        "Did not include unrelated family facts, preferences, open loops, Brain/Cognee chat, or table content.",
+        "Preserved ambiguity because the article metadata is not available in the provided context."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide or surface the saved article\u2019s title, URL, author, and publication date to make the recall more useful."
+    ]
+  },
+  "raw_text": "{\"intent\":\"answer saved articles about AI memory only\",\"decision\":\"answer_scope_limited\",\"memory_cards\":[{\"kind\":\"saved_article\",\"statement\":\"You saved an article about AI memory. The available context does not provide the article title, URL, author, or publication details.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"AI memory article\",\"type\":\"article\",\"role\":\"saved_item\"}],\"relationships\":[{\"subject\":\"user\",\"predicate\":\"saved\",\"object\":\"AI memory article\"}]}],\"entity_resolution\":{\"action\":\"preserve_ambiguity\",\"entity_id\":null,\"reason\":\"The context mentions an AI memory article but does not expose enough identifying metadata to resolve a specific article entity.\"},\"conflict_classification\":\"none_detected\",\"answer\":\"I found one saved item in scope: an article about AI memory. I don\u2019t have its title, URL, author, or publication details in the provided context.\",\"citations\":[\"context: Records include ... an AI memory article\"],\"repair_options\":[\"Provide or surface the saved article\u2019s title, URL, author, and publication date to make the recall more useful.\"],\"receipt\":{\"success\":true,\"details\":[\"Returned only memories relevant to saved articles about AI memory.\",\"Did not include unrelated family facts, preferences, open loops, Brain/Cognee chat, or table content.\",\"Preserved ambiguity because the article metadata is not available in the provided context.\"]}}",
+  "role": "groundedness_checker",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

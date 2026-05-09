@@ -1,0 +1,41 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0013095,
+  "fixture_id": "slack_retry_event_001",
+  "input_tokens": 372,
+  "latency_ms": 2421,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 229,
+  "payload": {
+    "answer": "Duplicate Slack event detected; ignore as a retry and do not create a new memory.",
+    "citations": [
+      "fixture: slack_retry_event_001",
+      "input: Same Slack event ID delivered twice for: Sam from Goldman likes Bill Evans."
+    ],
+    "conflict_classification": "duplicate_delivery",
+    "decision": "no_op_duplicate_event",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "This is a duplicate delivery of the same Slack event ID, so no new durable memory should be created or updated."
+    },
+    "intent": "duplicate_event_retry",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Duplicate event recognized by identical Slack event ID.",
+        "No durable memory committed.",
+        "No conflict requiring resolution."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Process only the first delivery and drop subsequent deliveries with the same Slack event ID.",
+      "If a memory was already created from the first delivery, leave it unchanged and do not duplicate it."
+    ]
+  },
+  "raw_text": "{\"intent\":\"duplicate_event_retry\",\"decision\":\"no_op_duplicate_event\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"This is a duplicate delivery of the same Slack event ID, so no new durable memory should be created or updated.\"},\"conflict_classification\":\"duplicate_delivery\",\"answer\":\"Duplicate Slack event detected; ignore as a retry and do not create a new memory.\",\"citations\":[\"fixture: slack_retry_event_001\",\"input: Same Slack event ID delivered twice for: Sam from Goldman likes Bill Evans.\"],\"repair_options\":[\"Process only the first delivery and drop subsequent deliveries with the same Slack event ID.\",\"If a memory was already created from the first delivery, leave it unchanged and do not duplicate it.\"],\"receipt\":{\"success\":true,\"details\":[\"Duplicate event recognized by identical Slack event ID.\",\"No durable memory committed.\",\"No conflict requiring resolution.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

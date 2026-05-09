@@ -1,0 +1,106 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.001866,
+  "fixture_id": "small_table_preferences_001",
+  "input_tokens": 466,
+  "latency_ms": 2823,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 337,
+  "payload": {
+    "answer": "Committed two atomic preference cards supported by the table.",
+    "citations": [
+      "Dinner 2026-05-05",
+      "Lunch 2026-05-01"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_success",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No ambiguous entity resolution was required; names and firms are stated explicitly in the input."
+    },
+    "intent": "extract_atomic_memory_cards",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "firm"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Anna",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "JPM",
+            "role": "affiliation",
+            "type": "firm"
+          },
+          {
+            "name": "Barolo",
+            "role": "preference_object",
+            "type": "thing"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Barolo",
+            "predicate": "likes",
+            "subject": "Anna"
+          },
+          {
+            "object": "JPM",
+            "predicate": "works_at",
+            "subject": "Anna"
+          }
+        ],
+        "statement": "Anna likes Barolo."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted explicit preference: Sam likes Bill Evans.",
+        "Extracted explicit preference: Anna likes Barolo."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"extract_atomic_memory_cards\",\"decision\":\"commit_success\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam likes Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"firm\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"preference_object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"},{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Goldman\"}]},{\"kind\":\"preference\",\"statement\":\"Anna likes Barolo.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Anna\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"JPM\",\"type\":\"firm\",\"role\":\"affiliation\"},{\"name\":\"Barolo\",\"type\":\"thing\",\"role\":\"preference_object\"}],\"relationships\":[{\"subject\":\"Anna\",\"predicate\":\"likes\",\"object\":\"Barolo\"},{\"subject\":\"Anna\",\"predicate\":\"works_at\",\"object\":\"JPM\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No ambiguous entity resolution was required; names and firms are stated explicitly in the input.\"},\"conflict_classification\":\"none\",\"answer\":\"Committed two atomic preference cards supported by the table.\",\"citations\":[\"Dinner 2026-05-05\",\"Lunch 2026-05-01\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Extracted explicit preference: Sam likes Bill Evans.\",\"Extracted explicit preference: Anna likes Barolo.\"]}}",
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164255",
+  "status": "ok"
+}

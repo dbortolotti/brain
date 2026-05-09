@@ -1,0 +1,70 @@
+{
+  "fixture_id": "correction_sam_music_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Update the memory for Sam from Goldman: he likes early Coltrane, not Bill Evans. The prior Bill Evans preference should be treated as superseded/deleted, not current.",
+    "citations": [
+      "Existing memory: Sam from Goldman likes Bill Evans.",
+      "Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans."
+    ],
+    "conflict_classification": "direct_correction",
+    "decision": "repair_existing_memory",
+    "entity_resolution": {
+      "action": "match_existing",
+      "entity_id": null,
+      "reason": "The correction explicitly refers to the existing memory subject, 'Sam from Goldman,' so it should update that same entity rather than create a new one."
+    },
+    "intent": "correct_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "liked_object",
+            "type": "music/artist-period"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "negated_prior_object",
+            "type": "music/artist"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "does_not_like_as_corrected",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes early Coltrane, not Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Identified a direct contradiction between the existing memory and the correction.",
+        "Generated a replacement memory preserving the corrected preference.",
+        "Flagged the prior Bill Evans preference as not current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace the existing preference 'Sam from Goldman likes Bill Evans' with 'Sam from Goldman likes early Coltrane.'",
+      "Mark the prior Bill Evans preference as superseded by the correction and avoid presenting it as current.",
+      "Do not create a separate Sam entity; apply the correction to the existing Sam from Goldman memory."
+    ]
+  },
+  "role": "repair_option_generator",
+  "run_id": "eval_20260508_132201"
+}

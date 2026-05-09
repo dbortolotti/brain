@@ -1,0 +1,28 @@
+{
+  "fixture_id": "conflict_employment_transition__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "The new fact appears to be a potential superseding employment transition relative to the existing current fact. Existing current fact says Sam works at Goldman; new fact says Sam left Goldman and joined Point72. This indicates the prior current employment may no longer be current, but this output is detection-only and does not apply any policy action.",
+    "citations": [
+      "Existing current fact: Sam works at Goldman.",
+      "New fact: Sam left Goldman and joined Point72."
+    ],
+    "conflict_classification": "supersedes",
+    "decision": "conflict_candidate",
+    "entity_resolution": {
+      "action": "same_entity_assumed",
+      "entity_id": null,
+      "reason": "Both facts refer to Sam in the same context, so they are treated as referring to the same person for conflict-candidate detection."
+    },
+    "evidence": [
+      {
+        "existing_fact": "Sam works at Goldman.",
+        "new_fact": "Sam left Goldman and joined Point72.",
+        "reason": "The new fact explicitly states Sam left the employer named in the existing current fact and joined a different employer, suggesting a possible superseding employment update."
+      }
+    ],
+    "intent": "detect employment transition conflict candidate"
+  },
+  "role": "conflict_candidate_detector",
+  "run_id": "eval_20260508_125514"
+}

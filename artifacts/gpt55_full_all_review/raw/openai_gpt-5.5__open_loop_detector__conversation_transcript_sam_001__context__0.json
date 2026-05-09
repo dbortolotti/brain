@@ -1,0 +1,143 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.021779999999999997,
+  "fixture_id": "conversation_transcript_sam_001__context",
+  "input_tokens": 462,
+  "latency_ms": 7933,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 649,
+  "payload": {
+    "answer": "Committed supported memories: Sam left Goldman last month and joined Point72; Sam still listens to Bill Evans and lately more early Coltrane; there is an open loop for Daniele to send Sam an unspecified article in the context of AI infra.",
+    "citations": [
+      "Sam: No, I left Goldman last month and joined Point72.",
+      "Sam: Yes, but lately more early Coltrane.",
+      "Daniele: We should catch up about AI infra.",
+      "Sam: Definitely, send me that article."
+    ],
+    "conflict_classification": "supersedes_prior_employment_if_any",
+    "decision": "commit_supported_facts_only",
+    "entity_resolution": {
+      "action": "no_merge",
+      "entity_id": null,
+      "reason": "No existing entity IDs were provided; entities should not be merged or resolved beyond the names explicitly present."
+    },
+    "intent": "extract_durable_memory_from_conversation",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_update",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman last month and joined Point72."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "artist",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "current_interest",
+            "type": "music_period_or_style"
+          }
+        ],
+        "kind": "music_preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "listens_to",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "has_recent_increased_interest_in",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam still listens to Bill Evans and has lately been listening more to early Coltrane."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "requester",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "sender",
+            "type": "person"
+          },
+          {
+            "name": "AI infra",
+            "role": "discussion_topic",
+            "type": "topic"
+          }
+        ],
+        "kind": "open_loop",
+        "relationships": [
+          {
+            "object": "Daniele to send an article",
+            "predicate": "asked",
+            "subject": "Sam"
+          },
+          {
+            "object": "AI infra",
+            "predicate": "topic_context",
+            "subject": "article"
+          }
+        ],
+        "statement": "Sam asked Daniele to send him an article related to AI infra, but the specific article is not identified."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recorded employment update with Goldman as former employer and Point72 as current employer.",
+        "Recorded music preference without treating early Coltrane as replacing Bill Evans.",
+        "Recorded open loop for an unspecified article; did not infer article title or content."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"extract_durable_memory_from_conversation\",\"decision\":\"commit_supported_facts_only\",\"memory_cards\":[{\"kind\":\"employment_update\",\"statement\":\"Sam left Goldman last month and joined Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former_employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"current_employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"left\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]},{\"kind\":\"music_preference\",\"statement\":\"Sam still listens to Bill Evans and has lately been listening more to early Coltrane.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"artist\"},{\"name\":\"early Coltrane\",\"type\":\"music_period_or_style\",\"role\":\"current_interest\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"listens_to\",\"object\":\"Bill Evans\"},{\"subject\":\"Sam\",\"predicate\":\"has_recent_increased_interest_in\",\"object\":\"early Coltrane\"}]},{\"kind\":\"open_loop\",\"statement\":\"Sam asked Daniele to send him an article related to AI infra, but the specific article is not identified.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"requester\"},{\"name\":\"Daniele\",\"type\":\"person\",\"role\":\"sender\"},{\"name\":\"AI infra\",\"type\":\"topic\",\"role\":\"discussion_topic\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"asked\",\"object\":\"Daniele to send an article\"},{\"subject\":\"article\",\"predicate\":\"topic_context\",\"object\":\"AI infra\"}]}],\"entity_resolution\":{\"action\":\"no_merge\",\"entity_id\":null,\"reason\":\"No existing entity IDs were provided; entities should not be merged or resolved beyond the names explicitly present.\"},\"conflict_classification\":\"supersedes_prior_employment_if_any\",\"answer\":\"Committed supported memories: Sam left Goldman last month and joined Point72; Sam still listens to Bill Evans and lately more early Coltrane; there is an open loop for Daniele to send Sam an unspecified article in the context of AI infra.\",\"citations\":[\"Sam: No, I left Goldman last month and joined Point72.\",\"Sam: Yes, but lately more early Coltrane.\",\"Daniele: We should catch up about AI infra.\",\"Sam: Definitely, send me that article.\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Recorded employment update with Goldman as former employer and Point72 as current employer.\",\"Recorded music preference without treating early Coltrane as replacing Bill Evans.\",\"Recorded open loop for an unspecified article; did not infer article title or content.\"]}}",
+  "role": "open_loop_detector",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

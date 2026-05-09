@@ -1,0 +1,33 @@
+{
+  "fixture_id": "ambiguous_sam_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "The mention of 'Sam' is ambiguous between Sam from Goldman and Sam from Point72, so no durable memory should be committed yet.",
+    "citations": [
+      "Existing entities: Sam from Goldman; Sam from Point72.",
+      "New message: Sam mentioned that he likes Bill Evans."
+    ],
+    "conflict_classification": "ambiguous_entity_reference",
+    "decision": "defer_memory_commit_due_to_ambiguous_entity_reference",
+    "entity_resolution": {
+      "action": "ambiguous_reference_no_merge",
+      "entity_id": null,
+      "reason": "The name 'Sam' could refer to either existing entity: Sam from Goldman or Sam from Point72. The message does not provide enough context to resolve which Sam likes Bill Evans."
+    },
+    "intent": "extract_entity_mention",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected ambiguous entity mention.",
+        "Did not create or update a memory card because the entity could not be resolved safely."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask which Sam likes Bill Evans: Sam from Goldman or Sam from Point72.",
+      "If additional context is available, use it to disambiguate the Sam reference before committing the preference."
+    ]
+  },
+  "role": "entity_mention_extractor",
+  "run_id": "eval_20260508_125514"
+}

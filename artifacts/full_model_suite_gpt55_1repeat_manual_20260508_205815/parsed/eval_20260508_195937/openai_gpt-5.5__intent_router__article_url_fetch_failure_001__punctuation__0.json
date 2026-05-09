@@ -1,0 +1,32 @@
+{
+  "fixture_id": "article_url_fetch_failure_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "I can\u2019t remember this article because the URL could not be fetched and no article content was provided. I won\u2019t create memory from an unavailable or unverifiable source.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "rejected",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input asks to remember an article, but the provided URL is malformed/ambiguous and the mock fetch result indicates a 404 network error, so no article content or durable claims can be verified."
+    },
+    "intent": "remember_article",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Fetch failed with mock result: 404 network error.",
+        "No source claims were committed to memory.",
+        "Malformed or ambiguous URL: https -//examplecom/missing"
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide a working article URL.",
+      "Paste the article text or a summary you want remembered.",
+      "Clarify the exact URL if the punctuation was mistyped, e.g. https://example.com/missing"
+    ]
+  },
+  "role": "intent_router",
+  "run_id": "eval_20260508_195937"
+}

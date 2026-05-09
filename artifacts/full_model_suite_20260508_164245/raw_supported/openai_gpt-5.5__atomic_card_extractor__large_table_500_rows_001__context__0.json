@@ -1,0 +1,41 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.012205,
+  "fixture_id": "large_table_500_rows_001__context",
+  "input_tokens": 455,
+  "latency_ms": 4749,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 331,
+  "payload": {
+    "answer": "Do not store the 500 CSV rows as individual memory cards. Treat the table as bulk/tabular data: store it as an attached file, dataset, or external artifact with lightweight metadata such as schema, row count, source, and purpose. Only extract durable memory cards from explicit, user-relevant facts derived from the table, if any are identified separately.",
+    "citations": [
+      "Input states: \"CSV table with 500 rows: id,name,value repeated many times.\"",
+      "Input asks: \"Policy question: how should it be stored?\""
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_with_warning",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input describes a generic 500-row CSV table and asks a storage policy question; it does not provide durable personal facts suitable for atomic memory extraction."
+    },
+    "intent": "answer_storage_policy_question",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No atomic durable memory cards were extracted.",
+        "Provided storage policy guidance for bulk tabular data."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Store the CSV as a file or dataset artifact rather than committing each row to memory.",
+      "Create a summary metadata card only if the dataset is user-relevant and has durable significance.",
+      "Ask for the actual table content or intended use if a summary or extraction is required."
+    ]
+  },
+  "raw_text": "{\"intent\":\"answer_storage_policy_question\",\"decision\":\"commit_with_warning\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input describes a generic 500-row CSV table and asks a storage policy question; it does not provide durable personal facts suitable for atomic memory extraction.\"},\"conflict_classification\":\"none\",\"answer\":\"Do not store the 500 CSV rows as individual memory cards. Treat the table as bulk/tabular data: store it as an attached file, dataset, or external artifact with lightweight metadata such as schema, row count, source, and purpose. Only extract durable memory cards from explicit, user-relevant facts derived from the table, if any are identified separately.\",\"citations\":[\"Input states: \\\"CSV table with 500 rows: id,name,value repeated many times.\\\"\",\"Input asks: \\\"Policy question: how should it be stored?\\\"\"],\"repair_options\":[\"Store the CSV as a file or dataset artifact rather than committing each row to memory.\",\"Create a summary metadata card only if the dataset is user-relevant and has durable significance.\",\"Ask for the actual table content or intended use if a summary or extraction is required.\"],\"receipt\":{\"success\":true,\"details\":[\"No atomic durable memory cards were extracted.\",\"Provided storage policy guidance for bulk tabular data.\"]}}",
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164405",
+  "status": "ok"
+}

@@ -1,0 +1,67 @@
+{
+  "fixture_id": "recall_hide_superseded__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Sam works at Point72 now.",
+    "citations": [
+      "mem_new"
+    ],
+    "conflict_classification": "superseded_fact",
+    "decision": "answer_from_current_fact",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": null,
+      "reason": "The query refers to Sam, who is identified only by name in the provided facts; no stable entity ID is supplied."
+    },
+    "intent": "recall_planner",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam now works at Point72 after leaving Goldman."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Used the current fact as authoritative.",
+        "Did not surface the superseded employer as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Replace the superseded fact 'Sam works at Goldman' with 'Sam left Goldman and joined Point72'.",
+      "Store the current employer as Point72 and mark Goldman as former employer."
+    ]
+  },
+  "role": "recall_planner",
+  "run_id": "eval_20260508_164540"
+}

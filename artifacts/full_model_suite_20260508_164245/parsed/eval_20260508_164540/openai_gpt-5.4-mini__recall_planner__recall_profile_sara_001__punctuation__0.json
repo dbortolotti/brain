@@ -1,0 +1,69 @@
+{
+  "fixture_id": "recall_profile_sara_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Sara is one of Daniele's twin daughters; her twin is Nur.",
+    "citations": [
+      "Fact - Nur and Sara are Daniele's twin daughters"
+    ],
+    "conflict_classification": "none",
+    "decision": "answer",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": "Sara",
+      "reason": "The query asks about Sara, and the provided fact identifies Sara as Daniele's twin daughter."
+    },
+    "intent": "recall",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "sibling",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Nur",
+            "predicate": "is_twin_sibling_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Daniele",
+            "predicate": "is_daughter_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Daniele",
+            "predicate": "is_daughter_of",
+            "subject": "Nur"
+          }
+        ],
+        "statement": "Sara is one of Daniele's twin daughters, alongside Nur."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Mapped Sara to the provided fact.",
+        "No conflict detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "recall_planner",
+  "run_id": "eval_20260508_164540"
+}

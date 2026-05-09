@@ -1,0 +1,74 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0016575,
+  "fixture_id": "person_interaction_sam_bill_evans_001__punctuation",
+  "input_tokens": 374,
+  "latency_ms": 3195,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 306,
+  "payload": {
+    "answer": "Tentatively record that Sam from Goldman likes Bill Evans.",
+    "citations": [
+      "input: Sam from Goldman mentioned that he likes Bill Evans"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_tentatively",
+    "entity_resolution": {
+      "action": "create_or_update_tentative",
+      "entity_id": null,
+      "reason": "The statement identifies a Sam linked to Goldman, but not enough information to resolve a durable unique identity."
+    },
+    "intent": "assert_fact",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object_of_liking",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam (associated with Goldman) appears to like Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed a preference statement with low confidence.",
+        "Preserved ambiguity about the identity of Sam and the referent of Bill Evans."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If needed, clarify which Sam from Goldman is meant.",
+      "If needed, clarify whether Bill Evans refers to the musician or another person."
+    ]
+  },
+  "raw_text": "{\"intent\":\"assert_fact\",\"decision\":\"commit_tentatively\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam (associated with Goldman) appears to like Bill Evans.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"object_of_liking\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"associated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"create_or_update_tentative\",\"entity_id\":null,\"reason\":\"The statement identifies a Sam linked to Goldman, but not enough information to resolve a durable unique identity.\"},\"conflict_classification\":\"none\",\"answer\":\"Tentatively record that Sam from Goldman likes Bill Evans.\",\"citations\":[\"input: Sam from Goldman mentioned that he likes Bill Evans\"],\"repair_options\":[\"If needed, clarify which Sam from Goldman is meant.\",\"If needed, clarify whether Bill Evans refers to the musician or another person.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed a preference statement with low confidence.\",\"Preserved ambiguity about the identity of Sam and the referent of Bill Evans.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

@@ -1,0 +1,74 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01227,
+  "fixture_id": "slack_conflict_buttons_001",
+  "input_tokens": 378,
+  "latency_ms": 5053,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 346,
+  "payload": {
+    "answer": "This appears to update the existing memory that Sam works at Goldman. Please choose how to handle it.",
+    "citations": [],
+    "conflict_classification": "supersedes_existing_employment",
+    "decision": "needs_repair_confirmation",
+    "entity_resolution": {
+      "action": "match_existing_ambiguous",
+      "entity_id": null,
+      "reason": "The new memory refers to 'Sam', which likely matches the existing Sam, but no stable identifier is provided."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "user_asserted",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_update",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left_employer",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined_employer",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected conflict with existing memory: Sam works at Goldman.",
+        "Proposed new memory says Sam left Goldman and joined Point72.",
+        "No durable memory was committed pending repair choice."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Replace the existing memory with: Sam works at Point72 and previously worked at Goldman.",
+      "Keep both memories, marking Goldman as a former employer and Point72 as current employer.",
+      "Do not save the new memory until clarified."
+    ]
+  },
+  "raw_text": "{\"intent\":\"remember\",\"decision\":\"needs_repair_confirmation\",\"memory_cards\":[{\"kind\":\"employment_update\",\"statement\":\"Sam left Goldman and joined Point72.\",\"confidence\":\"user_asserted\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"employee\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former_employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"current_employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"left_employer\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"joined_employer\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"match_existing_ambiguous\",\"entity_id\":null,\"reason\":\"The new memory refers to 'Sam', which likely matches the existing Sam, but no stable identifier is provided.\"},\"conflict_classification\":\"supersedes_existing_employment\",\"answer\":\"This appears to update the existing memory that Sam works at Goldman. Please choose how to handle it.\",\"citations\":[],\"repair_options\":[\"Replace the existing memory with: Sam works at Point72 and previously worked at Goldman.\",\"Keep both memories, marking Goldman as a former employer and Point72 as current employer.\",\"Do not save the new memory until clarified.\"],\"receipt\":{\"success\":false,\"details\":[\"Detected conflict with existing memory: Sam works at Goldman.\",\"Proposed new memory says Sam left Goldman and joined Point72.\",\"No durable memory was committed pending repair choice.\"]}}",
+  "role": "repair_option_generator",
+  "run_id": "eval_20260508_135905",
+  "status": "ok"
+}

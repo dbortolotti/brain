@@ -1,0 +1,64 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0014849999999999998,
+  "fixture_id": "slack_ambiguous_entity_buttons_001",
+  "input_tokens": 378,
+  "latency_ms": 2710,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 267,
+  "payload": {
+    "answer": "Which Sam do you mean: Sam from Goldman or Sam from Point72?",
+    "citations": [
+      "Existing: Sam from Goldman; Sam from Point72.",
+      "/brain remember Sam likes Bill Evans."
+    ],
+    "conflict_classification": "ambiguous_entity",
+    "decision": "need_clarification",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "There are at least two candidate entities matching Sam in existing memory: Sam from Goldman and Sam from Point72. The request does not specify which one is intended."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_target",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "A person named Sam likes Bill Evans, but the specific Sam is ambiguous among existing entities."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No durable memory committed due to ambiguous entity resolution."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Sam from Goldman likes Bill Evans.",
+      "Sam from Point72 likes Bill Evans."
+    ]
+  },
+  "raw_text": "{\"intent\":\"remember\",\"decision\":\"need_clarification\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"A person named Sam likes Bill Evans, but the specific Sam is ambiguous among existing entities.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"preference_target\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"There are at least two candidate entities matching Sam in existing memory: Sam from Goldman and Sam from Point72. The request does not specify which one is intended.\"},\"conflict_classification\":\"ambiguous_entity\",\"answer\":\"Which Sam do you mean: Sam from Goldman or Sam from Point72?\",\"citations\":[\"Existing: Sam from Goldman; Sam from Point72.\",\"/brain remember Sam likes Bill Evans.\"],\"repair_options\":[\"Sam from Goldman likes Bill Evans.\",\"Sam from Point72 likes Bill Evans.\"],\"receipt\":{\"success\":false,\"details\":[\"No durable memory committed due to ambiguous entity resolution.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

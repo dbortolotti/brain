@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.011535,
+  "fixture_id": "large_table_500_rows_001__context",
+  "input_tokens": 387,
+  "latency_ms": 5317,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 320,
+  "payload": {
+    "answer": "A 500-row repeated CSV table should not be stored as durable personal memory. Treat it as transient task context or an external/document artifact if needed. If future use is required, store a compact reference or summary plus a pointer to the source, not every row as memory facts.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "do_not_commit_as_durable_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input describes a large repeated CSV table used as context and asks a policy question, but provides no durable personal preference, stable user fact, relationship, or actionable long-term memory."
+    },
+    "intent": "classify_storage_policy_for_large_csv_context",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No memory cards created.",
+        "Large tabular context is not appropriate for durable personal memory.",
+        "Ambiguity preserved: no assumptions made about the CSV contents beyond the provided description."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask the user whether they want the CSV saved as a document/file rather than memory.",
+      "Store only a high-level summary of the dataset if it captures a durable preference or reusable context.",
+      "Store a pointer, filename, checksum, or retrieval location if the system supports document references."
+    ]
+  },
+  "raw_text": "{\"intent\":\"classify_storage_policy_for_large_csv_context\",\"decision\":\"do_not_commit_as_durable_memory\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input describes a large repeated CSV table used as context and asks a policy question, but provides no durable personal preference, stable user fact, relationship, or actionable long-term memory.\"},\"conflict_classification\":\"none\",\"answer\":\"A 500-row repeated CSV table should not be stored as durable personal memory. Treat it as transient task context or an external/document artifact if needed. If future use is required, store a compact reference or summary plus a pointer to the source, not every row as memory facts.\",\"citations\":[],\"repair_options\":[\"Ask the user whether they want the CSV saved as a document/file rather than memory.\",\"Store only a high-level summary of the dataset if it captures a durable preference or reusable context.\",\"Store a pointer, filename, checksum, or retrieval location if the system supports document references.\"],\"receipt\":{\"success\":true,\"details\":[\"No memory cards created.\",\"Large tabular context is not appropriate for durable personal memory.\",\"Ambiguity preserved: no assumptions made about the CSV contents beyond the provided description.\"]}}",
+  "role": "memory_kind_classifier",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

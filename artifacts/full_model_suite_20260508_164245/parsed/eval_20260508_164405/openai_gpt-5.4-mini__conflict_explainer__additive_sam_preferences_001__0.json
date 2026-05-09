@@ -1,0 +1,102 @@
+{
+  "fixture_id": "additive_sam_preferences_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Keep the existing memory and add the new one. Sam from Goldman likes Bill Evans, and Sam from Goldman also likes Sonny Rollins.",
+    "citations": [
+      "Existing memory: Sam from Goldman likes Bill Evans.",
+      "New: Sam from Goldman also likes Sonny Rollins."
+    ],
+    "conflict_classification": "additive",
+    "decision": "add_new",
+    "entity_resolution": {
+      "action": "keep_existing",
+      "entity_id": null,
+      "reason": "The new fact is additive and does not contradict the existing memory; both preferences can coexist."
+    },
+    "intent": "Explain how to handle an additive preference update without overwriting the existing memory.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works at/with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "preference",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works at/with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Sonny Rollins",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman also likes Sonny Rollins."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No supersession needed.",
+        "Preserved the original memory.",
+        "Stored the new preference as an additional fact."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "add_new"
+    ]
+  },
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_164405"
+}

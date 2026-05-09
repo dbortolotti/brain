@@ -1,0 +1,68 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.013235,
+  "fixture_id": "pdf_ocr_noisy_source_001__context",
+  "input_tokens": 421,
+  "latency_ms": 4153,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 371,
+  "payload": {
+    "answer": "Committed the explicit architecture note from noisy OCR with preserved meaning and medium confidence.",
+    "citations": [
+      "[OCR noisy] Brain DB remalns source of trvth. Cognee shou1d be rebuildable projection."
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "commit_with_low_confidence",
+    "entity_resolution": {
+      "action": "create_or_update_if_existing_clear_match",
+      "entity_id": null,
+      "reason": "The OCR text explicitly names Brain DB and Cognee, but contains OCR noise. The intended statement is clear enough to preserve with medium confidence without adding unsupported details."
+    },
+    "intent": "evaluate_memory_commit_from_noisy_ocr_context",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system_or_database"
+          },
+          {
+            "name": "Cognee",
+            "role": "rebuildable_projection",
+            "type": "system"
+          }
+        ],
+        "kind": "policy_or_architecture_note",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "remains",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "rebuildable projection",
+            "predicate": "should be",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain DB remains the source of truth; Cognee should be a rebuildable projection."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No unsupported neighboring-topic attachment was made.",
+        "OCR errors were normalized only where the intended words were unambiguous: 'remalns' to 'remains', 'trvth' to 'truth', and 'shou1d' to 'should'."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Verify against the original PDF or a cleaner OCR pass before increasing confidence."
+    ]
+  },
+  "raw_text": "{\"intent\":\"evaluate_memory_commit_from_noisy_ocr_context\",\"decision\":\"commit_with_low_confidence\",\"memory_cards\":[{\"kind\":\"policy_or_architecture_note\",\"statement\":\"Brain DB remains the source of truth; Cognee should be a rebuildable projection.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Brain DB\",\"type\":\"system_or_database\",\"role\":\"source_of_truth\"},{\"name\":\"Cognee\",\"type\":\"system\",\"role\":\"rebuildable_projection\"}],\"relationships\":[{\"subject\":\"Brain DB\",\"predicate\":\"remains\",\"object\":\"source of truth\"},{\"subject\":\"Cognee\",\"predicate\":\"should be\",\"object\":\"rebuildable projection\"}]}],\"entity_resolution\":{\"action\":\"create_or_update_if_existing_clear_match\",\"entity_id\":null,\"reason\":\"The OCR text explicitly names Brain DB and Cognee, but contains OCR noise. The intended statement is clear enough to preserve with medium confidence without adding unsupported details.\"},\"conflict_classification\":\"none_detected\",\"answer\":\"Committed the explicit architecture note from noisy OCR with preserved meaning and medium confidence.\",\"citations\":[\"[OCR noisy] Brain DB remalns source of trvth. Cognee shou1d be rebuildable projection.\"],\"repair_options\":[\"Verify against the original PDF or a cleaner OCR pass before increasing confidence.\"],\"receipt\":{\"success\":true,\"details\":[\"No unsupported neighboring-topic attachment was made.\",\"OCR errors were normalized only where the intended words were unambiguous: 'remalns' to 'remains', 'trvth' to 'truth', and 'shou1d' to 'should'.\"]}}",
+  "role": "table_policy_handler",
+  "run_id": "eval_20260508_195937",
+  "status": "ok"
+}

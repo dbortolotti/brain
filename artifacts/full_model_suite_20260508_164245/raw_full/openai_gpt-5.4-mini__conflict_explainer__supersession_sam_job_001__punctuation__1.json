@@ -1,0 +1,102 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0024015,
+  "fixture_id": "supersession_sam_job_001__punctuation",
+  "input_tokens": 436,
+  "latency_ms": 5624,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 461,
+  "payload": {
+    "answer": "Approve supersession: the newer memory indicates Sam no longer works at Goldman and now works at Point72. The older 'works at Goldman' fact should be treated as superseded, not current. If you want maximum caution, use edit to preserve the transition explicitly; otherwise approve_supersession is appropriate for the newer fact.",
+    "citations": [
+      "Existing memory: Sam works at Goldman",
+      "New memory: Sam left Goldman and joined Point72"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "approve_supersession",
+    "entity_resolution": {
+      "action": "keep_both",
+      "entity_id": null,
+      "reason": "The person entity appears to be the same Sam, but the employment relation has changed; the newer statement supersedes the older employment claim rather than introducing a new entity."
+    },
+    "intent": "Resolve an employment fact conflict where a newer statement supersedes an older one.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "previous employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "current",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      },
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "superseded",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict identified as an employment change.",
+        "Older Goldman employment claim marked superseded.",
+        "New Point72 employment claim treated as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "approve_supersession",
+      "keep_both",
+      "reject_new",
+      "edit"
+    ]
+  },
+  "raw_text": "{\"intent\":\"Resolve an employment fact conflict where a newer statement supersedes an older one.\",\"decision\":\"approve_supersession\",\"memory_cards\":[{\"kind\":\"current\",\"statement\":\"Sam left Goldman and joined Point72.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"previous employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"current employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"left\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]},{\"kind\":\"superseded\",\"statement\":\"Sam works at Goldman.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works at\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"keep_both\",\"entity_id\":null,\"reason\":\"The person entity appears to be the same Sam, but the employment relation has changed; the newer statement supersedes the older employment claim rather than introducing a new entity.\"},\"conflict_classification\":\"supersession\",\"answer\":\"Approve supersession: the newer memory indicates Sam no longer works at Goldman and now works at Point72. The older 'works at Goldman' fact should be treated as superseded, not current. If you want maximum caution, use edit to preserve the transition explicitly; otherwise approve_supersession is appropriate for the newer fact.\",\"citations\":[\"Existing memory: Sam works at Goldman\",\"New memory: Sam left Goldman and joined Point72\"],\"repair_options\":[\"approve_supersession\",\"keep_both\",\"reject_new\",\"edit\"],\"receipt\":{\"success\":true,\"details\":[\"Conflict identified as an employment change.\",\"Older Goldman employment claim marked superseded.\",\"New Point72 employment claim treated as current.\"]}}",
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

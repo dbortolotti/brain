@@ -1,0 +1,85 @@
+{
+  "fixture_id": "supersession_sam_job_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "The current memory should be repaired so that Sam is not presented as currently working at Goldman. Preserve Goldman only as historical employment, and record Point72 as Sam\u2019s current employer.",
+    "citations": [
+      "Existing memory: Sam works at Goldman",
+      "New memory: Sam left Goldman and joined Point72"
+    ],
+    "conflict_classification": "supersession",
+    "decision": "supersede_older_employment_fact",
+    "entity_resolution": {
+      "action": "treat_as_same_person",
+      "entity_id": null,
+      "reason": "Both memories refer to Sam in the same employment context; the later statement says Sam left Goldman and joined Point72, which supersedes the older current-employment claim."
+    },
+    "intent": "generate_repair_options_for_superseded_employment_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_current",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Point72."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "former_employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_historical",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "formerly_worked_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam previously worked at Goldman."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected that the new memory explicitly states Sam left Goldman and joined Point72.",
+        "Generated repair options that avoid presenting the superseded Goldman employment as current.",
+        "Preserved ambiguity in the organization name 'Goldman'."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark the older statement 'Sam works at Goldman' as superseded/deleted for current employment.",
+      "Add or retain a historical statement that Sam previously worked at Goldman.",
+      "Add or retain the current statement that Sam works at Point72.",
+      "If organization identity is uncertain, preserve the name as 'Goldman' rather than expanding it to 'Goldman Sachs'."
+    ]
+  },
+  "role": "repair_option_generator",
+  "run_id": "eval_20260508_132201"
+}

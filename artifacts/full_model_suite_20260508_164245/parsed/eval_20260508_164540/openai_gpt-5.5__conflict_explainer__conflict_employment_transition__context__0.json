@@ -1,0 +1,91 @@
+{
+  "fixture_id": "conflict_employment_transition__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "The existing memory says Sam currently works at Goldman, while the new fact says Sam left Goldman and joined Point72. These cannot both be current employment facts unless the timeline or meaning is clarified. Safe actions available: approve_supersession to treat the new employment transition as replacing the current Goldman employment fact; keep_both to retain both facts, preserving the ambiguity or possible timeline; reject_new to leave the existing Goldman fact unchanged and not store the new claim; edit to revise the wording before saving, for example to add dates or uncertainty.",
+    "citations": [],
+    "conflict_classification": "employment_transition_conflict",
+    "decision": "needs_user_resolution",
+    "entity_resolution": {
+      "action": "same_entity_assumed",
+      "entity_id": null,
+      "reason": "Both facts refer to Sam in the employment context, but no stable entity identifier was supplied."
+    },
+    "intent": "explain_conflict",
+    "memory_cards": [
+      {
+        "confidence": "current in memory",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "existing_current_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "new input",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "new_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No durable memory was changed.",
+        "Conflict requires an explicit safe action before committing the new fact as current."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "approve_supersession",
+      "keep_both",
+      "reject_new",
+      "edit"
+    ]
+  },
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_164540"
+}

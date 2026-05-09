@@ -1,0 +1,163 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0245,
+  "fixture_id": "long_markdown_chat_summary_001",
+  "input_tokens": 424,
+  "latency_ms": 5471,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 746,
+  "payload": {
+    "answer": "Routed as memory intake. Commit the durable architecture decisions and preserve the two items explicitly marked as open questions.",
+    "citations": [
+      "Input chat summary: Brain DB should be the source of truth; Cognee should be a rebuildable semantic projection; Slack should be a strict memory intake agent; open questions about Telegram and model choice."
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "The summary contains durable architecture decisions and open questions, but no existing entity identifiers are provided."
+    },
+    "intent": "memory_intake",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system"
+          },
+          {
+            "name": "Brain",
+            "role": "architecture_context",
+            "type": "system"
+          }
+        ],
+        "kind": "architecture_decision",
+        "relationships": [
+          {
+            "object": "Brain",
+            "predicate": "is_source_of_truth_for",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB should be the source of truth for the Brain architecture."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "semantic_projection",
+            "type": "system"
+          },
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system"
+          }
+        ],
+        "kind": "architecture_decision",
+        "relationships": [
+          {
+            "object": "Brain DB",
+            "predicate": "is_rebuildable_projection_of",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee should be treated as a rebuildable semantic projection rather than the source of truth."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "memory_intake_agent",
+            "type": "system"
+          },
+          {
+            "name": "Brain",
+            "role": "memory_system",
+            "type": "system"
+          }
+        ],
+        "kind": "architecture_decision",
+        "relationships": [
+          {
+            "object": "strict_memory_intake_agent",
+            "predicate": "acts_as",
+            "subject": "Slack"
+          },
+          {
+            "object": "Brain",
+            "predicate": "feeds_memory_into",
+            "subject": "Slack"
+          }
+        ],
+        "statement": "Slack should act as a strict memory intake agent for Brain."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Telegram",
+            "role": "potential_future_integration",
+            "type": "system"
+          },
+          {
+            "name": "Brain",
+            "role": "architecture_context",
+            "type": "system"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [
+          {
+            "object": "Brain",
+            "predicate": "may_be_added_later_to",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "It is undecided whether Telegram should be added later to the Brain architecture."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "model selection",
+            "role": "open_question",
+            "type": "decision_area"
+          },
+          {
+            "name": "Brain",
+            "role": "architecture_context",
+            "type": "system"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [
+          {
+            "object": "cheapest model while saturating performance",
+            "predicate": "has_open_question",
+            "subject": "model selection"
+          }
+        ],
+        "statement": "It is undecided which model is cheapest while saturating performance for the Brain architecture."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Identified three architecture decisions suitable for durable memory.",
+        "Identified two unresolved questions and preserved them as open questions rather than decisions.",
+        "No conflicts, deletions, or superseded facts were present in the input."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"memory_intake\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"architecture_decision\",\"statement\":\"Brain DB should be the source of truth for the Brain architecture.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Brain DB\",\"type\":\"system\",\"role\":\"source_of_truth\"},{\"name\":\"Brain\",\"type\":\"system\",\"role\":\"architecture_context\"}],\"relationships\":[{\"subject\":\"Brain DB\",\"predicate\":\"is_source_of_truth_for\",\"object\":\"Brain\"}]},{\"kind\":\"architecture_decision\",\"statement\":\"Cognee should be treated as a rebuildable semantic projection rather than the source of truth.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Cognee\",\"type\":\"system\",\"role\":\"semantic_projection\"},{\"name\":\"Brain DB\",\"type\":\"system\",\"role\":\"source_of_truth\"}],\"relationships\":[{\"subject\":\"Cognee\",\"predicate\":\"is_rebuildable_projection_of\",\"object\":\"Brain DB\"}]},{\"kind\":\"architecture_decision\",\"statement\":\"Slack should act as a strict memory intake agent for Brain.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Slack\",\"type\":\"system\",\"role\":\"memory_intake_agent\"},{\"name\":\"Brain\",\"type\":\"system\",\"role\":\"memory_system\"}],\"relationships\":[{\"subject\":\"Slack\",\"predicate\":\"acts_as\",\"object\":\"strict_memory_intake_agent\"},{\"subject\":\"Slack\",\"predicate\":\"feeds_memory_into\",\"object\":\"Brain\"}]},{\"kind\":\"open_question\",\"statement\":\"It is undecided whether Telegram should be added later to the Brain architecture.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Telegram\",\"type\":\"system\",\"role\":\"potential_future_integration\"},{\"name\":\"Brain\",\"type\":\"system\",\"role\":\"architecture_context\"}],\"relationships\":[{\"subject\":\"Telegram\",\"predicate\":\"may_be_added_later_to\",\"object\":\"Brain\"}]},{\"kind\":\"open_question\",\"statement\":\"It is undecided which model is cheapest while saturating performance for the Brain architecture.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"model selection\",\"type\":\"decision_area\",\"role\":\"open_question\"},{\"name\":\"Brain\",\"type\":\"system\",\"role\":\"architecture_context\"}],\"relationships\":[{\"subject\":\"model selection\",\"predicate\":\"has_open_question\",\"object\":\"cheapest model while saturating performance\"}]}],\"entity_resolution\":{\"action\":\"create_or_update\",\"entity_id\":null,\"reason\":\"The summary contains durable architecture decisions and open questions, but no existing entity identifiers are provided.\"},\"conflict_classification\":\"none_detected\",\"answer\":\"Routed as memory intake. Commit the durable architecture decisions and preserve the two items explicitly marked as open questions.\",\"citations\":[\"Input chat summary: Brain DB should be the source of truth; Cognee should be a rebuildable semantic projection; Slack should be a strict memory intake agent; open questions about Telegram and model choice.\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Identified three architecture decisions suitable for durable memory.\",\"Identified two unresolved questions and preserved them as open questions rather than decisions.\",\"No conflicts, deletions, or superseded facts were present in the input.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_195937",
+  "status": "ok"
+}

@@ -1,0 +1,98 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.015425000000000001,
+  "fixture_id": "supersession_sam_job_001",
+  "input_tokens": 433,
+  "latency_ms": 7411,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 442,
+  "payload": {
+    "answer": "The new statement may supersede the existing memory: the existing memory says Sam works at Goldman, while the new statement says Sam left Goldman and joined Point72. Safe actions available are: approve_supersession to treat the new statement as replacing the older job memory, keep_both to retain both statements if the situation is uncertain or both may be relevant, reject_new to keep only the existing memory and not store the new claim, or edit to revise the memory before saving.",
+    "citations": [],
+    "conflict_classification": "supersession_conflict",
+    "decision": "pending_user_choice",
+    "entity_resolution": {
+      "action": "match_existing_entity",
+      "entity_id": null,
+      "reason": "Both statements appear to refer to the same person, Sam, but no stable entity ID was provided."
+    },
+    "intent": "explain_memory_conflict",
+    "memory_cards": [
+      {
+        "confidence": "unknown",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "existing",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "unknown",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "new",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Explained the conflict using only backend-supplied safe actions.",
+        "Did not commit a durable memory or present superseded information as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "approve_supersession",
+      "keep_both",
+      "reject_new",
+      "edit"
+    ]
+  },
+  "raw_text": "{\"intent\":\"explain_memory_conflict\",\"decision\":\"pending_user_choice\",\"memory_cards\":[{\"kind\":\"existing\",\"statement\":\"Sam works at Goldman.\",\"confidence\":\"unknown\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Goldman\"}]},{\"kind\":\"new\",\"statement\":\"Sam left Goldman and joined Point72.\",\"confidence\":\"unknown\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former_employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"left\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"match_existing_entity\",\"entity_id\":null,\"reason\":\"Both statements appear to refer to the same person, Sam, but no stable entity ID was provided.\"},\"conflict_classification\":\"supersession_conflict\",\"answer\":\"The new statement may supersede the existing memory: the existing memory says Sam works at Goldman, while the new statement says Sam left Goldman and joined Point72. Safe actions available are: approve_supersession to treat the new statement as replacing the older job memory, keep_both to retain both statements if the situation is uncertain or both may be relevant, reject_new to keep only the existing memory and not store the new claim, or edit to revise the memory before saving.\",\"citations\":[],\"repair_options\":[\"approve_supersession\",\"keep_both\",\"reject_new\",\"edit\"],\"receipt\":{\"success\":true,\"details\":[\"Explained the conflict using only backend-supplied safe actions.\",\"Did not commit a durable memory or present superseded information as current.\"]}}",
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

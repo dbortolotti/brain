@@ -1,0 +1,102 @@
+{
+  "fixture_id": "conversation_transcript_sam_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Committed durable updates: Sam is now at Point72 after leaving Goldman last month, and Sam\u2019s music taste currently includes Bill Evans with a recent tilt toward early Coltrane.",
+    "citations": [
+      "\"I left Goldman last month and joined Point72\"",
+      "\"Yes, but lately more early Coltrane\""
+    ],
+    "conflict_classification": "supersession",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No ambiguous entity references require resolution; Sam is the only person referenced and the roles are explicit in context."
+    },
+    "intent": "Capture durable personal updates about employment and music preferences, while preserving the current state over superseded information.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman last month and joined Point72."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "musician",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "musician",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "listens to",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "listens more lately to",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam still listens to Bill Evans, but lately has been listening more to early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured current employment status and music preference.",
+        "Did not store the catch-up plan or article request as durable memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If desired, add a separate non-durable reminder to send Sam the article about AI infra.",
+      "If desired, store the AI infra catch-up as a pending task rather than a memory fact."
+    ]
+  },
+  "role": "table_policy_handler",
+  "run_id": "eval_20260508_164540"
+}

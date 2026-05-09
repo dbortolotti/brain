@@ -1,0 +1,56 @@
+{
+  "fixture_id": "router_remember_plain__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Remembered: Sam from Goldman likes Bill Evans.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "The user explicitly asked to remember this preference, but 'Sam from Goldman' is ambiguous without an existing entity ID."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation/context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked entity",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed preference: Sam from Goldman likes Bill Evans."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540"
+}

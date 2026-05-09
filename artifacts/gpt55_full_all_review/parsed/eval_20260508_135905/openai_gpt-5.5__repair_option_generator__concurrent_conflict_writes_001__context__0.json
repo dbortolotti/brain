@@ -1,0 +1,85 @@
+{
+  "fixture_id": "concurrent_conflict_writes_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "The context contains potentially conflicting employment facts for Sam: Sam works at Goldman, and Sam joined Point72. Do not commit either as the sole current employer without clarification.",
+    "citations": [
+      "Concurrent writes: Sam works at Goldman.",
+      "Sam joined Point72."
+    ],
+    "conflict_classification": "potential_concurrent_employment_conflict",
+    "decision": "needs_repair",
+    "entity_resolution": {
+      "action": "preserve_single_person_ambiguity",
+      "entity_id": null,
+      "reason": "Both statements refer to 'Sam' with no disambiguating attributes; assume same ambiguous person unless clarified."
+    },
+    "intent": "repair_option_generation",
+    "memory_cards": [
+      {
+        "confidence": "ambiguous_current_status",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "ambiguous_current_status",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Generated repair options instead of committing a durable current-employer memory.",
+        "Preserved ambiguity between Goldman and Point72.",
+        "Did not present either employment fact as definitively current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for clarification whether Sam currently works at Goldman, Point72, both, or whether one statement supersedes the other.",
+      "If 'joined Point72' is a newer employment update, mark Goldman as former employer and Point72 as current employer.",
+      "If Sam has concurrent roles, retain both Goldman and Point72 as current affiliations with appropriate role details if available.",
+      "If the two statements refer to different people named Sam, split into distinct Sam entities with disambiguating attributes."
+    ]
+  },
+  "role": "repair_option_generator",
+  "run_id": "eval_20260508_135905"
+}

@@ -1,0 +1,72 @@
+{
+  "fixture_id": "personal_routine_morning_reading_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Captured a likely user preference with moderate confidence: technical papers are usually read in the morning before email.",
+    "citations": [
+      "Input: \"I usually prefer to read technical papers in the morning before checking email.\""
+    ],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No existing entity context was provided for resolution."
+    },
+    "intent": "preference_capture",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "user",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "technical papers",
+            "role": "preferred reading material",
+            "type": "content"
+          },
+          {
+            "name": "morning",
+            "role": "preferred time",
+            "type": "time_of_day"
+          },
+          {
+            "name": "email",
+            "role": "task deferred until after reading",
+            "type": "communication_task"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "read technical papers in the morning before checking email",
+            "predicate": "usually_prefers",
+            "subject": "user"
+          },
+          {
+            "object": "checking email",
+            "predicate": "occurs_before",
+            "subject": "reading technical papers"
+          }
+        ],
+        "statement": "The user usually prefers to read technical papers in the morning before checking email."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Identified a routine preference candidate.",
+        "Stored with medium confidence to preserve ambiguity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If this is not a durable preference, mark it as a temporary routine instead.",
+      "If the ordering varies by day, store it as a soft preference rather than a rule."
+    ]
+  },
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540"
+}

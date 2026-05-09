@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01692,
+  "fixture_id": "recall_brain_cognee_conclusions_relevance_001__context",
+  "input_tokens": 438,
+  "latency_ms": 5559,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 491,
+  "payload": {
+    "answer": "You concluded that Brain is the durable source of truth for personal memory, and Cognee should be treated as a rebuildable projection/index derived from Brain\u2014not as the authoritative memory store.",
+    "citations": [
+      "Brain DB source-of-truth conclusion",
+      "Cognee rebuildable projection"
+    ],
+    "conflict_classification": "none",
+    "decision": "recall",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": null,
+      "reason": "The query refers to the systems Brain and Cognee; no ambiguous person/entity merge is required."
+    },
+    "intent": "Answer the user's query about their conclusion regarding Brain and Cognee, limited to the relevant stored conclusion.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "durable source of truth",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "rebuildable projection",
+            "type": "system"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "durable source of truth for personal memory",
+            "predicate": "serves_as",
+            "subject": "Brain"
+          },
+          {
+            "object": "rebuildable projection/index derived from Brain",
+            "predicate": "serves_as",
+            "subject": "Cognee"
+          },
+          {
+            "object": "authoritative memory store",
+            "predicate": "is_not",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain should be treated as the durable source of truth for personal memory, while Cognee is a rebuildable projection/index derived from Brain rather than an authoritative memory store."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Returned only the Brain/Cognee conclusion requested.",
+        "Excluded unrelated Slack, family, and Sam preference records."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\n  \"intent\": \"Answer the user's query about their conclusion regarding Brain and Cognee, limited to the relevant stored conclusion.\",\n  \"decision\": \"recall\",\n  \"memory_cards\": [\n    {\n      \"kind\": \"conclusion\",\n      \"statement\": \"Brain should be treated as the durable source of truth for personal memory, while Cognee is a rebuildable projection/index derived from Brain rather than an authoritative memory store.\",\n      \"confidence\": \"high\",\n      \"entities\": [\n        {\n          \"name\": \"Brain\",\n          \"type\": \"system\",\n          \"role\": \"durable source of truth\"\n        },\n        {\n          \"name\": \"Cognee\",\n          \"type\": \"system\",\n          \"role\": \"rebuildable projection\"\n        }\n      ],\n      \"relationships\": [\n        {\n          \"subject\": \"Brain\",\n          \"predicate\": \"serves_as\",\n          \"object\": \"durable source of truth for personal memory\"\n        },\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"serves_as\",\n          \"object\": \"rebuildable projection/index derived from Brain\"\n        },\n        {\n          \"subject\": \"Cognee\",\n          \"predicate\": \"is_not\",\n          \"object\": \"authoritative memory store\"\n        }\n      ]\n    }\n  ],\n  \"entity_resolution\": {\n    \"action\": \"resolved\",\n    \"entity_id\": null,\n    \"reason\": \"The query refers to the systems Brain and Cognee; no ambiguous person/entity merge is required.\"\n  },\n  \"conflict_classification\": \"none\",\n  \"answer\": \"You concluded that Brain is the durable source of truth for personal memory, and Cognee should be treated as a rebuildable projection/index derived from Brain\u2014not as the authoritative memory store.\",\n  \"citations\": [\n    \"Brain DB source-of-truth conclusion\",\n    \"Cognee rebuildable projection\"\n  ],\n  \"repair_options\": [],\n  \"receipt\": {\n    \"success\": true,\n    \"details\": [\n      \"Returned only the Brain/Cognee conclusion requested.\",\n      \"Excluded unrelated Slack, family, and Sam preference records.\"\n    ]\n  }\n}",
+  "role": "groundedness_checker",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

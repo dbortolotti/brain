@@ -1,0 +1,71 @@
+{
+  "fixture_id": "recall_profile_sara_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Sara is one of Daniele's twin daughters, along with Nur. I don't have any further details about Sara in the provided memory.",
+    "citations": [
+      "Fact: Nur and Sara are Daniele's twin daughters."
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "answer_with_caution",
+    "entity_resolution": {
+      "action": "link",
+      "entity_id": null,
+      "reason": "Sara is identifiable only from the provided fact; no durable entity ID is available."
+    },
+    "intent": "Describe Sara using the available memory.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "twin daughter",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_twin_daughter_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Daniele",
+            "predicate": "is_twin_daughter_of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is one of Daniele's twin daughters, together with Nur."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Used only the supplied fact.",
+        "Avoided adding unsupported details about Sara."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want, I can remember additional details about Sara if you provide them."
+    ]
+  },
+  "role": "groundedness_checker",
+  "run_id": "eval_20260508_164540"
+}

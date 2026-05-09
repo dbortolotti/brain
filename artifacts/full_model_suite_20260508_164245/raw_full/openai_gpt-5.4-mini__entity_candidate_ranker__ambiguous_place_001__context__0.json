@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00171675,
+  "fixture_id": "ambiguous_place_001__context",
+  "input_tokens": 387,
+  "latency_ms": 6297,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 317,
+  "payload": {
+    "answer": "Ambiguous reference: Brutto could be the restaurant in London or the article alias; record only the subjective evaluation with low confidence.",
+    "citations": [],
+    "conflict_classification": "ambiguous_reference",
+    "decision": "store_ambiguous",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The note does not disambiguate whether Brutto refers to the London restaurant or the article alias, so no durable entity-specific memory should be committed."
+    },
+    "intent": "entity_candidate_ranker",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Brutto",
+            "role": "subject",
+            "type": "ambiguous_place_or_alias"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "better than expected",
+            "predicate": "was_described_as",
+            "subject": "Brutto"
+          }
+        ],
+        "statement": "The user described Brutto as better than expected, but the reference is ambiguous between the restaurant in London and the Brutto article alias."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored an ambiguous subjective note without resolving the entity.",
+        "No superseding or deleted facts were asserted as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you meant the restaurant, store: 'Brutto restaurant in London was better than expected.'",
+      "If you meant the article, store: 'The Brutto article was better than expected.'"
+    ]
+  },
+  "raw_text": "{\"intent\":\"entity_candidate_ranker\",\"decision\":\"store_ambiguous\",\"memory_cards\":[{\"kind\":\"observation\",\"statement\":\"The user described Brutto as better than expected, but the reference is ambiguous between the restaurant in London and the Brutto article alias.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Brutto\",\"type\":\"ambiguous_place_or_alias\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"Brutto\",\"predicate\":\"was_described_as\",\"object\":\"better than expected\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"The note does not disambiguate whether Brutto refers to the London restaurant or the article alias, so no durable entity-specific memory should be committed.\"},\"conflict_classification\":\"ambiguous_reference\",\"answer\":\"Ambiguous reference: Brutto could be the restaurant in London or the article alias; record only the subjective evaluation with low confidence.\",\"citations\":[],\"repair_options\":[\"If you meant the restaurant, store: 'Brutto restaurant in London was better than expected.'\",\"If you meant the article, store: 'The Brutto article was better than expected.'\"],\"receipt\":{\"success\":true,\"details\":[\"Stored an ambiguous subjective note without resolving the entity.\",\"No superseding or deleted facts were asserted as current.\"]}}",
+  "role": "entity_candidate_ranker",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

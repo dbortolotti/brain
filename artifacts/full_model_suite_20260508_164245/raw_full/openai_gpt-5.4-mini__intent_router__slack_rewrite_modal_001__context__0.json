@@ -1,0 +1,53 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00144375,
+  "fixture_id": "slack_rewrite_modal_001__context",
+  "input_tokens": 377,
+  "latency_ms": 6015,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 258,
+  "payload": {
+    "answer": "Rewrite selected, but the referenced preference is too ambiguous to safely commit as a durable memory without clarification.",
+    "citations": [
+      "fixture:slack_rewrite_modal_001__context"
+    ],
+    "conflict_classification": "ambiguous_reference",
+    "decision": "proceed_with_rewrite_request",
+    "entity_resolution": {
+      "action": "unresolved",
+      "entity_id": null,
+      "reason": "The phrase \"the other one\" does not identify a specific entity in the provided context, so the memory cannot be safely rewritten into a durable, specific fact."
+    },
+    "intent": "rewrite_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "user",
+            "role": "owner",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [],
+        "statement": "User has a preference involving \"the other one,\" but the referent is ambiguous from the provided context."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Rewrite intent acknowledged.",
+        "No specific durable memory committed due to ambiguity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify what \"the other one\" refers to.",
+      "Provide the exact preference to store."
+    ]
+  },
+  "raw_text": "{\"intent\":\"rewrite_memory\",\"decision\":\"proceed_with_rewrite_request\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"User has a preference involving \\\"the other one,\\\" but the referent is ambiguous from the provided context.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"user\",\"type\":\"person\",\"role\":\"owner\"}],\"relationships\":[]}],\"entity_resolution\":{\"action\":\"unresolved\",\"entity_id\":null,\"reason\":\"The phrase \\\"the other one\\\" does not identify a specific entity in the provided context, so the memory cannot be safely rewritten into a durable, specific fact.\"},\"conflict_classification\":\"ambiguous_reference\",\"answer\":\"Rewrite selected, but the referenced preference is too ambiguous to safely commit as a durable memory without clarification.\",\"citations\":[\"fixture:slack_rewrite_modal_001__context\"],\"repair_options\":[\"Clarify what \\\"the other one\\\" refers to.\",\"Provide the exact preference to store.\"],\"receipt\":{\"success\":true,\"details\":[\"Rewrite intent acknowledged.\",\"No specific durable memory committed due to ambiguity.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

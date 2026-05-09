@@ -1,0 +1,35 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.010069999999999999,
+  "fixture_id": "conflict_employment_transition__context",
+  "input_tokens": 490,
+  "latency_ms": 3526,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 254,
+  "payload": {
+    "answer": "The new fact appears to be a conflict candidate because it describes an employment transition for Sam: leaving Goldman and joining Point72. This potentially supersedes the existing current fact that Sam works at Goldman, but this output is detection-only and does not choose a backend policy action.",
+    "citations": [
+      "Existing current fact: Sam works at Goldman.",
+      "New fact: Sam left Goldman and joined Point72."
+    ],
+    "conflict_classification": "supersedes",
+    "decision": "conflict_candidate",
+    "entity_resolution": {
+      "action": "same_entity_candidate",
+      "entity_id": null,
+      "reason": "Both facts refer to 'Sam' without additional identifiers; likely the same person in context, but ambiguity should be preserved."
+    },
+    "evidence": [
+      {
+        "existing_fact": "Sam works at Goldman.",
+        "new_fact": "Sam left Goldman and joined Point72.",
+        "reason": "The new fact states Sam no longer works at Goldman and now works at Point72, which updates the current employment relationship described by the existing fact."
+      }
+    ],
+    "intent": "detect_conflict_candidate"
+  },
+  "raw_text": "{\"intent\":\"detect_conflict_candidate\",\"decision\":\"conflict_candidate\",\"conflict_classification\":\"supersedes\",\"answer\":\"The new fact appears to be a conflict candidate because it describes an employment transition for Sam: leaving Goldman and joining Point72. This potentially supersedes the existing current fact that Sam works at Goldman, but this output is detection-only and does not choose a backend policy action.\",\"citations\":[\"Existing current fact: Sam works at Goldman.\",\"New fact: Sam left Goldman and joined Point72.\"],\"evidence\":[{\"existing_fact\":\"Sam works at Goldman.\",\"new_fact\":\"Sam left Goldman and joined Point72.\",\"reason\":\"The new fact states Sam no longer works at Goldman and now works at Point72, which updates the current employment relationship described by the existing fact.\"}],\"entity_resolution\":{\"action\":\"same_entity_candidate\",\"entity_id\":null,\"reason\":\"Both facts refer to 'Sam' without additional identifiers; likely the same person in context, but ambiguity should be preserved.\"}}",
+  "role": "conflict_candidate_detector",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

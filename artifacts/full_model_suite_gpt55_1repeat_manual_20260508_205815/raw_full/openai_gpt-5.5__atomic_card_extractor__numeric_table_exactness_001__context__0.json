@@ -1,0 +1,182 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.020319999999999998,
+  "fixture_id": "numeric_table_exactness_001__context",
+  "input_tokens": 464,
+  "latency_ms": 5825,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 600,
+  "payload": {
+    "answer": "Extracted atomic memory cards for PPO-001 and PPO-002 with exact numeric reward and Sharpe values and notes.",
+    "citations": [
+      "| PPO-001 | 0.12 | 0.45 | baseline |",
+      "| PPO-002 | 0.18 | 0.51 | entropy tuned |"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_success",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "The input explicitly provides run identifiers and associated metrics/notes, but no existing entity IDs are supplied."
+    },
+    "intent": "extract_atomic_memory_cards",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "subject",
+            "type": "run"
+          },
+          {
+            "name": "0.12",
+            "role": "reward",
+            "type": "metric_value"
+          }
+        ],
+        "kind": "run_metric",
+        "relationships": [
+          {
+            "object": "0.12",
+            "predicate": "has_reward",
+            "subject": "PPO-001"
+          }
+        ],
+        "statement": "Run PPO-001 has reward 0.12."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "subject",
+            "type": "run"
+          },
+          {
+            "name": "0.45",
+            "role": "Sharpe",
+            "type": "metric_value"
+          }
+        ],
+        "kind": "run_metric",
+        "relationships": [
+          {
+            "object": "0.45",
+            "predicate": "has_sharpe",
+            "subject": "PPO-001"
+          }
+        ],
+        "statement": "Run PPO-001 has Sharpe 0.45."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "subject",
+            "type": "run"
+          },
+          {
+            "name": "baseline",
+            "role": "note",
+            "type": "note"
+          }
+        ],
+        "kind": "run_note",
+        "relationships": [
+          {
+            "object": "baseline",
+            "predicate": "has_note",
+            "subject": "PPO-001"
+          }
+        ],
+        "statement": "Run PPO-001 is noted as baseline."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "subject",
+            "type": "run"
+          },
+          {
+            "name": "0.18",
+            "role": "reward",
+            "type": "metric_value"
+          }
+        ],
+        "kind": "run_metric",
+        "relationships": [
+          {
+            "object": "0.18",
+            "predicate": "has_reward",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "Run PPO-002 has reward 0.18."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "subject",
+            "type": "run"
+          },
+          {
+            "name": "0.51",
+            "role": "Sharpe",
+            "type": "metric_value"
+          }
+        ],
+        "kind": "run_metric",
+        "relationships": [
+          {
+            "object": "0.51",
+            "predicate": "has_sharpe",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "Run PPO-002 has Sharpe 0.51."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "subject",
+            "type": "run"
+          },
+          {
+            "name": "entropy tuned",
+            "role": "note",
+            "type": "note"
+          }
+        ],
+        "kind": "run_note",
+        "relationships": [
+          {
+            "object": "entropy tuned",
+            "predicate": "has_note",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "Run PPO-002 is noted as entropy tuned."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed 6 atomic memory cards from the table.",
+        "Preserved exact numeric values for reward and Sharpe."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"extract_atomic_memory_cards\",\"decision\":\"commit_success\",\"memory_cards\":[{\"kind\":\"run_metric\",\"statement\":\"Run PPO-001 has reward 0.12.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"PPO-001\",\"type\":\"run\",\"role\":\"subject\"},{\"name\":\"0.12\",\"type\":\"metric_value\",\"role\":\"reward\"}],\"relationships\":[{\"subject\":\"PPO-001\",\"predicate\":\"has_reward\",\"object\":\"0.12\"}]},{\"kind\":\"run_metric\",\"statement\":\"Run PPO-001 has Sharpe 0.45.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"PPO-001\",\"type\":\"run\",\"role\":\"subject\"},{\"name\":\"0.45\",\"type\":\"metric_value\",\"role\":\"Sharpe\"}],\"relationships\":[{\"subject\":\"PPO-001\",\"predicate\":\"has_sharpe\",\"object\":\"0.45\"}]},{\"kind\":\"run_note\",\"statement\":\"Run PPO-001 is noted as baseline.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"PPO-001\",\"type\":\"run\",\"role\":\"subject\"},{\"name\":\"baseline\",\"type\":\"note\",\"role\":\"note\"}],\"relationships\":[{\"subject\":\"PPO-001\",\"predicate\":\"has_note\",\"object\":\"baseline\"}]},{\"kind\":\"run_metric\",\"statement\":\"Run PPO-002 has reward 0.18.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"PPO-002\",\"type\":\"run\",\"role\":\"subject\"},{\"name\":\"0.18\",\"type\":\"metric_value\",\"role\":\"reward\"}],\"relationships\":[{\"subject\":\"PPO-002\",\"predicate\":\"has_reward\",\"object\":\"0.18\"}]},{\"kind\":\"run_metric\",\"statement\":\"Run PPO-002 has Sharpe 0.51.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"PPO-002\",\"type\":\"run\",\"role\":\"subject\"},{\"name\":\"0.51\",\"type\":\"metric_value\",\"role\":\"Sharpe\"}],\"relationships\":[{\"subject\":\"PPO-002\",\"predicate\":\"has_sharpe\",\"object\":\"0.51\"}]},{\"kind\":\"run_note\",\"statement\":\"Run PPO-002 is noted as entropy tuned.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"PPO-002\",\"type\":\"run\",\"role\":\"subject\"},{\"name\":\"entropy tuned\",\"type\":\"note\",\"role\":\"note\"}],\"relationships\":[{\"subject\":\"PPO-002\",\"predicate\":\"has_note\",\"object\":\"entropy tuned\"}]}],\"entity_resolution\":{\"action\":\"create_or_update\",\"entity_id\":null,\"reason\":\"The input explicitly provides run identifiers and associated metrics/notes, but no existing entity IDs are supplied.\"},\"conflict_classification\":\"none\",\"answer\":\"Extracted atomic memory cards for PPO-001 and PPO-002 with exact numeric reward and Sharpe values and notes.\",\"citations\":[\"| PPO-001 | 0.12 | 0.45 | baseline |\",\"| PPO-002 | 0.18 | 0.51 | entropy tuned |\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Committed 6 atomic memory cards from the table.\",\"Preserved exact numeric values for reward and Sharpe.\"]}}",
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_195937",
+  "status": "ok"
+}

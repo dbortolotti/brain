@@ -1,0 +1,136 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00276975,
+  "fixture_id": "recall_profile_sam_001__context",
+  "input_tokens": 477,
+  "latency_ms": 6646,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 536,
+  "payload": {
+    "answer": "Sam is associated with Goldman, likes Bill Evans, and is interested in AI infrastructure. There is also an open loop to send Sam an article about AI infrastructure.",
+    "citations": [
+      "fixture:recall_profile_sam_001__context"
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "answer_with_current_evidence_only",
+    "entity_resolution": {
+      "action": "keep_as_current_subject",
+      "entity_id": null,
+      "reason": "The current evidence refers to Sam from Goldman; no unique persistent ID is provided."
+    },
+    "intent": "recall_synthesizer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "association",
+            "type": "organization"
+          }
+        ],
+        "kind": "profile",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is associated with Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "interest",
+            "type": "topic"
+          }
+        ],
+        "kind": "interest",
+        "relationships": [
+          {
+            "object": "AI infrastructure",
+            "predicate": "interested_in",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is interested in AI infrastructure."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "recipient",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "article topic",
+            "type": "topic"
+          }
+        ],
+        "kind": "open_loop",
+        "relationships": [
+          {
+            "object": "article about AI infrastructure to Sam",
+            "predicate": "should_send",
+            "subject": "sender"
+          }
+        ],
+        "statement": "There is an open loop to send Sam an article about AI infrastructure."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Summarized only current evidence provided in the fixture.",
+        "No deleted, superseded, or unrelated facts were added."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want, I can help draft the AI infrastructure article note to Sam.",
+      "If there are additional facts about Sam, share them and I can incorporate only the current evidence."
+    ]
+  },
+  "raw_text": "{\"intent\":\"recall_synthesizer\",\"decision\":\"answer_with_current_evidence_only\",\"memory_cards\":[{\"kind\":\"profile\",\"statement\":\"Sam is associated with Goldman.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"association\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"associated_with\",\"object\":\"Goldman\"}]},{\"kind\":\"preference\",\"statement\":\"Sam likes Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"preference object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]},{\"kind\":\"interest\",\"statement\":\"Sam is interested in AI infrastructure.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"AI infrastructure\",\"type\":\"topic\",\"role\":\"interest\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"interested_in\",\"object\":\"AI infrastructure\"}]},{\"kind\":\"open_loop\",\"statement\":\"There is an open loop to send Sam an article about AI infrastructure.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"recipient\"},{\"name\":\"AI infrastructure\",\"type\":\"topic\",\"role\":\"article topic\"}],\"relationships\":[{\"subject\":\"sender\",\"predicate\":\"should_send\",\"object\":\"article about AI infrastructure to Sam\"}]}],\"entity_resolution\":{\"action\":\"keep_as_current_subject\",\"entity_id\":null,\"reason\":\"The current evidence refers to Sam from Goldman; no unique persistent ID is provided.\"},\"conflict_classification\":\"no_conflict\",\"answer\":\"Sam is associated with Goldman, likes Bill Evans, and is interested in AI infrastructure. There is also an open loop to send Sam an article about AI infrastructure.\",\"citations\":[\"fixture:recall_profile_sam_001__context\"],\"repair_options\":[\"If you want, I can help draft the AI infrastructure article note to Sam.\",\"If there are additional facts about Sam, share them and I can incorporate only the current evidence.\"],\"receipt\":{\"success\":true,\"details\":[\"Summarized only current evidence provided in the fixture.\",\"No deleted, superseded, or unrelated facts were added.\"]}}",
+  "role": "recall_synthesizer",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

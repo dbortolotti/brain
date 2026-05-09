@@ -1,0 +1,75 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00197475,
+  "fixture_id": "project_state_brain_slack_agent_001__punctuation",
+  "input_tokens": 389,
+  "latency_ms": 3570,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 374,
+  "payload": {
+    "answer": "Committed the project-state preference: Slack is the primary guardrailed memory ingestion interface, with Telegram deferred to later.",
+    "citations": [
+      "Input: \"Brain project state - Slack should be the primary guardrailed memory ingestion interface; Telegram can come later\""
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "set",
+      "entity_id": "Brain",
+      "reason": "The input explicitly refers to the Brain project state."
+    },
+    "intent": "project_state_update",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "Slack",
+            "role": "primary interface",
+            "type": "product"
+          },
+          {
+            "name": "Telegram",
+            "role": "future interface",
+            "type": "product"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Slack",
+            "predicate": "uses_as_primary_guardrailed_ingestion_interface",
+            "subject": "Brain"
+          },
+          {
+            "object": "Telegram",
+            "predicate": "may_add_later",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "For Brain, Slack should be the primary guardrailed memory ingestion interface; Telegram can be added later."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recorded one preference memory card.",
+        "No conflict detected.",
+        "Ambiguity preserved around the exact timing/priority of Telegram beyond 'later'."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If this is meant to be temporary rather than durable, mark it as a transient preference instead of a committed memory.",
+      "If Telegram should be excluded entirely for now, clarify whether it is deferred, disallowed, or simply not yet planned."
+    ]
+  },
+  "raw_text": "{\"intent\":\"project_state_update\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"For Brain, Slack should be the primary guardrailed memory ingestion interface; Telegram can be added later.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Brain\",\"type\":\"project\",\"role\":\"subject\"},{\"name\":\"Slack\",\"type\":\"product\",\"role\":\"primary interface\"},{\"name\":\"Telegram\",\"type\":\"product\",\"role\":\"future interface\"}],\"relationships\":[{\"subject\":\"Brain\",\"predicate\":\"uses_as_primary_guardrailed_ingestion_interface\",\"object\":\"Slack\"},{\"subject\":\"Brain\",\"predicate\":\"may_add_later\",\"object\":\"Telegram\"}]}],\"entity_resolution\":{\"action\":\"set\",\"entity_id\":\"Brain\",\"reason\":\"The input explicitly refers to the Brain project state.\"},\"conflict_classification\":\"none\",\"answer\":\"Committed the project-state preference: Slack is the primary guardrailed memory ingestion interface, with Telegram deferred to later.\",\"citations\":[\"Input: \\\"Brain project state - Slack should be the primary guardrailed memory ingestion interface; Telegram can come later\\\"\"],\"repair_options\":[\"If this is meant to be temporary rather than durable, mark it as a transient preference instead of a committed memory.\",\"If Telegram should be excluded entirely for now, clarify whether it is deferred, disallowed, or simply not yet planned.\"],\"receipt\":{\"success\":true,\"details\":[\"Recorded one preference memory card.\",\"No conflict detected.\",\"Ambiguity preserved around the exact timing/priority of Telegram beyond 'later'.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

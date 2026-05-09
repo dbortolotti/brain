@@ -1,0 +1,66 @@
+{
+  "fixture_id": "recall_brain_cognee_conclusions_relevance_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "You concluded that Brain should be treated as the source-of-truth database, and Cognee as a rebuildable projection derived from Brain.",
+    "citations": [
+      "Brain DB source-of-truth conclusion",
+      "Cognee rebuildable projection"
+    ],
+    "conflict_classification": "none",
+    "decision": "Answer from current evidence only.",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": null,
+      "reason": "The query explicitly names Brain and Cognee; no ambiguity requiring a separate entity merge or new entity creation."
+    },
+    "intent": "Recall the user\u2019s current conclusion about Brain and Cognee.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "source_of_truth",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "rebuildable_projection",
+            "type": "system"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "source-of-truth database",
+            "predicate": "is",
+            "subject": "Brain"
+          },
+          {
+            "object": "rebuildable projection",
+            "predicate": "is",
+            "subject": "Cognee"
+          },
+          {
+            "object": "Brain",
+            "predicate": "is derived from",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain is the source-of-truth database, while Cognee is a rebuildable projection derived from it."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Answered only within the queried scope: Brain and Cognee.",
+        "Excluded unrelated Slack intake, family facts, and Sam preferences.",
+        "No deleted, superseded, stale, or unrelated facts were presented as current."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "recall_synthesizer",
+  "run_id": "eval_20260508_164540"
+}

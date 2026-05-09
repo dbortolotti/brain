@@ -1,0 +1,35 @@
+{
+  "fixture_id": "cascade_conflict_escalation_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "I found a conflict: existing memory says Sara is your daughter, but the new input says Sara is your niece. I should not overwrite either as current without clarification.",
+    "citations": [
+      "Existing: Sara is my daughter",
+      "Input: Sara is my niece"
+    ],
+    "conflict_classification": "direct_relationship_conflict",
+    "decision": "do_not_commit_conflicting_update_without_clarification",
+    "entity_resolution": {
+      "action": "preserve_existing_entity_pending_clarification",
+      "entity_id": null,
+      "reason": "The new statement refers to Sara with the same name but asserts a conflicting family relationship. It is ambiguous whether this is the same Sara, a correction to the prior memory, or a different person named Sara."
+    },
+    "intent": "repair_conflicting_family_relationship",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected a direct conflict between daughter and niece relationships for Sara.",
+        "No durable memory was committed because the correct resolution is ambiguous."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Treat the new input as a correction: replace 'Sara is my daughter' with 'Sara is my niece'.",
+      "Treat this as a different person named Sara: keep 'Sara is my daughter' and add a separate memory that another Sara is your niece.",
+      "Keep the existing memory unchanged and ignore the new input.",
+      "Mark the relationship as uncertain: Sara may be your daughter or your niece, pending clarification."
+    ]
+  },
+  "role": "repair_option_generator",
+  "run_id": "eval_20260508_125514"
+}

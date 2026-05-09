@@ -1,0 +1,95 @@
+{
+  "fixture_id": "conflict_employment_transition__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "There is a conflict between the current memory, \u201cSam works at Goldman,\u201d and the new fact, \u201cSam left Goldman and joined Point72.\u201d If the new fact is accurate and represents a later employment transition, the safe action is approve_supersession. If both facts may be true in different contexts or refer to different Sams, use keep_both. If the new fact is incorrect, use reject_new. If the wording needs clarification before saving, use edit.",
+    "citations": [
+      "Existing current fact: Sam works at Goldman.",
+      "New fact: Sam left Goldman and joined Point72."
+    ],
+    "conflict_classification": "employment_transition_conflict",
+    "decision": "needs_user_resolution",
+    "entity_resolution": {
+      "action": "same_entity_assumed",
+      "entity_id": null,
+      "reason": "Both facts refer to Sam in the context of employment; no distinct Sam is indicated."
+    },
+    "intent": "explain_conflict",
+    "memory_cards": [
+      {
+        "confidence": "current in memory before new fact",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "existing_current_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "new user-supplied fact",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "former employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "new employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "new_fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Explained only the backend-supplied safe actions.",
+        "Did not commit the new fact as durable memory.",
+        "Preserved the conflict pending user resolution."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "approve_supersession",
+      "keep_both",
+      "reject_new",
+      "edit"
+    ]
+  },
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_133657"
+}

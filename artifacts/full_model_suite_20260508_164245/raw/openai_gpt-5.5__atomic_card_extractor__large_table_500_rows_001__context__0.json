@@ -1,0 +1,40 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.012174999999999998,
+  "fixture_id": "large_table_500_rows_001__context",
+  "input_tokens": 455,
+  "latency_ms": 5224,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 330,
+  "payload": {
+    "answer": "Do not store the 500 repeated CSV rows as individual memory cards. Treat the table as bulk/tabular data: store it externally or as an attachment/blob with metadata, and optionally keep only a concise summary or pointer if it is useful later. No durable personal memory cards were extracted from this input.",
+    "citations": [
+      "Input: CSV table with 500 rows: id,name,value repeated many times.",
+      "Input asks: Policy question: how should it be stored?"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_success",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input describes a generic 500-row CSV table and asks a storage policy question; it contains no durable personal memory facts to extract."
+    },
+    "intent": "policy_guidance_for_large_csv_storage",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No atomic memory cards committed because the input contains bulk tabular context rather than durable personal facts.",
+        "Recommended storage approach is external/blob storage with metadata or summary, not row-by-row memory extraction."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If specific rows contain durable user-relevant facts, provide the relevant subset for extraction.",
+      "If the table should be retained, store it as a file/blob and create one metadata record describing its source, schema, and purpose."
+    ]
+  },
+  "raw_text": "{\"intent\":\"policy_guidance_for_large_csv_storage\",\"decision\":\"commit_success\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input describes a generic 500-row CSV table and asks a storage policy question; it contains no durable personal memory facts to extract.\"},\"conflict_classification\":\"none\",\"answer\":\"Do not store the 500 repeated CSV rows as individual memory cards. Treat the table as bulk/tabular data: store it externally or as an attachment/blob with metadata, and optionally keep only a concise summary or pointer if it is useful later. No durable personal memory cards were extracted from this input.\",\"citations\":[\"Input: CSV table with 500 rows: id,name,value repeated many times.\",\"Input asks: Policy question: how should it be stored?\"],\"repair_options\":[\"If specific rows contain durable user-relevant facts, provide the relevant subset for extraction.\",\"If the table should be retained, store it as a file/blob and create one metadata record describing its source, schema, and purpose.\"],\"receipt\":{\"success\":true,\"details\":[\"No atomic memory cards committed because the input contains bulk tabular context rather than durable personal facts.\",\"Recommended storage approach is external/blob storage with metadata or summary, not row-by-row memory extraction.\"]}}",
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164255",
+  "status": "ok"
+}

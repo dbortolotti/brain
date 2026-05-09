@@ -1,0 +1,111 @@
+{
+  "fixture_id": "article_url_ai_memory_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Committed as a contextual reference with supporting claims, but the fetched article is mock-provided and should be treated as lower-trust context.",
+    "citations": [
+      "For context, Remember this article: https://example.com/ai-memory why: useful for thinking about knowledge graph memory design.",
+      "Mock fetched article: Graph memory helps agents preserve relationships; provenance and update semantics are needed."
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_with_warning",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No existing entity context was provided for resolution."
+    },
+    "intent": "Remember an article for future reference about AI memory / knowledge graph memory design.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/ai-memory",
+            "role": "article",
+            "type": "url"
+          }
+        ],
+        "kind": "reference",
+        "relationships": [],
+        "statement": "The user asked to remember the article at https://example.com/ai-memory."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "knowledge graph memory design",
+            "role": "topic",
+            "type": "concept"
+          }
+        ],
+        "kind": "note",
+        "relationships": [],
+        "statement": "The article is described as useful for thinking about knowledge graph memory design."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "graph memory",
+            "role": "memory approach",
+            "type": "concept"
+          },
+          {
+            "name": "agents",
+            "role": "beneficiary",
+            "type": "agent"
+          }
+        ],
+        "kind": "claim",
+        "relationships": [
+          {
+            "object": "relationships",
+            "predicate": "helps preserve",
+            "subject": "graph memory"
+          }
+        ],
+        "statement": "Graph memory helps agents preserve relationships."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "provenance",
+            "role": "requirement",
+            "type": "concept"
+          },
+          {
+            "name": "update semantics",
+            "role": "requirement",
+            "type": "concept"
+          }
+        ],
+        "kind": "claim",
+        "relationships": [
+          {
+            "object": "graph memory",
+            "predicate": "is needed with",
+            "subject": "provenance"
+          },
+          {
+            "object": "graph memory",
+            "predicate": "is needed with",
+            "subject": "update semantics"
+          }
+        ],
+        "statement": "Provenance and update semantics are needed."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted only explicitly supported facts.",
+        "Preserved ambiguity by marking the fetched article content as medium confidence.",
+        "No superseded or deleted facts were introduced."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164255"
+}

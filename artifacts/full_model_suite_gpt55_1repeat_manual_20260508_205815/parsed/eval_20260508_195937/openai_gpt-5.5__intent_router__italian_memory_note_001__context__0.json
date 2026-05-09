@@ -1,0 +1,57 @@
+{
+  "fixture_id": "italian_memory_note_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Ricordato: Sam di Goldman preferisce Bill Evans.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_link_ambiguous",
+      "entity_id": null,
+      "reason": "La richiesta identifica la persona come 'Sam di Goldman', ma non fornisce abbastanza informazioni per risolvere univocamente l'entit\u00e0 esistente."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "disambiguator",
+            "type": "organization_or_affiliation"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred_object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam di Goldman"
+          }
+        ],
+        "statement": "Sam di Goldman preferisce Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Memoria candidata registrata come preferenza attribuita a Sam di Goldman.",
+        "Ambiguit\u00e0 sull'identit\u00e0 precisa di Sam preservata."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "intent_router",
+  "run_id": "eval_20260508_195937"
+}

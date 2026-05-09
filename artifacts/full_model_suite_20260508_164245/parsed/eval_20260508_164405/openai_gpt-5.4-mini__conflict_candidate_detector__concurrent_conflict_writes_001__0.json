@@ -1,0 +1,28 @@
+{
+  "fixture_id": "concurrent_conflict_writes_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Possible conflict candidate: one write says Sam works at Goldman, while another says Sam joined Point72. These statements may describe different timeframes, but they conflict if both are intended as current employment facts.",
+    "citations": [
+      "Input: \"Sam works at Goldman.\"",
+      "Input: \"Sam joined Point72.\""
+    ],
+    "conflict_classification": "contradicts",
+    "decision": "possible_conflict",
+    "entity_resolution": {
+      "action": "same_entity",
+      "entity_id": null,
+      "reason": "Both writes mention the same person, Sam, with no disambiguating details."
+    },
+    "evidence": [
+      {
+        "existing_fact": "Sam works at Goldman.",
+        "new_fact": "Sam joined Point72.",
+        "reason": "The two statements refer to Sam\u2019s employment and may be incompatible if both are meant as current status."
+      }
+    ],
+    "intent": "Detect a possible conflict between concurrent employment writes for Sam."
+  },
+  "role": "conflict_candidate_detector",
+  "run_id": "eval_20260508_164405"
+}

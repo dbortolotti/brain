@@ -1,0 +1,125 @@
+{
+  "fixture_id": "conversation_transcript_sam_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Committed durable memories: Sam left Goldman last month and joined Point72; Sam still listens to Bill Evans and lately more early Coltrane; Sam is open to catching up about AI infra.",
+    "citations": [
+      "Daniele: Still at Goldman? Sam: No, I left Goldman last month and joined Point72.",
+      "Daniele: Still listening to Bill Evans? Sam: Yes, but lately more early Coltrane.",
+      "Daniele: We should catch up about AI infra. Sam: Definitely, send me that article."
+    ],
+    "conflict_classification": "supersedes_prior_if_any_current_employer_was_Goldman",
+    "decision": "accept",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "The conversation identifies Sam and explicit facts about Sam, but no stable existing entity ID is provided."
+    },
+    "intent": "commit_memory_from_conversation",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left_employer",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined_employer",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman last month and joined Point72."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "music_artist",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "music_preference",
+            "type": "music_period_or_style"
+          }
+        ],
+        "kind": "music_preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "listens_to",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "recently_listens_more_to",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam still listens to Bill Evans and lately has been listening more to early Coltrane."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "AI infra",
+            "role": "discussion_topic",
+            "type": "topic"
+          }
+        ],
+        "kind": "interest_or_topic",
+        "relationships": [
+          {
+            "object": "AI infra",
+            "predicate": "open_to_discussing",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is interested in catching up about AI infra."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored employment update with Goldman as former employer and Point72 as current employer.",
+        "Stored music preference update for Bill Evans and early Coltrane.",
+        "Stored AI infra as an agreed discussion topic, without inferring details about the article."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "table_policy_handler",
+  "run_id": "eval_20260508_132201"
+}

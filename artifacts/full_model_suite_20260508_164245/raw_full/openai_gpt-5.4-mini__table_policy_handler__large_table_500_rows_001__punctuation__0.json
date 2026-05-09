@@ -1,0 +1,63 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00212925,
+  "fixture_id": "large_table_500_rows_001__punctuation",
+  "input_tokens": 385,
+  "latency_ms": 3759,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 409,
+  "payload": {
+    "answer": "Store the 500-row CSV as a structured table artifact/attachment. Do not create durable memory for each repeated row; only extract memory if there are specific, non-redundant facts worth preserving.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "Store it as a structured table artifact/attachment rather than as row-level durable memory. Do not extract or normalize the repeated rows into individual memory cards unless the table contains unique, meaningful facts.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No stable real-world entity is introduced; the input is a generic data table."
+    },
+    "intent": "Determine how to store a large CSV table (500 rows) with repeated id,name,value columns under memory policy.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "input",
+            "type": "data artifact"
+          },
+          {
+            "name": "structured table artifact",
+            "role": "recommended storage",
+            "type": "storage form"
+          }
+        ],
+        "kind": "policy",
+        "relationships": [
+          {
+            "object": "structured table artifact",
+            "predicate": "should be stored as",
+            "subject": "CSV table"
+          }
+        ],
+        "statement": "A large CSV table with repetitive schema and no notable unique facts should be preserved as structured data, not committed as granular memory."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Identified as a repetitive large table.",
+        "Chose structured storage over row-level memory.",
+        "No durable entity memory committed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If the table later contains unique entities or important facts, summarize those separately as durable memory cards.",
+      "If needed, keep a compact metadata note about the table instead of the full row content."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Determine how to store a large CSV table (500 rows) with repeated id,name,value columns under memory policy.\",\"decision\":\"Store it as a structured table artifact/attachment rather than as row-level durable memory. Do not extract or normalize the repeated rows into individual memory cards unless the table contains unique, meaningful facts.\",\"memory_cards\":[{\"kind\":\"policy\",\"statement\":\"A large CSV table with repetitive schema and no notable unique facts should be preserved as structured data, not committed as granular memory.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"CSV table\",\"type\":\"data artifact\",\"role\":\"input\"},{\"name\":\"structured table artifact\",\"type\":\"storage form\",\"role\":\"recommended storage\"}],\"relationships\":[{\"subject\":\"CSV table\",\"predicate\":\"should be stored as\",\"object\":\"structured table artifact\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No stable real-world entity is introduced; the input is a generic data table.\"},\"conflict_classification\":\"none\",\"answer\":\"Store the 500-row CSV as a structured table artifact/attachment. Do not create durable memory for each repeated row; only extract memory if there are specific, non-redundant facts worth preserving.\",\"citations\":[],\"repair_options\":[\"If the table later contains unique entities or important facts, summarize those separately as durable memory cards.\",\"If needed, keep a compact metadata note about the table instead of the full row content.\"],\"receipt\":{\"success\":true,\"details\":[\"Identified as a repetitive large table.\",\"Chose structured storage over row-level memory.\",\"No durable entity memory committed.\"]}}",
+  "role": "table_policy_handler",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

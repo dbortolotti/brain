@@ -1,0 +1,97 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.019645,
+  "fixture_id": "large_table_500_rows_001__context",
+  "input_tokens": 455,
+  "latency_ms": 6724,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 579,
+  "payload": {
+    "answer": "Store the 500-row repeated CSV as a summarized or indexed artifact, not as hundreds of atomic durable memories. Commit only explicit durable facts that are user-relevant; otherwise retain the table as transient/contextual data or an external attachment/reference with a concise summary and schema metadata.",
+    "citations": [
+      "Input states: \"CSV table with 500 rows: id,name,value repeated many times.\"",
+      "Input asks: \"Policy question: how should it be stored?\""
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_success",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No stable user, person, organization, or durable domain entity was introduced; the input is a policy question about storing a large CSV-like context."
+    },
+    "intent": "evaluate_storage_policy_for_large_csv_context",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "subject",
+            "type": "data_artifact"
+          },
+          {
+            "name": "500 rows",
+            "role": "attribute",
+            "type": "quantity"
+          }
+        ],
+        "kind": "storage_policy",
+        "relationships": [
+          {
+            "object": "500 rows",
+            "predicate": "has_row_count",
+            "subject": "CSV table"
+          },
+          {
+            "object": "id, name, value",
+            "predicate": "has_columns",
+            "subject": "CSV table"
+          }
+        ],
+        "statement": "A CSV table with 500 rows of repeated columns such as id, name, and value should not be committed as 500 separate durable memory cards unless specific rows contain durable user-relevant facts."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "large repetitive table",
+            "role": "subject",
+            "type": "data_artifact"
+          },
+          {
+            "name": "durable user-relevant facts",
+            "role": "object",
+            "type": "information_type"
+          }
+        ],
+        "kind": "storage_policy",
+        "relationships": [
+          {
+            "object": "summary or indexed artifact",
+            "predicate": "should_be_stored_as",
+            "subject": "large repetitive table"
+          },
+          {
+            "object": "durable user-relevant facts explicitly supported by the content",
+            "predicate": "should_commit",
+            "subject": "memory system"
+          }
+        ],
+        "statement": "For a large repetitive table provided as context, the preferred storage approach is to summarize or index the artifact and preserve only durable, user-relevant facts explicitly supported by the content."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted storage-policy memory cards only; no row-level facts were committed.",
+        "No backend conflict-policy decision was emitted.",
+        "Ambiguity preserved: no specific row contents were inferred."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"evaluate_storage_policy_for_large_csv_context\",\"decision\":\"commit_success\",\"memory_cards\":[{\"kind\":\"storage_policy\",\"statement\":\"A CSV table with 500 rows of repeated columns such as id, name, and value should not be committed as 500 separate durable memory cards unless specific rows contain durable user-relevant facts.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"CSV table\",\"type\":\"data_artifact\",\"role\":\"subject\"},{\"name\":\"500 rows\",\"type\":\"quantity\",\"role\":\"attribute\"}],\"relationships\":[{\"subject\":\"CSV table\",\"predicate\":\"has_row_count\",\"object\":\"500 rows\"},{\"subject\":\"CSV table\",\"predicate\":\"has_columns\",\"object\":\"id, name, value\"}]},{\"kind\":\"storage_policy\",\"statement\":\"For a large repetitive table provided as context, the preferred storage approach is to summarize or index the artifact and preserve only durable, user-relevant facts explicitly supported by the content.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"large repetitive table\",\"type\":\"data_artifact\",\"role\":\"subject\"},{\"name\":\"durable user-relevant facts\",\"type\":\"information_type\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"large repetitive table\",\"predicate\":\"should_be_stored_as\",\"object\":\"summary or indexed artifact\"},{\"subject\":\"memory system\",\"predicate\":\"should_commit\",\"object\":\"durable user-relevant facts explicitly supported by the content\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No stable user, person, organization, or durable domain entity was introduced; the input is a policy question about storing a large CSV-like context.\"},\"conflict_classification\":\"none\",\"answer\":\"Store the 500-row repeated CSV as a summarized or indexed artifact, not as hundreds of atomic durable memories. Commit only explicit durable facts that are user-relevant; otherwise retain the table as transient/contextual data or an external attachment/reference with a concise summary and schema metadata.\",\"citations\":[\"Input states: \\\"CSV table with 500 rows: id,name,value repeated many times.\\\"\",\"Input asks: \\\"Policy question: how should it be stored?\\\"\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Extracted storage-policy memory cards only; no row-level facts were committed.\",\"No backend conflict-policy decision was emitted.\",\"Ambiguity preserved: no specific row contents were inferred.\"]}}",
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_195937",
+  "status": "ok"
+}

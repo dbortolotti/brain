@@ -1,0 +1,38 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01037,
+  "fixture_id": "debug_sql_select_only_001",
+  "input_tokens": 382,
+  "latency_ms": 3344,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 282,
+  "payload": {
+    "answer": "In admin SQL select-only mode, read-only SELECT queries such as `SELECT id FROM memory_cards LIMIT 10` are allowed, while mutating statements such as `DELETE FROM memory_cards` are denied. No memory update is appropriate from this input.",
+    "citations": [
+      "Fixture ID: debug_sql_select_only_001",
+      "Input: Admin SQL select-only mode: SELECT id FROM memory_cards LIMIT 10 allowed; DELETE FROM memory_cards denied."
+    ],
+    "conflict_classification": "none",
+    "decision": "No durable memory should be committed; this is a system/debug capability statement rather than a user memory fact.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input describes an admin SQL permission fixture, not an enduring fact about a person or entity to remember."
+    },
+    "intent": "explain admin SQL select-only behavior for the provided fixture",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Recognized select-only permission behavior.",
+        "Did not create memory cards because the input is a debug fixture, not durable user memory.",
+        "Preserved the distinction between allowed SELECT and denied DELETE operations."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"explain admin SQL select-only behavior for the provided fixture\",\"decision\":\"No durable memory should be committed; this is a system/debug capability statement rather than a user memory fact.\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input describes an admin SQL permission fixture, not an enduring fact about a person or entity to remember.\"},\"conflict_classification\":\"none\",\"answer\":\"In admin SQL select-only mode, read-only SELECT queries such as `SELECT id FROM memory_cards LIMIT 10` are allowed, while mutating statements such as `DELETE FROM memory_cards` are denied. No memory update is appropriate from this input.\",\"citations\":[\"Fixture ID: debug_sql_select_only_001\",\"Input: Admin SQL select-only mode: SELECT id FROM memory_cards LIMIT 10 allowed; DELETE FROM memory_cards denied.\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Recognized select-only permission behavior.\",\"Did not create memory cards because the input is a debug fixture, not durable user memory.\",\"Preserved the distinction between allowed SELECT and denied DELETE operations.\"]}}",
+  "role": "debug_explainer",
+  "run_id": "eval_20260508_195937",
+  "status": "ok"
+}

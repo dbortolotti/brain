@@ -1,0 +1,75 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0017895,
+  "fixture_id": "person_interaction_sam_bill_evans_001__context",
+  "input_tokens": 376,
+  "latency_ms": 4072,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 335,
+  "payload": {
+    "answer": "Provisional memory candidate: Sam from Goldman likes Bill Evans.",
+    "citations": [
+      "Input: \"For context, Sam from Goldman mentioned that he likes Bill Evans.\""
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "commit_with_caution",
+    "entity_resolution": {
+      "action": "provisionally_link",
+      "entity_id": null,
+      "reason": "The context identifies Sam only by first name and Goldman affiliation, which is not enough for a durable unique identity match."
+    },
+    "intent": "store_memory_candidate",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_or_context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman reportedly likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed a preference candidate.",
+        "Kept entity resolution provisional due to ambiguity.",
+        "No conflicting prior fact supplied."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If Sam is a known person in this system, provide a stronger identifier to resolve the entity.",
+      "If this was said in a casual or one-off context, consider not promoting it to durable memory without corroboration."
+    ]
+  },
+  "raw_text": "{\"intent\":\"store_memory_candidate\",\"decision\":\"commit_with_caution\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman reportedly likes Bill Evans.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation_or_context\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked_artist\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"},{\"subject\":\"Sam\",\"predicate\":\"associated_with\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"provisionally_link\",\"entity_id\":null,\"reason\":\"The context identifies Sam only by first name and Goldman affiliation, which is not enough for a durable unique identity match.\"},\"conflict_classification\":\"none_detected\",\"answer\":\"Provisional memory candidate: Sam from Goldman likes Bill Evans.\",\"citations\":[\"Input: \\\"For context, Sam from Goldman mentioned that he likes Bill Evans.\\\"\"],\"repair_options\":[\"If Sam is a known person in this system, provide a stronger identifier to resolve the entity.\",\"If this was said in a casual or one-off context, consider not promoting it to durable memory without corroboration.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed a preference candidate.\",\"Kept entity resolution provisional due to ambiguity.\",\"No conflicting prior fact supplied.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

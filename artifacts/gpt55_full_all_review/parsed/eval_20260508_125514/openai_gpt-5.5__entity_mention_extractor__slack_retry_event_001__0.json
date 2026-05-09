@@ -1,0 +1,70 @@
+{
+  "fixture_id": "slack_retry_event_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Extracted one candidate memory from the duplicated Slack event, treating the duplicate delivery as the same source event rather than two independent observations.",
+    "citations": [
+      "Same Slack event ID delivered twice for: Sam from Goldman likes Bill Evans."
+    ],
+    "conflict_classification": "duplicate_event_no_conflict",
+    "decision": "do_not_commit_duplicate_without_idempotency_confirmation",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The input indicates the same Slack event ID was delivered twice, so extraction should be idempotent; no existing entity ID is provided for Sam, Goldman, or Bill Evans, and 'Sam from Goldman' is only a disambiguating phrase."
+    },
+    "intent": "extract_entity_mentions_from_duplicate_event",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_or_disambiguator",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_entity",
+            "type": "person_or_artist"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "from",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected duplicate delivery of the same Slack event ID.",
+        "Produced only one candidate memory card to avoid double-counting.",
+        "Preserved ambiguity around Goldman and Bill Evans."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If this Slack event ID was already processed, skip committing a new memory card.",
+      "If no prior commit exists for this event ID, commit a single preference memory for Sam from Goldman liking Bill Evans.",
+      "Resolve whether Goldman refers to Goldman Sachs before linking to an organization entity.",
+      "Resolve whether Bill Evans refers to the jazz musician or another person before canonical entity linking."
+    ]
+  },
+  "role": "entity_mention_extractor",
+  "run_id": "eval_20260508_125514"
+}

@@ -1,0 +1,73 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.014105,
+  "fixture_id": "ambiguous_time_reference_001",
+  "input_tokens": 373,
+  "latency_ms": 6790,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 408,
+  "payload": {
+    "answer": "Extracted ambiguous mentions only; not suitable for durable memory without date and entity clarification.",
+    "citations": [
+      "Sam said last Friday that he is leaving Goldman next month."
+    ],
+    "conflict_classification": "none",
+    "decision": "do_not_commit_durable_memory",
+    "entity_resolution": {
+      "action": "no_resolution",
+      "entity_id": null,
+      "reason": "The mention 'Sam' is not uniquely identifiable, and 'Goldman' may refer to Goldman Sachs or another entity. The temporal references are relative and lack an anchor date."
+    },
+    "intent": "extract_entity_mentions",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker/subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer or affiliated organization",
+            "type": "organization"
+          }
+        ],
+        "kind": "episodic_claim",
+        "relationships": [
+          {
+            "object": "he is leaving Goldman next month",
+            "predicate": "said",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "may_leave",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said last Friday that he is leaving Goldman next month. The exact dates are ambiguous because 'last Friday' and 'next month' are relative to an unspecified reference date."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected person mention: Sam.",
+        "Detected organization mention: Goldman.",
+        "Preserved ambiguous temporal references instead of normalizing them.",
+        "Did not commit as durable current fact due to ambiguity and lack of temporal anchor."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Provide the date on which this statement was made or recorded.",
+      "Clarify which Sam is being referenced.",
+      "Clarify whether Goldman means Goldman Sachs or another organization.",
+      "Clarify the exact month Sam is expected to leave."
+    ]
+  },
+  "raw_text": "{\"intent\":\"extract_entity_mentions\",\"decision\":\"do_not_commit_durable_memory\",\"memory_cards\":[{\"kind\":\"episodic_claim\",\"statement\":\"Sam said last Friday that he is leaving Goldman next month. The exact dates are ambiguous because 'last Friday' and 'next month' are relative to an unspecified reference date.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"speaker/subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"employer or affiliated organization\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"said\",\"object\":\"he is leaving Goldman next month\"},{\"subject\":\"Sam\",\"predicate\":\"may_leave\",\"object\":\"Goldman\"}]}],\"entity_resolution\":{\"action\":\"no_resolution\",\"entity_id\":null,\"reason\":\"The mention 'Sam' is not uniquely identifiable, and 'Goldman' may refer to Goldman Sachs or another entity. The temporal references are relative and lack an anchor date.\"},\"conflict_classification\":\"none\",\"answer\":\"Extracted ambiguous mentions only; not suitable for durable memory without date and entity clarification.\",\"citations\":[\"Sam said last Friday that he is leaving Goldman next month.\"],\"repair_options\":[\"Provide the date on which this statement was made or recorded.\",\"Clarify which Sam is being referenced.\",\"Clarify whether Goldman means Goldman Sachs or another organization.\",\"Clarify the exact month Sam is expected to leave.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected person mention: Sam.\",\"Detected organization mention: Goldman.\",\"Preserved ambiguous temporal references instead of normalizing them.\",\"Did not commit as durable current fact due to ambiguity and lack of temporal anchor.\"]}}",
+  "role": "entity_mention_extractor",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

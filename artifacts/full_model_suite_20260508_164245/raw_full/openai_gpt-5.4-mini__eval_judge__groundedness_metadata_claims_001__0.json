@@ -1,0 +1,85 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.001842,
+  "fixture_id": "groundedness_metadata_claims_001",
+  "input_tokens": 392,
+  "latency_ms": 9402,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 344,
+  "payload": {
+    "answer": "Grounded: the evidence supports the entity being a person, with aliases Sam and Sam from Goldman at medium confidence.",
+    "citations": [
+      "entity row",
+      "alias row"
+    ],
+    "conflict_classification": "none",
+    "decision": "accept",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "The answer is grounded by the evidence indicating an entity row and alias row; identity as a person and the listed aliases are supported at medium confidence."
+    },
+    "intent": "Evaluate whether the provided answer is grounded in the evidence and, if so, capture durable memory cautiously.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "entity",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "identity",
+        "statement": "The entity is a person."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "entity",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Sam",
+            "role": "alias",
+            "type": "alias"
+          },
+          {
+            "name": "Sam from Goldman",
+            "role": "alias",
+            "type": "alias"
+          }
+        ],
+        "kind": "alias",
+        "relationships": [
+          {
+            "object": "Sam",
+            "predicate": "has_alias",
+            "subject": "entity"
+          },
+          {
+            "object": "Sam from Goldman",
+            "predicate": "has_alias",
+            "subject": "entity"
+          }
+        ],
+        "statement": "The entity may be referred to as Sam or Sam from Goldman."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Identity claim is supported at medium confidence.",
+        "Alias claim is supported at medium confidence.",
+        "No conflict or superseded fact detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"Evaluate whether the provided answer is grounded in the evidence and, if so, capture durable memory cautiously.\",\"decision\":\"accept\",\"memory_cards\":[{\"kind\":\"identity\",\"statement\":\"The entity is a person.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"entity\",\"type\":\"person\",\"role\":\"subject\"}]},{\"kind\":\"alias\",\"statement\":\"The entity may be referred to as Sam or Sam from Goldman.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"entity\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Sam\",\"type\":\"alias\",\"role\":\"alias\"},{\"name\":\"Sam from Goldman\",\"type\":\"alias\",\"role\":\"alias\"}],\"relationships\":[{\"subject\":\"entity\",\"predicate\":\"has_alias\",\"object\":\"Sam\"},{\"subject\":\"entity\",\"predicate\":\"has_alias\",\"object\":\"Sam from Goldman\"}]}],\"entity_resolution\":{\"action\":\"create_or_update\",\"entity_id\":null,\"reason\":\"The answer is grounded by the evidence indicating an entity row and alias row; identity as a person and the listed aliases are supported at medium confidence.\"},\"conflict_classification\":\"none\",\"answer\":\"Grounded: the evidence supports the entity being a person, with aliases Sam and Sam from Goldman at medium confidence.\",\"citations\":[\"entity row\",\"alias row\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Identity claim is supported at medium confidence.\",\"Alias claim is supported at medium confidence.\",\"No conflict or superseded fact detected.\"]}}",
+  "role": "eval_judge",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

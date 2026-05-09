@@ -1,0 +1,97 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0019635,
+  "fixture_id": "numeric_table_exactness_001",
+  "input_tokens": 458,
+  "latency_ms": 2978,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 360,
+  "payload": {
+    "answer": "Extracted two exact run-performance memory cards from the table.",
+    "citations": [
+      "PPO-001 | Reward 0.12 | Sharpe 0.45 | baseline",
+      "PPO-002 | Reward 0.18 | Sharpe 0.51 | entropy tuned"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_success",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The runs are distinct and unambiguous in the table."
+    },
+    "intent": "Extract atomic memory cards from the provided performance table with exact numeric values.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "subject",
+            "type": "run"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "0.12",
+            "predicate": "has_reward",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "0.45",
+            "predicate": "has_sharpe",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "baseline",
+            "predicate": "has_notes",
+            "subject": "PPO-001"
+          }
+        ],
+        "statement": "PPO-001 has Reward 0.12, Sharpe 0.45, and notes 'baseline'."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "subject",
+            "type": "run"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "0.18",
+            "predicate": "has_reward",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "0.51",
+            "predicate": "has_sharpe",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "entropy tuned",
+            "predicate": "has_notes",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "PPO-002 has Reward 0.18, Sharpe 0.51, and notes 'entropy tuned'."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed two rows from the table.",
+        "Preserved exact numeric values and notes.",
+        "No ambiguities or conflicts detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"Extract atomic memory cards from the provided performance table with exact numeric values.\",\"decision\":\"commit_success\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"PPO-001 has Reward 0.12, Sharpe 0.45, and notes 'baseline'.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"PPO-001\",\"type\":\"run\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"PPO-001\",\"predicate\":\"has_reward\",\"object\":\"0.12\"},{\"subject\":\"PPO-001\",\"predicate\":\"has_sharpe\",\"object\":\"0.45\"},{\"subject\":\"PPO-001\",\"predicate\":\"has_notes\",\"object\":\"baseline\"}]},{\"kind\":\"fact\",\"statement\":\"PPO-002 has Reward 0.18, Sharpe 0.51, and notes 'entropy tuned'.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"PPO-002\",\"type\":\"run\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"PPO-002\",\"predicate\":\"has_reward\",\"object\":\"0.18\"},{\"subject\":\"PPO-002\",\"predicate\":\"has_sharpe\",\"object\":\"0.51\"},{\"subject\":\"PPO-002\",\"predicate\":\"has_notes\",\"object\":\"entropy tuned\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The runs are distinct and unambiguous in the table.\"},\"conflict_classification\":\"none\",\"answer\":\"Extracted two exact run-performance memory cards from the table.\",\"citations\":[\"PPO-001 | Reward 0.12 | Sharpe 0.45 | baseline\",\"PPO-002 | Reward 0.18 | Sharpe 0.51 | entropy tuned\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Parsed two rows from the table.\",\"Preserved exact numeric values and notes.\",\"No ambiguities or conflicts detected.\"]}}",
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164405",
+  "status": "ok"
+}

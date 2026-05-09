@@ -1,0 +1,41 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01215,
+  "fixture_id": "large_table_500_rows_001",
+  "input_tokens": 450,
+  "latency_ms": 4875,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 330,
+  "payload": {
+    "answer": "Do not store the 500 CSV rows as durable atomic memories. Treat the CSV as bulk tabular data: keep it as an attached/source document or structured dataset, and only extract memory cards for explicit, durable facts if the user identifies facts worth remembering. Repeated id,name,value rows are not appropriate for long-term personal memory unless they encode specific user-relevant facts.",
+    "citations": [
+      "Input: CSV table with 500 rows: id,name,value repeated many times.",
+      "Input: Policy question: how should it be stored?"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_with_warning",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input describes a large CSV table and asks a storage policy question; it does not provide durable personal facts suitable for atomic memory cards."
+    },
+    "intent": "storage_policy_guidance",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No atomic memory cards were committed because the input contains no explicit durable personal facts.",
+        "Provided storage policy guidance for large tabular data."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Store the CSV externally as a file or dataset reference rather than memory cards.",
+      "Ask the user which specific facts, if any, should be remembered.",
+      "Summarize the dataset metadata only if it is useful and explicitly requested."
+    ]
+  },
+  "raw_text": "{\"intent\":\"storage_policy_guidance\",\"decision\":\"commit_with_warning\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input describes a large CSV table and asks a storage policy question; it does not provide durable personal facts suitable for atomic memory cards.\"},\"conflict_classification\":\"none\",\"answer\":\"Do not store the 500 CSV rows as durable atomic memories. Treat the CSV as bulk tabular data: keep it as an attached/source document or structured dataset, and only extract memory cards for explicit, durable facts if the user identifies facts worth remembering. Repeated id,name,value rows are not appropriate for long-term personal memory unless they encode specific user-relevant facts.\",\"citations\":[\"Input: CSV table with 500 rows: id,name,value repeated many times.\",\"Input: Policy question: how should it be stored?\"],\"repair_options\":[\"Store the CSV externally as a file or dataset reference rather than memory cards.\",\"Ask the user which specific facts, if any, should be remembered.\",\"Summarize the dataset metadata only if it is useful and explicitly requested.\"],\"receipt\":{\"success\":true,\"details\":[\"No atomic memory cards were committed because the input contains no explicit durable personal facts.\",\"Provided storage policy guidance for large tabular data.\"]}}",
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164255",
+  "status": "ok"
+}

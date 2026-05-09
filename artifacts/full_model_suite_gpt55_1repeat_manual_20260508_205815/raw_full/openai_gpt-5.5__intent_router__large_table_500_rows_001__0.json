@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.010690000000000002,
+  "fixture_id": "large_table_500_rows_001",
+  "input_tokens": 380,
+  "latency_ms": 4386,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 293,
+  "payload": {
+    "answer": "Do not store the 500-row CSV table in Brain as durable memory. Treat it as transient tabular data or an external artifact/document. If needed, store only a concise user-approved summary, schema description, provenance, or pointer/reference to where the file is stored, not all repeated rows as memory cards.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "do_not_store_as_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "A large CSV table of repeated id,name,value rows is bulk data, not a durable personal memory or user preference. It should not be committed to memory as individual facts."
+    },
+    "intent": "policy_question",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Classified the input as a storage policy question.",
+        "Rejected durable memory creation for bulk repeated tabular data.",
+        "No memory cards created."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask whether the user wants a summary of the table stored.",
+      "Ask whether the user wants the file referenced by name/location rather than ingested into memory.",
+      "Store only stable metadata such as: CSV with columns id,name,value; approximately 500 rows; source/location if provided."
+    ]
+  },
+  "raw_text": "{\"intent\":\"policy_question\",\"decision\":\"do_not_store_as_memory\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"A large CSV table of repeated id,name,value rows is bulk data, not a durable personal memory or user preference. It should not be committed to memory as individual facts.\"},\"conflict_classification\":\"none\",\"answer\":\"Do not store the 500-row CSV table in Brain as durable memory. Treat it as transient tabular data or an external artifact/document. If needed, store only a concise user-approved summary, schema description, provenance, or pointer/reference to where the file is stored, not all repeated rows as memory cards.\",\"citations\":[],\"repair_options\":[\"Ask whether the user wants a summary of the table stored.\",\"Ask whether the user wants the file referenced by name/location rather than ingested into memory.\",\"Store only stable metadata such as: CSV with columns id,name,value; approximately 500 rows; source/location if provided.\"],\"receipt\":{\"success\":true,\"details\":[\"Classified the input as a storage policy question.\",\"Rejected durable memory creation for bulk repeated tabular data.\",\"No memory cards created.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_195937",
+  "status": "ok"
+}

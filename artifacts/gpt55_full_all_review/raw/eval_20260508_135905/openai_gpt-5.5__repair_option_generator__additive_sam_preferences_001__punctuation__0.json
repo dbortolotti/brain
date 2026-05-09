@@ -1,0 +1,67 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01291,
+  "fixture_id": "additive_sam_preferences_001__punctuation",
+  "input_tokens": 386,
+  "latency_ms": 5251,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 366,
+  "payload": {
+    "answer": "Add the new preference while preserving the existing one: Sam from Goldman likes Bill Evans and also likes Sonny Rollins.",
+    "citations": [
+      "Existing memory: Sam from Goldman likes Bill Evans",
+      "New: Sam from Goldman also likes Sonny Rollins"
+    ],
+    "conflict_classification": "none_additive",
+    "decision": "append_new_preference",
+    "entity_resolution": {
+      "action": "reuse_existing_entity",
+      "entity_id": null,
+      "reason": "The new statement refers to the same ambiguous entity label, 'Sam from Goldman,' as the existing memory. No additional disambiguating information is provided."
+    },
+    "intent": "additive_memory_update",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "liked_artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Sonny Rollins",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes Sonny Rollins."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected additive preference update.",
+        "Preserved existing memory as current.",
+        "Generated repair option to add Sonny Rollins as an additional liked artist."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Add a separate preference memory: Sam from Goldman likes Sonny Rollins.",
+      "Optionally consolidate preferences into one memory: Sam from Goldman likes Bill Evans and Sonny Rollins.",
+      "Do not overwrite or delete the existing Bill Evans preference, because the new information is additive and non-conflicting."
+    ]
+  },
+  "raw_text": "{\"intent\":\"additive_memory_update\",\"decision\":\"append_new_preference\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman likes Sonny Rollins.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam from Goldman\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Sonny Rollins\",\"type\":\"person\",\"role\":\"liked_artist\"}],\"relationships\":[{\"subject\":\"Sam from Goldman\",\"predicate\":\"likes\",\"object\":\"Sonny Rollins\"}]}],\"entity_resolution\":{\"action\":\"reuse_existing_entity\",\"entity_id\":null,\"reason\":\"The new statement refers to the same ambiguous entity label, 'Sam from Goldman,' as the existing memory. No additional disambiguating information is provided.\"},\"conflict_classification\":\"none_additive\",\"answer\":\"Add the new preference while preserving the existing one: Sam from Goldman likes Bill Evans and also likes Sonny Rollins.\",\"citations\":[\"Existing memory: Sam from Goldman likes Bill Evans\",\"New: Sam from Goldman also likes Sonny Rollins\"],\"repair_options\":[\"Add a separate preference memory: Sam from Goldman likes Sonny Rollins.\",\"Optionally consolidate preferences into one memory: Sam from Goldman likes Bill Evans and Sonny Rollins.\",\"Do not overwrite or delete the existing Bill Evans preference, because the new information is additive and non-conflicting.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected additive preference update.\",\"Preserved existing memory as current.\",\"Generated repair option to add Sonny Rollins as an additional liked artist.\"]}}",
+  "role": "repair_option_generator",
+  "run_id": "eval_20260508_135905",
+  "status": "ok"
+}

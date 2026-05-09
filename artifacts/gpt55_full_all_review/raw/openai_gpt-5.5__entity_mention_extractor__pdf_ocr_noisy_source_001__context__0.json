@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.013090000000000001,
+  "fixture_id": "pdf_ocr_noisy_source_001__context",
+  "input_tokens": 422,
+  "latency_ms": 5762,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 366,
+  "payload": {
+    "answer": "Extracted entity mentions from noisy OCR while preserving uncertainty.",
+    "citations": [
+      "For context, [OCR noisy] Brain DB remalns source of trvth. Cognee shou1d be rebuildable projection."
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "record_low_confidence_memory_from_ocr_noisy_source",
+    "entity_resolution": {
+      "action": "no_merge",
+      "entity_id": null,
+      "reason": "The entities are mentioned in noisy OCR text; preserve names as interpreted without merging to existing entities."
+    },
+    "intent": "extract_entity_mentions_from_noisy_context",
+    "memory_cards": [
+      {
+        "confidence": "low_due_to_ocr_noise",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system_or_database"
+          },
+          {
+            "name": "Cognee",
+            "role": "rebuildable_projection",
+            "type": "system_or_projection"
+          }
+        ],
+        "kind": "source_policy",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "remains",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "rebuildable projection",
+            "predicate": "should be",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "The input appears to state that Brain DB remains the source of truth and Cognee should be a rebuildable projection."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected OCR noise in words likely intended as 'remains', 'truth', and 'should'.",
+        "Did not add unsupported details beyond the provided sentence."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Verify OCR text against the original source before committing as high-confidence durable memory.",
+      "Confirm whether 'Brain DB' and 'Cognee' refer to known existing entities."
+    ]
+  },
+  "raw_text": "{\"intent\":\"extract_entity_mentions_from_noisy_context\",\"decision\":\"record_low_confidence_memory_from_ocr_noisy_source\",\"memory_cards\":[{\"kind\":\"source_policy\",\"statement\":\"The input appears to state that Brain DB remains the source of truth and Cognee should be a rebuildable projection.\",\"confidence\":\"low_due_to_ocr_noise\",\"entities\":[{\"name\":\"Brain DB\",\"type\":\"system_or_database\",\"role\":\"source_of_truth\"},{\"name\":\"Cognee\",\"type\":\"system_or_projection\",\"role\":\"rebuildable_projection\"}],\"relationships\":[{\"subject\":\"Brain DB\",\"predicate\":\"remains\",\"object\":\"source of truth\"},{\"subject\":\"Cognee\",\"predicate\":\"should be\",\"object\":\"rebuildable projection\"}]}],\"entity_resolution\":{\"action\":\"no_merge\",\"entity_id\":null,\"reason\":\"The entities are mentioned in noisy OCR text; preserve names as interpreted without merging to existing entities.\"},\"conflict_classification\":\"none_detected\",\"answer\":\"Extracted entity mentions from noisy OCR while preserving uncertainty.\",\"citations\":[\"For context, [OCR noisy] Brain DB remalns source of trvth. Cognee shou1d be rebuildable projection.\"],\"repair_options\":[\"Verify OCR text against the original source before committing as high-confidence durable memory.\",\"Confirm whether 'Brain DB' and 'Cognee' refer to known existing entities.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected OCR noise in words likely intended as 'remains', 'truth', and 'should'.\",\"Did not add unsupported details beyond the provided sentence.\"]}}",
+  "role": "entity_mention_extractor",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

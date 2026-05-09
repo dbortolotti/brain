@@ -1,0 +1,98 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.014645000000000002,
+  "fixture_id": "numeric_table_exactness_001__context",
+  "input_tokens": 397,
+  "latency_ms": 7057,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 422,
+  "payload": {
+    "answer": "Extracted exact numeric table facts from the provided context without committing durable memory.",
+    "citations": [
+      "For context, | Run | Reward | Sharpe | Notes |",
+      "| PPO-001 | 0.12 | 0.45 | baseline |",
+      "| PPO-002 | 0.18 | 0.51 | entropy tuned |"
+    ],
+    "conflict_classification": "none",
+    "decision": "no_durable_memory_commit",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input provides contextual run metrics only; no durable personal-memory entity should be created or resolved."
+    },
+    "intent": "extract_takeaways_from_numeric_table",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-001",
+            "role": "subject",
+            "type": "run"
+          }
+        ],
+        "kind": "source_takeaway",
+        "relationships": [
+          {
+            "object": "0.12",
+            "predicate": "has_reward",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "0.45",
+            "predicate": "has_sharpe",
+            "subject": "PPO-001"
+          },
+          {
+            "object": "baseline",
+            "predicate": "has_notes",
+            "subject": "PPO-001"
+          }
+        ],
+        "statement": "In the provided context table, run PPO-001 has Reward 0.12 and Sharpe 0.45, with notes: baseline."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "PPO-002",
+            "role": "subject",
+            "type": "run"
+          }
+        ],
+        "kind": "source_takeaway",
+        "relationships": [
+          {
+            "object": "0.18",
+            "predicate": "has_reward",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "0.51",
+            "predicate": "has_sharpe",
+            "subject": "PPO-002"
+          },
+          {
+            "object": "entropy tuned",
+            "predicate": "has_notes",
+            "subject": "PPO-002"
+          }
+        ],
+        "statement": "In the provided context table, run PPO-002 has Reward 0.18 and Sharpe 0.51, with notes: entropy tuned."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preserved exact Reward and Sharpe values as given.",
+        "Did not infer that PPO-002 is globally better beyond the listed metrics.",
+        "Did not commit durable memory from contextual table data."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"extract_takeaways_from_numeric_table\",\"decision\":\"no_durable_memory_commit\",\"memory_cards\":[{\"kind\":\"source_takeaway\",\"statement\":\"In the provided context table, run PPO-001 has Reward 0.12 and Sharpe 0.45, with notes: baseline.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"PPO-001\",\"type\":\"run\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"PPO-001\",\"predicate\":\"has_reward\",\"object\":\"0.12\"},{\"subject\":\"PPO-001\",\"predicate\":\"has_sharpe\",\"object\":\"0.45\"},{\"subject\":\"PPO-001\",\"predicate\":\"has_notes\",\"object\":\"baseline\"}]},{\"kind\":\"source_takeaway\",\"statement\":\"In the provided context table, run PPO-002 has Reward 0.18 and Sharpe 0.51, with notes: entropy tuned.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"PPO-002\",\"type\":\"run\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"PPO-002\",\"predicate\":\"has_reward\",\"object\":\"0.18\"},{\"subject\":\"PPO-002\",\"predicate\":\"has_sharpe\",\"object\":\"0.51\"},{\"subject\":\"PPO-002\",\"predicate\":\"has_notes\",\"object\":\"entropy tuned\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input provides contextual run metrics only; no durable personal-memory entity should be created or resolved.\"},\"conflict_classification\":\"none\",\"answer\":\"Extracted exact numeric table facts from the provided context without committing durable memory.\",\"citations\":[\"For context, | Run | Reward | Sharpe | Notes |\",\"| PPO-001 | 0.12 | 0.45 | baseline |\",\"| PPO-002 | 0.18 | 0.51 | entropy tuned |\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Preserved exact Reward and Sharpe values as given.\",\"Did not infer that PPO-002 is globally better beyond the listed metrics.\",\"Did not commit durable memory from contextual table data.\"]}}",
+  "role": "source_takeaway_extractor",
+  "run_id": "eval_20260508_195937",
+  "status": "ok"
+}

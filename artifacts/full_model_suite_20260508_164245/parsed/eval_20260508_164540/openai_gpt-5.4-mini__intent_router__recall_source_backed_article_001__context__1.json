@@ -1,0 +1,73 @@
+{
+  "fixture_id": "recall_source_backed_article_001__context",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Source-backed facts about graph memory: it preserves relationships, and it needs provenance.",
+    "citations": [
+      "source article: graph memory preserves relationships and needs provenance"
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "answer",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "The query refers to the concept 'graph memory'; no disambiguation is needed beyond the source article context."
+    },
+    "intent": "retrieve_source_backed_facts",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "graph memory",
+            "role": "topic",
+            "type": "concept"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "relationships",
+            "predicate": "preserves",
+            "subject": "graph memory"
+          }
+        ],
+        "statement": "Graph memory preserves relationships."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "graph memory",
+            "role": "topic",
+            "type": "concept"
+          },
+          {
+            "name": "provenance",
+            "role": "requirement",
+            "type": "concept"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "provenance",
+            "predicate": "needs",
+            "subject": "graph memory"
+          }
+        ],
+        "statement": "Graph memory needs provenance."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted two source-backed facts from the article context.",
+        "Preserved ambiguity by limiting claims to the provided source text."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540"
+}

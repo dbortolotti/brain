@@ -1,0 +1,86 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01177,
+  "fixture_id": "memory_compiler_small_table",
+  "input_tokens": 380,
+  "latency_ms": 4050,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 329,
+  "payload": {
+    "answer": "Extracted two preference memories: Sam prefers Bill Evans; Daniele prefers knowledge graphs.",
+    "citations": [
+      "| Sam | Bill Evans |",
+      "| Daniele | Knowledge graphs |"
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create_or_link_if_unambiguous",
+      "entity_id": null,
+      "reason": "The input provides names and preferences but no stable identifiers; preserve ambiguity for entity identity."
+    },
+    "intent": "extract_takeaways_from_table",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference",
+            "type": "person_or_topic"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam's preference is Bill Evans."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Knowledge graphs",
+            "role": "preference",
+            "type": "topic"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Knowledge graphs",
+            "predicate": "prefers",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Daniele's preference is knowledge graphs."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed durable preference takeaway for Sam with ambiguous identity.",
+        "Committed durable preference takeaway for Daniele with ambiguous identity."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"extract_takeaways_from_table\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam's preference is Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"person_or_topic\",\"role\":\"preference\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"prefers\",\"object\":\"Bill Evans\"}]},{\"kind\":\"preference\",\"statement\":\"Daniele's preference is knowledge graphs.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Daniele\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Knowledge graphs\",\"type\":\"topic\",\"role\":\"preference\"}],\"relationships\":[{\"subject\":\"Daniele\",\"predicate\":\"prefers\",\"object\":\"Knowledge graphs\"}]}],\"entity_resolution\":{\"action\":\"create_or_link_if_unambiguous\",\"entity_id\":null,\"reason\":\"The input provides names and preferences but no stable identifiers; preserve ambiguity for entity identity.\"},\"conflict_classification\":\"none_detected\",\"answer\":\"Extracted two preference memories: Sam prefers Bill Evans; Daniele prefers knowledge graphs.\",\"citations\":[\"| Sam | Bill Evans |\",\"| Daniele | Knowledge graphs |\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Committed durable preference takeaway for Sam with ambiguous identity.\",\"Committed durable preference takeaway for Daniele with ambiguous identity.\"]}}",
+  "role": "source_takeaway_extractor",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

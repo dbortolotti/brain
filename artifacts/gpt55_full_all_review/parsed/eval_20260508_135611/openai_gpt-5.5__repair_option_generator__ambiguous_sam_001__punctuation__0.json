@@ -1,0 +1,65 @@
+{
+  "fixture_id": "ambiguous_sam_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "I can\u2019t safely attach this preference to either Sam from Goldman or Sam from Point72 without clarification.",
+    "citations": [
+      "Existing entities: Sam from Goldman; Sam from Point72",
+      "New message: Sam mentioned that he likes Bill Evans"
+    ],
+    "conflict_classification": "ambiguous_entity_reference",
+    "decision": "defer_commit_due_to_ambiguous_entity_reference",
+    "entity_resolution": {
+      "action": "needs_clarification",
+      "entity_id": null,
+      "reason": "The message says only 'Sam' while two existing entities match: Sam from Goldman and Sam from Point72."
+    },
+    "intent": "store_preference_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "possible_subject",
+            "type": "person"
+          },
+          {
+            "name": "Sam from Point72",
+            "role": "possible_subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_artist",
+            "type": "person"
+          }
+        ],
+        "kind": "candidate_memory",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Unknown Sam"
+          }
+        ],
+        "statement": "A person named Sam mentioned that he likes Bill Evans, but it is unclear whether this refers to Sam from Goldman or Sam from Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No durable memory was committed because the entity reference is ambiguous.",
+        "The preference was preserved only as a low-confidence candidate."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Attach 'likes Bill Evans' to Sam from Goldman.",
+      "Attach 'likes Bill Evans' to Sam from Point72.",
+      "Create an unresolved candidate memory noting that an unspecified Sam likes Bill Evans.",
+      "Ask for clarification: Which Sam likes Bill Evans?"
+    ]
+  },
+  "role": "repair_option_generator",
+  "run_id": "eval_20260508_135611"
+}

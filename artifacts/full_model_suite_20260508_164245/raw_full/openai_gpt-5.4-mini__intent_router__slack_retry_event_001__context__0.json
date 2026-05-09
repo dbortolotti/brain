@@ -1,0 +1,40 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0011745,
+  "fixture_id": "slack_retry_event_001__context",
+  "input_tokens": 378,
+  "latency_ms": 2183,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 198,
+  "payload": {
+    "answer": "No-op: duplicate Slack event, do not create or update memory.",
+    "citations": [
+      "slack_retry_event_001__context"
+    ],
+    "conflict_classification": "duplicate_delivery",
+    "decision": "duplicate_event_noop",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The same Slack event ID was delivered twice; no new durable memory should be committed from a duplicate delivery."
+    },
+    "intent": "intent_router",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected repeated delivery of the same Slack event ID.",
+        "Suppressed duplicate memory write.",
+        "No durable memory committed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If the second delivery contains new content or a different event ID, process it as a new event.",
+      "If deduplication state is missing, store only idempotency metadata, not user memory."
+    ]
+  },
+  "raw_text": "{\"intent\":\"intent_router\",\"decision\":\"duplicate_event_noop\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The same Slack event ID was delivered twice; no new durable memory should be committed from a duplicate delivery.\"},\"conflict_classification\":\"duplicate_delivery\",\"answer\":\"No-op: duplicate Slack event, do not create or update memory.\",\"citations\":[\"slack_retry_event_001__context\"],\"repair_options\":[\"If the second delivery contains new content or a different event ID, process it as a new event.\",\"If deduplication state is missing, store only idempotency metadata, not user memory.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected repeated delivery of the same Slack event ID.\",\"Suppressed duplicate memory write.\",\"No durable memory committed.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

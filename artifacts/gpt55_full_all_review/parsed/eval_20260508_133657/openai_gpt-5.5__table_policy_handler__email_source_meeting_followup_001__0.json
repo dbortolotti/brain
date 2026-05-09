@@ -1,0 +1,77 @@
+{
+  "fixture_id": "email_source_meeting_followup_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Captured limited durable facts: Sam says they joined Point72 last month, and they requested an AI infrastructure article. Private email address and raw source text were not exposed.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "commit_limited_memory",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Only a first name and private email source are available; insufficient evidence to resolve to an existing person without exposing raw email address."
+    },
+    "intent": "extract_durable_memory_from_email",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "source/person",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_update",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam reports having joined Point72 last month."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "requester",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure article",
+            "role": "requested_item",
+            "type": "content"
+          }
+        ],
+        "kind": "interest_or_request",
+        "relationships": [
+          {
+            "object": "AI infrastructure article",
+            "predicate": "requested",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam asked to be sent an article about AI infrastructure."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed only non-sensitive, relevant memory from the email.",
+        "Did not expose raw private email address.",
+        "Preserved ambiguity by referring to the sender as Sam and deferring entity resolution."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "table_policy_handler",
+  "run_id": "eval_20260508_133657"
+}

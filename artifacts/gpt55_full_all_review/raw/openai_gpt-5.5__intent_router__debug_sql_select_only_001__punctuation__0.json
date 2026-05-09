@@ -1,0 +1,35 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00591,
+  "fixture_id": "debug_sql_select_only_001__punctuation",
+  "input_tokens": 384,
+  "latency_ms": 2596,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 133,
+  "payload": {
+    "answer": "SELECT query is allowed in select-only mode; DELETE query is denied.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "allow_select_only",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Administrative SQL instruction, not a durable user memory fact."
+    },
+    "intent": "admin_sql",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected admin SQL select-only mode.",
+        "Allowed statement: SELECT id FROM memory_cards LIMIT 10.",
+        "Denied statement: DELETE FROM memory_cards."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"admin_sql\",\"decision\":\"allow_select_only\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"Administrative SQL instruction, not a durable user memory fact.\"},\"conflict_classification\":\"none\",\"answer\":\"SELECT query is allowed in select-only mode; DELETE query is denied.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Detected admin SQL select-only mode.\",\"Allowed statement: SELECT id FROM memory_cards LIMIT 10.\",\"Denied statement: DELETE FROM memory_cards.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

@@ -1,0 +1,85 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.011415,
+  "fixture_id": "recall_source_backed_article_001__context",
+  "input_tokens": 399,
+  "latency_ms": 14798,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 314,
+  "payload": {
+    "answer": "Source-backed facts about graph memory: it preserves relationships, and it needs provenance.",
+    "citations": [
+      "Source article"
+    ],
+    "conflict_classification": "none",
+    "decision": "recall",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The query refers to the concept 'graph memory' from the provided source context; no durable entity resolution is needed."
+    },
+    "intent": "answer_query_with_source_backed_facts",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "graph memory",
+            "role": "subject",
+            "type": "concept"
+          },
+          {
+            "name": "relationships",
+            "role": "object",
+            "type": "concept"
+          }
+        ],
+        "kind": "source_backed_fact",
+        "relationships": [
+          {
+            "object": "relationships",
+            "predicate": "preserves",
+            "subject": "graph memory"
+          }
+        ],
+        "statement": "Graph memory preserves relationships."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "graph memory",
+            "role": "subject",
+            "type": "concept"
+          },
+          {
+            "name": "provenance",
+            "role": "object",
+            "type": "concept"
+          }
+        ],
+        "kind": "source_backed_fact",
+        "relationships": [
+          {
+            "object": "provenance",
+            "predicate": "needs",
+            "subject": "graph memory"
+          }
+        ],
+        "statement": "Graph memory needs provenance."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Answered only from the provided source context.",
+        "Preserved the source-backed claims without adding unsupported details."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"answer_query_with_source_backed_facts\",\"decision\":\"recall\",\"memory_cards\":[{\"kind\":\"source_backed_fact\",\"statement\":\"Graph memory preserves relationships.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"graph memory\",\"type\":\"concept\",\"role\":\"subject\"},{\"name\":\"relationships\",\"type\":\"concept\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"graph memory\",\"predicate\":\"preserves\",\"object\":\"relationships\"}]},{\"kind\":\"source_backed_fact\",\"statement\":\"Graph memory needs provenance.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"graph memory\",\"type\":\"concept\",\"role\":\"subject\"},{\"name\":\"provenance\",\"type\":\"concept\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"graph memory\",\"predicate\":\"needs\",\"object\":\"provenance\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The query refers to the concept 'graph memory' from the provided source context; no durable entity resolution is needed.\"},\"conflict_classification\":\"none\",\"answer\":\"Source-backed facts about graph memory: it preserves relationships, and it needs provenance.\",\"citations\":[\"Source article\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Answered only from the provided source context.\",\"Preserved the source-backed claims without adding unsupported details.\"]}}",
+  "role": "groundedness_checker",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

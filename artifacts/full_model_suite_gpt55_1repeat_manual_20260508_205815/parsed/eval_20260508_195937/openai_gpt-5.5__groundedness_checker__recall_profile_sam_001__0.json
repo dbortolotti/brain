@@ -1,0 +1,127 @@
+{
+  "fixture_id": "recall_profile_sam_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Sam is associated with Goldman. He likes Bill Evans and is interested in AI infrastructure. There is also an open loop to send Sam an article about AI infrastructure.",
+    "citations": [
+      "Facts: Sam from Goldman likes Bill Evans, is associated with Goldman, is interested in AI infrastructure.",
+      "Open loop: send Sam article about AI infra."
+    ],
+    "conflict_classification": "none",
+    "decision": "answer_from_memory",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": "Sam from Goldman",
+      "reason": "The query explicitly refers to Sam from Goldman, matching the stored association between Sam and Goldman."
+    },
+    "intent": "recall_profile",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          }
+        ],
+        "kind": "person_profile",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "associated_with",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is associated with Goldman."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "interest",
+            "type": "topic"
+          }
+        ],
+        "kind": "interest",
+        "relationships": [
+          {
+            "object": "AI infrastructure",
+            "predicate": "interested_in",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is interested in AI infrastructure."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "recipient",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure",
+            "role": "article_topic",
+            "type": "topic"
+          }
+        ],
+        "kind": "open_loop",
+        "relationships": [
+          {
+            "object": "article about AI infrastructure",
+            "predicate": "should_receive",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Send Sam an article about AI infrastructure."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Answered using only provided facts and open loop.",
+        "No conflicts or superseded facts detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "groundedness_checker",
+  "run_id": "eval_20260508_195937"
+}

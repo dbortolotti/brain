@@ -1,0 +1,64 @@
+{
+  "fixture_id": "idempotent_retry_same_message_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Committed one memory only: Sam from Goldman mentioned that he likes Bill Evans.",
+    "citations": [
+      "Same input delivered three times: Sam from Goldman mentioned that he likes Bill Evans."
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_once",
+    "entity_resolution": {
+      "action": "create_or_update_ambiguous",
+      "entity_id": null,
+      "reason": "The input was delivered three times but appears to be an idempotent retry of the same message, not three independent observations. 'Sam from Goldman' is insufficient to uniquely resolve a durable entity without more identifiers."
+    },
+    "intent": "store_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "source/subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation/context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_entity",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman mentioned that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected idempotent retry of identical input.",
+        "Avoided creating duplicate memories.",
+        "Stored preference with medium confidence due to secondhand phrasing and ambiguous identity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Treat the repeated deliveries as duplicates and store a single memory card.",
+      "Preserve the affiliation/context as 'from Goldman' without assuming whether Goldman means Goldman Sachs or another Goldman entity.",
+      "Keep entity resolution ambiguous for Sam until additional identifying information is available."
+    ]
+  },
+  "role": "repair_option_generator",
+  "run_id": "eval_20260508_125514"
+}

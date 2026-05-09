@@ -1,0 +1,91 @@
+{
+  "fixture_id": "conflict_sara_niece_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "The new statement may be consistent with the existing memory, but 'my niece' depends on who the speaker is. Ask for clarification before committing it as durable memory.",
+    "citations": [
+      "Existing high-confidence memory: Sara is Daniele's daughter and Nur's twin",
+      "New: Sara is my niece"
+    ],
+    "conflict_classification": "potentially_compatible_relationship_with_ambiguous_reference",
+    "decision": "ask_clarification",
+    "entity_resolution": {
+      "action": "ask_clarification",
+      "entity_id": null,
+      "reason": "The new statement could be compatible with the existing one, but the speaker identity is unknown, so 'my niece' cannot be safely merged into the current family graph without clarification."
+    },
+    "intent": "Explain the relationship between the existing memory and the new statement while preserving ambiguity.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "sibling",
+            "type": "person"
+          }
+        ],
+        "kind": "existing_memory",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is_daughter_of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is_twin_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin."
+      },
+      {
+        "confidence": "uncertain",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "speaker",
+            "role": "possessor",
+            "type": "person"
+          }
+        ],
+        "kind": "new_memory",
+        "relationships": [
+          {
+            "object": "speaker",
+            "predicate": "is_niece_of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preserved existing high-confidence memory unchanged.",
+        "Did not commit the new statement as durable memory due to unresolved speaker reference."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "ask_clarification"
+    ]
+  },
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_164540"
+}

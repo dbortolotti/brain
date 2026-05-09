@@ -1,0 +1,64 @@
+{
+  "fixture_id": "project_state_brain_slack_agent_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Captured: Slack should be the primary guardrailed memory ingestion interface for Brain, while Telegram can be deferred until later.",
+    "citations": [
+      "For context, Brain project state: Slack should be the primary guardrailed memory ingestion interface; Telegram can come later."
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "Commit durable project preference/state: Slack is prioritized as the primary guardrailed memory ingestion interface; Telegram is deferred/later.",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "The input explicitly identifies this as Brain project state and provides a durable prioritization decision between Slack and Telegram."
+    },
+    "intent": "extract_project_state_takeaway",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "subject",
+            "type": "project"
+          },
+          {
+            "name": "Slack",
+            "role": "primary memory ingestion interface",
+            "type": "platform"
+          },
+          {
+            "name": "Telegram",
+            "role": "deferred alternative",
+            "type": "platform"
+          }
+        ],
+        "kind": "project_state",
+        "relationships": [
+          {
+            "object": "Slack",
+            "predicate": "uses_primary_guardrailed_memory_ingestion_interface",
+            "subject": "Brain"
+          },
+          {
+            "object": "Brain",
+            "predicate": "is_deferred_for",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "For the Brain project, Slack should be the primary guardrailed memory ingestion interface; Telegram can come later."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted one project_state memory card.",
+        "Preserved the prioritization and deferral without adding implementation details."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "source_takeaway_extractor",
+  "run_id": "eval_20260508_164540"
+}

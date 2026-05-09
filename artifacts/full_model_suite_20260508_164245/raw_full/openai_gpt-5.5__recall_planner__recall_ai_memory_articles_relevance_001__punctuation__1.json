@@ -1,0 +1,66 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01161,
+  "fixture_id": "recall_ai_memory_articles_relevance_001__punctuation",
+  "input_tokens": 432,
+  "latency_ms": 3601,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 315,
+  "payload": {
+    "answer": "You have saved one article about AI memory: \"AI Memory: New Tools for Persistent Context.\"",
+    "citations": [
+      "AI Memory: New Tools for Persistent Context"
+    ],
+    "conflict_classification": "none",
+    "decision": "answer_from_relevant_saved_article_record_only",
+    "entity_resolution": {
+      "action": "resolved_to_saved_article_topic",
+      "entity_id": null,
+      "reason": "The query asks specifically for saved articles about AI memory; unrelated family facts, preferences, open loops, chats, and tables are out of scope."
+    },
+    "intent": "recall_saved_articles_about_ai_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "AI Memory: New Tools for Persistent Context",
+            "role": "saved_item",
+            "type": "article"
+          },
+          {
+            "name": "AI memory",
+            "role": "subject",
+            "type": "topic"
+          }
+        ],
+        "kind": "saved_article",
+        "relationships": [
+          {
+            "object": "AI memory",
+            "predicate": "is_about",
+            "subject": "AI Memory: New Tools for Persistent Context"
+          },
+          {
+            "object": "AI Memory: New Tools for Persistent Context",
+            "predicate": "saved",
+            "subject": "user"
+          }
+        ],
+        "statement": "You saved an article titled \"AI Memory: New Tools for Persistent Context\" about AI memory."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Returned only the saved article relevant to AI memory.",
+        "Excluded unrelated memories and non-article records."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"recall_saved_articles_about_ai_memory\",\"decision\":\"answer_from_relevant_saved_article_record_only\",\"memory_cards\":[{\"kind\":\"saved_article\",\"statement\":\"You saved an article titled \\\"AI Memory: New Tools for Persistent Context\\\" about AI memory.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"AI Memory: New Tools for Persistent Context\",\"type\":\"article\",\"role\":\"saved_item\"},{\"name\":\"AI memory\",\"type\":\"topic\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"AI Memory: New Tools for Persistent Context\",\"predicate\":\"is_about\",\"object\":\"AI memory\"},{\"subject\":\"user\",\"predicate\":\"saved\",\"object\":\"AI Memory: New Tools for Persistent Context\"}]}],\"entity_resolution\":{\"action\":\"resolved_to_saved_article_topic\",\"entity_id\":null,\"reason\":\"The query asks specifically for saved articles about AI memory; unrelated family facts, preferences, open loops, chats, and tables are out of scope.\"},\"conflict_classification\":\"none\",\"answer\":\"You have saved one article about AI memory: \\\"AI Memory: New Tools for Persistent Context.\\\"\",\"citations\":[\"AI Memory: New Tools for Persistent Context\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Returned only the saved article relevant to AI memory.\",\"Excluded unrelated memories and non-article records.\"]}}",
+  "role": "recall_planner",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

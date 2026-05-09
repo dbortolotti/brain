@@ -1,0 +1,95 @@
+{
+  "fixture_id": "additive_sam_preferences_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Use add_new. The new memory adds Sonny Rollins as an additional liked artist for Sam from Goldman, while preserving the existing Bill Evans memory.",
+    "citations": [
+      "Existing memory: Sam from Goldman likes Bill Evans",
+      "New: Sam from Goldman also likes Sonny Rollins"
+    ],
+    "conflict_classification": "additive_update",
+    "decision": "add_new",
+    "entity_resolution": {
+      "action": "keep_existing",
+      "entity_id": null,
+      "reason": "The new fact appears additive and refers to the same Sam from Goldman, but no explicit durable merge or overwrite instruction is provided."
+    },
+    "intent": "Explain how to handle an additive preference update without overwriting the existing memory.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "liked_artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Sonny Rollins",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman also likes Sonny Rollins."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preserved the existing Bill Evans memory.",
+        "Added the Sonny Rollins preference as a separate memory.",
+        "Did not overwrite or delete any existing fact."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "add_new",
+      "keep_existing",
+      "edit",
+      "cancel"
+    ]
+  },
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_164540"
+}

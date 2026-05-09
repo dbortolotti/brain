@@ -1,0 +1,132 @@
+{
+  "fixture_id": "conversation_transcript_sam_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Extracted explicit entity mentions and durable memory candidates from the transcript.",
+    "citations": [
+      "Sam - No, I left Goldman last month and joined Point72",
+      "Sam - Yes, but lately more early Coltrane",
+      "Daniele - We should catch up about AI infra",
+      "Sam - Definitely, send me that article"
+    ],
+    "conflict_classification": "updates_prior_employment_status_if_present",
+    "decision": "store_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No existing entity identifiers were provided; extracted explicit mentions only."
+    },
+    "intent": "extract_entity_mentions",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_update",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman last month and joined Point72."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "music_interest",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "recent_music_interest",
+            "type": "music_interest"
+          }
+        ],
+        "kind": "interest",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "listens_to",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "listens_more_lately_to",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam still listens to Bill Evans, but lately has been listening more to early Coltrane."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "participant",
+            "type": "person"
+          },
+          {
+            "name": "Sam",
+            "role": "participant",
+            "type": "person"
+          },
+          {
+            "name": "AI infra",
+            "role": "discussion_topic",
+            "type": "topic"
+          }
+        ],
+        "kind": "topic_interest",
+        "relationships": [
+          {
+            "object": "AI infra",
+            "predicate": "plan_to_discuss",
+            "subject": "Daniele and Sam"
+          }
+        ],
+        "statement": "Daniele and Sam plan to catch up about AI infra."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured Sam's employment change from Goldman to Point72.",
+        "Captured Sam's stated music interests: Bill Evans and early Coltrane.",
+        "Captured planned discussion topic between Daniele and Sam: AI infra.",
+        "Did not infer details about the unspecified article."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "entity_mention_extractor",
+  "run_id": "eval_20260508_125514"
+}

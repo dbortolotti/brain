@@ -1,0 +1,40 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.011365,
+  "fixture_id": "large_table_500_rows_001__punctuation",
+  "input_tokens": 383,
+  "latency_ms": 4939,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 315,
+  "payload": {
+    "answer": "Do not commit the 500-row CSV table as durable memory. Large raw tables, repeated data, and bulk datasets should not be stored in personal memory. If needed, store only a concise user-approved summary, schema/metadata, or a pointer/reference to an external document, while preserving uncertainty and avoiding ingestion of the full dataset.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "do_not_store_as_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input is a large CSV/table payload and a policy question about storage, not a durable personal fact or preference."
+    },
+    "intent": "policy_question",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Classified as a policy/storage question rather than memory content.",
+        "No memory cards created.",
+        "Recommended against storing the large repeated CSV as durable memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask the user whether they want a concise summary of the table stored.",
+      "Store only metadata such as: 'User provided a CSV with columns id, name, value' if it is useful and explicitly requested.",
+      "Store an external file reference or document ID instead of the raw table.",
+      "Extract and store only durable preferences or facts explicitly stated outside the bulk table."
+    ]
+  },
+  "raw_text": "{\"intent\":\"policy_question\",\"decision\":\"do_not_store_as_memory\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input is a large CSV/table payload and a policy question about storage, not a durable personal fact or preference.\"},\"conflict_classification\":\"none\",\"answer\":\"Do not commit the 500-row CSV table as durable memory. Large raw tables, repeated data, and bulk datasets should not be stored in personal memory. If needed, store only a concise user-approved summary, schema/metadata, or a pointer/reference to an external document, while preserving uncertainty and avoiding ingestion of the full dataset.\",\"citations\":[],\"repair_options\":[\"Ask the user whether they want a concise summary of the table stored.\",\"Store only metadata such as: 'User provided a CSV with columns id, name, value' if it is useful and explicitly requested.\",\"Store an external file reference or document ID instead of the raw table.\",\"Extract and store only durable preferences or facts explicitly stated outside the bulk table.\"],\"receipt\":{\"success\":true,\"details\":[\"Classified as a policy/storage question rather than memory content.\",\"No memory cards created.\",\"Recommended against storing the large repeated CSV as durable memory.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

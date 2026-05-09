@@ -1,0 +1,133 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.02203,
+  "fixture_id": "article_url_ai_memory_001__punctuation",
+  "input_tokens": 506,
+  "latency_ms": 5684,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 650,
+  "payload": {
+    "answer": "Committed article memory with a warning because the URL-like reference is malformed or ambiguous.",
+    "citations": [
+      "Input: Remember this article - https -//examplecom/ai-memory why - useful for thinking about knowledge graph memory design",
+      "Mock fetched article: Graph memory helps agents preserve relationships; provenance and update semantics are needed"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_with_warning",
+    "entity_resolution": {
+      "action": "create_or_attach_source_reference",
+      "entity_id": null,
+      "reason": "The input provides an article-like reference, but the URL punctuation is malformed or ambiguous; preserve the exact reference rather than normalizing it to an unprovided URL."
+    },
+    "intent": "remember_article",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "https -//examplecom/ai-memory",
+            "role": "source",
+            "type": "url_reference"
+          },
+          {
+            "name": "knowledge graph memory design",
+            "role": "use_case",
+            "type": "concept"
+          }
+        ],
+        "kind": "article_reference",
+        "relationships": [
+          {
+            "object": "knowledge graph memory design",
+            "predicate": "is useful for thinking about",
+            "subject": "https -//examplecom/ai-memory"
+          }
+        ],
+        "statement": "The user wants to remember an article at the ambiguous URL-like reference \"https -//examplecom/ai-memory\" because it is useful for thinking about knowledge graph memory design."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "graph memory",
+            "role": "subject",
+            "type": "concept"
+          },
+          {
+            "name": "agents",
+            "role": "beneficiary",
+            "type": "concept"
+          },
+          {
+            "name": "relationships",
+            "role": "object",
+            "type": "concept"
+          }
+        ],
+        "kind": "article_claim",
+        "relationships": [
+          {
+            "object": "relationships",
+            "predicate": "helps preserve",
+            "subject": "graph memory"
+          },
+          {
+            "object": "agents",
+            "predicate": "helps",
+            "subject": "graph memory"
+          }
+        ],
+        "statement": "The referenced article says graph memory helps agents preserve relationships."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "graph memory",
+            "role": "context",
+            "type": "concept"
+          },
+          {
+            "name": "provenance",
+            "role": "requirement",
+            "type": "concept"
+          },
+          {
+            "name": "update semantics",
+            "role": "requirement",
+            "type": "concept"
+          }
+        ],
+        "kind": "article_claim",
+        "relationships": [
+          {
+            "object": "provenance",
+            "predicate": "needs",
+            "subject": "graph memory"
+          },
+          {
+            "object": "update semantics",
+            "predicate": "needs",
+            "subject": "graph memory"
+          }
+        ],
+        "statement": "The referenced article says provenance and update semantics are needed for graph memory."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored the article reference exactly as provided.",
+        "Stored explicitly supported article claims only.",
+        "Marked the URL reference as ambiguous due to punctuation."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Confirm the exact article URL if durable retrieval or deduplication is needed."
+    ]
+  },
+  "raw_text": "{\"intent\":\"remember_article\",\"decision\":\"commit_with_warning\",\"memory_cards\":[{\"kind\":\"article_reference\",\"statement\":\"The user wants to remember an article at the ambiguous URL-like reference \\\"https -//examplecom/ai-memory\\\" because it is useful for thinking about knowledge graph memory design.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"https -//examplecom/ai-memory\",\"type\":\"url_reference\",\"role\":\"source\"},{\"name\":\"knowledge graph memory design\",\"type\":\"concept\",\"role\":\"use_case\"}],\"relationships\":[{\"subject\":\"https -//examplecom/ai-memory\",\"predicate\":\"is useful for thinking about\",\"object\":\"knowledge graph memory design\"}]},{\"kind\":\"article_claim\",\"statement\":\"The referenced article says graph memory helps agents preserve relationships.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"graph memory\",\"type\":\"concept\",\"role\":\"subject\"},{\"name\":\"agents\",\"type\":\"concept\",\"role\":\"beneficiary\"},{\"name\":\"relationships\",\"type\":\"concept\",\"role\":\"object\"}],\"relationships\":[{\"subject\":\"graph memory\",\"predicate\":\"helps preserve\",\"object\":\"relationships\"},{\"subject\":\"graph memory\",\"predicate\":\"helps\",\"object\":\"agents\"}]},{\"kind\":\"article_claim\",\"statement\":\"The referenced article says provenance and update semantics are needed for graph memory.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"graph memory\",\"type\":\"concept\",\"role\":\"context\"},{\"name\":\"provenance\",\"type\":\"concept\",\"role\":\"requirement\"},{\"name\":\"update semantics\",\"type\":\"concept\",\"role\":\"requirement\"}],\"relationships\":[{\"subject\":\"graph memory\",\"predicate\":\"needs\",\"object\":\"provenance\"},{\"subject\":\"graph memory\",\"predicate\":\"needs\",\"object\":\"update semantics\"}]}],\"entity_resolution\":{\"action\":\"create_or_attach_source_reference\",\"entity_id\":null,\"reason\":\"The input provides an article-like reference, but the URL punctuation is malformed or ambiguous; preserve the exact reference rather than normalizing it to an unprovided URL.\"},\"conflict_classification\":\"none\",\"answer\":\"Committed article memory with a warning because the URL-like reference is malformed or ambiguous.\",\"citations\":[\"Input: Remember this article - https -//examplecom/ai-memory why - useful for thinking about knowledge graph memory design\",\"Mock fetched article: Graph memory helps agents preserve relationships; provenance and update semantics are needed\"],\"repair_options\":[\"Confirm the exact article URL if durable retrieval or deduplication is needed.\"],\"receipt\":{\"success\":true,\"details\":[\"Stored the article reference exactly as provided.\",\"Stored explicitly supported article claims only.\",\"Marked the URL reference as ambiguous due to punctuation.\"]}}",
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_195937",
+  "status": "ok"
+}

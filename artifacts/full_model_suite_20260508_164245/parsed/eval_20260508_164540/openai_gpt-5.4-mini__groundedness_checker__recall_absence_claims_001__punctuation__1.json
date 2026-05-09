@@ -1,0 +1,54 @@
+{
+  "fixture_id": "recall_absence_claims_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "I have no current evidence of open loops with Sam.",
+    "citations": [
+      "Relevant open-loop table checked for Sam and contains no open loops"
+    ],
+    "conflict_classification": "no_evidence",
+    "decision": "do_not_commit",
+    "entity_resolution": {
+      "action": "keep_unresolved",
+      "entity_id": null,
+      "reason": "Sam is referenced in the query, but no durable entity resolution is needed for an absence-of-evidence response."
+    },
+    "intent": "groundedness_check of absence claim about open loops with Sam",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "query subject",
+            "type": "person"
+          }
+        ],
+        "kind": "uncertainty",
+        "relationships": [
+          {
+            "object": "open loops with Sam",
+            "predicate": "contains_no_current_evidence_for",
+            "subject": "open-loop table"
+          }
+        ],
+        "statement": "There is no current evidence in the checked open-loop table that Sam has any open loops; this supports only uncertainty or no-current-evidence phrasing, not a positive or negative claim about preference or status."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Used only the provided table evidence",
+        "Avoided inferring that Sam definitely has no open loops",
+        "Preserved ambiguity as required"
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for the open-loop table to be rechecked later",
+      "Search other sources for unresolved items involving Sam",
+      "Rephrase as: 'I have no current evidence of open loops with Sam'"
+    ]
+  },
+  "role": "groundedness_checker",
+  "run_id": "eval_20260508_164540"
+}

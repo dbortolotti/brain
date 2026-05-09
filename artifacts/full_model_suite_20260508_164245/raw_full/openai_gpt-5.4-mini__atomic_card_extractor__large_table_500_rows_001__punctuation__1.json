@@ -1,0 +1,94 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00219375,
+  "fixture_id": "large_table_500_rows_001__punctuation",
+  "input_tokens": 453,
+  "latency_ms": 3495,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 412,
+  "payload": {
+    "answer": "Store it as a structured dataset rather than as durable personal memory; the input is a policy question about storage, not a personal fact to remember.",
+    "citations": [
+      "Input: 'CSV table with 500 rows - id,name,value repeated many times Policy question - how should it be stored?'"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_with_warning",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No stable real-world entity is identified beyond a generic CSV table description."
+    },
+    "intent": "policy_question",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "source",
+            "type": "data_format"
+          },
+          {
+            "name": "500 rows",
+            "role": "size",
+            "type": "quantity"
+          },
+          {
+            "name": "id",
+            "role": "column",
+            "type": "field"
+          },
+          {
+            "name": "name",
+            "role": "column",
+            "type": "field"
+          },
+          {
+            "name": "value",
+            "role": "column",
+            "type": "field"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "500 rows",
+            "predicate": "has_size",
+            "subject": "CSV table"
+          },
+          {
+            "object": "id",
+            "predicate": "contains_field",
+            "subject": "CSV table"
+          },
+          {
+            "object": "name",
+            "predicate": "contains_field",
+            "subject": "CSV table"
+          },
+          {
+            "object": "value",
+            "predicate": "contains_field",
+            "subject": "CSV table"
+          }
+        ],
+        "statement": "The input describes a CSV table with 500 rows containing repeated id, name, and value fields."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted one explicit observation from the input.",
+        "Avoided committing an unsupported durable memory about the storage policy."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want a durable memory card, provide the specific storage policy decision or the table's semantic meaning.",
+      "If you want the table normalized, store rows as records with fields id, name, and value."
+    ]
+  },
+  "raw_text": "{\"intent\":\"policy_question\",\"decision\":\"commit_with_warning\",\"memory_cards\":[{\"kind\":\"observation\",\"statement\":\"The input describes a CSV table with 500 rows containing repeated id, name, and value fields.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"CSV table\",\"type\":\"data_format\",\"role\":\"source\"},{\"name\":\"500 rows\",\"type\":\"quantity\",\"role\":\"size\"},{\"name\":\"id\",\"type\":\"field\",\"role\":\"column\"},{\"name\":\"name\",\"type\":\"field\",\"role\":\"column\"},{\"name\":\"value\",\"type\":\"field\",\"role\":\"column\"}],\"relationships\":[{\"subject\":\"CSV table\",\"predicate\":\"has_size\",\"object\":\"500 rows\"},{\"subject\":\"CSV table\",\"predicate\":\"contains_field\",\"object\":\"id\"},{\"subject\":\"CSV table\",\"predicate\":\"contains_field\",\"object\":\"name\"},{\"subject\":\"CSV table\",\"predicate\":\"contains_field\",\"object\":\"value\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No stable real-world entity is identified beyond a generic CSV table description.\"},\"conflict_classification\":\"none\",\"answer\":\"Store it as a structured dataset rather than as durable personal memory; the input is a policy question about storage, not a personal fact to remember.\",\"citations\":[\"Input: 'CSV table with 500 rows - id,name,value repeated many times Policy question - how should it be stored?'\"],\"repair_options\":[\"If you want a durable memory card, provide the specific storage policy decision or the table's semantic meaning.\",\"If you want the table normalized, store rows as records with fields id, name, and value.\"],\"receipt\":{\"success\":true,\"details\":[\"Extracted one explicit observation from the input.\",\"Avoided committing an unsupported durable memory about the storage policy.\"]}}",
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

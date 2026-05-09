@@ -1,0 +1,65 @@
+{
+  "fixture_id": "ambiguous_sam_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "I can\u2019t safely store this as a durable memory yet because there are two existing Sams. Please clarify whether the Sam who likes Bill Evans is Sam from Goldman or Sam from Point72.",
+    "citations": [
+      "Existing entities: Sam from Goldman; Sam from Point72.",
+      "New message: Sam mentioned that he likes Bill Evans."
+    ],
+    "conflict_classification": "ambiguous_entity_reference",
+    "decision": "defer_commit_due_to_ambiguous_entity",
+    "entity_resolution": {
+      "action": "needs_clarification",
+      "entity_id": null,
+      "reason": "The message refers only to 'Sam' while two existing entities match: Sam from Goldman and Sam from Point72. The preference cannot be durably assigned to either person without clarification."
+    },
+    "intent": "evaluate whether to store a new preference memory from an ambiguous mention of Sam",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "possible_subject",
+            "type": "person"
+          },
+          {
+            "name": "Sam from Point72",
+            "role": "possible_subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_artist",
+            "type": "person"
+          }
+        ],
+        "kind": "candidate_preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Unresolved Sam"
+          }
+        ],
+        "statement": "Sam mentioned that he likes Bill Evans, but it is unclear whether this refers to Sam from Goldman or Sam from Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No durable memory should be committed because the entity reference is ambiguous.",
+        "Generated repair options to resolve which Sam the preference belongs to."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Store the preference under Sam from Goldman: Sam from Goldman likes Bill Evans.",
+      "Store the preference under Sam from Point72: Sam from Point72 likes Bill Evans.",
+      "Ask for clarification before storing any durable memory.",
+      "Store only a non-durable unresolved note that an unspecified Sam likes Bill Evans."
+    ]
+  },
+  "role": "repair_option_generator",
+  "run_id": "eval_20260508_135611"
+}

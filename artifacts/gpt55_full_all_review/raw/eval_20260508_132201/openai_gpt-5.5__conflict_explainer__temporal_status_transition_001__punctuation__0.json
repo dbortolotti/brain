@@ -1,0 +1,87 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01697,
+  "fixture_id": "temporal_status_transition_001__punctuation",
+  "input_tokens": 448,
+  "latency_ms": 5801,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 491,
+  "payload": {
+    "answer": "There is a possible conflict: the existing memory says the Brain Slack agent is planned and open, while the new information says the Brain Slack agent MVP is now implemented. If these refer to the same project state, the new statement may supersede the old status. If the MVP is only a milestone or a separate scope, both may be valid. Safe actions available: approve_supersession, keep_both, reject_new, edit.",
+    "citations": [
+      "Existing: The Brain Slack agent is planned, status=open",
+      "New: The Brain Slack agent MVP is now implemented"
+    ],
+    "conflict_classification": "temporal_status_transition",
+    "decision": "needs_user_decision",
+    "entity_resolution": {
+      "action": "ambiguous",
+      "entity_id": null,
+      "reason": "The new statement may refer to the same Slack agent project, a narrower MVP milestone, or a related but distinct project. The wording also implies a temporal status transition from planned/open to implemented, but this should not be committed without approval."
+    },
+    "intent": "explain_conflict",
+    "memory_cards": [
+      {
+        "confidence": "backend_supplied",
+        "entities": [
+          {
+            "name": "Brain Slack agent",
+            "role": "subject",
+            "type": "project"
+          }
+        ],
+        "kind": "existing",
+        "relationships": [
+          {
+            "object": "open",
+            "predicate": "has_status",
+            "subject": "Brain Slack agent"
+          },
+          {
+            "object": "true",
+            "predicate": "is_planned",
+            "subject": "Brain Slack agent"
+          }
+        ],
+        "statement": "The Brain Slack agent is planned, status=open"
+      },
+      {
+        "confidence": "backend_supplied",
+        "entities": [
+          {
+            "name": "Brain Slack agent MVP",
+            "role": "subject",
+            "type": "project"
+          }
+        ],
+        "kind": "new",
+        "relationships": [
+          {
+            "object": "implemented",
+            "predicate": "has_status",
+            "subject": "Brain Slack agent MVP"
+          }
+        ],
+        "statement": "The Brain Slack agent MVP is now implemented"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Explained only backend-supplied safe actions.",
+        "Preserved ambiguity between the full Slack agent project and MVP scope.",
+        "Did not present the existing open/planned status as current if superseded."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "approve_supersession",
+      "keep_both",
+      "reject_new",
+      "edit"
+    ]
+  },
+  "raw_text": "{\"intent\":\"explain_conflict\",\"decision\":\"needs_user_decision\",\"memory_cards\":[{\"kind\":\"existing\",\"statement\":\"The Brain Slack agent is planned, status=open\",\"confidence\":\"backend_supplied\",\"entities\":[{\"name\":\"Brain Slack agent\",\"type\":\"project\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"Brain Slack agent\",\"predicate\":\"has_status\",\"object\":\"open\"},{\"subject\":\"Brain Slack agent\",\"predicate\":\"is_planned\",\"object\":\"true\"}]},{\"kind\":\"new\",\"statement\":\"The Brain Slack agent MVP is now implemented\",\"confidence\":\"backend_supplied\",\"entities\":[{\"name\":\"Brain Slack agent MVP\",\"type\":\"project\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"Brain Slack agent MVP\",\"predicate\":\"has_status\",\"object\":\"implemented\"}]}],\"entity_resolution\":{\"action\":\"ambiguous\",\"entity_id\":null,\"reason\":\"The new statement may refer to the same Slack agent project, a narrower MVP milestone, or a related but distinct project. The wording also implies a temporal status transition from planned/open to implemented, but this should not be committed without approval.\"},\"conflict_classification\":\"temporal_status_transition\",\"answer\":\"There is a possible conflict: the existing memory says the Brain Slack agent is planned and open, while the new information says the Brain Slack agent MVP is now implemented. If these refer to the same project state, the new statement may supersede the old status. If the MVP is only a milestone or a separate scope, both may be valid. Safe actions available: approve_supersession, keep_both, reject_new, edit.\",\"citations\":[\"Existing: The Brain Slack agent is planned, status=open\",\"New: The Brain Slack agent MVP is now implemented\"],\"repair_options\":[\"approve_supersession\",\"keep_both\",\"reject_new\",\"edit\"],\"receipt\":{\"success\":true,\"details\":[\"Explained only backend-supplied safe actions.\",\"Preserved ambiguity between the full Slack agent project and MVP scope.\",\"Did not present the existing open/planned status as current if superseded.\"]}}",
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_132201",
+  "status": "ok"
+}

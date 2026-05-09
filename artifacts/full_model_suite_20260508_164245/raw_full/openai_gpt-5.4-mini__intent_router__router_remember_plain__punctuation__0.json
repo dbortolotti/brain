@@ -1,0 +1,69 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0013552500000000001,
+  "fixture_id": "router_remember_plain__punctuation",
+  "input_tokens": 367,
+  "latency_ms": 2289,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 240,
+  "payload": {
+    "answer": "Stored.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "The input introduces a new person, Sam, with an affiliation to Goldman; no prior entity mapping is available, so create a new ambiguous entity record."
+    },
+    "intent": "remember",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference_object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured a new preference memory for Sam.",
+        "Preserved ambiguity around the identity of Sam and the nature of Goldman affiliation."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"remember\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman likes Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"preference_object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"create\",\"entity_id\":null,\"reason\":\"The input introduces a new person, Sam, with an affiliation to Goldman; no prior entity mapping is available, so create a new ambiguous entity record.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Captured a new preference memory for Sam.\",\"Preserved ambiguity around the identity of Sam and the nature of Goldman affiliation.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

@@ -1,0 +1,65 @@
+{
+  "fixture_id": "slack_retry_event_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Extracted one entity mention set from the duplicate Slack retry context; no additional durable memory should be committed solely because of the repeated delivery.",
+    "citations": [
+      "Same Slack event ID delivered twice for: Sam from Goldman likes Bill Evans."
+    ],
+    "conflict_classification": "none",
+    "decision": "deduplicate_retry_context_only",
+    "entity_resolution": {
+      "action": "no_commit_due_to_duplicate_event_context",
+      "entity_id": null,
+      "reason": "The input explicitly states the same Slack event ID was delivered twice; extract mentions but avoid treating duplicate delivery as additional evidence."
+    },
+    "intent": "extract_entity_mentions",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation_context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          },
+          {
+            "object": "Goldman",
+            "predicate": "from",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected duplicate/retry context.",
+        "Preserved ambiguous identity for Sam and Goldman.",
+        "Did not amplify confidence from duplicate delivery."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "entity_mention_extractor",
+  "run_id": "eval_20260508_125514"
+}

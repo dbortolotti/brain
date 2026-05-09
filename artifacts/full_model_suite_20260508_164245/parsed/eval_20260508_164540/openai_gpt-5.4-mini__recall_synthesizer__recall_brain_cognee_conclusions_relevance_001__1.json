@@ -1,0 +1,65 @@
+{
+  "fixture_id": "recall_brain_cognee_conclusions_relevance_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "You concluded that Brain is the source of truth, and Cognee is a rebuildable projection of it.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "answer_with_current_evidence",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": null,
+      "reason": "The query refers to the Brain and Cognee systems; current evidence supports a system-level conclusion without needing a more specific entity id."
+    },
+    "intent": "recall_synthesizer",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "source_of_truth",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "rebuildable_projection",
+            "type": "system"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "source_of_truth",
+            "predicate": "is",
+            "subject": "Brain"
+          },
+          {
+            "object": "rebuildable_projection",
+            "predicate": "is",
+            "subject": "Cognee"
+          },
+          {
+            "object": "Cognee",
+            "predicate": "has_priority_over",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "You concluded that Brain is the source of truth, while Cognee is a rebuildable projection rather than the authoritative record."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Answered only the queried scope.",
+        "Preserved uncertainty at medium confidence.",
+        "Did not assert any superseded or unrelated facts."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want, I can restate the conclusion as a short rule or a comparison table."
+    ]
+  },
+  "role": "recall_synthesizer",
+  "run_id": "eval_20260508_164540"
+}

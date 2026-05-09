@@ -1,0 +1,62 @@
+{
+  "fixture_id": "recall_brain_cognee_conclusions_relevance_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "You concluded that Brain is the source of truth, while Cognee is only a rebuildable projection of that data.",
+    "citations": [
+      "fixture:recall_brain_cognee_conclusions_relevance_001"
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "Return the stored conclusion that Brain is the source of truth and Cognee is a rebuildable projection, with no extra scope.",
+    "entity_resolution": {
+      "action": "keep_separate",
+      "entity_id": null,
+      "reason": "The query refers to two distinct systems with different roles; no merge is warranted."
+    },
+    "intent": "recall_planner",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "source of truth",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "rebuildable projection",
+            "type": "system"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "memory records",
+            "predicate": "is_source_of_truth_for",
+            "subject": "Brain"
+          },
+          {
+            "object": "Brain",
+            "predicate": "is_rebuildable_projection_of",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain is the source-of-truth layer; Cognee is a rebuildable projection, not the canonical record."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Scoped to Brain vs. Cognee only.",
+        "No unrelated memories included.",
+        "Ambiguity preserved where no direct record text was provided."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want, I can also restate the conclusion in stricter policy language for durable-memory storage."
+    ]
+  },
+  "role": "recall_planner",
+  "run_id": "eval_20260508_164540"
+}

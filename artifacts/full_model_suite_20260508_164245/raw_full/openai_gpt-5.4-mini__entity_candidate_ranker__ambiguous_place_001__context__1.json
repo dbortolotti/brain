@@ -1,0 +1,51 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0015052499999999999,
+  "fixture_id": "ambiguous_place_001__context",
+  "input_tokens": 387,
+  "latency_ms": 3911,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 270,
+  "payload": {
+    "answer": "Ambiguous reference to Brutto; preserve as a low-confidence opinion without resolving the referent.",
+    "citations": [],
+    "conflict_classification": "ambiguity",
+    "decision": "store_with_ambiguity",
+    "entity_resolution": {
+      "action": "defer_exact_resolution",
+      "entity_id": null,
+      "reason": "The note does not specify whether 'Brutto' refers to the London restaurant or the article alias; keep the sentiment attached without forcing a precise entity match."
+    },
+    "intent": "evaluate ambiguous note for durable memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Brutto",
+            "role": "ambiguous referent",
+            "type": "restaurant or article alias"
+          }
+        ],
+        "kind": "opinion",
+        "relationships": [],
+        "statement": "Brutto was better than expected."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recorded a low-confidence subjective note.",
+        "Did not overcommit to a specific Brutto entity."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If future context confirms the restaurant, attach this as a review/opinion about Brutto restaurant in London.",
+      "If future context confirms the article alias, reinterpret or replace this memory accordingly."
+    ]
+  },
+  "raw_text": "{\"intent\":\"evaluate ambiguous note for durable memory\",\"decision\":\"store_with_ambiguity\",\"memory_cards\":[{\"kind\":\"opinion\",\"statement\":\"Brutto was better than expected.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Brutto\",\"type\":\"restaurant or article alias\",\"role\":\"ambiguous referent\"}],\"relationships\":[]}],\"entity_resolution\":{\"action\":\"defer_exact_resolution\",\"entity_id\":null,\"reason\":\"The note does not specify whether 'Brutto' refers to the London restaurant or the article alias; keep the sentiment attached without forcing a precise entity match.\"},\"conflict_classification\":\"ambiguity\",\"answer\":\"Ambiguous reference to Brutto; preserve as a low-confidence opinion without resolving the referent.\",\"citations\":[],\"repair_options\":[\"If future context confirms the restaurant, attach this as a review/opinion about Brutto restaurant in London.\",\"If future context confirms the article alias, reinterpret or replace this memory accordingly.\"],\"receipt\":{\"success\":true,\"details\":[\"Recorded a low-confidence subjective note.\",\"Did not overcommit to a specific Brutto entity.\"]}}",
+  "role": "entity_candidate_ranker",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

@@ -1,0 +1,40 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.010185,
+  "fixture_id": "ambiguous_place_001__context",
+  "input_tokens": 387,
+  "latency_ms": 3810,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 275,
+  "payload": {
+    "answer": "The note 'Brutto was better than expected' mentions Brutto, but the referenced entity is ambiguous between the restaurant and the article alias, so no durable memory should be committed without clarification.",
+    "citations": [
+      "Existing: Brutto restaurant in London; Brutto article alias.",
+      "New note: Brutto was better than expected."
+    ],
+    "conflict_classification": "ambiguous_reference",
+    "decision": "defer_memory_commit_due_to_ambiguous_entity_reference",
+    "entity_resolution": {
+      "action": "needs_clarification",
+      "entity_id": null,
+      "reason": "The mention 'Brutto' could refer to the existing Brutto restaurant in London or the Brutto article alias. The note does not provide enough context to resolve which entity was better than expected."
+    },
+    "intent": "extract_entity_mention",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected ambiguous entity mention: Brutto.",
+        "No memory card created because the entity could not be resolved confidently."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify whether 'Brutto' refers to the Brutto restaurant in London.",
+      "Clarify whether 'Brutto' refers to the Brutto article alias."
+    ]
+  },
+  "raw_text": "{\"intent\":\"extract_entity_mention\",\"decision\":\"defer_memory_commit_due_to_ambiguous_entity_reference\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"needs_clarification\",\"entity_id\":null,\"reason\":\"The mention 'Brutto' could refer to the existing Brutto restaurant in London or the Brutto article alias. The note does not provide enough context to resolve which entity was better than expected.\"},\"conflict_classification\":\"ambiguous_reference\",\"answer\":\"The note 'Brutto was better than expected' mentions Brutto, but the referenced entity is ambiguous between the restaurant and the article alias, so no durable memory should be committed without clarification.\",\"citations\":[\"Existing: Brutto restaurant in London; Brutto article alias.\",\"New note: Brutto was better than expected.\"],\"repair_options\":[\"Clarify whether 'Brutto' refers to the Brutto restaurant in London.\",\"Clarify whether 'Brutto' refers to the Brutto article alias.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected ambiguous entity mention: Brutto.\",\"No memory card created because the entity could not be resolved confidently.\"]}}",
+  "role": "entity_mention_extractor",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

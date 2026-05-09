@@ -1,0 +1,61 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.015285,
+  "fixture_id": "contradiction_sam_children_001",
+  "input_tokens": 381,
+  "latency_ms": 6380,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 446,
+  "payload": {
+    "answer": "I found a direct contradiction: existing memory says Sam from Goldman has two children, while the new information says Sam from Goldman has no children. I would not overwrite the existing memory as current without clarification.",
+    "citations": [],
+    "conflict_classification": "direct_contradiction",
+    "decision": "do_not_commit_as_current_without_clarification",
+    "entity_resolution": {
+      "action": "same_entity_assumed_with_ambiguity",
+      "entity_id": null,
+      "reason": "Both statements refer to 'Sam from Goldman,' so they likely refer to the same person, but the contradiction should not be resolved without clarification."
+    },
+    "intent": "repair_memory_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam from Goldman",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "conflict_note",
+        "relationships": [
+          {
+            "object": "conflicting: two vs none",
+            "predicate": "has_children_count",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "There is a conflict about whether Sam from Goldman has children: existing memory says Sam has two children, while the new information says Sam has no children."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected contradiction between existing and new child-count facts.",
+        "Did not commit the new claim as durable current memory.",
+        "Generated repair options for clarification or supersession."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for clarification: 'Does Sam from Goldman have two children or no children?'",
+      "Mark the child-count fact as disputed until confirmed.",
+      "If the new statement is confirmed as more recent or authoritative, supersede the old memory that Sam has two children.",
+      "If the old statement is confirmed, reject the new statement that Sam has no children.",
+      "Consider whether there may be two different people named Sam associated with Goldman before merging the facts."
+    ]
+  },
+  "raw_text": "{\"intent\":\"repair_memory_conflict\",\"decision\":\"do_not_commit_as_current_without_clarification\",\"memory_cards\":[{\"kind\":\"conflict_note\",\"statement\":\"There is a conflict about whether Sam from Goldman has children: existing memory says Sam has two children, while the new information says Sam has no children.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam from Goldman\",\"type\":\"person\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"Sam from Goldman\",\"predicate\":\"has_children_count\",\"object\":\"conflicting: two vs none\"}]}],\"entity_resolution\":{\"action\":\"same_entity_assumed_with_ambiguity\",\"entity_id\":null,\"reason\":\"Both statements refer to 'Sam from Goldman,' so they likely refer to the same person, but the contradiction should not be resolved without clarification.\"},\"conflict_classification\":\"direct_contradiction\",\"answer\":\"I found a direct contradiction: existing memory says Sam from Goldman has two children, while the new information says Sam from Goldman has no children. I would not overwrite the existing memory as current without clarification.\",\"citations\":[],\"repair_options\":[\"Ask for clarification: 'Does Sam from Goldman have two children or no children?'\",\"Mark the child-count fact as disputed until confirmed.\",\"If the new statement is confirmed as more recent or authoritative, supersede the old memory that Sam has two children.\",\"If the old statement is confirmed, reject the new statement that Sam has no children.\",\"Consider whether there may be two different people named Sam associated with Goldman before merging the facts.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected contradiction between existing and new child-count facts.\",\"Did not commit the new claim as durable current memory.\",\"Generated repair options for clarification or supersession.\"]}}",
+  "role": "repair_option_generator",
+  "run_id": "eval_20260508_133657",
+  "status": "ok"
+}

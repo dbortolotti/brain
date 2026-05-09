@@ -1,0 +1,89 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.015404999999999999,
+  "fixture_id": "concurrent_conflict_writes_001__context",
+  "input_tokens": 435,
+  "latency_ms": 5520,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 441,
+  "payload": {
+    "answer": "There is a possible conflict between \u201cSam works at Goldman\u201d and \u201cSam joined Point72.\u201d The safe actions are: approve_supersession if joining Point72 should replace the Goldman employment as the current fact; keep_both if both facts should remain because they are both true or capture different meanings; reject_new if the Point72 statement should not be saved; or edit to clarify the wording before saving, such as adding dates or specifying whether one role ended.",
+    "citations": [
+      "Concurrent writes: Sam works at Goldman. Sam joined Point72."
+    ],
+    "conflict_classification": "concurrent_conflicting_writes",
+    "decision": "needs_user_resolution",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Both statements refer to Sam, but the current employment relationship is ambiguous because joining Point72 may supersede or coexist with working at Goldman."
+    },
+    "intent": "explain_conflict_safe_actions",
+    "memory_cards": [
+      {
+        "confidence": "ambiguous_currentness",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "ambiguous_currentness",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No durable memory was committed because the current employment status is ambiguous and requires one of the backend-supplied safe actions."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "approve_supersession",
+      "keep_both",
+      "reject_new",
+      "edit"
+    ]
+  },
+  "raw_text": "{\"intent\":\"explain_conflict_safe_actions\",\"decision\":\"needs_user_resolution\",\"memory_cards\":[{\"kind\":\"employment\",\"statement\":\"Sam works at Goldman.\",\"confidence\":\"ambiguous_currentness\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"employee\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Goldman\"}]},{\"kind\":\"employment\",\"statement\":\"Sam joined Point72.\",\"confidence\":\"ambiguous_currentness\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"employee\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"Both statements refer to Sam, but the current employment relationship is ambiguous because joining Point72 may supersede or coexist with working at Goldman.\"},\"conflict_classification\":\"concurrent_conflicting_writes\",\"answer\":\"There is a possible conflict between \u201cSam works at Goldman\u201d and \u201cSam joined Point72.\u201d The safe actions are: approve_supersession if joining Point72 should replace the Goldman employment as the current fact; keep_both if both facts should remain because they are both true or capture different meanings; reject_new if the Point72 statement should not be saved; or edit to clarify the wording before saving, such as adding dates or specifying whether one role ended.\",\"citations\":[\"Concurrent writes: Sam works at Goldman. Sam joined Point72.\"],\"repair_options\":[\"approve_supersession\",\"keep_both\",\"reject_new\",\"edit\"],\"receipt\":{\"success\":false,\"details\":[\"No durable memory was committed because the current employment status is ambiguous and requires one of the backend-supplied safe actions.\"]}}",
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_132201",
+  "status": "ok"
+}

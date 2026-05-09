@@ -1,0 +1,42 @@
+{
+  "fixture_id": "email_source_meeting_followup_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Email source detected. Boundaries: sender is sam@example.com; subject is 'Follow up'; body is 'Great seeing you. Yes, I joined Point72 last month. Please send the AI infra article.'",
+    "citations": [
+      "From: sam@example.com Subject: Follow up. Great seeing you. Yes, I joined Point72 last month. Please send the AI infra article."
+    ],
+    "conflict_classification": "not_applicable",
+    "decision": "email",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Role is source classification only; no entity resolution needed."
+    },
+    "intent": "classify_source",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "sam@example.com",
+            "role": "sender",
+            "type": "email_address"
+          }
+        ],
+        "kind": "source_boundary",
+        "relationships": [],
+        "statement": "The input is an email-like message with header fields From and Subject followed by body text."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Classified source type and boundaries only."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "source_classifier",
+  "run_id": "eval_20260508_125514"
+}

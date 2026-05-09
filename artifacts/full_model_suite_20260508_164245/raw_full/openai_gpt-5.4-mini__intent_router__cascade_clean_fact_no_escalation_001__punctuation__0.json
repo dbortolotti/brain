@@ -1,0 +1,74 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0016349999999999997,
+  "fixture_id": "cascade_clean_fact_no_escalation_001__punctuation",
+  "input_tokens": 380,
+  "latency_ms": 3334,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 300,
+  "payload": {
+    "answer": "Stored as a personal relationship memory with medium confidence.",
+    "citations": [
+      "Input: \"Cascade test - cheap/default model handles Nur and Sara are my twin daughters\""
+    ],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "create",
+      "entity_id": null,
+      "reason": "No existing entity context provided; preserve as a new, user-stated relationship."
+    },
+    "intent": "memory_write",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Nur",
+            "role": "daughter",
+            "type": "person"
+          },
+          {
+            "name": "Sara",
+            "role": "daughter",
+            "type": "person"
+          }
+        ],
+        "kind": "personal_relationship",
+        "relationships": [
+          {
+            "object": "Sara",
+            "predicate": "is twin of",
+            "subject": "Nur"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is parent of",
+            "subject": "User"
+          },
+          {
+            "object": "Sara",
+            "predicate": "is parent of",
+            "subject": "User"
+          }
+        ],
+        "statement": "The user stated that Nur and Sara are their twin daughters."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Captured a user-stated family relationship.",
+        "Preserved ambiguity by not inferring additional facts beyond the direct statement."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want, I can split this into separate memories for Nur and Sara.",
+      "If this is outdated or incorrect, you can ask me to delete or revise it."
+    ]
+  },
+  "raw_text": "{\"intent\":\"memory_write\",\"decision\":\"store\",\"memory_cards\":[{\"kind\":\"personal_relationship\",\"statement\":\"The user stated that Nur and Sara are their twin daughters.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Nur\",\"type\":\"person\",\"role\":\"daughter\"},{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"daughter\"}],\"relationships\":[{\"subject\":\"Nur\",\"predicate\":\"is twin of\",\"object\":\"Sara\"},{\"subject\":\"User\",\"predicate\":\"is parent of\",\"object\":\"Nur\"},{\"subject\":\"User\",\"predicate\":\"is parent of\",\"object\":\"Sara\"}]}],\"entity_resolution\":{\"action\":\"create\",\"entity_id\":null,\"reason\":\"No existing entity context provided; preserve as a new, user-stated relationship.\"},\"conflict_classification\":\"none\",\"answer\":\"Stored as a personal relationship memory with medium confidence.\",\"citations\":[\"Input: \\\"Cascade test - cheap/default model handles Nur and Sara are my twin daughters\\\"\"],\"repair_options\":[\"If you want, I can split this into separate memories for Nur and Sara.\",\"If this is outdated or incorrect, you can ask me to delete or revise it.\"],\"receipt\":{\"success\":true,\"details\":[\"Captured a user-stated family relationship.\",\"Preserved ambiguity by not inferring additional facts beyond the direct statement.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

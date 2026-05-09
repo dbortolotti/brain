@@ -1,0 +1,135 @@
+{
+  "fixture_id": "conversation_transcript_sam_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Extracted durable facts: Sam left Goldman last month and joined Point72; Sam still listens to Bill Evans and has lately been listening more to early Coltrane; Sam is open to catching up about AI infra and asked Daniele to send the article.",
+    "citations": [
+      "Daniele: Still at Goldman? Sam: No, I left Goldman last month and joined Point72.",
+      "Daniele: Still listening to Bill Evans? Sam: Yes, but lately more early Coltrane.",
+      "Daniele: We should catch up about AI infra. Sam: Definitely, send me that article."
+    ],
+    "conflict_classification": "updates_prior_employment_if_any; no explicit conflict context provided",
+    "decision": "commit_supported_updates",
+    "entity_resolution": {
+      "action": "no_existing_entity_context_provided",
+      "entity_id": null,
+      "reason": "The transcript identifies Sam and Daniele by name but provides no external entity IDs or prior memory context for resolution."
+    },
+    "intent": "extract_durable_memory_from_conversation",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_update",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman last month and joined Point72."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "artist",
+            "type": "person"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "music_interest",
+            "type": "music_period_or_style"
+          }
+        ],
+        "kind": "music_preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "listens_to",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "has_recent_interest_in",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam still listens to Bill Evans and lately has been listening more to early Coltrane."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "conversation_partner",
+            "type": "person"
+          },
+          {
+            "name": "AI infra",
+            "role": "discussion_topic",
+            "type": "topic"
+          }
+        ],
+        "kind": "conversation_interest",
+        "relationships": [
+          {
+            "object": "AI infra",
+            "predicate": "is_interested_in_discussing",
+            "subject": "Sam"
+          },
+          {
+            "object": "that article",
+            "predicate": "asked_Daniele_to_send",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam is interested in catching up about AI infra and wants Daniele to send an article about it."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed only facts explicitly supported by the transcript.",
+        "Preserved the employment change as an update rather than presenting Goldman as current.",
+        "Did not infer the identity or contents of 'that article' beyond its conversational link to the AI infra catch-up request."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "source_takeaway_extractor",
+  "run_id": "eval_20260508_132201"
+}

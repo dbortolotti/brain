@@ -23,6 +23,15 @@ def fastembed_vector_size(
     *,
     input_type: EmbeddingInputType = "passage",
 ) -> int:
+    return len(fastembed_vector(model, text, input_type=input_type))
+
+
+def fastembed_vector(
+    model: str,
+    text: str,
+    *,
+    input_type: EmbeddingInputType = "passage",
+) -> list[float]:
     try:
         from fastembed import TextEmbedding
     except ImportError as exc:  # pragma: no cover - depends on optional local extra.
@@ -38,7 +47,7 @@ def fastembed_vector_size(
     )
     if not vectors:
         raise RuntimeError("FastEmbed did not return an embedding vector")
-    return len(vectors[0])
+    return [float(value) for value in vectors[0]]
 
 
 def is_e5_model(model: str) -> bool:

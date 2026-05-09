@@ -1,0 +1,63 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0013785,
+  "fixture_id": "recall_hide_superseded_001",
+  "input_tokens": 470,
+  "latency_ms": 2138,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 228,
+  "payload": {
+    "answer": "Sam works at Point72.",
+    "citations": [
+      "current memory: Sam joined Point72"
+    ],
+    "conflict_classification": "superseded_old_employment",
+    "decision": "answer_from_current_evidence",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": "Sam",
+      "reason": "The query refers to Sam, and the current evidence identifies Sam as having joined Point72."
+    },
+    "intent": "recall_synthesizer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "current_fact",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ignored superseded memory: Sam works at Goldman.",
+        "Used current evidence: Sam joined Point72."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If needed, store the current employer as Point72 and keep Goldman as superseded history only."
+    ]
+  },
+  "raw_text": "{\"intent\":\"recall_synthesizer\",\"decision\":\"answer_from_current_evidence\",\"memory_cards\":[{\"kind\":\"current_fact\",\"statement\":\"Sam joined Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"resolved\",\"entity_id\":\"Sam\",\"reason\":\"The query refers to Sam, and the current evidence identifies Sam as having joined Point72.\"},\"conflict_classification\":\"superseded_old_employment\",\"answer\":\"Sam works at Point72.\",\"citations\":[\"current memory: Sam joined Point72\"],\"repair_options\":[\"If needed, store the current employer as Point72 and keep Goldman as superseded history only.\"],\"receipt\":{\"success\":true,\"details\":[\"Ignored superseded memory: Sam works at Goldman.\",\"Used current evidence: Sam joined Point72.\"]}}",
+  "role": "recall_synthesizer",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

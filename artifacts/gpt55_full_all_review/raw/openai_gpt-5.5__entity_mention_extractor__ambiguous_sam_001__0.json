@@ -1,0 +1,66 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.013250000000000001,
+  "fixture_id": "ambiguous_sam_001",
+  "input_tokens": 382,
+  "latency_ms": 5471,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 378,
+  "payload": {
+    "answer": "The mention of Sam is ambiguous, so this should not be committed to either existing Sam entity without clarification.",
+    "citations": [
+      "Existing entities: Sam from Goldman; Sam from Point72.",
+      "New message: Sam mentioned that he likes Bill Evans."
+    ],
+    "conflict_classification": "ambiguous_entity_reference",
+    "decision": "do_not_commit_durable_memory",
+    "entity_resolution": {
+      "action": "ambiguous_no_merge_no_attach",
+      "entity_id": null,
+      "reason": "There are at least two existing entities named Sam: Sam from Goldman and Sam from Point72. The new message does not provide enough disambiguating context to attach the preference to either entity."
+    },
+    "intent": "extract_entity_mentions_and_memory",
+    "memory_cards": [
+      {
+        "confidence": "low",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "ambiguous_subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_entity",
+            "type": "person"
+          }
+        ],
+        "kind": "ambiguous_preference_mention",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Someone named Sam mentioned that he likes Bill Evans, but it is ambiguous whether this refers to Sam from Goldman or Sam from Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected ambiguous reference to 'Sam'.",
+        "Did not attach the Bill Evans preference to either existing Sam entity.",
+        "Preserved the ambiguity rather than creating or updating a durable person memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask which Sam likes Bill Evans: Sam from Goldman or Sam from Point72.",
+      "Store only as an unresolved ambiguous mention until clarified."
+    ]
+  },
+  "raw_text": "{\"intent\":\"extract_entity_mentions_and_memory\",\"decision\":\"do_not_commit_durable_memory\",\"memory_cards\":[{\"kind\":\"ambiguous_preference_mention\",\"statement\":\"Someone named Sam mentioned that he likes Bill Evans, but it is ambiguous whether this refers to Sam from Goldman or Sam from Point72.\",\"confidence\":\"low\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"ambiguous_subject\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked_entity\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"ambiguous_no_merge_no_attach\",\"entity_id\":null,\"reason\":\"There are at least two existing entities named Sam: Sam from Goldman and Sam from Point72. The new message does not provide enough disambiguating context to attach the preference to either entity.\"},\"conflict_classification\":\"ambiguous_entity_reference\",\"answer\":\"The mention of Sam is ambiguous, so this should not be committed to either existing Sam entity without clarification.\",\"citations\":[\"Existing entities: Sam from Goldman; Sam from Point72.\",\"New message: Sam mentioned that he likes Bill Evans.\"],\"repair_options\":[\"Ask which Sam likes Bill Evans: Sam from Goldman or Sam from Point72.\",\"Store only as an unresolved ambiguous mention until clarified.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected ambiguous reference to 'Sam'.\",\"Did not attach the Bill Evans preference to either existing Sam entity.\",\"Preserved the ambiguity rather than creating or updating a durable person memory.\"]}}",
+  "role": "entity_mention_extractor",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

@@ -1,0 +1,86 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0018015,
+  "fixture_id": "memory_compiler_small_table__context",
+  "input_tokens": 386,
+  "latency_ms": 2363,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 336,
+  "payload": {
+    "answer": "Sam prefers Bill Evans; Daniele prefers knowledge graphs.",
+    "citations": [
+      "fixture: memory_compiler_small_table__context"
+    ],
+    "conflict_classification": "none",
+    "decision": "Commit two preference memory cards, one for Sam and one for Daniele, with no conflict detected.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No prior entity context or identifiers were provided; both entries are straightforward and unambiguous within the fixture."
+    },
+    "intent": "Extract durable preference memories from the provided table.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred entity",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam prefers Bill Evans."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "knowledge graphs",
+            "role": "preferred topic",
+            "type": "concept"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "knowledge graphs",
+            "predicate": "prefers",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Daniele prefers knowledge graphs."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted 2 preference facts from the table.",
+        "No conflicts or superseded facts detected.",
+        "No entity disambiguation was necessary."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"Extract durable preference memories from the provided table.\",\"decision\":\"Commit two preference memory cards, one for Sam and one for Daniele, with no conflict detected.\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam prefers Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"preferred entity\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"prefers\",\"object\":\"Bill Evans\"}]},{\"kind\":\"preference\",\"statement\":\"Daniele prefers knowledge graphs.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Daniele\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"knowledge graphs\",\"type\":\"concept\",\"role\":\"preferred topic\"}],\"relationships\":[{\"subject\":\"Daniele\",\"predicate\":\"prefers\",\"object\":\"knowledge graphs\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No prior entity context or identifiers were provided; both entries are straightforward and unambiguous within the fixture.\"},\"conflict_classification\":\"none\",\"answer\":\"Sam prefers Bill Evans; Daniele prefers knowledge graphs.\",\"citations\":[\"fixture: memory_compiler_small_table__context\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Extracted 2 preference facts from the table.\",\"No conflicts or superseded facts detected.\",\"No entity disambiguation was necessary.\"]}}",
+  "role": "source_takeaway_extractor",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

@@ -1,0 +1,35 @@
+{
+  "fixture_id": "contradiction_sam_children_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "The new statement directly contradicts the existing memory: 'Sam from Goldman has two children' versus 'Sam from Goldman has no children.' Do not present either as newly confirmed current fact without resolving the conflict.",
+    "citations": [
+      "Existing memory: Sam from Goldman has two children",
+      "New: Sam from Goldman has no children"
+    ],
+    "conflict_classification": "direct_contradiction",
+    "decision": "do_not_commit_as_current_without_clarification",
+    "entity_resolution": {
+      "action": "match_existing_entity",
+      "entity_id": null,
+      "reason": "Both statements refer to the same described person, 'Sam from Goldman', but no stable entity ID is provided."
+    },
+    "intent": "evaluate_conflicting_memory_update",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected direct numerical contradiction about children count.",
+        "No durable current memory committed pending clarification."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for clarification whether the new statement supersedes the old memory.",
+      "If confirmed current, mark the prior memory as superseded and store: 'Sam from Goldman has no children.'",
+      "If the new statement was mistaken, retain the existing memory: 'Sam from Goldman has two children.'",
+      "If both may refer to different people named Sam associated with Goldman, split into distinct entities with additional disambiguating details."
+    ]
+  },
+  "role": "repair_option_generator",
+  "run_id": "eval_20260508_125514"
+}

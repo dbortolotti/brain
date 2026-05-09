@@ -1,0 +1,60 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.007915,
+  "fixture_id": "recall_hide_superseded_001__context",
+  "input_tokens": 413,
+  "latency_ms": 2467,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 195,
+  "payload": {
+    "answer": "Sam works at Point72.",
+    "citations": [
+      "Current memory: Sam joined Point72."
+    ],
+    "conflict_classification": "superseded_memory_hidden",
+    "decision": "use_current_memory_only",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": null,
+      "reason": "The query refers to Sam, matching the current memory about Sam."
+    },
+    "intent": "answer_question_from_current_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "current_memory",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Ignored superseded memory and answered using only the current memory."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"answer_question_from_current_memory\",\"decision\":\"use_current_memory_only\",\"memory_cards\":[{\"kind\":\"current_memory\",\"statement\":\"Sam joined Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"resolved\",\"entity_id\":null,\"reason\":\"The query refers to Sam, matching the current memory about Sam.\"},\"conflict_classification\":\"superseded_memory_hidden\",\"answer\":\"Sam works at Point72.\",\"citations\":[\"Current memory: Sam joined Point72.\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Ignored superseded memory and answered using only the current memory.\"]}}",
+  "role": "groundedness_checker",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

@@ -1,0 +1,102 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01604,
+  "fixture_id": "duplicate_sam_bill_evans_001__punctuation",
+  "input_tokens": 448,
+  "latency_ms": 4711,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 460,
+  "payload": {
+    "answer": "This looks like a duplicate: both memories say that Sam from Goldman likes Bill Evans. You can choose link_duplicate to treat the new item as the same fact as the existing memory, keep_existing to retain only the existing memory, add_anyway if you want to store the new wording separately despite the duplication, edit to revise the new memory before saving, or cancel to take no action.",
+    "citations": [
+      "Existing memory: Sam from Goldman mentioned that he likes Bill Evans",
+      "New memory: Sam from Goldman said he likes Bill Evans"
+    ],
+    "conflict_classification": "duplicate",
+    "decision": "pending_user_choice",
+    "entity_resolution": {
+      "action": "link_duplicate",
+      "entity_id": null,
+      "reason": "The new memory appears to express the same durable fact as the existing memory with only minor wording differences."
+    },
+    "intent": "explain_duplicate_memory_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_artist",
+            "type": "person"
+          }
+        ],
+        "kind": "existing",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman mentioned that he likes Bill Evans"
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_artist",
+            "type": "person"
+          }
+        ],
+        "kind": "new",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman said he likes Bill Evans"
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Identified semantic duplicate with punctuation/wording variation only.",
+        "No new durable memory was committed."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "link_duplicate",
+      "keep_existing",
+      "add_anyway",
+      "edit",
+      "cancel"
+    ]
+  },
+  "raw_text": "{\"intent\":\"explain_duplicate_memory_conflict\",\"decision\":\"pending_user_choice\",\"memory_cards\":[{\"kind\":\"existing\",\"statement\":\"Sam from Goldman mentioned that he likes Bill Evans\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked_artist\"}],\"relationships\":[{\"subject\":\"Sam from Goldman\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]},{\"kind\":\"new\",\"statement\":\"Sam from Goldman said he likes Bill Evans\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked_artist\"}],\"relationships\":[{\"subject\":\"Sam from Goldman\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"link_duplicate\",\"entity_id\":null,\"reason\":\"The new memory appears to express the same durable fact as the existing memory with only minor wording differences.\"},\"conflict_classification\":\"duplicate\",\"answer\":\"This looks like a duplicate: both memories say that Sam from Goldman likes Bill Evans. You can choose link_duplicate to treat the new item as the same fact as the existing memory, keep_existing to retain only the existing memory, add_anyway if you want to store the new wording separately despite the duplication, edit to revise the new memory before saving, or cancel to take no action.\",\"citations\":[\"Existing memory: Sam from Goldman mentioned that he likes Bill Evans\",\"New memory: Sam from Goldman said he likes Bill Evans\"],\"repair_options\":[\"link_duplicate\",\"keep_existing\",\"add_anyway\",\"edit\",\"cancel\"],\"receipt\":{\"success\":true,\"details\":[\"Identified semantic duplicate with punctuation/wording variation only.\",\"No new durable memory was committed.\"]}}",
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_195937",
+  "status": "ok"
+}

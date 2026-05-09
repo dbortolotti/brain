@@ -1,0 +1,94 @@
+{
+  "fixture_id": "conflict_sara_niece_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "I found an existing high-confidence memory: \u201cSara is Daniele's daughter and Nur's twin.\u201d The new statement is: \u201cSara is my niece.\u201d These can both be true, so this is not a direct contradiction. Because the existing memory is high-confidence and the new memory adds a family relationship to you, the safe choices are: approve_supersession, keep_both, reject_new, or edit. Use keep_both if Sara is both Daniele's daughter/Nur's twin and your niece. Use edit if the new statement needs clarification, such as which Sara or how she is related to you. Use reject_new if \u201cSara is my niece\u201d is incorrect. Use approve_supersession only if the new statement is intended to replace the existing memory.",
+    "citations": [
+      "Existing memory: Sara is Daniele's daughter and Nur's twin.",
+      "New memory: Sara is my niece."
+    ],
+    "conflict_classification": "potential_relationship_overlap_not_direct_contradiction",
+    "decision": "needs_user_choice",
+    "entity_resolution": {
+      "action": "possible_same_entity",
+      "entity_id": null,
+      "reason": "The new statement refers to Sara, which may be the same Sara as the existing high-confidence memory, but the relationship 'my niece' does not directly contradict being Daniele's daughter and Nur's twin. It adds a relationship to the user that may be compatible depending on family structure."
+    },
+    "intent": "explain_memory_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "child/twin",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "twin",
+            "type": "person"
+          }
+        ],
+        "kind": "existing",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is daughter of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is twin of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin."
+      },
+      {
+        "confidence": "unspecified",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "niece",
+            "type": "person"
+          },
+          {
+            "name": "user",
+            "role": "aunt_or_uncle",
+            "type": "person"
+          }
+        ],
+        "kind": "new",
+        "relationships": [
+          {
+            "object": "user",
+            "predicate": "is niece of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No durable memory was changed.",
+        "A user choice is needed before committing or rejecting the new statement."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "approve_supersession",
+      "keep_both",
+      "reject_new",
+      "edit"
+    ]
+  },
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_125514"
+}

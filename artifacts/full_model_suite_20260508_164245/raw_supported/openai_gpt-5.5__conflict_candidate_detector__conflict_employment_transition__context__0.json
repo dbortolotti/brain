@@ -1,0 +1,35 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.009680000000000001,
+  "fixture_id": "conflict_employment_transition__context",
+  "input_tokens": 490,
+  "latency_ms": 3058,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 241,
+  "payload": {
+    "answer": "The new fact appears to be a conflict candidate with the existing employment fact because it states Sam left Goldman and joined Point72, which would supersede the current fact that Sam works at Goldman if referring to the same Sam.",
+    "citations": [
+      "Existing current fact: Sam works at Goldman.",
+      "New fact: Sam left Goldman and joined Point72."
+    ],
+    "conflict_classification": "supersedes",
+    "decision": "conflict_candidate",
+    "entity_resolution": {
+      "action": "same_entity_candidate",
+      "entity_id": null,
+      "reason": "Both facts refer to 'Sam'; no additional disambiguating information is provided, so this is treated as a same-entity candidate with ambiguity preserved."
+    },
+    "evidence": [
+      {
+        "existing_fact": "Sam works at Goldman.",
+        "new_fact": "Sam left Goldman and joined Point72.",
+        "reason": "The new fact describes an employment transition away from Goldman to Point72, making the prior current-employment claim potentially no longer current."
+      }
+    ],
+    "intent": "detect_conflict_candidate"
+  },
+  "raw_text": "{\"intent\":\"detect_conflict_candidate\",\"decision\":\"conflict_candidate\",\"conflict_classification\":\"supersedes\",\"answer\":\"The new fact appears to be a conflict candidate with the existing employment fact because it states Sam left Goldman and joined Point72, which would supersede the current fact that Sam works at Goldman if referring to the same Sam.\",\"citations\":[\"Existing current fact: Sam works at Goldman.\",\"New fact: Sam left Goldman and joined Point72.\"],\"evidence\":[{\"existing_fact\":\"Sam works at Goldman.\",\"new_fact\":\"Sam left Goldman and joined Point72.\",\"reason\":\"The new fact describes an employment transition away from Goldman to Point72, making the prior current-employment claim potentially no longer current.\"}],\"entity_resolution\":{\"action\":\"same_entity_candidate\",\"entity_id\":null,\"reason\":\"Both facts refer to 'Sam'; no additional disambiguating information is provided, so this is treated as a same-entity candidate with ambiguity preserved.\"}}",
+  "role": "conflict_candidate_detector",
+  "run_id": "eval_20260508_164405",
+  "status": "ok"
+}

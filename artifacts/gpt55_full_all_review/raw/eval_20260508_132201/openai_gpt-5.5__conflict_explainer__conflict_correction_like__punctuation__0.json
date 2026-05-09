@@ -1,0 +1,111 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0189,
+  "fixture_id": "conflict_correction_like__punctuation",
+  "input_tokens": 450,
+  "latency_ms": 7233,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 555,
+  "payload": {
+    "answer": "There is a conflict between the current memory and the correction. The current memory says Sam from Goldman likes Bill Evans. The new correction says Sam from Goldman actually likes early Coltrane, not Bill Evans. Safe actions available: approve_supersession to replace the current fact with the correction, keep_both if both should remain despite the tension, reject_new if the correction should not be saved, or edit to clarify the wording before saving.",
+    "citations": [
+      "Existing current fact: Sam from Goldman likes Bill Evans",
+      "Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans"
+    ],
+    "conflict_classification": "correction_conflict",
+    "decision": "needs_user_choice",
+    "entity_resolution": {
+      "action": "same_entity_assumed",
+      "entity_id": null,
+      "reason": "Both statements refer to 'Sam from Goldman', so they appear to concern the same person, but no durable update should be made without choosing a safe action."
+    },
+    "intent": "explain_conflict",
+    "memory_cards": [
+      {
+        "confidence": "current_existing",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_artist",
+            "type": "person"
+          }
+        ],
+        "kind": "existing_current_fact",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans."
+      },
+      {
+        "confidence": "user_provided_correction",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "early Coltrane",
+            "role": "liked_artist",
+            "type": "music/artist-period"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "negated_liked_artist",
+            "type": "person"
+          }
+        ],
+        "kind": "new_correction",
+        "relationships": [
+          {
+            "object": "early Coltrane",
+            "predicate": "likes",
+            "subject": "Sam from Goldman"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "does_not_like",
+            "subject": "Sam from Goldman"
+          }
+        ],
+        "statement": "Sam from Goldman actually likes early Coltrane, not Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict detected; no durable memory change committed.",
+        "Awaiting one of the allowed safe actions: approve_supersession, keep_both, reject_new, edit."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "approve_supersession",
+      "keep_both",
+      "reject_new",
+      "edit"
+    ]
+  },
+  "raw_text": "{\"intent\":\"explain_conflict\",\"decision\":\"needs_user_choice\",\"memory_cards\":[{\"kind\":\"existing_current_fact\",\"statement\":\"Sam from Goldman likes Bill Evans.\",\"confidence\":\"current_existing\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked_artist\"}],\"relationships\":[{\"subject\":\"Sam from Goldman\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]},{\"kind\":\"new_correction\",\"statement\":\"Sam from Goldman actually likes early Coltrane, not Bill Evans.\",\"confidence\":\"user_provided_correction\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"early Coltrane\",\"type\":\"music/artist-period\",\"role\":\"liked_artist\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"negated_liked_artist\"}],\"relationships\":[{\"subject\":\"Sam from Goldman\",\"predicate\":\"likes\",\"object\":\"early Coltrane\"},{\"subject\":\"Sam from Goldman\",\"predicate\":\"does_not_like\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"same_entity_assumed\",\"entity_id\":null,\"reason\":\"Both statements refer to 'Sam from Goldman', so they appear to concern the same person, but no durable update should be made without choosing a safe action.\"},\"conflict_classification\":\"correction_conflict\",\"answer\":\"There is a conflict between the current memory and the correction. The current memory says Sam from Goldman likes Bill Evans. The new correction says Sam from Goldman actually likes early Coltrane, not Bill Evans. Safe actions available: approve_supersession to replace the current fact with the correction, keep_both if both should remain despite the tension, reject_new if the correction should not be saved, or edit to clarify the wording before saving.\",\"citations\":[\"Existing current fact: Sam from Goldman likes Bill Evans\",\"Correction: Sam from Goldman actually likes early Coltrane, not Bill Evans\"],\"repair_options\":[\"approve_supersession\",\"keep_both\",\"reject_new\",\"edit\"],\"receipt\":{\"success\":false,\"details\":[\"Conflict detected; no durable memory change committed.\",\"Awaiting one of the allowed safe actions: approve_supersession, keep_both, reject_new, edit.\"]}}",
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_132201",
+  "status": "ok"
+}

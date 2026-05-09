@@ -1,0 +1,77 @@
+{
+  "fixture_id": "email_source_meeting_followup_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Captured a limited memory: Sam reported joining Point72 last month and requested the AI infrastructure article. Entity resolution is deferred because Sam is ambiguous without additional context.",
+    "citations": [],
+    "conflict_classification": "none_detected",
+    "decision": "commit_limited_memory",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Sender is identified only as Sam in the source; no raw email address exposed and no existing entity context provided for disambiguation."
+    },
+    "intent": "extract_durable_memory_from_email_followup",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "source",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_update",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam says they joined Point72 last month."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "requester",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure article",
+            "role": "requested_item",
+            "type": "content"
+          }
+        ],
+        "kind": "content_interest_or_request",
+        "relationships": [
+          {
+            "object": "AI infrastructure article",
+            "predicate": "requested",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam asked to be sent the AI infrastructure article."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Did not expose the raw private email address.",
+        "Avoided quoting raw source content unnecessarily.",
+        "Committed only the employment update and article request with medium confidence due to limited context."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "table_policy_handler",
+  "run_id": "eval_20260508_125514"
+}

@@ -1,0 +1,86 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.011,
+  "fixture_id": "memory_compiler_small_table__punctuation",
+  "input_tokens": 382,
+  "latency_ms": 3694,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 303,
+  "payload": {
+    "answer": "Detected two preference memories from the table: Sam prefers Bill Evans; Daniele prefers knowledge graphs.",
+    "citations": [
+      "| Sam | Bill Evans |",
+      "| Daniele | Knowledge graphs |"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No existing entities or disambiguating context were provided; names are recorded as stated."
+    },
+    "intent": "extract_memory_from_table",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preference",
+            "type": "person_or_topic"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "prefers",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes or prefers Bill Evans."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Daniele",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Knowledge graphs",
+            "role": "preference",
+            "type": "topic"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Knowledge graphs",
+            "predicate": "prefers",
+            "subject": "Daniele"
+          }
+        ],
+        "statement": "Daniele likes or prefers knowledge graphs."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed preference memory for Sam.",
+        "Committed preference memory for Daniele."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"extract_memory_from_table\",\"decision\":\"commit\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam likes or prefers Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"person_or_topic\",\"role\":\"preference\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"prefers\",\"object\":\"Bill Evans\"}]},{\"kind\":\"preference\",\"statement\":\"Daniele likes or prefers knowledge graphs.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Daniele\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Knowledge graphs\",\"type\":\"topic\",\"role\":\"preference\"}],\"relationships\":[{\"subject\":\"Daniele\",\"predicate\":\"prefers\",\"object\":\"Knowledge graphs\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No existing entities or disambiguating context were provided; names are recorded as stated.\"},\"conflict_classification\":\"none\",\"answer\":\"Detected two preference memories from the table: Sam prefers Bill Evans; Daniele prefers knowledge graphs.\",\"citations\":[\"| Sam | Bill Evans |\",\"| Daniele | Knowledge graphs |\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Committed preference memory for Sam.\",\"Committed preference memory for Daniele.\"]}}",
+  "role": "open_loop_detector",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

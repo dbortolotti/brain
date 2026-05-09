@@ -1,0 +1,42 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.011045,
+  "fixture_id": "ambiguous_place_001__punctuation",
+  "input_tokens": 385,
+  "latency_ms": 3899,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 304,
+  "payload": {
+    "answer": "I did not commit this as durable memory because 'Brutto' is ambiguous between the existing restaurant and article alias entries.",
+    "citations": [
+      "New note: Brutto was better than expected",
+      "Existing: Brutto restaurant in London",
+      "Existing: Brutto article alias"
+    ],
+    "conflict_classification": "ambiguous_entity_reference",
+    "decision": "defer_commit_due_to_ambiguous_reference",
+    "entity_resolution": {
+      "action": "no_link",
+      "entity_id": null,
+      "reason": "The note 'Brutto was better than expected' likely refers to an entity named Brutto, but the existing memories include both 'Brutto restaurant in London' and 'Brutto article alias'. The punctuation-free input does not disambiguate whether Brutto is the restaurant, an article, or another entity."
+    },
+    "intent": "record_user_evaluation",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Evaluated the new note for durable memory suitability.",
+        "Detected ambiguous entity resolution and avoided linking or committing the preference as current memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Clarify that the note refers to the Brutto restaurant in London.",
+      "Clarify that the note refers to the Brutto article alias.",
+      "Create a separate Brutto entity if neither existing entity is intended."
+    ]
+  },
+  "raw_text": "{\"intent\":\"record_user_evaluation\",\"decision\":\"defer_commit_due_to_ambiguous_reference\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"no_link\",\"entity_id\":null,\"reason\":\"The note 'Brutto was better than expected' likely refers to an entity named Brutto, but the existing memories include both 'Brutto restaurant in London' and 'Brutto article alias'. The punctuation-free input does not disambiguate whether Brutto is the restaurant, an article, or another entity.\"},\"conflict_classification\":\"ambiguous_entity_reference\",\"answer\":\"I did not commit this as durable memory because 'Brutto' is ambiguous between the existing restaurant and article alias entries.\",\"citations\":[\"New note: Brutto was better than expected\",\"Existing: Brutto restaurant in London\",\"Existing: Brutto article alias\"],\"repair_options\":[\"Clarify that the note refers to the Brutto restaurant in London.\",\"Clarify that the note refers to the Brutto article alias.\",\"Create a separate Brutto entity if neither existing entity is intended.\"],\"receipt\":{\"success\":true,\"details\":[\"Evaluated the new note for durable memory suitability.\",\"Detected ambiguous entity resolution and avoided linking or committing the preference as current memory.\"]}}",
+  "role": "entity_candidate_ranker",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

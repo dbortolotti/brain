@@ -1,0 +1,36 @@
+{
+  "fixture_id": "conflict_sara_niece_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "I won\u2019t commit 'Sara is my niece' as durable memory yet because the existing high-confidence memory says Sara is Daniele\u2019s daughter and Nur\u2019s twin, and the user\u2019s relationship to that family is not specified. This may be true from the user\u2019s perspective, but it needs clarification before storing.",
+    "citations": [
+      "Existing memory: Sara is Daniele's daughter and Nur's twin.",
+      "New input: Sara is my niece."
+    ],
+    "conflict_classification": "potential_contextual_conflict_or_underspecified_perspective",
+    "decision": "defer_commit_pending_clarification",
+    "entity_resolution": {
+      "action": "link_to_existing_entity_as_possible",
+      "entity_id": null,
+      "reason": "The new statement likely refers to the existing Sara, but without knowing the user's relationship to Daniele, Nur, or Sara, 'Sara is my niece' cannot be reconciled or rejected. It may be compatible if the user is sibling-in-law/sibling of one of Sara's parents, but the existing memory only states Sara is Daniele's daughter and Nur's twin."
+    },
+    "intent": "evaluate_new_kinship_memory_for_conflict",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No durable memory card was committed from the ambiguous new statement.",
+        "Existing high-confidence facts were preserved and not superseded.",
+        "Potential entity link to existing Sara was noted but not finalized."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask a clarifying question: 'Is the Sara who is Daniele\u2019s daughter and Nur\u2019s twin also your niece?'",
+      "If confirmed, add: 'Sara is the user's niece' while preserving existing facts that Sara is Daniele\u2019s daughter and Nur\u2019s twin.",
+      "If denied, create or distinguish another Sara entity who is the user's niece.",
+      "If the user indicates Daniele is the user's sibling or sibling-in-law, infer compatibility and store the niece relationship with appropriate confidence."
+    ]
+  },
+  "role": "repair_option_generator",
+  "run_id": "eval_20260508_135905"
+}

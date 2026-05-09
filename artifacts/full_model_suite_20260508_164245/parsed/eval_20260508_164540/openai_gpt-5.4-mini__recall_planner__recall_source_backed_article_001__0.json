@@ -1,0 +1,86 @@
+{
+  "fixture_id": "recall_source_backed_article_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Source-backed facts: graph memory preserves relationships, and it needs provenance.",
+    "citations": [
+      "source article: recall_source_backed_article_001"
+    ],
+    "conflict_classification": "none",
+    "decision": "Commit only the explicitly source-backed facts; preserve ambiguity and avoid adding unsupported details.",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": null,
+      "reason": "The query refers to graph memory as described in the source article; no separate durable entity ID is available from the fixture."
+    },
+    "intent": "Recall source-backed facts about graph memory from the provided article fixture.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "graph memory",
+            "role": "topic",
+            "type": "memory system"
+          },
+          {
+            "name": "relationships",
+            "role": "property preserved by graph memory",
+            "type": "concept"
+          },
+          {
+            "name": "entities",
+            "role": "items whose relationships are preserved",
+            "type": "concept"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "relationships between entities",
+            "predicate": "preserves",
+            "subject": "graph memory"
+          }
+        ],
+        "statement": "Graph memory preserves relationships between entities."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "graph memory",
+            "role": "topic",
+            "type": "memory system"
+          },
+          {
+            "name": "provenance",
+            "role": "required attribute",
+            "type": "concept"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "provenance",
+            "predicate": "needs",
+            "subject": "graph memory"
+          }
+        ],
+        "statement": "Graph memory needs provenance."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted two explicit claims from the source article.",
+        "No unsupported or superseded facts were included."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want, I can separate these into durable memory cards with stricter provenance fields.",
+      "I can also extract only the minimal canonical fact set from the article."
+    ]
+  },
+  "role": "recall_planner",
+  "run_id": "eval_20260508_164540"
+}

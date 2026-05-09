@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01106,
+  "fixture_id": "person_interaction_sam_bill_evans_001__punctuation",
+  "input_tokens": 376,
+  "latency_ms": 4450,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 306,
+  "payload": {
+    "answer": "Extracted entity mentions and relationships without committing durable memory.",
+    "citations": [
+      "Sam from Goldman mentioned that he likes Bill Evans"
+    ],
+    "conflict_classification": "none",
+    "decision": "no_durable_memory_commit",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Insufficient context to uniquely resolve Sam, Goldman, or Bill Evans; Bill Evans may refer to a known person but no durable identity should be assumed."
+    },
+    "intent": "extract_entity_mentions",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker/mentioned person",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation/employer context",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked person",
+            "type": "person"
+          }
+        ],
+        "kind": "entity_mention",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "from",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman mentioned that he likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Identified Sam as a person mention with Goldman as affiliation context.",
+        "Identified Bill Evans as a person mention liked by Sam.",
+        "No durable memory committed due to ambiguity and limited context."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"extract_entity_mentions\",\"decision\":\"no_durable_memory_commit\",\"memory_cards\":[{\"kind\":\"entity_mention\",\"statement\":\"Sam from Goldman mentioned that he likes Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"speaker/mentioned person\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation/employer context\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"liked person\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"from\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"Insufficient context to uniquely resolve Sam, Goldman, or Bill Evans; Bill Evans may refer to a known person but no durable identity should be assumed.\"},\"conflict_classification\":\"none\",\"answer\":\"Extracted entity mentions and relationships without committing durable memory.\",\"citations\":[\"Sam from Goldman mentioned that he likes Bill Evans\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Identified Sam as a person mention with Goldman as affiliation context.\",\"Identified Bill Evans as a person mention liked by Sam.\",\"No durable memory committed due to ambiguity and limited context.\"]}}",
+  "role": "entity_mention_extractor",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

@@ -1,0 +1,32 @@
+{
+  "fixture_id": "large_table_500_rows_001__punctuation",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Classified as bulk structured tabular input with a policy question. The CSV table should be treated as source data, not committed as durable memory by default.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "non_memory_bulk_structured_input",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input is described as a large CSV table with repeated id,name,value rows plus a policy question, not as durable personal memory about the user or an entity."
+    },
+    "intent": "source_classification",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Identified source type: CSV table / bulk structured data.",
+        "Identified boundary: 500 rows of repeated id,name,value records plus a policy question.",
+        "No memory cards created because the role is limited to source classification and the source does not itself establish durable personal memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Store the CSV as an external file or dataset reference rather than individual memory cards.",
+      "If specific durable facts are needed, extract only explicitly requested stable facts from the table with row-level provenance.",
+      "Answer the policy question without committing the 500 repeated rows to memory."
+    ]
+  },
+  "role": "source_classifier",
+  "run_id": "eval_20260508_125514"
+}

@@ -1,0 +1,82 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01324,
+  "fixture_id": "cascade_conflict_escalation_001__context",
+  "input_tokens": 434,
+  "latency_ms": 6048,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 369,
+  "payload": {
+    "answer": "There is a conflict: existing memory says \u201cSara is my daughter,\u201d while the new input says \u201cSara is my niece.\u201d I can\u2019t treat both as current facts about the same Sara without your confirmation. Safe actions available: approve_supersession, keep_both, reject_new, or edit.",
+    "citations": [
+      "Existing: Sara is my daughter.",
+      "Input: Sara is my niece."
+    ],
+    "conflict_classification": "relationship_conflict",
+    "decision": "needs_user_choice",
+    "entity_resolution": {
+      "action": "same_name_ambiguous",
+      "entity_id": null,
+      "reason": "The existing memory and new input both refer to Sara, but they assert different family relationships. This may be the same person with a corrected relationship, or two different people named Sara."
+    },
+    "intent": "explain_conflict",
+    "memory_cards": [
+      {
+        "confidence": "backend_supplied",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "related_person",
+            "type": "person"
+          }
+        ],
+        "kind": "existing",
+        "relationships": [
+          {
+            "object": "daughter",
+            "predicate": "is my",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my daughter."
+      },
+      {
+        "confidence": "user_provided",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "related_person",
+            "type": "person"
+          }
+        ],
+        "kind": "new_input",
+        "relationships": [
+          {
+            "object": "niece",
+            "predicate": "is my",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Conflict detected between existing memory and new input.",
+        "No durable memory change was committed.",
+        "Awaiting one of the allowed safe actions."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "approve_supersession",
+      "keep_both",
+      "reject_new",
+      "edit"
+    ]
+  },
+  "raw_text": "{\"intent\":\"explain_conflict\",\"decision\":\"needs_user_choice\",\"memory_cards\":[{\"kind\":\"existing\",\"statement\":\"Sara is my daughter.\",\"confidence\":\"backend_supplied\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"related_person\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"is my\",\"object\":\"daughter\"}]},{\"kind\":\"new_input\",\"statement\":\"Sara is my niece.\",\"confidence\":\"user_provided\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"related_person\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"is my\",\"object\":\"niece\"}]}],\"entity_resolution\":{\"action\":\"same_name_ambiguous\",\"entity_id\":null,\"reason\":\"The existing memory and new input both refer to Sara, but they assert different family relationships. This may be the same person with a corrected relationship, or two different people named Sara.\"},\"conflict_classification\":\"relationship_conflict\",\"answer\":\"There is a conflict: existing memory says \u201cSara is my daughter,\u201d while the new input says \u201cSara is my niece.\u201d I can\u2019t treat both as current facts about the same Sara without your confirmation. Safe actions available: approve_supersession, keep_both, reject_new, or edit.\",\"citations\":[\"Existing: Sara is my daughter.\",\"Input: Sara is my niece.\"],\"repair_options\":[\"approve_supersession\",\"keep_both\",\"reject_new\",\"edit\"],\"receipt\":{\"success\":false,\"details\":[\"Conflict detected between existing memory and new input.\",\"No durable memory change was committed.\",\"Awaiting one of the allowed safe actions.\"]}}",
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

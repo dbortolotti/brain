@@ -1,0 +1,110 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00255825,
+  "fixture_id": "conversation_transcript_sam_001__punctuation",
+  "input_tokens": 459,
+  "latency_ms": 3754,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 492,
+  "payload": {
+    "answer": "Committed the supported facts: Sam left Goldman last month and joined Point72; Sam still listens to Bill Evans, lately more early Coltrane.",
+    "citations": [
+      "Daniele - Still at Goldman? Sam - No, I left Goldman last month and joined Point72",
+      "Daniele - Still listening to Bill Evans? Sam - Yes, but lately more early Coltrane"
+    ],
+    "conflict_classification": "supersession_detected",
+    "decision": "commit_supported_memories_only",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No new entity linkage was needed beyond the explicit names in the transcript."
+    },
+    "intent": "memory_update",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "new employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "left",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said he left Goldman last month and joined Point72."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "musician",
+            "type": "person"
+          },
+          {
+            "name": "John Coltrane",
+            "role": "musician",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "listens to",
+            "subject": "Sam"
+          },
+          {
+            "object": "early Coltrane",
+            "predicate": "has recently preferred",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said he is still listening to Bill Evans, but lately more early Coltrane."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored employment change with clear supersession of prior Goldman status.",
+        "Stored music preference with preserved ambiguity about current emphasis.",
+        "Did not promote the AI-infra discussion to durable memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If needed, create a separate contact preference note for Sam about jazz listening habits.",
+      "If needed, store the AI-infra catch-up as a pending task rather than a durable memory."
+    ]
+  },
+  "raw_text": "{\"intent\":\"memory_update\",\"decision\":\"commit_supported_memories_only\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam said he left Goldman last month and joined Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"speaker\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"new employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"left\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]},{\"kind\":\"preference\",\"statement\":\"Sam said he is still listening to Bill Evans, but lately more early Coltrane.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"speaker\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"musician\"},{\"name\":\"John Coltrane\",\"type\":\"person\",\"role\":\"musician\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"listens to\",\"object\":\"Bill Evans\"},{\"subject\":\"Sam\",\"predicate\":\"has recently preferred\",\"object\":\"early Coltrane\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No new entity linkage was needed beyond the explicit names in the transcript.\"},\"conflict_classification\":\"supersession_detected\",\"answer\":\"Committed the supported facts: Sam left Goldman last month and joined Point72; Sam still listens to Bill Evans, lately more early Coltrane.\",\"citations\":[\"Daniele - Still at Goldman? Sam - No, I left Goldman last month and joined Point72\",\"Daniele - Still listening to Bill Evans? Sam - Yes, but lately more early Coltrane\"],\"repair_options\":[\"If needed, create a separate contact preference note for Sam about jazz listening habits.\",\"If needed, store the AI-infra catch-up as a pending task rather than a durable memory.\"],\"receipt\":{\"success\":true,\"details\":[\"Stored employment change with clear supersession of prior Goldman status.\",\"Stored music preference with preserved ambiguity about current emphasis.\",\"Did not promote the AI-infra discussion to durable memory.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

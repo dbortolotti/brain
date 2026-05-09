@@ -1,0 +1,73 @@
+{
+  "fixture_id": "article_url_fetch_failure_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "I can remember that you wanted to save the URL https://example.com/missing because it may be useful for memory architecture, but I cannot store any article-derived facts because the fetch failed with a 404 network error.",
+    "citations": [
+      "Input: Remember this article: https://example.com/missing why: useful for memory architecture.",
+      "Input: Mock fetch result: 404 network error."
+    ],
+    "conflict_classification": "none",
+    "decision": "do_not_commit_article_content",
+    "entity_resolution": {
+      "action": "no_entity_created_for_article_content",
+      "entity_id": null,
+      "reason": "The article content was unavailable due to a 404 network error, so no claims from the article can be extracted or committed."
+    },
+    "intent": "remember_article_url_for_context",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "article_reference",
+            "type": "url"
+          }
+        ],
+        "kind": "user_intent",
+        "relationships": [
+          {
+            "object": "useful for memory architecture",
+            "predicate": "was_requested_to_be_remembered_for",
+            "subject": "https://example.com/missing"
+          }
+        ],
+        "statement": "The user wanted to remember the article URL https://example.com/missing for the reason: useful for memory architecture."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "failed_fetch_target",
+            "type": "url"
+          }
+        ],
+        "kind": "fetch_status",
+        "relationships": [
+          {
+            "object": "404 network error",
+            "predicate": "fetch_result",
+            "subject": "https://example.com/missing"
+          }
+        ],
+        "statement": "The requested article URL https://example.com/missing could not be fetched; the mock fetch result was a 404 network error."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Recorded the user\u2019s intent and URL only.",
+        "Did not commit article content or claims because the URL fetch failed with a 404 network error."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Provide a working URL for the article.",
+      "Paste the article text directly.",
+      "Provide a summary you want remembered, clearly marked as your own summary."
+    ]
+  },
+  "role": "entity_mention_extractor",
+  "run_id": "eval_20260508_125514"
+}

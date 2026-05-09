@@ -1,0 +1,72 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0016005,
+  "fixture_id": "slack_conflict_buttons_001",
+  "input_tokens": 376,
+  "latency_ms": 3183,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 293,
+  "payload": {
+    "answer": "Recorded update: Sam now works at Point72; Goldman is treated as a previous employer.",
+    "citations": [
+      "input: Existing: Sam works at Goldman.",
+      "input: /brain remember Sam left Goldman and joined Point72."
+    ],
+    "conflict_classification": "direct_contradiction_with_replacement",
+    "decision": "accept",
+    "entity_resolution": {
+      "action": "update_existing_entity",
+      "entity_id": null,
+      "reason": "The new instruction explicitly updates Sam's employment, superseding the prior 'works at Goldman' fact with a current role at Point72."
+    },
+    "intent": "memory_update",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "previously_worked_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam currently works at Point72 and previously worked at Goldman."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Updated Sam's employment to Point72.",
+        "Preserved Goldman as a prior employer, not current."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"memory_update\",\"decision\":\"accept\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam currently works at Point72 and previously worked at Goldman.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"current employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"previously_worked_at\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"update_existing_entity\",\"entity_id\":null,\"reason\":\"The new instruction explicitly updates Sam's employment, superseding the prior 'works at Goldman' fact with a current role at Point72.\"},\"conflict_classification\":\"direct_contradiction_with_replacement\",\"answer\":\"Recorded update: Sam now works at Point72; Goldman is treated as a previous employer.\",\"citations\":[\"input: Existing: Sam works at Goldman.\",\"input: /brain remember Sam left Goldman and joined Point72.\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Updated Sam's employment to Point72.\",\"Preserved Goldman as a prior employer, not current.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

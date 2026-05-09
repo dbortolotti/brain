@@ -1,0 +1,34 @@
+{
+  "fixture_id": "ambiguous_place_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "I can\u2019t safely tell whether \u201cBrutto\u201d refers to the London restaurant or the article alias, so I won\u2019t commit this as a durable memory yet.",
+    "citations": [
+      "Existing: Brutto restaurant in London; Brutto article alias.",
+      "New note: Brutto was better than expected."
+    ],
+    "conflict_classification": "ambiguous_reference",
+    "decision": "defer_commit_due_to_ambiguous_entity",
+    "entity_resolution": {
+      "action": "needs_clarification",
+      "entity_id": null,
+      "reason": "The note says \u201cBrutto was better than expected,\u201d and context contains both \u201cBrutto restaurant in London\u201d and \u201cBrutto article alias.\u201d The statement could refer to either entity, so durable memory should not be attached without clarification."
+    },
+    "intent": "record_opinion_about_ambiguous_entity",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No memory card committed because the referenced entity is ambiguous.",
+        "Preserved ambiguity between the restaurant and article alias."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Clarify that this refers to Brutto restaurant in London.",
+      "Clarify that this refers to the Brutto article alias.",
+      "Record as an unlinked note without attaching it to either existing Brutto entity."
+    ]
+  },
+  "role": "entity_candidate_ranker",
+  "run_id": "eval_20260508_164540"
+}

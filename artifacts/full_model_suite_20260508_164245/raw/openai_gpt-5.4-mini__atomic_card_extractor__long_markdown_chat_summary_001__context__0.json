@@ -1,0 +1,135 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0029535,
+  "fixture_id": "long_markdown_chat_summary_001__context",
+  "input_tokens": 500,
+  "latency_ms": 4011,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 573,
+  "payload": {
+    "answer": "Extracted the explicitly stated architecture preferences and open questions as atomic memory cards.",
+    "citations": [
+      "Chat Summary: Brain Architecture"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_with_warning",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No entity disambiguation was explicitly required by the input."
+    },
+    "intent": "atomic_card_extractor",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source of truth",
+            "type": "system"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "memory system",
+            "predicate": "is_source_of_truth_for",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB should be the source of truth."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "semantic projection",
+            "type": "system"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "rebuildable semantic projection",
+            "predicate": "should_be",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee should be a rebuildable semantic projection."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "memory intake agent",
+            "type": "system"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "strict memory intake agent",
+            "predicate": "should_function_as",
+            "subject": "Slack"
+          }
+        ],
+        "statement": "Slack should function as a strict memory intake agent."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Telegram",
+            "role": "possible future addition",
+            "type": "system"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [
+          {
+            "object": "unknown",
+            "predicate": "may_be_added_later",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "Whether Telegram should be added later is still an open question."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "model selection",
+            "role": "cost-performance optimization",
+            "type": "topic"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [
+          {
+            "object": "cheapest model while saturating performance",
+            "predicate": "seeks",
+            "subject": "model selection"
+          }
+        ],
+        "statement": "Which model is cheapest while saturating performance is still an open question."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted 5 atomic memory cards.",
+        "Used commit_with_warning because two items are unresolved open questions."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If desired, split the open questions into separate decision-tracking cards once a choice is made.",
+      "If the system has canonical entity IDs, map Brain DB, Cognee, Slack, and Telegram to those IDs."
+    ]
+  },
+  "raw_text": "{\"intent\":\"atomic_card_extractor\",\"decision\":\"commit_with_warning\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Brain DB should be the source of truth.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Brain DB\",\"type\":\"system\",\"role\":\"source of truth\"}],\"relationships\":[{\"subject\":\"Brain DB\",\"predicate\":\"is_source_of_truth_for\",\"object\":\"memory system\"}]},{\"kind\":\"preference\",\"statement\":\"Cognee should be a rebuildable semantic projection.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Cognee\",\"type\":\"system\",\"role\":\"semantic projection\"}],\"relationships\":[{\"subject\":\"Cognee\",\"predicate\":\"should_be\",\"object\":\"rebuildable semantic projection\"}]},{\"kind\":\"preference\",\"statement\":\"Slack should function as a strict memory intake agent.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Slack\",\"type\":\"system\",\"role\":\"memory intake agent\"}],\"relationships\":[{\"subject\":\"Slack\",\"predicate\":\"should_function_as\",\"object\":\"strict memory intake agent\"}]},{\"kind\":\"open_question\",\"statement\":\"Whether Telegram should be added later is still an open question.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Telegram\",\"type\":\"system\",\"role\":\"possible future addition\"}],\"relationships\":[{\"subject\":\"Telegram\",\"predicate\":\"may_be_added_later\",\"object\":\"unknown\"}]},{\"kind\":\"open_question\",\"statement\":\"Which model is cheapest while saturating performance is still an open question.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"model selection\",\"type\":\"topic\",\"role\":\"cost-performance optimization\"}],\"relationships\":[{\"subject\":\"model selection\",\"predicate\":\"seeks\",\"object\":\"cheapest model while saturating performance\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No entity disambiguation was explicitly required by the input.\"},\"conflict_classification\":\"none\",\"answer\":\"Extracted the explicitly stated architecture preferences and open questions as atomic memory cards.\",\"citations\":[\"Chat Summary: Brain Architecture\"],\"repair_options\":[\"If desired, split the open questions into separate decision-tracking cards once a choice is made.\",\"If the system has canonical entity IDs, map Brain DB, Cognee, Slack, and Telegram to those IDs.\"],\"receipt\":{\"success\":true,\"details\":[\"Extracted 5 atomic memory cards.\",\"Used commit_with_warning because two items are unresolved open questions.\"]}}",
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164255",
+  "status": "ok"
+}

@@ -1,0 +1,71 @@
+{
+  "fixture_id": "article_url_fetch_failure_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Captured the request and the fetch failure, but no article content was available to extract additional memory cards.",
+    "citations": [
+      "Input: \"Remember this article: https://example.com/missing why: useful for memory architecture. Mock fetch result: 404 network error.\""
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_with_warning",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No durable entity identity can be resolved beyond the provided URL, and the article content was not retrieved."
+    },
+    "intent": "Extract atomic memory cards from the user's request and the mock fetch result, using only explicitly supported facts.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "article",
+            "type": "url"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "https://example.com/missing",
+            "predicate": "asked_to_remember",
+            "subject": "user"
+          }
+        ],
+        "statement": "The user asked to remember the article at https://example.com/missing for its usefulness for memory architecture."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "fetch_target",
+            "type": "url"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "404 network error",
+            "predicate": "failed_with",
+            "subject": "fetch_attempt"
+          }
+        ],
+        "statement": "A mock fetch attempt for https://example.com/missing failed with a 404 network error."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted 2 atomic facts supported by the input.",
+        "No source content was available due to 404 network error."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Retry fetching the URL if a different retrieval path is available.",
+      "If the article content becomes available, extract content-based memory cards then."
+    ]
+  },
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164540"
+}

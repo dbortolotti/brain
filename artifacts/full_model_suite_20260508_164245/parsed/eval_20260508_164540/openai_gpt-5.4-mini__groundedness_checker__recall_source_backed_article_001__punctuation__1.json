@@ -1,0 +1,76 @@
+{
+  "fixture_id": "recall_source_backed_article_001__punctuation",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Source-backed facts about graph memory: it preserves relationships, and it needs provenance.",
+    "citations": [
+      "Source article: \"graph memory preserves relationships and needs provenance\""
+    ],
+    "conflict_classification": "none",
+    "decision": "allow",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "The query refers to graph memory in the source article; no prior durable entity identifier is provided."
+    },
+    "intent": "groundedness_checking",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "graph memory",
+            "role": "topic",
+            "type": "concept"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "relationships",
+            "predicate": "preserves",
+            "subject": "graph memory"
+          }
+        ],
+        "statement": "Graph memory preserves relationships."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "graph memory",
+            "role": "topic",
+            "type": "concept"
+          },
+          {
+            "name": "provenance",
+            "role": "requirement",
+            "type": "concept"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "provenance",
+            "predicate": "needs",
+            "subject": "graph memory"
+          }
+        ],
+        "statement": "Graph memory needs provenance."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted two source-backed facts from the article.",
+        "Preserved the wording at a high level without adding unsupported details."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want, I can restate these as a single atomic memory card.",
+      "I can also keep the facts separate to preserve provenance and avoid overgeneralization."
+    ]
+  },
+  "role": "groundedness_checker",
+  "run_id": "eval_20260508_164540"
+}

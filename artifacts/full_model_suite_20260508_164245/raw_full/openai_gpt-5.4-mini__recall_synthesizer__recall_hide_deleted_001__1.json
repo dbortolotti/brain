@@ -1,0 +1,65 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0015742500000000001,
+  "fixture_id": "recall_hide_deleted_001",
+  "input_tokens": 467,
+  "latency_ms": 8862,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 272,
+  "payload": {
+    "answer": "I don't know what music Sam likes from the current evidence. The only current memory is that Sam likes Bill Evans.",
+    "citations": [
+      "current memory: Sam likes Bill Evans"
+    ],
+    "conflict_classification": "deleted_memory_ignored",
+    "decision": "no_current_evidence_for_music_genre",
+    "entity_resolution": {
+      "action": "resolve",
+      "entity_id": null,
+      "reason": "The current evidence identifies Sam and Bill Evans, but does not establish a music genre preference."
+    },
+    "intent": "recall_synthesizer",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred artist",
+            "type": "person"
+          }
+        ],
+        "kind": "current_memory",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Used only current evidence.",
+        "Ignored deleted memory.",
+        "Did not infer a genre from an artist preference."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for more current evidence about Sam's music preferences.",
+      "Do not use the deleted memory 'Sam likes Taylor Swift' as current evidence."
+    ]
+  },
+  "raw_text": "{\"intent\":\"recall_synthesizer\",\"decision\":\"no_current_evidence_for_music_genre\",\"memory_cards\":[{\"kind\":\"current_memory\",\"statement\":\"Sam likes Bill Evans.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"preferred artist\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]}],\"entity_resolution\":{\"action\":\"resolve\",\"entity_id\":null,\"reason\":\"The current evidence identifies Sam and Bill Evans, but does not establish a music genre preference.\"},\"conflict_classification\":\"deleted_memory_ignored\",\"answer\":\"I don't know what music Sam likes from the current evidence. The only current memory is that Sam likes Bill Evans.\",\"citations\":[\"current memory: Sam likes Bill Evans\"],\"repair_options\":[\"Ask for more current evidence about Sam's music preferences.\",\"Do not use the deleted memory 'Sam likes Taylor Swift' as current evidence.\"],\"receipt\":{\"success\":true,\"details\":[\"Used only current evidence.\",\"Ignored deleted memory.\",\"Did not infer a genre from an artist preference.\"]}}",
+  "role": "recall_synthesizer",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

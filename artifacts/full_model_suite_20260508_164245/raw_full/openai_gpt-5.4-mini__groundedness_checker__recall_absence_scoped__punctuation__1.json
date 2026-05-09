@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0016320000000000002,
+  "fixture_id": "recall_absence_scoped__punctuation",
+  "input_tokens": 424,
+  "latency_ms": 3843,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 292,
+  "payload": {
+    "answer": "No current evidence indicates whether Sara prefers morning flights.",
+    "citations": [],
+    "conflict_classification": "absence_of_evidence",
+    "decision": "insufficient_evidence",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "Sara is mentioned as the target person, but no durable identity linkage is needed because the task only asks about current evidence for a preference."
+    },
+    "intent": "groundedness_check for whether Sara prefers morning flights",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Sara's morning-flight preference",
+            "predicate": "lack current evidence for",
+            "subject": "retrieved facts"
+          }
+        ],
+        "statement": "There is no current evidence in the retrieved facts about Sara's travel-time preference."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No preference claim was inferred from absence of evidence.",
+        "Response preserves ambiguity and avoids treating missing data as a positive or negative preference."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for additional facts about Sara's flight-time preferences.",
+      "Retrieve more memory entries scoped to travel preferences for Sara."
+    ]
+  },
+  "raw_text": "{\"intent\":\"groundedness_check for whether Sara prefers morning flights\",\"decision\":\"insufficient_evidence\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"There is no current evidence in the retrieved facts about Sara's travel-time preference.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"retrieved facts\",\"predicate\":\"lack current evidence for\",\"object\":\"Sara's morning-flight preference\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"Sara is mentioned as the target person, but no durable identity linkage is needed because the task only asks about current evidence for a preference.\"},\"conflict_classification\":\"absence_of_evidence\",\"answer\":\"No current evidence indicates whether Sara prefers morning flights.\",\"citations\":[],\"repair_options\":[\"Ask for additional facts about Sara's flight-time preferences.\",\"Retrieve more memory entries scoped to travel preferences for Sara.\"],\"receipt\":{\"success\":true,\"details\":[\"No preference claim was inferred from absence of evidence.\",\"Response preserves ambiguity and avoids treating missing data as a positive or negative preference.\"]}}",
+  "role": "groundedness_checker",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

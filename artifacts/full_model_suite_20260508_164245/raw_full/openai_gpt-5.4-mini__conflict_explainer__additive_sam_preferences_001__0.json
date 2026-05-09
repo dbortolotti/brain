@@ -1,0 +1,102 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.002622,
+  "fixture_id": "additive_sam_preferences_001",
+  "input_tokens": 436,
+  "latency_ms": 5671,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 510,
+  "payload": {
+    "answer": "Safe action: add_new. The new preference can be stored alongside the existing one. Do not replace or delete the Bill Evans memory, because the new information says Sam also likes Sonny Rollins, not that the earlier preference was wrong.",
+    "citations": [
+      "Existing memory: Sam from Goldman likes Bill Evans.",
+      "New: Sam from Goldman also likes Sonny Rollins."
+    ],
+    "conflict_classification": "additive",
+    "decision": "add_new",
+    "entity_resolution": {
+      "action": "keep_existing",
+      "entity_id": null,
+      "reason": "The new fact is compatible with the existing memory and can be added without superseding it; the identity of Sam from Goldman appears consistent, but no durable merge beyond coexistence is required."
+    },
+    "intent": "Explain the backend-supplied safe actions for an additive memory update without overwriting existing facts.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "preferred artist",
+            "type": "person"
+          }
+        ],
+        "kind": "preexisting_memory",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman likes Bill Evans."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "preferred artist",
+            "type": "person"
+          }
+        ],
+        "kind": "new_memory",
+        "relationships": [
+          {
+            "object": "Sonny Rollins",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman also likes Sonny Rollins."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No contradiction detected.",
+        "Existing memory preserved.",
+        "New fact may be added as an additional preference."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "add_new: store Sonny Rollins as an additional liked artist while keeping Bill Evans.",
+      "keep_existing: retain the current memory unchanged and ignore the new fact if no update is desired.",
+      "cancel: make no memory change.",
+      "edit: only if later evidence clarifies or revises one of the preferences."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Explain the backend-supplied safe actions for an additive memory update without overwriting existing facts.\",\"decision\":\"add_new\",\"memory_cards\":[{\"kind\":\"preexisting_memory\",\"statement\":\"Sam from Goldman likes Bill Evans.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person\",\"role\":\"preferred artist\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]},{\"kind\":\"new_memory\",\"statement\":\"Sam from Goldman also likes Sonny Rollins.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Sonny Rollins\",\"type\":\"person\",\"role\":\"preferred artist\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Sonny Rollins\"}]}],\"entity_resolution\":{\"action\":\"keep_existing\",\"entity_id\":null,\"reason\":\"The new fact is compatible with the existing memory and can be added without superseding it; the identity of Sam from Goldman appears consistent, but no durable merge beyond coexistence is required.\"},\"conflict_classification\":\"additive\",\"answer\":\"Safe action: add_new. The new preference can be stored alongside the existing one. Do not replace or delete the Bill Evans memory, because the new information says Sam also likes Sonny Rollins, not that the earlier preference was wrong.\",\"citations\":[\"Existing memory: Sam from Goldman likes Bill Evans.\",\"New: Sam from Goldman also likes Sonny Rollins.\"],\"repair_options\":[\"add_new: store Sonny Rollins as an additional liked artist while keeping Bill Evans.\",\"keep_existing: retain the current memory unchanged and ignore the new fact if no update is desired.\",\"cancel: make no memory change.\",\"edit: only if later evidence clarifies or revises one of the preferences.\"],\"receipt\":{\"success\":true,\"details\":[\"No contradiction detected.\",\"Existing memory preserved.\",\"New fact may be added as an additional preference.\"]}}",
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

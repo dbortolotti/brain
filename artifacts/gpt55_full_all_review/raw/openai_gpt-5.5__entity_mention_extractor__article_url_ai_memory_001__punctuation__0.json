@@ -1,0 +1,96 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.015774999999999997,
+  "fixture_id": "article_url_ai_memory_001__punctuation",
+  "input_tokens": 443,
+  "latency_ms": 5461,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 452,
+  "payload": {
+    "answer": "Remembered the article reference and its provided summary.",
+    "citations": [
+      "https://examplecom/ai-memory"
+    ],
+    "conflict_classification": "none",
+    "decision": "store",
+    "entity_resolution": {
+      "action": "create_or_update_article_memory",
+      "entity_id": null,
+      "reason": "The input contains a user request to remember an article and provides a mock fetched article summary, but no existing entity ID is supplied."
+    },
+    "intent": "remember_article",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "https://examplecom/ai-memory",
+            "role": "article_location",
+            "type": "url"
+          },
+          {
+            "name": "knowledge graph memory design",
+            "role": "user_described_relevance",
+            "type": "topic"
+          },
+          {
+            "name": "graph memory",
+            "role": "article_subject",
+            "type": "concept"
+          },
+          {
+            "name": "agents",
+            "role": "article_context",
+            "type": "concept"
+          },
+          {
+            "name": "provenance",
+            "role": "article_claim_component",
+            "type": "concept"
+          },
+          {
+            "name": "update semantics",
+            "role": "article_claim_component",
+            "type": "concept"
+          }
+        ],
+        "kind": "article_reference",
+        "relationships": [
+          {
+            "object": "relationships",
+            "predicate": "helps_preserve",
+            "subject": "graph memory"
+          },
+          {
+            "object": "knowledge graph memory design",
+            "predicate": "is_relevant_to",
+            "subject": "graph memory"
+          },
+          {
+            "object": "graph memory",
+            "predicate": "is_needed_for",
+            "subject": "provenance"
+          },
+          {
+            "object": "graph memory",
+            "predicate": "is_needed_for",
+            "subject": "update semantics"
+          }
+        ],
+        "statement": "The user asked to remember an article at https://examplecom/ai-memory, described as useful for thinking about knowledge graph memory design. Mock fetched article claim: graph memory helps agents preserve relationships; provenance and update semantics are needed."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored article URL as provided despite unusual punctuation/formatting in the prompt.",
+        "Stored only the supplied article summary and user-described usefulness."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"remember_article\",\"decision\":\"store\",\"memory_cards\":[{\"kind\":\"article_reference\",\"statement\":\"The user asked to remember an article at https://examplecom/ai-memory, described as useful for thinking about knowledge graph memory design. Mock fetched article claim: graph memory helps agents preserve relationships; provenance and update semantics are needed.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"https://examplecom/ai-memory\",\"type\":\"url\",\"role\":\"article_location\"},{\"name\":\"knowledge graph memory design\",\"type\":\"topic\",\"role\":\"user_described_relevance\"},{\"name\":\"graph memory\",\"type\":\"concept\",\"role\":\"article_subject\"},{\"name\":\"agents\",\"type\":\"concept\",\"role\":\"article_context\"},{\"name\":\"provenance\",\"type\":\"concept\",\"role\":\"article_claim_component\"},{\"name\":\"update semantics\",\"type\":\"concept\",\"role\":\"article_claim_component\"}],\"relationships\":[{\"subject\":\"graph memory\",\"predicate\":\"helps_preserve\",\"object\":\"relationships\"},{\"subject\":\"graph memory\",\"predicate\":\"is_relevant_to\",\"object\":\"knowledge graph memory design\"},{\"subject\":\"provenance\",\"predicate\":\"is_needed_for\",\"object\":\"graph memory\"},{\"subject\":\"update semantics\",\"predicate\":\"is_needed_for\",\"object\":\"graph memory\"}]}],\"entity_resolution\":{\"action\":\"create_or_update_article_memory\",\"entity_id\":null,\"reason\":\"The input contains a user request to remember an article and provides a mock fetched article summary, but no existing entity ID is supplied.\"},\"conflict_classification\":\"none\",\"answer\":\"Remembered the article reference and its provided summary.\",\"citations\":[\"https://examplecom/ai-memory\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Stored article URL as provided despite unusual punctuation/formatting in the prompt.\",\"Stored only the supplied article summary and user-described usefulness.\"]}}",
+  "role": "entity_mention_extractor",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

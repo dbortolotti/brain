@@ -1,0 +1,54 @@
+{
+  "fixture_id": "recall_hide_deleted_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Current evidence says Sam likes Bill Evans. I have no current evidence that Sam likes Taylor Swift.",
+    "citations": [
+      "Current memory: Sam likes Bill Evans."
+    ],
+    "conflict_classification": "no_current_conflict_deleted_memory_excluded",
+    "decision": "provide_current_evidence_only",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The query refers to Sam, and current evidence directly states Sam likes Bill Evans."
+    },
+    "intent": "answer_query_from_current_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_music",
+            "type": "musician"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam likes Bill Evans."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Answered only from current evidence.",
+        "Deleted memory was not treated as current evidence."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "recall_synthesizer",
+  "run_id": "eval_20260508_164540"
+}

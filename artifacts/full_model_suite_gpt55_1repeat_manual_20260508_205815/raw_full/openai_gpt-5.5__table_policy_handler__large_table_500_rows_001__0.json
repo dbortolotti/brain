@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.010905,
+  "fixture_id": "large_table_500_rows_001",
+  "input_tokens": 381,
+  "latency_ms": 3826,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 300,
+  "payload": {
+    "answer": "Do not commit the 500-row CSV table to durable memory. Large tabular data should be treated as transient working data unless the user explicitly asks to save a specific durable fact, summary, schema, or preference derived from it. If needed, store only a concise summary such as: 'CSV table with columns id, name, value and 500 repeated rows was provided for the current task.'",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "do_not_store_as_durable_memory",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input is a large repetitive CSV table fixture, not a durable user preference, identity fact, relationship, or long-term memory-worthy information."
+    },
+    "intent": "table_storage_policy",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "No memory cards were created.",
+        "Large raw table data was rejected for durable memory storage.",
+        "Ambiguity was preserved; no facts from the table were promoted to current user memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask the user whether they want a summary, schema, or selected rows saved.",
+      "Store only the table schema if it is expected to recur.",
+      "Store a compact derived insight only if explicitly requested and stable."
+    ]
+  },
+  "raw_text": "{\"intent\":\"table_storage_policy\",\"decision\":\"do_not_store_as_durable_memory\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input is a large repetitive CSV table fixture, not a durable user preference, identity fact, relationship, or long-term memory-worthy information.\"},\"conflict_classification\":\"none\",\"answer\":\"Do not commit the 500-row CSV table to durable memory. Large tabular data should be treated as transient working data unless the user explicitly asks to save a specific durable fact, summary, schema, or preference derived from it. If needed, store only a concise summary such as: 'CSV table with columns id, name, value and 500 repeated rows was provided for the current task.'\",\"citations\":[],\"repair_options\":[\"Ask the user whether they want a summary, schema, or selected rows saved.\",\"Store only the table schema if it is expected to recur.\",\"Store a compact derived insight only if explicitly requested and stable.\"],\"receipt\":{\"success\":true,\"details\":[\"No memory cards were created.\",\"Large raw table data was rejected for durable memory storage.\",\"Ambiguity was preserved; no facts from the table were promoted to current user memory.\"]}}",
+  "role": "table_policy_handler",
+  "run_id": "eval_20260508_195937",
+  "status": "ok"
+}

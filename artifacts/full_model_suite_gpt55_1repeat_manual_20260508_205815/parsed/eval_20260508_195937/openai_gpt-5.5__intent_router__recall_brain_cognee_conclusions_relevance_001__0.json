@@ -1,0 +1,66 @@
+{
+  "fixture_id": "recall_brain_cognee_conclusions_relevance_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "You concluded that Brain/Brain DB should be the durable source of truth, and Cognee should be treated as a rebuildable projection or index derived from Brain\u2014not as the authoritative memory store.",
+    "citations": [
+      "Brain DB source-of-truth conclusion",
+      "Cognee rebuildable projection"
+    ],
+    "conflict_classification": "none",
+    "decision": "answer_from_relevant_memory_only",
+    "entity_resolution": {
+      "action": "resolved_scope",
+      "entity_id": null,
+      "reason": "The query asks specifically for the user's conclusion about Brain and Cognee; unrelated Slack, family, and preference records are out of scope."
+    },
+    "intent": "recall",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "source_of_truth",
+            "type": "system"
+          },
+          {
+            "name": "Brain DB",
+            "role": "durable_source_of_truth",
+            "type": "database"
+          },
+          {
+            "name": "Cognee",
+            "role": "rebuildable_projection",
+            "type": "system"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "Brain memory",
+            "predicate": "is_source_of_truth_for",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "Brain DB",
+            "predicate": "is_rebuildable_projection_of",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain DB is the source of truth, while Cognee is a rebuildable projection/index derived from Brain rather than an independent durable memory store."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Answered only the queried Brain/Cognee conclusion.",
+        "Excluded unrelated Slack intake, family facts, and Sam preference records.",
+        "Did not present Cognee as an independent current source of truth."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "intent_router",
+  "run_id": "eval_20260508_195937"
+}

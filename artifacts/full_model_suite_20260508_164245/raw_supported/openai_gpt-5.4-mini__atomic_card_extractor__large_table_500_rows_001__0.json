@@ -1,0 +1,117 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0025695,
+  "fixture_id": "large_table_500_rows_001",
+  "input_tokens": 450,
+  "latency_ms": 5491,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 496,
+  "payload": {
+    "answer": "The input only explicitly supports that this is a 500-row CSV table with repeated id, name, and value fields. I would store that fact as a structured table description, but the precise storage policy is not specified in the input.",
+    "citations": [
+      "Input: \"CSV table with 500 rows: id,name,value repeated many times. Policy question: how should it be stored?\""
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_with_warning",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No unique entity resolution is supported by the input."
+    },
+    "intent": "atomic_card_extractor",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "subject",
+            "type": "data_artifact"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "500",
+            "predicate": "has_row_count",
+            "subject": "CSV table"
+          }
+        ],
+        "statement": "The input describes a CSV table with 500 rows."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "id",
+            "role": "column",
+            "type": "field"
+          },
+          {
+            "name": "name",
+            "role": "column",
+            "type": "field"
+          },
+          {
+            "name": "value",
+            "role": "column",
+            "type": "field"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "id",
+            "predicate": "contains_field",
+            "subject": "CSV table"
+          },
+          {
+            "object": "name",
+            "predicate": "contains_field",
+            "subject": "CSV table"
+          },
+          {
+            "object": "value",
+            "predicate": "contains_field",
+            "subject": "CSV table"
+          }
+        ],
+        "statement": "The table contains the fields id, name, and value, repeated many times."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "topic",
+            "type": "data_artifact"
+          }
+        ],
+        "kind": "question",
+        "relationships": [
+          {
+            "object": "CSV table",
+            "predicate": "asks_about_storage_of",
+            "subject": "user"
+          }
+        ],
+        "statement": "The user asks how the CSV table should be stored."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted only explicitly supported facts.",
+        "Preserved ambiguity about storage policy.",
+        "Avoided asserting unsupported storage recommendations as fact."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want a durable memory card, state the intended storage policy explicitly (for example, CSV, database table, or normalized schema)."
+    ]
+  },
+  "raw_text": "{\"intent\":\"atomic_card_extractor\",\"decision\":\"commit_with_warning\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"The input describes a CSV table with 500 rows.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"CSV table\",\"type\":\"data_artifact\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"CSV table\",\"predicate\":\"has_row_count\",\"object\":\"500\"}]},{\"kind\":\"fact\",\"statement\":\"The table contains the fields id, name, and value, repeated many times.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"id\",\"type\":\"field\",\"role\":\"column\"},{\"name\":\"name\",\"type\":\"field\",\"role\":\"column\"},{\"name\":\"value\",\"type\":\"field\",\"role\":\"column\"}],\"relationships\":[{\"subject\":\"CSV table\",\"predicate\":\"contains_field\",\"object\":\"id\"},{\"subject\":\"CSV table\",\"predicate\":\"contains_field\",\"object\":\"name\"},{\"subject\":\"CSV table\",\"predicate\":\"contains_field\",\"object\":\"value\"}]},{\"kind\":\"question\",\"statement\":\"The user asks how the CSV table should be stored.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"CSV table\",\"type\":\"data_artifact\",\"role\":\"topic\"}],\"relationships\":[{\"subject\":\"user\",\"predicate\":\"asks_about_storage_of\",\"object\":\"CSV table\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No unique entity resolution is supported by the input.\"},\"conflict_classification\":\"none\",\"answer\":\"The input only explicitly supports that this is a 500-row CSV table with repeated id, name, and value fields. I would store that fact as a structured table description, but the precise storage policy is not specified in the input.\",\"citations\":[\"Input: \\\"CSV table with 500 rows: id,name,value repeated many times. Policy question: how should it be stored?\\\"\"],\"repair_options\":[\"If you want a durable memory card, state the intended storage policy explicitly (for example, CSV, database table, or normalized schema).\"],\"receipt\":{\"success\":true,\"details\":[\"Extracted only explicitly supported facts.\",\"Preserved ambiguity about storage policy.\",\"Avoided asserting unsupported storage recommendations as fact.\"]}}",
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164405",
+  "status": "ok"
+}

@@ -1,0 +1,78 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0020894999999999998,
+  "fixture_id": "pdf_ocr_noisy_source_001__context",
+  "input_tokens": 422,
+  "latency_ms": 3048,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 394,
+  "payload": {
+    "answer": "Brain DB is the source of truth; Cognee should be a rebuildable projection.",
+    "citations": [
+      "For context, [OCR noisy] Brain DB remalns source of trvth. Cognee shou1d be rebuildable projection."
+    ],
+    "conflict_classification": "no_conflict",
+    "decision": "Commit two supported statements: Brain DB remains the source of truth, and Cognee should be a rebuildable projection.",
+    "entity_resolution": {
+      "action": "no_resolution",
+      "entity_id": null,
+      "reason": "The input is too short and OCR-noisy to justify linking these terms to any broader entity set beyond their literal mentions."
+    },
+    "intent": "Extract durable takeaways from the OCR-noisy source text with strict support-only memory handling.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source of truth",
+            "type": "system"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "remains",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB remains the source of truth."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "projection",
+            "type": "system"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "rebuildable projection",
+            "predicate": "should be",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee should be a rebuildable projection."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted two supported statements from the source.",
+        "Preserved ambiguity by avoiding any unsupported expansion."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Normalize OCR noise: 'remalns' -> 'remains', 'trvth' -> 'truth', 'shou1d' -> 'should'.",
+      "If needed, store 'Cognee' only as a rebuildable projection without inferring additional system roles."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Extract durable takeaways from the OCR-noisy source text with strict support-only memory handling.\",\"decision\":\"Commit two supported statements: Brain DB remains the source of truth, and Cognee should be a rebuildable projection.\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Brain DB remains the source of truth.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Brain DB\",\"type\":\"system\",\"role\":\"source of truth\"}],\"relationships\":[{\"subject\":\"Brain DB\",\"predicate\":\"remains\",\"object\":\"source of truth\"}]},{\"kind\":\"fact\",\"statement\":\"Cognee should be a rebuildable projection.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Cognee\",\"type\":\"system\",\"role\":\"projection\"}],\"relationships\":[{\"subject\":\"Cognee\",\"predicate\":\"should be\",\"object\":\"rebuildable projection\"}]}],\"entity_resolution\":{\"action\":\"no_resolution\",\"entity_id\":null,\"reason\":\"The input is too short and OCR-noisy to justify linking these terms to any broader entity set beyond their literal mentions.\"},\"conflict_classification\":\"no_conflict\",\"answer\":\"Brain DB is the source of truth; Cognee should be a rebuildable projection.\",\"citations\":[\"For context, [OCR noisy] Brain DB remalns source of trvth. Cognee shou1d be rebuildable projection.\"],\"repair_options\":[\"Normalize OCR noise: 'remalns' -> 'remains', 'trvth' -> 'truth', 'shou1d' -> 'should'.\",\"If needed, store 'Cognee' only as a rebuildable projection without inferring additional system roles.\"],\"receipt\":{\"success\":true,\"details\":[\"Extracted two supported statements from the source.\",\"Preserved ambiguity by avoiding any unsupported expansion.\"]}}",
+  "role": "source_takeaway_extractor",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

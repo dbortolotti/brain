@@ -1,0 +1,95 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0030037500000000003,
+  "fixture_id": "large_table_500_rows_001",
+  "input_tokens": 381,
+  "latency_ms": 9809,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 604,
+  "payload": {
+    "answer": "Store only a compressed summary: a 500-row CSV with repeated id/name/value columns should not be memorized in full. Preserve structure and policy-relevant metadata; omit individual rows unless explicitly needed later.",
+    "citations": [
+      "Input: CSV table with 500 rows; policy question: how should it be stored?",
+      "Schema context: table_policy_handler"
+    ],
+    "conflict_classification": "none",
+    "decision": "Do not store the full table as durable memory. Store only a high-level summary of the table structure and the fact that it is a large CSV with 500 rows and repeated fields; avoid retaining row-level contents unless a later task explicitly requires them.",
+    "entity_resolution": {
+      "action": "do_not_create_new_durable_entity",
+      "entity_id": null,
+      "reason": "The table appears to be a transient large dataset; durable memory should preserve only the abstract policy-relevant summary, not row-level content."
+    },
+    "intent": "Evaluate whether a 500-row CSV table with repeated columns/values should be committed as durable memory and, if so, at what level of abstraction.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "large table 500 rows 001",
+            "role": "example input",
+            "type": "fixture"
+          }
+        ],
+        "kind": "policy",
+        "relationships": [
+          {
+            "object": "summary rather than full raw rows",
+            "predicate": "should be stored as",
+            "subject": "large table 500 rows 001"
+          }
+        ],
+        "statement": "Large repetitive tables should generally be summarized rather than stored in full as durable memory, especially when they contain repeated fields and no unique long-term facts."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "CSV table",
+            "role": "input",
+            "type": "data table"
+          },
+          {
+            "name": "500 rows",
+            "role": "property",
+            "type": "size"
+          },
+          {
+            "name": "id,name,value",
+            "role": "schema",
+            "type": "columns"
+          }
+        ],
+        "kind": "observation",
+        "relationships": [
+          {
+            "object": "id,name,value",
+            "predicate": "has_columns",
+            "subject": "CSV table"
+          },
+          {
+            "object": "500 rows",
+            "predicate": "has_size",
+            "subject": "CSV table"
+          }
+        ],
+        "statement": "The input is a CSV table with 500 rows and repeated columns/values: id, name, value."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Classified as large repetitive table.",
+        "Recommended summary-level storage only.",
+        "Avoided committing row-level facts to durable memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If exact row contents are later required, store a pointer or extract only the specific rows needed.",
+      "If the dataset is known to recur, keep a schema-level note and retrieval strategy instead of the raw table."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Evaluate whether a 500-row CSV table with repeated columns/values should be committed as durable memory and, if so, at what level of abstraction.\",\"decision\":\"Do not store the full table as durable memory. Store only a high-level summary of the table structure and the fact that it is a large CSV with 500 rows and repeated fields; avoid retaining row-level contents unless a later task explicitly requires them.\",\"memory_cards\":[{\"kind\":\"policy\",\"statement\":\"Large repetitive tables should generally be summarized rather than stored in full as durable memory, especially when they contain repeated fields and no unique long-term facts.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"large table 500 rows 001\",\"type\":\"fixture\",\"role\":\"example input\"}],\"relationships\":[{\"subject\":\"large table 500 rows 001\",\"predicate\":\"should be stored as\",\"object\":\"summary rather than full raw rows\"}]},{\"kind\":\"observation\",\"statement\":\"The input is a CSV table with 500 rows and repeated columns/values: id, name, value.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"CSV table\",\"type\":\"data table\",\"role\":\"input\"},{\"name\":\"500 rows\",\"type\":\"size\",\"role\":\"property\"},{\"name\":\"id,name,value\",\"type\":\"columns\",\"role\":\"schema\"}],\"relationships\":[{\"subject\":\"CSV table\",\"predicate\":\"has_columns\",\"object\":\"id,name,value\"},{\"subject\":\"CSV table\",\"predicate\":\"has_size\",\"object\":\"500 rows\"}]}],\"entity_resolution\":{\"action\":\"do_not_create_new_durable_entity\",\"entity_id\":null,\"reason\":\"The table appears to be a transient large dataset; durable memory should preserve only the abstract policy-relevant summary, not row-level content.\"},\"conflict_classification\":\"none\",\"answer\":\"Store only a compressed summary: a 500-row CSV with repeated id/name/value columns should not be memorized in full. Preserve structure and policy-relevant metadata; omit individual rows unless explicitly needed later.\",\"citations\":[\"Input: CSV table with 500 rows; policy question: how should it be stored?\",\"Schema context: table_policy_handler\"],\"repair_options\":[\"If exact row contents are later required, store a pointer or extract only the specific rows needed.\",\"If the dataset is known to recur, keep a schema-level note and retrieval strategy instead of the raw table.\"],\"receipt\":{\"success\":true,\"details\":[\"Classified as large repetitive table.\",\"Recommended summary-level storage only.\",\"Avoided committing row-level facts to durable memory.\"]}}",
+  "role": "table_policy_handler",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

@@ -1,0 +1,98 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.017215,
+  "fixture_id": "conflict_sara_niece_001__punctuation",
+  "input_tokens": 443,
+  "latency_ms": 5284,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 500,
+  "payload": {
+    "answer": "There is a potential ambiguity: the existing high-confidence memory says Sara is Daniele's daughter and Nur's twin, while the new statement says Sara is your niece. These facts could both be true, but the system should not assume the family connection without clarification. Safe actions available are: ask_clarification, add_new, keep_existing, reject_new, or edit. The safest action is to ask for clarification before committing the new niece relationship as durable memory.",
+    "citations": [
+      "Existing memory: Sara is Daniele's daughter and Nur's twin.",
+      "New memory: Sara is my niece."
+    ],
+    "conflict_classification": "ambiguous_relationship",
+    "decision": "ask_clarification",
+    "entity_resolution": {
+      "action": "ask_clarification",
+      "entity_id": null,
+      "reason": "The new statement may refer to the same Sara, but it introduces a different family relationship to the user that is not established by the existing memory. More information is needed to confirm whether it is the same person and how the relationships fit together."
+    },
+    "intent": "explain_conflict",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Daniele",
+            "role": "parent",
+            "type": "person"
+          },
+          {
+            "name": "Nur",
+            "role": "twin",
+            "type": "person"
+          }
+        ],
+        "kind": "existing",
+        "relationships": [
+          {
+            "object": "Daniele",
+            "predicate": "is daughter of",
+            "subject": "Sara"
+          },
+          {
+            "object": "Nur",
+            "predicate": "is twin of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is Daniele's daughter and Nur's twin."
+      },
+      {
+        "confidence": "unspecified",
+        "entities": [
+          {
+            "name": "Sara",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "new",
+        "relationships": [
+          {
+            "object": "user",
+            "predicate": "is niece of",
+            "subject": "Sara"
+          }
+        ],
+        "statement": "Sara is my niece."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Explained only the backend-supplied safe actions.",
+        "Preserved ambiguity and did not treat the new niece relationship as confirmed.",
+        "Did not present any superseded or deleted facts as current."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "ask_clarification",
+      "add_new",
+      "keep_existing",
+      "reject_new",
+      "edit"
+    ]
+  },
+  "raw_text": "{\"intent\":\"explain_conflict\",\"decision\":\"ask_clarification\",\"memory_cards\":[{\"kind\":\"existing\",\"statement\":\"Sara is Daniele's daughter and Nur's twin.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Daniele\",\"type\":\"person\",\"role\":\"parent\"},{\"name\":\"Nur\",\"type\":\"person\",\"role\":\"twin\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"is daughter of\",\"object\":\"Daniele\"},{\"subject\":\"Sara\",\"predicate\":\"is twin of\",\"object\":\"Nur\"}]},{\"kind\":\"new\",\"statement\":\"Sara is my niece.\",\"confidence\":\"unspecified\",\"entities\":[{\"name\":\"Sara\",\"type\":\"person\",\"role\":\"subject\"}],\"relationships\":[{\"subject\":\"Sara\",\"predicate\":\"is niece of\",\"object\":\"user\"}]}],\"entity_resolution\":{\"action\":\"ask_clarification\",\"entity_id\":null,\"reason\":\"The new statement may refer to the same Sara, but it introduces a different family relationship to the user that is not established by the existing memory. More information is needed to confirm whether it is the same person and how the relationships fit together.\"},\"conflict_classification\":\"ambiguous_relationship\",\"answer\":\"There is a potential ambiguity: the existing high-confidence memory says Sara is Daniele's daughter and Nur's twin, while the new statement says Sara is your niece. These facts could both be true, but the system should not assume the family connection without clarification. Safe actions available are: ask_clarification, add_new, keep_existing, reject_new, or edit. The safest action is to ask for clarification before committing the new niece relationship as durable memory.\",\"citations\":[\"Existing memory: Sara is Daniele's daughter and Nur's twin.\",\"New memory: Sara is my niece.\"],\"repair_options\":[\"ask_clarification\",\"add_new\",\"keep_existing\",\"reject_new\",\"edit\"],\"receipt\":{\"success\":true,\"details\":[\"Explained only the backend-supplied safe actions.\",\"Preserved ambiguity and did not treat the new niece relationship as confirmed.\",\"Did not present any superseded or deleted facts as current.\"]}}",
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_195937",
+  "status": "ok"
+}

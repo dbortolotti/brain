@@ -1,0 +1,52 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0014925,
+  "fixture_id": "article_url_fetch_failure_001",
+  "input_tokens": 478,
+  "latency_ms": 2408,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 252,
+  "payload": {
+    "answer": "Fetch failed: 404 network error.",
+    "citations": [],
+    "conflict_classification": "no_source_content",
+    "decision": "commit_with_warning",
+    "entity_resolution": {
+      "action": "no_change",
+      "entity_id": null,
+      "reason": "The source could not be retrieved, so no durable article content or entity linkage can be resolved."
+    },
+    "intent": "Remember this article URL, but the mock fetch failed with a 404 network error.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "https://example.com/missing",
+            "role": "requested source",
+            "type": "url"
+          }
+        ],
+        "kind": "source_status",
+        "relationships": [],
+        "statement": "The requested article URL could not be fetched because the mock fetch returned a 404 network error."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No article content was available to extract.",
+        "Only the fetch failure itself was supported by the input."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Retry the URL fetch.",
+      "Provide the article text or an accessible mirror URL.",
+      "If the URL is expected to be unavailable, supply a summary for ingestion."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Remember this article URL, but the mock fetch failed with a 404 network error.\",\"decision\":\"commit_with_warning\",\"memory_cards\":[{\"kind\":\"source_status\",\"statement\":\"The requested article URL could not be fetched because the mock fetch returned a 404 network error.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"https://example.com/missing\",\"type\":\"url\",\"role\":\"requested source\"}],\"relationships\":[]}],\"entity_resolution\":{\"action\":\"no_change\",\"entity_id\":null,\"reason\":\"The source could not be retrieved, so no durable article content or entity linkage can be resolved.\"},\"conflict_classification\":\"no_source_content\",\"answer\":\"Fetch failed: 404 network error.\",\"citations\":[],\"repair_options\":[\"Retry the URL fetch.\",\"Provide the article text or an accessible mirror URL.\",\"If the URL is expected to be unavailable, supply a summary for ingestion.\"],\"receipt\":{\"success\":false,\"details\":[\"No article content was available to extract.\", \"Only the fetch failure itself was supported by the input.\"]}}",
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164255",
+  "status": "ok"
+}

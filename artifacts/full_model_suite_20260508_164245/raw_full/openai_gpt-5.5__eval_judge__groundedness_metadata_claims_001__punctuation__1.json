@@ -1,0 +1,68 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.010915000000000001,
+  "fixture_id": "groundedness_metadata_claims_001__punctuation",
+  "input_tokens": 395,
+  "latency_ms": 4457,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 298,
+  "payload": {
+    "answer": "The answer is grounded: the evidence supports an Identity memory for a Person with medium confidence and aliases \"Sam\" and \"Sam from Goldman.\"",
+    "citations": [
+      "entity row",
+      "alias row"
+    ],
+    "conflict_classification": "none",
+    "decision": "grounded",
+    "entity_resolution": {
+      "action": "link_or_create_person",
+      "entity_id": null,
+      "reason": "Evidence contains both an entity row and an alias row supporting the person identity and aliases, but no stable entity ID is provided."
+    },
+    "intent": "evaluate_groundedness",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "alias",
+            "type": "Person"
+          },
+          {
+            "name": "Sam from Goldman",
+            "role": "alias",
+            "type": "Person"
+          }
+        ],
+        "kind": "identity",
+        "relationships": [
+          {
+            "object": "Sam",
+            "predicate": "has_alias",
+            "subject": "Person"
+          },
+          {
+            "object": "Sam from Goldman",
+            "predicate": "has_alias",
+            "subject": "Person"
+          }
+        ],
+        "statement": "A person is identified with aliases \"Sam\" and \"Sam from Goldman\"."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Verified that the claimed person identity is supported by an entity row.",
+        "Verified that aliases \"Sam\" and \"Sam from Goldman\" are supported by an alias row.",
+        "No conflict or supersession is indicated in the input."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"evaluate_groundedness\",\"decision\":\"grounded\",\"memory_cards\":[{\"kind\":\"identity\",\"statement\":\"A person is identified with aliases \\\"Sam\\\" and \\\"Sam from Goldman\\\".\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"Person\",\"role\":\"alias\"},{\"name\":\"Sam from Goldman\",\"type\":\"Person\",\"role\":\"alias\"}],\"relationships\":[{\"subject\":\"Person\",\"predicate\":\"has_alias\",\"object\":\"Sam\"},{\"subject\":\"Person\",\"predicate\":\"has_alias\",\"object\":\"Sam from Goldman\"}]}],\"entity_resolution\":{\"action\":\"link_or_create_person\",\"entity_id\":null,\"reason\":\"Evidence contains both an entity row and an alias row supporting the person identity and aliases, but no stable entity ID is provided.\"},\"conflict_classification\":\"none\",\"answer\":\"The answer is grounded: the evidence supports an Identity memory for a Person with medium confidence and aliases \\\"Sam\\\" and \\\"Sam from Goldman.\\\"\",\"citations\":[\"entity row\",\"alias row\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Verified that the claimed person identity is supported by an entity row.\",\"Verified that aliases \\\"Sam\\\" and \\\"Sam from Goldman\\\" are supported by an alias row.\",\"No conflict or supersession is indicated in the input.\"]}}",
+  "role": "eval_judge",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

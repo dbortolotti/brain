@@ -1,0 +1,121 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.018215,
+  "fixture_id": "small_table_preferences_001__context",
+  "input_tokens": 403,
+  "latency_ms": 10914,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 540,
+  "payload": {
+    "answer": "Detected two contextual preference observations, but they should not be committed as durable memory without clearer identity resolution and confirmation that these are durable user-relevant preferences.",
+    "citations": [
+      "Dinner 2026-05-05",
+      "Lunch 2026-05-01"
+    ],
+    "conflict_classification": "none_detected",
+    "decision": "do_not_commit",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "Names and firm affiliations are insufficient to uniquely resolve Sam or Anna to durable person entities; context is tabular and may be transient."
+    },
+    "intent": "extract_contextual_preferences_for_potential_memory",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "preference_holder",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "firm"
+          },
+          {
+            "name": "Bill Evans",
+            "role": "liked_object",
+            "type": "person_or_artist"
+          },
+          {
+            "name": "Dinner 2026-05-05",
+            "role": "source",
+            "type": "source_event"
+          }
+        ],
+        "kind": "preference_observation",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Bill Evans",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam at Goldman was reported to like Bill Evans, sourced from dinner on 2026-05-05."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Anna",
+            "role": "preference_holder",
+            "type": "person"
+          },
+          {
+            "name": "JPM",
+            "role": "affiliation",
+            "type": "firm"
+          },
+          {
+            "name": "Barolo",
+            "role": "liked_object",
+            "type": "wine"
+          },
+          {
+            "name": "Lunch 2026-05-01",
+            "role": "source",
+            "type": "source_event"
+          }
+        ],
+        "kind": "preference_observation",
+        "relationships": [
+          {
+            "object": "JPM",
+            "predicate": "affiliated_with",
+            "subject": "Anna"
+          },
+          {
+            "object": "Barolo",
+            "predicate": "likes",
+            "subject": "Anna"
+          }
+        ],
+        "statement": "Anna at JPM was reported to like Barolo, sourced from lunch on 2026-05-01."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted preference observations from the provided table.",
+        "Preserved ambiguity around entity identity and source context.",
+        "No durable memory commit recommended."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Ask for full names or stable identifiers for Sam and Anna.",
+      "Confirm whether these preferences should be saved as durable contact preferences.",
+      "Clarify whether Goldman means Goldman Sachs and JPM means JPMorgan Chase."
+    ]
+  },
+  "raw_text": "{\"intent\":\"extract_contextual_preferences_for_potential_memory\",\"decision\":\"do_not_commit\",\"memory_cards\":[{\"kind\":\"preference_observation\",\"statement\":\"Sam at Goldman was reported to like Bill Evans, sourced from dinner on 2026-05-05.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"preference_holder\"},{\"name\":\"Goldman\",\"type\":\"firm\",\"role\":\"affiliation\"},{\"name\":\"Bill Evans\",\"type\":\"person_or_artist\",\"role\":\"liked_object\"},{\"name\":\"Dinner 2026-05-05\",\"type\":\"source_event\",\"role\":\"source\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Bill Evans\"}]},{\"kind\":\"preference_observation\",\"statement\":\"Anna at JPM was reported to like Barolo, sourced from lunch on 2026-05-01.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Anna\",\"type\":\"person\",\"role\":\"preference_holder\"},{\"name\":\"JPM\",\"type\":\"firm\",\"role\":\"affiliation\"},{\"name\":\"Barolo\",\"type\":\"wine\",\"role\":\"liked_object\"},{\"name\":\"Lunch 2026-05-01\",\"type\":\"source_event\",\"role\":\"source\"}],\"relationships\":[{\"subject\":\"Anna\",\"predicate\":\"affiliated_with\",\"object\":\"JPM\"},{\"subject\":\"Anna\",\"predicate\":\"likes\",\"object\":\"Barolo\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"Names and firm affiliations are insufficient to uniquely resolve Sam or Anna to durable person entities; context is tabular and may be transient.\"},\"conflict_classification\":\"none_detected\",\"answer\":\"Detected two contextual preference observations, but they should not be committed as durable memory without clearer identity resolution and confirmation that these are durable user-relevant preferences.\",\"citations\":[\"Dinner 2026-05-05\",\"Lunch 2026-05-01\"],\"repair_options\":[\"Ask for full names or stable identifiers for Sam and Anna.\",\"Confirm whether these preferences should be saved as durable contact preferences.\",\"Clarify whether Goldman means Goldman Sachs and JPM means JPMorgan Chase.\"],\"receipt\":{\"success\":true,\"details\":[\"Extracted preference observations from the provided table.\",\"Preserved ambiguity around entity identity and source context.\",\"No durable memory commit recommended.\"]}}",
+  "role": "open_loop_detector",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

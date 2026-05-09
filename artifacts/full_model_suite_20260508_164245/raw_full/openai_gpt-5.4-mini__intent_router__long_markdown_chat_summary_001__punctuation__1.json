@@ -1,0 +1,148 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0033307500000000004,
+  "fixture_id": "long_markdown_chat_summary_001__punctuation",
+  "input_tokens": 427,
+  "latency_ms": 4507,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 669,
+  "payload": {
+    "answer": "Captured the architecture preferences as durable memory and left the Telegram/model questions open.",
+    "citations": [
+      "Input: Brain DB should be the source of truth",
+      "Input: Cognee should be a rebuildable semantic projection",
+      "Input: Slack should be a strict memory intake agent",
+      "Input: Open questions - Should Telegram be added later? Which model is cheapest while saturating performance?"
+    ],
+    "conflict_classification": "none",
+    "decision": "Commit durable memory for the stated architecture preferences and preserve the two open questions as unresolved.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No ambiguous entity requires resolution from the provided summary."
+    },
+    "intent": "intent_router",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source of truth",
+            "type": "system"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Brain",
+            "predicate": "is_source_of_truth_for",
+            "subject": "Brain DB"
+          }
+        ],
+        "statement": "Brain DB should be the source of truth."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Cognee",
+            "role": "semantic projection",
+            "type": "system"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "rebuildable semantic projection",
+            "predicate": "is",
+            "subject": "Cognee"
+          },
+          {
+            "object": "Brain DB",
+            "predicate": "depends_on",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Cognee should be a rebuildable semantic projection."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Slack",
+            "role": "memory intake agent",
+            "type": "system"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "strict memory intake agent",
+            "predicate": "should_be",
+            "subject": "Slack"
+          }
+        ],
+        "statement": "Slack should be a strict memory intake agent."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Telegram",
+            "role": "candidate addition",
+            "type": "system"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [
+          {
+            "object": "unknown",
+            "predicate": "addition_timing",
+            "subject": "Telegram"
+          }
+        ],
+        "statement": "Whether Telegram should be added later is unresolved."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "model selection",
+            "role": "open optimization question",
+            "type": "concept"
+          }
+        ],
+        "kind": "open_question",
+        "relationships": [
+          {
+            "object": "cheapest while saturating performance",
+            "predicate": "objective",
+            "subject": "model selection"
+          },
+          {
+            "object": "unresolved",
+            "predicate": "status",
+            "subject": "model selection"
+          }
+        ],
+        "statement": "Which model is cheapest while saturating performance is unresolved."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Stored 3 durable preference cards.",
+        "Preserved 2 unresolved questions without converting them into decisions."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If desired, I can normalize these into explicit policy statements for Brain, Cognee, and Slack.",
+      "If desired, I can split the open questions into separate decision-tracking records."
+    ]
+  },
+  "raw_text": "{\"intent\":\"intent_router\",\"decision\":\"Commit durable memory for the stated architecture preferences and preserve the two open questions as unresolved.\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Brain DB should be the source of truth.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Brain DB\",\"type\":\"system\",\"role\":\"source of truth\"}],\"relationships\":[{\"subject\":\"Brain DB\",\"predicate\":\"is_source_of_truth_for\",\"object\":\"Brain\"}]},{\"kind\":\"preference\",\"statement\":\"Cognee should be a rebuildable semantic projection.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Cognee\",\"type\":\"system\",\"role\":\"semantic projection\"}],\"relationships\":[{\"subject\":\"Cognee\",\"predicate\":\"is\",\"object\":\"rebuildable semantic projection\"},{\"subject\":\"Cognee\",\"predicate\":\"depends_on\",\"object\":\"Brain DB\"}]},{\"kind\":\"preference\",\"statement\":\"Slack should be a strict memory intake agent.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Slack\",\"type\":\"system\",\"role\":\"memory intake agent\"}],\"relationships\":[{\"subject\":\"Slack\",\"predicate\":\"should_be\",\"object\":\"strict memory intake agent\"}]},{\"kind\":\"open_question\",\"statement\":\"Whether Telegram should be added later is unresolved.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Telegram\",\"type\":\"system\",\"role\":\"candidate addition\"}],\"relationships\":[{\"subject\":\"Telegram\",\"predicate\":\"addition_timing\",\"object\":\"unknown\"}]},{\"kind\":\"open_question\",\"statement\":\"Which model is cheapest while saturating performance is unresolved.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"model selection\",\"type\":\"concept\",\"role\":\"open optimization question\"}],\"relationships\":[{\"subject\":\"model selection\",\"predicate\":\"objective\",\"object\":\"cheapest while saturating performance\"},{\"subject\":\"model selection\",\"predicate\":\"status\",\"object\":\"unresolved\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No ambiguous entity requires resolution from the provided summary.\"},\"conflict_classification\":\"none\",\"answer\":\"Captured the architecture preferences as durable memory and left the Telegram/model questions open.\",\"citations\":[\"Input: Brain DB should be the source of truth\",\"Input: Cognee should be a rebuildable semantic projection\",\"Input: Slack should be a strict memory intake agent\",\"Input: Open questions - Should Telegram be added later? Which model is cheapest while saturating performance?\"],\"repair_options\":[\"If desired, I can normalize these into explicit policy statements for Brain, Cognee, and Slack.\",\"If desired, I can split the open questions into separate decision-tracking records.\"],\"receipt\":{\"success\":true,\"details\":[\"Stored 3 durable preference cards.\",\"Preserved 2 unresolved questions without converting them into decisions.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

@@ -1,0 +1,78 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.011349999999999999,
+  "fixture_id": "email_source_meeting_followup_001__punctuation",
+  "input_tokens": 422,
+  "latency_ms": 13009,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 308,
+  "payload": {
+    "answer": "Extracted two durable takeaways: Sam joined Point72 last month, and Sam requested the AI infrastructure article. No raw private email address was retained.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "commit_memory",
+    "entity_resolution": {
+      "action": "needs_resolution",
+      "entity_id": null,
+      "reason": "The sender is identified only as Sam without a usable raw email address or additional disambiguating context."
+    },
+    "intent": "extract_source_takeaways",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "sender",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_update",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam said they joined Point72 last month."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "requester",
+            "type": "person"
+          }
+        ],
+        "kind": "content_request",
+        "relationships": [
+          {
+            "object": "AI infrastructure article",
+            "predicate": "requested",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam requested that the AI infrastructure article be sent to them."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Private email address omitted.",
+        "Preserved ambiguity around Sam's identity due to limited context."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"extract_source_takeaways\",\"decision\":\"commit_memory\",\"memory_cards\":[{\"kind\":\"employment_update\",\"statement\":\"Sam said they joined Point72 last month.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"sender\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]},{\"kind\":\"content_request\",\"statement\":\"Sam requested that the AI infrastructure article be sent to them.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"requester\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"requested\",\"object\":\"AI infrastructure article\"}]}],\"entity_resolution\":{\"action\":\"needs_resolution\",\"entity_id\":null,\"reason\":\"The sender is identified only as Sam without a usable raw email address or additional disambiguating context.\"},\"conflict_classification\":\"none\",\"answer\":\"Extracted two durable takeaways: Sam joined Point72 last month, and Sam requested the AI infrastructure article. No raw private email address was retained.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Private email address omitted.\",\"Preserved ambiguity around Sam's identity due to limited context.\"]}}",
+  "role": "source_takeaway_extractor",
+  "run_id": "eval_20260508_132201",
+  "status": "ok"
+}

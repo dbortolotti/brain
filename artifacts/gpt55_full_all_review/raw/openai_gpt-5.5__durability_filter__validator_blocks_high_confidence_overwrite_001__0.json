@@ -1,0 +1,38 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.009880000000000002,
+  "fixture_id": "validator_blocks_high_confidence_overwrite_001",
+  "input_tokens": 380,
+  "latency_ms": 5609,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 266,
+  "payload": {
+    "answer": "Rejected the proposed update. Existing memory says Sara is Daniele's daughter; the proposed claim that Sara is Daniele's niece is conflicting and should not be committed as current without clarification.",
+    "citations": [],
+    "conflict_classification": "high_confidence_overwrite_blocked",
+    "decision": "reject",
+    "entity_resolution": {
+      "action": "no_change",
+      "entity_id": null,
+      "reason": "The proposed relationship directly conflicts with an existing high-confidence durable memory that Sara is Daniele's daughter. Do not overwrite without explicit correction or disambiguation."
+    },
+    "intent": "evaluate_memory_update",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Blocked conflicting overwrite of existing relationship: Sara is Daniele's daughter.",
+        "Did not commit proposed relationship: Sara is Daniele's niece."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "Ask for clarification whether Sara is Daniele's daughter or niece.",
+      "If the prior memory was wrong, provide an explicit correction before replacing it.",
+      "If this refers to a different Sara or Daniele, disambiguate the entities."
+    ]
+  },
+  "raw_text": "{\"intent\":\"evaluate_memory_update\",\"decision\":\"reject\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"no_change\",\"entity_id\":null,\"reason\":\"The proposed relationship directly conflicts with an existing high-confidence durable memory that Sara is Daniele's daughter. Do not overwrite without explicit correction or disambiguation.\"},\"conflict_classification\":\"high_confidence_overwrite_blocked\",\"answer\":\"Rejected the proposed update. Existing memory says Sara is Daniele's daughter; the proposed claim that Sara is Daniele's niece is conflicting and should not be committed as current without clarification.\",\"citations\":[],\"repair_options\":[\"Ask for clarification whether Sara is Daniele's daughter or niece.\",\"If the prior memory was wrong, provide an explicit correction before replacing it.\",\"If this refers to a different Sara or Daniele, disambiguate the entities.\"],\"receipt\":{\"success\":false,\"details\":[\"Blocked conflicting overwrite of existing relationship: Sara is Daniele's daughter.\",\"Did not commit proposed relationship: Sara is Daniele's niece.\"]}}",
+  "role": "durability_filter",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

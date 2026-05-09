@@ -1,0 +1,40 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.011025,
+  "fixture_id": "numeric_table_exactness_001__punctuation",
+  "input_tokens": 393,
+  "latency_ms": 3837,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 302,
+  "payload": {
+    "answer": "No durable memory was committed. The table appears to report two runs exactly as written: PPO-001 has Reward 012, Sharpe 045, Notes baseline; PPO-002 has Reward 018, Sharpe 051, Notes entropy tuned. Numeric values were preserved as strings due to leading zeros.",
+    "citations": [
+      "| PPO-001 | 012 | 045 | baseline |",
+      "| PPO-002 | 018 | 051 | entropy tuned |"
+    ],
+    "conflict_classification": "none",
+    "decision": "do_not_commit",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input is a small run-results table with ambiguous context and numeric strings containing leading zeros; it is not clearly durable personal memory."
+    },
+    "intent": "extract_table_facts_exactly",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Declined durable memory commitment due to insufficient long-term personal-memory context.",
+        "Preserved exact punctuation and leading-zero numeric strings in the answer."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If these run metrics should be remembered, provide context such as project name, metric definitions, and whether leading zeros are meaningful identifiers or numeric formatting.",
+      "Confirm whether Reward and Sharpe values should be stored as exact strings or normalized numbers."
+    ]
+  },
+  "raw_text": "{\"intent\":\"extract_table_facts_exactly\",\"decision\":\"do_not_commit\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input is a small run-results table with ambiguous context and numeric strings containing leading zeros; it is not clearly durable personal memory.\"},\"conflict_classification\":\"none\",\"answer\":\"No durable memory was committed. The table appears to report two runs exactly as written: PPO-001 has Reward 012, Sharpe 045, Notes baseline; PPO-002 has Reward 018, Sharpe 051, Notes entropy tuned. Numeric values were preserved as strings due to leading zeros.\",\"citations\":[\"| PPO-001 | 012 | 045 | baseline |\",\"| PPO-002 | 018 | 051 | entropy tuned |\"],\"repair_options\":[\"If these run metrics should be remembered, provide context such as project name, metric definitions, and whether leading zeros are meaningful identifiers or numeric formatting.\",\"Confirm whether Reward and Sharpe values should be stored as exact strings or normalized numbers.\"],\"receipt\":{\"success\":true,\"details\":[\"Declined durable memory commitment due to insufficient long-term personal-memory context.\",\"Preserved exact punctuation and leading-zero numeric strings in the answer.\"]}}",
+  "role": "table_policy_handler",
+  "run_id": "eval_20260508_195937",
+  "status": "ok"
+}

@@ -1,0 +1,89 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.00225825,
+  "fixture_id": "email_source_meeting_followup_001__punctuation",
+  "input_tokens": 485,
+  "latency_ms": 3025,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 421,
+  "payload": {
+    "answer": "Extracted two supported atomic memories: a request for the AI infrastructure article, and a self-reported update that the sender joined Point72 last month.",
+    "citations": [
+      "source_email_subject_followup",
+      "source_email_body_followup"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_with_warning",
+    "entity_resolution": {
+      "action": "defer",
+      "entity_id": null,
+      "reason": "The sender is identifiable only as an email address in the source, which should not be exposed directly; no separate durable identity resolution is justified from the provided text."
+    },
+    "intent": "Extract atomic memory cards from an email follow-up note.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "sender",
+            "role": "requester",
+            "type": "person"
+          },
+          {
+            "name": "AI infrastructure article",
+            "role": "requested item",
+            "type": "document"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "AI infrastructure article",
+            "predicate": "requested",
+            "subject": "sender"
+          }
+        ],
+        "statement": "The sender requested the AI infrastructure article be sent."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "sender",
+            "role": "speaker",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "career_update",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "sender"
+          }
+        ],
+        "statement": "The sender said they joined Point72 last month."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Supported facts extracted without exposing raw private email address.",
+        "Ambiguous entity identity left unresolved."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want stronger entity resolution, provide a stable contact name for the sender.",
+      "If you want a more conservative memory set, keep only the article request and omit the employment update."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Extract atomic memory cards from an email follow-up note.\",\"decision\":\"commit_with_warning\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"The sender requested the AI infrastructure article be sent.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"sender\",\"type\":\"person\",\"role\":\"requester\"},{\"name\":\"AI infrastructure article\",\"type\":\"document\",\"role\":\"requested item\"}],\"relationships\":[{\"subject\":\"sender\",\"predicate\":\"requested\",\"object\":\"AI infrastructure article\"}]},{\"kind\":\"career_update\",\"statement\":\"The sender said they joined Point72 last month.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"sender\",\"type\":\"person\",\"role\":\"speaker\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"sender\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"defer\",\"entity_id\":null,\"reason\":\"The sender is identifiable only as an email address in the source, which should not be exposed directly; no separate durable identity resolution is justified from the provided text.\"},\"conflict_classification\":\"none\",\"answer\":\"Extracted two supported atomic memories: a request for the AI infrastructure article, and a self-reported update that the sender joined Point72 last month.\",\"citations\":[\"source_email_subject_followup\",\"source_email_body_followup\"],\"repair_options\":[\"If you want stronger entity resolution, provide a stable contact name for the sender.\",\"If you want a more conservative memory set, keep only the article request and omit the employment update.\"],\"receipt\":{\"success\":true,\"details\":[\"Supported facts extracted without exposing raw private email address.\",\"Ambiguous entity identity left unresolved.\"]}}",
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164405",
+  "status": "ok"
+}

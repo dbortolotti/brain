@@ -1,0 +1,86 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.001842,
+  "fixture_id": "email_source_meeting_followup_001__context",
+  "input_tokens": 488,
+  "latency_ms": 3266,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 328,
+  "payload": {
+    "answer": "Committed two atomic memory cards: Sam joined Point72 last month, and Sam requested the AI infrastructure article.",
+    "citations": [
+      "input: follow-up email context"
+    ],
+    "conflict_classification": "none",
+    "decision": "commit_success",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No prior entity context was provided to resolve Sam to an existing memory entity with confidence."
+    },
+    "intent": "Extract atomic memory cards from the email follow-up context",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "sender",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "fact",
+        "relationships": [
+          {
+            "object": "Point72 last month",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72 last month."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "sender",
+            "type": "person"
+          },
+          {
+            "name": "AI infra article",
+            "role": "requested item",
+            "type": "document"
+          }
+        ],
+        "kind": "request",
+        "relationships": [
+          {
+            "object": "AI infra article",
+            "predicate": "requested",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam requested the AI infrastructure article to be sent."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Extracted only explicitly supported facts.",
+        "Omitted raw email address and source text.",
+        "Preserved ambiguity by not resolving Sam to a prior entity."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"Extract atomic memory cards from the email follow-up context\",\"decision\":\"commit_success\",\"memory_cards\":[{\"kind\":\"fact\",\"statement\":\"Sam joined Point72 last month.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"sender\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72 last month\"}]},{\"kind\":\"request\",\"statement\":\"Sam requested the AI infrastructure article to be sent.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"sender\"},{\"name\":\"AI infra article\",\"type\":\"document\",\"role\":\"requested item\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"requested\",\"object\":\"AI infra article\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"No prior entity context was provided to resolve Sam to an existing memory entity with confidence.\"},\"conflict_classification\":\"none\",\"answer\":\"Committed two atomic memory cards: Sam joined Point72 last month, and Sam requested the AI infrastructure article.\",\"citations\":[\"input: follow-up email context\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Extracted only explicitly supported facts.\",\"Omitted raw email address and source text.\",\"Preserved ambiguity by not resolving Sam to a prior entity.\"]}}",
+  "role": "atomic_card_extractor",
+  "run_id": "eval_20260508_164405",
+  "status": "ok"
+}

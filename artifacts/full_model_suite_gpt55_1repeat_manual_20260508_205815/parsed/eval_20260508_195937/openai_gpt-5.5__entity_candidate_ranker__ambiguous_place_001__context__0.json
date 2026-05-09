@@ -1,0 +1,50 @@
+{
+  "fixture_id": "ambiguous_place_001__context",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Linked the note to the existing Brutto restaurant in London entity as a personal evaluation.",
+    "citations": [
+      "Existing: Brutto restaurant in London",
+      "New note: Brutto was better than expected"
+    ],
+    "conflict_classification": "none",
+    "decision": "merge_with_existing_entity",
+    "entity_resolution": {
+      "action": "link_existing",
+      "entity_id": "Brutto restaurant in London",
+      "reason": "The note refers to 'Brutto' in a context where an existing entity is 'Brutto restaurant in London' and a separate 'Brutto article alias' exists. The evaluative phrase 'was better than expected' most plausibly applies to the restaurant experience, not an article alias."
+    },
+    "intent": "store_personal_evaluation",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Brutto",
+            "role": "subject",
+            "type": "restaurant"
+          }
+        ],
+        "kind": "preference_observation",
+        "relationships": [
+          {
+            "object": "Brutto",
+            "predicate": "thought_better_than_expected",
+            "subject": "user"
+          }
+        ],
+        "statement": "The user thought Brutto was better than expected."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Committed a medium-confidence personal evaluation for Brutto restaurant in London.",
+        "Did not treat the Brutto article alias as the primary entity."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "entity_candidate_ranker",
+  "run_id": "eval_20260508_195937"
+}

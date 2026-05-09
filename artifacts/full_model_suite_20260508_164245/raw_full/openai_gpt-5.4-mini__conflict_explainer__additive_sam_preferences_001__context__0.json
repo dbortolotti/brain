@@ -1,0 +1,75 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0019372500000000002,
+  "fixture_id": "additive_sam_preferences_001__context",
+  "input_tokens": 441,
+  "latency_ms": 2860,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 357,
+  "payload": {
+    "answer": "Add the new preference as a separate memory. The existing fact that Sam from Goldman likes Bill Evans remains current, and the new fact that Sam from Goldman also likes Sonny Rollins can be stored alongside it.",
+    "citations": [
+      "Existing memory: Sam from Goldman likes Bill Evans.",
+      "New: Sam from Goldman also likes Sonny Rollins."
+    ],
+    "conflict_classification": "additive_compatible",
+    "decision": "add_new",
+    "entity_resolution": {
+      "action": "keep_existing",
+      "entity_id": null,
+      "reason": "The new memory appears additive and does not conflict with the existing preference about Bill Evans; preserve the existing entity mapping and add the new preference separately."
+    },
+    "intent": "Explain how to handle an additive preference update without overwriting existing memory.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "affiliation",
+            "type": "organization"
+          },
+          {
+            "name": "Sonny Rollins",
+            "role": "preference object",
+            "type": "person"
+          }
+        ],
+        "kind": "preference",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "affiliated_with",
+            "subject": "Sam"
+          },
+          {
+            "object": "Sonny Rollins",
+            "predicate": "likes",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam from Goldman also likes Sonny Rollins."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Preserved the existing Bill Evans preference.",
+        "Stored the Sonny Rollins preference as an additional, non-conflicting memory."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "add_new",
+      "keep_existing"
+    ]
+  },
+  "raw_text": "{\"intent\":\"Explain how to handle an additive preference update without overwriting existing memory.\",\"decision\":\"add_new\",\"memory_cards\":[{\"kind\":\"preference\",\"statement\":\"Sam from Goldman also likes Sonny Rollins.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"affiliation\"},{\"name\":\"Sonny Rollins\",\"type\":\"person\",\"role\":\"preference object\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"affiliated_with\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"likes\",\"object\":\"Sonny Rollins\"}]}],\"entity_resolution\":{\"action\":\"keep_existing\",\"entity_id\":null,\"reason\":\"The new memory appears additive and does not conflict with the existing preference about Bill Evans; preserve the existing entity mapping and add the new preference separately.\"},\"conflict_classification\":\"additive_compatible\",\"answer\":\"Add the new preference as a separate memory. The existing fact that Sam from Goldman likes Bill Evans remains current, and the new fact that Sam from Goldman also likes Sonny Rollins can be stored alongside it.\",\"citations\":[\"Existing memory: Sam from Goldman likes Bill Evans.\",\"New: Sam from Goldman also likes Sonny Rollins.\"],\"repair_options\":[\"add_new\",\"keep_existing\"],\"receipt\":{\"success\":true,\"details\":[\"Preserved the existing Bill Evans preference.\",\"Stored the Sonny Rollins preference as an additional, non-conflicting memory.\"]}}",
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

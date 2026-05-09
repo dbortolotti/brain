@@ -1,0 +1,34 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01601,
+  "fixture_id": "cost_latency_token_accounting_001__punctuation",
+  "input_tokens": 388,
+  "latency_ms": 5969,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 469,
+  "payload": {
+    "answer": "Required eval accounting fields should capture enough information to reproduce cost and performance metrics:\n\n- Token counts: record input/prompt tokens, output/completion tokens, and total tokens. If available, include cached tokens, reasoning tokens, tool-call tokens, or other provider-specific token categories.\n- Provider ID: record the serving provider, for example OpenAI, Anthropic, Google, local, or another vendor. This should be stable and machine-readable.\n- Model ID: record the exact model identifier used for the run, including version or snapshot when available. Avoid vague names if a precise model ID exists.\n- Estimated price: compute the estimated cost from token usage and the applicable provider/model pricing. Store currency, pricing basis, and whether the amount is estimated rather than billed.\n- Latency p50, p90, p95: report percentile latency across the evaluated requests. p50 is the median, p90 is the latency below which 90% of requests completed, and p95 is the latency below which 95% completed. Include units, typically milliseconds, and clarify whether latency is end-to-end, model-only, or API round-trip.\n\nThese fields are important because token counts support auditability, provider/model IDs identify what was evaluated, estimated price supports cost comparison, and latency percentiles summarize typical and tail performance.",
+    "citations": [],
+    "conflict_classification": "none",
+    "decision": "no_memory_commit",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "The input asks for an explanation of eval accounting fields and contains no durable user-specific fact to store."
+    },
+    "intent": "debug_explainer",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Explained required eval accounting fields.",
+        "No memory was committed because the request contained no durable personal memory."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"debug_explainer\",\"decision\":\"no_memory_commit\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":null,\"reason\":\"The input asks for an explanation of eval accounting fields and contains no durable user-specific fact to store.\"},\"conflict_classification\":\"none\",\"answer\":\"Required eval accounting fields should capture enough information to reproduce cost and performance metrics:\\n\\n- Token counts: record input/prompt tokens, output/completion tokens, and total tokens. If available, include cached tokens, reasoning tokens, tool-call tokens, or other provider-specific token categories.\\n- Provider ID: record the serving provider, for example OpenAI, Anthropic, Google, local, or another vendor. This should be stable and machine-readable.\\n- Model ID: record the exact model identifier used for the run, including version or snapshot when available. Avoid vague names if a precise model ID exists.\\n- Estimated price: compute the estimated cost from token usage and the applicable provider/model pricing. Store currency, pricing basis, and whether the amount is estimated rather than billed.\\n- Latency p50, p90, p95: report percentile latency across the evaluated requests. p50 is the median, p90 is the latency below which 90% of requests completed, and p95 is the latency below which 95% completed. Include units, typically milliseconds, and clarify whether latency is end-to-end, model-only, or API round-trip.\\n\\nThese fields are important because token counts support auditability, provider/model IDs identify what was evaluated, estimated price supports cost comparison, and latency percentiles summarize typical and tail performance.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Explained required eval accounting fields.\",\"No memory was committed because the request contained no durable personal memory.\"]}}",
+  "role": "debug_explainer",
+  "run_id": "eval_20260508_195937",
+  "status": "ok"
+}

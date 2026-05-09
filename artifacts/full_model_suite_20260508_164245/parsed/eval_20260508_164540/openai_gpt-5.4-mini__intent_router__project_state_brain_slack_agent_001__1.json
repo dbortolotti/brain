@@ -1,0 +1,65 @@
+{
+  "fixture_id": "project_state_brain_slack_agent_001",
+  "model": "openai:gpt-5.4-mini",
+  "payload": {
+    "answer": "Committed as current state with Slack primary and Telegram deferred.",
+    "citations": [
+      "Input: \"Brain project state: Slack should be the primary guardrailed memory ingestion interface; Telegram can come later.\""
+    ],
+    "conflict_classification": "none",
+    "decision": "Commit as current project state: Slack is the primary guardrailed memory ingestion interface; Telegram is deferred for later.",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": null,
+      "reason": "No ambiguous entity reference requires resolution."
+    },
+    "intent": "record_project_state",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain",
+            "role": "system",
+            "type": "project"
+          },
+          {
+            "name": "Slack",
+            "role": "primary ingestion interface",
+            "type": "tool"
+          },
+          {
+            "name": "Telegram",
+            "role": "deferred future interface",
+            "type": "tool"
+          }
+        ],
+        "kind": "project_state",
+        "relationships": [
+          {
+            "object": "Slack",
+            "predicate": "uses as primary guardrailed memory ingestion interface",
+            "subject": "Brain"
+          },
+          {
+            "object": "Telegram",
+            "predicate": "may add later",
+            "subject": "Brain"
+          }
+        ],
+        "statement": "Slack should be the primary guardrailed memory ingestion interface for Brain; Telegram can come later."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed the project-state directive.",
+        "Stored one durable memory card with high confidence.",
+        "No conflicts or superseded facts detected."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540"
+}

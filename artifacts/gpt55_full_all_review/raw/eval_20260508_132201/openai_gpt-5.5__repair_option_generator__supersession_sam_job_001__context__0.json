@@ -1,0 +1,74 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.01331,
+  "fixture_id": "supersession_sam_job_001__context",
+  "input_tokens": 382,
+  "latency_ms": 5092,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 380,
+  "payload": {
+    "answer": "Updated memory: Sam previously worked at Goldman and now works at Point72. The prior statement that Sam works at Goldman should no longer be treated as current.",
+    "citations": [],
+    "conflict_classification": "supersession",
+    "decision": "commit_update_and_mark_prior_as_superseded",
+    "entity_resolution": {
+      "action": "reuse_existing_entity",
+      "entity_id": null,
+      "reason": "The new information refers to the same Sam as the existing memory by direct contextual continuity."
+    },
+    "intent": "update_memory_with_supersession",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          },
+          {
+            "name": "Point72",
+            "role": "current_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_status",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "formerly_worked_at",
+            "subject": "Sam"
+          },
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam left Goldman and joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected supersession: the new employment information replaces the prior current-employer fact.",
+        "Committed Point72 as Sam's current employer.",
+        "Preserved Goldman only as Sam's former employer, not as a current fact."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark the existing memory 'Sam works at Goldman' as superseded rather than deleting it, preserving it as historical employment.",
+      "Add a new current memory that Sam works at Point72.",
+      "Optionally add a historical memory that Sam left Goldman, if departure history is useful."
+    ]
+  },
+  "raw_text": "{\"intent\":\"update_memory_with_supersession\",\"decision\":\"commit_update_and_mark_prior_as_superseded\",\"memory_cards\":[{\"kind\":\"employment_status\",\"statement\":\"Sam left Goldman and joined Point72.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"former_employer\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"current_employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"formerly_worked_at\",\"object\":\"Goldman\"},{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"reuse_existing_entity\",\"entity_id\":null,\"reason\":\"The new information refers to the same Sam as the existing memory by direct contextual continuity.\"},\"conflict_classification\":\"supersession\",\"answer\":\"Updated memory: Sam previously worked at Goldman and now works at Point72. The prior statement that Sam works at Goldman should no longer be treated as current.\",\"citations\":[],\"repair_options\":[\"Mark the existing memory 'Sam works at Goldman' as superseded rather than deleting it, preserving it as historical employment.\",\"Add a new current memory that Sam works at Point72.\",\"Optionally add a historical memory that Sam left Goldman, if departure history is useful.\"],\"receipt\":{\"success\":true,\"details\":[\"Detected supersession: the new employment information replaces the prior current-employer fact.\",\"Committed Point72 as Sam's current employer.\",\"Preserved Goldman only as Sam's former employer, not as a current fact.\"]}}",
+  "role": "repair_option_generator",
+  "run_id": "eval_20260508_132201",
+  "status": "ok"
+}

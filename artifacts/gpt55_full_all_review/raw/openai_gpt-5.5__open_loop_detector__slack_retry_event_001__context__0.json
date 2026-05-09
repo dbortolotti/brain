@@ -1,0 +1,35 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.007234999999999999,
+  "fixture_id": "slack_retry_event_001__context",
+  "input_tokens": 379,
+  "latency_ms": 3046,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 178,
+  "payload": {
+    "answer": "Duplicate Slack event delivery detected; no additional durable memory should be committed from the retry.",
+    "citations": [],
+    "conflict_classification": "duplicate_event",
+    "decision": "ignore_duplicate",
+    "entity_resolution": {
+      "action": "no_new_entity",
+      "entity_id": null,
+      "reason": "The same Slack event ID was delivered twice, so this is a retry/duplicate delivery rather than a distinct new memory signal."
+    },
+    "intent": "deduplicate_event",
+    "memory_cards": [],
+    "receipt": {
+      "details": [
+        "Detected duplicate delivery for the same Slack event ID.",
+        "No memory card created to avoid double-counting the same fact.",
+        "Underlying ambiguous statement remains: Sam from Goldman likes Bill Evans."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"deduplicate_event\",\"decision\":\"ignore_duplicate\",\"memory_cards\":[],\"entity_resolution\":{\"action\":\"no_new_entity\",\"entity_id\":null,\"reason\":\"The same Slack event ID was delivered twice, so this is a retry/duplicate delivery rather than a distinct new memory signal.\"},\"conflict_classification\":\"duplicate_event\",\"answer\":\"Duplicate Slack event delivery detected; no additional durable memory should be committed from the retry.\",\"citations\":[],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Detected duplicate delivery for the same Slack event ID.\",\"No memory card created to avoid double-counting the same fact.\",\"Underlying ambiguous statement remains: Sam from Goldman likes Bill Evans.\"]}}",
+  "role": "open_loop_detector",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

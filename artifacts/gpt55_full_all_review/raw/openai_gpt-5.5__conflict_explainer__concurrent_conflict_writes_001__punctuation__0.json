@@ -1,0 +1,90 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.014315,
+  "fixture_id": "concurrent_conflict_writes_001__punctuation",
+  "input_tokens": 433,
+  "latency_ms": 5130,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 405,
+  "payload": {
+    "answer": "There are two concurrent candidate memories: \u201cSam works at Goldman\u201d and \u201cSam joined Point72.\u201d They may conflict if they refer to the same Sam and the same employment timeframe, but the input does not provide enough timing or context to decide which is current. Safe actions available: approve_supersession, keep_both, reject_new, or edit.",
+    "citations": [
+      "Concurrent writes - Sam works at Goldman Sam joined Point72"
+    ],
+    "conflict_classification": "concurrent_conflict_writes",
+    "decision": "needs_user_resolution",
+    "entity_resolution": {
+      "action": "unresolved",
+      "entity_id": null,
+      "reason": "The input contains two concurrent employment-related statements about Sam with no punctuation or timing to determine whether one supersedes the other."
+    },
+    "intent": "explain_conflict",
+    "memory_cards": [
+      {
+        "confidence": "ambiguous",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "candidate_memory",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Goldman."
+      },
+      {
+        "confidence": "ambiguous",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "candidate_memory",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "joined",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam joined Point72."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "No durable memory was committed.",
+        "Conflict requires user resolution before deciding whether to supersede, keep both, reject the new memory, or edit."
+      ],
+      "success": false
+    },
+    "repair_options": [
+      "approve_supersession",
+      "keep_both",
+      "reject_new",
+      "edit"
+    ]
+  },
+  "raw_text": "{\"intent\":\"explain_conflict\",\"decision\":\"needs_user_resolution\",\"memory_cards\":[{\"kind\":\"candidate_memory\",\"statement\":\"Sam works at Goldman.\",\"confidence\":\"ambiguous\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Goldman\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"works_at\",\"object\":\"Goldman\"}]},{\"kind\":\"candidate_memory\",\"statement\":\"Sam joined Point72.\",\"confidence\":\"ambiguous\",\"entities\":[{\"name\":\"Sam\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Point72\",\"type\":\"organization\",\"role\":\"employer\"}],\"relationships\":[{\"subject\":\"Sam\",\"predicate\":\"joined\",\"object\":\"Point72\"}]}],\"entity_resolution\":{\"action\":\"unresolved\",\"entity_id\":null,\"reason\":\"The input contains two concurrent employment-related statements about Sam with no punctuation or timing to determine whether one supersedes the other.\"},\"conflict_classification\":\"concurrent_conflict_writes\",\"answer\":\"There are two concurrent candidate memories: \u201cSam works at Goldman\u201d and \u201cSam joined Point72.\u201d They may conflict if they refer to the same Sam and the same employment timeframe, but the input does not provide enough timing or context to decide which is current. Safe actions available: approve_supersession, keep_both, reject_new, or edit.\",\"citations\":[\"Concurrent writes - Sam works at Goldman Sam joined Point72\"],\"repair_options\":[\"approve_supersession\",\"keep_both\",\"reject_new\",\"edit\"],\"receipt\":{\"success\":false,\"details\":[\"No durable memory was committed.\",\"Conflict requires user resolution before deciding whether to supersede, keep both, reject the new memory, or edit.\"]}}",
+  "role": "conflict_explainer",
+  "run_id": "eval_20260508_125514",
+  "status": "ok"
+}

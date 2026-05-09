@@ -1,0 +1,68 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.010705000000000003,
+  "fixture_id": "groundedness_metadata_claims_001__punctuation",
+  "input_tokens": 395,
+  "latency_ms": 4326,
+  "model": "openai:gpt-5.5",
+  "output_tokens": 291,
+  "payload": {
+    "answer": "Grounded: the identity claim and aliases are supported by the provided evidence rows. Confidence should remain medium due to limited detail.",
+    "citations": [
+      "entity row",
+      "alias row"
+    ],
+    "conflict_classification": "none",
+    "decision": "grounded",
+    "entity_resolution": {
+      "action": "accept",
+      "entity_id": null,
+      "reason": "Evidence contains both an entity row and an alias row supporting the identity and aliases; no specific durable entity ID was provided."
+    },
+    "intent": "evaluate_groundedness",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "alias",
+            "type": "Person"
+          },
+          {
+            "name": "Sam from Goldman",
+            "role": "alias",
+            "type": "Person"
+          }
+        ],
+        "kind": "identity",
+        "relationships": [
+          {
+            "object": "Sam",
+            "predicate": "has_alias",
+            "subject": "Person"
+          },
+          {
+            "object": "Sam from Goldman",
+            "predicate": "has_alias",
+            "subject": "Person"
+          }
+        ],
+        "statement": "Person identity is supported by the evidence entity row; aliases include \"Sam\" and \"Sam from Goldman\" as supported by the alias row."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Evaluated the metadata claim for groundedness.",
+        "Preserved medium confidence.",
+        "Did not infer additional identity details beyond the evidence."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "raw_text": "{\"intent\":\"evaluate_groundedness\",\"decision\":\"grounded\",\"memory_cards\":[{\"kind\":\"identity\",\"statement\":\"Person identity is supported by the evidence entity row; aliases include \\\"Sam\\\" and \\\"Sam from Goldman\\\" as supported by the alias row.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"Sam\",\"type\":\"Person\",\"role\":\"alias\"},{\"name\":\"Sam from Goldman\",\"type\":\"Person\",\"role\":\"alias\"}],\"relationships\":[{\"subject\":\"Person\",\"predicate\":\"has_alias\",\"object\":\"Sam\"},{\"subject\":\"Person\",\"predicate\":\"has_alias\",\"object\":\"Sam from Goldman\"}]}],\"entity_resolution\":{\"action\":\"accept\",\"entity_id\":null,\"reason\":\"Evidence contains both an entity row and an alias row supporting the identity and aliases; no specific durable entity ID was provided.\"},\"conflict_classification\":\"none\",\"answer\":\"Grounded: the identity claim and aliases are supported by the provided evidence rows. Confidence should remain medium due to limited detail.\",\"citations\":[\"entity row\",\"alias row\"],\"repair_options\":[],\"receipt\":{\"success\":true,\"details\":[\"Evaluated the metadata claim for groundedness.\",\"Preserved medium confidence.\",\"Did not infer additional identity details beyond the evidence.\"]}}",
+  "role": "eval_judge",
+  "run_id": "eval_20260508_132201",
+  "status": "ok"
+}

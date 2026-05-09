@@ -1,0 +1,60 @@
+{
+  "fixture_id": "recall_brain_cognee_conclusions_relevance_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "You concluded that Brain DB is the source of truth, and Cognee is a rebuildable projection.",
+    "citations": [
+      "Records include Brain DB source-of-truth conclusion, Cognee rebuildable projection."
+    ],
+    "conflict_classification": "none",
+    "decision": "Provide only the durable conclusion available in the input summary: Brain DB is the source of truth, while Cognee is a rebuildable projection.",
+    "entity_resolution": {
+      "action": "resolved",
+      "entity_id": null,
+      "reason": "The query refers to Brain and Cognee; the relevant record explicitly distinguishes Brain DB as source-of-truth and Cognee as rebuildable projection."
+    },
+    "intent": "Answer the user's scoped recall query about their conclusion regarding Brain and Cognee, without including unrelated memories.",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Brain DB",
+            "role": "source_of_truth",
+            "type": "system"
+          },
+          {
+            "name": "Cognee",
+            "role": "rebuildable_projection",
+            "type": "system"
+          }
+        ],
+        "kind": "conclusion",
+        "relationships": [
+          {
+            "object": "source of truth",
+            "predicate": "is",
+            "subject": "Brain DB"
+          },
+          {
+            "object": "rebuildable projection",
+            "predicate": "is",
+            "subject": "Cognee"
+          }
+        ],
+        "statement": "Brain DB is the source of truth; Cognee is a rebuildable projection."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Answered only the queried scope.",
+        "Did not include unrelated Slack, family, or Sam preference facts.",
+        "Preserved the source-of-truth versus projection distinction."
+      ],
+      "success": true
+    },
+    "repair_options": []
+  },
+  "role": "groundedness_checker",
+  "run_id": "eval_20260508_125514"
+}

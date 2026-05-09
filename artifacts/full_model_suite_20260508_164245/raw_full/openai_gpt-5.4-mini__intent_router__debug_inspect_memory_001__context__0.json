@@ -1,0 +1,59 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0015352499999999997,
+  "fixture_id": "debug_inspect_memory_001__context",
+  "input_tokens": 367,
+  "latency_ms": 2382,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 280,
+  "payload": {
+    "answer": "Inspection request acknowledged for mem_123. No memory content is provided in the input, so there is nothing to summarize or reconcile.",
+    "citations": [
+      "Input: \"For context, /brain inspect memory mem_123\""
+    ],
+    "conflict_classification": "none",
+    "decision": "read_only_inspection",
+    "entity_resolution": {
+      "action": "none",
+      "entity_id": "mem_123",
+      "reason": "The request refers directly to a specific memory identifier; no disambiguation is needed for inspection."
+    },
+    "intent": "inspect_memory",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "mem_123",
+            "role": "target",
+            "type": "memory_id"
+          }
+        ],
+        "kind": "query",
+        "relationships": [
+          {
+            "object": "mem_123",
+            "predicate": "requested_inspection_of",
+            "subject": "user"
+          }
+        ],
+        "statement": "The user requested inspection of memory item mem_123 via /brain inspect memory mem_123."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Parsed request as a read-only memory inspection.",
+        "No durable memory was created or modified."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If you want the memory contents analyzed, provide the retrieved record for mem_123.",
+      "If you want a different memory item inspected, supply the correct memory ID."
+    ]
+  },
+  "raw_text": "{\"intent\":\"inspect_memory\",\"decision\":\"read_only_inspection\",\"memory_cards\":[{\"kind\":\"query\",\"statement\":\"The user requested inspection of memory item mem_123 via /brain inspect memory mem_123.\",\"confidence\":\"high\",\"entities\":[{\"name\":\"mem_123\",\"type\":\"memory_id\",\"role\":\"target\"}],\"relationships\":[{\"subject\":\"user\",\"predicate\":\"requested_inspection_of\",\"object\":\"mem_123\"}]}],\"entity_resolution\":{\"action\":\"none\",\"entity_id\":\"mem_123\",\"reason\":\"The request refers directly to a specific memory identifier; no disambiguation is needed for inspection.\"},\"conflict_classification\":\"none\",\"answer\":\"Inspection request acknowledged for mem_123. No memory content is provided in the input, so there is nothing to summarize or reconcile.\",\"citations\":[\"Input: \\\"For context, /brain inspect memory mem_123\\\"\"],\"repair_options\":[\"If you want the memory contents analyzed, provide the retrieved record for mem_123.\",\"If you want a different memory item inspected, supply the correct memory ID.\"],\"receipt\":{\"success\":true,\"details\":[\"Parsed request as a read-only memory inspection.\",\"No durable memory was created or modified.\"]}}",
+  "role": "intent_router",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}

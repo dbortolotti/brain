@@ -1,0 +1,81 @@
+{
+  "fixture_id": "supersession_sam_job_001",
+  "model": "openai:gpt-5.5",
+  "payload": {
+    "answer": "Update Sam's current employer to Point72 and preserve Goldman only as a former employer, not as current.",
+    "citations": [],
+    "conflict_classification": "supersession",
+    "decision": "commit_update_superseding_prior_employment",
+    "entity_resolution": {
+      "action": "reuse_existing_entity",
+      "entity_id": null,
+      "reason": "The new information refers to the same Sam as the existing memory; no evidence suggests a different person."
+    },
+    "intent": "update_memory_with_supersession",
+    "memory_cards": [
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "employee",
+            "type": "person"
+          },
+          {
+            "name": "Point72",
+            "role": "employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_current",
+        "relationships": [
+          {
+            "object": "Point72",
+            "predicate": "works_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam works at Point72."
+      },
+      {
+        "confidence": "high",
+        "entities": [
+          {
+            "name": "Sam",
+            "role": "former_employee",
+            "type": "person"
+          },
+          {
+            "name": "Goldman",
+            "role": "former_employer",
+            "type": "organization"
+          }
+        ],
+        "kind": "employment_former",
+        "relationships": [
+          {
+            "object": "Goldman",
+            "predicate": "formerly_worked_at",
+            "subject": "Sam"
+          }
+        ],
+        "statement": "Sam previously worked at Goldman."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Detected that the new statement supersedes the prior current-employment fact.",
+        "Avoided presenting the superseded Goldman employment as current.",
+        "Committed Point72 as Sam's current employer with high confidence."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "Mark the existing memory 'Sam works at Goldman' as superseded/not current.",
+      "Add a new current employment memory: 'Sam works at Point72.'",
+      "Optionally retain historical context as: 'Sam previously worked at Goldman.'"
+    ]
+  },
+  "role": "repair_option_generator",
+  "run_id": "eval_20260508_135611"
+}

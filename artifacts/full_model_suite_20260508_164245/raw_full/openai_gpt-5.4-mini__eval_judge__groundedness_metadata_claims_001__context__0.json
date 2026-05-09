@@ -1,0 +1,89 @@
+{
+  "error": null,
+  "estimated_cost_usd": 0.0020535,
+  "fixture_id": "groundedness_metadata_claims_001__context",
+  "input_tokens": 398,
+  "latency_ms": 3752,
+  "model": "openai:gpt-5.4-mini",
+  "output_tokens": 390,
+  "payload": {
+    "answer": "Grounded: identity as a person with medium confidence, with aliases Sam and Sam from Goldman supported by entity and alias rows.",
+    "citations": [
+      "evidence: entity row",
+      "evidence: alias row"
+    ],
+    "conflict_classification": "none",
+    "decision": "accept",
+    "entity_resolution": {
+      "action": "create_or_update",
+      "entity_id": null,
+      "reason": "The evidence supports a person identity and alias entries, but no stable entity identifier is provided here."
+    },
+    "intent": "Evaluate whether the identity and alias claims are grounded in the provided evidence.",
+    "memory_cards": [
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "entity",
+            "role": "subject",
+            "type": "person"
+          }
+        ],
+        "kind": "identity",
+        "relationships": [],
+        "statement": "The entity is a person."
+      },
+      {
+        "confidence": "medium",
+        "entities": [
+          {
+            "name": "entity",
+            "role": "subject",
+            "type": "person"
+          },
+          {
+            "name": "Sam",
+            "role": "alias",
+            "type": "alias"
+          },
+          {
+            "name": "Sam from Goldman",
+            "role": "alias",
+            "type": "alias"
+          }
+        ],
+        "kind": "alias",
+        "relationships": [
+          {
+            "object": "Sam",
+            "predicate": "has_alias",
+            "subject": "entity"
+          },
+          {
+            "object": "Sam from Goldman",
+            "predicate": "has_alias",
+            "subject": "entity"
+          }
+        ],
+        "statement": "The entity may be referred to as Sam and possibly as Sam from Goldman."
+      }
+    ],
+    "receipt": {
+      "details": [
+        "Identity claim supported at medium confidence.",
+        "Alias claim supported by the provided evidence rows.",
+        "No superseding or conflicting facts present."
+      ],
+      "success": true
+    },
+    "repair_options": [
+      "If a stable identifier exists, link the person record to that entity.",
+      "If 'Sam from Goldman' is provisional or context-dependent, mark it as an uncertain alias rather than a definitive one."
+    ]
+  },
+  "raw_text": "{\"intent\":\"Evaluate whether the identity and alias claims are grounded in the provided evidence.\",\"decision\":\"accept\",\"memory_cards\":[{\"kind\":\"identity\",\"statement\":\"The entity is a person.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"entity\",\"type\":\"person\",\"role\":\"subject\"}],\"relationships\":[]},{\"kind\":\"alias\",\"statement\":\"The entity may be referred to as Sam and possibly as Sam from Goldman.\",\"confidence\":\"medium\",\"entities\":[{\"name\":\"entity\",\"type\":\"person\",\"role\":\"subject\"},{\"name\":\"Sam\",\"type\":\"alias\",\"role\":\"alias\"},{\"name\":\"Sam from Goldman\",\"type\":\"alias\",\"role\":\"alias\"}],\"relationships\":[{\"subject\":\"entity\",\"predicate\":\"has_alias\",\"object\":\"Sam\"},{\"subject\":\"entity\",\"predicate\":\"has_alias\",\"object\":\"Sam from Goldman\"}]}],\"entity_resolution\":{\"action\":\"create_or_update\",\"entity_id\":null,\"reason\":\"The evidence supports a person identity and alias entries, but no stable entity identifier is provided here.\"},\"conflict_classification\":\"none\",\"answer\":\"Grounded: identity as a person with medium confidence, with aliases Sam and Sam from Goldman supported by entity and alias rows.\",\"citations\":[\"evidence: entity row\",\"evidence: alias row\"],\"repair_options\":[\"If a stable identifier exists, link the person record to that entity.\",\"If 'Sam from Goldman' is provisional or context-dependent, mark it as an uncertain alias rather than a definitive one.\"],\"receipt\":{\"success\":true,\"details\":[\"Identity claim supported at medium confidence.\",\"Alias claim supported by the provided evidence rows.\",\"No superseding or conflicting facts present.\"]}}",
+  "role": "eval_judge",
+  "run_id": "eval_20260508_164540",
+  "status": "ok"
+}
