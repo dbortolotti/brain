@@ -378,6 +378,53 @@ def test_open_loop_detector_derivation_uses_open_loop_semantics_not_repair_paths
     assert by_id["ambiguous_time_reference_001"].expected["expected_open_loop"] is True
 
 
+def test_role_contracts_cover_remaining_fixture_failure_guidance() -> None:
+    intent = ModelEvalFixture(
+        id="open_question_knowledge_graphs_001",
+        scenario_group="open_question",
+        role="intent_router",
+        input_text="I want to learn more about knowledge graphs.",
+        expected={"decision": "commit_success"},
+        context={"source_role": "slack_intake"},
+    )
+    source = ModelEvalFixture(
+        id="article_url_fetch_failure_001",
+        scenario_group="article_url_fetch_failure",
+        role="source_classifier",
+        input_text="Remember this article: https://example.com/missing",
+        expected={},
+    )
+    open_loop = ModelEvalFixture(
+        id="unresolved_pronoun_001",
+        scenario_group="ambiguous_reference",
+        role="open_loop_detector",
+        input_text="Remember he prefers the other one.",
+        expected={},
+    )
+    repair = ModelEvalFixture(
+        id="unresolved_pronoun_001",
+        scenario_group="ambiguous_reference",
+        role="repair_option_generator",
+        input_text="Remember he prefers the other one.",
+        expected={},
+    )
+
+    intent_prompt = fixture_prompt(intent)
+    source_prompt = fixture_prompt(source)
+    open_loop_prompt = fixture_prompt(open_loop)
+    repair_prompt = fixture_prompt(repair)
+
+    assert "do not answer" in intent_prompt
+    assert "open_question" in intent_prompt
+    assert "research_question" in intent_prompt
+    assert "memory inputs, not junk" in source_prompt
+    assert "fetch failure is still a source/article boundary" in source_prompt
+    assert "unresolved entities" in open_loop_prompt
+    assert "Operational source failures" in open_loop_prompt
+    assert "source repair/fetch status" in open_loop_prompt
+    assert "never offer to rewrite, add, or save the unresolved text" in repair_prompt
+
+
 def test_success_receipt_generator_is_not_a_fine_grained_model_fixture() -> None:
     fixtures = select_fixtures(
         fixture_set="brain-model-test-v2",
@@ -690,6 +737,49 @@ def test_entity_mention_extractor_drops_non_entity_fixture_terms() -> None:
     assert "entity_terms" not in no_durable.expected
 
 
+def test_entity_mention_extractor_accepts_explicit_alias_terms() -> None:
+    fixture = next(
+        fixture
+        for fixture in select_fixtures(
+            fixture_set="brain-model-test-v2",
+            roles={"entity_mention_extractor"},
+            mode="fine-grained",
+        )
+        if fixture.id == "entity_alias_sam_goldman"
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {"entities": [{"name": "Sam G"}, {"name": "Bill Evans"}]},
+        status="ok",
+    )
+
+    assert fixture.expected["entity_terms"] == ["Bill Evans"]
+    assert scores["decision_correctness"] == 1.0
+    assert zero is False
+    assert types == []
+
+
+def test_entity_mention_extractor_accepts_ai_infra_article_alias() -> None:
+    fixture = ModelEvalFixture(
+        id="email_source_meeting_followup_001",
+        role="entity_mention_extractor",
+        scenario_group="email_source",
+        input_text="Please send the AI infra article.",
+        expected={"entity_terms": ["AI infra article"]},
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {"entities": [{"name": "AI infra", "type": "domain_concept"}]},
+        status="ok",
+    )
+
+    assert scores["decision_correctness"] == 1.0
+    assert zero is False
+    assert types == []
+
+
 def test_success_receipt_generator_fails_missing_receipt() -> None:
     fixture = ModelEvalFixture(
         id="receipt",
@@ -971,6 +1061,23 @@ def test_intent_router_scores_router_aliases_from_source_role() -> None:
 
     assert zero is False
     assert scores["decision_correctness"] == 1.0
+
+
+def test_intent_router_accepts_open_question_and_research_question_routes() -> None:
+    for intent in ("open_question", "research_question"):
+        fixture = ModelEvalFixture(
+            id=f"router_{intent}",
+            role="intent_router",
+            scenario_group="slack_intake",
+            input_text="I want to learn more about knowledge graphs.",
+            expected={"decision": "commit_success"},
+            context={"source_role": "slack_intake"},
+        )
+
+        scores, zero, _types = score_model_output(fixture, {"intent": intent}, status="ok")
+
+        assert zero is False
+        assert scores["decision_correctness"] == 1.0
 
 
 def test_source_classifier_semantic_score_uses_source_split_not_downstream_decision() -> None:
@@ -1403,6 +1510,33 @@ def test_durability_filter_treats_slack_retry_as_non_new_write() -> None:
     assert types == []
 
 
+def test_durability_filter_treats_idempotent_retry_as_either_existing_or_new_write() -> None:
+    fixture = next(
+        fixture
+        for fixture in select_fixtures(
+            fixture_set="brain-model-test-v2",
+            roles={"durability_filter"},
+            mode="fine-grained",
+        )
+        if fixture.id == "idempotent_retry_same_message_001__context"
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "decision": "do_not_store",
+            "durable": False,
+            "reason": "Duplicate delivery metadata should not create another write.",
+        },
+        status="ok",
+    )
+
+    assert fixture.expected["expected_durable_any"] == [False, True]
+    assert scores["durability_decision"] == 1.0
+    assert zero is False
+    assert types == []
+
+
 def test_debug_denial_decision_aliases_are_accepted() -> None:
     fixture = ModelEvalFixture(
         id="normal_user_admin_attempt_001",
@@ -1621,6 +1755,31 @@ def test_repair_option_generator_scores_point72_entity_terms() -> None:
     )
 
     assert scores["repair_quality"] == 1.0
+    assert zero is False
+    assert types == []
+
+
+def test_relationship_extractor_accepts_explicit_predicate_phrases() -> None:
+    fixture = ModelEvalFixture(
+        id="person_interaction_sam_bill_evans_001",
+        role="relationship_extractor",
+        scenario_group="person_interaction_sam",
+        input_text="Sam from Goldman mentioned that he likes Bill Evans.",
+        expected={"relationships": ["likes", "associated_with"]},
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "relationships": [
+                {"subject": "Sam", "predicate": "mentioned that he likes", "object": "Bill Evans"},
+                {"subject": "Sam", "predicate": "from", "object": "Goldman"},
+            ]
+        },
+        status="ok",
+    )
+
+    assert scores["decision_correctness"] == 1.0
     assert zero is False
     assert types == []
 

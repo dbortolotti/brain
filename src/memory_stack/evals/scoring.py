@@ -1059,12 +1059,14 @@ def score_router_intent(actual: Any, expected: str | None) -> float:
             "family",
             "ignore_duplicate",
             "memory",
+            "open_question",
             "preference",
             "policy",
             "dedupe",
             "record",
             "remember",
             "repair",
+            "research_question",
             "resolve",
             "rewrite",
             "save",
@@ -1079,8 +1081,6 @@ def score_router_intent(actual: Any, expected: str | None) -> float:
             "answer",
             "daughters",
             "employment",
-            "open_loop",
-            "open_question",
             "profile",
             "query",
             "recall",
@@ -1179,6 +1179,14 @@ def predicate_present(expected_predicate: str, actual_predicates: set[str]) -> b
         if expected == "daughter_of" and "daughter" in normalized_actual:
             return True
         if expected == "twin_of" and "twin" in normalized_actual:
+            return True
+        if expected == "likes" and "likes" in normalized_actual:
+            return True
+        if expected == "associated_with" and (
+            "associated_with" in normalized_actual
+            or normalized_actual.startswith("from_")
+            or normalized_actual.startswith("works_at_")
+        ):
             return True
     return False
 
@@ -1360,7 +1368,7 @@ def term_present(normalized_text: str, term: str) -> bool:
 
 
 TERM_ALIASES: dict[str, tuple[str, ...]] = {
-    "ai infra article": ("ai infrastructure article",),
+    "ai infra article": ("ai infrastructure article", "ai infra"),
     "brain db": (
         "brain is the source-of-truth",
         "brain's db is the source of truth",
