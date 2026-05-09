@@ -9,6 +9,19 @@ metadata:
 
 Use this skill in the Brain repo when the user asks to run or iterate model evaluation tests, evaluate one model's production readiness, rerun failures, audit `fixture_prompt_expected_failure_table.csv`, or improve scoring/harness issues found by those evals.
 
+## Evaluation Bias
+
+Start skeptical. The job is to test whether the requested model is appropriate for Brain's production roles, not to rescue the model or make the eval pass.
+
+Default prior:
+
+- Assume the model is not appropriate until the eval evidence shows it satisfies the role contracts.
+- Treat failures as true model failures unless there is clear evidence that the harness, scorer, fixture, or prompt contract is wrong.
+- Do not patch scoring/harness simply because the model gave a plausible answer.
+- Only modify harness/scoring when confident the current check is inappropriate, misleading, or too narrow for the documented role contract.
+- Modify prompts or role descriptions when the role description is insufficient, ambiguous, or does not state a requirement that the scorer enforces.
+- When uncertain, preserve the failure and mark it `uncertain` or `requires_user_decision`; do not weaken the gate.
+
 ## Defaults
 
 Unless the user specifies otherwise:
@@ -96,6 +109,7 @@ Include:
 - Progress as `done/total` when available
 - Status counts when available
 - ETA when enough progress exists
+- Served HTML monitor link when available, e.g. `http://<mac-tailscale-name-or-ip>:18084/`
 
 For ETA, use the run start time and current progress:
 
@@ -107,6 +121,8 @@ eta = now + remaining / rate
 ```
 
 If progress is unavailable, say so and report the latest log line or artifact timestamp instead.
+
+When the monitor server is running, include the monitor URL in every periodic update so the user can open the live HTML page from their iPhone. If the exact Tailscale hostname/IP is unknown, include the URL shape and the local port.
 
 Useful status commands:
 
@@ -138,6 +154,8 @@ For each failure cluster, inspect enough evidence to classify it:
 - fixture construction/contracts in `src/memory_stack/evals/model_fixtures.py`
 - artifact generation in `src/memory_stack/evals/model_runner.py` if descriptions or manifests are wrong
 
+Always check whether the scoring logic is appropriate for the role as defined and for the fixture expectations. The scorer must measure the actual role contract, not an adjacent broad capability or an implicit expectation that is absent from the prompt/fixture. If the role definition, expected fields, and scorer disagree, classify the cluster as `prompt_contract_issue`, `fixture_issue`, or `harness_scoring_issue` according to the concrete source of the mismatch.
+
 Classify failures as:
 
 - `true_model_error`: prompt/expected/scorer are coherent and the model output violates them
@@ -156,7 +174,7 @@ Keep the audit focused on concrete code-actionable clusters, not every individua
 
 ## Fix Rules
 
-Patch harness/scoring only when the evidence shows a misspecification.
+Patch harness/scoring only when the evidence shows a misspecification and you are confident the existing check is inappropriate.
 
 Good fixes include:
 
@@ -166,6 +184,7 @@ Good fixes include:
 - aligning fixture expected values with the role prompt ontology
 - tightening prompts when the scorer already reflects the intended product contract
 - improving failure descriptions when they are misleading
+- expanding role descriptions in prompts when the scorer relies on role behavior that was not adequately described
 
 Avoid:
 
@@ -173,6 +192,7 @@ Avoid:
 - deleting hard safety checks without replacing them with a more accurate check
 - changing model outputs or raw artifacts
 - broad refactors unrelated to the failure cluster
+- reclassifying a failure as harness/scoring issue because the model output is subjectively reasonable but still violates the prompt, expected fixture behavior, or product contract
 
 Use focused tests after code changes:
 
