@@ -2,16 +2,12 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
-import hmac
 import json
 import os
 import sys
 from dataclasses import dataclass, replace
-from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
-from urllib.parse import quote, urlparse
 
 import httpx
 import yaml
@@ -21,34 +17,11 @@ from rich.table import Table
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from memory_stack.config import Settings, load_settings, normalize_provider_name
-from memory_stack.local_embeddings import fastembed_vector_size
-from memory_stack.provider_auth import (
-    ProviderAuthError,
-    resolve_openai_text_bearer,
-)
+from memory_stack.evals.model_matrix import ModelCandidate
+from memory_stack.evals.provider_client import LiveProviderClient, redact as redact_provider_error
 
 
 REGISTRY_PATH = Path(__file__).resolve().parents[1] / "brain_model_registry.yaml"
-LLM_PROVIDERS = {"openai", "openrouter", "google", "gemini", "anthropic", "aws-bedrock", "bedrock", "groq"}
-EMBEDDING_PROVIDERS = {"openai", "google", "gemini", "voyage", "fastembed"}
-LOCAL_PROVIDERS = {"ollama", "fastembed"}
-SECRET_FIELDS = (
-    "llm_api_key",
-    "embedding_api_key",
-    "openai_api_key",
-    "openrouter_api_key",
-    "gemini_api_key",
-    "google_api_key",
-    "anthropic_api_key",
-    "aws_access_key_id",
-    "aws_secret_access_key",
-    "aws_session_token",
-    "aws_bearer_token_bedrock",
-    "groq_api_key",
-    "voyage_api_key",
-)
-SMOKE_MAX_TOKENS = 16
-
 console = Console()
 
 
@@ -71,10 +44,6 @@ class ProbeResult:
     probe: Probe
     status: str
     detail: str
-
-
-class SmokeFailure(RuntimeError):
-    """A live provider call failed in a way that should fail the smoke run."""
 
 
 def main() -> int:
@@ -383,14 +352,15 @@ def run_probes(
     skip_missing_keys: bool,
 ) -> list[ProbeResult]:
     results: list[ProbeResult] = []
+    provider_client = LiveProviderClient(settings, http_client=client)
     for probe in probes:
-        missing = missing_credential(settings, probe)
+        missing = provider_client.missing_credential(candidate_from_probe(probe))
         if missing:
-            status = "skip" if skip_missing_keys or probe.provider in LOCAL_PROVIDERS else "fail"
+            status = "skip" if skip_missing_keys else "fail"
             results.append(ProbeResult(probe, status, missing))
             continue
         try:
-            run_probe(settings, probe, client=client)
+            provider_client.smoke(candidate_from_probe(probe))
         except Exception as exc:
             results.append(ProbeResult(probe, "fail", redact(str(exc), settings)))
         else:
@@ -403,422 +373,27 @@ def model_skip_reason(model: dict[str, Any]) -> str | None:
     return str(reason) if reason else None
 
 
+def candidate_from_probe(probe: Probe) -> ModelCandidate:
+    return ModelCandidate(
+        provider=probe.provider,
+        model=probe.model,
+        kind=probe.kind,
+        api_model=probe.api_model or probe.model,
+        quantizations=probe.quantizations,
+        roles=probe.roles,
+        judge_only=probe.judge_only,
+        reasoning_effort=probe.reasoning_effort,
+        skip_reason=probe.skip_reason,
+        requested_ref=probe.label,
+    )
+
+
 def missing_credential(settings: Settings, probe: Probe) -> str | None:
-    if probe.provider == "fastembed" and probe.kind == "embedding":
-        return None
-    if probe.provider in LOCAL_PROVIDERS:
-        return f"provider {probe.provider} is local; no cloud smoke call"
-    if probe.provider == "aws-bedrock":
-        region = settings.aws_region or settings.aws_default_region
-        has_bearer = bool(settings.aws_bearer_token_bedrock)
-        has_sigv4 = bool(settings.aws_access_key_id and settings.aws_secret_access_key)
-        if not region:
-            return "missing AWS_REGION or AWS_DEFAULT_REGION"
-        if not has_bearer and not has_sigv4:
-            return "missing AWS_BEARER_TOKEN_BEDROCK or AWS access key credentials"
-        return None
-    if probe.kind == "llm" and probe.provider not in LLM_PROVIDERS:
-        return f"unsupported LLM provider for live smoke: {probe.provider}"
-    if probe.kind == "embedding" and probe.provider not in EMBEDDING_PROVIDERS:
-        return f"unsupported embedding provider for live smoke: {probe.provider}"
-    if probe.provider == "openai" and probe.kind == "llm" and settings.openai_auth_mode == "oauth":
-        try:
-            resolve_openai_text_bearer(settings)
-        except ProviderAuthError as exc:
-            return str(exc)
-        return None
-    if probe.provider == "openai" and probe.kind == "embedding":
-        if not settings.configured_provider_api_key("openai"):
-            return "missing OPENAI_API_KEY for OpenAI embeddings"
-        return None
-    if not settings.provider_api_key(probe.provider):
-        env_names = {
-            "openai": "OPENAI_API_KEY",
-            "openrouter": "OPENROUTER_API_KEY",
-            "google": "GEMINI_API_KEY or GOOGLE_API_KEY",
-            "anthropic": "ANTHROPIC_API_KEY",
-            "groq": "GROQ_API_KEY",
-            "voyage": "VOYAGE_API_KEY",
-        }.get(probe.provider, f"{probe.provider.upper()}_API_KEY")
-        return f"missing {env_names}"
-    return None
-
-
-def run_probe(settings: Settings, probe: Probe, *, client: httpx.Client) -> None:
-    if probe.kind == "embedding":
-        run_embedding_probe(settings, probe, client=client)
-        return
-    run_llm_probe(settings, probe, client=client)
-
-
-def run_llm_probe(settings: Settings, probe: Probe, *, client: httpx.Client) -> None:
-    if probe.provider == "openai":
-        post_openai_response(settings, probe.api_model or probe.model, client=client)
-    elif probe.provider == "openrouter":
-        post_openrouter_chat_completion(settings, probe.api_model or probe.model, probe.quantizations, client=client)
-    elif probe.provider == "google":
-        post_google_generate_content(
-            settings,
-            probe.api_model or probe.model,
-            reasoning_effort=probe.reasoning_effort,
-            client=client,
-        )
-    elif probe.provider == "anthropic":
-        post_anthropic_message(settings, probe.api_model or probe.model, client=client)
-    elif probe.provider == "groq":
-        post_groq_chat_completion(settings, probe.api_model or probe.model, client=client)
-    elif probe.provider == "aws-bedrock":
-        post_bedrock_converse(settings, probe.api_model or probe.model, client=client)
-    else:
-        raise SmokeFailure(f"unsupported LLM provider for live smoke: {probe.provider}")
-
-
-def run_embedding_probe(settings: Settings, probe: Probe, *, client: httpx.Client) -> None:
-    if probe.provider == "openai":
-        post_openai_embedding(settings, probe.model, client=client)
-    elif probe.provider == "google":
-        post_google_embedding(settings, probe.model, client=client)
-    elif probe.provider == "voyage":
-        post_voyage_embedding(settings, probe.model, client=client)
-    elif probe.provider == "fastembed":
-        post_fastembed_embedding(probe.model)
-    else:
-        raise SmokeFailure(f"unsupported embedding provider for live smoke: {probe.provider}")
-
-
-def post_openai_response(settings: Settings, model: str, *, client: httpx.Client) -> None:
-    base_url = (
-        settings.openai_codex_base_url
-        if settings.openai_auth_mode == "oauth"
-        else "https://api.openai.com/v1"
-    )
-    request_json: dict[str, Any]
-    if settings.openai_auth_mode == "oauth":
-        request_json = {
-            "model": model,
-            "instructions": "Reply with exactly: ok",
-            "input": [
-                {
-                    "role": "user",
-                    "content": [{"type": "input_text", "text": "Reply with exactly: ok"}],
-                }
-            ],
-            "store": False,
-            "stream": True,
-        }
-    else:
-        request_json = {
-            "model": model,
-            "input": "Reply with exactly: ok",
-            "max_output_tokens": SMOKE_MAX_TOKENS,
-        }
-    response = client.post(
-        f"{base_url.rstrip('/')}/responses",
-        headers={"Authorization": f"Bearer {resolve_openai_text_bearer(settings)}"},
-        json=request_json,
-    )
-    if settings.openai_auth_mode == "oauth":
-        if response.status_code >= 400:
-            raise SmokeFailure(
-                f"HTTP {response.status_code}: {redact(response_error_message(response), settings)}"
-            )
-        if "response." not in response.text:
-            raise SmokeFailure("OpenAI Codex response did not include stream events")
-        return
-    payload = checked_json(response, settings)
-    if not payload.get("id"):
-        raise SmokeFailure("OpenAI response did not include an id")
-
-
-def post_openai_embedding(settings: Settings, model: str, *, client: httpx.Client) -> None:
-    response = client.post(
-        "https://api.openai.com/v1/embeddings",
-        headers={"Authorization": f"Bearer {settings.configured_provider_api_key('openai')}"},
-        json={"model": model, "input": "brain smoke test"},
-    )
-    payload = checked_json(response, settings)
-    if not vector_present(payload):
-        raise SmokeFailure("OpenAI embedding response did not include an embedding vector")
-
-
-def post_groq_chat_completion(settings: Settings, model: str, *, client: httpx.Client) -> None:
-    response = client.post(
-        "https://api.groq.com/openai/v1/chat/completions",
-        headers={"Authorization": f"Bearer {settings.provider_api_key('groq')}"},
-        json={
-            "model": model,
-            "messages": [{"role": "user", "content": "Reply with exactly: ok"}],
-            "max_tokens": SMOKE_MAX_TOKENS,
-        },
-    )
-    payload = checked_json(response, settings)
-    if not payload.get("choices"):
-        raise SmokeFailure("Groq response did not include choices")
-
-
-def post_openrouter_chat_completion(
-    settings: Settings,
-    model: str,
-    quantizations: tuple[str, ...],
-    *,
-    client: httpx.Client,
-) -> None:
-    request_json: dict[str, Any] = {
-        "model": model,
-        "messages": [{"role": "user", "content": "Reply with exactly: ok"}],
-        "max_tokens": SMOKE_MAX_TOKENS,
-    }
-    if quantizations:
-        request_json["provider"] = {"quantizations": list(quantizations)}
-    response = client.post(
-        "https://openrouter.ai/api/v1/chat/completions",
-        headers={"Authorization": f"Bearer {settings.provider_api_key('openrouter')}"},
-        json=request_json,
-    )
-    payload = checked_json(response, settings)
-    if not payload.get("choices"):
-        raise SmokeFailure("OpenRouter response did not include choices")
-
-
-def post_google_generate_content(
-    settings: Settings,
-    model: str,
-    *,
-    reasoning_effort: str | None = None,
-    client: httpx.Client,
-) -> None:
-    generation_config: dict[str, Any] = {"maxOutputTokens": SMOKE_MAX_TOKENS, "temperature": 0}
-    if thinking_level := google_thinking_level(reasoning_effort):
-        generation_config["thinkingConfig"] = {"thinkingLevel": thinking_level}
-    response = client.post(
-        f"https://generativelanguage.googleapis.com/v1beta/models/{quote(model, safe='')}:generateContent",
-        headers={"x-goog-api-key": settings.provider_api_key("google") or ""},
-        json={
-            "contents": [{"parts": [{"text": "Reply with exactly: ok"}]}],
-            "generationConfig": generation_config,
-        },
-    )
-    payload = checked_json(response, settings)
-    if not payload.get("candidates"):
-        raise SmokeFailure("Google response did not include candidates")
-
-
-def post_google_embedding(settings: Settings, model: str, *, client: httpx.Client) -> None:
-    response = client.post(
-        f"https://generativelanguage.googleapis.com/v1beta/models/{quote(model, safe='')}:embedContent",
-        headers={"x-goog-api-key": settings.provider_api_key("google") or ""},
-        json={
-            "model": f"models/{model}",
-            "content": {"parts": [{"text": "brain smoke test"}]},
-        },
-    )
-    payload = checked_json(response, settings)
-    values = (payload.get("embedding") or {}).get("values")
-    if not isinstance(values, list) or not values:
-        raise SmokeFailure("Google embedding response did not include an embedding vector")
-
-
-def post_anthropic_message(settings: Settings, model: str, *, client: httpx.Client) -> None:
-    response = client.post(
-        "https://api.anthropic.com/v1/messages",
-        headers={
-            "x-api-key": settings.provider_api_key("anthropic") or "",
-            "anthropic-version": "2023-06-01",
-        },
-        json={
-            "model": model,
-            "max_tokens": SMOKE_MAX_TOKENS,
-            "messages": [{"role": "user", "content": "Reply with exactly: ok"}],
-        },
-    )
-    payload = checked_json(response, settings)
-    if not payload.get("content"):
-        raise SmokeFailure("Anthropic response did not include content")
-
-
-def post_voyage_embedding(settings: Settings, model: str, *, client: httpx.Client) -> None:
-    response = client.post(
-        "https://api.voyageai.com/v1/embeddings",
-        headers={"Authorization": f"Bearer {settings.provider_api_key('voyage')}"},
-        json={"model": model, "input": ["brain smoke test"]},
-    )
-    payload = checked_json(response, settings)
-    if not vector_present(payload):
-        raise SmokeFailure("Voyage embedding response did not include an embedding vector")
-
-
-def post_fastembed_embedding(model: str) -> None:
-    vector_size = fastembed_vector_size(model, "brain smoke test")
-    if vector_size <= 0:
-        raise SmokeFailure("FastEmbed did not return an embedding vector")
-
-
-def post_bedrock_converse(settings: Settings, model: str, *, client: httpx.Client) -> None:
-    region = settings.aws_region or settings.aws_default_region
-    if not region:
-        raise SmokeFailure("missing AWS region")
-    model_path = quote(model, safe="")
-    url = f"https://bedrock-runtime.{region}.amazonaws.com/model/{model_path}/converse"
-    body = json.dumps(
-        {
-            "messages": [
-                {"role": "user", "content": [{"text": "Reply with exactly: ok"}]},
-            ],
-            "inferenceConfig": {"maxTokens": SMOKE_MAX_TOKENS, "temperature": 0},
-        },
-        separators=(",", ":"),
-    ).encode("utf-8")
-    headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-    }
-    if settings.aws_bearer_token_bedrock:
-        headers["Authorization"] = f"Bearer {settings.aws_bearer_token_bedrock}"
-    else:
-        headers.update(sigv4_headers(settings, url=url, body=body, region=region))
-    response = client.post(url, headers=headers, content=body)
-    payload = checked_json(response, settings)
-    content = ((payload.get("output") or {}).get("message") or {}).get("content")
-    if not content:
-        raise SmokeFailure("Bedrock response did not include message content")
-
-
-def sigv4_headers(settings: Settings, *, url: str, body: bytes, region: str) -> dict[str, str]:
-    access_key = settings.aws_access_key_id
-    secret_key = settings.aws_secret_access_key
-    if not access_key or not secret_key:
-        raise SmokeFailure("missing AWS access key credentials")
-
-    parsed = urlparse(url)
-    now = datetime.now(UTC)
-    amz_date = now.strftime("%Y%m%dT%H%M%SZ")
-    date_stamp = now.strftime("%Y%m%d")
-    payload_hash = hashlib.sha256(body).hexdigest()
-    headers = {
-        "accept": "application/json",
-        "content-type": "application/json",
-        "host": parsed.netloc,
-        "x-amz-content-sha256": payload_hash,
-        "x-amz-date": amz_date,
-    }
-    if settings.aws_session_token:
-        headers["x-amz-security-token"] = settings.aws_session_token
-
-    signed_headers = ";".join(sorted(headers))
-    canonical_headers = "".join(f"{key}:{headers[key]}\n" for key in sorted(headers))
-    canonical_request = "\n".join(
-        [
-            "POST",
-            parsed.path,
-            parsed.query,
-            canonical_headers,
-            signed_headers,
-            payload_hash,
-        ]
-    )
-    credential_scope = f"{date_stamp}/{region}/bedrock/aws4_request"
-    string_to_sign = "\n".join(
-        [
-            "AWS4-HMAC-SHA256",
-            amz_date,
-            credential_scope,
-            hashlib.sha256(canonical_request.encode("utf-8")).hexdigest(),
-        ]
-    )
-    signing_key = aws_signing_key(secret_key, date_stamp, region, "bedrock")
-    signature = hmac.new(signing_key, string_to_sign.encode("utf-8"), hashlib.sha256).hexdigest()
-    headers["authorization"] = (
-        "AWS4-HMAC-SHA256 "
-        f"Credential={access_key}/{credential_scope}, "
-        f"SignedHeaders={signed_headers}, "
-        f"Signature={signature}"
-    )
-    return headers
-
-
-def aws_signing_key(secret_key: str, date_stamp: str, region: str, service: str) -> bytes:
-    key = ("AWS4" + secret_key).encode("utf-8")
-    for value in (date_stamp, region, service, "aws4_request"):
-        key = hmac.new(key, value.encode("utf-8"), hashlib.sha256).digest()
-    return key
-
-
-def checked_json(response: httpx.Response, settings: Settings) -> dict[str, Any]:
-    if response.status_code >= 400:
-        raise SmokeFailure(
-            f"HTTP {response.status_code}: {redact(response_error_message(response), settings)}"
-        )
-    try:
-        payload = response.json()
-    except ValueError as exc:
-        raise SmokeFailure("provider returned non-JSON response") from exc
-    if not isinstance(payload, dict):
-        raise SmokeFailure("provider returned unexpected JSON response")
-    return payload
-
-
-def response_error_message(response: httpx.Response) -> str:
-    try:
-        payload = response.json()
-    except ValueError:
-        return response.text[:500]
-    if isinstance(payload, dict):
-        error = payload.get("error")
-        if isinstance(error, dict):
-            message = error.get("message") or error.get("type") or error.get("code")
-            if message:
-                return str(message)
-        if isinstance(error, str):
-            return error
-        message = payload.get("message")
-        if message:
-            return str(message)
-    return json.dumps(payload)[:500]
-
-
-def vector_present(payload: dict[str, Any]) -> bool:
-    data = payload.get("data")
-    if not isinstance(data, list) or not data:
-        return False
-    embedding = data[0].get("embedding") if isinstance(data[0], dict) else None
-    return isinstance(embedding, list) and bool(embedding)
-
-
-def google_thinking_level(reasoning_effort: str | None) -> str | None:
-    if reasoning_effort in {"low", "medium", "high"}:
-        return reasoning_effort
-    return None
+    return LiveProviderClient(settings).missing_credential(candidate_from_probe(probe))
 
 
 def redact(value: str, settings: Settings) -> str:
-    redacted = value
-    for secret in secret_values(settings):
-        if len(secret) >= 6:
-            redacted = redacted.replace(secret, "[redacted]")
-    return redacted
-
-
-def secret_values(settings: Settings) -> set[str]:
-    values = {
-        str(getattr(settings, field))
-        for field in SECRET_FIELDS
-        if getattr(settings, field, None)
-    }
-    for env_name in (
-        "OPENAI_API_KEY",
-        "GEMINI_API_KEY",
-        "GOOGLE_API_KEY",
-        "ANTHROPIC_API_KEY",
-        "AWS_ACCESS_KEY_ID",
-        "AWS_SECRET_ACCESS_KEY",
-        "AWS_SESSION_TOKEN",
-        "AWS_BEARER_TOKEN_BEDROCK",
-        "GROQ_API_KEY",
-        "VOYAGE_API_KEY",
-    ):
-        if value := os.getenv(env_name):
-            values.add(value)
-    return values
+    return redact_provider_error(value, settings)
 
 
 def print_results(results: list[ProbeResult]) -> None:

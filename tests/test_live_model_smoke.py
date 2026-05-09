@@ -11,6 +11,7 @@ import httpx
 import pytest
 
 from memory_stack.config import Settings
+from memory_stack.evals import provider_client
 from memory_stack.provider_auth import OpenAICodexCredential, upsert_openai_codex_profile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
@@ -71,11 +72,11 @@ def test_fastembed_embedding_probe_runs_locally(
     clear_provider_env(monkeypatch)
     calls: list[tuple[str, str]] = []
 
-    def fake_fastembed_vector_size(model: str, text: str) -> int:
+    def fake_fastembed_vector(model: str, text: str) -> list[float]:
         calls.append((model, text))
-        return 1024
+        return [0.1, 0.2]
 
-    monkeypatch.setattr(live_model_smoke, "fastembed_vector_size", fake_fastembed_vector_size)
+    monkeypatch.setattr(provider_client, "fastembed_vector", fake_fastembed_vector)
     settings = Settings(
         profile="local",
         llm_provider="ollama",
@@ -205,7 +206,7 @@ def test_openai_active_probe_makes_live_style_calls_without_leaking_key(
         seen_paths.append(request.url.path)
         assert request.headers["authorization"] == "Bearer sk-provider-secret"
         if request.url.path == "/v1/responses":
-            return httpx.Response(200, json={"id": "resp_123", "output": []})
+            return httpx.Response(200, json={"id": "resp_123", "output_text": '{"ok": true}'})
         if request.url.path == "/v1/embeddings":
             return httpx.Response(200, json={"data": [{"embedding": [0.1, 0.2]}]})
         return httpx.Response(404, json={"error": {"message": "not found"}})
@@ -386,7 +387,10 @@ def test_openai_oauth_text_smoke_uses_codex_bearer(
     def handler(request: httpx.Request) -> httpx.Response:
         seen.append((str(request.url), request.headers["authorization"]))
         seen_json.append(json.loads(request.content.decode("utf-8")))
-        return httpx.Response(200, text='data: {"type":"response.completed"}\n\n')
+        return httpx.Response(
+            200,
+            text='data: {"type":"response.completed","response":{"output_text":"{\\"ok\\": true}"}}\n\n',
+        )
 
     client = httpx.Client(transport=httpx.MockTransport(handler))
     results = live_model_smoke.run_probes(
@@ -410,20 +414,13 @@ def test_openai_oauth_text_smoke_uses_codex_bearer(
             "Bearer oauth-access",
         )
     ]
-    assert seen_json == [
-        {
-            "model": "gpt-5.4-mini",
-            "instructions": "Reply with exactly: ok",
-            "input": [
-                {
-                    "role": "user",
-                    "content": [{"type": "input_text", "text": "Reply with exactly: ok"}],
-                }
-            ],
-            "store": False,
-            "stream": True,
-        }
-    ]
+    assert len(seen_json) == 1
+    assert seen_json[0]["model"] == "gpt-5.4-mini"
+    assert seen_json[0]["instructions"].startswith("Return only one JSON object")
+    assert seen_json[0]["store"] is False
+    assert seen_json[0]["stream"] is True
+    assert "Return exactly this JSON object" in seen_json[0]["input"][0]["content"]
+    assert "JSON schema" in seen_json[0]["input"][0]["content"]
 
 
 def test_openrouter_probe_uses_api_model_and_quantization(
@@ -445,7 +442,7 @@ def test_openrouter_probe_uses_api_model_and_quantization(
     def handler(request: httpx.Request) -> httpx.Response:
         if request.url.path == "/api/v1/chat/completions":
             seen_json.append(__import__("json").loads(request.content.decode("utf-8")))
-            return httpx.Response(200, json={"choices": [{"message": {"content": "ok"}}]})
+            return httpx.Response(200, json={"choices": [{"message": {"content": '{"ok": true}'}}]})
         return httpx.Response(404, json={"error": {"message": "not found"}})
 
     client = httpx.Client(transport=httpx.MockTransport(handler))
@@ -464,8 +461,19 @@ def test_openrouter_probe_uses_api_model_and_quantization(
     assert seen_json == [
         {
             "model": "google/gemma-4-31b-it",
-            "messages": [{"role": "user", "content": "Reply with exactly: ok"}],
-            "max_tokens": live_model_smoke.SMOKE_MAX_TOKENS,
+            "messages": [
+                {
+                    "role": "user",
+                    "content": (
+                        'Return exactly this JSON object: {"ok": true}\n'
+                        "Return only one JSON object. Do not wrap it in Markdown.\n"
+                        'JSON schema:\n{"type":"object","properties":{"ok":{"type":"boolean"}},"required":["ok"],"additionalProperties":false}'
+                    ),
+                }
+            ],
+            "max_tokens": provider_client.MAX_OUTPUT_TOKENS,
+            "temperature": 0,
+            "response_format": {"type": "json_object"},
             "provider": {"quantizations": ["fp8"]},
         }
     ]
@@ -490,7 +498,7 @@ def test_google_probe_uses_api_model_and_thinking_level(
     def handler(request: httpx.Request) -> httpx.Response:
         if request.url.path.endswith(":generateContent"):
             seen_json.append(__import__("json").loads(request.content.decode("utf-8")))
-            return httpx.Response(200, json={"candidates": [{"content": {"parts": [{"text": "ok"}]}}]})
+            return httpx.Response(200, json={"candidates": [{"content": {"parts": [{"text": '{"ok": true}' }]}}]})
         return httpx.Response(404, json={"error": {"message": "not found"}})
 
     client = httpx.Client(transport=httpx.MockTransport(handler))
@@ -506,12 +514,14 @@ def test_google_probe_uses_api_model_and_thinking_level(
     results = live_model_smoke.run_probes(settings, [probe], client=client, skip_missing_keys=False)
 
     assert [result.status for result in results] == ["ok"]
-    assert seen_json == [
-        {
-            "contents": [{"parts": [{"text": "Reply with exactly: ok"}]}],
-            "generationConfig": {"maxOutputTokens": live_model_smoke.SMOKE_MAX_TOKENS, "temperature": 0, "thinkingConfig": {"thinkingLevel": "high"}},
-        }
-    ]
+    assert len(seen_json) == 1
+    assert "Return exactly this JSON object" in seen_json[0]["contents"][0]["parts"][0]["text"]
+    assert seen_json[0]["generationConfig"] == {
+        "maxOutputTokens": provider_client.MAX_OUTPUT_TOKENS,
+        "temperature": 0,
+        "responseMimeType": "application/json",
+        "thinkingConfig": {"thinkingLevel": "high"},
+    }
 
 
 def jwt(payload: dict[str, Any]) -> str:

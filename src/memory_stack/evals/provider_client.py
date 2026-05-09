@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
+import os
 import re
 import time
 from dataclasses import dataclass
@@ -15,10 +16,17 @@ import httpx
 from memory_stack.config import Settings
 from memory_stack.evals.model_matrix import ModelCandidate
 from memory_stack.local_embeddings import fastembed_vector
-from memory_stack.provider_auth import resolve_openai_text_bearer
+from memory_stack.provider_auth import ProviderAuthError, resolve_openai_text_bearer
 
 
 MAX_OUTPUT_TOKENS = 2000
+SMOKE_PROMPT = 'Return exactly this JSON object: {"ok": true}'
+SMOKE_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {"ok": {"type": "boolean"}},
+    "required": ["ok"],
+    "additionalProperties": False,
+}
 JSON_RE = re.compile(r"\{.*\}", re.DOTALL)
 
 
@@ -130,6 +138,23 @@ class LiveProviderClient:
             estimated_cost_usd=estimate_cost(candidate, input_tokens, 0),
         )
 
+    def smoke(self, candidate: ModelCandidate) -> None:
+        if candidate.kind == "embedding":
+            result = self.embed(candidate, text="brain smoke test")
+            if result.status != "ok":
+                raise ProviderCallError(result.error or "embedding smoke failed")
+            return
+
+        result = self.complete_json(
+            candidate,
+            prompt=SMOKE_PROMPT,
+            schema=SMOKE_SCHEMA,
+        )
+        if result.status != "ok":
+            raise ProviderCallError(result.error or "LLM smoke failed")
+        if not result.payload or result.payload.get("ok") is not True:
+            raise ProviderCallError("LLM smoke response did not include ok=true")
+
     def missing_credential(self, candidate: ModelCandidate) -> str | None:
         if candidate.provider == "aws-bedrock":
             region = self.settings.aws_region or self.settings.aws_default_region
@@ -145,11 +170,15 @@ class LiveProviderClient:
                 return "missing OPENAI_API_KEY for OpenAI embeddings"
             return None
         if candidate.provider == "openai" and self.settings.openai_auth_mode == "oauth":
+            try:
+                resolve_openai_text_bearer(self.settings)
+            except ProviderAuthError as exc:
+                return str(exc)
             return None
         if candidate.provider == "fastembed" and getattr(candidate, "kind", "llm") == "embedding":
             return None
         if not self.settings.provider_api_key(candidate.provider):
-            return f"missing provider API key for {candidate.provider}"
+            return missing_provider_api_key_message(candidate.provider)
         return None
 
     def _complete_text(
@@ -551,6 +580,18 @@ def response_error_message(response: httpx.Response) -> str:
     return json.dumps(payload)[:500]
 
 
+def missing_provider_api_key_message(provider: str) -> str:
+    env_names = {
+        "openai": "OPENAI_API_KEY",
+        "openrouter": "OPENROUTER_API_KEY",
+        "google": "GEMINI_API_KEY or GOOGLE_API_KEY",
+        "anthropic": "ANTHROPIC_API_KEY",
+        "groq": "GROQ_API_KEY",
+        "voyage": "VOYAGE_API_KEY",
+    }.get(provider, f"{provider.upper()}_API_KEY")
+    return f"missing {env_names}"
+
+
 def sigv4_headers(settings: Settings, *, url: str, body: bytes, region: str) -> dict[str, str]:
     access_key = settings.aws_access_key_id
     secret_key = settings.aws_secret_access_key
@@ -639,6 +680,7 @@ def secret_values(settings: Settings) -> set[str]:
         "llm_api_key",
         "embedding_api_key",
         "openai_api_key",
+        "openrouter_api_key",
         "gemini_api_key",
         "google_api_key",
         "anthropic_api_key",
@@ -649,8 +691,24 @@ def secret_values(settings: Settings) -> set[str]:
         "groq_api_key",
         "voyage_api_key",
     )
-    return {
+    values = {
         str(getattr(settings, field))
         for field in fields
         if getattr(settings, field, None)
     }
+    for env_name in (
+        "OPENAI_API_KEY",
+        "OPENROUTER_API_KEY",
+        "GEMINI_API_KEY",
+        "GOOGLE_API_KEY",
+        "ANTHROPIC_API_KEY",
+        "AWS_ACCESS_KEY_ID",
+        "AWS_SECRET_ACCESS_KEY",
+        "AWS_SESSION_TOKEN",
+        "AWS_BEARER_TOKEN_BEDROCK",
+        "GROQ_API_KEY",
+        "VOYAGE_API_KEY",
+    ):
+        if value := os.getenv(env_name):
+            values.add(value)
+    return values
