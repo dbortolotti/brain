@@ -29,7 +29,7 @@ Unless the user specifies otherwise:
 - Model: `openai:gpt-5.5`
 - Repeats: `3`
 - Endpoint max concurrency: `10`
-- Roles: all fine-grained roles, excluding embeddings. In the current CLI, omit `--roles` with `--mode fine-grained` to get this set.
+- Roles: all tested fine-grained roles in the selected fixture set, excluding `embeddings`.
 - Fixture set: `production`
 - Output root: `eval_runs/<chosen-run-folder>` under the repo root
 
@@ -67,16 +67,104 @@ Using production deployment model secrets from <redacted-source>; values redacte
 
 If production model secrets are unavailable or ambiguous, stop and ask the user where the production deployment env/secrets should be sourced from. Do not silently fall back to unrelated local shell credentials.
 
+## Role Selection Semantics
+
+When the user says `all roles`, treat that as:
+
+```text
+all roles that have selected fine-grained fixtures/tests, excluding embeddings by default
+```
+
+Do not interpret `all roles` as “only the roles already assigned to the requested model in
+`brain_model_registry.yaml`.
+
+Compute the role list from fixtures, not from the model deployment matrix:
+
+```bash
+uv run python - <<'PY'
+from memory_stack.evals.model_fixtures import select_fixtures
+fixtures = select_fixtures(fixture_set="production", roles=set(), mode="fine-grained")
+roles = sorted({fixture.role for fixture in fixtures if fixture.role != "embeddings"})
+print(",".join(roles))
+PY
+```
+
+If the user explicitly includes embeddings, include `embeddings`; otherwise exclude it.
+
+## Forced Model Registry
+
+The current eval CLI intersects `--models <model-ref>` with the model's existing
+`fine_grained_eval_matrix` roles. That is not the desired behavior for this skill.
+For a requested model, create a run-local registry that maps the requested model to every
+selected tested role, while leaving the repo registry untouched.
+
+Create `<run-dir>/forced_model_registry.yaml` before running:
+
+```bash
+RUN_DIR=<run-dir> MODEL_REF=<model-ref> FIXTURE_SET=production uv run python - <<'PY'
+from __future__ import annotations
+
+import os
+from pathlib import Path
+
+import yaml
+
+from memory_stack.evals.model_fixtures import select_fixtures
+
+run_dir = Path(os.environ["RUN_DIR"])
+model_ref = os.environ["MODEL_REF"]
+fixture_set = os.environ.get("FIXTURE_SET", "production")
+explicit_roles = {
+    role.strip()
+    for role in os.environ.get("ROLES", "").split(",")
+    if role.strip()
+}
+include_embeddings = os.environ.get("INCLUDE_EMBEDDINGS", "false").lower() in {
+    "1",
+    "true",
+    "yes",
+    "on",
+}
+
+fixtures = select_fixtures(
+    fixture_set=fixture_set,
+    roles=explicit_roles,
+    mode="fine-grained",
+)
+roles = sorted({fixture.role for fixture in fixtures})
+if not include_embeddings:
+    roles = [role for role in roles if role != "embeddings"]
+
+if not roles:
+    raise SystemExit("no tested roles selected")
+
+with Path("brain_model_registry.yaml").open(encoding="utf-8") as file:
+    registry = yaml.safe_load(file)
+
+registry["fine_grained_eval_matrix"] = {role: [model_ref] for role in roles}
+
+run_dir.mkdir(parents=True, exist_ok=True)
+(run_dir / "selected_roles.txt").write_text("\n".join(roles) + "\n", encoding="utf-8")
+with (run_dir / "forced_model_registry.yaml").open("w", encoding="utf-8") as file:
+    yaml.safe_dump(registry, file, sort_keys=False)
+print(",".join(roles))
+PY
+```
+
+Use this generated registry for the eval command. This preserves the requested model and
+forces it across every selected tested non-embedding role.
+
 ## Run Command
 
 Create the output directory, then run:
 
 ```bash
 uv run brain eval models \
-  --registry brain_model_registry.yaml \
+  --registry <run-dir>/forced_model_registry.yaml \
   --fixture-set production \
   --mode fine-grained \
   --models <model-ref> \
+  --roles "$(paste -sd, <run-dir>/selected_roles.txt)" \
   --repeat-runs <repeats> \
   --endpoint-max-concurrency <concurrency> \
   --output-json <run-dir>/results.json \
@@ -84,7 +172,8 @@ uv run brain eval models \
   --raw-output-dir <run-dir>/raw
 ```
 
-Only add `--roles <comma-separated-roles>` if the user supplied roles.
+Always pass the selected roles when using a forced model registry. This keeps embeddings
+excluded unless the user explicitly requested them.
 
 The run must produce:
 
@@ -222,7 +311,7 @@ After a harness/scoring fix, rerun only failed cases:
 
 ```bash
 uv run brain eval rerun-failed \
-  --registry brain_model_registry.yaml \
+  --registry <run-dir>/forced_model_registry.yaml \
   --source-json <run-dir>/results.json \
   --failed-manifest <run-dir>/failed_tests.jsonl \
   --output-json <run-dir>/results.json \
