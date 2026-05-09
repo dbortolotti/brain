@@ -364,6 +364,20 @@ def test_durability_filter_derives_explicit_expected_durable_value() -> None:
     assert all("expected_durable" in fixture.expected for fixture in fixtures)
 
 
+def test_open_loop_detector_derivation_uses_open_loop_semantics_not_repair_paths() -> None:
+    fixtures = select_fixtures(
+        fixture_set="brain-model-test-v2",
+        roles={"open_loop_detector"},
+        mode="fine-grained",
+    )
+    by_id = {fixture.id: fixture for fixture in fixtures}
+
+    assert by_id["slack_no_durable_value_repair_001"].expected["expected_open_loop"] is False
+    assert by_id["slack_conflict_buttons_001"].expected["expected_open_loop_any"] == [False, True]
+    assert by_id["small_table_preferences_001"].expected["expected_open_loop"] is False
+    assert by_id["ambiguous_time_reference_001"].expected["expected_open_loop"] is True
+
+
 def test_success_receipt_generator_is_not_a_fine_grained_model_fixture() -> None:
     fixtures = select_fixtures(
         fixture_set="brain-model-test-v2",
@@ -590,6 +604,26 @@ def test_entity_candidate_ranker_accepts_ambiguity_preserving_actions() -> None:
     assert notes == []
 
 
+def test_entity_candidate_ranker_accepts_exact_alias_match_actions() -> None:
+    fixture = ModelEvalFixture(
+        id="entity_alias",
+        scenario_group="entity_alias",
+        role="entity_candidate_ranker",
+        input_text="Existing entity: Sam from Goldman, aliases Sam G. New: Sam G likes Bill Evans.",
+        expected={"entity_action": "use_existing"},
+    )
+
+    scores, zero_tolerance, notes = score_model_output(
+        fixture,
+        {"entity_resolution": {"action": "matched", "entity_id": "Sam from Goldman"}},
+        status="ok",
+    )
+
+    assert scores["entity_safety"] == 1.0
+    assert zero_tolerance is False
+    assert notes == []
+
+
 def test_intent_router_ignores_table_zero_tolerance_checks() -> None:
     fixture = ModelEvalFixture(
         id="router_table_input",
@@ -750,6 +784,39 @@ def test_recall_irrelevant_dump_zero_tolerance_requires_irrelevant_content() -> 
 
     assert bad_zero is True
     assert bad_types == ["irrelevant_memory_dump"]
+
+    excluded_scores, excluded_zero, excluded_types = score_model_output(
+        fixture,
+        {
+            "answer": (
+                "Brain DB should be authoritative and Cognee should be rebuildable. "
+                "I am not including unrelated records such as Bill Evans because "
+                "they are outside the queried scope."
+            )
+        },
+        status="ok",
+    )
+
+    assert excluded_scores["recall_quality"] == 1.0
+    assert excluded_zero is False
+    assert excluded_types == []
+
+    long_exclusion_scores, long_exclusion_zero, long_exclusion_types = score_model_output(
+        fixture,
+        {
+            "answer": (
+                "Brain DB should be authoritative and Cognee should be rebuildable. "
+                "I am not including unrelated records such as family facts, Sam preferences, "
+                "Bill Evans, Brain/Cognee chat, or the small table because they are "
+                "outside the queried scope."
+            )
+        },
+        status="ok",
+    )
+
+    assert long_exclusion_scores["recall_quality"] == 1.0
+    assert long_exclusion_zero is False
+    assert long_exclusion_types == []
 
 
 def test_deleted_memory_returned_zero_tolerance_is_enforced_for_recall() -> None:
@@ -982,6 +1049,73 @@ def test_source_classifier_long_source_zero_tolerance_allows_source_subtype_miss
     assert types == []
 
 
+def test_source_classifier_uses_fixture_specific_source_expectations() -> None:
+    transcript = ModelEvalFixture(
+        id="conversation_transcript_sam_001",
+        role="source_classifier",
+        scenario_group="transcript_source_split",
+        input_text="Daniele: Still at Goldman? Sam: No. Daniele: send me that article.",
+        expected={},
+    )
+    large_table = ModelEvalFixture(
+        id="large_table_500_rows_001",
+        role="source_classifier",
+        scenario_group="large_table_policy",
+        input_text="CSV table with 500 rows: id,name,value repeated many times.",
+        expected={},
+    )
+
+    transcript_scores, _zero, _types = score_model_output(
+        transcript,
+        {
+            "input_class": "source",
+            "source_kind": "chat_log",
+            "should_create_source": True,
+            "should_extract_memories": True,
+        },
+        status="ok",
+    )
+    table_scores, _zero, _types = score_model_output(
+        large_table,
+        {
+            "input_class": "source",
+            "source_kind": "table",
+            "should_create_source": True,
+            "should_extract_memories": False,
+        },
+        status="ok",
+    )
+
+    assert transcript_scores["source_memory_split"] == 1.0
+    assert table_scores["source_memory_split"] == 1.0
+
+
+def test_atomic_card_extractor_expected_relaxes_broad_source_summary_kind() -> None:
+    fixture = select_fixtures(
+        fixture_set="development",
+        roles={"atomic_card_extractor"},
+        mode="fine-grained",
+    )
+    article = next(item for item in fixture if item.id == "memory_compiler_article_atomic")
+
+    scores, zero, types = score_model_output(
+        article,
+        {
+            "decision": "commit_success",
+            "memory_cards": [
+                {"kind": "key_takeaway", "statement": "AI memory systems need durable source evidence."},
+                {"kind": "key_takeaway", "statement": "Atomic memory cards should be small and traceable."},
+                {"kind": "key_takeaway", "statement": "The application database must own lifecycle state."},
+            ],
+        },
+        status="ok",
+    )
+
+    assert scores["memory_card_quality"] == 1.0
+    assert zero is False
+    assert types == []
+
+
 def test_table_policy_zero_tolerance_checks_expected_values_directly() -> None:
     fixture = ModelEvalFixture(
         id="small_table",
@@ -1009,6 +1143,31 @@ def test_table_policy_zero_tolerance_checks_expected_values_directly() -> None:
     )
 
     assert scores["memory_card_quality"] == 1.0
+    assert zero is False
+    assert types == []
+
+
+def test_table_policy_non_table_input_scores_no_table_response() -> None:
+    fixture = ModelEvalFixture(
+        id="article_source",
+        role="table_policy_handler",
+        scenario_group="article",
+        input_text="This article says graph memory is useful.",
+        expected={"must_include": ["graph memory"]},
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "decision": "no_table_detected",
+            "answer": "No table content was provided. No table policy action is needed.",
+            "memory_cards": [],
+        },
+        status="ok",
+    )
+
+    assert scores["memory_card_quality"] == 1.0
+    assert scores["source_memory_split"] == 1.0
     assert zero is False
     assert types == []
 
@@ -1065,6 +1224,29 @@ def test_durability_filter_scores_durable_vs_non_durable_decision() -> None:
     assert good_scores["durability_decision"] == 1.0
 
 
+def test_durability_filter_accepts_safe_clarification_decision_over_boolean() -> None:
+    fixture = ModelEvalFixture(
+        id="ambiguous_sam",
+        role="durability_filter",
+        scenario_group="durability",
+        input_text="Existing: Sam from Goldman; Sam from Point72. New: Sam likes Bill Evans.",
+        expected={
+            "decision_any": ["needs_user_choice", "needs_clarification"],
+            "expected_durable": False,
+        },
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {"decision": "needs_clarification", "durable": True},
+        status="ok",
+    )
+
+    assert scores["durability_decision"] == 1.0
+    assert zero is False
+    assert types == []
+
+
 def test_conflict_candidate_detector_rejects_auto_commit_policy_decision() -> None:
     fixture = ModelEvalFixture(
         id="conflict_candidate",
@@ -1093,7 +1275,7 @@ def test_conflict_candidate_detector_rejects_auto_commit_policy_decision() -> No
     assert types == ["silent_high_confidence_overwrite"]
 
 
-def test_conflict_candidate_detector_classification_miss_is_not_overwrite_zero_tolerance() -> None:
+def test_conflict_candidate_detector_accepts_semantic_conflict_label_alias() -> None:
     fixture = ModelEvalFixture(
         id="conflict_candidate",
         role="conflict_candidate_detector",
@@ -1117,7 +1299,7 @@ def test_conflict_candidate_detector_classification_miss_is_not_overwrite_zero_t
         status="ok",
     )
 
-    assert scores["conflict_safety"] == 0.0
+    assert scores["conflict_safety"] == 1.0
     assert zero is False
     assert types == []
 
@@ -1146,7 +1328,7 @@ def test_conflict_explainer_rejects_actions_outside_backend_safe_space() -> None
     assert types == ["silent_high_confidence_overwrite"]
 
 
-def test_conflict_explainer_classification_miss_is_not_overwrite_zero_tolerance() -> None:
+def test_conflict_explainer_accepts_semantic_conflict_label_alias() -> None:
     fixture = ModelEvalFixture(
         id="conflict_explainer",
         role="conflict_explainer",
@@ -1164,6 +1346,34 @@ def test_conflict_explainer_classification_miss_is_not_overwrite_zero_tolerance(
         {
             "decision": "needs_user_choice",
             "conflict_classification": "employment_transition_conflict",
+            "answer": "Use approve_supersession, keep_both, reject_new, or edit.",
+        },
+        status="ok",
+    )
+
+    assert scores["conflict_safety"] == 1.0
+    assert zero is False
+    assert types == []
+
+
+def test_conflict_classification_miss_still_affects_quality_without_zero_tolerance() -> None:
+    fixture = ModelEvalFixture(
+        id="conflict_explainer",
+        role="conflict_explainer",
+        scenario_group="conflict",
+        input_text="Existing: Sam works at Goldman. New: Sam likes Bill Evans.",
+        expected={
+            "conflict_classification": "supersedes",
+            "safe_action_space": ["approve_supersession", "keep_both", "reject_new", "edit"],
+        },
+        zero_tolerance_checks=("silent_high_confidence_overwrite",),
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "decision": "needs_user_choice",
+            "conflict_classification": "unrelated_preference",
             "answer": "Use approve_supersession, keep_both, reject_new, or edit.",
         },
         status="ok",

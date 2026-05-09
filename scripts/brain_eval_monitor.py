@@ -7,7 +7,7 @@ import re
 import threading
 import time
 from collections import Counter
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
 from typing import Any
@@ -88,6 +88,77 @@ def latest_progress(run_dir: Path, records: list[dict[str, Any]]) -> tuple[int, 
     return len(records), None
 
 
+def estimate_timing(
+    *,
+    run_dir: Path,
+    raw_dir: Path | None,
+    done: int,
+    total: int | None,
+) -> dict[str, Any]:
+    if not done or total is None or done >= total:
+        return {
+            "started_at": None,
+            "elapsed_seconds": None,
+            "rate_per_second": None,
+            "remaining_seconds": None,
+            "expected_end_at": None,
+        }
+
+    candidates: list[float] = []
+    if raw_dir is not None and raw_dir.exists():
+        for path in raw_dir.rglob("*.json"):
+            try:
+                candidates.append(path.stat().st_mtime)
+            except OSError:
+                continue
+    for name in ("run.log", "selected_roles.txt", "forced_model_registry.yaml"):
+        path = run_dir / name
+        if path.exists():
+            try:
+                candidates.append(path.stat().st_mtime)
+            except OSError:
+                continue
+
+    if not candidates:
+        return {
+            "started_at": None,
+            "elapsed_seconds": None,
+            "rate_per_second": None,
+            "remaining_seconds": None,
+            "expected_end_at": None,
+        }
+
+    now = datetime.now(UTC)
+    started_at = datetime.fromtimestamp(min(candidates), UTC)
+    elapsed_seconds = max((now - started_at).total_seconds(), 1.0)
+    rate_per_second = done / elapsed_seconds
+    if rate_per_second <= 0:
+        remaining_seconds = None
+        expected_end_at = None
+    else:
+        remaining_seconds = max(total - done, 0) / rate_per_second
+        expected_end_at = now + timedelta(seconds=remaining_seconds)
+
+    return {
+        "started_at": started_at,
+        "elapsed_seconds": elapsed_seconds,
+        "rate_per_second": rate_per_second,
+        "remaining_seconds": remaining_seconds,
+        "expected_end_at": expected_end_at,
+    }
+
+
+def format_duration(seconds: float | None) -> str:
+    if seconds is None:
+        return "unknown"
+    seconds = max(0, int(seconds))
+    hours, remainder = divmod(seconds, 3600)
+    minutes, _ = divmod(remainder, 60)
+    if hours:
+        return f"{hours}h {minutes:02d}m"
+    return f"{minutes}m"
+
+
 def summarize_records(records: list[dict[str, Any]]) -> dict[str, Any]:
     by_status: Counter[str] = Counter()
     by_model_role: dict[tuple[str, str], Counter[str]] = {}
@@ -137,7 +208,15 @@ def render_html(
     total: int | None,
 ) -> str:
     summary = summarize_records(records)
+    timing = estimate_timing(run_dir=run_dir, raw_dir=raw_dir, done=done, total=total)
     updated = datetime.now(UTC).astimezone().strftime("%Y-%m-%d %H:%M:%S %Z")
+    expected_end_at = timing["expected_end_at"]
+    expected_end_text = (
+        expected_end_at.astimezone().strftime("%Y-%m-%d %H:%M:%S %Z")
+        if expected_end_at is not None
+        else "unknown"
+    )
+    remaining_text = format_duration(timing["remaining_seconds"])
     total_text = str(total) if total is not None else "unknown"
     progress_pct = f"{(done / total * 100):.1f}%" if total else "unknown"
     status_rows = "\n".join(
@@ -201,6 +280,7 @@ def render_html(
   <p>Raw: <code>{escape(raw_dir or '')}</code></p>
   <section class="kpis">
     <div class="kpi"><span>Progress</span><strong>{done} / {escape(total_text)}</strong><p>{escape(progress_pct)}</p></div>
+    <div class="kpi"><span>Expected end</span><strong>{escape(expected_end_text)}</strong><p>{escape(remaining_text)} remaining</p></div>
     <div class="kpi"><span>Rows observed</span><strong>{len(records)}</strong></div>
     <div class="kpi"><span>Failures</span><strong>{sum(count for status, count in summary['by_status'].items() if status != 'ok')}</strong></div>
     <div class="kpi"><span>OK</span><strong>{summary['by_status'].get('ok', 0)}</strong></div>
@@ -219,6 +299,7 @@ def write_once(run_dir: Path, results_json: Path | None, raw_dir: Path | None) -
     done, total = latest_progress(run_dir, records)
     if total is None and records_from_results(results_path):
         total = len(records)
+    timing = estimate_timing(run_dir=run_dir, raw_dir=raw_path, done=done, total=total)
     html_text = render_html(
         run_dir=run_dir,
         results_json=results_path,
@@ -237,6 +318,12 @@ def write_once(run_dir: Path, results_json: Path | None, raw_dir: Path | None) -
                 "results_json": str(results_path) if results_path else None,
                 "raw_dir": str(raw_path) if raw_path else None,
                 "done": done,
+                "elapsed_seconds": timing["elapsed_seconds"],
+                "expected_end_at": timing["expected_end_at"].isoformat()
+                if timing["expected_end_at"] is not None
+                else None,
+                "rate_per_second": timing["rate_per_second"],
+                "remaining_seconds": timing["remaining_seconds"],
                 "total": total,
                 "status_counts": dict(summarize_records(records)["by_status"]),
             },

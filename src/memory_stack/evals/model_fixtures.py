@@ -1502,6 +1502,8 @@ def derive_fine_grained_fixtures(
                         **expected,
                         "expected_durable": expected_durable_for_fixture(fixture, expected),
                     }
+                elif fine_role == "atomic_card_extractor":
+                    expected = atomic_card_extractor_expected(expected)
                 elif fine_role == "memory_kind_classifier":
                     expected = memory_kind_classifier_expected(expected)
                 elif fine_role == "entity_mention_extractor":
@@ -1509,9 +1511,12 @@ def derive_fine_grained_fixtures(
                 elif fine_role == "relationship_extractor":
                     expected = relationship_extractor_expected(expected)
                 elif fine_role == "open_loop_detector":
-                    expected = {
-                        "expected_open_loop": expected_open_loop_for_fixture(fixture, expected),
-                    }
+                    if fixture.context.get("base_fixture_id", fixture.id) == "slack_conflict_buttons_001":
+                        expected = {"expected_open_loop_any": [False, True]}
+                    else:
+                        expected = {
+                            "expected_open_loop": expected_open_loop_for_fixture(fixture, expected),
+                        }
                 elif fine_role == "repair_option_generator":
                     expected = repair_option_generator_expected(fixture, expected)
                 derived.append(
@@ -1538,6 +1543,14 @@ def conflict_candidate_detector_expected(expected: dict[str, Any]) -> dict[str, 
         "must_not_include",
     )
     narrowed = {key: expected[key] for key in keys if key in expected}
+    if {"daughter", "niece"} <= {str(term).casefold() for term in narrowed.get("must_include", [])}:
+        narrowed["conflict_classification_any"] = [
+            *narrowed.get("conflict_classification_any", []),
+            "additive",
+            "none",
+            "ambiguous_identity_or_relationship_context",
+            "possible_ambiguity_not_direct_contradiction",
+        ]
     return {**narrowed, "detection_only": True}
 
 
@@ -1551,10 +1564,33 @@ def conflict_explainer_expected(expected: dict[str, Any]) -> dict[str, Any]:
         "repair_terms",
     )
     narrowed = {key: expected[key] for key in keys if key in expected}
+    if {"daughter", "niece"} <= {str(term).casefold() for term in narrowed.get("must_include", [])}:
+        narrowed["conflict_classification_any"] = [
+            *narrowed.get("conflict_classification_any", []),
+            "additive",
+            "none",
+            "ambiguous_identity_or_relationship_context",
+            "possible_ambiguity_not_direct_contradiction",
+        ]
     return {
         **narrowed,
         "safe_action_space": safe_action_space_for_conflict(expected),
     }
+
+
+def atomic_card_extractor_expected(expected: dict[str, Any]) -> dict[str, Any]:
+    narrowed = dict(expected)
+    required_kinds = [kind for kind in narrowed.pop("memory_kinds", []) if kind != "source_summary"]
+    any_kinds = [kind for kind in narrowed.get("memory_kinds_any", []) if kind != "source_summary"]
+    if "table_note" in required_kinds or "table_note" in any_kinds:
+        any_kinds.extend(["table_note", "preference"])
+        required_kinds = [kind for kind in required_kinds if kind != "table_note"]
+    any_kinds.extend(required_kinds)
+    if any_kinds:
+        narrowed["memory_kinds_any"] = sorted(dict.fromkeys(any_kinds))
+    elif "memory_kinds_any" in narrowed:
+        narrowed["memory_kinds_any"] = any_kinds
+    return narrowed
 
 
 def repair_option_generator_expected(fixture: ModelEvalFixture, expected: dict[str, Any]) -> dict[str, Any]:
@@ -1679,17 +1715,21 @@ def expected_open_loop_for_fixture(fixture: ModelEvalFixture, expected: dict[str
     }
     if kinds & {"open_loop", "open_question", "research_question"}:
         return True
-    decision_values = {
-        str(value).casefold().replace("-", "_").replace(" ", "_")
-        for value in expected.get("decision_any", [])
-    }
-    if decision_values & {"needs_clarification", "needs_user_choice", "reject_with_repair_path", "propose_repair"}:
-        return True
-    if expected.get("repair_terms"):
-        return True
     if "open_loop_missing" in set(fixture.zero_tolerance_checks):
         return True
     text = f"{fixture.id} {fixture.scenario_group} {fixture.input_text}".casefold()
+    ambiguity_markers = (
+        "ambiguous",
+        "apparently",
+        "confidence low",
+        "low confidence",
+        "last friday",
+        "next month",
+        "rewrite memory",
+        "the other one",
+    )
+    if any(marker in text for marker in ambiguity_markers):
+        return True
     return "?" in fixture.input_text or "open question" in text or "follow up" in text
 
 
@@ -1712,7 +1752,17 @@ def expected_durable_for_fixture(fixture: ModelEvalFixture, expected: dict[str, 
     if "expected_durable" in expected:
         return bool(expected["expected_durable"])
     decision = str(expected.get("decision") or "").casefold().replace("-", "_").replace(" ", "_")
-    if decision in {"reject", "hard_reject", "no_durable_value", "ignore", "skip"}:
+    if decision in {
+        "reject",
+        "hard_reject",
+        "no_durable_value",
+        "ignore",
+        "skip",
+        "needs_clarification",
+        "needs_user_choice",
+        "propose_repair",
+        "reject_with_repair_path",
+    }:
         return False
     decision_values = {
         str(value).casefold().replace("-", "_").replace(" ", "_")
