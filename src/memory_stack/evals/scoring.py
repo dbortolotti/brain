@@ -1190,11 +1190,14 @@ def score_recall_relevance_filter(payload: dict[str, Any], expected: dict[str, A
     ]
     memory_ids = {str(value) for value in payload.get("memory_ids", []) if value is not None}
     excluded_ids = {str(value) for value in payload.get("excluded_memory_ids", []) if value is not None}
+    forbidden_ids = {str(value) for value in expected.get("forbidden_memory_ids", []) if value is not None}
     if expected.get("memory_ids"):
         scores.append(1.0 if set(expected["memory_ids"]) <= memory_ids else 0.0)
     if expected.get("excluded_memory_ids"):
         scores.append(1.0 if set(expected["excluded_memory_ids"]) <= excluded_ids else 0.0)
         scores.append(1.0 if memory_ids.isdisjoint(set(expected["excluded_memory_ids"])) else 0.0)
+    if forbidden_ids:
+        scores.append(1.0 if memory_ids.isdisjoint(forbidden_ids) else 0.0)
     return min(scores)
 
 
@@ -1672,7 +1675,10 @@ def _mentions_forbidden_term_as_excluded(window: str) -> bool:
         "blocked ",
         "prompt-injection text",
         "prevented ",
+        "explicitly deleted",
+        "must be excluded",
         "excluded ",
+        "excluded.",
         "filtered ",
         "closed ",
         "not listed",
@@ -1747,6 +1753,8 @@ def entity_action_matches(actual: Any, expected: Any) -> bool:
             "link_existing",
             "link_to_existing",
             "link_to_existing_entity",
+            "match",
+            "match_existing",
             "match_existing_entity",
             "matched",
             "matched_existing_entity",
@@ -1919,6 +1927,7 @@ def repair_option_action_id(option: Any) -> str | None:
         ("if_confirmed_add", "add_new"),
         ("add_the_specific_relationship", "add_new"),
         ("add_a_separate", "add_new"),
+        ("add_as_a_new_separate", "add_new"),
         ("add_as_a_separate", "add_new"),
         ("add_as_separate", "add_new"),
         ("add_separately", "add_new"),
@@ -2361,6 +2370,12 @@ def zero_tolerance_failure_types(
         for value in fixture.expected.get("excluded_memory_ids", [])
         if value is not None
     }
+    expected_forbidden_memory_ids = {
+        str(value)
+        for value in fixture.expected.get("forbidden_memory_ids", [])
+        if value is not None
+    }
+    expected_blocked_memory_ids = expected_excluded_memory_ids | expected_forbidden_memory_ids
 
     def score_below(key: str) -> bool:
         value = scores.get(key)
@@ -2372,7 +2387,7 @@ def zero_tolerance_failure_types(
         "deleted_or_superseded_memory_returned_as_current" in checks
         and (
             ("works at goldman" in recall_answer and "superseded" not in recall_answer)
-            or bool(included_memory_ids & expected_excluded_memory_ids)
+            or bool(included_memory_ids & expected_blocked_memory_ids)
         )
     ):
         failures.append("deleted_or_superseded_memory_returned_as_current")
@@ -2465,6 +2480,7 @@ def zero_tolerance_failure_types(
             for term in fixture.expected.get("must_not_include", [])
         )
         or bool(included_memory_ids & expected_excluded_memory_ids)
+        or bool(included_memory_ids & expected_forbidden_memory_ids)
     ):
         failures.append("deleted_memory_returned")
     if "irrelevant_memory_dump" in checks and any(

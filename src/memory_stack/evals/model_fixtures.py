@@ -1652,8 +1652,9 @@ MODEL_EVAL_FIXTURES.extend(
             ),
             {
                 "memory_ids": ["mem_new"],
-                "excluded_memory_ids": ["mem_old", "mem_deleted"],
-                "must_include": ["mem_new", "Point72"],
+                "excluded_memory_ids": [],
+                "forbidden_memory_ids": ["mem_old", "mem_deleted"],
+                "must_include": ["mem_new"],
                 "must_not_include": ["works at Goldman", "Taylor Swift"],
             },
             fixture_set="development",
@@ -1723,6 +1724,7 @@ FIXTURE_SET_ORDER = {
     "production": 2,
     "brain-model-test-v2": 2,
 }
+WORKFLOW_COMPARISON_FIXTURE_SET = "deterministic-vs-llm-workflows"
 
 FINE_GRAINED_ROLE_FIXTURE_SOURCES: dict[str, tuple[str, ...]] = {
     "intent_router": ("router", "slack_intake", "memory_compiler", "recall_synthesizer", "debug_explainer"),
@@ -1758,6 +1760,13 @@ def select_fixtures(
     roles: set[str],
     mode: str = "broad",
 ) -> list[ModelEvalFixture]:
+    if fixture_set == WORKFLOW_COMPARISON_FIXTURE_SET:
+        fixtures = [
+            fixture
+            for fixture in MODEL_EVAL_FIXTURES
+            if fixture.context.get("workflow_comparison")
+        ]
+        return [fixture for fixture in fixtures if not roles or fixture.role in roles]
     if fixture_set not in FIXTURE_SET_ORDER:
         raise ValueError(f"unsupported fixture set: {fixture_set}")
     max_level = FIXTURE_SET_ORDER[fixture_set]
@@ -2060,6 +2069,7 @@ def recall_relevance_filter_expected(fixture: ModelEvalFixture, expected: dict[s
         for key in (
             "memory_ids",
             "excluded_memory_ids",
+            "forbidden_memory_ids",
             "must_include",
             "must_include_any",
             "must_not_include",

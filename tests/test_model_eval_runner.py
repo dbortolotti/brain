@@ -1141,6 +1141,41 @@ def test_deleted_memory_exclusion_is_not_returned_as_current() -> None:
     assert types == []
 
 
+def test_deleted_memory_exclusion_note_is_not_returned_as_current() -> None:
+    fixture = ModelEvalFixture(
+        id="recall_hide_deleted_001",
+        role="recall_planner",
+        scenario_group="recall",
+        input_text="Current memory: Sam likes Bill Evans. Deleted memory: Sam likes Taylor Swift. Query: What music does Sam like?",
+        expected={
+            "must_include": ["Bill Evans"],
+            "must_not_include": ["Taylor Swift"],
+        },
+        zero_tolerance_checks=("deleted_memory_returned",),
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "answer": "",
+            "decision": "Search current Brain evidence for music preferences associated with Sam; do not treat the deleted Taylor Swift memory as current evidence.",
+            "entity_resolution": {
+                "action": "search",
+                "reason": "Current evidence mentions Sam likes Bill Evans, while the Taylor Swift fact is explicitly deleted and must be excluded.",
+            },
+            "receipt": {
+                "success": True,
+                "details": ["Deleted memory about Taylor Swift is not returned as current evidence."],
+            },
+        },
+        status="ok",
+    )
+
+    assert scores["recall_quality"] == 1.0
+    assert zero is False
+    assert types == []
+
+
 def test_unsupported_inference_zero_tolerance_requires_forbidden_content() -> None:
     fixture = ModelEvalFixture(
         id="atomic_missing_expected_term",
@@ -1905,6 +1940,24 @@ def test_repair_option_generator_accepts_safe_add_separately_phrasing() -> None:
     assert additive_zero is False
     assert additive_types == []
 
+    additive_new_separate_scores, additive_new_separate_zero, additive_new_separate_types = score_model_output(
+        additive_fixture,
+        {
+            "answer": "The new fact is additive.",
+            "repair_options": [
+                "Add as a new separate preference: Sam from Goldman also likes Sonny Rollins.",
+                "Keep the existing memory only: Sam from Goldman likes Bill Evans.",
+                "Edit the proposed memory before saving.",
+                "Cancel and do not save anything yet.",
+            ],
+        },
+        status="ok",
+    )
+
+    assert additive_new_separate_scores["repair_quality"] == 1.0
+    assert additive_new_separate_zero is False
+    assert additive_new_separate_types == []
+
     sara_fixture = ModelEvalFixture(
         id="conflict_sara_niece_001",
         role="repair_option_generator",
@@ -2651,6 +2704,24 @@ def test_deterministic_vs_llm_workflow_comparison_battery_is_selected() -> None:
     } <= {fixture.context.get("base_fixture_id", fixture.id) for fixture in comparison_fixtures}
 
 
+def test_deterministic_vs_llm_workflow_fixture_set_only_selects_battery() -> None:
+    fixtures = select_fixtures(
+        fixture_set="deterministic-vs-llm-workflows",
+        roles=set(),
+        mode="fine-grained",
+    )
+
+    assert len(fixtures) == 27
+    assert {fixture.context.get("workflow_comparison") for fixture in fixtures} == {True}
+    assert {fixture.role for fixture in fixtures} == {
+        "commit_policy_decider",
+        "success_receipt_generator",
+        "entity_final_resolver",
+        "conflict_policy_decider",
+        "recall_relevance_filter",
+    }
+
+
 def test_workflow_comparison_battery_scores_deterministic_aligned_outputs() -> None:
     fixtures = {
         fixture.context.get("base_fixture_id", fixture.id): fixture
@@ -2692,6 +2763,19 @@ def test_workflow_comparison_battery_scores_deterministic_aligned_outputs() -> N
             },
         ),
         (
+            "workflow_compare_entity_final_resolver_alias_001",
+            {
+                "entity_resolution": {
+                    "action": "match",
+                    "entity_id": "sam_goldman",
+                    "confidence": "high",
+                    "reason": "Sam G is an alias for Sam from Goldman.",
+                },
+                "answer": "Resolved Sam G to sam_goldman, Sam from Goldman.",
+                "citations": [],
+            },
+        ),
+        (
             "workflow_compare_conflict_policy_duplicate_001",
             {
                 "policy_action": "mark_duplicate",
@@ -2706,13 +2790,13 @@ def test_workflow_comparison_battery_scores_deterministic_aligned_outputs() -> N
             "workflow_compare_recall_relevance_status_filter_001",
             {
                 "memory_ids": ["mem_new"],
-                "excluded_memory_ids": ["mem_old", "mem_deleted"],
+                "excluded_memory_ids": [],
                 "reason_by_memory_id": {
                     "mem_new": "Relevant current workplace fact.",
                     "mem_old": "Removed by deterministic status filter.",
                     "mem_deleted": "Removed by deterministic status filter.",
                 },
-                "answer": "Keep mem_new: Sam joined Point72.",
+                "answer": "",
                 "citations": [],
             },
         ),
@@ -2743,7 +2827,7 @@ def test_recall_relevance_filter_fails_when_llm_restores_status_filtered_memory(
         fixture,
         {
             "memory_ids": ["mem_new", "mem_old"],
-            "excluded_memory_ids": ["mem_deleted"],
+            "excluded_memory_ids": [],
             "reason_by_memory_id": {
                 "mem_new": "Relevant.",
                 "mem_old": "Also relevant.",

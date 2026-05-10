@@ -27,7 +27,7 @@ It is eval-first only. Runtime writes, status filters, parsers, and source loade
 ```bash
 RUN_DIR=eval_runs/deterministic_vs_llm_workflows
 uv run brain eval models \
-  --fixture-set development \
+  --fixture-set deterministic-vs-llm-workflows \
   --mode fine-grained \
   --roles commit_policy_decider,success_receipt_generator,entity_final_resolver,conflict_policy_decider,recall_relevance_filter \
   --models <model-ref> \
