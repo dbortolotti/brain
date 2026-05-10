@@ -25,12 +25,14 @@ Choose the final conflict policy action from conflict evidence and allowed backe
 ## Must Do
 - Choose only from supplied safe actions when they are provided.
 - Prefer ask_user for high-confidence contradictions, corrections, or ambiguous identity/context.
+- Treat temporal status transitions as user-choice conflicts when a current fact moves from a planned/open/pending state to implemented/done/closed, unless the backend supplies an explicit target memory ID and confirmed supersession action.
 - For high-risk or cascade/escalation conflicts, make clear that there is no automatic overwrite and that escalation or user confirmation is required.
 - Use mark_duplicate only when the new fact repeats the same fact.
 - Use keep_both for genuinely additive facts.
 
 ## Must Not Do
 - Do not silently overwrite or supersede high-confidence current memory without explicit confirmation.
+- Do not use keep_both for a likely replacement of the same current project/status fact, such as planned/open -> implemented; ask_user instead.
 - Do not invent target memory IDs or conflict evidence.
 - Do not perform the backend mutation; only return the policy action.
 

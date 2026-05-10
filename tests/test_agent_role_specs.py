@@ -81,6 +81,8 @@ def test_role_specs_cover_recent_model_failure_contracts() -> None:
         "conflict_policy_decider": [
             "no automatic overwrite",
             "escalation or user confirmation is required",
+            "Treat temporal status transitions as user-choice conflicts",
+            "planned/open -> implemented",
         ],
         "durability_filter": [
             "Treat direct user memory statements about the user's family",
@@ -94,6 +96,8 @@ def test_role_specs_cover_recent_model_failure_contracts() -> None:
             "Return has_open_loop false for ordinary durable facts",
             "Do not treat duplicate/retry delivery metadata as a user open loop",
             "Do not treat transient non-durable observations with relative words like today as open loops",
+            "Treat OCR/source-noise artifacts as source repair or compiler concerns",
+            "Do not treat OCR misspellings",
         ],
         "recall_relevance_filter": [
             "When the prompt supplies candidate facts without explicit IDs",

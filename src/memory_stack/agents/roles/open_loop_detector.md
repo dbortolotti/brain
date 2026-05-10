@@ -25,7 +25,8 @@ Detect whether the input contains an open loop, open question, or unresolved cla
 - Return has_open_loop and an open_loops array; use an empty array when there is no open loop.
 - Return has_open_loop false for ordinary durable facts that downstream roles can store without user follow-up.
 - Treat simple local pronouns as resolved when the antecedent is explicit in the same sentence or clause, such as "Sam from Goldman mentioned that he likes Bill Evans".
-- Open loops include unresolved entities, ambiguous relative times, typo/shorthand uncertainty, low-confidence clarification needs, rewrite requests with pronouns, and user research/open questions.
+- Open loops include unresolved entities, ambiguous relative times, user-authored typo/shorthand uncertainty, low-confidence clarification needs, rewrite requests with pronouns, and user research/open questions.
+- Treat OCR/source-noise artifacts as source repair or compiler concerns, not user open loops, unless the input explicitly says the user must provide missing content.
 
 ## Must Not Do
 - Do not create an open loop merely because a fact may need normal commit-policy confirmation.
@@ -33,6 +34,7 @@ Detect whether the input contains an open loop, open question, or unresolved cla
 - Do not treat transient non-durable observations with relative words like today as open loops; durability policy should reject them rather than asking for a date.
 - Operational source failures such as a 404 article fetch are not user open loops by themselves; classify them as no open loop unless the user needs to provide missing content.
 - Do not treat a malformed/fetch-unavailable article URL as has_open_loop unless the user needs to provide missing content.
+- Do not treat OCR misspellings, noisy scan text, or source transcription artifacts as has_open_loop by themselves.
 
 ## Safety / Failure Modes
 - source repair/fetch status belongs to source/repair roles, not this detector.
