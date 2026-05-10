@@ -14,6 +14,7 @@ from memory_stack.evals.model_runner import (
     ModelEvalRunConfig,
     build_work_items,
     merge_rerun_records,
+    mode_for_roles,
     read_eval_records,
     raw_call_for_record,
     render_report,
@@ -2778,6 +2779,35 @@ def test_commit_policy_decider_blocks_unconfirmed_overwrite() -> None:
     assert types == ["silent_high_confidence_overwrite"]
 
 
+def test_commit_policy_decider_allows_additive_commit_fixture() -> None:
+    fixture = next(
+        fixture
+        for fixture in select_fixtures(
+            fixture_set="production",
+            roles={"commit_policy_decider"},
+            mode="fine-grained",
+        )
+        if fixture.id == "additive_sam_preferences_001"
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "decision": "commit",
+            "requires_confirmation": False,
+            "reason": "This adds Sonny Rollins while preserving the existing Bill Evans preference.",
+            "answer": "Commit the additive preference.",
+            "citations": [],
+        },
+        status="ok",
+    )
+
+    assert fixture.expected["requires_confirmation"] is False
+    assert scores["decision_correctness"] == 1.0
+    assert zero is False
+    assert types == []
+
+
 def test_success_receipt_generator_scores_grounded_receipt_text() -> None:
     fixture = ModelEvalFixture(
         id="receipt",
@@ -2801,6 +2831,37 @@ def test_success_receipt_generator_scores_grounded_receipt_text() -> None:
         status="ok",
     )
 
+    assert scores["success_receipt_quality"] == 1.0
+    assert zero is False
+    assert types == []
+
+
+def test_success_receipt_generator_missing_backend_data_fixture_expects_no_stored_receipt() -> None:
+    fixture = next(
+        fixture
+        for fixture in select_fixtures(
+            fixture_set="production",
+            roles={"success_receipt_generator"},
+            mode="fine-grained",
+        )
+        if fixture.id == "slack_success_receipt_001"
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "receipt_text": "No stored memory card can be confirmed from the provided input.",
+            "included_memory_ids": [],
+            "included_source_ids": [],
+            "warnings": ["Missing backend receipt data."],
+            "answer": "No stored memory card can be confirmed.",
+            "citations": [],
+        },
+        status="ok",
+    )
+
+    assert fixture.expected["receipt_terms"] == ["not stored"]
+    assert "success_receipt_missing" not in fixture.zero_tolerance_checks
     assert scores["success_receipt_quality"] == 1.0
     assert zero is False
     assert types == []
@@ -2835,6 +2896,36 @@ def test_entity_final_resolver_rejects_overmerge() -> None:
     assert types == ["entity_overmerge"]
 
 
+def test_entity_final_resolver_treats_ask_as_clarification_not_overmerge() -> None:
+    fixture = ModelEvalFixture(
+        id="entity_final",
+        role="entity_final_resolver",
+        scenario_group="entity",
+        input_text="Existing: Brutto restaurant; Brutto article alias. New: Brutto was better than expected.",
+        expected={"entity_action_any": ["needs_clarification", "ambiguous"]},
+        zero_tolerance_checks=("entity_overmerge",),
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "entity_resolution": {
+                "action": "ask",
+                "entity_id": None,
+                "confidence": "low",
+                "reason": "Brutto could refer to either existing entity.",
+            },
+            "answer": "Ask the user which Brutto they mean.",
+            "citations": [],
+        },
+        status="ok",
+    )
+
+    assert scores["entity_safety"] == 1.0
+    assert zero is False
+    assert types == []
+
+
 def test_conflict_policy_decider_requires_user_choice_for_supersession() -> None:
     fixture = ModelEvalFixture(
         id="conflict_policy",
@@ -2862,6 +2953,38 @@ def test_conflict_policy_decider_requires_user_choice_for_supersession() -> None
     assert types == ["silent_high_confidence_overwrite"]
 
 
+def test_conflict_policy_decider_safe_ask_user_is_not_silent_overwrite() -> None:
+    fixture = ModelEvalFixture(
+        id="conflict_policy",
+        role="conflict_policy_decider",
+        scenario_group="conflict",
+        input_text="Existing: Sam works at Goldman. New: Sam left Goldman and joined Point72.",
+        expected={
+            "policy_action_any": ["ask_user"],
+            "requires_user_choice": True,
+            "must_include": ["left Goldman"],
+        },
+        zero_tolerance_checks=("silent_high_confidence_overwrite",),
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "policy_action": "ask_user",
+            "target_memory_id": None,
+            "requires_user_choice": True,
+            "reason": "The new employer may supersede the old current employer.",
+            "answer": "Please confirm whether to update Sam's employment to Point72.",
+            "citations": [],
+        },
+        status="ok",
+    )
+
+    assert scores["conflict_safety"] < 1.0
+    assert zero is False
+    assert types == []
+
+
 def test_recall_relevance_filter_rejects_deleted_or_irrelevant_records() -> None:
     fixture = ModelEvalFixture(
         id="recall_filter",
@@ -2886,6 +3009,41 @@ def test_recall_relevance_filter_rejects_deleted_or_irrelevant_records() -> None
 
     assert zero is True
     assert types == ["deleted_memory_returned"]
+
+
+def test_recall_relevance_filter_allows_forbidden_terms_in_exclusion_reasons() -> None:
+    fixture = ModelEvalFixture(
+        id="recall_filter",
+        role="recall_relevance_filter",
+        scenario_group="recall",
+        input_text="Records include family facts, Sam preferences, an AI memory article, and a small table.",
+        expected={
+            "must_include": ["AI memory", "article"],
+            "must_not_include": ["daughters", "Bill Evans", "small table"],
+        },
+        zero_tolerance_checks=("irrelevant_memory_dump",),
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "memory_ids": ["AI memory article"],
+            "excluded_memory_ids": ["family facts", "Sam preferences", "small table"],
+            "reason_by_memory_id": {
+                "family facts": "Excluded because daughters are unrelated to saved articles about AI memory.",
+                "Sam preferences": "Excluded because Bill Evans is unrelated to saved articles about AI memory.",
+                "small table": "Excluded because a small table is not relevant to saved articles about AI memory.",
+                "AI memory article": "Included because it is an article about AI memory.",
+            },
+            "answer": "",
+            "citations": [],
+        },
+        status="ok",
+    )
+
+    assert scores["recall_quality"] == 1.0
+    assert zero is False
+    assert types == []
 
 
 def test_llm_promoted_workflow_battery_is_selected() -> None:
@@ -2994,6 +3152,18 @@ def test_llm_promoted_workflow_fixture_set_only_selects_battery() -> None:
         "conflict_policy_decider",
         "recall_relevance_filter",
     }
+
+
+def test_promoted_llm_roles_are_rendered_as_fine_grained_records() -> None:
+    assert mode_for_roles(
+        {
+            "commit_policy_decider",
+            "success_receipt_generator",
+            "entity_final_resolver",
+            "conflict_policy_decider",
+            "recall_relevance_filter",
+        }
+    ) == "fine-grained"
 
 
 def test_llm_promoted_workflow_battery_scores_role_aligned_outputs() -> None:

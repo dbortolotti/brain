@@ -1956,14 +1956,19 @@ def commit_policy_decider_expected(fixture: ModelEvalFixture, expected: dict[str
         if key in expected
     }
     checks = set(fixture.zero_tolerance_checks)
-    if checks & {
+    labels = {
+        normalize_fixture_value(expected.get("conflict_classification"))
+    } | {normalize_fixture_value(value) for value in expected.get("conflict_classification_any", [])}
+    requires_confirmation_checks = checks & {
         "auto_commit_when_user_choice_required",
         "entity_overmerge",
         "no_durable_value_junk_committed",
-        "silent_high_confidence_overwrite",
         "unresolved_pronoun_committed",
         "vague_memory_committed",
-    }:
+    }
+    if "silent_high_confidence_overwrite" in checks and "additive" not in labels:
+        requires_confirmation_checks.add("silent_high_confidence_overwrite")
+    if requires_confirmation_checks:
         narrowed["decision_any"] = [
             "ask",
             "needs_confirmation",
@@ -1978,6 +1983,8 @@ def commit_policy_decider_expected(fixture: ModelEvalFixture, expected: dict[str
     elif "decision" not in narrowed and "decision_any" not in narrowed:
         narrowed["decision_any"] = ["commit", "commit_success", "commit_with_warning"]
         narrowed["requires_confirmation"] = False
+    else:
+        narrowed.setdefault("requires_confirmation", False)
     return narrowed
 
 
@@ -1991,6 +1998,7 @@ def success_receipt_generator_expected(fixture: ModelEvalFixture, expected: dict
         "slack_ambiguous_entity_buttons_001",
         "slack_rewrite_modal_001",
         "slack_no_durable_value_repair_001",
+        "slack_success_receipt_001",
         "unresolved_pronoun_001",
     }:
         terms = ["not stored"]
@@ -2012,7 +2020,7 @@ def normalize_fixture_value(value: Any) -> str:
 
 
 def success_receipt_generator_zero_tolerance_checks(fixture: ModelEvalFixture) -> tuple[str, ...]:
-    if fixture.context.get("base_fixture_id", fixture.id) == "slack_success_receipt_001":
+    if fixture.context.get("base_fixture_id", fixture.id) == "llm_promoted_success_receipt_grounded_001":
         return ("success_receipt_missing",)
     return ()
 

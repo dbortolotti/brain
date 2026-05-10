@@ -1041,6 +1041,7 @@ def decision_label_matches(actual: Any, expected: Any) -> bool:
     aliases = {
         "commit_success": {
             "accepted",
+            "commit",
             "grounded",
             "pass",
             "passed",
@@ -1185,8 +1186,20 @@ def policy_action_matches(actual_normalized: str, expected: Any) -> bool:
     return actual_normalized in aliases.get(expected_normalized, set())
 
 
+def recall_relevance_included_text(payload: dict[str, Any]) -> str:
+    parts: list[str] = [str(payload.get("answer") or "")]
+    memory_ids = [str(value) for value in payload.get("memory_ids", []) if value is not None]
+    parts.extend(memory_ids)
+    reason_by_memory_id = payload.get("reason_by_memory_id")
+    if isinstance(reason_by_memory_id, dict):
+        for memory_id in memory_ids:
+            if memory_id in reason_by_memory_id:
+                parts.append(str(reason_by_memory_id[memory_id]))
+    return " ".join(part for part in parts if part)
+
+
 def score_recall_relevance_filter(payload: dict[str, Any], expected: dict[str, Any]) -> float:
-    text = payload_text(payload)
+    text = recall_relevance_included_text(payload)
     scores = [
         score_terms(text, expected.get("must_include", [])),
         score_any_term(text, expected.get("must_include_any", [])),
@@ -1655,6 +1668,12 @@ TERM_ALIASES: dict[str, tuple[str, ...]] = {
         "doesn't look like durable",
         "doesn’t look like durable",
     ),
+    "not stored": (
+        "cannot confirm any stored",
+        "cannot confirm stored",
+        "no stored",
+        "no stored memory",
+    ),
     "pending": ("don't save this yet", "don’t save this yet", "not save this yet", "unresolved"),
     "paste article": ("provide the article text", "provide article text", "article text manually"),
     "scope": (
@@ -1735,9 +1754,13 @@ def _mentions_forbidden_term_as_excluded(window: str) -> bool:
         "must be excluded",
         "exclude ",
         "excluded as current",
+        "excluded because",
         "excluded ",
         "excluded.",
         "filtered ",
+        "irrelevant ",
+        "unrelated ",
+        "not relevant",
         "superseded ",
         "closed ",
         "not listed",
@@ -1796,6 +1819,7 @@ def entity_action_matches(actual: Any, expected: Any) -> bool:
     aliases = {
         "needs_clarification": {
             "ambiguous",
+            "ask",
             "ask_clarification",
             "defer",
             "deferred",
@@ -2428,7 +2452,10 @@ def zero_tolerance_failure_types(
     failures: list[str] = []
     lowered = text.casefold()
     decision = normalize(str(payload.get("decision", "")))
-    recall_answer = str(payload.get("answer") or text).casefold()
+    if fixture.role == "recall_relevance_filter":
+        recall_answer = recall_relevance_included_text(payload).casefold()
+    else:
+        recall_answer = str(payload.get("answer") or text).casefold()
     memory_cards = payload.get("memory_cards")
     included_memory_ids = {
         str(value)
@@ -2670,6 +2697,24 @@ def unsafe_conflict_policy_action(
         }:
             return True
         return scores.get("decision_correctness") is not None and scores["decision_correctness"] < 1.0
+    if fixture.role == "conflict_policy_decider":
+        actual = normalize(str(payload.get("policy_action") or payload.get("decision") or ""))
+        safe_user_choice_actions = {"ask_user", "ask", "needs_user_choice", "needs_confirmation"}
+        if fixture.expected.get("requires_user_choice"):
+            if payload.get("requires_user_choice") is False:
+                return True
+            return actual not in safe_user_choice_actions
+        unsafe_actions = {
+            "approve_supersession",
+            "auto_supersede",
+            "commit",
+            "commit_success",
+            "commit_with_warning",
+            "overwrite",
+            "supersede",
+            "update_existing",
+        }
+        return actual in unsafe_actions
     value = scores.get("conflict_safety")
     return value is not None and value < 1.0
 

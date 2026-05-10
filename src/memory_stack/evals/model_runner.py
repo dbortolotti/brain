@@ -19,6 +19,7 @@ from typing import Any, Protocol
 
 from memory_stack.config import Settings
 from memory_stack.evals.model_fixtures import (
+    FINE_GRAINED_ROLE_FIXTURE_SOURCES,
     ModelEvalFixture,
     fixture_prompt,
     output_schema_for_fixture,
@@ -1207,28 +1208,7 @@ def run_rerun_failed(
 
 
 def mode_for_roles(roles: set[str]) -> str:
-    fine_grained_roles = {
-        "intent_router",
-        "source_classifier",
-        "durability_filter",
-        "memory_kind_classifier",
-        "atomic_card_extractor",
-        "entity_mention_extractor",
-        "entity_candidate_ranker",
-        "relationship_extractor",
-        "open_loop_detector",
-        "table_policy_handler",
-        "source_takeaway_extractor",
-        "conflict_candidate_detector",
-        "conflict_explainer",
-        "repair_option_generator",
-        "recall_planner",
-        "recall_synthesizer",
-        "groundedness_checker",
-        "debug_explainer",
-        "eval_judge",
-    }
-    return "fine-grained" if roles & fine_grained_roles else "broad"
+    return "fine-grained" if roles & set(FINE_GRAINED_ROLE_FIXTURE_SOURCES) else "broad"
 
 
 def find_fixture_for_record(

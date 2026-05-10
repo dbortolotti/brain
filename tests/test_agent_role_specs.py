@@ -58,6 +58,17 @@ def test_fine_grained_fixture_prompts_include_agent_spec() -> None:
         assert "## Must Not Do" in prompt
 
 
+def test_entity_candidate_ranker_contract_requires_unique_disambiguating_evidence() -> None:
+    text = role_spec_markdown("entity_candidate_ranker")
+    assert text is not None
+
+    assert "only when the evidence identifies one specific supplied candidate" in text
+    assert "exact surface-text match is not sufficient" in text
+    assert "compressed punctuation lists as ambiguous" in text
+    assert "Do not infer \"no competing candidates\"" in text
+    assert "Prefer a false clarification over a false merge" in text
+
+
 def test_eval_role_llm_calls_use_central_fixture_prompt() -> None:
     violations: list[str] = []
     eval_dir = REPO_ROOT / "src" / "memory_stack" / "evals"
