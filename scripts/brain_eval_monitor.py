@@ -204,6 +204,7 @@ def render_html(
     results_json: Path | None,
     raw_dir: Path | None,
     records: list[dict[str, Any]],
+    record_source: str,
     done: int,
     total: int | None,
 ) -> str:
@@ -219,6 +220,18 @@ def render_html(
     remaining_text = format_duration(timing["remaining_seconds"])
     total_text = str(total) if total is not None else "unknown"
     progress_pct = f"{(done / total * 100):.1f}%" if total else "unknown"
+    is_scored = record_source == "scored_results"
+    status_label = "Scored" if is_scored else "Raw provider"
+    failure_label = "Scored failures" if is_scored else "Provider failures"
+    ok_label = "Scored OK" if is_scored else "Provider OK"
+    source_note = (
+        "Final scored results loaded from results.json."
+        if is_scored
+        else (
+            "Live counts are raw provider-call observations only. "
+            "Quality, schema, and zero-tolerance scoring will appear after results.json is written."
+        )
+    )
     status_rows = "\n".join(
         f"<tr><td><code>{escape(status)}</code></td><td>{count}</td></tr>"
         for status, count in sorted(summary["by_status"].items())
@@ -278,15 +291,16 @@ def render_html(
   <p>Run dir: <code>{escape(run_dir)}</code></p>
   <p>Results: <code>{escape(results_json or '')}</code></p>
   <p>Raw: <code>{escape(raw_dir or '')}</code></p>
+  <p>Count source: <code>{escape(record_source)}</code>. {escape(source_note)}</p>
   <section class="kpis">
     <div class="kpi"><span>Progress</span><strong>{done} / {escape(total_text)}</strong><p>{escape(progress_pct)}</p></div>
     <div class="kpi"><span>Expected end</span><strong>{escape(expected_end_text)}</strong><p>{escape(remaining_text)} remaining</p></div>
     <div class="kpi"><span>Rows observed</span><strong>{len(records)}</strong></div>
-    <div class="kpi"><span>Failures</span><strong>{sum(count for status, count in summary['by_status'].items() if status != 'ok')}</strong></div>
-    <div class="kpi"><span>OK</span><strong>{summary['by_status'].get('ok', 0)}</strong></div>
+    <div class="kpi"><span>{escape(failure_label)}</span><strong>{sum(count for status, count in summary['by_status'].items() if status != 'ok')}</strong></div>
+    <div class="kpi"><span>{escape(ok_label)}</span><strong>{summary['by_status'].get('ok', 0)}</strong></div>
   </section>
-  <section><h2>Status Counts</h2><table><thead><tr><th>Status</th><th>Count</th></tr></thead><tbody>{status_rows}</tbody></table></section>
-  <section><h2>Model / Role</h2><table><thead><tr><th>Model</th><th>Role</th><th>Total</th><th>OK</th><th>Fail</th><th>Statuses</th></tr></thead><tbody>{model_role_rows}</tbody></table></section>
+  <section><h2>{escape(status_label)} Status Counts</h2><table><thead><tr><th>Status</th><th>Count</th></tr></thead><tbody>{status_rows}</tbody></table></section>
+  <section><h2>Model / Role</h2><table><thead><tr><th>Model</th><th>Role</th><th>Total</th><th>OK</th><th>{escape(failure_label)}</th><th>Statuses</th></tr></thead><tbody>{model_role_rows}</tbody></table></section>
   <section><h2>Recent/Important Failures</h2><table><thead><tr><th>#</th><th>Status</th><th>Role</th><th>Fixture</th><th>Variant</th><th>Score</th><th>Reasons</th></tr></thead><tbody>{failed_rows}</tbody></table></section>
 </main></body></html>
 """
@@ -295,9 +309,15 @@ def render_html(
 def write_once(run_dir: Path, results_json: Path | None, raw_dir: Path | None) -> None:
     results_path = find_results_json(run_dir, results_json)
     raw_path = find_raw_dir(run_dir, raw_dir)
-    records = records_from_results(results_path) or records_from_raw(raw_path)
+    scored_records = records_from_results(results_path)
+    if scored_records:
+        records = scored_records
+        record_source = "scored_results"
+    else:
+        records = records_from_raw(raw_path)
+        record_source = "raw_provider_outputs"
     done, total = latest_progress(run_dir, records)
-    if total is None and records_from_results(results_path):
+    if total is None and scored_records:
         total = len(records)
     timing = estimate_timing(run_dir=run_dir, raw_dir=raw_path, done=done, total=total)
     html_text = render_html(
@@ -305,6 +325,7 @@ def write_once(run_dir: Path, results_json: Path | None, raw_dir: Path | None) -
         results_json=results_path,
         raw_dir=raw_path,
         records=records,
+        record_source=record_source,
         done=done,
         total=total,
     )
@@ -317,6 +338,12 @@ def write_once(run_dir: Path, results_json: Path | None, raw_dir: Path | None) -
                 "run_dir": str(run_dir),
                 "results_json": str(results_path) if results_path else None,
                 "raw_dir": str(raw_path) if raw_path else None,
+                "status_counts_source": record_source,
+                "status_counts_note": (
+                    "final scored eval statuses"
+                    if record_source == "scored_results"
+                    else "raw provider-call statuses only; final scoring unavailable until results.json is written"
+                ),
                 "done": done,
                 "elapsed_seconds": timing["elapsed_seconds"],
                 "expected_end_at": timing["expected_end_at"].isoformat()

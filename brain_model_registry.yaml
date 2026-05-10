@@ -82,10 +82,10 @@ fine_grained_capabilities:
       - durability_filter
       - memory_kind_classifier
       - repair_option_generator
+      - commit_policy_decider
+      - success_receipt_generator
     deterministic_roles:
       - zero_tolerance_validator
-      - commit_policy
-      - success_receipt_template
 
   memory_compiler:
     required: true
@@ -106,24 +106,25 @@ fine_grained_capabilities:
     required_model_roles:
       - entity_mention_extractor
       - entity_candidate_ranker
-    deterministic_roles:
       - entity_final_resolver
+    deterministic_roles: []
 
   conflict_handling:
     required: true
     required_model_roles:
       - conflict_candidate_detector
       - conflict_explainer
-    deterministic_roles:
       - conflict_policy_decider
+    deterministic_roles: []
 
   recall:
     required: true
     required_model_roles:
       - recall_planner
+      - recall_relevance_filter
       - recall_synthesizer
     deterministic_roles:
-      - recall_filter
+      - recall_status_filter
 
   debug:
     required: false
@@ -1211,7 +1212,34 @@ fine_grained_eval_matrix:
     - openai:gpt-5.4-mini
     - google:gemini-2.5-flash-lite
 
+  commit_policy_decider:
+    - openai:gpt-5.4-nano
+    - openai:gpt-5.4-mini
+    - google:gemini-2.5-flash-lite
+
+  success_receipt_generator:
+    - openai:gpt-5-nano
+    - openai:gpt-5.4-nano
+    - google:gemini-2.5-flash-lite
+
   recall_planner:
+    - openai:gpt-5.4-nano
+    - openai:gpt-5.4-mini
+    - google:gemini-2.5-flash-lite
+
+  entity_final_resolver:
+    - openai:gpt-5.4-nano
+    - openai:gpt-5.4-mini
+    - google:gemini-2.5-flash-lite
+    - anthropic:claude-haiku-4-5
+
+  conflict_policy_decider:
+    - openai:gpt-5.4-mini
+    - openai:gpt-5.5-high
+    - google:gemini-2.5-flash
+    - anthropic:claude-haiku-4-5
+
+  recall_relevance_filter:
     - openai:gpt-5.4-nano
     - openai:gpt-5.4-mini
     - google:gemini-2.5-flash-lite

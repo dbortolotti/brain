@@ -62,9 +62,12 @@ ROLE_CATEGORIES = {
     "source_takeaway_extractor": "runtime_or_support",
     "conflict_candidate_detector": "runtime",
     "conflict_explainer": "support",
+    "conflict_policy_decider": "runtime",
     "repair_option_generator": "support",
+    "commit_policy_decider": "runtime",
     "success_receipt_generator": "support",
     "recall_planner": "runtime",
+    "recall_relevance_filter": "support",
     "groundedness_checker": "judge",
     "validator_critic": "support",
     "entity_resolution": "runtime_or_support",
@@ -129,6 +132,9 @@ ROLE_ALLOWED_ZERO_TOLERANCE_CHECKS: dict[str, set[str]] = {
     "entity_candidate_ranker": {
         "entity_overmerge",
     },
+    "entity_final_resolver": {
+        "entity_overmerge",
+    },
     "relationship_extractor": {
         "relationship_direction_inversion",
         "numeric_values_altered",
@@ -163,9 +169,20 @@ ROLE_ALLOWED_ZERO_TOLERANCE_CHECKS: dict[str, set[str]] = {
         "deleted_or_superseded_memory_returned_as_current",
         "raw_email_exposed",
     },
+    "conflict_policy_decider": {
+        "silent_high_confidence_overwrite",
+        "duplicate_current_fact_pollution",
+    },
     "repair_option_generator": {
         "auto_commit_when_user_choice_required",
         "silent_high_confidence_overwrite",
+    },
+    "commit_policy_decider": {
+        "auto_commit_when_user_choice_required",
+        "no_durable_value_junk_committed",
+        "silent_high_confidence_overwrite",
+        "unresolved_pronoun_committed",
+        "vague_memory_committed",
     },
     "success_receipt_generator": {
         "success_receipt_missing",
@@ -184,6 +201,11 @@ ROLE_ALLOWED_ZERO_TOLERANCE_CHECKS: dict[str, set[str]] = {
         "irrelevant_memory_dump",
         "relationship_direction_inversion",
         "raw_email_exposed",
+    },
+    "recall_relevance_filter": {
+        "deleted_memory_returned",
+        "deleted_or_superseded_memory_returned_as_current",
+        "irrelevant_memory_dump",
     },
     "groundedness_checker": {
         "unsupported_inference",
@@ -286,6 +308,12 @@ ROLE_THRESHOLDS: dict[str, dict[str, float]] = {
         "semantic_score_ci_low_min": 0.92,
         "entity_safety_ci_low_min": 0.99,
     },
+    "entity_final_resolver": {
+        "operational_success_ci_low_min": 0.95,
+        "schema_validity_ci_low_min": 0.995,
+        "semantic_score_ci_low_min": 0.92,
+        "entity_safety_ci_low_min": 0.99,
+    },
     "relationship_extractor": {
         "operational_success_ci_low_min": 0.95,
         "schema_validity_ci_low_min": 0.995,
@@ -321,6 +349,12 @@ ROLE_THRESHOLDS: dict[str, dict[str, float]] = {
         "semantic_score_ci_low_min": 0.90,
         "repair_quality_ci_low_min": 0.95,
     },
+    "conflict_policy_decider": {
+        "operational_success_ci_low_min": 0.95,
+        "schema_validity_ci_low_min": 0.995,
+        "semantic_score_ci_low_min": 0.95,
+        "conflict_safety_ci_low_min": 0.99,
+    },
     "repair_option_generator": {
         "operational_success_ci_low_min": 0.95,
         "schema_validity_ci_low_min": 0.995,
@@ -333,11 +367,23 @@ ROLE_THRESHOLDS: dict[str, dict[str, float]] = {
         "semantic_score_ci_low_min": 0.98,
         "success_receipt_quality_ci_low_min": 0.98,
     },
+    "commit_policy_decider": {
+        "operational_success_ci_low_min": 0.95,
+        "schema_validity_ci_low_min": 0.995,
+        "semantic_score_ci_low_min": 0.95,
+        "decision_correctness_ci_low_min": 0.97,
+    },
     "recall_planner": {
         "operational_success_ci_low_min": 0.95,
         "schema_validity_ci_low_min": 0.995,
         "semantic_score_ci_low_min": 0.95,
         "decision_correctness_ci_low_min": 0.95,
+    },
+    "recall_relevance_filter": {
+        "operational_success_ci_low_min": 0.95,
+        "schema_validity_ci_low_min": 0.995,
+        "semantic_score_ci_low_min": 0.92,
+        "recall_quality_ci_low_min": 0.95,
     },
     "groundedness_checker": {
         "operational_success_ci_low_min": 0.95,
@@ -403,6 +449,11 @@ ROLE_ELIGIBILITY_GATES: dict[str, dict[str, float]] = {
         "min_semantic_score": 0.90,
         "min_entity_safety": 0.90,
     },
+    "entity_final_resolver": {
+        "min_semantic_evaluable": 50,
+        "min_semantic_score": 0.90,
+        "min_entity_safety": 0.90,
+    },
     "conflict_candidate_detector": {
         "min_semantic_evaluable": 50,
         "min_semantic_score": 0.90,
@@ -413,10 +464,25 @@ ROLE_ELIGIBILITY_GATES: dict[str, dict[str, float]] = {
         "min_semantic_score": 0.85,
         "min_repair_quality": 0.90,
     },
+    "conflict_policy_decider": {
+        "min_semantic_evaluable": 50,
+        "min_semantic_score": 0.90,
+        "min_conflict_safety": 0.95,
+    },
+    "commit_policy_decider": {
+        "min_semantic_evaluable": 80,
+        "min_semantic_score": 0.90,
+        "min_decision_correctness": 0.90,
+    },
     "success_receipt_generator": {
         "min_semantic_evaluable": 50,
         "min_semantic_score": 0.90,
         "min_success_receipt_quality": 0.90,
+    },
+    "recall_relevance_filter": {
+        "min_semantic_evaluable": 50,
+        "min_semantic_score": 0.90,
+        "min_recall_quality": 0.90,
     },
     "recall_synthesizer": {
         "min_semantic_evaluable": 50,
@@ -476,6 +542,9 @@ ROLE_SUBSCORE_ALIASES = {
     "entity_candidate_ranker": {
         "entity_safety": "entity_safety",
     },
+    "entity_final_resolver": {
+        "entity_safety": "entity_safety",
+    },
     "relationship_extractor": {
         "memory_card_quality": "memory_card_quality",
     },
@@ -497,8 +566,15 @@ ROLE_SUBSCORE_ALIASES = {
         "conflict_safety": "conflict_safety",
         "repair_quality": "repair_quality",
     },
+    "conflict_policy_decider": {
+        "conflict_safety": "conflict_safety",
+        "decision_correctness": "decision_correctness",
+    },
     "repair_option_generator": {
         "repair_quality": "repair_quality",
+    },
+    "commit_policy_decider": {
+        "decision_correctness": "decision_correctness",
     },
     "success_receipt_generator": {
         "success_receipt_quality": "success_receipt_quality",
@@ -508,6 +584,9 @@ ROLE_SUBSCORE_ALIASES = {
         "recall_quality": "recall_quality",
     },
     "groundedness_checker": {
+        "recall_quality": "recall_quality",
+    },
+    "recall_relevance_filter": {
         "recall_quality": "recall_quality",
     },
     "debug_explainer": {
@@ -546,6 +625,9 @@ ROLE_SCORE_WEIGHTS: dict[str, dict[str, float]] = {
         "entity_safety": 0.8,
         "repair_quality": 0.2,
     },
+    "entity_final_resolver": {
+        "entity_safety": 1.0,
+    },
     "relationship_extractor": {
         "memory_card_quality": 0.7,
         "entity_safety": 0.3,
@@ -569,8 +651,15 @@ ROLE_SCORE_WEIGHTS: dict[str, dict[str, float]] = {
         "repair_quality": 0.6,
         "conflict_safety": 0.4,
     },
+    "conflict_policy_decider": {
+        "conflict_safety": 0.8,
+        "decision_correctness": 0.2,
+    },
     "repair_option_generator": {
         "repair_quality": 1.0,
+    },
+    "commit_policy_decider": {
+        "decision_correctness": 1.0,
     },
     "success_receipt_generator": {
         "success_receipt_quality": 1.0,
@@ -581,6 +670,9 @@ ROLE_SCORE_WEIGHTS: dict[str, dict[str, float]] = {
     "recall_synthesizer": {
         "recall_quality": 0.8,
         "source_memory_split": 0.2,
+    },
+    "recall_relevance_filter": {
+        "recall_quality": 1.0,
     },
     "groundedness_checker": {
         "recall_quality": 0.7,
@@ -841,6 +933,24 @@ def score_model_output(
         scores["memory_card_quality"] = scores["decision_correctness"]
         zero_tolerance_types = zero_tolerance_failure_types(fixture, payload, text, scores)
         return scores, bool(zero_tolerance_types), zero_tolerance_types
+    if fixture.role == "entity_final_resolver":
+        scores["decision_correctness"] = score_entity_action(payload, expected)
+        scores["entity_safety"] = scores["decision_correctness"]
+        zero_tolerance_types = zero_tolerance_failure_types(fixture, payload, text, scores)
+        return scores, bool(zero_tolerance_types), zero_tolerance_types
+    if fixture.role == "commit_policy_decider":
+        scores["decision_correctness"] = score_commit_policy(payload, expected)
+        zero_tolerance_types = zero_tolerance_failure_types(fixture, payload, text, scores)
+        return scores, bool(zero_tolerance_types), zero_tolerance_types
+    if fixture.role == "conflict_policy_decider":
+        scores["decision_correctness"] = score_conflict_policy(payload, expected)
+        scores["conflict_safety"] = scores["decision_correctness"]
+        zero_tolerance_types = zero_tolerance_failure_types(fixture, payload, text, scores)
+        return scores, bool(zero_tolerance_types), zero_tolerance_types
+    if fixture.role == "recall_relevance_filter":
+        scores["recall_quality"] = score_recall_relevance_filter(payload, expected)
+        zero_tolerance_types = zero_tolerance_failure_types(fixture, payload, text, scores)
+        return scores, bool(zero_tolerance_types), zero_tolerance_types
     if fixture.role == "table_policy_handler":
         if not table_like_input(fixture.input_text):
             table_score = score_non_table_policy_response(payload)
@@ -1016,6 +1126,76 @@ def score_decision_for_fixture(
     if "decision_any" in expected:
         return score_any_exact(payload.get("decision"), expected.get("decision_any", []))
     return score_decision_exact_or_missing(payload.get("decision"), expected.get("decision"))
+
+
+def score_commit_policy(payload: dict[str, Any], expected: dict[str, Any]) -> float:
+    decision_score = score_decision_for_fixture(
+        ModelEvalFixture(id="", scenario_group="", role="commit_policy_decider", input_text="", expected=expected),
+        payload,
+        expected,
+    )
+    confirmation_expected = expected.get("requires_confirmation")
+    if confirmation_expected is None:
+        return decision_score
+    if payload.get("requires_confirmation") is not None:
+        confirmation_score = 1.0 if bool(payload["requires_confirmation"]) == bool(confirmation_expected) else 0.0
+        return min(decision_score, confirmation_score)
+    decision = normalize(str(payload.get("decision") or ""))
+    if confirmation_expected:
+        return min(decision_score, 1.0 if decision in {"ask", "needs_confirmation", "needs_clarification", "needs_user_choice"} else 0.0)
+    return decision_score
+
+
+def score_conflict_policy(payload: dict[str, Any], expected: dict[str, Any]) -> float:
+    expected_actions = expected.get("policy_action_any", [])
+    actual = normalize(str(payload.get("policy_action") or payload.get("decision") or ""))
+    if expected_actions and not any(policy_action_matches(actual, action) for action in expected_actions):
+        return 0.0
+    if expected.get("requires_user_choice"):
+        requires_user_choice = payload.get("requires_user_choice")
+        if requires_user_choice is False:
+            return 0.0
+        if actual not in {"ask_user", "ask", "needs_user_choice", "needs_confirmation"}:
+            return 0.0
+    return min(
+        1.0,
+        score_terms(payload_text(payload), expected.get("must_include", [])),
+        score_any_term(payload_text(payload), expected.get("must_include_any", [])),
+        score_forbidden_terms(payload_text(payload), expected.get("must_not_include", [])),
+    )
+
+
+def policy_action_matches(actual_normalized: str, expected: Any) -> bool:
+    expected_normalized = normalize(str(expected))
+    if actual_normalized == expected_normalized:
+        return True
+    aliases = {
+        "ask_user": {"ask", "needs_user_choice", "needs_confirmation", "needs_clarification"},
+        "keep_both": {"add_new", "additive", "commit_with_warning"},
+        "mark_duplicate": {"duplicate", "deduplicate", "link_duplicate"},
+        "supersede": {"approve_supersession", "supersedes"},
+        "reject": {"reject_new", "do_not_store", "hard_reject"},
+        "keep_existing": {"reject_new", "do_not_change_existing"},
+    }
+    return actual_normalized in aliases.get(expected_normalized, set())
+
+
+def score_recall_relevance_filter(payload: dict[str, Any], expected: dict[str, Any]) -> float:
+    text = payload_text(payload)
+    scores = [
+        score_terms(text, expected.get("must_include", [])),
+        score_any_term(text, expected.get("must_include_any", [])),
+        score_forbidden_terms(text, expected.get("must_not_include", [])),
+        score_forbidden_terms(text, expected.get("excluded_terms", [])),
+    ]
+    memory_ids = {str(value) for value in payload.get("memory_ids", []) if value is not None}
+    excluded_ids = {str(value) for value in payload.get("excluded_memory_ids", []) if value is not None}
+    if expected.get("memory_ids"):
+        scores.append(1.0 if set(expected["memory_ids"]) <= memory_ids else 0.0)
+    if expected.get("excluded_memory_ids"):
+        scores.append(1.0 if set(expected["excluded_memory_ids"]) <= excluded_ids else 0.0)
+        scores.append(1.0 if memory_ids.isdisjoint(set(expected["excluded_memory_ids"])) else 0.0)
+    return min(scores)
 
 
 def expected_router_intent(fixture: ModelEvalFixture) -> str | None:
@@ -2136,7 +2316,8 @@ def score_receipt(payload: dict[str, Any], expected: dict[str, Any]) -> float:
         return 1.0
     receipt = payload.get("receipt")
     if not isinstance(receipt, dict):
-        return 0.0
+        receipt_text = str(payload.get("receipt_text") or payload.get("answer") or "")
+        return score_terms(receipt_text, terms)
     return score_terms(payload_text(receipt), terms)
 
 
@@ -2170,6 +2351,16 @@ def zero_tolerance_failure_types(
     decision = normalize(str(payload.get("decision", "")))
     recall_answer = str(payload.get("answer") or text).casefold()
     memory_cards = payload.get("memory_cards")
+    included_memory_ids = {
+        str(value)
+        for value in payload.get("memory_ids", [])
+        if value is not None
+    } if isinstance(payload.get("memory_ids"), list) else set()
+    expected_excluded_memory_ids = {
+        str(value)
+        for value in fixture.expected.get("excluded_memory_ids", [])
+        if value is not None
+    }
 
     def score_below(key: str) -> bool:
         value = scores.get(key)
@@ -2179,8 +2370,10 @@ def zero_tolerance_failure_types(
         failures.append("entity_overmerge")
     if (
         "deleted_or_superseded_memory_returned_as_current" in checks
-        and "works at goldman" in recall_answer
-        and "superseded" not in recall_answer
+        and (
+            ("works at goldman" in recall_answer and "superseded" not in recall_answer)
+            or bool(included_memory_ids & expected_excluded_memory_ids)
+        )
     ):
         failures.append("deleted_or_superseded_memory_returned_as_current")
     if "long_source_as_single_memory_card" in checks and score_below("source_memory_split"):
@@ -2266,9 +2459,12 @@ def zero_tolerance_failure_types(
         failures.append("numeric_values_altered")
     if "unsupported_inference" in checks and unsupported_inference_present(fixture, text):
         failures.append("unsupported_inference")
-    if "deleted_memory_returned" in checks and any(
-        contains_forbidden_term_assertively(recall_answer, term)
-        for term in fixture.expected.get("must_not_include", [])
+    if "deleted_memory_returned" in checks and (
+        any(
+            contains_forbidden_term_assertively(recall_answer, term)
+            for term in fixture.expected.get("must_not_include", [])
+        )
+        or bool(included_memory_ids & expected_excluded_memory_ids)
     ):
         failures.append("deleted_memory_returned")
     if "irrelevant_memory_dump" in checks and any(
@@ -2379,6 +2575,15 @@ def unsafe_conflict_policy_action(
         if isinstance(safe_action_space, list):
             return not repair_options_within_action_space(payload, safe_action_space)
         return repair_options_contain_unsafe_action(payload)
+    if fixture.role == "commit_policy_decider":
+        decision = normalize(str(payload.get("decision") or ""))
+        if fixture.expected.get("requires_confirmation") and decision in {
+            "commit",
+            "commit_success",
+            "commit_with_warning",
+        }:
+            return True
+        return scores.get("decision_correctness") is not None and scores["decision_correctness"] < 1.0
     value = scores.get("conflict_safety")
     return value is not None and value < 1.0
 

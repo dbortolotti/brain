@@ -120,12 +120,13 @@ flowchart LR
 | `table_policy_handler` | Deterministic table handling |
 | `source_takeaway_extractor` | Deterministic source summary/card creation by default; optional broad compiler fallback |
 | `entity_candidate_ranker` | Not a runtime model role; entity resolution is deterministic |
-| `entity_final_resolver` | Deterministic |
+| `entity_final_resolver` | Deterministic at current runtime; promoted to eval-first model role for future semantic final resolution |
 | `conflict_candidate_detector` | Deterministic duplicate/regex conflict detection |
 | `conflict_explainer` | Not model-backed at runtime |
-| `conflict_policy_decider` | Deterministic code / explicit user action |
+| `conflict_policy_decider` | Deterministic code / explicit user action at current runtime; promoted to eval-first model role |
 | `recall_planner` | Deterministic mode inference |
-| `recall_filter` | Deterministic status filtering |
+| `recall_status_filter` | Deterministic status filtering |
+| `recall_relevance_filter` | Not a runtime model role yet; eval-first candidate for semantic relevance filtering after hard status filtering |
 | `recall_synthesizer` | Deterministic templated rendering |
 | `debug_explainer` | Deterministic DB inspection at runtime |
 | `eval_judge` | Model-based in eval tooling only |
@@ -163,10 +164,10 @@ flowchart LR
         sl_durability_filter[durability_filter]:::model
         sl_memory_kind_classifier[memory_kind_classifier]:::model
         sl_repair_option_generator[repair_option_generator]:::model
+        sl_commit_policy_decider[commit_policy_decider]:::model
+        sl_success_receipt_generator[success_receipt_generator]:::model
         sl_zero_tolerance_validator[zero_tolerance_validator]:::det
-        sl_commit_policy[commit_policy]:::det
-        sl_success_receipt_template[success_receipt_template]:::det
-        sl_source_classifier -.-> sl_durability_filter -.-> sl_memory_kind_classifier -.-> sl_repair_option_generator -.-> sl_zero_tolerance_validator -.-> sl_commit_policy -.-> sl_success_receipt_template
+        sl_source_classifier -.-> sl_durability_filter -.-> sl_memory_kind_classifier -.-> sl_repair_option_generator -.-> sl_commit_policy_decider -.-> sl_zero_tolerance_validator -.-> sl_success_receipt_generator
     end
 
     subgraph COMPILER["memory_compiler"]
@@ -187,7 +188,7 @@ flowchart LR
         direction TB
         er_entity_mention_extractor[entity_mention_extractor]:::model
         er_entity_candidate_ranker[entity_candidate_ranker]:::model
-        er_entity_final_resolver[entity_final_resolver]:::det
+        er_entity_final_resolver[entity_final_resolver]:::model
         er_entity_mention_extractor -.-> er_entity_candidate_ranker -.-> er_entity_final_resolver
     end
 
@@ -195,16 +196,17 @@ flowchart LR
         direction TB
         ch_conflict_candidate_detector[conflict_candidate_detector]:::model
         ch_conflict_explainer[conflict_explainer]:::model
-        ch_conflict_policy_decider[conflict_policy_decider]:::det
+        ch_conflict_policy_decider[conflict_policy_decider]:::model
         ch_conflict_candidate_detector -.-> ch_conflict_explainer -.-> ch_conflict_policy_decider
     end
 
     subgraph RECALL["recall"]
         direction TB
         rc_recall_planner[recall_planner]:::model
-        rc_recall_filter[recall_filter]:::det
+        rc_recall_status_filter[recall_status_filter]:::det
+        rc_recall_relevance_filter[recall_relevance_filter]:::model
         rc_recall_synthesizer[recall_synthesizer]:::model
-        rc_recall_planner -.-> rc_recall_filter -.-> rc_recall_synthesizer
+        rc_recall_planner -.-> rc_recall_status_filter -.-> rc_recall_relevance_filter -.-> rc_recall_synthesizer
     end
 
     subgraph DEBUG["debug"]
@@ -252,16 +254,18 @@ flowchart LR
 1. **This is a registry/eval topology.** The diagram shows how coarse
    capabilities decompose into fine-grained roles for model evaluation and
    deployment decisions. It should not be read as the exact runtime call graph.
-2. **The intended pattern is model proposes, deterministic policy enforces.**
-   Fine-grained model roles recommend extraction, classification, or synthesis;
-   deterministic roles validate or gate the result.
+2. **The intended pattern is model judgement with hard deterministic safety
+   gates.** Promoted policy roles may choose semantic actions in evals, but
+   zero-tolerance validation and hard status visibility filters remain code
+   gates.
 3. **Ingestion capabilities conceptually converge.** In this topology,
    `slack_intake` and `memory_compiler` produce candidate memory cards and
    entity mentions, which flow through `entity_resolution` and then
    `conflict_handling`.
-4. **Recall is represented as planner/filter/synthesizer.** In current runtime
-   this is deterministic mode inference, deterministic filtering, and templated
-   answer rendering.
+4. **Recall is represented as planner/status filter/relevance
+   filter/synthesizer.** In current runtime this is deterministic mode
+   inference, deterministic status filtering, and templated answer rendering;
+   `recall_relevance_filter` is eval-first for future semantic pruning.
 5. **User loop.** The user is involved at three points: clarification
    (`repair_option_generator`), conflict confirmation, and final receipts /
    answers.
@@ -274,11 +278,11 @@ flowchart LR
 | Coarse role        | Model roles                                                                                                                     | Deterministic roles                                                       |
 | ------------------ | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
 | router             | intent_router                                                                                                                   | —                                                                         |
-| slack_intake       | source_classifier, durability_filter, memory_kind_classifier, repair_option_generator                                           | zero_tolerance_validator, commit_policy, success_receipt_template         |
+| slack_intake       | source_classifier, durability_filter, memory_kind_classifier, repair_option_generator, commit_policy_decider, success_receipt_generator | zero_tolerance_validator                                                  |
 | memory_compiler    | atomic_card_extractor, entity_mention_extractor, relationship_extractor, open_loop_detector, table_policy_handler, source_takeaway_extractor | table_parser, source_loader, zero_tolerance_validator         |
-| entity_resolution  | entity_mention_extractor, entity_candidate_ranker                                                                               | entity_final_resolver                                                     |
-| conflict_handling  | conflict_candidate_detector, conflict_explainer                                                                                 | conflict_policy_decider                                                   |
-| recall             | recall_planner, recall_synthesizer                                                                                              | recall_filter                                                             |
+| entity_resolution  | entity_mention_extractor, entity_candidate_ranker, entity_final_resolver                                                        | —                                                                         |
+| conflict_handling  | conflict_candidate_detector, conflict_explainer, conflict_policy_decider                                                        | —                                                                         |
+| recall             | recall_planner, recall_relevance_filter, recall_synthesizer                                                                     | recall_status_filter                                                      |
 | debug              | debug_explainer                                                                                                                 | —                                                                         |
 | judge (offline)    | eval_judge                                                                                                                      | —                                                                         |
 | embeddings         | embeddings                                                                                                                      | —                                                                         |

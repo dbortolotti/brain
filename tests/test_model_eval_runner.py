@@ -257,6 +257,7 @@ def test_fine_grained_explicit_model_inherits_matrix_roles() -> None:
         "entity_candidate_ranker",
         "source_takeaway_extractor",
         "conflict_candidate_detector",
+        "conflict_policy_decider",
         "recall_synthesizer",
         "groundedness_checker",
         "eval_judge",
@@ -474,14 +475,16 @@ def test_role_contracts_include_agent_markdown_alignment() -> None:
     assert "Admin SQL must be SELECT-only, allowlisted, logged, time-limited, and row-limited." in debug_prompt
 
 
-def test_success_receipt_generator_is_not_a_fine_grained_model_fixture() -> None:
+def test_success_receipt_generator_is_a_fine_grained_model_fixture() -> None:
     fixtures = select_fixtures(
         fixture_set="brain-model-test-v2",
         roles={"success_receipt_generator"},
         mode="fine-grained",
     )
 
-    assert fixtures == []
+    assert fixtures
+    assert {fixture.role for fixture in fixtures} == {"success_receipt_generator"}
+    assert all(output_schema_for_fixture(fixture)["additionalProperties"] is False for fixture in fixtures)
 
 
 def test_fixture_prompt_includes_role_specific_zero_tolerance_contracts() -> None:
@@ -2445,12 +2448,316 @@ def test_slack_intake_uses_deterministic_success_receipts() -> None:
         Summary(role="durability_filter", model="m1", eligible=True),
         Summary(role="memory_kind_classifier", model="m1", eligible=True),
         Summary(role="repair_option_generator", model="m1", eligible=True),
+        Summary(role="commit_policy_decider", model="m1", eligible=True),
+        Summary(role="success_receipt_generator", model="m1", eligible=True),
     ]
 
     coverage = capability_coverage(summaries)
 
     assert coverage["slack_intake"]["status"] == "eligible"
-    assert "success_receipt_template" in coverage["slack_intake"]["deterministic_roles"]
+    assert coverage["slack_intake"]["deterministic_roles"] == ["zero_tolerance_validator"]
+
+
+def test_promoted_deterministic_roles_are_fine_grained_fixture_roles() -> None:
+    fixtures = select_fixtures(
+        fixture_set="production",
+        roles={
+            "commit_policy_decider",
+            "success_receipt_generator",
+            "entity_final_resolver",
+            "conflict_policy_decider",
+            "recall_relevance_filter",
+        },
+        mode="fine-grained",
+    )
+
+    assert {fixture.role for fixture in fixtures} == {
+        "commit_policy_decider",
+        "success_receipt_generator",
+        "entity_final_resolver",
+        "conflict_policy_decider",
+        "recall_relevance_filter",
+    }
+    for fixture in fixtures:
+        assert output_schema_for_fixture(fixture)["additionalProperties"] is False
+
+
+def test_commit_policy_decider_blocks_unconfirmed_overwrite() -> None:
+    fixture = ModelEvalFixture(
+        id="commit_policy_overwrite",
+        role="commit_policy_decider",
+        scenario_group="commit_policy",
+        input_text="Existing: Sam works at Goldman. New: Sam joined Point72.",
+        expected={"decision_any": ["ask", "needs_confirmation"], "requires_confirmation": True},
+        zero_tolerance_checks=("silent_high_confidence_overwrite",),
+    )
+
+    _scores, zero, types = score_model_output(
+        fixture,
+        {
+            "decision": "commit_success",
+            "requires_confirmation": False,
+            "reason": "Auto-commit replacement.",
+            "answer": "Committed.",
+            "citations": [],
+        },
+        status="ok",
+    )
+
+    assert zero is True
+    assert types == ["silent_high_confidence_overwrite"]
+
+
+def test_success_receipt_generator_scores_grounded_receipt_text() -> None:
+    fixture = ModelEvalFixture(
+        id="receipt",
+        role="success_receipt_generator",
+        scenario_group="receipt",
+        input_text="Receipt JSON with memory_id mem_123.",
+        expected={"receipt_terms": ["Stored", "memory_id", "confidence"]},
+        zero_tolerance_checks=("success_receipt_missing",),
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "receipt_text": "Stored 1 memory card. preference [memory_id: mem_123; confidence: high]",
+            "included_memory_ids": ["mem_123"],
+            "included_source_ids": [],
+            "warnings": [],
+            "answer": "Stored 1 memory card. preference [memory_id: mem_123; confidence: high]",
+            "citations": [],
+        },
+        status="ok",
+    )
+
+    assert scores["success_receipt_quality"] == 1.0
+    assert zero is False
+    assert types == []
+
+
+def test_entity_final_resolver_rejects_overmerge() -> None:
+    fixture = ModelEvalFixture(
+        id="entity_final",
+        role="entity_final_resolver",
+        scenario_group="entity",
+        input_text="Existing: Sam from Goldman; Sam from Point72. New: Sam likes Coltrane.",
+        expected={"entity_action_any": ["needs_clarification", "ambiguous"]},
+        zero_tolerance_checks=("entity_overmerge",),
+    )
+
+    _scores, zero, types = score_model_output(
+        fixture,
+        {
+            "entity_resolution": {
+                "action": "use_existing",
+                "entity_id": "sam_goldman",
+                "confidence": "high",
+                "reason": "Same first name.",
+            },
+            "answer": "Resolved to Sam from Goldman.",
+            "citations": [],
+        },
+        status="ok",
+    )
+
+    assert zero is True
+    assert types == ["entity_overmerge"]
+
+
+def test_conflict_policy_decider_requires_user_choice_for_supersession() -> None:
+    fixture = ModelEvalFixture(
+        id="conflict_policy",
+        role="conflict_policy_decider",
+        scenario_group="conflict",
+        input_text="Existing: Sam works at Goldman. New: Sam left Goldman and joined Point72.",
+        expected={"policy_action_any": ["ask_user"], "requires_user_choice": True},
+        zero_tolerance_checks=("silent_high_confidence_overwrite",),
+    )
+
+    _scores, zero, types = score_model_output(
+        fixture,
+        {
+            "policy_action": "supersede",
+            "target_memory_id": "old",
+            "requires_user_choice": False,
+            "reason": "Looks newer.",
+            "answer": "Superseded old memory.",
+            "citations": [],
+        },
+        status="ok",
+    )
+
+    assert zero is True
+    assert types == ["silent_high_confidence_overwrite"]
+
+
+def test_recall_relevance_filter_rejects_deleted_or_irrelevant_records() -> None:
+    fixture = ModelEvalFixture(
+        id="recall_filter",
+        role="recall_relevance_filter",
+        scenario_group="recall",
+        input_text="Current: Sam likes Bill Evans. Deleted: Sam likes Taylor Swift.",
+        expected={"must_include": ["Bill Evans"], "must_not_include": ["Taylor Swift"]},
+        zero_tolerance_checks=("deleted_memory_returned",),
+    )
+
+    _scores, zero, types = score_model_output(
+        fixture,
+        {
+            "memory_ids": ["current", "deleted"],
+            "excluded_memory_ids": [],
+            "reason_by_memory_id": {"deleted": "included"},
+            "answer": "Keep Bill Evans and Taylor Swift.",
+            "citations": [],
+        },
+        status="ok",
+    )
+
+    assert zero is True
+    assert types == ["deleted_memory_returned"]
+
+
+def test_deterministic_vs_llm_workflow_comparison_battery_is_selected() -> None:
+    promoted_roles = {
+        "commit_policy_decider",
+        "success_receipt_generator",
+        "entity_final_resolver",
+        "conflict_policy_decider",
+        "recall_relevance_filter",
+    }
+    fixtures = select_fixtures(
+        fixture_set="development",
+        roles=promoted_roles,
+        mode="fine-grained",
+    )
+    comparison_fixtures = [
+        fixture
+        for fixture in fixtures
+        if fixture.context.get("workflow_comparison")
+    ]
+
+    assert promoted_roles <= {fixture.role for fixture in comparison_fixtures}
+    assert {
+        "workflow_compare_commit_policy_unconfirmed_conflict_001",
+        "workflow_compare_commit_policy_clean_fact_001",
+        "workflow_compare_success_receipt_grounded_001",
+        "workflow_compare_entity_final_resolver_ambiguous_001",
+        "workflow_compare_entity_final_resolver_alias_001",
+        "workflow_compare_conflict_policy_supersession_001",
+        "workflow_compare_conflict_policy_duplicate_001",
+        "workflow_compare_recall_relevance_status_filter_001",
+        "workflow_compare_recall_relevance_topic_pruning_001",
+    } <= {fixture.context.get("base_fixture_id", fixture.id) for fixture in comparison_fixtures}
+
+
+def test_workflow_comparison_battery_scores_deterministic_aligned_outputs() -> None:
+    fixtures = {
+        fixture.context.get("base_fixture_id", fixture.id): fixture
+        for fixture in select_fixtures(
+            fixture_set="development",
+            roles={
+                "commit_policy_decider",
+                "entity_final_resolver",
+                "conflict_policy_decider",
+                "recall_relevance_filter",
+            },
+            mode="fine-grained",
+        )
+        if fixture.context.get("workflow_comparison") and fixture.context.get("variant") == "base"
+    }
+
+    cases = [
+        (
+            "workflow_compare_commit_policy_unconfirmed_conflict_001",
+            {
+                "decision": "needs_confirmation",
+                "requires_confirmation": True,
+                "reason": "Potential supersession requires confirmation.",
+                "answer": "Ask for confirmation before committing.",
+                "citations": [],
+            },
+        ),
+        (
+            "workflow_compare_entity_final_resolver_ambiguous_001",
+            {
+                "entity_resolution": {
+                    "action": "ambiguous",
+                    "entity_id": None,
+                    "confidence": "low",
+                    "reason": "Sam could be Sam from Goldman or Sam from Point72.",
+                },
+                "answer": "Ask which Sam is meant: Sam from Goldman or Sam from Point72.",
+                "citations": [],
+            },
+        ),
+        (
+            "workflow_compare_conflict_policy_duplicate_001",
+            {
+                "policy_action": "mark_duplicate",
+                "target_memory_id": "mem_old",
+                "requires_user_choice": False,
+                "reason": "The new Bill Evans fact duplicates the existing memory.",
+                "answer": "Mark as duplicate; do not create a second current Bill Evans fact.",
+                "citations": [],
+            },
+        ),
+        (
+            "workflow_compare_recall_relevance_status_filter_001",
+            {
+                "memory_ids": ["mem_new"],
+                "excluded_memory_ids": ["mem_old", "mem_deleted"],
+                "reason_by_memory_id": {
+                    "mem_new": "Relevant current workplace fact.",
+                    "mem_old": "Removed by deterministic status filter.",
+                    "mem_deleted": "Removed by deterministic status filter.",
+                },
+                "answer": "Keep mem_new: Sam joined Point72.",
+                "citations": [],
+            },
+        ),
+    ]
+
+    for fixture_id, payload in cases:
+        scores, zero, types = score_model_output(fixtures[fixture_id], payload, status="ok")
+
+        assert semantic_quality_score_for_role(fixtures[fixture_id].role, scores) == 1.0
+        assert zero is False
+        assert types == []
+
+
+def test_recall_relevance_filter_fails_when_llm_restores_status_filtered_memory() -> None:
+    fixture = next(
+        fixture
+        for fixture in select_fixtures(
+            fixture_set="development",
+            roles={"recall_relevance_filter"},
+            mode="fine-grained",
+        )
+        if fixture.context.get("base_fixture_id", fixture.id)
+        == "workflow_compare_recall_relevance_status_filter_001"
+        and fixture.context.get("variant") == "base"
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "memory_ids": ["mem_new", "mem_old"],
+            "excluded_memory_ids": ["mem_deleted"],
+            "reason_by_memory_id": {
+                "mem_new": "Relevant.",
+                "mem_old": "Also relevant.",
+                "mem_deleted": "Deleted.",
+            },
+            "answer": "Keep mem_new and mem_old.",
+            "citations": [],
+        },
+        status="ok",
+    )
+
+    assert scores["recall_quality"] == 0.0
+    assert zero is True
+    assert "deleted_or_superseded_memory_returned_as_current" in types
 
 
 def test_embeddings_optional_if_not_tested() -> None:

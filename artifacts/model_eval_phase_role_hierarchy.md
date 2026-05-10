@@ -23,14 +23,14 @@
 ####  <span style="color: red;">repair_option_generator: []</span>
  >    *Brief: Propose safe user-facing repair options when clarification or conflict resolution is required.*
 
+####  <span style="color: red;">commit_policy_decider: []</span>
+ >    *Brief: Decide whether a validated proposal can commit, must ask, or must be rejected.*
+
+####  <span style="color: red;">success_receipt_generator: []</span>
+ >    *Brief: Produce concise user-facing confirmations for successful Slack or memory operations.*
+
 ####  <span style="color: green;">zero_tolerance_validator: [deterministic]</span>
  >    *Brief: Enforce non-negotiable safety checks before any memory commit.*
-
-####  <span style="color: green;">commit_policy: [deterministic]</span>
- >    *Brief: Decide whether validated intake output can be committed.*
-
-####  <span style="color: green;">success_receipt_template: [deterministic]</span>
- >    *Brief: Render required success receipt fields from deterministic ingestion data rather than model-authored prose.*
 
 
 ## `memory_compiler`
@@ -73,8 +73,8 @@
 ####  <span style="color: red;">entity_candidate_ranker: []</span>
  >    *Brief: Rank candidate entity matches while avoiding unsafe overmerge.*
 
-####  <span style="color: green;">entity_final_resolver: [deterministic]</span>
- >    *Brief: Apply final deterministic entity resolution policy after candidate ranking.*
+####  <span style="color: red;">entity_final_resolver: []</span>
+ >    *Brief: Make the final entity resolution choice from ranked candidates and evidence.*
 
 
 ## `conflict_handling`
@@ -86,8 +86,8 @@
 ####  <span style="color: red;">conflict_explainer: []</span>
  >    *Brief: Explain conflict type and evidence without making the final policy decision or silently overwriting current facts.*
 
-####  <span style="color: green;">conflict_policy_decider: [deterministic]</span>
- >    *Brief: Apply final conflict policy after model-assisted detection and explanation.*
+####  <span style="color: red;">conflict_policy_decider: []</span>
+ >    *Brief: Choose ask, keep, duplicate, reject, or supersede policy from conflict evidence.*
 
 
 ## `recall`
@@ -96,11 +96,14 @@
 ####  <span style="color: red;">recall_planner: []</span>
  >    *Brief: Plan retrieval scope and query strategy without dumping irrelevant memory or making unsupported absence claims.*
 
+####  <span style="color: red;">recall_relevance_filter: []</span>
+ >    *Brief: Filter and order visible recall candidates by query relevance after hard status filtering.*
+
 ####  <span style="color: red;">recall_synthesizer: []</span>
  >    *Brief: Synthesize grounded answers from retrieved memory records without unsupported inference, irrelevant dumps, or stale deleted facts.*
 
-####  <span style="color: green;">recall_filter: [deterministic]</span>
- >    *Brief: Filter deleted, superseded, irrelevant, or unauthorized records before synthesis.*
+####  <span style="color: green;">recall_status_filter: [deterministic]</span>
+ >    *Brief: Filter deleted, rejected, archived, or superseded records before model-facing relevance filtering.*
 
 
 ## `debug`

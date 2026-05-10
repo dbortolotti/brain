@@ -290,6 +290,106 @@ REPAIR_OPTION_GENERATOR_OUTPUT_SCHEMA: dict[str, Any] = {
     "additionalProperties": False,
 }
 
+COMMIT_POLICY_DECIDER_OUTPUT_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "decision": {
+            "type": "string",
+            "enum": [
+                "commit",
+                "commit_success",
+                "commit_with_warning",
+                "ask",
+                "needs_confirmation",
+                "needs_clarification",
+                "needs_user_choice",
+                "reject",
+                "reject_with_repair_path",
+                "do_not_store",
+                "hard_reject",
+            ],
+        },
+        "requires_confirmation": {"type": "boolean"},
+        "reason": {"type": "string"},
+        "repair_options": {"type": "array", "items": {"type": "string"}},
+        "answer": {"type": "string"},
+        "citations": {"type": "array", "items": {"type": "string"}},
+    },
+    "required": ["decision", "requires_confirmation", "reason", "answer", "citations"],
+    "additionalProperties": False,
+}
+
+SUCCESS_RECEIPT_GENERATOR_OUTPUT_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "receipt_text": {"type": "string"},
+        "included_memory_ids": {"type": "array", "items": {"type": "string"}},
+        "included_source_ids": {"type": "array", "items": {"type": "string"}},
+        "warnings": {"type": "array", "items": {"type": "string"}},
+        "answer": {"type": "string"},
+        "citations": {"type": "array", "items": {"type": "string"}},
+    },
+    "required": ["receipt_text", "included_memory_ids", "included_source_ids", "warnings", "answer", "citations"],
+    "additionalProperties": False,
+}
+
+ENTITY_FINAL_RESOLVER_OUTPUT_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "entity_resolution": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "type": "string",
+                    "enum": ["match", "use_existing", "create", "ask", "needs_clarification", "ambiguous"],
+                },
+                "entity_id": {"type": ["string", "null"]},
+                "confidence": {"type": "string"},
+                "reason": {"type": "string"},
+            },
+            "required": ["action", "entity_id", "confidence", "reason"],
+            "additionalProperties": False,
+        },
+        "answer": {"type": "string"},
+        "citations": {"type": "array", "items": {"type": "string"}},
+    },
+    "required": ["entity_resolution", "answer", "citations"],
+    "additionalProperties": False,
+}
+
+CONFLICT_POLICY_DECIDER_OUTPUT_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "policy_action": {
+            "type": "string",
+            "enum": ["supersede", "keep_both", "mark_duplicate", "ask_user", "reject", "keep_existing"],
+        },
+        "target_memory_id": {"type": ["string", "null"]},
+        "requires_user_choice": {"type": "boolean"},
+        "reason": {"type": "string"},
+        "answer": {"type": "string"},
+        "citations": {"type": "array", "items": {"type": "string"}},
+    },
+    "required": ["policy_action", "target_memory_id", "requires_user_choice", "reason", "answer", "citations"],
+    "additionalProperties": False,
+}
+
+RECALL_RELEVANCE_FILTER_OUTPUT_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "memory_ids": {"type": "array", "items": {"type": "string"}},
+        "excluded_memory_ids": {"type": "array", "items": {"type": "string"}},
+        "reason_by_memory_id": {
+            "type": "object",
+            "additionalProperties": {"type": "string"},
+        },
+        "answer": {"type": "string"},
+        "citations": {"type": "array", "items": {"type": "string"}},
+    },
+    "required": ["memory_ids", "excluded_memory_ids", "reason_by_memory_id", "answer", "citations"],
+    "additionalProperties": False,
+}
+
 
 def output_schema_for_fixture(fixture: "ModelEvalFixture") -> dict[str, Any]:
     if fixture.role == "source_classifier":
@@ -306,8 +406,18 @@ def output_schema_for_fixture(fixture: "ModelEvalFixture") -> dict[str, Any]:
         return RELATIONSHIP_EXTRACTOR_OUTPUT_SCHEMA
     if fixture.role == "repair_option_generator":
         return REPAIR_OPTION_GENERATOR_OUTPUT_SCHEMA
+    if fixture.role == "commit_policy_decider":
+        return COMMIT_POLICY_DECIDER_OUTPUT_SCHEMA
+    if fixture.role == "success_receipt_generator":
+        return SUCCESS_RECEIPT_GENERATOR_OUTPUT_SCHEMA
+    if fixture.role == "entity_final_resolver":
+        return ENTITY_FINAL_RESOLVER_OUTPUT_SCHEMA
     if fixture.role == "conflict_candidate_detector":
         return CONFLICT_DETECTOR_OUTPUT_SCHEMA
+    if fixture.role == "conflict_policy_decider":
+        return CONFLICT_POLICY_DECIDER_OUTPUT_SCHEMA
+    if fixture.role == "recall_relevance_filter":
+        return RECALL_RELEVANCE_FILTER_OUTPUT_SCHEMA
     return BASE_OUTPUT_SCHEMA
 
 
@@ -521,6 +631,7 @@ def _fixture(
     *,
     fixture_set: str = "production",
     zero_tolerance_checks: tuple[str, ...] = (),
+    context: dict[str, Any] | None = None,
 ) -> ModelEvalFixture:
     return ModelEvalFixture(
         id=fixture_id,
@@ -530,6 +641,7 @@ def _fixture(
         expected=expected,
         fixture_set=fixture_set,
         zero_tolerance_checks=zero_tolerance_checks,
+        context=context or {},
     )
 
 
@@ -1390,6 +1502,185 @@ MODEL_EVAL_FIXTURES.extend(
             },
             fixture_set="development",
         ),
+        _fixture(
+            "workflow_compare_commit_policy_unconfirmed_conflict_001",
+            "deterministic_llm_comparison_commit_policy",
+            "commit_policy_decider",
+            (
+                "Compare deterministic baseline and LLM policy decision. "
+                "Deterministic baseline: zero_tolerance_validator passed basic schema, "
+                "but conflict detector found existing memory mem_old='Sam works at Goldman' "
+                "and proposed memory mem_new='Sam left Goldman and joined Point72'. "
+                "User confirmation state: not confirmed. Baseline action: ask for confirmation; do not commit."
+            ),
+            {
+                "decision_any": ["ask", "needs_confirmation", "needs_user_choice"],
+                "requires_confirmation": True,
+                "must_include": ["confirmation"],
+                "must_not_include": ["committed"],
+            },
+            fixture_set="development",
+            zero_tolerance_checks=("silent_high_confidence_overwrite",),
+            context={"workflow_comparison": True, "deterministic_baseline": "ask_for_confirmation"},
+        ),
+        _fixture(
+            "workflow_compare_commit_policy_clean_fact_001",
+            "deterministic_llm_comparison_commit_policy",
+            "commit_policy_decider",
+            (
+                "Compare deterministic baseline and LLM policy decision. "
+                "Deterministic baseline: proposal is durable, specific, non-sensitive, non-conflicting, "
+                "and high confidence. Proposed memory: 'Sam from Goldman likes Bill Evans.' "
+                "Baseline action: commit is allowed."
+            ),
+            {
+                "decision_any": ["commit", "commit_success", "commit_with_warning"],
+                "requires_confirmation": False,
+                "must_include": ["commit"],
+            },
+            fixture_set="development",
+            context={"workflow_comparison": True, "deterministic_baseline": "commit_allowed"},
+        ),
+        _fixture(
+            "workflow_compare_success_receipt_grounded_001",
+            "deterministic_llm_comparison_success_receipt",
+            "success_receipt_generator",
+            (
+                "Compare deterministic receipt template and LLM receipt. "
+                "Deterministic baseline receipt data: memory_cards=[{id:'mem_123', kind:'preference', "
+                "statement:'Sam from Goldman likes Bill Evans.', confidence:'high', status:'current'}], "
+                "entities=['Sam from Goldman','Bill Evans'], relationships=1, actions=['Inspect','Undo','Mark wrong']. "
+                "The LLM receipt must stay grounded in these fields only."
+            ),
+            {
+                "receipt_terms": [
+                    "Stored",
+                    "mem_123",
+                    "preference",
+                    "confidence",
+                    "current",
+                    "Inspect",
+                    "Undo",
+                    "Mark wrong",
+                ],
+                "must_not_include": ["Point72", "Taylor Swift", "source_id"],
+            },
+            fixture_set="development",
+            zero_tolerance_checks=("success_receipt_missing",),
+            context={"workflow_comparison": True, "deterministic_baseline": "receipt_text"},
+        ),
+        _fixture(
+            "workflow_compare_entity_final_resolver_ambiguous_001",
+            "deterministic_llm_comparison_entity_final_resolver",
+            "entity_final_resolver",
+            (
+                "Compare deterministic entity resolver and LLM final resolver. "
+                "Existing candidates: entity_id=sam_goldman canonical='Sam from Goldman'; "
+                "entity_id=sam_point72 canonical='Sam from Point72'. New mention: 'Sam likes early Coltrane.' "
+                "No organization or alias is supplied. Deterministic baseline action: preserve ambiguity and ask."
+            ),
+            {
+                "entity_action_any": ["needs_clarification", "needs_user_choice", "ambiguous", "ask"],
+                "must_include": ["Sam", "Goldman", "Point72"],
+            },
+            fixture_set="development",
+            zero_tolerance_checks=("entity_overmerge",),
+            context={"workflow_comparison": True, "deterministic_baseline": "ambiguous_entity"},
+        ),
+        _fixture(
+            "workflow_compare_entity_final_resolver_alias_001",
+            "deterministic_llm_comparison_entity_final_resolver",
+            "entity_final_resolver",
+            (
+                "Compare deterministic entity resolver and LLM final resolver. "
+                "Existing candidate: entity_id=sam_goldman canonical='Sam from Goldman' aliases=['Sam G','Goldman Sam']. "
+                "New mention: 'Sam G likes Bill Evans.' Deterministic baseline action: match existing entity sam_goldman."
+            ),
+            {
+                "entity_action": "use_existing",
+                "must_include": ["sam_goldman", "Sam from Goldman"],
+            },
+            fixture_set="development",
+            context={"workflow_comparison": True, "deterministic_baseline": "alias_match"},
+        ),
+        _fixture(
+            "workflow_compare_conflict_policy_supersession_001",
+            "deterministic_llm_comparison_conflict_policy",
+            "conflict_policy_decider",
+            (
+                "Compare deterministic conflict policy and LLM conflict policy. "
+                "Existing memory mem_old: 'Sam works at Goldman.' New memory mem_new: "
+                "'Sam left Goldman and joined Point72.' Conflict candidate classification: supersedes. "
+                "User confirmation state: not confirmed. Deterministic baseline action: ask_user before superseding."
+            ),
+            {
+                "policy_action_any": ["ask_user"],
+                "requires_user_choice": True,
+                "must_include": ["Goldman", "Point72"],
+            },
+            fixture_set="development",
+            zero_tolerance_checks=("silent_high_confidence_overwrite",),
+            context={"workflow_comparison": True, "deterministic_baseline": "ask_before_supersede"},
+        ),
+        _fixture(
+            "workflow_compare_conflict_policy_duplicate_001",
+            "deterministic_llm_comparison_conflict_policy",
+            "conflict_policy_decider",
+            (
+                "Compare deterministic duplicate detector and LLM conflict policy. "
+                "Existing memory mem_old: 'Sam from Goldman likes Bill Evans.' "
+                "New memory mem_new: 'Sam from Goldman likes Bill Evans.' "
+                "Deterministic baseline action: mark_duplicate or keep_existing; do not create a second current fact."
+            ),
+            {
+                "policy_action_any": ["mark_duplicate", "keep_existing"],
+                "must_include": ["duplicate", "Bill Evans"],
+            },
+            fixture_set="development",
+            zero_tolerance_checks=("duplicate_current_fact_pollution",),
+            context={"workflow_comparison": True, "deterministic_baseline": "mark_duplicate"},
+        ),
+        _fixture(
+            "workflow_compare_recall_relevance_status_filter_001",
+            "deterministic_llm_comparison_recall_relevance",
+            "recall_relevance_filter",
+            (
+                "Compare deterministic recall status filter and LLM relevance filter. Query: 'Where does Sam work now?' "
+                "Visible after deterministic status filter: mem_new current='Sam joined Point72'. "
+                "Removed by deterministic status filter: mem_old superseded='Sam works at Goldman', "
+                "mem_deleted deleted='Sam likes Taylor Swift'. The LLM relevance filter must not restore removed records."
+            ),
+            {
+                "memory_ids": ["mem_new"],
+                "excluded_memory_ids": ["mem_old", "mem_deleted"],
+                "must_include": ["mem_new", "Point72"],
+                "must_not_include": ["works at Goldman", "Taylor Swift"],
+            },
+            fixture_set="development",
+            zero_tolerance_checks=("deleted_or_superseded_memory_returned_as_current", "deleted_memory_returned"),
+            context={"workflow_comparison": True, "deterministic_baseline": "status_filter_then_relevance"},
+        ),
+        _fixture(
+            "workflow_compare_recall_relevance_topic_pruning_001",
+            "deterministic_llm_comparison_recall_relevance",
+            "recall_relevance_filter",
+            (
+                "Compare deterministic keyword recall and LLM relevance filtering. Query: 'What articles have I saved about AI memory?' "
+                "Visible candidates: mem_article='Saved article about AI memory and provenance', "
+                "mem_family='Nur and Sara are Daniele twin daughters', mem_music='Sam likes Bill Evans', "
+                "mem_table='Small table of preferences'. Deterministic baseline may retrieve broad candidates; "
+                "LLM relevance filter should keep only mem_article for synthesis."
+            ),
+            {
+                "memory_ids": ["mem_article"],
+                "excluded_memory_ids": ["mem_family", "mem_music", "mem_table"],
+                "must_include": ["mem_article", "AI memory"],
+                "must_not_include": ["daughters", "Bill Evans", "small table"],
+            },
+            fixture_set="development",
+            zero_tolerance_checks=("irrelevant_memory_dump",),
+            context={"workflow_comparison": True, "deterministic_baseline": "broad_retrieval_then_relevance"},
+        ),
     ]
 )
 
@@ -1447,8 +1738,13 @@ FINE_GRAINED_ROLE_FIXTURE_SOURCES: dict[str, tuple[str, ...]] = {
     "source_takeaway_extractor": ("memory_compiler",),
     "conflict_candidate_detector": ("conflict_classifier",),
     "conflict_explainer": ("conflict_classifier",),
+    "conflict_policy_decider": ("conflict_classifier", "conflict_policy_decider"),
     "repair_option_generator": ("validator_critic", "slack_intake", "conflict_classifier"),
+    "commit_policy_decider": ("validator_critic", "slack_intake", "conflict_classifier", "commit_policy_decider"),
+    "success_receipt_generator": ("slack_intake", "success_receipt_generator"),
     "recall_planner": ("router", "recall_synthesizer"),
+    "entity_final_resolver": ("entity_resolution", "entity_final_resolver"),
+    "recall_relevance_filter": ("recall_synthesizer", "recall_relevance_filter"),
     "recall_synthesizer": ("recall_synthesizer",),
     "groundedness_checker": ("recall_synthesizer",),
     "debug_explainer": ("debug_explainer",),
@@ -1529,6 +1825,17 @@ def derive_fine_grained_fixtures(
                         }
                 elif fine_role == "repair_option_generator":
                     expected = repair_option_generator_expected(fixture, expected)
+                elif fine_role == "commit_policy_decider":
+                    expected = commit_policy_decider_expected(fixture, expected)
+                elif fine_role == "success_receipt_generator":
+                    expected = success_receipt_generator_expected(fixture, expected)
+                    zero_tolerance_checks = success_receipt_generator_zero_tolerance_checks(fixture)
+                elif fine_role == "entity_final_resolver":
+                    expected = entity_final_resolver_expected(fixture, expected)
+                elif fine_role == "conflict_policy_decider":
+                    expected = conflict_policy_decider_expected(expected)
+                elif fine_role == "recall_relevance_filter":
+                    expected = recall_relevance_filter_expected(fixture, expected)
                 derived.append(
                     ModelEvalFixture(
                         id=fixture.id,
@@ -1624,6 +1931,147 @@ def repair_option_generator_expected(fixture: ModelEvalFixture, expected: dict[s
     if "conflict_classification" in expected or "conflict_classification_any" in expected:
         narrowed["safe_action_space"] = safe_action_space_for_conflict(expected)
     narrowed["repair_terms"] = repair_terms_for_repair_fixture(fixture, expected)
+    return narrowed
+
+
+def commit_policy_decider_expected(fixture: ModelEvalFixture, expected: dict[str, Any]) -> dict[str, Any]:
+    narrowed = {
+        key: expected[key]
+        for key in (
+            "decision",
+            "decision_any",
+            "must_include",
+            "must_include_any",
+            "must_not_include",
+            "repair_terms",
+        )
+        if key in expected
+    }
+    checks = set(fixture.zero_tolerance_checks)
+    if checks & {
+        "auto_commit_when_user_choice_required",
+        "entity_overmerge",
+        "no_durable_value_junk_committed",
+        "silent_high_confidence_overwrite",
+        "unresolved_pronoun_committed",
+        "vague_memory_committed",
+    }:
+        narrowed["decision_any"] = [
+            "ask",
+            "needs_confirmation",
+            "needs_clarification",
+            "needs_user_choice",
+            "reject",
+            "reject_with_repair_path",
+            "do_not_store",
+            "hard_reject",
+        ]
+        narrowed["requires_confirmation"] = True
+    elif "decision" not in narrowed and "decision_any" not in narrowed:
+        narrowed["decision_any"] = ["commit", "commit_success", "commit_with_warning"]
+        narrowed["requires_confirmation"] = False
+    return narrowed
+
+
+def success_receipt_generator_expected(fixture: ModelEvalFixture, expected: dict[str, Any]) -> dict[str, Any]:
+    fixture_id = str(fixture.context.get("base_fixture_id", fixture.id))
+    terms = list(expected.get("receipt_terms") or [])
+    if not terms and commit_expected_for_receipt(expected):
+        terms = ["Stored", "memory_id", "confidence"]
+    if fixture_id in {
+        "ambiguous_sam_001",
+        "slack_ambiguous_entity_buttons_001",
+        "slack_rewrite_modal_001",
+        "slack_no_durable_value_repair_001",
+        "unresolved_pronoun_001",
+    }:
+        terms = ["not stored"]
+    return {
+        "receipt_terms": terms,
+        "must_not_include": expected.get("must_not_include", []),
+    }
+
+
+def commit_expected_for_receipt(expected: dict[str, Any]) -> bool:
+    decisions = {normalize_fixture_value(value) for value in expected.get("decision_any", [])}
+    if decision := expected.get("decision"):
+        decisions.add(normalize_fixture_value(decision))
+    return not decisions or bool(decisions & {"commit_success", "commit_with_warning", "commit"})
+
+
+def normalize_fixture_value(value: Any) -> str:
+    return str(value).casefold().replace("-", "_").replace(" ", "_")
+
+
+def success_receipt_generator_zero_tolerance_checks(fixture: ModelEvalFixture) -> tuple[str, ...]:
+    if fixture.context.get("base_fixture_id", fixture.id) == "slack_success_receipt_001":
+        return ("success_receipt_missing",)
+    return ()
+
+
+def entity_final_resolver_expected(fixture: ModelEvalFixture, expected: dict[str, Any]) -> dict[str, Any]:
+    narrowed = {
+        key: expected[key]
+        for key in ("entity_action", "entity_action_any", "must_include", "must_include_any", "must_not_include")
+        if key in expected
+    }
+    fixture_id = str(fixture.context.get("base_fixture_id", fixture.id))
+    if fixture_id == "entity_alias_sam_goldman":
+        narrowed["entity_action"] = "use_existing"
+    if "entity_overmerge" in set(fixture.zero_tolerance_checks):
+        narrowed.setdefault("entity_action_any", ["needs_clarification", "needs_user_choice", "ambiguous", "ask"])
+    return narrowed
+
+
+def conflict_policy_decider_expected(expected: dict[str, Any]) -> dict[str, Any]:
+    narrowed = {
+        key: expected[key]
+        for key in (
+            "conflict_classification",
+            "conflict_classification_any",
+            "policy_action_any",
+            "requires_user_choice",
+            "must_include",
+            "must_include_any",
+            "must_not_include",
+        )
+        if key in expected
+    }
+    if "policy_action_any" in narrowed:
+        return narrowed
+    labels = {
+        normalize_fixture_value(expected.get("conflict_classification"))
+    } | {normalize_fixture_value(value) for value in expected.get("conflict_classification_any", [])}
+    if "duplicate" in labels:
+        narrowed["policy_action_any"] = ["mark_duplicate", "keep_existing", "ask_user"]
+    elif "additive" in labels:
+        narrowed["policy_action_any"] = ["keep_both"]
+    elif labels & {"supersedes", "correction", "contradicts", "high_confidence_conflict", "project_state_update"}:
+        narrowed["policy_action_any"] = ["ask_user"]
+        narrowed["requires_user_choice"] = True
+    else:
+        narrowed["policy_action_any"] = ["ask_user", "keep_both", "reject"]
+    return narrowed
+
+
+def recall_relevance_filter_expected(fixture: ModelEvalFixture, expected: dict[str, Any]) -> dict[str, Any]:
+    narrowed = {
+        key: expected[key]
+        for key in (
+            "memory_ids",
+            "excluded_memory_ids",
+            "must_include",
+            "must_include_any",
+            "must_not_include",
+        )
+        if key in expected
+    }
+    fixture_id = str(fixture.context.get("base_fixture_id", fixture.id))
+    if fixture_id in {"recall_hide_superseded", "recall_hide_superseded_001"}:
+        narrowed["memory_ids"] = ["mem_new"]
+        narrowed["excluded_memory_ids"] = ["mem_old"]
+    elif fixture_id == "recall_hide_deleted_001":
+        narrowed["excluded_terms"] = ["Taylor Swift"]
     return narrowed
 
 
