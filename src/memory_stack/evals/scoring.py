@@ -1348,7 +1348,12 @@ def contains_forbidden_term_assertively(text: str, term: str) -> bool:
         return False
     start = lower.find(needle)
     while start != -1:
-        before = lower[max(0, start - 90):start]
+        sentence_start = max(lower.rfind(boundary, 0, start) for boundary in (".", "!", "?", "\n"))
+        if sentence_start != -1 and start - sentence_start <= 240:
+            before_start = sentence_start + 1
+        else:
+            before_start = max(0, start - 90)
+        before = lower[before_start:start]
         after = lower[start + len(needle):start + len(needle) + 90]
         window = f"{before}{needle}{after}"
         if not _mentions_forbidden_term_as_excluded(window):
@@ -1493,6 +1498,12 @@ def _mentions_forbidden_term_as_excluded(window: str) -> bool:
         "not listed",
         "not included",
         "not including",
+        "not include",
+        "should not include",
+        "shouldn't include",
+        "must not include",
+        "do not include",
+        "don't include",
         "not returned",
         "not current",
         "not executed",
@@ -1728,6 +1739,9 @@ def repair_option_action_id(option: Any) -> str | None:
         ("if_confirmed_add", "add_new"),
         ("add_the_specific_relationship", "add_new"),
         ("add_a_separate", "add_new"),
+        ("add_as_a_separate", "add_new"),
+        ("add_as_separate", "add_new"),
+        ("add_separately", "add_new"),
         ("keep_existing", "keep_existing"),
         ("keep_the_existing", "keep_existing"),
         ("keep_existing_memory_unchanged", "keep_existing"),
@@ -1741,6 +1755,8 @@ def repair_option_action_id(option: Any) -> str | None:
         ("replace_current", "approve_supersession"),
         ("do_not_add", "reject_new"),
         ("reject_new", "reject_new"),
+        ("reject_the_new", "reject_new"),
+        ("reject_the_statement", "reject_new"),
         ("do_not_change_the_existing", "reject_new"),
         ("do_not_change_anything", "reject_new"),
         ("do_not_make_any_changes", "cancel"),
@@ -2211,9 +2227,7 @@ def zero_tolerance_failure_types(
         failures.append("unresolved_pronoun_committed")
     if "success_receipt_missing" in checks and score_below("success_receipt_quality"):
         failures.append("success_receipt_missing")
-    if "relationship_direction_inversion" in checks and (
-        "daniele daughter_of sara" in lowered or "daniele is sara's daughter" in lowered
-    ):
+    if "relationship_direction_inversion" in checks and relationship_direction_inversion_present(payload):
         failures.append("relationship_direction_inversion")
     if "large_table_atomized_by_default" in checks:
         if isinstance(memory_cards, list) and len(memory_cards) > 50:
@@ -2264,6 +2278,34 @@ def zero_tolerance_failure_types(
         failures.append("irrelevant_memory_dump")
 
     return sorted(dict.fromkeys(failures))
+
+
+def relationship_direction_inversion_present(payload: dict[str, Any]) -> bool:
+    snippets: list[str] = [str(payload.get("answer") or "")]
+    memory_cards = payload.get("memory_cards")
+    if isinstance(memory_cards, list):
+        for card in memory_cards:
+            if not isinstance(card, dict):
+                continue
+            snippets.append(str(card.get("statement") or ""))
+            relationships = card.get("relationships")
+            if not isinstance(relationships, list):
+                continue
+            for relationship in relationships:
+                if not isinstance(relationship, dict):
+                    continue
+                subject = normalize(str(relationship.get("subject") or ""))
+                predicate = normalize(str(relationship.get("predicate") or ""))
+                object_ = normalize(str(relationship.get("object") or ""))
+                if subject == "daniele" and predicate == "daughter_of" and object_ == "sara":
+                    return True
+
+    natural_text = normalize_match_text(" ".join(snippets))
+    return (
+        "daniele daughter_of sara" in natural_text
+        or "daniele is sara's daughter" in natural_text
+        or "daniele is the daughter of sara" in natural_text
+    )
 
 
 def expected_content_present(payload: dict[str, Any], expected: dict[str, Any]) -> bool:

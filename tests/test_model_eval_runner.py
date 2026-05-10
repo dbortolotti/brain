@@ -866,7 +866,7 @@ def test_recall_irrelevant_dump_zero_tolerance_requires_irrelevant_content() -> 
         input_text="Question: What did I conclude about Brain and Cognee?",
         expected={
             "must_include": ["Brain DB", "Cognee"],
-            "must_not_include": ["Bill Evans"],
+            "must_not_include": ["Bill Evans", "small table"],
         },
         zero_tolerance_checks=("irrelevant_memory_dump",),
     )
@@ -923,6 +923,39 @@ def test_recall_irrelevant_dump_zero_tolerance_requires_irrelevant_content() -> 
     assert long_exclusion_zero is False
     assert long_exclusion_types == []
 
+    should_not_include_scores, should_not_include_zero, should_not_include_types = score_model_output(
+        fixture,
+        {
+            "answer": (
+                "Brain DB should be authoritative and Cognee should be rebuildable. "
+                "It should not include unrelated family facts, Sam preferences, "
+                "Bill Evans, Brain/Cognee chat, or the small table because they "
+                "are outside the queried scope."
+            )
+        },
+        status="ok",
+    )
+
+    assert should_not_include_scores["recall_quality"] == 1.0
+    assert should_not_include_zero is False
+    assert should_not_include_types == []
+
+    later_sentence_scores, later_sentence_zero, later_sentence_types = score_model_output(
+        fixture,
+        {
+            "answer": (
+                "Brain DB should be authoritative and Cognee should be rebuildable. "
+                "It should not include unrelated records such as Bill Evans. "
+                "The small table is also relevant."
+            )
+        },
+        status="ok",
+    )
+
+    assert later_sentence_scores["recall_quality"] == 0.0
+    assert later_sentence_zero is True
+    assert later_sentence_types == ["irrelevant_memory_dump"]
+
 
 def test_recall_accepts_brain_source_of_truth_wording_without_db_literal() -> None:
     fixture = ModelEvalFixture(
@@ -951,6 +984,62 @@ def test_recall_accepts_brain_source_of_truth_wording_without_db_literal() -> No
     assert scores["recall_quality"] == 1.0
     assert zero is False
     assert types == []
+
+
+def test_relationship_direction_inversion_ignores_correct_structured_relationship_order() -> None:
+    fixture = ModelEvalFixture(
+        id="recall_profile_sara_001",
+        role="recall_synthesizer",
+        scenario_group="profile_sara_recall",
+        input_text="Fact: Nur and Sara are Daniele's twin daughters. Query: Tell me about Sara.",
+        expected={
+            "citations_required": True,
+            "must_include": ["Sara", "Daniele", "daughter", "Nur", "twin"],
+        },
+        zero_tolerance_checks=("relationship_direction_inversion",),
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "answer": "Sara is one of Daniele's twin daughters. Her twin sister is Nur.",
+            "citations": ["Fact: Nur and Sara are Daniele's twin daughters."],
+            "memory_cards": [
+                {
+                    "statement": "Sara is one of Daniele's twin daughters; Nur is her twin sister.",
+                    "relationships": [
+                        {"object": "Daniele", "predicate": "daughter_of", "subject": "Sara"},
+                        {"object": "Nur", "predicate": "twin_sibling_of", "subject": "Sara"},
+                    ],
+                }
+            ],
+        },
+        status="ok",
+    )
+
+    assert scores["recall_quality"] == 1.0
+    assert zero is False
+    assert types == []
+
+    _bad_scores, bad_zero, bad_types = score_model_output(
+        fixture,
+        {
+            "answer": "Daniele is Sara's daughter. Nur is Sara's twin.",
+            "citations": ["Fact: Nur and Sara are Daniele's twin daughters."],
+            "memory_cards": [
+                {
+                    "statement": "Daniele is Sara's daughter.",
+                    "relationships": [
+                        {"subject": "Daniele", "predicate": "daughter_of", "object": "Sara"},
+                    ],
+                }
+            ],
+        },
+        status="ok",
+    )
+
+    assert bad_zero is True
+    assert bad_types == ["relationship_direction_inversion"]
 
 
 def test_deleted_memory_returned_zero_tolerance_is_enforced_for_recall() -> None:
@@ -1731,6 +1820,69 @@ def test_repair_option_generator_accepts_colon_prefixed_safe_actions() -> None:
     assert scores["repair_quality"] == 1.0
     assert zero is False
     assert types == []
+
+
+def test_repair_option_generator_accepts_safe_add_separately_phrasing() -> None:
+    additive_fixture = ModelEvalFixture(
+        id="additive_sam_preferences_001",
+        role="repair_option_generator",
+        scenario_group="additive_preference",
+        input_text="Existing memory: Sam from Goldman likes Bill Evans. New: Sam from Goldman also likes Sonny Rollins.",
+        expected={
+            "safe_action_space": ["add_new", "keep_existing", "edit", "cancel"],
+            "must_include": ["Bill Evans", "Sonny Rollins"],
+        },
+        zero_tolerance_checks=("silent_high_confidence_overwrite",),
+    )
+
+    additive_scores, additive_zero, additive_types = score_model_output(
+        additive_fixture,
+        {
+            "answer": "The new fact is additive.",
+            "repair_options": [
+                "Add separately: Save that Sam from Goldman also likes Sonny Rollins, while keeping the existing Bill Evans memory.",
+                "Keep existing: Keep only the existing Bill Evans memory.",
+                "Edit: Modify the new preference before saving.",
+                "Cancel: Do not make any changes right now.",
+            ],
+        },
+        status="ok",
+    )
+
+    assert additive_scores["repair_quality"] == 1.0
+    assert additive_zero is False
+    assert additive_types == []
+
+    sara_fixture = ModelEvalFixture(
+        id="conflict_sara_niece_001",
+        role="repair_option_generator",
+        scenario_group="high_confidence_family_conflict",
+        input_text="Existing high-confidence memory: Sara is Daniele's daughter and Nur's twin. New: Sara is my niece.",
+        expected={
+            "safe_action_space": ["ask_clarification", "add_new", "keep_existing", "reject_new", "edit"],
+            "must_include": ["daughter", "niece"],
+        },
+        zero_tolerance_checks=("silent_high_confidence_overwrite",),
+    )
+
+    sara_scores, sara_zero, sara_types = score_model_output(
+        sara_fixture,
+        {
+            "answer": "Ask for clarification before changing the existing memory.",
+            "repair_options": [
+                "Ask for clarification: Which Sara do you mean, and how is she your niece?",
+                "Add as a separate new fact: Sara is your niece, while keeping the existing daughter and twin memory.",
+                "Keep the existing memory only and do not save the new niece relationship.",
+                "Reject the new statement as not something to remember.",
+                "Edit the new statement before saving.",
+            ],
+        },
+        status="ok",
+    )
+
+    assert sara_scores["repair_quality"] == 1.0
+    assert sara_zero is False
+    assert sara_types == []
 
 
 def test_repair_option_generator_scores_point72_entity_terms() -> None:
