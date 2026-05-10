@@ -5,6 +5,19 @@ surface. Brain DB is the source of truth for memory identity, lifecycle, entity
 resolution, conflicts, open loops, and Cognee sync state. Cognee is an optional
 semantic projection that can be rebuilt from Brain DB.
 
+## Documentation
+
+- [User Guide](docs/USER_GUIDE.md) - setup, HTTP/MCP examples, Slack usage, and
+  verification commands.
+- [Slack Setup Guide](docs/SLACK_SETUP.md) - Slack app configuration, routes,
+  allowlists, and troubleshooting.
+- [Backup Scheme](docs/BACKUP_SCHEME.md) - backup contents, verification,
+  Google Drive replication, and restore outline.
+- [Production Secrets](docs/production-secrets.md) - production secret and
+  variable handling.
+- [Runtime Flow Diagrams](docs/role_flow_diagram.md) - current runtime flow and
+  model-role topology notes.
+
 ## Local Dev Setup
 
 ```bash
