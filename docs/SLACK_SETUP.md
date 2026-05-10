@@ -5,6 +5,8 @@ verifies Slack request signatures and allowlists before handling any memory
 operation. Slack writes are guarded by proposal rules and require confirmation
 by default.
 
+For HTTP and MCP client setup, see [API Setup](API_SETUP_GUIDE.md).
+
 ## Architecture
 
 ```text

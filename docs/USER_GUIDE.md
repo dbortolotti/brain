@@ -489,6 +489,7 @@ Use Brain to recall the current project state for Slack intake and include any c
 
 ## Related Docs
 
+- [API Setup](API_SETUP_GUIDE.md) explains how to connect HTTP and MCP clients.
 - [Slack Setup](SLACK_SETUP.md) explains how to configure the Slack app.
 - [Backup Scheme](BACKUP_SCHEME.md) explains how Brain production backups work.
 - [Production Secrets](production-secrets.md) explains production secret

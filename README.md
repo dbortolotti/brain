@@ -7,8 +7,10 @@ semantic projection that can be rebuilt from Brain DB.
 
 ## Documentation
 
-- [User Guide](docs/USER_GUIDE.md) - setup, HTTP/MCP examples, Slack usage, and
-  verification commands.
+- [User Guide](docs/USER_GUIDE.md) - end-user guidance for saving and recalling
+  memories through Slack or an LLM.
+- [API Setup Guide](docs/API_SETUP_GUIDE.md) - HTTP, MCP, auth, client setup,
+  and integration examples.
 - [Slack Setup Guide](docs/SLACK_SETUP.md) - Slack app configuration, routes,
   allowlists, and troubleshooting.
 - [Backup Scheme](docs/BACKUP_SCHEME.md) - backup contents, verification,
