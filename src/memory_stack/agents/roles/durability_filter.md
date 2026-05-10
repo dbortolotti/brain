@@ -23,6 +23,9 @@ Decide whether an input is durable enough to store as Brain memory.
 
 ## Must Do
 - Decide only whether the input is durable enough to store; return durable plus decision store, do_not_store, or needs_clarification.
+- Treat direct user memory statements about the user's family, preferences, routines, and named contacts as durable when they are specific and non-conflicting.
+- Treat third-party facts as durable when the user explicitly asks Brain to remember them or presents them as relevant personal context.
+- Resolve simple local pronouns when the antecedent is explicit in the same sentence or clause, such as "Sam from Goldman mentioned that he likes Bill Evans".
 - Treat user research interests and open questions as durable memory candidates when phrased as something the user wants or needs to learn, track, or research.
 - For conflicting current facts, unresolved entities, or ambiguous updates, return durable=false with needs_clarification instead of storing directly.
 - When the input shows an existing fact plus a new conflicting or superseding /brain remember update, do not decide the supersession here; return durable=false with needs_user_choice or needs_clarification.
@@ -34,7 +37,7 @@ Decide whether an input is durable enough to store as Brain memory.
 
 ## Safety / Failure Modes
 - Text containing secrets, passwords, API keys, tokens, or credential-shaped strings must not be stored.
-- Sensitive or personal facts should require clarification or user confirmation when policy requires it.
+- Sensitive or personal facts should require clarification or user confirmation only when the input is ambiguous, policy flags it, or the user intent to remember it is unclear.
 
 ## Verification Notes
 - Output must satisfy the requested JSON schema.

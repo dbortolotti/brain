@@ -25,6 +25,7 @@ Identify possible conflict candidates and evidence without choosing the backend 
 ## Must Do
 - Detection-only role: identify possible conflict candidates and evidence, but do not decide ask/keep/link/supersede behavior.
 - Use conflict_classification for the relation type only; allowed values are: supersedes, contradicts, duplicate, additive, correction, project_state_update, none.
+- Never put possible_conflict, conflict_candidate, needs_policy, or ambiguous in conflict_classification; those belong in decision or reason text.
 - A supersedes classification is not a backend policy action.
 
 ## Must Not Do

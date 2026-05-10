@@ -69,6 +69,57 @@ def test_entity_candidate_ranker_contract_requires_unique_disambiguating_evidenc
     assert "Prefer a false clarification over a false merge" in text
 
 
+def test_role_specs_cover_recent_model_failure_contracts() -> None:
+    required_phrases = {
+        "commit_policy_decider": [
+            "Do not require extra confirmation solely because a fact is about the user's family or a named third party",
+            "Resolve simple local pronouns",
+        ],
+        "conflict_candidate_detector": [
+            "Never put possible_conflict, conflict_candidate, needs_policy, or ambiguous in conflict_classification",
+        ],
+        "conflict_policy_decider": [
+            "no automatic overwrite",
+            "escalation or user confirmation is required",
+        ],
+        "durability_filter": [
+            "Treat direct user memory statements about the user's family",
+            "Treat third-party facts as durable when the user explicitly asks Brain to remember them",
+        ],
+        "intent_router": [
+            "Route unresolved memory-write inputs to repair or needs_clarification rather than unknown",
+            "Route storage-policy questions about problematic inputs",
+        ],
+        "open_loop_detector": [
+            "Return has_open_loop false for ordinary durable facts",
+            "Do not treat duplicate/retry delivery metadata as a user open loop",
+            "Do not treat transient non-durable observations with relative words like today as open loops",
+        ],
+        "recall_relevance_filter": [
+            "When the prompt supplies candidate facts without explicit IDs",
+            "For profile or broad \"everything about\" recall modes",
+            "include the literal labels Identity, Known facts, Relationships, and Open loops",
+        ],
+        "relationship_extractor": [
+            "emit daughter_of from each child to the user/me",
+            "emit twin_of between the named people",
+        ],
+        "repair_option_generator": [
+            "preserve the exact safe action label",
+        ],
+        "source_classifier": [
+            "prompt-injection or policy-override instruction",
+            "reject/hard_reject",
+        ],
+    }
+
+    for role, phrases in required_phrases.items():
+        text = role_spec_markdown(role)
+        assert text is not None
+        for phrase in phrases:
+            assert phrase in text
+
+
 def test_eval_role_llm_calls_use_central_fixture_prompt() -> None:
     violations: list[str] = []
     eval_dir = REPO_ROOT / "src" / "memory_stack" / "evals"

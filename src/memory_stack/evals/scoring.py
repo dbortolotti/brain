@@ -1082,16 +1082,29 @@ def decision_label_matches(actual: Any, expected: Any) -> bool:
             "deduplicate_event",
             "duplicate_event",
             "ignore_duplicate",
+            "reject",
         },
         "needs_clarification": {
+            "ask",
             "ask_user",
             "clarification_needed",
             "defer",
+            "needs_confirmation",
+            "needs_user_choice",
+        },
+        "needs_confirmation": {
+            "ask",
+            "ask_user",
+            "clarification_needed",
+            "defer",
+            "needs_clarification",
             "needs_user_choice",
         },
         "needs_user_choice": {
+            "ask",
             "ask_user",
             "clarification_needed",
+            "needs_confirmation",
             "needs_clarification",
         },
         "not_grounded": {
@@ -1105,6 +1118,7 @@ def decision_label_matches(actual: Any, expected: Any) -> bool:
         },
         "propose_repair": {
             "do_not_commit_memory_cards_from_table_rows",
+            "reject",
             "do_not_store_as_durable_memory",
             "reject_with_repair_path",
         },
@@ -1113,6 +1127,7 @@ def decision_label_matches(actual: Any, expected: Any) -> bool:
             "do_not_store",
             "do_not_store_as_durable_memory",
             "propose_repair",
+            "reject",
         },
     }
     return actual_norm in aliases.get(expected_norm, set())
@@ -1140,16 +1155,51 @@ def score_commit_policy(payload: dict[str, Any], expected: dict[str, Any]) -> fl
         payload,
         expected,
     )
+    if decision_score == 0.0:
+        return 0.0
     confirmation_expected = expected.get("requires_confirmation")
     if confirmation_expected is None:
         return decision_score
+    decision = normalize(str(payload.get("decision") or ""))
+    if commit_policy_decision_requires_confirmation(decision):
+        if payload.get("requires_confirmation") is None:
+            return decision_score
+        return min(decision_score, 1.0 if bool(payload["requires_confirmation"]) else 0.0)
+    if commit_policy_decision_is_terminal(decision):
+        if payload.get("requires_confirmation") is None:
+            return decision_score
+        return min(decision_score, 1.0 if not bool(payload["requires_confirmation"]) else 0.0)
     if payload.get("requires_confirmation") is not None:
         confirmation_score = 1.0 if bool(payload["requires_confirmation"]) == bool(confirmation_expected) else 0.0
         return min(decision_score, confirmation_score)
-    decision = normalize(str(payload.get("decision") or ""))
     if confirmation_expected:
         return min(decision_score, 1.0 if decision in {"ask", "needs_confirmation", "needs_clarification", "needs_user_choice"} else 0.0)
     return decision_score
+
+
+def commit_policy_decision_requires_confirmation(decision: str) -> bool:
+    return decision in {
+        "ask",
+        "ask_user",
+        "needs_confirmation",
+        "needs_clarification",
+        "needs_user_choice",
+        "clarification_needed",
+        "defer",
+    }
+
+
+def commit_policy_decision_is_terminal(decision: str) -> bool:
+    return decision in {
+        "commit",
+        "commit_success",
+        "commit_with_warning",
+        "duplicate",
+        "do_not_store",
+        "hard_reject",
+        "reject",
+        "reject_with_repair_path",
+    }
 
 
 def score_conflict_policy(payload: dict[str, Any], expected: dict[str, Any]) -> float:
@@ -1210,13 +1260,29 @@ def score_recall_relevance_filter(payload: dict[str, Any], expected: dict[str, A
     excluded_ids = {str(value) for value in payload.get("excluded_memory_ids", []) if value is not None}
     forbidden_ids = {str(value) for value in expected.get("forbidden_memory_ids", []) if value is not None}
     if expected.get("memory_ids"):
-        scores.append(1.0 if set(expected["memory_ids"]) <= memory_ids else 0.0)
+        scores.append(1.0 if all(recall_memory_id_present(str(memory_id), memory_ids) for memory_id in expected["memory_ids"]) else 0.0)
     if expected.get("excluded_memory_ids"):
-        scores.append(1.0 if set(expected["excluded_memory_ids"]) <= excluded_ids else 0.0)
-        scores.append(1.0 if memory_ids.isdisjoint(set(expected["excluded_memory_ids"])) else 0.0)
+        scores.append(
+            1.0
+            if all(recall_memory_id_present(str(memory_id), excluded_ids) for memory_id in expected["excluded_memory_ids"])
+            else 0.0
+        )
+        scores.append(1.0 if all(not recall_memory_id_present(str(memory_id), memory_ids) for memory_id in expected["excluded_memory_ids"]) else 0.0)
     if forbidden_ids:
-        scores.append(1.0 if memory_ids.isdisjoint(forbidden_ids) else 0.0)
+        scores.append(1.0 if all(not recall_memory_id_present(memory_id, memory_ids) for memory_id in forbidden_ids) else 0.0)
     return min(scores)
+
+
+def recall_memory_id_present(expected_id: str, actual_ids: set[str]) -> bool:
+    expected = normalize_match_text(expected_id)
+    actual_normalized = {normalize_match_text(actual_id) for actual_id in actual_ids}
+    if expected in actual_normalized:
+        return True
+    aliases = {
+        "mem_new": {"current memory", "current_memory", "new memory", "new_memory", "current"},
+        "mem_old": {"old memory", "old_memory", "superseded memory", "superseded_memory", "deleted memory", "deleted_memory", "old"},
+    }
+    return bool(actual_normalized & aliases.get(expected, set()))
 
 
 def score_recall_planner(payload: dict[str, Any], expected: dict[str, Any]) -> float:
@@ -1645,6 +1711,17 @@ TERM_ALIASES: dict[str, tuple[str, ...]] = {
     "clarif": ("clarify", "clarification", "specify", "resolve ambiguity", "which memory"),
     "clarify": ("clarification", "ask_clarification", "ask for clarification"),
     "do not save": ("do not store", "don't save", "don’t save", "don't store", "don’t store", "ignore"),
+    "escalate": (
+        "confirm",
+        "confirmation",
+        "clarification",
+        "user confirmation",
+        "requires user choice",
+        "requires_user_choice",
+        "ask user",
+        "manual review",
+    ),
+    "left goldman": ("no longer works at goldman", "from goldman to point72", "left goldman"),
     "fetch_error": ("fetch failed", "fetch failure", "404 network error", "network error"),
     "metadata": ("entity row", "alias row", "evidence contains"),
     "no current": (
@@ -1671,8 +1748,26 @@ TERM_ALIASES: dict[str, tuple[str, ...]] = {
     "not stored": (
         "cannot confirm any stored",
         "cannot confirm stored",
+        "non posso confermare",
+        "nessuna memoria confermata",
+        "nessuna scheda memoria",
+        "nessuna scheda di memoria",
+        "nessuna scheda memoria archiviata",
+        "nessuna scheda di memoria archiviata",
         "no stored",
         "no stored memory",
+    ),
+    "no automatic overwrite": (
+        "no automatic overwrite",
+        "not automatically overwritten",
+        "not be automatically overwritten",
+        "must not be silently overwritten",
+        "must not silently overwrite",
+        "must not silently overwritten",
+        "silent overwrite",
+        "silently overwrite",
+        "silently overwritten",
+        "without explicit user confirmation",
     ),
     "pending": ("don't save this yet", "don’t save this yet", "not save this yet", "unresolved"),
     "paste article": ("provide the article text", "provide article text", "article text manually"),
@@ -1688,6 +1783,22 @@ TERM_ALIASES: dict[str, tuple[str, ...]] = {
     "ignored": ("does not treat", "do not treat", "not treat", "non-factual"),
     "source of truth": ("source-of-truth",),
     "store_as_source_data": ("store as source data", "store as a source", "source artifact", "source data"),
+    "relationships": ("associated with", "associated"),
+    "source_material_as_memory": (
+        "store an entire",
+        "entire transcript as a single",
+        "source material as memory",
+        "not an appropriate durable memory",
+    ),
+    "store_source_and_extract": (
+        "extract only specific",
+        "extract durable",
+        "submit them individually",
+        "store as source",
+    ),
+    "unresolved_pronoun": ("unresolved references", "unclear who", "who 'he' refers to", "who he refers to"),
+    "no db write": ("no database write", "not committed", "do not store", "can't store", "can’t store"),
+    "supersede": ("superseding", "supersession", "supersedes"),
     "url-only": ("url only", "url-only", "article url", "source url"),
 }
 

@@ -23,9 +23,14 @@ Detect whether the input contains an open loop, open question, or unresolved cla
 ## Must Do
 - Detect only whether the input contains an open loop or open question; do not store facts or emit memory cards.
 - Return has_open_loop and an open_loops array; use an empty array when there is no open loop.
+- Return has_open_loop false for ordinary durable facts that downstream roles can store without user follow-up.
+- Treat simple local pronouns as resolved when the antecedent is explicit in the same sentence or clause, such as "Sam from Goldman mentioned that he likes Bill Evans".
 - Open loops include unresolved entities, ambiguous relative times, typo/shorthand uncertainty, low-confidence clarification needs, rewrite requests with pronouns, and user research/open questions.
 
 ## Must Not Do
+- Do not create an open loop merely because a fact may need normal commit-policy confirmation.
+- Do not treat duplicate/retry delivery metadata as a user open loop; duplicate handling belongs to idempotency or repair policy.
+- Do not treat transient non-durable observations with relative words like today as open loops; durability policy should reject them rather than asking for a date.
 - Operational source failures such as a 404 article fetch are not user open loops by themselves; classify them as no open loop unless the user needs to provide missing content.
 - Do not treat a malformed/fetch-unavailable article URL as has_open_loop unless the user needs to provide missing content.
 

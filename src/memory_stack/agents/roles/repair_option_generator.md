@@ -23,6 +23,7 @@ Generate safe repair or user-choice options without applying them.
 ## Must Do
 - Generate repair/user-choice options only; do not decide, commit, append, merge, overwrite, supersede, or mark anything as saved.
 - Return repair_options as candidate actions or user choices.
+- When an allowed safe action space is supplied, each option should preserve the exact safe action label, preferably as a prefix such as `link_duplicate: ...`.
 - For additive facts, offer options such as add separately or keep both; do not perform the add or merge in the output.
 - Use explicit user-facing option text for ambiguity, such as specify the person, ask for clarification, do not save yet, keep existing, reject new, edit, or cancel.
 - For unresolved pronoun rewrites like "They prefer the second option", every option must ask for clarification or cancel.

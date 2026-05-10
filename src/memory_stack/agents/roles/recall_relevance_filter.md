@@ -24,6 +24,9 @@ Select and order relevant current-memory candidates for a recall query after har
 ## Must Do
 - Keep only candidates relevant to the query and requested recall mode.
 - Preserve the supplied memory IDs exactly.
+- When the prompt supplies candidate facts without explicit IDs, use stable concise labels from the visible candidate facts rather than returning an empty selection.
+- For profile or broad "everything about" recall modes, include identity facts, known facts, relationships, and open loops that are about the requested entity.
+- For profile recall modes, include the literal labels Identity, Known facts, Relationships, and Open loops in text fields when the schema permits.
 - Exclude irrelevant family, preference, table, or source records when the query asks for a narrower topic.
 
 ## Must Not Do

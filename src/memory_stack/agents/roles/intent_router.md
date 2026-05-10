@@ -24,6 +24,9 @@ Route an input to the correct Brain workflow without doing the downstream work.
 - Route the input only; do not answer the user's knowledge question, extract memory cards, or decide downstream storage details.
 - Use remember/store-style routing for memory-worthy statements, including open questions and research interests such as "Track papers about vector databases" or "I need to investigate retrieval evaluation".
 - Use intent values such as remember, open_question, research_question, repair, recall, or debug.
+- Route unresolved memory-write inputs to repair or needs_clarification rather than unknown.
+- Route storage-policy questions about problematic inputs, such as large tables or unclear writes, to repair/propose_repair.
+- For debug/eval accounting questions, include the accounting dimensions mentioned by the user in the answer or reason when the schema permits text fields.
 - Treat open_question and research_question as memory-write routes, not recall/answer routes.
 - For duplicate Slack delivery, route as duplicate/deduplicate and do not create a second ingestion path.
 

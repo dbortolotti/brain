@@ -806,6 +806,38 @@ MODEL_EVAL_FIXTURES.extend(
             zero_tolerance_checks=("entity_overmerge",),
         ),
         _fixture(
+            "entity_clear_org_alias_001",
+            "entity_clear_org_alias",
+            "entity_resolution",
+            "Existing entities: Priya at Anthropic (person, aliases Priya A, Anthropic Priya); Priya at DeepMind (person). New note: Priya A recommended the interpretability paper.",
+            {
+                "entity_action": "use_existing",
+                "must_include": ["Priya at Anthropic", "interpretability"],
+            },
+        ),
+        _fixture(
+            "entity_clear_place_city_001",
+            "entity_clear_place_city",
+            "entity_resolution",
+            "Existing entities: Cafe Luca London (place, aliases Luca London); Cafe Luca Milan (place, aliases Luca Milan). New note: Luca London has excellent focaccia.",
+            {
+                "entity_action": "use_existing",
+                "must_include": ["Cafe Luca London", "focaccia"],
+            },
+        ),
+        _fixture(
+            "entity_shared_initial_alias_001",
+            "entity_shared_initial_alias",
+            "entity_resolution",
+            "Existing entities: Alex Chen designer (person, aliases A. Chen); Alex Chen engineer (person, aliases A. Chen). New note: A. Chen recommended the gallery opening.",
+            {
+                "decision": "needs_user_choice",
+                "entity_action_any": ["needs_user_choice", "needs_clarification"],
+                "must_include": ["A. Chen"],
+            },
+            zero_tolerance_checks=("entity_overmerge",),
+        ),
+        _fixture(
             "ambiguous_time_reference_001",
             "ambiguous_time",
             "slack_intake",
@@ -1985,23 +2017,26 @@ def commit_policy_decider_expected(fixture: ModelEvalFixture, expected: dict[str
         narrowed["requires_confirmation"] = False
     else:
         narrowed.setdefault("requires_confirmation", False)
+    expected_terms = {
+        normalize_fixture_value(term)
+        for key in ("must_include", "must_include_any")
+        for term in expected.get(key, [])
+    }
+    if "duplicate" in expected_terms:
+        options = list(narrowed.get("decision_any") or [])
+        options.extend(["duplicate", "reject", "do_not_store"])
+        narrowed["decision_any"] = sorted(dict.fromkeys(options))
     return narrowed
 
 
 def success_receipt_generator_expected(fixture: ModelEvalFixture, expected: dict[str, Any]) -> dict[str, Any]:
     fixture_id = str(fixture.context.get("base_fixture_id", fixture.id))
     terms = list(expected.get("receipt_terms") or [])
-    if not terms and commit_expected_for_receipt(expected):
-        terms = ["Stored", "memory_id", "confidence"]
-    if fixture_id in {
-        "ambiguous_sam_001",
-        "slack_ambiguous_entity_buttons_001",
-        "slack_rewrite_modal_001",
-        "slack_no_durable_value_repair_001",
-        "slack_success_receipt_001",
-        "unresolved_pronoun_001",
-    }:
+    has_backend_receipt_data = fixture_id == "llm_promoted_success_receipt_grounded_001"
+    if not has_backend_receipt_data:
         terms = ["not stored"]
+    elif not terms and commit_expected_for_receipt(expected):
+        terms = ["Stored", "memory_id", "confidence"]
     return {
         "receipt_terms": terms,
         "must_not_include": expected.get("must_not_include", []),

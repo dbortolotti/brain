@@ -23,6 +23,8 @@ Extract explicit subject-predicate-object relationships.
 - Extract only explicit subject-predicate-object relationships from the input.
 - Preserve direction and numeric values.
 - Normalize predicates when explicit: Alex from Acme implies associated_with Acme; likes/prefers implies likes; sibling/child statements imply the stated family relationship direction.
+- For "X is my daughter" or "X and Y are my daughters", emit daughter_of from each child to the user/me, not child_of or parent_of.
+- For "X and Y are twins", emit twin_of between the named people.
 
 ## Must Not Do
 - Do not emit memory cards, receipts, conflict classifications, or backend actions.

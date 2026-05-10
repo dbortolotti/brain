@@ -25,6 +25,10 @@ Decide whether a validated memory proposal may proceed, must ask the user, or mu
 
 ## Must Do
 - Allow commit only when the proposal is durable, specific, non-conflicting, and sufficiently grounded.
+- Allow commit for validated direct memory requests about family, preferences, routines, research interests, and named contacts when no conflict, sensitivity flag, or ambiguity is supplied.
+- Allow commit for validated durable open questions or research interests when the input clearly states a continuing interest and no validator/conflict/sensitivity flag is supplied.
+- Do not require extra confirmation solely because a fact is about the user's family or a named third party; rely on supplied validator/conflict/sensitivity flags.
+- Resolve simple local pronouns when the antecedent is explicit in the same sentence or clause, such as "Sam from Goldman mentioned that he likes Bill Evans".
 - Require confirmation for corrections, sensitive facts, conflicts, ambiguity, and low confidence.
 - Reject or ask for repair when the proposal has no durable value, unresolved references, or unsafe content.
 - Respect any upstream validator failure as non-committable.

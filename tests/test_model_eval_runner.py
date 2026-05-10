@@ -374,6 +374,7 @@ def test_entity_candidate_ranker_uses_entity_resolution_fixtures_only() -> None:
     )
 
     assert fixtures
+    assert len(fixtures) >= 12
     assert {fixture.context["source_role"] for fixture in fixtures} == {"entity_resolution"}
 
 
@@ -2808,6 +2809,60 @@ def test_commit_policy_decider_allows_additive_commit_fixture() -> None:
     assert types == []
 
 
+def test_commit_policy_decider_accepts_terminal_reject_without_confirmation() -> None:
+    fixture = next(
+        fixture
+        for fixture in select_fixtures(
+            fixture_set="production",
+            roles={"commit_policy_decider"},
+            mode="fine-grained",
+        )
+        if fixture.id == "validator_reject_junk"
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "decision": "reject",
+            "requires_confirmation": False,
+            "reason": "No durable, specific memory value is present.",
+            "answer": "I won't store this because it is not durable memory.",
+            "citations": [],
+        },
+        status="ok",
+    )
+
+    assert scores["decision_correctness"] == 1.0
+    assert zero is False
+    assert types == []
+
+
+def test_commit_policy_decider_accepts_ask_with_confirmation_when_allowed() -> None:
+    fixture = ModelEvalFixture(
+        id="commit_policy_ambiguous",
+        role="commit_policy_decider",
+        scenario_group="commit_policy",
+        input_text="Sam mentioned this last Friday and wants it next month.",
+        expected={"decision_any": ["needs_clarification", "commit_with_warning"], "requires_confirmation": False},
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "decision": "ask",
+            "requires_confirmation": True,
+            "reason": "Relative time references need clarification.",
+            "answer": "Please clarify the exact dates.",
+            "citations": [],
+        },
+        status="ok",
+    )
+
+    assert scores["decision_correctness"] == 1.0
+    assert zero is False
+    assert types == []
+
+
 def test_success_receipt_generator_scores_grounded_receipt_text() -> None:
     fixture = ModelEvalFixture(
         id="receipt",
@@ -2854,6 +2909,37 @@ def test_success_receipt_generator_missing_backend_data_fixture_expects_no_store
             "included_memory_ids": [],
             "included_source_ids": [],
             "warnings": ["Missing backend receipt data."],
+            "answer": "No stored memory card can be confirmed.",
+            "citations": [],
+        },
+        status="ok",
+    )
+
+    assert fixture.expected["receipt_terms"] == ["not stored"]
+    assert "success_receipt_missing" not in fixture.zero_tolerance_checks
+    assert scores["success_receipt_quality"] == 1.0
+    assert zero is False
+    assert types == []
+
+
+def test_success_receipt_generator_derived_memory_fixture_without_backend_data_expects_no_stored_receipt() -> None:
+    fixture = next(
+        fixture
+        for fixture in select_fixtures(
+            fixture_set="production",
+            roles={"success_receipt_generator"},
+            mode="fine-grained",
+        )
+        if fixture.id == "slack_intake_family_twins"
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "receipt_text": "No backend ingestion receipt was provided, so no stored memory card can be confirmed.",
+            "included_memory_ids": [],
+            "included_source_ids": [],
+            "warnings": ["Receipt data is missing."],
             "answer": "No stored memory card can be confirmed.",
             "citations": [],
         },
@@ -2985,6 +3071,36 @@ def test_conflict_policy_decider_safe_ask_user_is_not_silent_overwrite() -> None
     assert types == []
 
 
+def test_conflict_policy_decider_accepts_confirmation_as_escalation_language() -> None:
+    fixture = ModelEvalFixture(
+        id="conflict_policy",
+        role="conflict_policy_decider",
+        scenario_group="conflict",
+        input_text="Existing: Sara is my daughter. New: Sara is my niece.",
+        expected={
+            "policy_action_any": ["ask_user", "keep_both", "reject"],
+            "must_include": ["escalate", "no automatic overwrite"],
+        },
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "policy_action": "ask_user",
+            "target_memory_id": None,
+            "requires_user_choice": True,
+            "reason": "No automatic overwrite should occur without user confirmation.",
+            "answer": "Please confirm the relationship before any update.",
+            "citations": [],
+        },
+        status="ok",
+    )
+
+    assert scores["conflict_safety"] == 1.0
+    assert zero is False
+    assert types == []
+
+
 def test_recall_relevance_filter_rejects_deleted_or_irrelevant_records() -> None:
     fixture = ModelEvalFixture(
         id="recall_filter",
@@ -3037,6 +3153,37 @@ def test_recall_relevance_filter_allows_forbidden_terms_in_exclusion_reasons() -
             },
             "answer": "",
             "citations": [],
+        },
+        status="ok",
+    )
+
+    assert scores["recall_quality"] == 1.0
+    assert zero is False
+    assert types == []
+
+
+def test_recall_relevance_filter_accepts_fixture_labels_for_superseded_memory_ids() -> None:
+    fixture = next(
+        fixture
+        for fixture in select_fixtures(
+            fixture_set="production",
+            roles={"recall_relevance_filter"},
+            mode="fine-grained",
+        )
+        if fixture.id == "recall_hide_superseded_001"
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "memory_ids": ["Current memory"],
+            "excluded_memory_ids": ["Old memory"],
+            "reason_by_memory_id": {
+                "Current memory": "Included because it is current and says Sam joined Point72.",
+                "Old memory": "Excluded because it is superseded.",
+            },
+            "answer": "Sam works at Point72.",
+            "citations": ["Current memory"],
         },
         status="ok",
     )

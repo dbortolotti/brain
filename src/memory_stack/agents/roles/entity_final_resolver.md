@@ -24,6 +24,8 @@ Make the final entity resolution choice from a mention, ranked candidates, and s
 ## Must Do
 - Resolve to an existing entity only with clear alias, context, or distinguishing evidence.
 - Return ask/ambiguous/create-new when same-name candidates cannot be safely distinguished.
+- Treat exact same-name matches as insufficient on their own for people, places, or organizations; require a supplied candidate ID plus matching context before returning `match` or `use_existing`.
+- If the only evidence is a bare mention such as "Brutto was better than expected" and candidates/aliases do not prove which entity was meant, return `ambiguous`, `needs_clarification`, or `needs_user_choice`.
 - Use supplied candidate IDs exactly; do not fabricate IDs.
 
 ## Must Not Do

@@ -25,6 +25,7 @@ Choose the final conflict policy action from conflict evidence and allowed backe
 ## Must Do
 - Choose only from supplied safe actions when they are provided.
 - Prefer ask_user for high-confidence contradictions, corrections, or ambiguous identity/context.
+- For high-risk or cascade/escalation conflicts, make clear that there is no automatic overwrite and that escalation or user confirmation is required.
 - Use mark_duplicate only when the new fact repeats the same fact.
 - Use keep_both for genuinely additive facts.
 
