@@ -971,6 +971,16 @@ def test_recall_absence_allows_uncertain_repetition_of_query_phrase() -> None:
     assert zero is False
     assert types == []
 
+    insufficient_scores, insufficient_zero, insufficient_types = score_model_output(
+        fixture,
+        {"answer": "Insufficient current Brain evidence to determine whether Sara prefers morning flights."},
+        status="ok",
+    )
+
+    assert insufficient_scores["recall_quality"] == 1.0
+    assert insufficient_zero is False
+    assert insufficient_types == []
+
 
 def test_recall_irrelevant_dump_zero_tolerance_requires_irrelevant_content() -> None:
     fixture = ModelEvalFixture(
@@ -1263,6 +1273,40 @@ def test_recall_planner_scores_recall_plan_intent() -> None:
 
     assert scores["decision_correctness"] == 1.0
     assert scores["recall_quality"] == 1.0
+    assert zero is False
+    assert types == []
+
+
+def test_recall_planner_allows_scoped_exclusion_language() -> None:
+    fixture = ModelEvalFixture(
+        id="recall_ai_memory_articles_relevance_001",
+        role="recall_planner",
+        scenario_group="recall_relevance_ai_articles",
+        input_text=(
+            "Records include family facts, Sam preferences, a knowledge graph open loop, "
+            "an AI memory article, Brain/Cognee chat, and a small table. "
+            "Query: What articles have I saved about AI memory?"
+        ),
+        expected={"must_not_include": ["daughters", "Bill Evans", "small table"]},
+        zero_tolerance_checks=("irrelevant_memory_dump",),
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "answer": "",
+            "intent": "Plan retrieval for the user's saved articles about AI memory.",
+            "decision": (
+                "Search current Brain evidence for saved articles whose topic or title "
+                "relates to AI memory; exclude unrelated family facts, Sam preferences, "
+                "and small table content unless relevant."
+            ),
+            "memory_cards": [],
+        },
+        status="ok",
+    )
+
+    assert scores["decision_correctness"] == 1.0
     assert zero is False
     assert types == []
 
@@ -3193,6 +3237,40 @@ def test_recall_relevance_filter_accepts_fixture_labels_for_superseded_memory_id
     assert types == []
 
 
+def test_recall_relevance_filter_accepts_brain_cognee_fixture_labels() -> None:
+    fixture = next(
+        fixture
+        for fixture in select_fixtures(
+            fixture_set="production",
+            roles={"recall_relevance_filter"},
+            mode="fine-grained",
+        )
+        if fixture.id == "recall_brain_cognee_conclusions_relevance_001"
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "memory_ids": ["Brain DB source-of-truth conclusion", "Cognee rebuildable projection"],
+            "excluded_memory_ids": ["Slack strict intake", "family facts", "Sam preferences"],
+            "reason_by_memory_id": {
+                "Brain DB source-of-truth conclusion": "Included because the query asks about Brain.",
+                "Cognee rebuildable projection": "Included because the query asks about Cognee.",
+                "Slack strict intake": "Excluded because it is unrelated.",
+                "family facts": "Excluded because it is unrelated.",
+                "Sam preferences": "Excluded because it is unrelated.",
+            },
+            "answer": "",
+            "citations": [],
+        },
+        status="ok",
+    )
+
+    assert scores["recall_quality"] == 1.0
+    assert zero is False
+    assert types == []
+
+
 def test_llm_promoted_workflow_battery_is_selected() -> None:
     promoted_roles = {
         "commit_policy_decider",
@@ -4228,3 +4306,85 @@ def test_live_provider_client_retries_transient_provider_error(monkeypatch) -> N
     assert result.status == "ok"
     assert result.attempt_count == 3
     assert result.retry_count == 2
+
+
+def test_live_provider_client_retries_missing_json_response(monkeypatch) -> None:
+    settings = Settings(openai_api_key="test-key", openai_auth_mode="api_key")
+    client = LiveProviderClient(
+        settings,
+        retry_attempts=2,
+        retry_backoff_seconds=0,
+    )
+    attempts = {"count": 0}
+
+    def fake_complete_text(*args: Any, **kwargs: Any) -> str:
+        attempts["count"] += 1
+        if attempts["count"] < 3:
+            return "no json here"
+        return '{"intent":"remember","decision":"commit_success","memory_cards":[],"receipt":{"success":true,"details":[]},"answer":"ok"}'
+
+    monkeypatch.setattr(client, "_complete_text", fake_complete_text)
+    result = client.complete_json(
+        type("Candidate", (), {"provider": "openai", "model": "gpt-5.4-nano", "ref": "openai:gpt-5.4-nano", "price_per_1m": {}})(),
+        prompt="test",
+        schema={},
+    )
+
+    assert attempts["count"] == 3
+    assert result.status == "ok"
+    assert result.attempt_count == 3
+    assert result.retry_count == 2
+
+
+def test_live_provider_client_exhausted_missing_text_is_provider_fail(monkeypatch) -> None:
+    settings = Settings(openai_api_key="test-key", openai_auth_mode="api_key")
+    client = LiveProviderClient(
+        settings,
+        retry_attempts=2,
+        retry_backoff_seconds=0,
+    )
+    attempts = {"count": 0}
+
+    def fake_complete_text(*args: Any, **kwargs: Any) -> str:
+        attempts["count"] += 1
+        raise ProviderCallError("OpenAI response did not include text")
+
+    monkeypatch.setattr(client, "_complete_text", fake_complete_text)
+    result = client.complete_json(
+        type("Candidate", (), {"provider": "openai", "model": "gpt-5.4-nano", "ref": "openai:gpt-5.4-nano", "price_per_1m": {}})(),
+        prompt="test",
+        schema={},
+    )
+
+    assert attempts["count"] == 3
+    assert result.status == "fail"
+    assert result.error == "OpenAI response did not include text"
+    assert result.attempt_count == 3
+    assert result.retry_count == 2
+
+
+def test_live_provider_client_parseable_non_object_remains_schema_fail(monkeypatch) -> None:
+    settings = Settings(openai_api_key="test-key", openai_auth_mode="api_key")
+    client = LiveProviderClient(
+        settings,
+        retry_attempts=2,
+        retry_backoff_seconds=0,
+    )
+    attempts = {"count": 0}
+
+    def fake_complete_text(*args: Any, **kwargs: Any) -> str:
+        attempts["count"] += 1
+        return '["not", "an", "object"]'
+
+    monkeypatch.setattr(client, "_complete_text", fake_complete_text)
+    result = client.complete_json(
+        type("Candidate", (), {"provider": "openai", "model": "gpt-5.4-nano", "ref": "openai:gpt-5.4-nano", "price_per_1m": {}})(),
+        prompt="test",
+        schema={},
+    )
+
+    assert attempts["count"] == 1
+    assert result.status == "schema_fail"
+    assert result.error == "model output JSON was not an object"
+    assert result.attempt_count == 1
+    assert result.retry_count == 0

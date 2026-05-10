@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Brain Flow Diagrams</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7f8fb;
+      --panel: #ffffff;
+      --text: #172033;
+      --muted: #64748b;
+      --border: #d8dee9;
+      --link: #1d4ed8;
+      --code-bg: #eef2f7;
+      --shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(12px);
+    }
+
+    .bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      width: min(1520px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 14px 0;
+    }
+
+    .title {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .title strong {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 15px;
+      letter-spacing: 0;
+    }
+
+    .title span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .actions a,
+    .actions button {
+      display: inline-flex;
+      min-height: 34px;
+      align-items: center;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: #ffffff;
+      color: var(--text);
+      cursor: pointer;
+      font: inherit;
+      font-size: 13px;
+      line-height: 1;
+      padding: 8px 11px;
+      text-decoration: none;
+    }
+
+    .actions a:hover,
+    .actions button:hover {
+      border-color: #94a3b8;
+    }
+
+    main {
+      width: min(1520px, calc(100% - 40px));
+      margin: 26px auto 56px;
+    }
+
+    article {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      padding: clamp(22px, 3vw, 42px);
+    }
+
+    h1,
+    h2,
+    h3 {
+      letter-spacing: 0;
+      line-height: 1.2;
+    }
+
+    h1 {
+      margin: 0 0 16px;
+      font-size: clamp(30px, 4vw, 46px);
+    }
+
+    h2 {
+      margin-top: 40px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      font-size: 24px;
+    }
+
+    h3 {
+      margin-top: 30px;
+      font-size: 18px;
+    }
+
+    p,
+    li {
+      max-width: 88ch;
+    }
+
+    a {
+      color: var(--link);
+    }
+
+    code {
+      border-radius: 4px;
+      background: var(--code-bg);
+      padding: 0.12rem 0.28rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 0.92em;
+    }
+
+    pre {
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #0f172a;
+      color: #e5e7eb;
+      padding: 16px;
+    }
+
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 18px 0 26px;
+      font-size: 14px;
+    }
+
+    th,
+    td {
+      border: 1px solid var(--border);
+      padding: 9px 11px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f1f5f9;
+      font-weight: 650;
+    }
+
+    .diagram-shell {
+      margin: 22px 0 30px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #ffffff;
+    }
+
+    .diagram-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+      background: #f8fafc;
+      padding: 8px;
+    }
+
+    .diagram-toolbar button,
+    .diagram-toolbar output {
+      display: inline-flex;
+      min-width: 36px;
+      min-height: 32px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: #ffffff;
+      color: var(--text);
+      font: inherit;
+      font-size: 13px;
+      line-height: 1;
+      padding: 7px 10px;
+    }
+
+    .diagram-toolbar button {
+      cursor: pointer;
+    }
+
+    .diagram-toolbar button:hover {
+      border-color: #94a3b8;
+    }
+
+    .diagram-toolbar output {
+      min-width: 58px;
+      color: var(--muted);
+    }
+
+    .diagram-viewport {
+      max-height: 78vh;
+      overflow: auto;
+      padding: 18px;
+      overscroll-behavior: contain;
+    }
+
+    .mermaid {
+      display: inline-block;
+      min-width: max-content;
+      margin: 0;
+      background: #ffffff;
+    }
+
+    .mermaid svg {
+      height: auto;
+      max-width: none;
+      transform-origin: top left;
+    }
+
+    .status {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #ffffff;
+      color: var(--muted);
+      padding: 18px;
+    }
+
+    @media print {
+      header {
+        position: static;
+      }
+
+      .actions {
+        display: none;
+      }
+
+      body {
+        background: #ffffff;
+      }
+
+      article {
+        border: 0;
+        box-shadow: none;
+        padding: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="bar">
+      <div class="title">
+        <strong>Brain Flow Diagrams</strong>
+        <span>Rendered from docs/role_flow_diagram.md</span>
+      </div>
+      <nav class="actions" aria-label="Document actions">
+        <a href="role_flow_diagram.md">Markdown</a>
+        <button type="button" id="print">Print</button>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <article id="content">
+      <div class="status">Loading role flow diagram...</div>
+    </article>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>
+    const content = document.getElementById("content");
+
+    document.getElementById("print").addEventListener("click", () => {
+      window.print();
+    });
+
+    async function render() {
+      try {
+        if (!window.marked || !window.mermaid) {
+          throw new Error("Markdown or Mermaid renderer did not load.");
+        }
+
+        const response = await fetch("role_flow_diagram.md", { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error(`Could not load role_flow_diagram.md: HTTP ${response.status}`);
+        }
+
+        const markdown = await response.text();
+        content.innerHTML = marked.parse(markdown, {
+          gfm: true,
+          mangle: false,
+          headerIds: true
+        });
+
+        content.querySelectorAll("pre code.language-mermaid").forEach((code) => {
+          const diagram = document.createElement("div");
+          diagram.className = "mermaid";
+          diagram.textContent = code.textContent;
+          code.closest("pre").replaceWith(diagram);
+        });
+
+        mermaid.initialize({
+          startOnLoad: false,
+          securityLevel: "loose",
+          theme: "default",
+          flowchart: {
+            curve: "basis",
+            htmlLabels: true,
+            useMaxWidth: false
+          }
+        });
+        await mermaid.run({ querySelector: ".mermaid" });
+        enhanceMermaidDiagrams();
+      } catch (error) {
+        content.innerHTML = `<div class="status">Unable to render the diagram: ${escapeHtml(error.message)}</div>`;
+      }
+    }
+
+    function enhanceMermaidDiagrams() {
+      content.querySelectorAll(".mermaid").forEach((diagram, index) => {
+        if (diagram.closest(".diagram-shell")) {
+          return;
+        }
+
+        const svg = diagram.querySelector("svg");
+        if (!svg) {
+          return;
+        }
+
+        const wrapper = document.createElement("section");
+        wrapper.className = "diagram-shell";
+        wrapper.setAttribute("aria-label", `Flow chart ${index + 1}`);
+
+        const toolbar = document.createElement("div");
+        toolbar.className = "diagram-toolbar";
+
+        const viewport = document.createElement("div");
+        viewport.className = "diagram-viewport";
+
+        const scaleOutput = document.createElement("output");
+        scaleOutput.setAttribute("aria-live", "polite");
+
+        const baseWidth = getSvgDimension(svg, "width");
+        const baseHeight = getSvgDimension(svg, "height");
+        const state = { scale: 1, baseWidth, baseHeight };
+
+        const zoomOut = makeZoomButton("-", "Zoom out", () => setScale(state.scale / 1.2));
+        const zoomIn = makeZoomButton("+", "Zoom in", () => setScale(state.scale * 1.2));
+        const reset = makeZoomButton("100%", "Reset zoom", () => setScale(1));
+        const fit = makeZoomButton("Fit", "Fit chart to visible width", () => {
+          const availableWidth = Math.max(320, viewport.clientWidth - 36);
+          setScale(availableWidth / state.baseWidth);
+        });
+
+        toolbar.append(zoomOut, scaleOutput, zoomIn, reset, fit);
+        diagram.replaceWith(wrapper);
+        viewport.appendChild(diagram);
+        wrapper.append(toolbar, viewport);
+
+        viewport.addEventListener("wheel", (event) => {
+          if (!event.ctrlKey && !event.metaKey) {
+            return;
+          }
+
+          event.preventDefault();
+          const rect = viewport.getBoundingClientRect();
+          const anchor = {
+            x: event.clientX - rect.left,
+            y: event.clientY - rect.top
+          };
+          setScale(state.scale * (event.deltaY > 0 ? 0.9 : 1.1), anchor);
+        }, { passive: false });
+
+        setScale(1);
+
+        function setScale(nextScale, anchor) {
+          const previousWidth = viewport.scrollWidth || state.baseWidth;
+          const previousHeight = viewport.scrollHeight || state.baseHeight;
+          const anchorX = anchor ? anchor.x : viewport.clientWidth / 2;
+          const anchorY = anchor ? anchor.y : viewport.clientHeight / 2;
+          const ratioX = (viewport.scrollLeft + anchorX) / previousWidth;
+          const ratioY = (viewport.scrollTop + anchorY) / previousHeight;
+
+          state.scale = clamp(nextScale, 0.2, 5);
+          svg.style.width = `${Math.round(state.baseWidth * state.scale)}px`;
+          svg.style.height = `${Math.round(state.baseHeight * state.scale)}px`;
+          scaleOutput.value = `${Math.round(state.scale * 100)}%`;
+
+          requestAnimationFrame(() => {
+            viewport.scrollLeft = Math.max(0, viewport.scrollWidth * ratioX - anchorX);
+            viewport.scrollTop = Math.max(0, viewport.scrollHeight * ratioY - anchorY);
+          });
+        }
+      });
+    }
+
+    function makeZoomButton(label, title, onClick) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = label;
+      button.title = title;
+      button.setAttribute("aria-label", title);
+      button.addEventListener("click", onClick);
+      return button;
+    }
+
+    function getSvgDimension(svg, dimension) {
+      const viewBox = svg.getAttribute("viewBox");
+      if (viewBox) {
+        const parts = viewBox.trim().split(/\s+/).map(Number);
+        const index = dimension === "width" ? 2 : 3;
+        if (Number.isFinite(parts[index]) && parts[index] > 0) {
+          return parts[index];
+        }
+      }
+
+      const rawValue = svg.getAttribute(dimension) || "";
+      const parsed = Number.parseFloat(rawValue);
+      if (Number.isFinite(parsed) && parsed > 0) {
+        return parsed;
+      }
+
+      return dimension === "width" ? 1200 : 800;
+    }
+
+    function clamp(value, min, max) {
+      return Math.min(max, Math.max(min, value));
+    }
+
+    function escapeHtml(value) {
+      return value.replace(/[&<>"']/g, (character) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[character]));
+    }
+
+    render();
+  </script>
+</body>
+</html>

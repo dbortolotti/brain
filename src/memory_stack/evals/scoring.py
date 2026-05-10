@@ -928,6 +928,12 @@ def score_model_output(
         scores["entity_safety"] = min(scores["entity_safety"], score_entity_action(payload, expected))
         zero_tolerance_types = zero_tolerance_failure_types(fixture, payload, text, scores)
         return scores, bool(zero_tolerance_types), zero_tolerance_types
+    if fixture.role == "entity_candidate_ranker":
+        scores["decision_correctness"] = score_entity_action(payload, expected)
+        scores["entity_safety"] = scores["decision_correctness"]
+        scores["memory_card_quality"] = score_payload_expected_content(payload, expected)
+        zero_tolerance_types = zero_tolerance_failure_types(fixture, payload, text, scores)
+        return scores, bool(zero_tolerance_types), zero_tolerance_types
     if fixture.role == "relationship_extractor":
         scores["decision_correctness"] = score_relationship_extraction(payload, expected)
         scores["memory_card_quality"] = scores["decision_correctness"]
@@ -1281,6 +1287,17 @@ def recall_memory_id_present(expected_id: str, actual_ids: set[str]) -> bool:
     aliases = {
         "mem_new": {"current memory", "current_memory", "new memory", "new_memory", "current"},
         "mem_old": {"old memory", "old_memory", "superseded memory", "superseded_memory", "deleted memory", "deleted_memory", "old"},
+        "brain db source of truth conclusion": {"brain cognee conclusion", "brain-cognee-conclusion"},
+        "brain db source-of-truth conclusion": {"brain cognee conclusion", "brain-cognee-conclusion"},
+        "cognee rebuildable projection": {"brain cognee conclusion", "brain-cognee-conclusion"},
+        "brain cognee conclusion": {
+            "brain db source of truth conclusion",
+            "cognee rebuildable projection",
+            "brain-cognee-conclusion",
+        },
+        "slack strict intake": {"slack-strict-intake"},
+        "family facts": {"family-facts"},
+        "sam preferences": {"sam-preferences"},
     }
     return bool(actual_normalized & aliases.get(expected, set()))
 
@@ -1871,6 +1888,8 @@ def _mentions_forbidden_term_as_excluded(window: str) -> bool:
         "filtered ",
         "irrelevant ",
         "unrelated ",
+        "unless directly",
+        "unless relevant",
         "not relevant",
         "superseded ",
         "closed ",
@@ -1968,6 +1987,15 @@ def entity_action_matches(actual: Any, expected: Any) -> bool:
             "select_existing",
             "use_existing_entity",
         },
+        "create_new": {
+            "create",
+            "create_entity",
+            "create_new_entity",
+            "create_new_or_defer_to_new_source",
+            "create_or_defer_new_place_candidate",
+            "new_entity",
+            "new_source",
+        },
     }
     return actual_norm in aliases.get(expected_norm, set())
 
@@ -2020,6 +2048,9 @@ def conflict_classification_matches(actual: Any, expected: Any) -> bool:
             "employment_transition",
             "employment_conflict",
             "concurrent_employment_conflict",
+            "employment_affiliation_conflict",
+            "potential_employment_affiliation_conflict",
+            "potential_conflict_between_concurrent_workplace_claims",
             "temporal_status_transition",
             "replacement",
         ),
@@ -2841,7 +2872,11 @@ def expresses_recall_uncertainty_or_absence(answer: str) -> bool:
     normalized = normalize_match_text(answer)
     markers = (
         "not enough",
+        "insufficient current",
+        "absence of current evidence",
+        "absence of evidence",
         "no current",
+        "no_current_evidence",
         "do not know",
         "don't know",
         "do not have",

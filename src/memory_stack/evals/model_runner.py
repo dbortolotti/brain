@@ -465,10 +465,23 @@ def build_eval_record(
         schema_valid = False
     semantic_evaluable = operational_success and json_parseable and schema_valid
 
+    scoring_status = (
+        "ok"
+        if semantic_evaluable
+        else (
+            "provider_fail"
+            if not operational_success
+            else "parse_fail"
+            if not json_parseable
+            else "schema_fail"
+            if not schema_valid
+            else "provider_fail"
+        )
+    )
     scores, zero_tolerance_failure, notes = score_model_output(
         fixture,
         call.payload,
-        status="ok" if semantic_evaluable else ("parse_fail" if not json_parseable else "schema_fail" if not schema_valid else "provider_fail"),
+        status=scoring_status,
     )
     quality_score = semantic_quality_score_for_role(role, scores) if semantic_evaluable else None
     quality_passed = semantic_evaluable and (not zero_tolerance_failure) and quality_score is not None and quality_score >= 1.0
@@ -963,10 +976,23 @@ def rescore_record(
         schema_valid = False
     semantic_evaluable = operational_success and json_parseable and schema_valid
 
+    scoring_status = (
+        "ok"
+        if semantic_evaluable
+        else (
+            "provider_fail"
+            if not operational_success
+            else "parse_fail"
+            if not json_parseable
+            else "schema_fail"
+            if not schema_valid
+            else "provider_fail"
+        )
+    )
     scores, zero_tolerance_failure, notes = score_model_output(
         fixture,
         call.payload,
-        status="ok" if semantic_evaluable else ("parse_fail" if not json_parseable else "schema_fail" if not schema_valid else "provider_fail"),
+        status=scoring_status,
     )
     quality_score = semantic_quality_score_for_role(role, scores) if semantic_evaluable else None
     quality_passed = semantic_evaluable and (not zero_tolerance_failure) and quality_score is not None and quality_score >= 1.0

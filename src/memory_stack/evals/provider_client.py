@@ -54,6 +54,18 @@ class ProviderCallError(RuntimeError):
     pass
 
 
+class MissingJsonObjectError(ProviderCallError):
+    def __init__(self, message: str, *, raw_text: str = "") -> None:
+        super().__init__(message)
+        self.raw_text = raw_text
+
+
+class ModelOutputSchemaError(ValueError):
+    def __init__(self, message: str, *, raw_text: str) -> None:
+        super().__init__(message)
+        self.raw_text = raw_text
+
+
 class ProviderRetryError(ProviderCallError):
     def __init__(self, exc: Exception, *, attempt_count: int) -> None:
         super().__init__(str(exc))
@@ -92,22 +104,21 @@ class LiveProviderClient:
             if missing := self.missing_credential(candidate):
                 raise ProviderCallError(missing)
             retry_result = self._retry_call(
-                lambda: self._complete_text(candidate, prompt=prompt, schema=schema)
+                lambda: self._complete_json_payload(candidate, prompt=prompt, schema=schema)
             )
-            raw_text = str(retry_result.value)
+            raw_text, payload = retry_result.value
             attempt_count = retry_result.attempt_count
-            try:
-                payload = parse_json_object(raw_text)
-            except Exception as exc:
-                payload = None
-                status = "schema_fail"
-                error = redact(str(exc), self.settings)
-            else:
-                status = "ok"
-                error = None
+            status = "ok"
+            error = None
+        except ModelOutputSchemaError as exc:
+            attempt_count = int(getattr(exc, "attempt_count", attempt_count))
+            raw_text = exc.raw_text
+            payload = None
+            status = "schema_fail"
+            error = redact(str(exc), self.settings)
         except Exception as exc:
             attempt_count = int(getattr(exc, "attempt_count", attempt_count))
-            raw_text = ""
+            raw_text = str(getattr(getattr(exc, "original_error", exc), "raw_text", ""))
             payload = None
             status = "fail"
             error = redact(str(exc), self.settings)
@@ -125,6 +136,21 @@ class LiveProviderClient:
             attempt_count=attempt_count,
             retry_count=max(0, attempt_count - 1),
         )
+
+    def _complete_json_payload(
+        self,
+        candidate: ModelCandidate,
+        *,
+        prompt: str,
+        schema: dict[str, Any],
+    ) -> tuple[str, dict[str, Any]]:
+        raw_text = self._complete_text(candidate, prompt=prompt, schema=schema)
+        try:
+            return raw_text, parse_json_object(raw_text)
+        except MissingJsonObjectError:
+            raise
+        except Exception as exc:
+            raise ModelOutputSchemaError(str(exc), raw_text=raw_text) from exc
 
     def embed(self, candidate: ModelCandidate, *, text: str) -> ModelCallResult:
         started = time.perf_counter()
@@ -470,6 +496,9 @@ class LiveProviderClient:
                 return RetryCallResult(value=fn(), attempt_count=attempt_idx + 1)
             except Exception as exc:
                 last_error = exc
+                if isinstance(exc, ModelOutputSchemaError):
+                    exc.attempt_count = attempt_idx + 1
+                    raise
                 if attempt_idx >= attempts - 1 or not is_retryable_provider_error(exc):
                     raise ProviderRetryError(exc, attempt_count=attempt_idx + 1) from exc
                 delay_seconds = self._retry_backoff_seconds * (2**attempt_idx)
@@ -497,7 +526,7 @@ def parse_json_object(raw_text: str) -> dict[str, Any]:
     except ValueError:
         match = JSON_RE.search(raw_text)
         if not match:
-            raise ProviderCallError("model output did not contain a JSON object")
+            raise MissingJsonObjectError("model output did not contain a JSON object", raw_text=raw_text)
         payload = json.loads(match.group(0))
     if not isinstance(payload, dict):
         raise ProviderCallError("model output JSON was not an object")
@@ -575,7 +604,13 @@ def is_retryable_provider_error(exc: Exception) -> bool:
         return True
     if not isinstance(exc, ProviderCallError):
         return False
+    if isinstance(exc, MissingJsonObjectError):
+        return True
     message = str(exc).lower()
+    if "response did not include text" in message or "response did not include message content" in message:
+        return True
+    if "model output did not contain a json object" in message:
+        return True
     if "http 429" in message:
         return True
     if any(code in message for code in ("http 500", "http 502", "http 503", "http 504")):
