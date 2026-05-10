@@ -96,7 +96,7 @@ def test_registry_owns_fine_grained_capability_topology() -> None:
     assert "conflict_policy_decider" in capabilities["conflict_handling"]["required_model_roles"]
     assert deterministic_roles("conflict_handling", registry) == []
     assert "recall_relevance_filter" in capabilities["recall"]["required_model_roles"]
-    assert deterministic_roles("recall", registry) == ["recall_status_filter"]
+    assert deterministic_roles("recall", registry) == []
     assert "slack_intake" in mandatory_capabilities(registry)
     assert "debug" not in mandatory_capabilities(registry)
     assert "success_receipt_generator" in registry["fine_grained_eval_matrix"]

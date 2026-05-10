@@ -102,9 +102,6 @@
 ####  <span style="color: red;">recall_synthesizer: []</span>
  >    *Brief: Synthesize grounded answers from retrieved memory records without unsupported inference, irrelevant dumps, or stale deleted facts.*
 
-####  <span style="color: green;">recall_status_filter: [deterministic]</span>
- >    *Brief: Filter deleted, rejected, archived, or superseded records before model-facing relevance filtering.*
-
 
 ## `debug`
 *Explain recall plans, filtered candidates, and sync/debug state for operators.*

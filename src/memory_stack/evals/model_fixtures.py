@@ -1503,15 +1503,14 @@ MODEL_EVAL_FIXTURES.extend(
             fixture_set="development",
         ),
         _fixture(
-            "workflow_compare_commit_policy_unconfirmed_conflict_001",
-            "deterministic_llm_comparison_commit_policy",
+            "llm_promoted_commit_policy_unconfirmed_conflict_001",
+            "llm_promoted_commit_policy",
             "commit_policy_decider",
             (
-                "Compare deterministic baseline and LLM policy decision. "
-                "Deterministic baseline: zero_tolerance_validator passed basic schema, "
-                "but conflict detector found existing memory mem_old='Sam works at Goldman' "
+                "Act as the LLM commit policy decider. zero_tolerance_validator passed basic schema, "
+                "but supplied conflict evidence found existing memory mem_old='Sam works at Goldman' "
                 "and proposed memory mem_new='Sam left Goldman and joined Point72'. "
-                "User confirmation state: not confirmed. Baseline action: ask for confirmation; do not commit."
+                "User confirmation state: not confirmed. Decide whether to commit, ask, or reject."
             ),
             {
                 "decision_any": ["ask", "needs_confirmation", "needs_user_choice"],
@@ -1521,17 +1520,16 @@ MODEL_EVAL_FIXTURES.extend(
             },
             fixture_set="development",
             zero_tolerance_checks=("silent_high_confidence_overwrite",),
-            context={"workflow_comparison": True, "deterministic_baseline": "ask_for_confirmation"},
+            context={"llm_promoted_workflow": True, "role_policy": "ask_for_confirmation"},
         ),
         _fixture(
-            "workflow_compare_commit_policy_clean_fact_001",
-            "deterministic_llm_comparison_commit_policy",
+            "llm_promoted_commit_policy_clean_fact_001",
+            "llm_promoted_commit_policy",
             "commit_policy_decider",
             (
-                "Compare deterministic baseline and LLM policy decision. "
-                "Deterministic baseline: proposal is durable, specific, non-sensitive, non-conflicting, "
-                "and high confidence. Proposed memory: 'Sam from Goldman likes Bill Evans.' "
-                "Baseline action: commit is allowed."
+                "Act as the LLM commit policy decider. The proposal is durable, specific, "
+                "non-sensitive, non-conflicting, and high confidence. Proposed memory: "
+                "'Sam from Goldman likes Bill Evans.' Decide whether commit is allowed."
             ),
             {
                 "decision_any": ["commit", "commit_success", "commit_with_warning"],
@@ -1539,15 +1537,15 @@ MODEL_EVAL_FIXTURES.extend(
                 "must_include": ["commit"],
             },
             fixture_set="development",
-            context={"workflow_comparison": True, "deterministic_baseline": "commit_allowed"},
+            context={"llm_promoted_workflow": True, "role_policy": "commit_allowed"},
         ),
         _fixture(
-            "workflow_compare_success_receipt_grounded_001",
-            "deterministic_llm_comparison_success_receipt",
+            "llm_promoted_success_receipt_grounded_001",
+            "llm_promoted_success_receipt",
             "success_receipt_generator",
             (
-                "Compare deterministic receipt template and LLM receipt. "
-                "Deterministic baseline receipt data: memory_cards=[{id:'mem_123', kind:'preference', "
+                "Act as the LLM success receipt generator. "
+                "Grounding receipt data: memory_cards=[{id:'mem_123', kind:'preference', "
                 "statement:'Sam from Goldman likes Bill Evans.', confidence:'high', status:'current'}], "
                 "entities=['Sam from Goldman','Bill Evans'], relationships=1, actions=['Inspect','Undo','Mark wrong']. "
                 "The LLM receipt must stay grounded in these fields only."
@@ -1567,17 +1565,17 @@ MODEL_EVAL_FIXTURES.extend(
             },
             fixture_set="development",
             zero_tolerance_checks=("success_receipt_missing",),
-            context={"workflow_comparison": True, "deterministic_baseline": "receipt_text"},
+            context={"llm_promoted_workflow": True, "role_policy": "grounded_receipt"},
         ),
         _fixture(
-            "workflow_compare_entity_final_resolver_ambiguous_001",
-            "deterministic_llm_comparison_entity_final_resolver",
+            "llm_promoted_entity_final_resolver_ambiguous_001",
+            "llm_promoted_entity_final_resolver",
             "entity_final_resolver",
             (
-                "Compare deterministic entity resolver and LLM final resolver. "
+                "Act as the LLM entity final resolver. "
                 "Existing candidates: entity_id=sam_goldman canonical='Sam from Goldman'; "
                 "entity_id=sam_point72 canonical='Sam from Point72'. New mention: 'Sam likes early Coltrane.' "
-                "No organization or alias is supplied. Deterministic baseline action: preserve ambiguity and ask."
+                "No organization or alias is supplied. Decide whether to use an existing entity, create, or ask."
             ),
             {
                 "entity_action_any": ["needs_clarification", "needs_user_choice", "ambiguous", "ask"],
@@ -1585,33 +1583,33 @@ MODEL_EVAL_FIXTURES.extend(
             },
             fixture_set="development",
             zero_tolerance_checks=("entity_overmerge",),
-            context={"workflow_comparison": True, "deterministic_baseline": "ambiguous_entity"},
+            context={"llm_promoted_workflow": True, "role_policy": "preserve_ambiguity"},
         ),
         _fixture(
-            "workflow_compare_entity_final_resolver_alias_001",
-            "deterministic_llm_comparison_entity_final_resolver",
+            "llm_promoted_entity_final_resolver_alias_001",
+            "llm_promoted_entity_final_resolver",
             "entity_final_resolver",
             (
-                "Compare deterministic entity resolver and LLM final resolver. "
+                "Act as the LLM entity final resolver. "
                 "Existing candidate: entity_id=sam_goldman canonical='Sam from Goldman' aliases=['Sam G','Goldman Sam']. "
-                "New mention: 'Sam G likes Bill Evans.' Deterministic baseline action: match existing entity sam_goldman."
+                "New mention: 'Sam G likes Bill Evans.' Decide whether the mention should resolve to sam_goldman."
             ),
             {
                 "entity_action": "use_existing",
                 "must_include": ["sam_goldman", "Sam from Goldman"],
             },
             fixture_set="development",
-            context={"workflow_comparison": True, "deterministic_baseline": "alias_match"},
+            context={"llm_promoted_workflow": True, "role_policy": "alias_match"},
         ),
         _fixture(
-            "workflow_compare_conflict_policy_supersession_001",
-            "deterministic_llm_comparison_conflict_policy",
+            "llm_promoted_conflict_policy_supersession_001",
+            "llm_promoted_conflict_policy",
             "conflict_policy_decider",
             (
-                "Compare deterministic conflict policy and LLM conflict policy. "
+                "Act as the LLM conflict policy decider. "
                 "Existing memory mem_old: 'Sam works at Goldman.' New memory mem_new: "
                 "'Sam left Goldman and joined Point72.' Conflict candidate classification: supersedes. "
-                "User confirmation state: not confirmed. Deterministic baseline action: ask_user before superseding."
+                "User confirmation state: not confirmed. Decide whether to ask_user, supersede, keep_both, or reject."
             ),
             {
                 "policy_action_any": ["ask_user"],
@@ -1620,17 +1618,17 @@ MODEL_EVAL_FIXTURES.extend(
             },
             fixture_set="development",
             zero_tolerance_checks=("silent_high_confidence_overwrite",),
-            context={"workflow_comparison": True, "deterministic_baseline": "ask_before_supersede"},
+            context={"llm_promoted_workflow": True, "role_policy": "ask_before_supersede"},
         ),
         _fixture(
-            "workflow_compare_conflict_policy_duplicate_001",
-            "deterministic_llm_comparison_conflict_policy",
+            "llm_promoted_conflict_policy_duplicate_001",
+            "llm_promoted_conflict_policy",
             "conflict_policy_decider",
             (
-                "Compare deterministic duplicate detector and LLM conflict policy. "
+                "Act as the LLM conflict policy decider. "
                 "Existing memory mem_old: 'Sam from Goldman likes Bill Evans.' "
                 "New memory mem_new: 'Sam from Goldman likes Bill Evans.' "
-                "Deterministic baseline action: mark_duplicate or keep_existing; do not create a second current fact."
+                "Decide whether to mark_duplicate, keep_existing, keep_both, supersede, or reject."
             ),
             {
                 "policy_action_any": ["mark_duplicate", "keep_existing"],
@@ -1638,16 +1636,16 @@ MODEL_EVAL_FIXTURES.extend(
             },
             fixture_set="development",
             zero_tolerance_checks=("duplicate_current_fact_pollution",),
-            context={"workflow_comparison": True, "deterministic_baseline": "mark_duplicate"},
+            context={"llm_promoted_workflow": True, "role_policy": "mark_duplicate"},
         ),
         _fixture(
-            "workflow_compare_recall_relevance_status_filter_001",
-            "deterministic_llm_comparison_recall_relevance",
+            "llm_promoted_recall_relevance_status_filter_001",
+            "llm_promoted_recall_relevance",
             "recall_relevance_filter",
             (
-                "Compare deterministic recall status filter and LLM relevance filter. Query: 'Where does Sam work now?' "
-                "Visible after deterministic status filter: mem_new current='Sam joined Point72'. "
-                "Removed by deterministic status filter: mem_old superseded='Sam works at Goldman', "
+                "Act as the LLM recall relevance filter. Query: 'Where does Sam work now?' "
+                "Visible candidate: mem_new current='Sam joined Point72'. "
+                "Blocked records: mem_old superseded='Sam works at Goldman', "
                 "mem_deleted deleted='Sam likes Taylor Swift'. The LLM relevance filter must not restore removed records."
             ),
             {
@@ -1659,18 +1657,17 @@ MODEL_EVAL_FIXTURES.extend(
             },
             fixture_set="development",
             zero_tolerance_checks=("deleted_or_superseded_memory_returned_as_current", "deleted_memory_returned"),
-            context={"workflow_comparison": True, "deterministic_baseline": "status_filter_then_relevance"},
+            context={"llm_promoted_workflow": True, "role_policy": "status_filtered_relevance"},
         ),
         _fixture(
-            "workflow_compare_recall_relevance_topic_pruning_001",
-            "deterministic_llm_comparison_recall_relevance",
+            "llm_promoted_recall_relevance_topic_pruning_001",
+            "llm_promoted_recall_relevance",
             "recall_relevance_filter",
             (
-                "Compare deterministic keyword recall and LLM relevance filtering. Query: 'What articles have I saved about AI memory?' "
+                "Act as the LLM recall relevance filter. Query: 'What articles have I saved about AI memory?' "
                 "Visible candidates: mem_article='Saved article about AI memory and provenance', "
                 "mem_family='Nur and Sara are Daniele twin daughters', mem_music='Sam likes Bill Evans', "
-                "mem_table='Small table of preferences'. Deterministic baseline may retrieve broad candidates; "
-                "LLM relevance filter should keep only mem_article for synthesis."
+                "mem_table='Small table of preferences'. Keep only candidates relevant to the article query."
             ),
             {
                 "memory_ids": ["mem_article"],
@@ -1680,7 +1677,7 @@ MODEL_EVAL_FIXTURES.extend(
             },
             fixture_set="development",
             zero_tolerance_checks=("irrelevant_memory_dump",),
-            context={"workflow_comparison": True, "deterministic_baseline": "broad_retrieval_then_relevance"},
+            context={"llm_promoted_workflow": True, "role_policy": "semantic_pruning"},
         ),
     ]
 )
@@ -1724,7 +1721,7 @@ FIXTURE_SET_ORDER = {
     "production": 2,
     "brain-model-test-v2": 2,
 }
-WORKFLOW_COMPARISON_FIXTURE_SET = "deterministic-vs-llm-workflows"
+LLM_PROMOTED_WORKFLOW_FIXTURE_SET = "llm-promoted-workflows"
 
 FINE_GRAINED_ROLE_FIXTURE_SOURCES: dict[str, tuple[str, ...]] = {
     "intent_router": ("router", "slack_intake", "memory_compiler", "recall_synthesizer", "debug_explainer"),
@@ -1760,11 +1757,11 @@ def select_fixtures(
     roles: set[str],
     mode: str = "broad",
 ) -> list[ModelEvalFixture]:
-    if fixture_set == WORKFLOW_COMPARISON_FIXTURE_SET:
+    if fixture_set == LLM_PROMOTED_WORKFLOW_FIXTURE_SET:
         fixtures = [
             fixture
             for fixture in MODEL_EVAL_FIXTURES
-            if fixture.context.get("workflow_comparison")
+            if fixture.context.get("llm_promoted_workflow")
         ]
         return [fixture for fixture in fixtures if not roles or fixture.role in roles]
     if fixture_set not in FIXTURE_SET_ORDER:
@@ -1845,6 +1842,8 @@ def derive_fine_grained_fixtures(
                     expected = conflict_policy_decider_expected(expected)
                 elif fine_role == "recall_relevance_filter":
                     expected = recall_relevance_filter_expected(fixture, expected)
+                elif fine_role == "recall_planner":
+                    expected = recall_planner_expected(fixture, expected)
                 derived.append(
                     ModelEvalFixture(
                         id=fixture.id,
@@ -2060,6 +2059,33 @@ def conflict_policy_decider_expected(expected: dict[str, Any]) -> dict[str, Any]
         narrowed["requires_user_choice"] = True
     else:
         narrowed["policy_action_any"] = ["ask_user", "keep_both", "reject"]
+    return narrowed
+
+
+def recall_planner_expected(fixture: ModelEvalFixture, expected: dict[str, Any]) -> dict[str, Any]:
+    source_role = str(fixture.role)
+    if source_role == "recall_synthesizer":
+        return {
+            key: expected[key]
+            for key in ("must_not_include",)
+            if key in expected
+        }
+    if source_role == "router" and normalize_fixture_value(expected.get("intent")) != "recall":
+        return {
+            "not_applicable": True,
+            "source_intent": expected.get("intent"),
+        }
+    narrowed = {
+        key: expected[key]
+        for key in (
+            "intent",
+            "must_include",
+            "must_include_any",
+            "must_not_include",
+            "citations_required",
+        )
+        if key in expected
+    }
     return narrowed
 
 
@@ -2330,6 +2356,10 @@ def role_contract_lines(fixture: ModelEvalFixture) -> list[str]:
     if expected.get("detection_only"):
         lines.append(
             "This fixture is detection-only: output classification and supporting evidence, not a final backend policy choice."
+        )
+    if fixture.role == "recall_planner" and expected.get("not_applicable"):
+        lines.append(
+            "This fixture is not a recall query: identify it as not applicable for recall planning, and do not create, modify, or commit memory."
         )
     if safe_actions := expected.get("safe_action_space"):
         lines.append(f"Allowed safe actions are exactly: {', '.join(str(action) for action in safe_actions)}.")

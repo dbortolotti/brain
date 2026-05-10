@@ -125,8 +125,7 @@ flowchart LR
 | `conflict_explainer` | Not model-backed at runtime |
 | `conflict_policy_decider` | Deterministic code / explicit user action at current runtime; promoted to eval-first model role |
 | `recall_planner` | Deterministic mode inference |
-| `recall_status_filter` | Deterministic status filtering |
-| `recall_relevance_filter` | Not a runtime model role yet; eval-first candidate for semantic relevance filtering after hard status filtering |
+| `recall_relevance_filter` | LLM-owned semantic relevance filtering after backend status visibility gates |
 | `recall_synthesizer` | Deterministic templated rendering |
 | `debug_explainer` | Deterministic DB inspection at runtime |
 | `eval_judge` | Model-based in eval tooling only |
@@ -203,10 +202,9 @@ flowchart LR
     subgraph RECALL["recall"]
         direction TB
         rc_recall_planner[recall_planner]:::model
-        rc_recall_status_filter[recall_status_filter]:::det
         rc_recall_relevance_filter[recall_relevance_filter]:::model
         rc_recall_synthesizer[recall_synthesizer]:::model
-        rc_recall_planner -.-> rc_recall_status_filter -.-> rc_recall_relevance_filter -.-> rc_recall_synthesizer
+        rc_recall_planner -.-> rc_recall_relevance_filter -.-> rc_recall_synthesizer
     end
 
     subgraph DEBUG["debug"]
@@ -262,10 +260,9 @@ flowchart LR
    `slack_intake` and `memory_compiler` produce candidate memory cards and
    entity mentions, which flow through `entity_resolution` and then
    `conflict_handling`.
-4. **Recall is represented as planner/status filter/relevance
-   filter/synthesizer.** In current runtime this is deterministic mode
-   inference, deterministic status filtering, and templated answer rendering;
-   `recall_relevance_filter` is eval-first for future semantic pruning.
+4. **Recall is represented as planner/relevance filter/synthesizer.** Backend
+   status visibility remains a safety gate, but `recall_relevance_filter`
+   owns semantic pruning as a model role.
 5. **User loop.** The user is involved at three points: clarification
    (`repair_option_generator`), conflict confirmation, and final receipts /
    answers.
@@ -282,7 +279,7 @@ flowchart LR
 | memory_compiler    | atomic_card_extractor, entity_mention_extractor, relationship_extractor, open_loop_detector, table_policy_handler, source_takeaway_extractor | table_parser, source_loader, zero_tolerance_validator         |
 | entity_resolution  | entity_mention_extractor, entity_candidate_ranker, entity_final_resolver                                                        | —                                                                         |
 | conflict_handling  | conflict_candidate_detector, conflict_explainer, conflict_policy_decider                                                        | —                                                                         |
-| recall             | recall_planner, recall_relevance_filter, recall_synthesizer                                                                     | recall_status_filter                                                      |
+| recall             | recall_planner, recall_relevance_filter, recall_synthesizer                                                                     | —                                                                         |
 | debug              | debug_explainer                                                                                                                 | —                                                                         |
 | judge (offline)    | eval_judge                                                                                                                      | —                                                                         |
 | embeddings         | embeddings                                                                                                                      | —                                                                         |

@@ -1,10 +1,10 @@
-# Deterministic vs LLM Workflow Test Battery
+# LLM-Promoted Workflow Test Battery
 
 ## Purpose
 
-This battery compares the promoted LLM role-agent workflows against the deterministic workflow baselines they may eventually augment.
+This battery validates the roles promoted from deterministic ownership to LLM-owned role-agent decisions.
 
-It is eval-first only. Runtime writes, status filters, parsers, and source loaders remain deterministic.
+Runtime safety validators, schema checks, source loaders, parsers, and hard status gates remain backend-owned. The tested judgment and wording roles are LLM-owned.
 
 ## Roles Covered
 
@@ -14,20 +14,20 @@ It is eval-first only. Runtime writes, status filters, parsers, and source loade
 - `conflict_policy_decider`
 - `recall_relevance_filter`
 
-## Baseline Comparisons
+## Role Checks
 
 - Commit policy: clean high-confidence memory may commit; unconfirmed conflict must ask.
-- Success receipt: LLM receipt must stay grounded in backend receipt data.
+- Success receipt: generated receipt must stay grounded in backend receipt data.
 - Entity final resolver: alias evidence can match; ambiguous same-name candidates must ask.
 - Conflict policy: duplicates can be marked duplicate; supersession without confirmation must ask.
-- Recall relevance filter: hard status-filtered memories must not be restored; broad deterministic retrieval can be semantically pruned.
+- Recall relevance filter: blocked memory IDs must not be restored; broad visible retrieval can be semantically pruned.
 
 ## Run Command
 
 ```bash
-RUN_DIR=eval_runs/deterministic_vs_llm_workflows
+RUN_DIR=eval_runs/llm_promoted_workflows
 uv run brain eval models \
-  --fixture-set deterministic-vs-llm-workflows \
+  --fixture-set llm-promoted-workflows \
   --mode fine-grained \
   --roles commit_policy_decider,success_receipt_generator,entity_final_resolver,conflict_policy_decider,recall_relevance_filter \
   --models <model-ref> \
@@ -43,7 +43,7 @@ Start the monitor before or during the eval run. It refreshes `index.html` every
 10 seconds and serves the run directory over HTTP.
 
 ```bash
-RUN_DIR=eval_runs/deterministic_vs_llm_workflows
+RUN_DIR=eval_runs/llm_promoted_workflows
 mkdir -p "$RUN_DIR"
 uv run python scripts/brain_eval_monitor.py \
   --run-dir "$RUN_DIR" \

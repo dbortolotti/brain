@@ -280,17 +280,14 @@ source ID if relevant
 Inspect / Undo / Mark wrong actions
 ```
 
-Suggested implementation:
+Updated implementation direction:
 
 ```text
-success_receipt_template:
-  deterministic
-
-gpt-5-nano:
-  optional wording polish only
+success_receipt_generator:
+  llm-owned, with backend grounding validation
 ```
 
-Do not spend more eval budget trying to make a free-form model reliably produce mandatory receipt structure.
+The LLM-promotion battery supersedes the older deterministic-template recommendation for this role.
 
 ---
 

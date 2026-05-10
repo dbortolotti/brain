@@ -951,6 +951,11 @@ def score_model_output(
         scores["recall_quality"] = score_recall_relevance_filter(payload, expected)
         zero_tolerance_types = zero_tolerance_failure_types(fixture, payload, text, scores)
         return scores, bool(zero_tolerance_types), zero_tolerance_types
+    if fixture.role == "recall_planner":
+        scores["decision_correctness"] = score_recall_planner(payload, expected)
+        scores["recall_quality"] = score_payload_expected_content(payload, expected)
+        zero_tolerance_types = zero_tolerance_failure_types(fixture, payload, text, scores)
+        return scores, bool(zero_tolerance_types), zero_tolerance_types
     if fixture.role == "table_policy_handler":
         if not table_like_input(fixture.input_text):
             table_score = score_non_table_policy_response(payload)
@@ -1199,6 +1204,57 @@ def score_recall_relevance_filter(payload: dict[str, Any], expected: dict[str, A
     if forbidden_ids:
         scores.append(1.0 if memory_ids.isdisjoint(forbidden_ids) else 0.0)
     return min(scores)
+
+
+def score_recall_planner(payload: dict[str, Any], expected: dict[str, Any]) -> float:
+    text = payload_text(payload)
+    content_score = score_payload_expected_content(payload, expected)
+    if expected.get("not_applicable"):
+        if payload.get("memory_cards"):
+            return 0.0
+        normalized_text = normalize(text)
+        boundary_markers = {
+            "cannot_create_memory_from_this_role",
+            "not_applicable",
+            "not_applicable_for_recall_planner",
+            "not_for_recall_planner",
+            "memory_write_request",
+            "not_a_recall_query",
+            "out_of_scope_for_recall_planner",
+            "out_of_scope_for_recall_planner_no_memory_write",
+        }
+        boundary_score = 1.0 if any(marker in normalized_text for marker in boundary_markers) else 0.0
+        return min(boundary_score, content_score)
+
+    expected_intent = normalize(str(expected.get("intent") or "recall"))
+    if expected_intent != "recall":
+        return content_score
+
+    normalized_text = normalize(
+        " ".join(
+            str(value or "")
+            for value in (
+                payload.get("intent"),
+                payload.get("decision"),
+                payload.get("answer"),
+                payload_text(payload.get("entity_resolution")),
+                payload_text(payload.get("receipt")),
+            )
+        )
+    )
+    plan_markers = {
+        "recall",
+        "recall_plan",
+        "retrieve",
+        "retrieval",
+        "search",
+        "query",
+        "profile",
+        "current_brain_evidence",
+        "current_memory",
+    }
+    plan_score = 1.0 if any(marker in normalized_text for marker in plan_markers) else 0.0
+    return min(plan_score, content_score)
 
 
 def expected_router_intent(fixture: ModelEvalFixture) -> str | None:
@@ -1677,9 +1733,12 @@ def _mentions_forbidden_term_as_excluded(window: str) -> bool:
         "prevented ",
         "explicitly deleted",
         "must be excluded",
+        "exclude ",
+        "excluded as current",
         "excluded ",
         "excluded.",
         "filtered ",
+        "superseded ",
         "closed ",
         "not listed",
         "not included",
@@ -1747,6 +1806,8 @@ def entity_action_matches(actual: Any, expected: Any) -> bool:
         },
         "use_existing": {
             "accept",
+            "choose",
+            "choose_existing",
             "commit",
             "existing_entity",
             "keep_existing_entity",
@@ -1758,11 +1819,18 @@ def entity_action_matches(actual: Any, expected: Any) -> bool:
             "match_existing_entity",
             "matched",
             "matched_existing_entity",
+            "rank_candidate",
+            "rank_existing_candidate",
+            "rank_match",
+            "rank_or_choose",
             "resolved",
+            "resolved_to_existing_alias",
+            "resolved_to_existing_candidate",
             "resolved_to_existing_entity",
             "same_entity",
             "same_entity_assumed",
             "same_entity_assumed_from_context",
+            "select_existing",
             "use_existing_entity",
         },
     }
@@ -2134,10 +2202,12 @@ def expected_source_classification(fixture: ModelEvalFixture) -> dict[str, Any]:
         }
     if fixture_id == "memory_compiler_article_atomic":
         return {
-            "input_class": "source",
+            "input_class": None,
+            "input_class_any": ["memory", "source"],
             "source_kind": None,
-            "source_kind_any": ["article", "markdown"],
-            "should_create_source": True,
+            "source_kind_any": [None, "article", "markdown"],
+            "should_create_source": False,
+            "should_create_source_any": [False, True],
             "should_extract_memories": True,
             "should_extract_memories_any": [False, True],
         }

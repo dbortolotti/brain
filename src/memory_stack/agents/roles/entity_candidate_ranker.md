@@ -14,6 +14,8 @@ Rank candidate entities or decide that entity resolution must remain ambiguous.
 ## Output Contract
 - `entity_resolution` with an action and reason.
 - Candidate ranking when appropriate.
+- Use `entity_resolution.action: "use_existing"` when the mention matches a supplied existing candidate by exact alias or other sufficient disambiguating evidence.
+- Use `entity_resolution.action: "needs_clarification"`, `"ambiguous"`, or `"defer"` when the evidence is insufficient.
 
 ## Decision Procedure
 1. Read the input and any supplied context.
@@ -23,6 +25,7 @@ Rank candidate entities or decide that entity resolution must remain ambiguous.
 
 ## Must Do
 - Rank or choose entity candidates only when the input contains enough disambiguating evidence; preserve ambiguity otherwise.
+- For exact alias matches to a supplied existing candidate, choose that existing candidate with `entity_resolution.action: "use_existing"` and cite the alias evidence in the reason.
 - For ambiguous matches, use entity_resolution.action needs_clarification, ambiguous, or defer.
 - Use distinguishing labels such as organization, role, relationship, or context when they are supplied.
 
