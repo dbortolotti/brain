@@ -425,6 +425,55 @@ def test_role_contracts_cover_remaining_fixture_failure_guidance() -> None:
     assert "never offer to rewrite, add, or save the unresolved text" in repair_prompt
 
 
+def test_role_contracts_include_agent_markdown_alignment() -> None:
+    intent = ModelEvalFixture(
+        id="slack_router",
+        scenario_group="slack_intake",
+        role="intent_router",
+        input_text="/brain recall what do I know about Sam?",
+        expected={},
+    )
+    source = ModelEvalFixture(
+        id="slack_source",
+        scenario_group="slack_intake",
+        role="source_classifier",
+        input_text="/brain source https://example.com/article",
+        expected={},
+    )
+    repair = ModelEvalFixture(
+        id="slack_repair",
+        scenario_group="slack_intake",
+        role="repair_option_generator",
+        input_text="Existing: Sam works at Goldman. New: Sam left Goldman.",
+        expected={},
+    )
+    debug = ModelEvalFixture(
+        id="slack_debug",
+        scenario_group="slack_debug",
+        role="debug_explainer",
+        input_text="/brain admin sql SELECT * FROM memory_cards",
+        expected={},
+    )
+
+    intent_prompt = fixture_prompt(intent)
+    source_prompt = fixture_prompt(source)
+    repair_prompt = fixture_prompt(repair)
+    debug_prompt = fixture_prompt(debug)
+
+    assert "Agent markdown excerpt from src/memory_stack/agents/shared/memory_agent_rules.md#Mission" in intent_prompt
+    assert "Agent markdown excerpt from src/memory_stack/agents/shared/agent_architecture.md#7. Slack message routing" in intent_prompt
+    assert "Role markdown from src/memory_stack/agents/roles/intent_router.md" in intent_prompt
+    assert "Explicit slash commands override LLM classification." in intent_prompt
+    assert "ingest_source" in intent_prompt
+    assert "profile_entity" in intent_prompt
+    assert "Agent markdown excerpt from src/memory_stack/agents/shared/agent_architecture.md#6.2 `/brain source`" in source_prompt
+    assert "Long/external material:" in source_prompt
+    assert "Agent markdown excerpt from src/memory_stack/agents/shared/agent_architecture.md#2. Core behaviour" in repair_prompt
+    assert "Ambiguous/conflicting memory:" in repair_prompt
+    assert "Agent markdown excerpt from src/memory_stack/agents/shared/agent_architecture.md#6.10 `/brain admin`" in debug_prompt
+    assert "Admin SQL must be SELECT-only, allowlisted, logged, time-limited, and row-limited." in debug_prompt
+
+
 def test_success_receipt_generator_is_not_a_fine_grained_model_fixture() -> None:
     fixtures = select_fixtures(
         fixture_set="brain-model-test-v2",
