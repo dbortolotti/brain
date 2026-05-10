@@ -2921,6 +2921,63 @@ def test_llm_promoted_workflow_battery_is_selected() -> None:
     } <= {fixture.context.get("base_fixture_id", fixture.id) for fixture in promoted_fixtures}
 
 
+def test_llm_promoted_workflow_fixture_contracts_cover_promoted_role_risks() -> None:
+    fixtures = [
+        fixture
+        for fixture in select_fixtures(
+            fixture_set="llm-promoted-workflows",
+            roles=set(),
+            mode="fine-grained",
+        )
+        if fixture.context.get("variant") == "base"
+    ]
+    by_id = {fixture.id: fixture for fixture in fixtures}
+
+    assert set(by_id) == {
+        "llm_promoted_commit_policy_unconfirmed_conflict_001",
+        "llm_promoted_commit_policy_clean_fact_001",
+        "llm_promoted_success_receipt_grounded_001",
+        "llm_promoted_entity_final_resolver_ambiguous_001",
+        "llm_promoted_entity_final_resolver_alias_001",
+        "llm_promoted_conflict_policy_supersession_001",
+        "llm_promoted_conflict_policy_duplicate_001",
+        "llm_promoted_recall_relevance_status_filter_001",
+        "llm_promoted_recall_relevance_topic_pruning_001",
+    }
+
+    assert by_id["llm_promoted_commit_policy_unconfirmed_conflict_001"].expected["requires_confirmation"] is True
+    assert "silent_high_confidence_overwrite" in by_id[
+        "llm_promoted_commit_policy_unconfirmed_conflict_001"
+    ].zero_tolerance_checks
+    assert by_id["llm_promoted_commit_policy_clean_fact_001"].expected["requires_confirmation"] is False
+    assert "success_receipt_missing" in by_id[
+        "llm_promoted_success_receipt_grounded_001"
+    ].zero_tolerance_checks
+    assert by_id["llm_promoted_entity_final_resolver_alias_001"].expected["entity_action"] == "use_existing"
+    assert "entity_overmerge" in by_id[
+        "llm_promoted_entity_final_resolver_ambiguous_001"
+    ].zero_tolerance_checks
+    assert by_id["llm_promoted_conflict_policy_supersession_001"].expected["requires_user_choice"] is True
+    assert "duplicate_current_fact_pollution" in by_id[
+        "llm_promoted_conflict_policy_duplicate_001"
+    ].zero_tolerance_checks
+    assert by_id["llm_promoted_recall_relevance_status_filter_001"].expected["forbidden_memory_ids"] == [
+        "mem_old",
+        "mem_deleted",
+    ]
+    assert by_id["llm_promoted_recall_relevance_topic_pruning_001"].expected["excluded_memory_ids"] == [
+        "mem_family",
+        "mem_music",
+        "mem_table",
+    ]
+
+    for fixture in fixtures:
+        prompt = fixture_prompt(fixture)
+        assert f"Role markdown from src/memory_stack/agents/roles/{fixture.role}.md" in prompt
+        assert fixture.context.get("llm_promoted_workflow") is True
+        assert fixture.context.get("role_policy")
+
+
 def test_llm_promoted_workflow_fixture_set_only_selects_battery() -> None:
     fixtures = select_fixtures(
         fixture_set="llm-promoted-workflows",
@@ -2946,6 +3003,7 @@ def test_llm_promoted_workflow_battery_scores_role_aligned_outputs() -> None:
             fixture_set="development",
             roles={
                 "commit_policy_decider",
+                "success_receipt_generator",
                 "entity_final_resolver",
                 "conflict_policy_decider",
                 "recall_relevance_filter",
@@ -2963,6 +3021,34 @@ def test_llm_promoted_workflow_battery_scores_role_aligned_outputs() -> None:
                 "requires_confirmation": True,
                 "reason": "Potential supersession requires confirmation.",
                 "answer": "Ask for confirmation before committing.",
+                "citations": [],
+            },
+        ),
+        (
+            "llm_promoted_commit_policy_clean_fact_001",
+            {
+                "decision": "commit_success",
+                "requires_confirmation": False,
+                "reason": "The proposal is durable, specific, non-sensitive, non-conflicting, and grounded.",
+                "answer": "Commit allowed.",
+                "citations": [],
+            },
+        ),
+        (
+            "llm_promoted_success_receipt_grounded_001",
+            {
+                "receipt_text": (
+                    "Stored 1 current preference memory mem_123 with high confidence. "
+                    "Entities: Sam from Goldman, Bill Evans. Relationships: 1. "
+                    "Actions: Inspect, Undo, Mark wrong."
+                ),
+                "included_memory_ids": ["mem_123"],
+                "included_source_ids": [],
+                "warnings": [],
+                "answer": (
+                    "Stored 1 current preference memory mem_123 with high confidence. "
+                    "Actions: Inspect, Undo, Mark wrong."
+                ),
                 "citations": [],
             },
         ),
@@ -2993,6 +3079,17 @@ def test_llm_promoted_workflow_battery_scores_role_aligned_outputs() -> None:
             },
         ),
         (
+            "llm_promoted_conflict_policy_supersession_001",
+            {
+                "policy_action": "ask_user",
+                "target_memory_id": "mem_old",
+                "requires_user_choice": True,
+                "reason": "Goldman and Point72 are a possible supersession and need confirmation.",
+                "answer": "Ask before replacing Goldman with Point72.",
+                "citations": [],
+            },
+        ),
+        (
             "llm_promoted_conflict_policy_duplicate_001",
             {
                 "policy_action": "mark_duplicate",
@@ -3014,6 +3111,21 @@ def test_llm_promoted_workflow_battery_scores_role_aligned_outputs() -> None:
                     "mem_deleted": "Blocked deleted record.",
                 },
                 "answer": "",
+                "citations": [],
+            },
+        ),
+        (
+            "llm_promoted_recall_relevance_topic_pruning_001",
+            {
+                "memory_ids": ["mem_article"],
+                "excluded_memory_ids": ["mem_family", "mem_music", "mem_table"],
+                "reason_by_memory_id": {
+                    "mem_article": "Relevant AI memory article candidate.",
+                    "mem_family": "Not relevant to the AI memory article query.",
+                    "mem_music": "Not relevant to the AI memory article query.",
+                    "mem_table": "Not relevant to the AI memory article query.",
+                },
+                "answer": "Keep mem_article for the AI memory article query.",
                 "citations": [],
             },
         ),
