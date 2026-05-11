@@ -151,6 +151,16 @@ uv run brain eval models \
   --output-json eval_runs/model_eval/results.json
 ```
 
+For full end-to-end model checks, use the E2E model suite. It creates a fresh
+SQLite Brain database, seeds it through the app service layer, retrieves runtime
+facts/evidence, and asks the model to synthesize answers from that full context.
+
+```bash
+uv run brain eval e2e-models \
+  --model openai:gpt-5.5 \
+  --output-json eval_runs/e2e_model/results.json
+```
+
 ## Environment Variables
 
 Core Brain settings:

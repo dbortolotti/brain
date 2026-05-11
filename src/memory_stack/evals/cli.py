@@ -7,7 +7,9 @@ import typer
 from rich.console import Console
 
 from memory_stack.config import load_settings
+from memory_stack.evals.e2e_model_suite import run_e2e_model_suite
 from memory_stack.evals.model_runner import ModelEvalRunConfig, run_model_evals, run_rescore, run_rerun_failed
+from memory_stack.evals.provider_client import LiveProviderClient
 from memory_stack.evals.runner import run_golden_evals
 from memory_stack.model_selection import parse_csv_list, parse_csv_set
 
@@ -75,6 +77,43 @@ def models(
     console.print(f"[green]wrote[/green] {result['failed_manifest_jsonl_path']}")
     console.print(f"[green]wrote[/green] {result['failed_manifest_md_path']}")
     console.print_json(data={"run_id": result["run_id"], "record_count": result["record_count"]})
+
+
+@app.command("e2e-models")
+def e2e_models(
+    output_json: Path = typer.Option(..., "--output-json"),
+    database_path: Path | None = typer.Option(None, "--database-path"),
+    model_ref: str | None = typer.Option(None, "--model"),
+    retry_attempts: int = typer.Option(2, "--retry-attempts", min=0),
+    retry_backoff_seconds: float = typer.Option(1.0, "--retry-backoff-seconds", min=0.0),
+) -> None:
+    output_json.parent.mkdir(parents=True, exist_ok=True)
+    resolved_database_path = database_path or output_json.with_suffix(".db")
+    if resolved_database_path.exists():
+        resolved_database_path.unlink()
+    settings = load_settings().model_copy(
+        update={"brain_database_url": f"sqlite:///{resolved_database_path}"}
+    )
+    result = run_e2e_model_suite(
+        settings,
+        model_ref=model_ref,
+        client=LiveProviderClient(
+            settings,
+            retry_attempts=retry_attempts,
+            retry_backoff_seconds=retry_backoff_seconds,
+        ),
+    )
+    output_json.write_text(json.dumps(result, indent=2, default=str), encoding="utf-8")
+    console.print(f"[green]wrote[/green] {output_json}")
+    console.print(f"[green]wrote[/green] {resolved_database_path}")
+    console.print_json(
+        data={
+            "model": result["model"],
+            "record_count": result["record_count"],
+            "pass_count": result["pass_count"],
+            "fail_count": result["fail_count"],
+        }
+    )
 
 
 @app.command("rerun-failed")
