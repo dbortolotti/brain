@@ -54,6 +54,11 @@ def test_help_command_returns_supported_commands(tmp_path) -> None:
     assert "/brain undo-last" in response.text
     assert response.blocks[1]["elements"][0]["action_id"] == "brain_help_template"
     assert response.blocks[1]["elements"][0]["text"]["text"] == "Remember"
+    assert all(
+        len(block.get("elements", [])) <= 5
+        for block in response.blocks
+        if block["type"] == "actions"
+    )
     assert response.payload["commands"] == [
         "remember",
         "confirm",

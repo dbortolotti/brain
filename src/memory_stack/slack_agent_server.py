@@ -60,7 +60,7 @@ async def slack_events(
         settings,
         channel=slack_request.channel_id,
         response=response.as_slack_payload(),
-        thread_ts=slack_request.thread_ts or slack_request.message_ts,
+        thread_ts=slack_request.thread_ts,
     )
     return JSONResponse({"ok": True, "posted": posted})
 

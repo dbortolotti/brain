@@ -129,8 +129,45 @@ def test_slack_dm_event_posts_response_with_bot_token(tmp_path, monkeypatch) -> 
     assert response.status_code == 200
     assert response.json() == {"ok": True, "posted": True}
     assert posted[0]["channel"] == "C1"
-    assert posted[0]["thread_ts"] == "1700000000.0001"
+    assert posted[0]["thread_ts"] is None
     assert "/brain remember <memory>" in posted[0]["response"]["text"]
+
+
+def test_slack_threaded_event_replies_in_thread(tmp_path, monkeypatch) -> None:
+    settings = slack_settings(tmp_path, brain_slack_bot_token="xoxb-test")
+    monkeypatch.setattr(slack_agent_server, "settings", settings)
+    posted: list[dict[str, object]] = []
+
+    async def fake_post_slack_message(settings, *, channel, response, thread_ts=None):
+        posted.append({"channel": channel, "response": response, "thread_ts": thread_ts})
+        return True
+
+    monkeypatch.setattr(slack_agent_server, "post_slack_message", fake_post_slack_message)
+    client = TestClient(app)
+    body = json.dumps(
+        {
+            "type": "event_callback",
+            "team_id": "T1",
+            "event": {
+                "type": "message",
+                "channel_type": "im",
+                "text": "help",
+                "user": "U1",
+                "channel": "C1",
+                "ts": "1700000000.0002",
+                "thread_ts": "1700000000.0001",
+            },
+        }
+    ).encode("utf-8")
+
+    response = client.post(
+        "/slack/events",
+        content=body,
+        headers=signed_headers(settings, body),
+    )
+
+    assert response.status_code == 200
+    assert posted[0]["thread_ts"] == "1700000000.0001"
 
 
 def test_slack_bot_event_is_ignored_to_avoid_reply_loop(tmp_path, monkeypatch) -> None:

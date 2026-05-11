@@ -626,7 +626,7 @@ def help_blocks() -> list[dict[str, Any]]:
         ("Review", "review"),
         ("Undo last", "undo_last"),
     ]
-    return [
+    blocks: list[dict[str, Any]] = [
         {
             "type": "section",
             "text": {
@@ -638,19 +638,27 @@ def help_blocks() -> list[dict[str, Any]]:
                 ),
             },
         },
-        {
-            "type": "actions",
-            "elements": [
-                {
-                    "type": "button",
-                    "text": {"type": "plain_text", "text": label},
-                    "action_id": "brain_help_template",
-                    "value": json.dumps({"help_command": command}, separators=(",", ":")),
-                }
-                for label, command in buttons
-            ],
-        },
     ]
+    for chunk in chunks(buttons, 5):
+        blocks.append(
+            {
+                "type": "actions",
+                "elements": [
+                    {
+                        "type": "button",
+                        "text": {"type": "plain_text", "text": label},
+                        "action_id": "brain_help_template",
+                        "value": json.dumps({"help_command": command}, separators=(",", ":")),
+                    }
+                    for label, command in chunk
+                ],
+            }
+        )
+    return blocks
+
+
+def chunks(values: list[tuple[str, str]], size: int) -> list[list[tuple[str, str]]]:
+    return [values[index : index + size] for index in range(0, len(values), size)]
 
 
 def split_first(text: str) -> tuple[str, str]:
