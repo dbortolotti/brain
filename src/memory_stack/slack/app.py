@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, Protocol
 
 from memory_stack.config import Settings, load_settings
-from memory_stack.slack.commands import SlackBrainService, execute_slack_command
+from memory_stack.slack.commands import execute_slack_command
 
 
 class SlackResponder(Protocol):
@@ -17,7 +17,7 @@ class SlackCommandApp:
         *,
         settings: Settings | None = None,
         responder: SlackResponder | None = None,
-        service: SlackBrainService | None = None,
+        service: Any | None = None,
     ) -> None:
         self.settings = settings or load_settings()
         self.responder = responder

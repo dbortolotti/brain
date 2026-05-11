@@ -75,6 +75,12 @@ Recall stored context:
 /brain recall What do we know about Sam from Goldman?
 ```
 
+Show available commands:
+
+```text
+/brain help
+```
+
 Profile an entity:
 
 ```text
@@ -471,6 +477,7 @@ appropriate, and allowed. Prefer attribution when a fact came from someone else.
 /brain recall What do we know about Priya's working style?
 /brain profile Brain
 /brain open-loops OAuth
+/brain help
 ```
 
 LLM examples:

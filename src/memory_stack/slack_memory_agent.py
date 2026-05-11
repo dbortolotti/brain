@@ -16,9 +16,12 @@ from memory_stack.brain_service import (
     profile_entity,
     recall,
     remember,
+    review_recent,
+    undo_last,
 )
 from memory_stack.brain_store import BrainStore, row_dict
 from memory_stack.config import Settings
+from memory_stack.slack.formatter import format_review, format_undo
 from memory_stack.slack_guardrails import (
     ProposedMemory,
     SlackAgentProposal,
@@ -181,9 +184,11 @@ class SlackMemoryAgent:
     def handle(self, request: SlackAgentRequest) -> SlackAgentResponse:
         normalized = normalize_agent_text(request.text)
         if not normalized:
-            return self._unsupported("Tell me what to remember or recall.")
+            return self._handle_help()
 
         command, argument = split_intent(normalized)
+        if command == "help":
+            return self._handle_help()
         if command == "remember":
             return self._handle_remember(argument, request)
         if command == "confirm":
@@ -196,9 +201,32 @@ class SlackMemoryAgent:
             return self._handle_open_loops(argument)
         if command == "get_memory":
             return self._handle_get_memory(argument)
+        if command == "review":
+            return self._handle_review()
+        if command == "undo_last":
+            return self._handle_undo_last(argument)
         if command == "debug":
             return self._handle_debug(argument, request)
         return self._unsupported("I only handle Brain memory commands.")
+
+    def _handle_help(self) -> SlackAgentResponse:
+        return SlackAgentResponse(
+            decision="help",
+            text=slack_help_text(),
+            payload={
+                "commands": [
+                    "remember",
+                    "confirm",
+                    "recall",
+                    "profile",
+                    "open-loops",
+                    "get-memory",
+                    "review",
+                    "undo-last",
+                    "help",
+                ]
+            },
+        )
 
     def _handle_remember(
         self,
@@ -364,6 +392,22 @@ class SlackMemoryAgent:
             payload={"memory": memory},
         )
 
+    def _handle_review(self) -> SlackAgentResponse:
+        review = review_recent(self.settings)
+        return SlackAgentResponse(
+            decision="review",
+            text=format_review(review),
+            payload=review,
+        )
+
+    def _handle_undo_last(self, ingestion_run_id: str) -> SlackAgentResponse:
+        result = undo_last(self.settings, ingestion_run_id=ingestion_run_id or None)
+        return SlackAgentResponse(
+            decision="undo_last",
+            text=format_undo(result),
+            payload=result,
+        )
+
     def _handle_debug(self, argument: str, request: SlackAgentRequest) -> SlackAgentResponse:
         if not is_admin_user(self.settings, request.user_id):
             return SlackAgentResponse(
@@ -504,14 +548,18 @@ def split_intent(text: str) -> tuple[str, str]:
         "open": "open_loops",
         "open_loop": "open_loops",
         "memory": "get_memory",
+        "undo": "undo_last",
     }
     if normalized in {
+        "help",
         "remember",
         "confirm",
         "recall",
         "profile",
         "open_loops",
         "get_memory",
+        "review",
+        "undo_last",
         "debug",
     }:
         return aliases.get(normalized, normalized), argument
@@ -521,6 +569,23 @@ def split_intent(text: str) -> tuple[str, str]:
     if lower.startswith(("what ", "who ", "tell me ", "find ")):
         return "recall", text
     return "unsupported", text
+
+
+def slack_help_text() -> str:
+    return "\n".join(
+        [
+            "Brain commands",
+            "/brain remember <memory> - propose a memory to save",
+            "/brain confirm <memory> - confirm a proposed memory",
+            "/brain recall <query> - answer from saved memory",
+            "/brain profile <entity> - summarize what Brain knows about an entity",
+            "/brain open-loops [topic] - list open questions",
+            "/brain get-memory <memory_id> - show one memory",
+            "/brain review - show recent writes",
+            "/brain undo-last - undo the latest write",
+            "/brain help - show this help",
+        ]
+    )
 
 
 def split_first(text: str) -> tuple[str, str]:

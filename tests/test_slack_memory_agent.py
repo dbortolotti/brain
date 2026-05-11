@@ -41,6 +41,31 @@ def test_explicit_remember_produces_dry_run_and_writes_nothing(tmp_path) -> None
     assert BrainStore(settings).search_memory("Bill Evans") == []
 
 
+def test_help_command_returns_supported_commands(tmp_path) -> None:
+    settings = brain_test_settings(tmp_path)
+    agent = SlackMemoryAgent(settings)
+
+    response = agent.handle(slack_request("help"))
+    empty_response = agent.handle(slack_request("/brain"))
+
+    assert response.decision == "help"
+    assert "/brain remember <memory>" in response.text
+    assert "/brain recall <query>" in response.text
+    assert "/brain undo-last" in response.text
+    assert response.payload["commands"] == [
+        "remember",
+        "confirm",
+        "recall",
+        "profile",
+        "open-loops",
+        "get-memory",
+        "review",
+        "undo-last",
+        "help",
+    ]
+    assert empty_response.decision == "help"
+
+
 def test_confirmation_commits_proposed_memory(tmp_path) -> None:
     settings = brain_test_settings(tmp_path)
     agent = SlackMemoryAgent(settings)

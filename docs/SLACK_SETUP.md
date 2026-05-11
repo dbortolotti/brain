@@ -124,6 +124,7 @@ Example commands:
 /brain open-loops Slack
 /brain get-memory mem_...
 /brain debug snapshot
+/brain help
 ```
 
 The Slack slash command sends form-encoded payloads to `/slack/commands`; Brain
