@@ -269,42 +269,22 @@ def test_slack_interaction_confirmation_commits_proposed_memory(tmp_path, monkey
     assert response.json()["payload"]["receipt"]["dry_run"] is False
 
 
-def test_slack_help_button_returns_copyable_template(tmp_path, monkeypatch) -> None:
+def test_slack_help_command_returns_text_only_payload(tmp_path, monkeypatch) -> None:
     settings = slack_settings(tmp_path)
     monkeypatch.setattr(slack_agent_server, "settings", settings)
     client = TestClient(app)
     command = command_body("help", user_id="U1")
-    command_response = client.post(
+    response = client.post(
         "/slack/commands",
         content=command,
         headers={**signed_headers(settings, command), "Content-Type": "application/x-www-form-urlencoded"},
     )
-    action_value = command_response.json()["blocks"][1]["elements"][1]["value"]
-    interaction = urlencode(
-        {
-            "payload": json.dumps(
-                {
-                    "user": {"id": "U1"},
-                    "channel": {"id": "C1"},
-                    "team": {"id": "T1"},
-                    "actions": [{"action_id": "brain_help_template", "value": action_value}],
-                }
-            )
-        }
-    ).encode("utf-8")
-
-    response = client.post(
-        "/slack/interactions",
-        content=interaction,
-        headers={**signed_headers(settings, interaction), "Content-Type": "application/x-www-form-urlencoded"},
-    )
 
     assert response.status_code == 200
-    assert response.json()["payload"] == {
-        "command": "recall",
-        "template": "/brain recall <query>",
-    }
-    assert "`/brain recall <query>`" in response.json()["text"]
+    payload = response.json()
+    assert "blocks" not in payload
+    assert "/brain remember <memory>" in payload["text"]
+    assert "/brain recall <query>" in payload["text"]
 
 
 def test_singular_slack_interaction_path_is_supported(tmp_path, monkeypatch) -> None:

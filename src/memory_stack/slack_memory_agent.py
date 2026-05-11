@@ -229,7 +229,6 @@ class SlackMemoryAgent:
                     "help",
                 ]
             },
-            blocks=help_blocks(),
         )
 
     def _handle_help_template(self, command: str) -> SlackAgentResponse:
