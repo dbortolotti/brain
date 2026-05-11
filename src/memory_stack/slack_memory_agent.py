@@ -561,6 +561,7 @@ def split_intent(text: str) -> tuple[str, str]:
     command, argument = split_first(text)
     normalized = command.replace("-", "_")
     aliases = {
+        "h": "help",
         "open": "open_loops",
         "open_loop": "open_loops",
         "memory": "get_memory",
@@ -568,6 +569,7 @@ def split_intent(text: str) -> tuple[str, str]:
         "help_template": "help_template",
     }
     if normalized in {
+        "h",
         "help",
         "remember",
         "confirm",

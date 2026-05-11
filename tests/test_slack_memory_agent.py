@@ -47,6 +47,7 @@ def test_help_command_returns_supported_commands(tmp_path) -> None:
 
     response = agent.handle(slack_request("help"))
     empty_response = agent.handle(slack_request("/brain"))
+    short_response = agent.handle(slack_request("h"))
 
     assert response.decision == "help"
     assert "/brain remember <memory>" in response.text
@@ -65,6 +66,8 @@ def test_help_command_returns_supported_commands(tmp_path) -> None:
         "help",
     ]
     assert empty_response.decision == "help"
+    assert short_response.decision == "help"
+    assert short_response.text == response.text
 
 
 def test_help_template_button_returns_copyable_command(tmp_path) -> None:

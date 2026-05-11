@@ -18,11 +18,13 @@ class FakeResponder:
 def test_parse_slack_command_delegates_to_canonical_intent_parser() -> None:
     command = parse_slack_command("/brain undo-last")
     empty = parse_slack_command("/brain")
+    short_help = parse_slack_command("/brain h")
     natural_recall = parse_slack_command("what do we know about Sam?")
 
     assert command.action == "undo_last"
     assert command.text == ""
     assert empty.action == "help"
+    assert short_help.action == "help"
     assert natural_recall.action == "recall"
     assert natural_recall.text == "what do we know about Sam?"
 
