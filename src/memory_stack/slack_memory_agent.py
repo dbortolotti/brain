@@ -647,7 +647,7 @@ def help_blocks() -> list[dict[str, Any]]:
                     {
                         "type": "button",
                         "text": {"type": "plain_text", "text": label},
-                        "action_id": "brain_help_template",
+                        "action_id": f"brain_help_template_{command}",
                         "value": json.dumps({"help_command": command}, separators=(",", ":")),
                     }
                     for label, command in chunk
