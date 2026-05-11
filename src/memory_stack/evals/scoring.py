@@ -2705,7 +2705,7 @@ def zero_tolerance_failure_types(
         failures.append("calendar_event_invented")
     if "invented_precise_date" in checks and fixture.role != "entity_mention_extractor" and score_below("memory_card_quality"):
         failures.append("invented_precise_date")
-    if "duplicate_current_fact_pollution" in checks and score_below("conflict_safety"):
+    if "duplicate_current_fact_pollution" in checks and duplicate_current_fact_pollution_present(fixture, payload):
         failures.append("duplicate_current_fact_pollution")
     if "overconfident_typo_fact" in checks and score_below("memory_card_quality"):
         failures.append("overconfident_typo_fact")
@@ -2788,6 +2788,38 @@ def source_classifier_zero_tolerance_failed(
         return not (source_kind in expected_source_kinds or (not source_kind and None in expected_source_kind_values))
     expected_kind = expected.get("source_kind")
     return expected_kind is not None and normalize(str(expected_kind)) != source_kind
+
+
+def duplicate_current_fact_pollution_present(
+    fixture: ModelEvalFixture,
+    payload: dict[str, Any],
+) -> bool:
+    text = payload_text(payload)
+    if any(
+        contains_forbidden_term_assertively(text, term)
+        for term in fixture.expected.get("must_not_include", [])
+    ):
+        return True
+
+    if fixture.role == "conflict_policy_decider":
+        actual = normalize(str(payload.get("policy_action") or payload.get("decision") or ""))
+        expected_actions = fixture.expected.get("policy_action_any", [])
+        if expected_actions and any(policy_action_matches(actual, action) for action in expected_actions):
+            return False
+        return actual in {
+            "add_new",
+            "additive",
+            "approve_supersession",
+            "commit",
+            "commit_success",
+            "commit_with_warning",
+            "keep_both",
+            "overwrite",
+            "supersede",
+            "update_existing",
+        }
+
+    return False
 
 
 def entity_overmerge_present(payload: dict[str, Any], scores: dict[str, float | None]) -> bool:

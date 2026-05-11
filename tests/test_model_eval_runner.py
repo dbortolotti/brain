@@ -3115,6 +3115,77 @@ def test_conflict_policy_decider_safe_ask_user_is_not_silent_overwrite() -> None
     assert types == []
 
 
+def test_conflict_policy_decider_duplicate_missing_terms_is_not_duplicate_pollution() -> None:
+    fixture = ModelEvalFixture(
+        id="conflict_duplicate_project_status_001",
+        role="conflict_policy_decider",
+        scenario_group="conflict",
+        input_text=(
+            "Existing current fact: Brain uses Postgres as source of truth. "
+            "New fact: Brain uses Postgres as its source of truth."
+        ),
+        expected={
+            "conflict_classification": "duplicate",
+            "must_include": ["Brain", "Postgres", "source of truth"],
+            "must_not_include": ["supersedes"],
+            "policy_action_any": ["mark_duplicate", "keep_existing", "ask_user"],
+        },
+        zero_tolerance_checks=("duplicate_current_fact_pollution",),
+    )
+
+    scores, zero, types = score_model_output(
+        fixture,
+        {
+            "policy_action": "mark_duplicate",
+            "target_memory_id": None,
+            "requires_user_choice": False,
+            "reason": "The new fact repeats the existing current fact with only minor wording differences.",
+            "answer": "Mark as duplicate; no user choice is required.",
+            "citations": [],
+        },
+        status="ok",
+    )
+
+    assert scores["conflict_safety"] < 1.0
+    assert zero is False
+    assert types == []
+
+
+def test_conflict_policy_decider_duplicate_keep_both_is_duplicate_pollution() -> None:
+    fixture = ModelEvalFixture(
+        id="conflict_duplicate_project_status_001",
+        role="conflict_policy_decider",
+        scenario_group="conflict",
+        input_text=(
+            "Existing current fact: Brain uses Postgres as source of truth. "
+            "New fact: Brain uses Postgres as its source of truth."
+        ),
+        expected={
+            "conflict_classification": "duplicate",
+            "must_include": ["Brain", "Postgres", "source of truth"],
+            "must_not_include": ["supersedes"],
+            "policy_action_any": ["mark_duplicate", "keep_existing", "ask_user"],
+        },
+        zero_tolerance_checks=("duplicate_current_fact_pollution",),
+    )
+
+    _scores, zero, types = score_model_output(
+        fixture,
+        {
+            "policy_action": "keep_both",
+            "target_memory_id": None,
+            "requires_user_choice": False,
+            "reason": "Keep both duplicate project status facts current.",
+            "answer": "Keep both facts.",
+            "citations": [],
+        },
+        status="ok",
+    )
+
+    assert zero is True
+    assert types == ["duplicate_current_fact_pollution"]
+
+
 def test_conflict_policy_decider_accepts_confirmation_as_escalation_language() -> None:
     fixture = ModelEvalFixture(
         id="conflict_policy",
