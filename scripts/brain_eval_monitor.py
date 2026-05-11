@@ -111,7 +111,7 @@ def estimate_timing(
                 candidates.append(path.stat().st_mtime)
             except OSError:
                 continue
-    for name in ("run.log", "selected_roles.txt", "forced_model_registry.yaml"):
+    for name in ("run.log", "selected_roles.txt"):
         path = run_dir / name
         if path.exists():
             try:

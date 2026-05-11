@@ -8,6 +8,14 @@ from typing import Literal
 from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from memory_stack.model_selection import (
+    DEFAULT_EMBEDDING_DIMENSIONS,
+    DEFAULT_EMBEDDING_MODEL,
+    DEFAULT_EMBEDDING_PROVIDER,
+    DEFAULT_LLM_MODEL,
+    DEFAULT_LLM_PROVIDER,
+)
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_ENV_FILE = PROJECT_ROOT / ".env"
@@ -73,10 +81,10 @@ class Settings(BaseSettings):
         case_sensitive=False,
     )
 
-    profile: Literal["gemini", "openai", "local"] = "gemini"
+    profile: Literal["openai", "local"] = "openai"
 
-    llm_provider: str = "gemini"
-    llm_model: str = "gemini/gemini-3.1-flash-lite-preview"
+    llm_provider: str = DEFAULT_LLM_PROVIDER
+    llm_model: str = DEFAULT_LLM_MODEL
     llm_api_key: str | None = None
     llm_endpoint: str | None = None
     llm_temperature: float = 0.0
@@ -88,10 +96,10 @@ class Settings(BaseSettings):
     brain_provider_auth_profiles_path: str = "./secrets/provider-auth-profiles.json"
     brain_provider_auth_state_dir: str = "./secrets/provider-auth-state"
 
-    embedding_provider: str = "gemini"
-    embedding_model: str = "gemini/gemini-embedding-001"
+    embedding_provider: str = DEFAULT_EMBEDDING_PROVIDER
+    embedding_model: str = DEFAULT_EMBEDDING_MODEL
     embedding_api_key: str | None = None
-    embedding_dimensions: int = 768
+    embedding_dimensions: int = DEFAULT_EMBEDDING_DIMENSIONS
 
     openai_api_key: str | None = None
     openrouter_api_key: str | None = None
@@ -235,10 +243,6 @@ class Settings(BaseSettings):
                         "PROFILE=local appears to contain cloud provider settings. "
                         "Set ALLOW_CLOUD_KEYS_IN_LOCAL=true only if intentional."
                     )
-
-        if self.profile == "gemini":
-            if self.llm_provider != "gemini":
-                raise ValueError("PROFILE=gemini requires LLM_PROVIDER=gemini")
 
         if self.profile == "openai":
             if self.llm_provider != "openai":

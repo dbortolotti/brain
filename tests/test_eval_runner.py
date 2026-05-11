@@ -42,11 +42,11 @@ queries:
     )
     output_path = tmp_path / "results" / "results.csv"
     settings = SimpleNamespace(
-        profile="gemini",
-        llm_provider="gemini",
-        llm_model="gemini/gemini-3.1-flash-lite-preview",
-        embedding_provider="gemini",
-        embedding_model="gemini/gemini-embedding-001",
+        profile="openai",
+        llm_provider="openai",
+        llm_model="gpt-5.5",
+        embedding_provider="fastembed",
+        embedding_model="intfloat/multilingual-e5-large",
     )
     calls: list[dict] = []
 
@@ -73,5 +73,5 @@ queries:
 
     with output_path.open(newline="", encoding="utf-8") as handle:
         csv_rows = list(csv.DictReader(handle))
-    assert csv_rows[0]["profile"] == "gemini"
+    assert csv_rows[0]["profile"] == "openai"
     assert csv_rows[0]["score"] == "1.0"

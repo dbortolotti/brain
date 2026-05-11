@@ -7,7 +7,6 @@ import typer
 from rich.console import Console
 
 from memory_stack.config import load_settings
-from memory_stack.evals.model_matrix import REGISTRY_PATH
 from memory_stack.evals.model_runner import ModelEvalRunConfig, run_model_evals, run_rescore, run_rerun_failed
 from memory_stack.evals.runner import run_golden_evals
 
@@ -33,17 +32,10 @@ def golden(output: str | None = typer.Option(None, "--output")) -> None:
 
 @app.command("models")
 def models(
-    registry: Path = typer.Option(REGISTRY_PATH, "--registry"),
     fixture_set: str = typer.Option("smoke", "--fixture-set"),
     mode: str = typer.Option("broad", "--mode", help="broad or fine-grained"),
     roles: str | None = typer.Option(None, "--roles", help="Comma-separated role list."),
     model_refs: str | None = typer.Option(None, "--models", help="Comma-separated model refs."),
-    model_set: str | None = typer.Option(
-        None,
-        "--model-set",
-        help="Named model set, e.g. model-test-initial.",
-    ),
-    scope: str = typer.Option("core", "--scope", help="core, enabled, or all when --models is absent."),
     include_judge: bool = typer.Option(False, "--include-judge"),
     repeat_runs: int = typer.Option(1, "--repeat-runs", min=1),
     bootstrap_samples: int = typer.Option(1000, "--bootstrap-samples", min=0),
@@ -61,13 +53,10 @@ def models(
     if resolved_output is None:
         raise typer.BadParameter("pass --output or --output-json")
     config = ModelEvalRunConfig(
-        registry_path=registry,
         fixture_set=fixture_set,
         mode=mode,
         roles=parse_csv(roles),
         model_refs=parse_csv_list(model_refs),
-        model_set=model_set,
-        scope=scope,
         include_judge=include_judge,
         repeat_runs=resolved_repeat_runs,
         bootstrap_samples=bootstrap_samples,
@@ -89,7 +78,6 @@ def models(
 
 @app.command("rerun-failed")
 def rerun_failed(
-    registry: Path = typer.Option(REGISTRY_PATH, "--registry"),
     source_json: Path = typer.Option(..., "--source-json"),
     failed_manifest: Path = typer.Option(..., "--failed-manifest"),
     output_json: Path = typer.Option(..., "--output-json"),
@@ -104,7 +92,6 @@ def rerun_failed(
 ) -> None:
     result = run_rerun_failed(
         load_settings(),
-        registry_path=registry,
         source_path=source_json,
         failed_manifest_path=failed_manifest,
         output_path=output_json,
@@ -127,14 +114,12 @@ def rerun_failed(
 
 @app.command("rescore")
 def rescore(
-    registry: Path = typer.Option(REGISTRY_PATH, "--registry"),
     source_json: Path = typer.Option(..., "--source-json"),
     output_json: Path = typer.Option(..., "--output-json"),
     bootstrap_samples: int = typer.Option(1000, "--bootstrap-samples", min=0),
     overwrite: bool = typer.Option(False, "--overwrite"),
 ) -> None:
     result = run_rescore(
-        registry_path=registry,
         source_path=source_json,
         output_path=output_json,
         overwrite=overwrite,

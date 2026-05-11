@@ -12,7 +12,6 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field
 
 from memory_stack.evals.model_fixtures import ModelEvalFixture
-from memory_stack.model_registry import capability_definitions, mandatory_capabilities
 
 
 LLM_SCORE_KEYS = (
@@ -90,7 +89,86 @@ MANDATORY_NON_RUNTIME_ROLES = {
     "embeddings",
 }
 
-MANDATORY_FINE_GRAINED_CAPABILITIES = mandatory_capabilities()
+COARSE_CAPABILITIES: dict[str, dict[str, Any]] = {
+    "router": {
+        "required": True,
+        "required_model_roles": ["intent_router"],
+        "deterministic_roles": [],
+    },
+    "slack_intake": {
+        "required": True,
+        "required_model_roles": [
+            "source_classifier",
+            "durability_filter",
+            "memory_kind_classifier",
+            "repair_option_generator",
+            "commit_policy_decider",
+            "success_receipt_generator",
+        ],
+        "deterministic_roles": ["zero_tolerance_validator"],
+    },
+    "memory_compiler": {
+        "required": True,
+        "required_model_roles": [
+            "atomic_card_extractor",
+            "entity_mention_extractor",
+            "relationship_extractor",
+            "open_loop_detector",
+            "table_policy_handler",
+            "source_takeaway_extractor",
+        ],
+        "deterministic_roles": ["table_parser", "source_loader", "zero_tolerance_validator"],
+    },
+    "entity_resolution": {
+        "required": True,
+        "required_model_roles": [
+            "entity_mention_extractor",
+            "entity_candidate_ranker",
+            "entity_final_resolver",
+        ],
+        "deterministic_roles": [],
+    },
+    "conflict_handling": {
+        "required": True,
+        "required_model_roles": [
+            "conflict_candidate_detector",
+            "conflict_explainer",
+            "conflict_policy_decider",
+        ],
+        "deterministic_roles": [],
+    },
+    "recall": {
+        "required": True,
+        "required_model_roles": [
+            "recall_planner",
+            "recall_relevance_filter",
+            "recall_synthesizer",
+        ],
+        "deterministic_roles": [],
+    },
+    "debug": {
+        "required": False,
+        "required_model_roles": ["debug_explainer"],
+        "deterministic_roles": [],
+    },
+    "judge": {
+        "required": False,
+        "required_model_roles": ["eval_judge"],
+        "deterministic_roles": [],
+    },
+    "embeddings": {
+        "required": True,
+        "optional_if_not_tested": True,
+        "required_model_roles": ["embeddings"],
+        "deterministic_roles": [],
+    },
+}
+
+MANDATORY_FINE_GRAINED_CAPABILITIES = {
+    capability
+    for capability, config in COARSE_CAPABILITIES.items()
+    if bool(config.get("required", True)) and not bool(config.get("optional_if_not_tested", False))
+}
 
 ROLE_ALLOWED_ZERO_TOLERANCE_CHECKS: dict[str, set[str]] = {
     "intent_router": {
@@ -225,8 +303,6 @@ ROLE_ALLOWED_ZERO_TOLERANCE_CHECKS: dict[str, set[str]] = {
         "raw_email_exposed",
     },
 }
-
-COARSE_CAPABILITIES: dict[str, dict[str, Any]] = capability_definitions()
 
 ROLE_THRESHOLDS: dict[str, dict[str, float]] = {
     "router": {

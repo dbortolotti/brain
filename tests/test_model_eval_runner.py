@@ -9,7 +9,7 @@ import pytest
 
 from memory_stack.config import Settings
 from memory_stack.evals.model_fixtures import ModelEvalFixture, fixture_prompt, output_schema_for_fixture, select_fixtures
-from memory_stack.evals.model_matrix import ModelCandidate, load_model_registry, select_model_candidates
+from memory_stack.evals.model_matrix import ModelCandidate, select_model_candidates
 from memory_stack.evals.model_runner import (
     ModelEvalRunConfig,
     build_work_items,
@@ -42,9 +42,6 @@ from memory_stack.evals.scoring import (
     semantic_quality_score_for_role,
     zero_tolerance_upper_bound,
 )
-
-
-REGISTRY_PATH = Path(__file__).resolve().parents[1] / "brain_model_registry.yaml"
 
 
 class FakeEvalClient:
@@ -148,121 +145,42 @@ class AlwaysFailClient(FakeEvalClient):
         )
 
 
-def test_model_matrix_selects_explicit_alias_and_embeddings() -> None:
-    registry = load_model_registry(REGISTRY_PATH)
-
+def test_model_matrix_selects_explicit_models_without_registry() -> None:
     candidates = select_model_candidates(
-        registry,
-        model_refs=["anthropic:claude-haiku-4-5", "openai:text-embedding-3-small"],
-        roles={"embeddings"},
-        scope="core",
-        include_judge=False,
+        Settings(),
+        model_refs=["openai:gpt-5.5", "fastembed:intfloat/multilingual-e5-large"],
+        roles={"intent_router", "embeddings"},
+        fixture_roles={"intent_router", "embeddings"},
     )
 
     assert [(candidate.provider, candidate.model, candidate.kind) for candidate in candidates] == [
-        ("anthropic", "claude-haiku-4-5-20251001", "llm"),
-        ("openai", "text-embedding-3-small", "embedding"),
+        ("openai", "gpt-5.5", "llm"),
+        ("fastembed", "intfloat/multilingual-e5-large", "embedding"),
     ]
+    assert set(candidates[0].roles) == {"intent_router"}
+    assert set(candidates[1].roles) == {"embeddings"}
 
 
-def test_model_matrix_selects_gpt_5_5_xhigh_inventory_variant() -> None:
-    registry = load_model_registry(REGISTRY_PATH)
-
-    candidate = select_model_candidates(
-        registry,
-        model_refs=["openai:gpt-5.5-xhigh"],
-        roles={"eval_judge"},
-        scope="core",
-        include_judge=True,
-    )[0]
-
-    assert candidate.ref == "openai:gpt-5.5-xhigh"
-    assert candidate.model == "gpt-5.5-xhigh"
-    assert candidate.api_model == "gpt-5.5"
-    assert candidate.reasoning_effort == "xhigh"
-
-
-def test_model_matrix_selects_gpt_5_4_and_gemini_3_1_pro_thinking_variants() -> None:
-    registry = load_model_registry(REGISTRY_PATH)
-
-    candidates = select_model_candidates(
-        registry,
-        model_refs=["openai:gpt-5.4-high", "google:gemini-3.1-pro-preview-medium"],
-        roles={"eval_judge"},
-        scope="core",
-        include_judge=True,
+def test_model_matrix_uses_configured_defaults_without_registry() -> None:
+    settings = Settings(
+        profile="openai",
+        llm_provider="openai",
+        llm_model="gpt-5.5",
+        embedding_provider="fastembed",
+        embedding_model="intfloat/multilingual-e5-large",
+        embedding_dimensions=1024,
     )
-
-    assert candidates[0].api_model == "gpt-5.4"
-    assert candidates[0].reasoning_effort == "high"
-    assert candidates[1].api_model == "gemini-3.1-pro-preview"
-    assert candidates[1].reasoning_effort == "medium"
-
-
-def test_model_matrix_selects_openrouter_quantized_variants() -> None:
-    registry = load_model_registry(REGISTRY_PATH)
-
     candidates = select_model_candidates(
-        registry,
-        model_refs=[
-            "openrouter:qwen/qwen3.5-9b-fp8",
-            "openrouter:google/gemma-3n-e4b-it",
-            "openrouter:google/gemma-4-31b-it-fp8",
-            "openrouter:qwen/qwen3.5-27b-fp8",
-        ],
-        roles={"eval_judge"},
-        scope="core",
-        include_judge=True,
-    )
-
-    assert [(candidate.api_model, candidate.quantizations) for candidate in candidates] == [
-        ("qwen/qwen3.5-9b", ("fp8",)),
-        ("google/gemma-3n-e4b-it", ()),
-        ("google/gemma-4-31b-it", ("fp8",)),
-        ("qwen/qwen3.5-27b", ("fp8",)),
-    ]
-
-
-def test_fine_grained_model_matrix_selects_targeted_role_models() -> None:
-    registry = load_model_registry(REGISTRY_PATH)
-
-    candidates = select_model_candidates(
-        registry,
+        settings,
         model_refs=None,
-        roles={"intent_router"},
-        scope="core",
-        include_judge=False,
-        mode="fine-grained",
+        roles={"intent_router", "embeddings"},
+        fixture_roles={"intent_router", "embeddings"},
     )
 
     assert [candidate.ref for candidate in candidates] == [
-        "openai:gpt-5-nano",
-        "google:gemini-2.5-flash-lite",
+        "openai:gpt-5.5",
+        "fastembed:intfloat/multilingual-e5-large",
     ]
-
-
-def test_fine_grained_explicit_model_inherits_matrix_roles() -> None:
-    registry = load_model_registry(REGISTRY_PATH)
-
-    candidate = select_model_candidates(
-        registry,
-        model_refs=["openai:gpt-5.5-high"],
-        roles=set(),
-        scope="core",
-        include_judge=True,
-        mode="fine-grained",
-    )[0]
-
-    assert set(candidate.roles) == {
-        "atomic_card_extractor",
-        "entity_candidate_ranker",
-        "source_takeaway_extractor",
-        "conflict_candidate_detector",
-        "conflict_policy_decider",
-        "recall_synthesizer",
-        "groundedness_checker",
-        "eval_judge",
-    }
 
 
 def test_select_fixtures_derives_fine_grained_roles() -> None:
@@ -594,15 +512,12 @@ def test_conflict_candidate_detector_schema_is_detection_only() -> None:
     ) == ["$.conflict_classification must be one of supersedes, contradicts, duplicate, additive, correction, project_state_update, none"]
 
 
-def test_model_test_initial_model_set_runs_through_config(tmp_path) -> None:
+def test_embedding_eval_uses_configured_embedding_model(tmp_path) -> None:
     output = tmp_path / "eval.jsonl"
     config = ModelEvalRunConfig(
-        registry_path=REGISTRY_PATH,
         fixture_set="smoke",
         roles={"embeddings"},
         model_refs=None,
-        model_set="model-test-initial",
-        scope="core",
         include_judge=False,
         repeat_runs=1,
         bootstrap_samples=0,
@@ -612,25 +527,16 @@ def test_model_test_initial_model_set_runs_through_config(tmp_path) -> None:
     result = run_model_evals(Settings(), config, client=FakeEvalClient())
 
     rows = [json.loads(line) for line in output.read_text().splitlines()]
-    assert result["record_count"] == 15
-    assert {row["model"] for row in rows} == {
-        "fastembed:intfloat/multilingual-e5-large",
-        "openai:text-embedding-3-small",
-        "openai:text-embedding-3-large",
-        "voyage:voyage-4-lite",
-        "voyage:voyage-4",
-    }
+    assert result["record_count"] == 3
+    assert {row["model"] for row in rows} == {"fastembed:intfloat/multilingual-e5-large"}
 
 
 def test_embedding_retrieval_probes_rank_positive_passage(tmp_path: Path) -> None:
     output = tmp_path / "eval.jsonl"
     config = ModelEvalRunConfig(
-        registry_path=REGISTRY_PATH,
         fixture_set="development",
         roles={"embeddings"},
         model_refs=["fastembed:intfloat/multilingual-e5-large"],
-        model_set=None,
-        scope="core",
         include_judge=False,
         repeat_runs=1,
         bootstrap_samples=0,
@@ -3760,7 +3666,6 @@ def test_non_deployable_report_suppresses_production_defaults() -> None:
 def test_openai_reasoning_effort_matches_model_family() -> None:
     assert openai_reasoning_effort("gpt-5-nano") == "minimal"
     assert openai_reasoning_effort("gpt-5.4-nano") == "low"
-    assert openai_reasoning_effort("gpt-5.4-mini") == "low"
     assert openai_reasoning_effort("gpt-5.5") == "low"
 
 
@@ -3786,13 +3691,13 @@ def test_live_provider_client_uses_reasoning_effort_override() -> None:
         Settings(openai_api_key="test-key", openai_auth_mode="api_key"),
         http_client=http_client,
     )
-    candidate = select_model_candidates(
-        load_model_registry(REGISTRY_PATH),
-        model_refs=["openai:gpt-5.5-xhigh"],
-        roles={"eval_judge"},
-        scope="core",
-        include_judge=True,
-    )[0]
+    candidate = ModelCandidate(
+        provider="openai",
+        model="gpt-5.5",
+        kind="llm",
+        api_model="gpt-5.5",
+        reasoning_effort="xhigh",
+    )
 
     client.complete_json(candidate, prompt="test", schema={})
 
@@ -3845,13 +3750,7 @@ def test_live_provider_client_defaults_openai_text_to_oauth(tmp_path: Path, monk
     )
     http_client = RecordingClient()
     client = LiveProviderClient(settings, http_client=http_client)
-    candidate = select_model_candidates(
-        load_model_registry(REGISTRY_PATH),
-        model_refs=["openai:gpt-5.5"],
-        roles={"eval_judge"},
-        scope="core",
-        include_judge=True,
-    )[0]
+    candidate = ModelCandidate(provider="openai", model="gpt-5.5", kind="llm")
 
     client.complete_json(candidate, prompt="test", schema={})
 
@@ -3890,13 +3789,12 @@ def test_live_provider_client_maps_google_reasoning_effort_to_thinking_level() -
 
     http_client = RecordingClient()
     client = LiveProviderClient(Settings(gemini_api_key="test-key"), http_client=http_client)
-    candidate = select_model_candidates(
-        load_model_registry(REGISTRY_PATH),
-        model_refs=["google:gemini-3.1-pro-preview-medium"],
-        roles={"eval_judge"},
-        scope="core",
-        include_judge=True,
-    )[0]
+    candidate = ModelCandidate(
+        provider="google",
+        model="gemini-3.1-pro-preview",
+        kind="llm",
+        reasoning_effort="medium",
+    )
 
     client.complete_json(candidate, prompt="test", schema={})
 
@@ -3925,13 +3823,12 @@ def test_live_provider_client_uses_openrouter_quantization_override() -> None:
 
     http_client = RecordingClient()
     client = LiveProviderClient(Settings(openrouter_api_key="test-key"), http_client=http_client)
-    candidate = select_model_candidates(
-        load_model_registry(REGISTRY_PATH),
-        model_refs=["openrouter:google/gemma-4-31b-it-fp8"],
-        roles={"eval_judge"},
-        scope="core",
-        include_judge=True,
-    )[0]
+    candidate = ModelCandidate(
+        provider="openrouter",
+        model="google/gemma-4-31b-it",
+        kind="llm",
+        quantizations=("fp8",),
+    )
 
     client.complete_json(candidate, prompt="test", schema={})
 
@@ -3945,11 +3842,9 @@ def test_model_eval_runner_writes_jsonl_and_markdown(tmp_path) -> None:
     output = tmp_path / "eval.jsonl"
     report = tmp_path / "report.md"
     config = ModelEvalRunConfig(
-        registry_path=REGISTRY_PATH,
         fixture_set="smoke",
         roles={"slack_intake"},
         model_refs=["openai:gpt-5.4-nano"],
-        scope="core",
         include_judge=False,
         repeat_runs=1,
         bootstrap_samples=10,
@@ -3969,11 +3864,9 @@ def test_model_eval_runner_writes_jsonl_and_markdown(tmp_path) -> None:
 def test_model_eval_runner_caps_concurrency_per_shared_endpoint(tmp_path) -> None:
     output = tmp_path / "eval.jsonl"
     config = ModelEvalRunConfig(
-        registry_path=REGISTRY_PATH,
         fixture_set="brain-model-test-v2",
         roles={"eval_judge"},
         model_refs=["openai:gpt-5.5", "openai:gpt-5.5-high"],
-        scope="core",
         include_judge=True,
         repeat_runs=2,
         bootstrap_samples=0,
@@ -3989,13 +3882,11 @@ def test_model_eval_runner_caps_concurrency_per_shared_endpoint(tmp_path) -> Non
 
 
 def test_build_work_items_makes_repeat_the_outer_loop() -> None:
-    registry = load_model_registry(REGISTRY_PATH)
     candidates = select_model_candidates(
-        registry,
-        model_refs=["openai:gpt-5.4-nano"],
+        Settings(),
+        model_refs=["openai:gpt-5.5"],
         roles={"slack_intake"},
-        scope="core",
-        include_judge=False,
+        fixture_roles={"slack_intake"},
     )
     fixtures = select_fixtures(
         fixture_set="smoke",
@@ -4013,14 +3904,11 @@ def test_build_work_items_makes_repeat_the_outer_loop() -> None:
 
 
 def test_build_work_items_interleaves_endpoints_within_repeat() -> None:
-    registry = load_model_registry(REGISTRY_PATH)
     candidates = select_model_candidates(
-        registry,
+        Settings(),
         model_refs=None,
         roles={"intent_router"},
-        scope="core",
-        include_judge=False,
-        mode="fine-grained",
+        fixture_roles={"intent_router"},
     )
     fixtures = select_fixtures(
         fixture_set="brain-model-test-v2",
@@ -4030,23 +3918,17 @@ def test_build_work_items_interleaves_endpoints_within_repeat() -> None:
 
     items = build_work_items(candidates, {"intent_router"}, fixtures, 1)
 
-    assert len(items) >= 2
-    first_wave = items[:2]
-    assert {item.candidate.endpoint_key for item in first_wave} == {
-        "openai:gpt-5-nano:llm",
-        "google:gemini-2.5-flash-lite:llm",
-    }
+    assert items
+    assert {item.candidate.endpoint_key for item in items} == {"openai:gpt-5.5:llm"}
 
 
 def test_model_eval_runner_generates_failed_manifest_and_stable_record_ids(tmp_path) -> None:
     output = tmp_path / "results.json"
     config = ModelEvalRunConfig(
-        registry_path=REGISTRY_PATH,
         fixture_set="smoke",
         mode="broad",
         roles={"slack_intake"},
         model_refs=["openai:gpt-5.4-nano"],
-        scope="core",
         include_judge=False,
         repeat_runs=1,
         bootstrap_samples=0,
@@ -4066,14 +3948,11 @@ def test_model_eval_runner_generates_failed_manifest_and_stable_record_ids(tmp_p
 
 
 def test_raw_and_parsed_artifacts_are_role_scoped_for_same_fixture_id(tmp_path) -> None:
-    registry = load_model_registry(REGISTRY_PATH)
     candidate = select_model_candidates(
-        registry,
-        model_refs=["openai:gpt-5.4-nano"],
+        Settings(),
+        model_refs=["openai:gpt-5.5"],
         roles={"intent_router", "source_classifier"},
-        scope="core",
-        include_judge=False,
-        mode="fine-grained",
+        fixture_roles={"intent_router", "source_classifier"},
     )[0]
     intent_fixture = ModelEvalFixture(
         id="shared_fixture_id",
@@ -4136,12 +4015,10 @@ def test_rerun_failed_replaces_records_by_record_id(tmp_path) -> None:
     initial = run_model_evals(
         Settings(),
         ModelEvalRunConfig(
-            registry_path=REGISTRY_PATH,
             fixture_set="smoke",
             mode="broad",
             roles={"slack_intake"},
             model_refs=["openai:gpt-5.4-nano"],
-            scope="core",
             include_judge=False,
             repeat_runs=1,
             bootstrap_samples=0,
@@ -4155,7 +4032,6 @@ def test_rerun_failed_replaces_records_by_record_id(tmp_path) -> None:
 
     rerun_failed = run_rerun_failed(
         Settings(),
-        registry_path=REGISTRY_PATH,
         source_path=output,
         failed_manifest_path=Path(initial["failed_manifest_jsonl_path"]),
         output_path=output,
@@ -4264,7 +4140,6 @@ def test_rescore_removes_router_table_failure_and_regenerates_artifacts(tmp_path
     )
 
     result = run_rescore(
-        registry_path=REGISTRY_PATH,
         source_path=output,
         output_path=output,
         overwrite=True,
@@ -4343,7 +4218,6 @@ def test_rescore_rejects_semantic_to_provider_transition(tmp_path) -> None:
 
     with pytest.raises(ValueError, match="impossible semantic/provider transitions"):
         run_rescore(
-            registry_path=REGISTRY_PATH,
             source_path=output,
             output_path=output,
             overwrite=True,

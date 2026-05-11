@@ -4,25 +4,10 @@ import math
 from dataclasses import dataclass
 
 PRICES = {
-    "gpt-5-mini": {
-        "input": 0.25,
-        "output": 2.00,
-        "embedding": 0.02,
-    },
-    "gpt-5.4-mini": {
-        "input": 0.75,
-        "output": 4.50,
-        "embedding": 0.02,
-    },
-    "gemini-3.1-flash-lite-preview": {
-        "input": 0.25,
-        "output": 1.50,
-        "embedding": 0.15,
-    },
-    "gemini-3-flash-preview": {
-        "input": 0.50,
-        "output": 3.00,
-        "embedding": 0.15,
+    "gpt-5.5": {
+        "input": 1.25,
+        "output": 10.00,
+        "embedding": 0.0,
     },
 }
 
@@ -121,4 +106,3 @@ def paid_cost(
         + (output_tokens / 1_000_000) * prices["output"]
         + (embedding_tokens / 1_000_000) * prices["embedding"]
     )
-

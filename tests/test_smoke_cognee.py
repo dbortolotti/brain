@@ -11,7 +11,7 @@ import smoke_cognee
 
 
 def test_smoke_orchestrates_ingest_and_recall_without_live_cognee(monkeypatch) -> None:
-    settings = SimpleNamespace(profile="gemini")
+    settings = SimpleNamespace(profile="openai")
     remembered: list[dict] = []
     recalls: list[dict] = []
 
@@ -58,7 +58,7 @@ def test_smoke_orchestrates_ingest_and_recall_without_live_cognee(monkeypatch) -
 
 
 def test_smoke_returns_failure_when_ingest_fails(monkeypatch) -> None:
-    settings = SimpleNamespace(profile="gemini")
+    settings = SimpleNamespace(profile="openai")
 
     async def fake_remember_text(*args, **kwargs):
         raise RuntimeError("ingest failed")

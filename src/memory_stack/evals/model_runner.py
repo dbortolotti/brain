@@ -28,8 +28,6 @@ from memory_stack.evals.model_fixtures import (
 from memory_stack.evals.model_matrix import (
     ModelCandidate,
     candidate_from_ref,
-    load_model_registry,
-    registry_model_index,
     select_model_candidates,
 )
 from memory_stack.evals.provider_client import LiveProviderClient, ModelCallResult
@@ -66,17 +64,14 @@ class EvalModelClient(Protocol):
 
 @dataclass(frozen=True)
 class ModelEvalRunConfig:
-    registry_path: Path
     fixture_set: str
     roles: set[str]
     model_refs: list[str] | None
-    scope: str
     include_judge: bool
     repeat_runs: int
     bootstrap_samples: int
     output_path: Path
     mode: str = "broad"
-    model_set: str | None = None
     report_md_path: Path | None = None
     raw_output_dir: Path | None = None
     endpoint_max_concurrency: int = 1
@@ -98,25 +93,13 @@ def run_model_evals(
     client: EvalModelClient | None = None,
     progress_callback: Callable[[int, int, dict], None] | None = None,
 ) -> dict:
-    registry = load_model_registry(config.registry_path)
-    model_refs = config.model_refs
-    if config.model_set:
-        from memory_stack.evals.model_matrix import MODEL_SETS
-
-        if config.model_set not in MODEL_SETS:
-            raise ValueError(f"unsupported model set: {config.model_set}")
-        if model_refs:
-            raise ValueError("pass either --models or --model-set, not both")
-        model_refs = MODEL_SETS[config.model_set]
-    candidates = select_model_candidates(
-        registry,
-        model_refs=model_refs,
-        roles=config.roles,
-        scope=config.scope,
-        include_judge=config.include_judge or bool(config.model_set),
-        mode=config.mode,
-    )
     fixtures = select_fixtures(fixture_set=config.fixture_set, roles=config.roles, mode=config.mode)
+    candidates = select_model_candidates(
+        settings,
+        model_refs=config.model_refs,
+        roles=config.roles,
+        fixture_roles={fixture.role for fixture in fixtures},
+    )
     if not candidates:
         raise ValueError("no model candidates selected")
     if not fixtures:
@@ -891,9 +874,6 @@ def candidate_for_record(
 ) -> ModelCandidate:
     model_ref = str(record.get("model") or "")
     role = str(record.get("role") or "")
-    if registry_index and model_ref in registry_index:
-        return candidate_from_ref(model_ref, registry_index, roles={role}, include_judge=True)
-
     kind = str(record.get("kind") or ("embedding" if role == "embeddings" else "llm"))
     provider = str(record.get("provider") or model_ref.split(":", 1)[0] or "unknown")
     return ModelCandidate(
@@ -1047,7 +1027,6 @@ def rescore_record(
 
 def run_rescore(
     *,
-    registry_path: Path,
     source_path: Path,
     output_path: Path,
     overwrite: bool,
@@ -1057,9 +1036,7 @@ def run_rescore(
         raise ValueError("rescore currently requires --overwrite or matching source/output path")
 
     records = read_eval_records(source_path)
-    registry = load_model_registry(registry_path)
-    index = registry_model_index(registry)
-    rescored = [rescore_record(record, registry_index=index) for record in records]
+    rescored = [rescore_record(record) for record in records]
     transition_summary = build_rescore_transition_summary(records, rescored)
     impossible = impossible_rescore_transitions(records, rescored)
     if impossible:
@@ -1092,7 +1069,6 @@ def run_rescore(
 def run_rerun_failed(
     settings: Settings,
     *,
-    registry_path: Path,
     source_path: Path,
     failed_manifest_path: Path,
     output_path: Path,
@@ -1121,8 +1097,6 @@ def run_rerun_failed(
     if not filtered_manifest:
         raise ValueError("no failed manifest rows matched the requested filters")
 
-    registry = load_model_registry(registry_path)
-    index = registry_model_index(registry)
     rerun_run_id = f"eval_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}"
     rerun_timestamp = datetime.now(UTC).isoformat()
     active_client = client or LiveProviderClient(
@@ -1139,7 +1113,7 @@ def run_rerun_failed(
     mode = mode_for_roles(selected_roles)
 
     for item in filtered_manifest:
-        candidate = candidate_from_ref(str(item["model"]), index, roles={str(item["role"])}, include_judge=True)
+        candidate = candidate_from_ref(str(item["model"]), roles={str(item["role"])})
         fixture = find_fixture_for_record(
             fixture_set="brain-model-test-v2",
             role=str(item["role"]),
@@ -1675,7 +1649,7 @@ def render_targeted_followup_commands(output_dir: Path) -> str:
             "  --fixture-set brain-model-test-v2 \\",
             "  --mode fine-grained \\",
             "  --roles atomic_card_extractor,durability_filter,recall_synthesizer,eval_judge,debug_explainer \\",
-            "  --models openai:gpt-5.4-mini,openai:gpt-5.5-high,openai:gpt-5.4-nano,google:gemini-2.5-flash-lite,openai:gpt-5.4-low \\",
+            "  --models openai:gpt-5.5 \\",
             "  --repeat-runs 1 \\",
             "  --endpoint-max-concurrency 3 \\",
             f"  --output-json {output} \\",
@@ -1689,7 +1663,7 @@ def render_targeted_followup_commands(output_dir: Path) -> str:
             "  --fixture-set brain-model-test-v2 \\",
             "  --mode fine-grained \\",
             "  --roles source_classifier,conflict_candidate_detector,conflict_explainer \\",
-            "  --models openai:gpt-5-nano,openai:gpt-5.4-mini,google:gemini-2.5-flash-lite \\",
+            "  --models openai:gpt-5.5 \\",
             "  --repeat-runs 1 \\",
             "  --endpoint-max-concurrency 3 \\",
             f"  --output-json {output_dir / 'targeted_source_safety' / 'results.json'} \\",

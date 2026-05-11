@@ -3,8 +3,8 @@
 This document contains two related but different views of Brain:
 
 1. **Current runtime flow** - what the application code executes today.
-2. **Fine-grained role topology** - the model/eval capability map declared in
-   `brain_model_registry.yaml`.
+2. **Fine-grained role topology** - the model/eval capability map used by the
+   eval scorer.
 
 The fine-grained topology is useful for model evaluation and deployment
 planning, but it is not a literal runtime call graph. Current production
@@ -141,8 +141,7 @@ flowchart LR
 - **dotted arrows** — intended ordering inside a coarse capability
 - **dashed arrows** — out-of-band / supporting roles
 
-Source of truth: `brain_model_registry.yaml` (`fine_grained_capabilities`,
-lines 71-145).
+Source of truth: `src/memory_stack/evals/scoring.py` (`COARSE_CAPABILITIES`).
 
 ```mermaid
 flowchart TD

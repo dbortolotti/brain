@@ -52,9 +52,6 @@ deploys:
 
 ```text
 active   current configured LLM and embedding models
-core     unique models in core_eval_matrix, excluding judge_only by default
-enabled  all enabled_by_default registry models, excluding judge_only by default
-all      all registry models, excluding judge_only by default
 none     disable live provider smoke
 ```
 

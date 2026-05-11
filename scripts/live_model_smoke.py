@@ -7,10 +7,8 @@ import os
 import sys
 from dataclasses import dataclass, replace
 from pathlib import Path
-from typing import Any
 
 import httpx
-import yaml
 from rich.console import Console
 from rich.table import Table
 
@@ -18,10 +16,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from memory_stack.config import Settings, load_settings, normalize_provider_name
 from memory_stack.evals.model_matrix import ModelCandidate
+from memory_stack.model_selection import parse_model_ref
 from memory_stack.evals.provider_client import LiveProviderClient, redact as redact_provider_error
 
 
-REGISTRY_PATH = Path(__file__).resolve().parents[1] / "brain_model_registry.yaml"
 console = Console()
 
 
@@ -55,13 +53,10 @@ def main() -> int:
         return 0
 
     settings = load_settings()
-    registry = load_registry(Path(args.registry))
     probes = select_probes(
         settings,
-        registry,
         scope=args.scope,
-        roles=set(args.role or []),
-        include_judge=args.include_judge,
+        model_refs=parse_csv(args.models),
     )
     if not probes:
         console.print("[red][FAIL][/red] no live model probes selected")
@@ -85,22 +80,13 @@ def main() -> int:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run low-token live model smoke checks.")
-    parser.add_argument("--registry", default=str(REGISTRY_PATH))
     parser.add_argument(
         "--scope",
-        choices=("none", "active", "core", "enabled", "all"),
+        choices=("none", "active"),
         default=os.getenv("BRAIN_MODEL_SMOKE_SCOPE", "active"),
-        help="Model set to test. Use core/enabled/all for registry-wide checks.",
+        help="Model set to test. Active checks the configured LLM and embedding models.",
     )
-    parser.add_argument(
-        "--all-registry",
-        action="store_true",
-        help=(
-            "Shortcut for --scope all --include-judge. Runs one tiny live probe for "
-            "every unique model declared in the registry."
-        ),
-    )
-    parser.add_argument("--role", action="append", default=None, help="Limit registry scopes to a role.")
+    parser.add_argument("--models", default=None, help="Comma-separated provider:model refs to probe.")
     parser.add_argument(
         "--skip-missing-keys",
         action="store_true",
@@ -113,12 +99,6 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_false",
     )
     parser.add_argument(
-        "--include-judge",
-        action="store_true",
-        default=env_bool("BRAIN_MODEL_SMOKE_INCLUDE_JUDGE", False),
-        help="Include judge_only models in registry scopes.",
-    )
-    parser.add_argument(
         "--timeout",
         type=float,
         default=float(os.getenv("BRAIN_MODEL_SMOKE_TIMEOUT_SECONDS", "30")),
@@ -128,9 +108,6 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def normalize_args(args: argparse.Namespace) -> argparse.Namespace:
-    if args.all_registry:
-        args.scope = "all"
-        args.include_judge = True
     return args
 
 
@@ -141,30 +118,21 @@ def env_bool(name: str, default: bool) -> bool:
     return value.strip().lower() in {"1", "true", "yes", "on"}
 
 
-def load_registry(path: Path) -> dict[str, Any]:
-    with path.open(encoding="utf-8") as file:
-        return yaml.safe_load(file) or {}
+def parse_csv(value: str | None) -> list[str] | None:
+    items = [item.strip() for item in (value or "").split(",") if item.strip()]
+    return items or None
 
 
 def select_probes(
     settings: Settings,
-    registry: dict[str, Any],
     *,
     scope: str,
-    roles: set[str],
-    include_judge: bool,
+    model_refs: list[str] | None = None,
 ) -> list[Probe]:
+    if model_refs:
+        return dedupe_probes([probe_from_ref(ref) for ref in model_refs])
     if scope == "active":
         return active_probes(settings)
-    if scope == "core":
-        return core_registry_probes(registry, roles=roles, include_judge=include_judge)
-    if scope in {"enabled", "all"}:
-        return provider_registry_probes(
-            registry,
-            enabled_only=scope == "enabled",
-            roles=roles,
-            include_judge=include_judge,
-        )
     raise ValueError(f"unsupported smoke scope: {scope}")
 
 
@@ -195,114 +163,15 @@ def active_probes(settings: Settings) -> list[Probe]:
     return dedupe_probes(probes)
 
 
-def core_registry_probes(
-    registry: dict[str, Any],
-    *,
-    roles: set[str],
-    include_judge: bool,
-) -> list[Probe]:
-    index = registry_model_index(registry)
-    probes: list[Probe] = []
-    for role, refs in (registry.get("core_eval_matrix") or {}).items():
-        if roles and role not in roles:
-            continue
-        for ref in refs or []:
-            probe = probe_from_ref(str(ref), index, role=role)
-            if probe.skip_reason:
-                continue
-            if probe.judge_only and not include_judge:
-                continue
-            probes.append(probe)
-    return dedupe_probes(probes)
-
-
-def provider_registry_probes(
-    registry: dict[str, Any],
-    *,
-    enabled_only: bool,
-    roles: set[str],
-    include_judge: bool,
-) -> list[Probe]:
-    probes: list[Probe] = []
-    for provider, config in (registry.get("providers") or {}).items():
-        provider_type = config.get("type", "llm")
-        for model in config.get("models") or []:
-            if model_skip_reason(model):
-                continue
-            if enabled_only and not model.get("enabled_by_default", False):
-                continue
-            if model.get("judge_only", False) and not include_judge:
-                continue
-            model_roles = tuple(str(role) for role in model.get("roles", ()))
-            if roles and not roles.intersection(model_roles):
-                continue
-            if provider == "embeddings":
-                probe_provider = normalize_provider(str(model["provider"]))
-                probe_kind = "embedding"
-            else:
-                probe_provider = normalize_provider(provider)
-                probe_kind = str(provider_type)
-            probes.append(
-                Probe(
-                    provider=probe_provider,
-                    model=str(model["id"]),
-                    kind=probe_kind,
-                    label=f"{probe_provider}:{model['id']}",
-                    api_model=str(model.get("api_model") or model["id"]),
-                    reasoning_effort=str(model.get("reasoning_effort")) if model.get("reasoning_effort") is not None else None,
-                    quantizations=tuple(str(value) for value in model.get("quantizations", ())),
-                    roles=model_roles,
-                    judge_only=bool(model.get("judge_only", False)),
-                )
-            )
-    return dedupe_probes(probes)
-
-
-def registry_model_index(registry: dict[str, Any]) -> dict[str, Probe]:
-    index: dict[str, Probe] = {}
-    for provider, config in (registry.get("providers") or {}).items():
-        provider_type = config.get("type", "llm")
-        for model in config.get("models") or []:
-            if provider == "embeddings":
-                probe_provider = normalize_provider(str(model["provider"]))
-                kind = "embedding"
-            else:
-                probe_provider = normalize_provider(provider)
-                kind = str(provider_type)
-            probe = Probe(
-                provider=probe_provider,
-                model=str(model["id"]),
-                kind=kind,
-                label=f"{probe_provider}:{model['id']}",
-                api_model=str(model.get("api_model") or model["id"]),
-                reasoning_effort=str(model.get("reasoning_effort")) if model.get("reasoning_effort") is not None else None,
-                quantizations=tuple(str(value) for value in model.get("quantizations", ())),
-                roles=tuple(str(role) for role in model.get("roles", ())),
-                judge_only=bool(model.get("judge_only", False)),
-                skip_reason=model_skip_reason(model),
-            )
-            index[f"{probe_provider}:{probe.model}"] = probe
-            if alias := model.get("alias"):
-                index[f"{probe_provider}:{alias}"] = replace(
-                    probe,
-                    label=f"{probe_provider}:{alias}",
-                )
-    return index
-
-
-def probe_from_ref(ref: str, index: dict[str, Probe], *, role: str) -> Probe:
-    if ref in index:
-        probe = index[ref]
-        return replace(probe, roles=tuple(dict.fromkeys((*probe.roles, role))))
-    provider, model = ref.split(":", maxsplit=1)
-    kind = "embedding" if role == "embeddings" else "llm"
+def probe_from_ref(ref: str) -> Probe:
+    parsed = parse_model_ref(ref)
+    kind = "embedding" if parsed.provider in {"fastembed", "voyage"} or "embedding" in parsed.model else "llm"
     return Probe(
-        provider=normalize_provider(provider),
-        model=model,
+        provider=parsed.provider,
+        model=parsed.model,
         kind=kind,
         label=ref,
-        api_model=model,
-        roles=(role,),
+        api_model=parsed.model,
     )
 
 
@@ -366,11 +235,6 @@ def run_probes(
         else:
             results.append(ProbeResult(probe, "ok", "live call succeeded"))
     return results
-
-
-def model_skip_reason(model: dict[str, Any]) -> str | None:
-    reason = model.get("skip_reason")
-    return str(reason) if reason else None
 
 
 def candidate_from_probe(probe: Probe) -> ModelCandidate:

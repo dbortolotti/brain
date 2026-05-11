@@ -67,9 +67,9 @@ mkdir -p "$PROD_ROOT/releases" "$DATA_DIR" "$BACKUP_DIR" "$SECRETS_DIR" "$LOG_DI
 if [[ ! -f "$SECRETS_DIR/brain.env" ]]; then
   log "creating starter production env at $SECRETS_DIR/brain.env"
   cat >"$SECRETS_DIR/brain.env" <<EOF
-PROFILE=gemini
-LLM_PROVIDER=gemini
-LLM_MODEL=gemini/gemini-3.1-flash-lite-preview
+PROFILE=openai
+LLM_PROVIDER=openai
+LLM_MODEL=gpt-5.5
 OPENAI_AUTH_MODE=oauth
 OPENAI_CODEX_AUTH_PROFILE=default
 OPENAI_CODEX_BASE_URL=https://chatgpt.com/backend-api/codex
@@ -78,7 +78,6 @@ BRAIN_PROVIDER_AUTH_STATE_DIR=$SECRETS_DIR/provider-auth-state
 EMBEDDING_PROVIDER=fastembed
 EMBEDDING_MODEL=intfloat/multilingual-e5-large
 EMBEDDING_DIMENSIONS=1024
-GEMINI_API_KEY=replace-me
 GRAPH_DATABASE_PROVIDER=neo4j
 GRAPH_DATABASE_URL=bolt://localhost:7687
 GRAPH_DATABASE_NAME=neo4j

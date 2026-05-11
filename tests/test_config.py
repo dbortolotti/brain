@@ -39,7 +39,7 @@ def test_local_profile_rejects_cloud_provider() -> None:
         Settings(
             profile="local",
             llm_provider="openai",
-            llm_model="gpt-5.4-mini",
+            llm_model="gpt-5.5",
             llm_api_key="sk-test",
             embedding_provider="fastembed",
             embedding_model="sentence-transformers/all-MiniLM-L6-v2",
@@ -59,7 +59,7 @@ def test_openai_provider_key_reuses_key_for_llm_and_embeddings(
                 "PROFILE=openai",
                 "OPENAI_AUTH_MODE=api_key",
                 "LLM_PROVIDER=openai",
-                "LLM_MODEL=gpt-5.4-mini",
+                "LLM_MODEL=gpt-5.5",
                 "OPENAI_API_KEY=sk-provider",
                 "EMBEDDING_PROVIDER=openai",
                 "EMBEDDING_MODEL=text-embedding-3-small",
@@ -110,7 +110,7 @@ def test_openai_profile_allows_local_embedding_provider(
     settings = Settings(
         profile="openai",
         llm_provider="openai",
-        llm_model="gpt-5.4-mini",
+        llm_model="gpt-5.5",
         openai_auth_mode="oauth",
         openai_api_key="sk-provider",
         embedding_provider="fastembed",
@@ -138,7 +138,7 @@ def test_role_api_keys_override_provider_api_key(monkeypatch: pytest.MonkeyPatch
         profile="openai",
         openai_auth_mode="api_key",
         llm_provider="openai",
-        llm_model="gpt-5.4-mini",
+        llm_model="gpt-5.5",
         llm_api_key="sk-llm-role",
         openai_api_key="sk-provider",
         embedding_provider="openai",
@@ -152,37 +152,6 @@ def test_role_api_keys_override_provider_api_key(monkeypatch: pytest.MonkeyPatch
     assert runtime_env(settings)["OPENAI_API_KEY"] == "sk-provider"
 
 
-def test_gemini_provider_can_use_google_api_key_alias(
-    tmp_path,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    clear_provider_env(monkeypatch)
-    env_file = tmp_path / ".env.gemini"
-    env_file.write_text(
-        "\n".join(
-            [
-                "PROFILE=gemini",
-                "OPENAI_AUTH_MODE=api_key",
-                "LLM_PROVIDER=gemini",
-                "LLM_MODEL=gemini/gemini-3.1-flash-lite-preview",
-                "GOOGLE_API_KEY=AIza-provider",
-                "EMBEDDING_PROVIDER=gemini",
-                "EMBEDDING_MODEL=gemini/gemini-embedding-001",
-                "EMBEDDING_DIMENSIONS=768",
-            ]
-        ),
-        encoding="utf-8",
-    )
-
-    settings = Settings(_env_file=str(env_file))
-    env = runtime_env(settings)
-
-    assert settings.llm_api_key == "AIza-provider"
-    assert settings.embedding_api_key == "AIza-provider"
-    assert env["GEMINI_API_KEY"] == "AIza-provider"
-    assert env["GOOGLE_API_KEY"] == "AIza-provider"
-
-
 def test_provider_key_lookup_supports_non_active_benchmark_providers(
     tmp_path,
     monkeypatch: pytest.MonkeyPatch,
@@ -192,13 +161,12 @@ def test_provider_key_lookup_supports_non_active_benchmark_providers(
     env_file.write_text(
         "\n".join(
             [
-                "PROFILE=gemini",
-                "LLM_PROVIDER=gemini",
-                "LLM_MODEL=gemini/gemini-3.1-flash-lite-preview",
-                "GEMINI_API_KEY=AIza-provider",
-                "EMBEDDING_PROVIDER=gemini",
-                "EMBEDDING_MODEL=gemini/gemini-embedding-001",
-                "EMBEDDING_DIMENSIONS=768",
+                "PROFILE=openai",
+                "LLM_PROVIDER=openai",
+                "LLM_MODEL=gpt-5.5",
+                "EMBEDDING_PROVIDER=fastembed",
+                "EMBEDDING_MODEL=intfloat/multilingual-e5-large",
+                "EMBEDDING_DIMENSIONS=1024",
                 "GROQ_API_KEY=gsk-provider",
                 "ANTHROPIC_API_KEY=sk-ant-provider",
                 "VOYAGE_API_KEY=pa-provider",

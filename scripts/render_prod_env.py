@@ -9,6 +9,14 @@ import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
+from memory_stack.model_selection import (
+    DEFAULT_EMBEDDING_DIMENSIONS,
+    DEFAULT_EMBEDDING_MODEL,
+    DEFAULT_EMBEDDING_PROVIDER,
+    DEFAULT_LLM_MODEL,
+    DEFAULT_LLM_PROVIDER,
+)
+
 
 PROD_ROOT = Path(os.getenv("BRAIN_PROD_ROOT", "/Volumes/xpg_usb4/prod/brain"))
 SHARED_DIR = PROD_ROOT / "shared"
@@ -140,8 +148,8 @@ ORDERED_KEYS = [
 
 DEFAULTS = {
     "PROFILE": "openai",
-    "LLM_PROVIDER": "openai",
-    "LLM_MODEL": "gpt-5.5",
+    "LLM_PROVIDER": DEFAULT_LLM_PROVIDER,
+    "LLM_MODEL": DEFAULT_LLM_MODEL,
     "LLM_TEMPERATURE": "0.0",
     "LLM_MAX_TOKENS": "8192",
     "OPENAI_AUTH_MODE": "oauth",
@@ -149,9 +157,9 @@ DEFAULTS = {
     "OPENAI_CODEX_BASE_URL": "https://chatgpt.com/backend-api/codex",
     "BRAIN_PROVIDER_AUTH_PROFILES_PATH": str(SECRETS_DIR / "provider-auth-profiles.json"),
     "BRAIN_PROVIDER_AUTH_STATE_DIR": str(SECRETS_DIR / "provider-auth-state"),
-    "EMBEDDING_PROVIDER": "fastembed",
-    "EMBEDDING_MODEL": "intfloat/multilingual-e5-large",
-    "EMBEDDING_DIMENSIONS": "1024",
+    "EMBEDDING_PROVIDER": DEFAULT_EMBEDDING_PROVIDER,
+    "EMBEDDING_MODEL": DEFAULT_EMBEDDING_MODEL,
+    "EMBEDDING_DIMENSIONS": str(DEFAULT_EMBEDDING_DIMENSIONS),
     "GRAPH_DATABASE_PROVIDER": "neo4j",
     "GRAPH_DATABASE_URL": "bolt://localhost:7687",
     "GRAPH_DATABASE_NAME": "neo4j",

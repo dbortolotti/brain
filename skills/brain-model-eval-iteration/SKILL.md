@@ -75,10 +75,7 @@ When the user says `all roles`, treat that as:
 all roles that have selected fine-grained fixtures/tests, excluding embeddings by default
 ```
 
-Do not interpret `all roles` as “only the roles already assigned to the requested model in
-`brain_model_registry.yaml`.
-
-Compute the role list from fixtures, not from the model deployment matrix:
+Compute the role list from fixtures. There is no model registry or role/model matrix:
 
 ```bash
 uv run python - <<'PY'
@@ -91,28 +88,30 @@ PY
 
 If the user explicitly includes embeddings, include `embeddings`; otherwise exclude it.
 
-## Forced Model Registry
+## Model Selection
 
-The current eval CLI intersects `--models <model-ref>` with the model's existing
-`fine_grained_eval_matrix` roles. That is not the desired behavior for this skill.
-For a requested model, create a run-local registry that maps the requested model to every
-selected tested role, while leaving the repo registry untouched.
+Brain now uses one configured LLM model for all LLM-backed roles and one configured
+embedding model for the embedding role:
 
-Create `<run-dir>/forced_model_registry.yaml` before running:
+- LLM default: `openai:gpt-5.5`
+- Embedding default: `fastembed:intfloat/multilingual-e5-large`
+
+Use `--models <provider:model>` only when the user explicitly requests a different
+model for that eval. Do not create a forced registry; no registry is consulted by the
+eval runner.
+
+Create `<run-dir>/selected_roles.txt` before running:
 
 ```bash
-RUN_DIR=<run-dir> MODEL_REF=<model-ref> FIXTURE_SET=production uv run python - <<'PY'
+RUN_DIR=<run-dir> FIXTURE_SET=production uv run python - <<'PY'
 from __future__ import annotations
 
 import os
 from pathlib import Path
 
-import yaml
-
 from memory_stack.evals.model_fixtures import select_fixtures
 
 run_dir = Path(os.environ["RUN_DIR"])
-model_ref = os.environ["MODEL_REF"]
 fixture_set = os.environ.get("FIXTURE_SET", "production")
 explicit_roles = {
     role.strip()
@@ -138,21 +137,11 @@ if not include_embeddings:
 if not roles:
     raise SystemExit("no tested roles selected")
 
-with Path("brain_model_registry.yaml").open(encoding="utf-8") as file:
-    registry = yaml.safe_load(file)
-
-registry["fine_grained_eval_matrix"] = {role: [model_ref] for role in roles}
-
 run_dir.mkdir(parents=True, exist_ok=True)
 (run_dir / "selected_roles.txt").write_text("\n".join(roles) + "\n", encoding="utf-8")
-with (run_dir / "forced_model_registry.yaml").open("w", encoding="utf-8") as file:
-    yaml.safe_dump(registry, file, sort_keys=False)
 print(",".join(roles))
 PY
 ```
-
-Use this generated registry for the eval command. This preserves the requested model and
-forces it across every selected tested non-embedding role.
 
 ## Run Command
 
@@ -160,10 +149,8 @@ Create the output directory, then run:
 
 ```bash
 uv run brain eval models \
-  --registry <run-dir>/forced_model_registry.yaml \
   --fixture-set production \
   --mode fine-grained \
-  --models <model-ref> \
   --roles "$(paste -sd, <run-dir>/selected_roles.txt)" \
   --repeat-runs <repeats> \
   --endpoint-max-concurrency <concurrency> \
@@ -172,7 +159,8 @@ uv run brain eval models \
   --raw-output-dir <run-dir>/raw
 ```
 
-Always pass the selected roles when using a forced model registry. This keeps embeddings
+Add `--models <model-ref>` only when the user explicitly requested a model different from
+the configured production default. Always pass the selected roles so embeddings stay
 excluded unless the user explicitly requested them.
 
 The run must produce:
@@ -311,7 +299,6 @@ After a harness/scoring fix, rerun only failed cases:
 
 ```bash
 uv run brain eval rerun-failed \
-  --registry <run-dir>/forced_model_registry.yaml \
   --source-json <run-dir>/results.json \
   --failed-manifest <run-dir>/failed_tests.jsonl \
   --output-json <run-dir>/results.json \
