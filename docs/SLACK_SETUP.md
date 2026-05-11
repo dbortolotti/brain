@@ -241,7 +241,7 @@ state.
 Production launchd support is scaffolded in:
 
 ```text
-launchd/com.brain.slack-agent.plist.template
+config/deployment/launchd/com.brain.slack-agent.plist.template
 ```
 
 The README expects the production Slack agent to run under:

@@ -44,13 +44,30 @@ def test_validation_workflow_runs_without_production_secrets() -> None:
     assert "secrets." not in workflow
 
 
+def test_deployment_templates_live_under_config_deployment() -> None:
+    expected = {
+        Path("config/deployment/cloudflare/config.example.yml"),
+        Path("config/deployment/launchd/com.brain.mcp.plist.template"),
+        Path("config/deployment/launchd/com.brain.ui.plist.template"),
+        Path("config/deployment/launchd/com.brain.slack-agent.plist.template"),
+        Path("config/deployment/mcp/claude_desktop_config.template.json"),
+    }
+
+    assert all(path.exists() for path in expected)
+    assert not Path("cloudflare").exists()
+    assert not Path("launchd").exists()
+    assert not Path("mcp").exists()
+
+
 def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     script = Path("scripts/deploy-local-production.sh").read_text(encoding="utf-8")
 
     for label in ["com.brain.mcp", "com.brain.ui", "com.brain.slack-agent"]:
         assert label in script
 
-    assert "launchd/com.brain.slack-agent.plist.template" in script
+    assert 'DEPLOYMENT_CONFIG_DIR="$REPO_ROOT/config/deployment"' in script
+    assert "config/deployment" in script
+    assert "$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.slack-agent.plist.template" in script
     assert 'ensure_env_var "BRAIN_SLACK_AGENT_ENABLED" "true"' in script
     assert 'ensure_env_var "BRAIN_SLACK_AGENT_PORT" "8003"' in script
     assert 'BRAIN_DATABASE_URL=$DATABASE_URL' in script
@@ -75,7 +92,7 @@ def test_production_verifier_checks_brain_database_under_shared_data() -> None:
 
 
 def test_cloudflare_routes_slack_to_agent_before_mcp_catchall() -> None:
-    config = Path("cloudflare/config.example.yml").read_text(encoding="utf-8")
+    config = Path("config/deployment/cloudflare/config.example.yml").read_text(encoding="utf-8")
 
     slack_route = "path: /slack*"
     slack_service = "service: http://127.0.0.1:8003"
