@@ -5,6 +5,8 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
+from memory_stack.domain_constants import SOURCE_KINDS
+
 
 MemoryKind = Literal[
     "basic_fact",
@@ -81,19 +83,12 @@ class RememberRequest(BaseModel):
     context: dict[str, Any] = Field(default_factory=dict)
 
 
+SourceKind = Literal[*SOURCE_KINDS]
+
+
 class IngestSourceRequest(BaseModel):
     source: str
-    source_kind: Literal[
-        "auto",
-        "article",
-        "transcript",
-        "markdown",
-        "pdf",
-        "email",
-        "table",
-        "chat_log",
-        "other",
-    ] = "auto"
+    source_kind: SourceKind = "auto"
     title: str | None = None
     why_saved: str | None = None
     extract_memories: bool = True

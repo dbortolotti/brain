@@ -12,7 +12,6 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
-from statistics import mean
 from tempfile import NamedTemporaryFile
 from threading import BoundedSemaphore, Lock
 from typing import Any, Protocol
@@ -867,11 +866,7 @@ def impossible_rescore_transitions(
     return impossible
 
 
-def candidate_for_record(
-    record: dict[str, Any],
-    *,
-    registry_index: dict[str, ModelCandidate] | None = None,
-) -> ModelCandidate:
+def candidate_for_record(record: dict[str, Any]) -> ModelCandidate:
     model_ref = str(record.get("model") or "")
     role = str(record.get("role") or "")
     kind = str(record.get("kind") or ("embedding" if role == "embeddings" else "llm"))
@@ -931,12 +926,8 @@ def raw_call_for_record(record: dict[str, Any]) -> ModelCallResult:
     )
 
 
-def rescore_record(
-    record: dict[str, Any],
-    *,
-    registry_index: dict[str, ModelCandidate] | None = None,
-) -> dict[str, Any]:
-    candidate = candidate_for_record(record, registry_index=registry_index)
+def rescore_record(record: dict[str, Any]) -> dict[str, Any]:
+    candidate = candidate_for_record(record)
     role = str(record.get("role") or "")
     mode = mode_for_roles({role})
     fixture = find_fixture_for_record(
@@ -2004,13 +1995,6 @@ def eligible_counts_by_category(summaries: list[Summary | dict[str, Any]]) -> di
         if summary.eligible:
             counts[summary.role_category] += 1
     return dict(counts)
-
-
-def semantic_quality_score(scores: dict[str, float | None]) -> float | None:
-    numeric_values = [float(value) for value in scores.values() if value is not None]
-    if not numeric_values:
-        return None
-    return mean(numeric_values)
 
 
 def mandatory_role_rows(

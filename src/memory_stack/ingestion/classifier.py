@@ -1,23 +1,13 @@
 from __future__ import annotations
 
-from typing import Any
-
 from pydantic import BaseModel
 
 from memory_stack.brain_models import IngestSourceRequest, RememberRequest
+from memory_stack.domain_constants import SOURCE_KINDS as SOURCE_KIND_VALUES
+from memory_stack.text_utils import string_or_none
 
 
-SOURCE_KINDS = {
-    "auto",
-    "article",
-    "transcript",
-    "markdown",
-    "pdf",
-    "email",
-    "table",
-    "chat_log",
-    "other",
-}
+SOURCE_KINDS = set(SOURCE_KIND_VALUES)
 
 
 class SourceClassification(BaseModel):
@@ -120,10 +110,3 @@ def source_kind_for_input_type(input_type: str, requested_kind: str | None = Non
     if input_type == "source_text":
         return "markdown"
     return "table" if input_type == "table" else input_type
-
-
-def string_or_none(value: Any) -> str | None:
-    if value is None:
-        return None
-    text = str(value).strip()
-    return text or None

@@ -31,17 +31,14 @@ def main() -> int:
 
 
 def soft_reset() -> int:
-    raw_dir = PROJECT_ROOT / "eval" / "results" / "raw"
-    if raw_dir.exists():
-        for path in raw_dir.iterdir():
-            if path.name == ".gitkeep":
-                continue
-            if path.is_dir():
-                shutil.rmtree(path)
-            else:
-                path.unlink()
-    console.print("[green][OK][/green] cleared eval/results/raw")
-    console.print("[yellow][WARN][/yellow] Cognee metadata prune is package-version specific; use hard reset for a full store reset.")
+    brain_dir = PROJECT_ROOT / ".data" / "brain"
+    if brain_dir.exists():
+        shutil.rmtree(brain_dir)
+    console.print("[green][OK][/green] cleared ./.data/brain")
+    console.print(
+        "[yellow][WARN][/yellow] Cognee metadata prune is package-version specific; "
+        "use hard reset for a full store reset."
+    )
     return 0
 
 
@@ -69,4 +66,3 @@ def hard_reset() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

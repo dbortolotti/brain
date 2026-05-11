@@ -188,8 +188,6 @@ if [[ ! -d "$RELEASE_DIR" ]]; then
     --exclude '__pycache__' \
     --exclude '.pytest_cache' \
     --exclude '.ruff_cache' \
-    --exclude 'eval/results/*.csv' \
-    --exclude 'eval/results/raw/*' \
     "$REPO_ROOT/" "$RELEASE_DIR/"
 else
   log "release already exists: $RELEASE_DIR"
@@ -215,9 +213,6 @@ if [[ "$MODEL_SMOKE_SCOPE" != "none" ]]; then
   smoke_args=(--scope "$MODEL_SMOKE_SCOPE")
   if is_true "${BRAIN_MODEL_SMOKE_SKIP_MISSING_KEYS:-false}"; then
     smoke_args+=(--skip-missing-keys)
-  fi
-  if is_true "${BRAIN_MODEL_SMOKE_INCLUDE_JUDGE:-false}"; then
-    smoke_args+=(--include-judge)
   fi
   if [[ -n "${BRAIN_MODEL_SMOKE_TIMEOUT_SECONDS:-}" ]]; then
     smoke_args+=(--timeout "$BRAIN_MODEL_SMOKE_TIMEOUT_SECONDS")

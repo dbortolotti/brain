@@ -565,16 +565,7 @@ def test_live_provider_client_fastembed_embedding_uses_local_vector_size(
         "fastembed_vector",
         lambda model, text: [0.1] * 1024,
     )
-    settings = Settings(
-        profile="local",
-        llm_provider="ollama",
-        llm_model="qwen3:8b",
-        llm_api_key="ollama",
-        embedding_provider="fastembed",
-        embedding_model="intfloat/multilingual-e5-large",
-        embedding_dimensions=1024,
-        allow_cloud_keys_in_local=True,
-    )
+    settings = Settings()
     candidate = ModelCandidate(
         provider="fastembed",
         model="intfloat/multilingual-e5-large",

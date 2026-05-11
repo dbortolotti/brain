@@ -14,9 +14,15 @@ from rich.table import Table
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from memory_stack.config import Settings, load_settings, normalize_provider_name
+from memory_stack.config import Settings, load_settings
 from memory_stack.evals.model_matrix import ModelCandidate
-from memory_stack.model_selection import parse_model_ref
+from memory_stack.model_selection import (
+    configured_embedding,
+    configured_llm,
+    is_embedding_ref,
+    parse_csv_list,
+    parse_model_ref,
+)
 from memory_stack.evals.provider_client import LiveProviderClient, redact as redact_provider_error
 
 
@@ -56,7 +62,7 @@ def main() -> int:
     probes = select_probes(
         settings,
         scope=args.scope,
-        model_refs=parse_csv(args.models),
+        model_refs=parse_csv_list(args.models),
     )
     if not probes:
         console.print("[red][FAIL][/red] no live model probes selected")
@@ -118,11 +124,6 @@ def env_bool(name: str, default: bool) -> bool:
     return value.strip().lower() in {"1", "true", "yes", "on"}
 
 
-def parse_csv(value: str | None) -> list[str] | None:
-    items = [item.strip() for item in (value or "").split(",") if item.strip()]
-    return items or None
-
-
 def select_probes(
     settings: Settings,
     *,
@@ -137,35 +138,28 @@ def select_probes(
 
 
 def active_probes(settings: Settings) -> list[Probe]:
+    llm = configured_llm(settings)
+    embedding = configured_embedding(settings)
     probes = [
         Probe(
-            provider=normalize_provider(settings.llm_provider),
-            model=strip_provider_prefix(settings.llm_provider, settings.llm_model),
+            provider=llm.provider,
+            model=llm.model,
             kind="llm",
             label="active:llm",
         ),
         Probe(
-            provider=normalize_provider(settings.embedding_provider),
-            model=strip_provider_prefix(settings.embedding_provider, settings.embedding_model),
+            provider=embedding.provider,
+            model=embedding.model,
             kind="embedding",
             label="active:embedding",
         ),
     ]
-    if settings.brain_llm_enabled and settings.brain_llm_provider and settings.brain_llm_model:
-        probes.append(
-            Probe(
-                provider=normalize_provider(settings.brain_llm_provider),
-                model=strip_provider_prefix(settings.brain_llm_provider, settings.brain_llm_model),
-                kind="llm",
-                label="active:brain_llm",
-            )
-        )
     return dedupe_probes(probes)
 
 
 def probe_from_ref(ref: str) -> Probe:
     parsed = parse_model_ref(ref)
-    kind = "embedding" if parsed.provider in {"fastembed", "voyage"} or "embedding" in parsed.model else "llm"
+    kind = "embedding" if is_embedding_ref(ref) else "llm"
     return Probe(
         provider=parsed.provider,
         model=parsed.model,
@@ -173,27 +167,6 @@ def probe_from_ref(ref: str) -> Probe:
         label=ref,
         api_model=parsed.model,
     )
-
-
-def normalize_provider(provider: str | None) -> str:
-    normalized = normalize_provider_name(provider)
-    if normalized == "gemini":
-        return "google"
-    if normalized == "bedrock":
-        return "aws-bedrock"
-    return normalized or ""
-
-
-def strip_provider_prefix(provider: str, model: str) -> str:
-    normalized = normalize_provider(provider)
-    for prefix in (f"{normalized}/", f"{normalized}:"):
-        if model.startswith(prefix):
-            return model.removeprefix(prefix)
-    if normalized == "google":
-        for prefix in ("gemini/", "gemini:"):
-            if model.startswith(prefix):
-                return model.removeprefix(prefix)
-    return model
 
 
 def dedupe_probes(probes: list[Probe]) -> list[Probe]:

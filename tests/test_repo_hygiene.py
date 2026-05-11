@@ -10,6 +10,7 @@ DISALLOWED_TRACKED_PATH_PREFIXES = (
     ".venv/",
     "artifacts/",
     "data/",
+    "eval/",
     "eval_reports/",
     "eval_runs/",
     "local-secrets/",

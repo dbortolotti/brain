@@ -23,7 +23,7 @@ semantic projection that can be rebuilt from Brain DB.
 ## Local Dev Setup
 
 ```bash
-cp .env.gemini.example .env
+cp .env.openai.example .env
 make setup
 uv run pytest
 ```
@@ -133,40 +133,22 @@ ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env \
   uv run python scripts/live_model_smoke.py --scope active
 ```
 
-Use `--scope core`, `--scope enabled`, or `--scope all` for registry-wide checks.
-Judge-only models are excluded unless `--include-judge` is set.
-
-To run one tiny live probe against every unique non-skipped model declared in
-`brain_model_registry.yaml`, including disabled and judge-only entries:
-
-```bash
-ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env \
-  uv run python scripts/live_model_smoke.py \
-    --all-registry \
-    --json-output eval_runs/live_model_smoke_all.json
-```
-
 The equivalent Make target is:
 
 ```bash
-ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make model-smoke-all
+ENV_FILE=/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env make model-smoke
 ```
 
-For statistical model-role evals, use the Brain eval CLI. It writes one JSONL
-record per model/role/fixture/repeat, plus an optional Markdown report with
-bootstrap confidence intervals, cost, latency, zero-tolerance failures, and
-pairwise model comparisons:
+For statistical model-role evals, use the Brain eval CLI. Runtime defaults use
+the configured LLM and embedding models; experiments can pass explicit
+`provider:model` refs with `--models`.
 
 ```bash
 uv run brain eval models \
-  --registry brain_model_registry.yaml \
-  --fixture-set production \
-  --roles slack_intake,memory_compiler,entity_resolution,conflict_classifier,recall_synthesizer \
-  --model-set model-test-initial \
-  --bootstrap-samples 5000 \
-  --max-workers 4 \
-  --output eval_runs/prod_$(date +%Y%m%d_%H%M%S).jsonl \
-  --report-md eval_reports/model_eval_$(date +%Y%m%d_%H%M%S).md
+  --fixture-set brain-model-test-v2 \
+  --models openai:gpt-5.5 \
+  --repeat-runs 1 \
+  --output-json eval_runs/model_eval/results.json
 ```
 
 ## Environment Variables
@@ -179,11 +161,10 @@ Core Brain settings:
 - `BRAIN_AUTH_ENABLED=false`
 - `BRAIN_AUTH_TOKEN`
 
-LLM compiler settings, disabled by default:
+LLM compiler settings, disabled by default. When enabled, it uses the same fixed
+runtime LLM as the rest of Brain: `openai:gpt-5.5`.
 
 - `BRAIN_LLM_ENABLED=false`
-- `BRAIN_LLM_PROVIDER`
-- `BRAIN_LLM_MODEL`
 - `LLM_PROVIDER`
 - `LLM_MODEL`
 - `LLM_API_KEY`
@@ -216,13 +197,10 @@ does not bypass Brain DB.
 
 ## Profiles
 
-Profiles are selected through `PROFILE` and provider-specific environment
-variables:
-
-- `gemini` for the Google lane
-- `openai` for the OpenAI lane; text calls default to OpenAI Codex OAuth
-- `local` for Ollama/Fastembed no-cloud use. The local embedding default is
-  `fastembed:intfloat/multilingual-e5-large` with 1024-dimensional vectors.
+Runtime uses one configured LLM and one configured embedding model. The default
+production values are OpenAI `gpt-5.5` for LLM calls and
+`fastembed:intfloat/multilingual-e5-large` with 1024-dimensional vectors for
+local embeddings.
 
 Provider API keys can be stored once and reused across every model for that
 provider:
@@ -258,11 +236,5 @@ uv run brain models auth login --provider openai-codex
 
 Set `OPENAI_AUTH_MODE=api_key` to use `OPENAI_API_KEY` for OpenAI text calls.
 OpenAI embeddings still require `OPENAI_API_KEY`; Codex OAuth is not used as an
-embedding credential. Other providers keep their existing API-key or cloud
-credential settings.
-
-## Legacy Cognee Eval Tools
-
-The old Cognee-first scripts are retained for compatibility and are marked as
-legacy. New work should use the Brain eval harness under
-`src/memory_stack/evals/`.
+embedding credential. Non-runtime providers are available only for explicit
+eval/smoke experiments.

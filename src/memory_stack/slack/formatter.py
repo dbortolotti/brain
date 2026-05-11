@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from memory_stack.brain_models import IngestionReceipt, RecallResponse
+from memory_stack.recall.synthesizer import render_open_loops
 
 
 def format_ingestion_receipt(receipt: IngestionReceipt) -> str:
@@ -44,13 +45,7 @@ def format_recall_response(response: RecallResponse) -> str:
     return response.answer
 
 
-def format_open_loops(loops: list[dict[str, Any]]) -> str:
-    if not loops:
-        return "No open loops found."
-    lines = ["Open loops"]
-    for loop in loops:
-        lines.append(f"- {loop['statement']} [{loop['memory_id']}]")
-    return "\n".join(lines)
+format_open_loops = render_open_loops
 
 
 def format_review(review: dict[str, Any]) -> str:

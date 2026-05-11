@@ -88,7 +88,6 @@ async def slack_commands(
     return JSONResponse(response.as_slack_payload())
 
 
-@app.post("/slack/interaction")
 @app.post("/slack/interactions")
 async def slack_interactions(
     request: Request,

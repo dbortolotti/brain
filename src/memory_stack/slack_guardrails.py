@@ -6,6 +6,12 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field, ValidationError
 
+from memory_stack.domain_constants import (
+    CONFIDENCE_VALUES,
+    SLACK_PROPOSAL_INPUT_TYPES,
+    SLACK_SOURCE_POLICIES,
+)
+
 
 Decision = Literal[
     "ask",
@@ -17,18 +23,9 @@ Decision = Literal[
     "debug",
     "unsupported",
 ]
-InputType = Literal[
-    "auto",
-    "fact",
-    "note",
-    "person_interaction",
-    "open_question",
-    "research_question",
-    "chat_conclusion",
-    "table",
-]
-SourcePolicy = Literal["memory_only", "source_and_memory"]
-Confidence = Literal["low", "medium", "high"]
+InputType = Literal[*SLACK_PROPOSAL_INPUT_TYPES]
+SourcePolicy = Literal[*SLACK_SOURCE_POLICIES]
+Confidence = Literal[*CONFIDENCE_VALUES]
 
 
 SECRET_PATTERNS = [

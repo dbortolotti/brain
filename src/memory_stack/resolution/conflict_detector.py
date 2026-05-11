@@ -9,6 +9,7 @@ from memory_stack.resolution.duplicate_detector import (
     find_duplicate_memory,
     normalized_statement,
 )
+from memory_stack.text_utils import number_word_to_int
 
 
 LIKE_RE = re.compile(r"^(?P<subject>.+?)\s+likes\s+(?P<object>[^.]+)\.?$", re.IGNORECASE)
@@ -230,16 +231,4 @@ def _same_value(left: str | None, right: str | None) -> bool:
 
 
 def _count_value(value: str) -> int:
-    numbers = {
-        "no": 0,
-        "zero": 0,
-        "one": 1,
-        "two": 2,
-        "three": 3,
-        "four": 4,
-        "five": 5,
-    }
-    lowered = value.casefold()
-    if lowered in numbers:
-        return numbers[lowered]
-    return int(value)
+    return number_word_to_int(value)

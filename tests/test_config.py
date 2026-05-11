@@ -34,20 +34,14 @@ def test_normalize_path() -> None:
     assert normalize_path("/mcp/") == "/mcp"
 
 
-def test_local_profile_rejects_cloud_provider() -> None:
+def test_runtime_rejects_non_openai_profile() -> None:
     with pytest.raises(ValueError):
         Settings(
             profile="local",
-            llm_provider="openai",
-            llm_model="gpt-5.5",
-            llm_api_key="sk-test",
-            embedding_provider="fastembed",
-            embedding_model="sentence-transformers/all-MiniLM-L6-v2",
-            embedding_dimensions=384,
         )
 
 
-def test_openai_provider_key_reuses_key_for_llm_and_embeddings(
+def test_openai_api_key_is_used_for_fixed_llm_only(
     tmp_path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -61,9 +55,9 @@ def test_openai_provider_key_reuses_key_for_llm_and_embeddings(
                 "LLM_PROVIDER=openai",
                 "LLM_MODEL=gpt-5.5",
                 "OPENAI_API_KEY=sk-provider",
-                "EMBEDDING_PROVIDER=openai",
-                "EMBEDDING_MODEL=text-embedding-3-small",
-                "EMBEDDING_DIMENSIONS=1536",
+                "EMBEDDING_PROVIDER=fastembed",
+                "EMBEDDING_MODEL=intfloat/multilingual-e5-large",
+                "EMBEDDING_DIMENSIONS=1024",
             ]
         ),
         encoding="utf-8",
@@ -73,10 +67,10 @@ def test_openai_provider_key_reuses_key_for_llm_and_embeddings(
     env = runtime_env(settings)
 
     assert settings.llm_api_key == "sk-provider"
-    assert settings.embedding_api_key == "sk-provider"
+    assert settings.embedding_api_key is None
     assert env["LLM_API_KEY"] == "sk-provider"
-    assert env["EMBEDDING_API_KEY"] == "sk-provider"
     assert env["OPENAI_API_KEY"] == "sk-provider"
+    assert "EMBEDDING_API_KEY" not in env
 
 
 def test_openai_oauth_is_default_and_does_not_export_text_api_key(
@@ -88,9 +82,9 @@ def test_openai_oauth_is_default_and_does_not_export_text_api_key(
         llm_provider="openai",
         llm_model="gpt-5.5",
         openai_api_key="sk-provider",
-        embedding_provider="openai",
-        embedding_model="text-embedding-3-small",
-        embedding_dimensions=1536,
+        embedding_provider="fastembed",
+        embedding_model="intfloat/multilingual-e5-large",
+        embedding_dimensions=1024,
     )
     env = runtime_env(settings)
 
@@ -99,11 +93,11 @@ def test_openai_oauth_is_default_and_does_not_export_text_api_key(
     assert settings.provider_api_key("openai") is None
     assert env["OPENAI_AUTH_MODE"] == "oauth"
     assert "LLM_API_KEY" not in env
-    assert env["EMBEDDING_API_KEY"] == "sk-provider"
+    assert "EMBEDDING_API_KEY" not in env
     assert "OPENAI_API_KEY" not in env
 
 
-def test_openai_profile_allows_local_embedding_provider(
+def test_openai_profile_exports_fixed_models(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     clear_provider_env(monkeypatch)
@@ -132,7 +126,19 @@ def test_openai_profile_allows_local_embedding_provider(
     assert "OPENAI_API_KEY" not in env
 
 
-def test_role_api_keys_override_provider_api_key(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_runtime_rejects_non_default_llm_or_embedding() -> None:
+    with pytest.raises(ValueError, match="runtime LLM is fixed"):
+        Settings(llm_model="gpt-5.4-mini")
+
+    with pytest.raises(ValueError, match="runtime embeddings are fixed"):
+        Settings(
+            embedding_provider="openai",
+            embedding_model="text-embedding-3-small",
+            embedding_dimensions=1536,
+        )
+
+
+def test_llm_api_key_overrides_provider_api_key(monkeypatch: pytest.MonkeyPatch) -> None:
     clear_provider_env(monkeypatch)
     settings = Settings(
         profile="openai",
@@ -141,14 +147,13 @@ def test_role_api_keys_override_provider_api_key(monkeypatch: pytest.MonkeyPatch
         llm_model="gpt-5.5",
         llm_api_key="sk-llm-role",
         openai_api_key="sk-provider",
-        embedding_provider="openai",
-        embedding_model="text-embedding-3-small",
-        embedding_api_key="sk-embedding-role",
-        embedding_dimensions=1536,
+        embedding_provider="fastembed",
+        embedding_model="intfloat/multilingual-e5-large",
+        embedding_dimensions=1024,
     )
 
     assert settings.llm_api_key == "sk-llm-role"
-    assert settings.embedding_api_key == "sk-embedding-role"
+    assert settings.embedding_api_key is None
     assert runtime_env(settings)["OPENAI_API_KEY"] == "sk-provider"
 
 
@@ -192,21 +197,6 @@ def test_provider_key_lookup_supports_non_active_benchmark_providers(
     assert env["VOYAGE_API_KEY"] == "pa-provider"
     assert env["AWS_REGION"] == "eu-west-2"
     assert env["AWS_BEARER_TOKEN_BEDROCK"] == "bedrock-provider"
-
-
-def test_local_profile_rejects_provider_level_cloud_keys() -> None:
-    with pytest.raises(ValueError):
-        Settings(
-            profile="local",
-            llm_provider="ollama",
-            llm_model="qwen3:8b",
-            llm_api_key="ollama",
-            embedding_provider="fastembed",
-            embedding_model="sentence-transformers/all-MiniLM-L6-v2",
-            embedding_dimensions=384,
-            openai_api_key="sk-provider",
-        )
-
 
 def test_public_mcp_url() -> None:
     settings = Settings(

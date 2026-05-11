@@ -35,6 +35,17 @@ from memory_stack.cognee_adapter import (
     list_datasources as list_cognee_datasources,
 )
 from memory_stack.config import Settings, load_settings
+from memory_stack.domain_constants import (
+    ADMIN_COGNEE_DATASETS,
+    ADMIN_COGNEE_OBJECT_TYPES,
+    CONFLICT_ACTIONS,
+    ENTITY_TYPES,
+    FORGET_OBJECT_TYPES,
+    INPUT_TYPES,
+    OPEN_LOOP_STATUSES,
+    RECALL_MODES,
+    SOURCE_KINDS,
+)
 from memory_stack.io import to_jsonable
 from memory_stack.oauth import BrainOAuthProvider, parse_bearer
 from memory_stack.request_logging import RequestResponseLogMiddleware
@@ -113,44 +124,6 @@ class MergeEntitiesRequest(BaseModel):
     duplicate_entity_id: str
     reason: str | None = None
     confirm: bool = False
-
-
-INPUT_TYPES = [
-    "auto",
-    "note",
-    "fact",
-    "thought",
-    "person_interaction",
-    "open_question",
-    "research_question",
-    "chat_conclusion",
-    "table",
-]
-SOURCE_KINDS = [
-    "auto",
-    "article",
-    "transcript",
-    "markdown",
-    "pdf",
-    "email",
-    "table",
-    "chat_log",
-    "other",
-]
-RECALL_MODES = ["auto", "evidence", "profile", "open_loops", "sources", "memories", "debug"]
-ENTITY_TYPES = ["auto", "person", "organization", "place", "concept", "project", "artifact"]
-OPEN_LOOP_STATUSES = ["open", "parked", "in_progress", "closed", "archived", "any"]
-CONFLICT_ACTIONS = [
-    "supersede",
-    "keep_both",
-    "mark_duplicate",
-    "archive_old",
-    "reject_new",
-    "mark_contradiction",
-]
-FORGET_OBJECT_TYPES = ["memory", "source", "entity", "relationship", "open_loop"]
-ADMIN_COGNEE_OBJECT_TYPES = ["memory", "source", "data", "all"]
-ADMIN_COGNEE_DATASETS = ["memory", "sources", "data", "all"]
 
 
 def memory_tool_definitions() -> list[dict[str, Any]]:

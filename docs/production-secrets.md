@@ -56,9 +56,9 @@ none     disable live provider smoke
 ```
 
 Manual workflow dispatch exposes the same scope plus
-`model_smoke_skip_missing_keys` and `model_smoke_include_judge`. Normal smoke
-runs fail on missing credentials. Use `skip_missing_keys=true` only when you want
-to check the providers currently available without blocking on unfetched keys.
+`model_smoke_skip_missing_keys`. Normal smoke runs fail on missing credentials.
+Use `skip_missing_keys=true` only when you want to check the providers currently
+available without blocking on unfetched keys.
 
 The generated config includes metadata for diagnostics:
 
@@ -87,9 +87,11 @@ BRAIN_AUTH_PASSWORD
 `BRAIN_AUTH_PASSWORD` is written to
 `/Volumes/xpg_usb4/prod/brain/shared/secrets/brain-auth-password`.
 
-## Optional Model Provider Secrets
+## Optional Eval Provider Secrets
 
-Set these when you want the full model registry available:
+Runtime uses the configured OpenAI LLM and local FastEmbed embedding model.
+Set these only when you want explicit eval/smoke experiments against additional
+`provider:model` refs:
 
 ```text
 OPENROUTER_API_KEY

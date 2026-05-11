@@ -65,8 +65,6 @@ def active_providers(settings: Settings) -> list[str]:
         canonical_provider(settings.llm_provider),
         canonical_provider(settings.embedding_provider),
     }
-    if settings.brain_llm_provider:
-        active.add(canonical_provider(settings.brain_llm_provider))
     for provider in ("openai", "google", "anthropic", "aws-bedrock", "groq", "voyage"):
         if credential_present(settings, provider):
             active.add(provider)

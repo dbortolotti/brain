@@ -14,6 +14,7 @@ from memory_stack.ingestion.article_loader import load_article
 from memory_stack.ingestion.classifier import source_kind_for_input_type
 from memory_stack.ingestion.table_parser import parse_table, table_summary
 from memory_stack.ingestion.transcript_parser import parse_transcript, transcript_summary
+from memory_stack.text_utils import number_word_to_int, slug, string_or_none
 
 
 FAMILY_TWINS_RE = re.compile(
@@ -54,10 +55,6 @@ WONDER_RE = re.compile(
     r"^I\s+wonder\s+(?P<question>.+?)(?:\.?\s+Need\s+to\s+research\s+this\.?)?$",
     re.IGNORECASE | re.DOTALL,
 )
-
-
-def slug(value: str) -> str:
-    return "_".join(re.findall(r"[a-z0-9]+", value.casefold()))
 
 
 def compact_statement(value: str) -> str:
@@ -262,13 +259,6 @@ def source_for_input(
             metadata=metadata,
         )
     return None
-
-
-def string_or_none(value: object) -> str | None:
-    if value is None:
-        return None
-    text = str(value).strip()
-    return text or None
 
 
 def rule_confidence(input_type: str, cards: list[MemoryCandidate]) -> str:
@@ -625,22 +615,6 @@ def infer_entity_type(value: str) -> str:
     if len(words) >= 2 and all(word[:1].isupper() for word in words):
         return "person"
     return "concept"
-
-
-def number_word_to_int(value: str) -> int:
-    numbers = {
-        "no": 0,
-        "zero": 0,
-        "one": 1,
-        "two": 2,
-        "three": 3,
-        "four": 4,
-        "five": 5,
-    }
-    lowered = value.casefold()
-    if lowered in numbers:
-        return numbers[lowered]
-    return int(value)
 
 
 def infer_topics(text: str) -> list[str]:

@@ -465,7 +465,7 @@ class SlackMemoryAgent:
         raw = self.llm_client.complete_json(
             self._guard_prompt(text, request=request, context=context),
             SlackAgentProposal.model_json_schema(),
-            model=self.settings.brain_llm_model or self.settings.llm_model,
+            model=self.settings.llm_model,
             temperature=0,
         )
         return parse_llm_proposal(raw)

@@ -330,9 +330,9 @@ flowchart TD
 
 ### How to Read the Topology
 
-1. **This is a registry/eval topology with explicit logical branches.** It
-   shows how promoted model roles should compose when Brain uses fine-grained
-   agents. It is not the exact current runtime call graph.
+1. **This is an eval/runtime role-contract topology with explicit logical branches.**
+   It shows how model roles compose in shared prompt contracts. It is not the
+   exact current runtime call graph.
 2. **Decision roles are shown as conditionals.** For example,
    `conflict_candidate_detector` does not just pass data downstream: it chooses
    between no conflict, additive, duplicate, supersession/contradiction, and

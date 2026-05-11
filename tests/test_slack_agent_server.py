@@ -287,40 +287,6 @@ def test_slack_help_command_returns_text_only_payload(tmp_path, monkeypatch) -> 
     assert "/brain recall <query>" in payload["text"]
 
 
-def test_singular_slack_interaction_path_is_supported(tmp_path, monkeypatch) -> None:
-    settings = slack_settings(tmp_path)
-    monkeypatch.setattr(slack_agent_server, "settings", settings)
-    client = TestClient(app)
-    proposed_memory = {
-        "input": "Sam likes Bill Evans.",
-        "input_type": "auto",
-        "source_policy": "memory_only",
-        "confidence": "high",
-        "entities": ["Sam", "Bill Evans"],
-    }
-    interaction = urlencode(
-        {
-            "payload": json.dumps(
-                {
-                    "user": {"id": "U1"},
-                    "channel": {"id": "C1"},
-                    "team": {"id": "T1"},
-                    "actions": [{"value": json.dumps({"proposed_memory": proposed_memory})}],
-                }
-            )
-        }
-    ).encode("utf-8")
-
-    response = client.post(
-        "/slack/interaction",
-        content=interaction,
-        headers={**signed_headers(settings, interaction), "Content-Type": "application/x-www-form-urlencoded"},
-    )
-
-    assert response.status_code == 200
-    assert response.json()["payload"]["receipt"]["dry_run"] is False
-
-
 def test_admin_debug_works_for_admin_and_rejects_non_admin(tmp_path, monkeypatch) -> None:
     settings = slack_settings(tmp_path, brain_slack_admin_user_ids="UADMIN")
     monkeypatch.setattr(slack_agent_server, "settings", settings)

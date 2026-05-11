@@ -13,6 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from rich.console import Console
 
 from memory_stack.config import load_settings
+from production_check_utils import command_exists, uid
 
 
 console = Console()
@@ -137,14 +138,6 @@ def fetch(url: str) -> tuple[int | None, dict[str, str], str]:
 class NoRedirectHandler(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         return None
-
-
-def command_exists(command: str) -> bool:
-    return subprocess.run(["/usr/bin/env", "which", command], capture_output=True).returncode == 0
-
-
-def uid() -> str:
-    return subprocess.check_output(["id", "-u"], text=True).strip()
 
 
 if __name__ == "__main__":

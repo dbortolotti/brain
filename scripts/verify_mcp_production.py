@@ -15,6 +15,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from rich.console import Console
 
 from memory_stack.config import load_settings
+from production_check_utils import command_exists, uid
 
 
 console = Console()
@@ -116,10 +117,6 @@ def check_launchd(label: str, failures: list[str]) -> int | None:
         return pid
     failures.append(f"launchd service loaded but no pid found: {label}")
     return None
-
-
-def uid() -> str:
-    return subprocess.check_output(["id", "-u"], text=True).strip()
 
 
 def parse_launchd_pid(output: str) -> int | None:
@@ -328,10 +325,6 @@ def verified_archive_entries(entries: Any) -> bool:
         if archive and Path(archive).exists():
             return True
     return False
-
-
-def command_exists(command: str) -> bool:
-    return subprocess.run(["/usr/bin/env", "which", command], capture_output=True).returncode == 0
 
 
 if __name__ == "__main__":

@@ -31,7 +31,6 @@ GET  /slack/healthz
 POST /slack/events
 POST /slack/commands
 POST /slack/interactions
-POST /slack/interaction
 ```
 
 ## Prerequisites
@@ -165,8 +164,7 @@ Enable Interactivity & Shortcuts and set:
 Request URL: https://your-public-host.example.com/slack/interactions
 ```
 
-Brain also accepts `/slack/interaction` for compatibility. Interactive
-confirmations are used for proposed Slack memory commits.
+Interactive confirmations are used for proposed Slack memory commits.
 
 ## Start The Services Locally
 

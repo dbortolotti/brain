@@ -14,6 +14,7 @@ from memory_stack.model_selection import (
     DEFAULT_EMBEDDING_PROVIDER,
     DEFAULT_LLM_MODEL,
     DEFAULT_LLM_PROVIDER,
+    strip_provider_prefix,
 )
 
 
@@ -81,7 +82,7 @@ class Settings(BaseSettings):
         case_sensitive=False,
     )
 
-    profile: Literal["openai", "local"] = "openai"
+    profile: Literal["openai"] = "openai"
 
     llm_provider: str = DEFAULT_LLM_PROVIDER
     llm_model: str = DEFAULT_LLM_MODEL
@@ -132,7 +133,6 @@ class Settings(BaseSettings):
     data_root_directory: str = "./.data/data"
 
     google_free_tier: bool = False
-    allow_cloud_keys_in_local: bool = False
     allow_embedding_dimension_change: bool = False
 
     brain_mcp_host: str = "127.0.0.1"
@@ -165,8 +165,6 @@ class Settings(BaseSettings):
     brain_database_url: str = "sqlite:///.data/brain/brain.db"
     brain_owner_name: str = "Daniele"
     brain_llm_enabled: bool = False
-    brain_llm_provider: str | None = None
-    brain_llm_model: str | None = None
     brain_cognee_enabled: bool = False
     brain_cognee_recall_enabled: bool = False
     brain_cognee_memory_dataset: str = "memory"
@@ -212,40 +210,36 @@ class Settings(BaseSettings):
             or self.configured_provider_api_key(self.embedding_provider)
         )
 
-        if self.profile == "local":
-            if self.llm_provider != "ollama":
-                raise ValueError("PROFILE=local requires LLM_PROVIDER=ollama")
+        if self.profile != "openai":
+            raise ValueError("Brain runtime supports PROFILE=openai only")
 
-            if self.embedding_provider not in {"fastembed", "ollama"}:
-                raise ValueError(
-                    "PROFILE=local requires EMBEDDING_PROVIDER=fastembed or ollama"
-                )
+        self.llm_provider = normalize_provider_name(self.llm_provider) or self.llm_provider
+        self.llm_model = strip_provider_prefix(self.llm_provider, self.llm_model)
+        if self.llm_provider != DEFAULT_LLM_PROVIDER or self.llm_model != DEFAULT_LLM_MODEL:
+            raise ValueError(
+                "Brain runtime LLM is fixed to "
+                f"{DEFAULT_LLM_PROVIDER}:{DEFAULT_LLM_MODEL}; "
+                "use eval/smoke --models for explicit model experiments."
+            )
 
-            if not self.allow_cloud_keys_in_local:
-                cloud_indicators = [
-                    self.llm_api_key and self.llm_api_key.startswith("sk-"),
-                    self.embedding_api_key and self.embedding_api_key.startswith("sk-"),
-                    self.llm_api_key and self.llm_api_key.startswith("AIza"),
-                    self.embedding_api_key and self.embedding_api_key.startswith("AIza"),
-                    self.openai_api_key,
-                    self.gemini_api_key,
-                    self.google_api_key,
-                    self.anthropic_api_key,
-                    self.aws_bearer_token_bedrock,
-                    self.groq_api_key,
-                    self.voyage_api_key,
-                    self.llm_provider in {"openai", "gemini"},
-                    self.embedding_provider in {"openai", "gemini"},
-                ]
-                if any(cloud_indicators):
-                    raise ValueError(
-                        "PROFILE=local appears to contain cloud provider settings. "
-                        "Set ALLOW_CLOUD_KEYS_IN_LOCAL=true only if intentional."
-                    )
-
-        if self.profile == "openai":
-            if self.llm_provider != "openai":
-                raise ValueError("PROFILE=openai requires LLM_PROVIDER=openai")
+        self.embedding_provider = (
+            normalize_provider_name(self.embedding_provider) or self.embedding_provider
+        )
+        self.embedding_model = strip_provider_prefix(
+            self.embedding_provider,
+            self.embedding_model,
+        )
+        if (
+            self.embedding_provider != DEFAULT_EMBEDDING_PROVIDER
+            or self.embedding_model != DEFAULT_EMBEDDING_MODEL
+            or self.embedding_dimensions != DEFAULT_EMBEDDING_DIMENSIONS
+        ):
+            raise ValueError(
+                "Brain runtime embeddings are fixed to "
+                f"{DEFAULT_EMBEDDING_PROVIDER}:{DEFAULT_EMBEDDING_MODEL} "
+                f"with {DEFAULT_EMBEDDING_DIMENSIONS} dimensions; "
+                "use eval/smoke --models for explicit embedding experiments."
+            )
 
         self.brain_mcp_path = normalize_path(self.brain_mcp_path)
         self.brain_public_mcp_path = normalize_path(self.brain_public_mcp_path)
@@ -402,7 +396,6 @@ def provider_api_environment(settings: Settings) -> dict[str, str]:
     providers = {
         normalize_provider_name(settings.llm_provider),
         normalize_provider_name(settings.embedding_provider),
-        normalize_provider_name(settings.brain_llm_provider),
     }
     providers.update(CANONICAL_PROVIDER_API_KEY_PROVIDERS)
     values: dict[str, str] = {}
@@ -472,8 +465,6 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "BRAIN_DATABASE_URL": settings.brain_database_url,
         "BRAIN_OWNER_NAME": settings.brain_owner_name,
         "BRAIN_LLM_ENABLED": str(settings.brain_llm_enabled).lower(),
-        "BRAIN_LLM_PROVIDER": settings.brain_llm_provider or "",
-        "BRAIN_LLM_MODEL": settings.brain_llm_model or "",
         "BRAIN_COGNEE_ENABLED": str(settings.brain_cognee_enabled).lower(),
         "BRAIN_COGNEE_RECALL_ENABLED": str(settings.brain_cognee_recall_enabled).lower(),
         "BRAIN_COGNEE_MEMORY_DATASET": settings.brain_cognee_memory_dataset,

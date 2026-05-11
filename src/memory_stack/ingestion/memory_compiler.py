@@ -48,7 +48,7 @@ def compile_with_llm(
         llm_client.complete_json(
             prompt,
             compiler_output_schema(),
-            model=settings.brain_llm_model or settings.llm_model,
+            model=settings.llm_model,
             temperature=0,
         )
     )

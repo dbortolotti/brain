@@ -9,6 +9,7 @@ from rich.console import Console
 from memory_stack.config import load_settings
 from memory_stack.evals.model_runner import ModelEvalRunConfig, run_model_evals, run_rescore, run_rerun_failed
 from memory_stack.evals.runner import run_golden_evals
+from memory_stack.model_selection import parse_csv_list, parse_csv_set
 
 
 app = typer.Typer(no_args_is_help=False)
@@ -55,7 +56,7 @@ def models(
     config = ModelEvalRunConfig(
         fixture_set=fixture_set,
         mode=mode,
-        roles=parse_csv(roles),
+        roles=parse_csv_set(roles),
         model_refs=parse_csv_list(model_refs),
         include_judge=include_judge,
         repeat_runs=resolved_repeat_runs,
@@ -142,15 +143,6 @@ def run_golden_command(output: str | None) -> None:
         console.print(f"[green]wrote[/green] {path}")
     else:
         console.print_json(data=result["metrics"])
-
-
-def parse_csv(value: str | None) -> set[str]:
-    return {item.strip() for item in (value or "").split(",") if item.strip()}
-
-
-def parse_csv_list(value: str | None) -> list[str] | None:
-    items = [item.strip() for item in (value or "").split(",") if item.strip()]
-    return items or None
 
 
 def progress_printer():

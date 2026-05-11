@@ -16,6 +16,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from rich.console import Console
 
 from memory_stack.config import load_settings
+from production_check_utils import command_exists, uid
 
 
 console = Console()
@@ -215,14 +216,6 @@ def check_cloudflared(failures: list[str]) -> None:
         failures.append("cloudflared launchd service has no running pid")
         return
     console.print("[green][OK][/green] cloudflared launchd service running")
-
-
-def command_exists(command: str) -> bool:
-    return subprocess.run(["/usr/bin/env", "which", command], capture_output=True).returncode == 0
-
-
-def uid() -> str:
-    return subprocess.check_output(["id", "-u"], text=True).strip()
 
 
 if __name__ == "__main__":

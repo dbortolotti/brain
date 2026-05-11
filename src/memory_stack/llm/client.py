@@ -16,9 +16,8 @@ class ConfiguredLLMClient:
 
     def complete_json(self, prompt: str, schema: dict[str, Any], **kwargs: Any) -> dict[str, Any]:
         del prompt, schema, kwargs
-        provider = self.settings.brain_llm_provider or self.settings.llm_provider
         raise RuntimeError(
-            f"Brain LLM provider '{provider}' is configured but no real provider client is wired yet."
+            f"Brain LLM provider '{self.settings.llm_provider}' is configured but no real provider client is wired yet."
         )
 
 

@@ -69,3 +69,12 @@ def is_embedding_ref(ref: str) -> bool:
     parsed = parse_model_ref(ref)
     model = parsed.model.lower()
     return parsed.provider in EMBEDDING_PROVIDERS or "embedding" in model or model.startswith("intfloat/")
+
+
+def parse_csv_list(value: str | None) -> list[str] | None:
+    items = [item.strip() for item in (value or "").split(",") if item.strip()]
+    return items or None
+
+
+def parse_csv_set(value: str | None) -> set[str]:
+    return set(parse_csv_list(value) or [])
