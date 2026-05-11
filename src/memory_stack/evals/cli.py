@@ -9,7 +9,6 @@ from rich.console import Console
 from memory_stack.config import load_settings
 from memory_stack.evals.e2e_model_suite import run_e2e_model_suite
 from memory_stack.evals.model_runner import ModelEvalRunConfig, run_model_evals, run_rescore, run_rerun_failed
-from memory_stack.evals.provider_client import LiveProviderClient
 from memory_stack.evals.runner import run_golden_evals
 from memory_stack.model_selection import parse_csv_list, parse_csv_set
 
@@ -97,11 +96,8 @@ def e2e_models(
     result = run_e2e_model_suite(
         settings,
         model_ref=model_ref,
-        client=LiveProviderClient(
-            settings,
-            retry_attempts=retry_attempts,
-            retry_backoff_seconds=retry_backoff_seconds,
-        ),
+        retry_attempts=retry_attempts,
+        retry_backoff_seconds=retry_backoff_seconds,
     )
     output_json.write_text(json.dumps(result, indent=2, default=str), encoding="utf-8")
     console.print(f"[green]wrote[/green] {output_json}")

@@ -1554,7 +1554,7 @@ def score_relationships(memory_cards: list[Any], expected_relationships: list[st
         for relationship in card.get("relationships") or []:
             if isinstance(relationship, dict):
                 predicates.add(normalize(str(relationship.get("predicate", ""))))
-    hits = sum(1 for predicate in expected_relationships if normalize(predicate) in predicates)
+    hits = sum(1 for predicate in expected_relationships if predicate_present(predicate, predicates))
     return hits / len(expected_relationships)
 
 
@@ -1801,6 +1801,8 @@ TERM_ALIASES: dict[str, tuple[str, ...]] = {
         "brain should remain the source of truth",
         "brain should be treated as the source of truth",
     ),
+    "memory_id": ("memory id",),
+    "source_id": ("source id",),
     "clarif": ("clarify", "clarification", "specify", "resolve ambiguity", "which memory"),
     "clarify": ("clarification", "ask_clarification", "ask for clarification"),
     "do not save": ("do not store", "don't save", "don’t save", "don't store", "don’t store", "ignore"),
@@ -2403,6 +2405,30 @@ def score_source_classification(payload: dict[str, Any], fixture: ModelEvalFixtu
 
 
 def expected_source_classification(fixture: ModelEvalFixture) -> dict[str, Any]:
+    explicit_expected_keys = {
+        "input_class",
+        "source_kind",
+        "should_create_source",
+        "should_extract_memories",
+    }
+    if explicit_expected_keys <= set(fixture.expected):
+        return {
+            "input_class": fixture.expected["input_class"],
+            "source_kind": fixture.expected["source_kind"],
+            "should_create_source": fixture.expected["should_create_source"],
+            "should_extract_memories": fixture.expected["should_extract_memories"],
+            **{
+                key: fixture.expected[key]
+                for key in (
+                    "input_class_any",
+                    "source_kind_any",
+                    "should_create_source_any",
+                    "should_extract_memories_any",
+                )
+                if key in fixture.expected
+            },
+        }
+
     text = fixture.input_text.strip()
     lowered = text.casefold()
     fixture_id = str(fixture.context.get("base_fixture_id", fixture.id))

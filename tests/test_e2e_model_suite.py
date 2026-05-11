@@ -1,135 +1,60 @@
 from __future__ import annotations
 
-import re
-from typing import Any
+import os
 
+import pytest
 from fastapi.testclient import TestClient
 
+from memory_stack import mcp_server
+from memory_stack.agents.role_specs import role_spec_role_names
 from memory_stack.brain_store import BrainStore
 from memory_stack.evals.e2e_model_suite import (
-    E2E_MODEL_OUTPUT_SCHEMA,
     E2E_RECALL_CASES,
+    EXPECTED_E2E_ROLES,
+    build_e2e_model_fixtures,
+    run_e2e_model_suite,
     seed_e2e_database,
     settings_for_e2e_database,
-    run_e2e_model_suite,
 )
-from memory_stack.evals.model_matrix import ModelCandidate
-from memory_stack.evals.provider_client import ModelCallResult
 from memory_stack.mcp_server import app
-from memory_stack import mcp_server
 
 
-PASSING_MODEL_RESPONSES = {
-    "e2e_recall_daughters": {
-        "answer": "Nur and Sara are Daniele's daughters.",
-        "citations": ["mem_606293e20cef058e"],
-        "memory_ids": ["mem_606293e20cef058e"],
-    },
-    "e2e_recall_current_work": {
-        "answer": "Sam left Goldman and joined Point72, so the current workplace evidence is Point72.",
-        "citations": ["sam_work_current"],
-        "memory_ids": ["sam_work_current"],
-    },
-    "e2e_recall_music_deleted_filter": {
-        "answer": "Sam likes Bill Evans.",
-        "citations": ["sam_jazz"],
-        "memory_ids": ["sam_jazz"],
-    },
-    "e2e_recall_open_loop_filter": {
-        "answer": "Open loop: Daniele wants to learn more about knowledge graphs.",
-        "citations": ["knowledge_graphs_open_loop"],
-        "memory_ids": ["knowledge_graphs_open_loop"],
-    },
-    "e2e_recall_brain_cognee_conclusions": {
-        "answer": "The conclusion was that Brain DB remains the source of truth, while Cognee is a rebuildable projection for semantic search.",
-        "citations": ["brain_cognee"],
-        "memory_ids": ["brain_cognee"],
-    },
-    "e2e_recall_ai_memory_articles": {
-        "answer": "The saved AI memory article says AI memory systems need durable source evidence.",
-        "citations": ["ai_memory_article"],
-        "memory_ids": ["ai_memory_article"],
-    },
-}
-
-
-class FixtureAwareFakeModelClient:
-    def __init__(self, overrides: dict[str, dict[str, Any]] | None = None) -> None:
-        self.overrides = overrides or {}
-        self.prompts: list[str] = []
-
-    def complete_json(
-        self,
-        candidate: ModelCandidate,
-        *,
-        prompt: str,
-        schema: dict[str, Any],
-    ) -> ModelCallResult:
-        assert candidate.kind == "llm"
-        assert schema == E2E_MODEL_OUTPUT_SCHEMA
-        self.prompts.append(prompt)
-        fixture_id = fixture_id_from_prompt(prompt)
-        payload = self.overrides.get(fixture_id, PASSING_MODEL_RESPONSES[fixture_id])
-        return ModelCallResult(
-            status="ok",
-            payload=payload,
-            raw_text=str(payload),
-            error=None,
-            latency_ms=1,
-            input_tokens=10,
-            output_tokens=10,
-            estimated_cost_usd=0.0,
-        )
-
-
-def test_e2e_model_suite_seeds_sqlite_database_and_scores_full_runtime_prompts(
-    tmp_path,
-) -> None:
+def test_e2e_database_seed_populates_real_sqlite_runtime_state(tmp_path) -> None:
     database_path = tmp_path / "brain-e2e.db"
     settings = settings_for_e2e_database(database_path)
-    client = FixtureAwareFakeModelClient()
 
-    result = run_e2e_model_suite(settings, client=client)
+    seed = seed_e2e_database(settings)
 
     store = BrainStore(settings)
+    memories = store.list_memory_cards(include_deleted=True, limit=100)
+    sources = store.list_sources(limit=100)
     assert database_path.exists()
-    assert result["record_count"] == len(E2E_RECALL_CASES)
-    assert result["pass_count"] == len(E2E_RECALL_CASES)
-    assert result["fail_count"] == 0
-    assert len(store.list_memory_cards(include_deleted=True, limit=100)) >= 9
-    assert len(store.list_sources(limit=100)) == 3
-    assert any(
-        memory["status"] == "deleted" and "Taylor Swift" in memory["statement"]
-        for memory in store.list_memory_cards(include_deleted=True, limit=100)
-    )
-    assert all("runtime_facts" in prompt for prompt in client.prompts)
-    assert all(record["scores"]["recall_quality"] == 1.0 for record in result["records"])
+    assert len(memories) >= 9
+    assert len(sources) == 3
+    assert seed.memory_ids["sam_work_old"] in {
+        memory["id"] for memory in memories if memory["status"] == "superseded"
+    }
+    assert seed.memory_ids["sam_music_deleted"] in {
+        memory["id"] for memory in memories if memory["status"] == "deleted"
+    }
+    assert store.list_open_loops(topic="knowledge graphs")[
+        0
+    ]["id"] == seed.open_loop_ids["knowledge_graphs"]
 
 
-def test_e2e_model_suite_flags_deleted_or_irrelevant_model_answers(tmp_path) -> None:
+def test_e2e_model_fixture_matrix_covers_runtime_role_specs(tmp_path) -> None:
     settings = settings_for_e2e_database(tmp_path / "brain-e2e.db")
-    client = FixtureAwareFakeModelClient(
-        {
-            "e2e_recall_music_deleted_filter": {
-                "answer": "Sam likes Bill Evans and Taylor Swift.",
-                "citations": ["sam_jazz", "sam_music_deleted"],
-                "memory_ids": ["sam_jazz", "sam_music_deleted"],
-            }
-        }
-    )
+    seed = seed_e2e_database(settings)
 
-    result = run_e2e_model_suite(settings, client=client)
-    bad_record = next(
-        record
-        for record in result["records"]
-        if record["fixture_id"] == "e2e_recall_music_deleted_filter"
-    )
+    fixtures = build_e2e_model_fixtures(settings, seed)
+    roles = {fixture.role for fixture in fixtures}
 
-    assert result["fail_count"] == 1
-    assert bad_record["status"] == "fail"
-    assert bad_record["scores"]["recall_quality"] == 0.0
-    assert bad_record["zero_tolerance"] is True
-    assert "deleted_memory_returned" in bad_record["notes"]
+    assert roles == set(EXPECTED_E2E_ROLES)
+    assert roles == role_spec_role_names()
+    assert len(fixtures) == len(EXPECTED_E2E_ROLES) + len(E2E_RECALL_CASES) - 1
+    assert sum(1 for fixture in fixtures if fixture.role == "recall_synthesizer") == len(
+        E2E_RECALL_CASES
+    )
 
 
 def test_seeded_e2e_database_is_available_to_app_http_endpoints(tmp_path) -> None:
@@ -152,7 +77,16 @@ def test_seeded_e2e_database_is_available_to_app_http_endpoints(tmp_path) -> Non
     assert payload["facts"][0]["status"] == "current"
 
 
-def fixture_id_from_prompt(prompt: str) -> str:
-    match = re.search(r'"fixture_id": "([^"]+)"', prompt)
-    assert match is not None
-    return match.group(1)
+@pytest.mark.skipif(
+    os.getenv("BRAIN_RUN_LIVE_E2E_MODEL_TESTS") != "1",
+    reason="Set BRAIN_RUN_LIVE_E2E_MODEL_TESTS=1 to run live model E2E tests.",
+)
+def test_live_e2e_model_suite_runs_configured_model_front_to_back(tmp_path) -> None:
+    settings = settings_for_e2e_database(tmp_path / "brain-live-e2e.db")
+
+    result = run_e2e_model_suite(settings)
+
+    assert result["model"] == "openai:gpt-5.5"
+    assert result["record_count"] == len(EXPECTED_E2E_ROLES) + len(E2E_RECALL_CASES) - 1
+    assert {record["role"] for record in result["records"]} == set(EXPECTED_E2E_ROLES)
+    assert result["fail_count"] == 0

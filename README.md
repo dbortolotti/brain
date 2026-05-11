@@ -153,12 +153,20 @@ uv run brain eval models \
 
 For full end-to-end model checks, use the E2E model suite. It creates a fresh
 SQLite Brain database, seeds it through the app service layer, retrieves runtime
-facts/evidence, and asks the model to synthesize answers from that full context.
+facts/evidence, and calls the live configured model against the same shared role
+contracts used by runtime. The suite covers every checked-in fine-grained role
+spec, plus recall synthesis cases that use real runtime recall payloads.
 
 ```bash
 uv run brain eval e2e-models \
   --model openai:gpt-5.5 \
   --output-json eval_runs/e2e_model/results.json
+```
+
+The pytest live E2E gate is opt-in because it makes provider calls:
+
+```bash
+BRAIN_RUN_LIVE_E2E_MODEL_TESTS=1 uv run pytest tests/test_e2e_model_suite.py -q
 ```
 
 ## Environment Variables
