@@ -127,6 +127,10 @@ Example commands:
 /brain help
 ```
 
+`/brain help` returns Block Kit buttons for common command templates. Slack does
+not let app buttons insert text into the user's composer directly, so each
+button returns a copyable template instead.
+
 The Slack slash command sends form-encoded payloads to `/slack/commands`; Brain
 validates the Slack signature before parsing the command text.
 
@@ -149,7 +153,10 @@ message.im
 ```
 
 Use app mentions or DMs for free-form recall/profile/remember routing. The agent
-strips bot mentions before parsing the message.
+strips bot mentions before parsing the message. Event-based DMs and mentions do
+not use Slack's slash-command response channel, so Brain replies by calling
+Slack `chat.postMessage`; this requires `BRAIN_SLACK_BOT_TOKEN` and the
+`chat:write` bot scope.
 
 ## Configure Interactivity
 

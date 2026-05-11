@@ -87,6 +87,80 @@ def test_non_allowlisted_user_is_rejected(tmp_path, monkeypatch) -> None:
     assert response.status_code == 403
 
 
+def test_slack_dm_event_posts_response_with_bot_token(tmp_path, monkeypatch) -> None:
+    settings = slack_settings(tmp_path, brain_slack_bot_token="xoxb-test")
+    monkeypatch.setattr(slack_agent_server, "settings", settings)
+    posted: list[dict[str, object]] = []
+
+    async def fake_post_slack_message(settings, *, channel, response, thread_ts=None):
+        posted.append(
+            {
+                "settings": settings,
+                "channel": channel,
+                "response": response,
+                "thread_ts": thread_ts,
+            }
+        )
+        return True
+
+    monkeypatch.setattr(slack_agent_server, "post_slack_message", fake_post_slack_message)
+    client = TestClient(app)
+    body = json.dumps(
+        {
+            "type": "event_callback",
+            "team_id": "T1",
+            "event": {
+                "type": "message",
+                "channel_type": "im",
+                "text": "help",
+                "user": "U1",
+                "channel": "C1",
+                "ts": "1700000000.0001",
+            },
+        }
+    ).encode("utf-8")
+
+    response = client.post(
+        "/slack/events",
+        content=body,
+        headers=signed_headers(settings, body),
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {"ok": True, "posted": True}
+    assert posted[0]["channel"] == "C1"
+    assert posted[0]["thread_ts"] == "1700000000.0001"
+    assert "/brain remember <memory>" in posted[0]["response"]["text"]
+
+
+def test_slack_bot_event_is_ignored_to_avoid_reply_loop(tmp_path, monkeypatch) -> None:
+    settings = slack_settings(tmp_path, brain_slack_bot_token="xoxb-test")
+    monkeypatch.setattr(slack_agent_server, "settings", settings)
+    client = TestClient(app)
+    body = json.dumps(
+        {
+            "type": "event_callback",
+            "team_id": "T1",
+            "event": {
+                "type": "message",
+                "subtype": "bot_message",
+                "bot_id": "B1",
+                "text": "help",
+                "channel": "C1",
+            },
+        }
+    ).encode("utf-8")
+
+    response = client.post(
+        "/slack/events",
+        content=body,
+        headers=signed_headers(settings, body),
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {"ok": True, "ignored": True}
+
+
 def test_slack_routes_are_separate_from_mcp(tmp_path, monkeypatch) -> None:
     settings = slack_settings(tmp_path)
     monkeypatch.setattr(slack_agent_server, "settings", settings)
@@ -156,6 +230,44 @@ def test_slack_interaction_confirmation_commits_proposed_memory(tmp_path, monkey
 
     assert response.status_code == 200
     assert response.json()["payload"]["receipt"]["dry_run"] is False
+
+
+def test_slack_help_button_returns_copyable_template(tmp_path, monkeypatch) -> None:
+    settings = slack_settings(tmp_path)
+    monkeypatch.setattr(slack_agent_server, "settings", settings)
+    client = TestClient(app)
+    command = command_body("help", user_id="U1")
+    command_response = client.post(
+        "/slack/commands",
+        content=command,
+        headers={**signed_headers(settings, command), "Content-Type": "application/x-www-form-urlencoded"},
+    )
+    action_value = command_response.json()["blocks"][1]["elements"][1]["value"]
+    interaction = urlencode(
+        {
+            "payload": json.dumps(
+                {
+                    "user": {"id": "U1"},
+                    "channel": {"id": "C1"},
+                    "team": {"id": "T1"},
+                    "actions": [{"action_id": "brain_help_template", "value": action_value}],
+                }
+            )
+        }
+    ).encode("utf-8")
+
+    response = client.post(
+        "/slack/interactions",
+        content=interaction,
+        headers={**signed_headers(settings, interaction), "Content-Type": "application/x-www-form-urlencoded"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["payload"] == {
+        "command": "recall",
+        "template": "/brain recall <query>",
+    }
+    assert "`/brain recall <query>`" in response.json()["text"]
 
 
 def test_singular_slack_interaction_path_is_supported(tmp_path, monkeypatch) -> None:

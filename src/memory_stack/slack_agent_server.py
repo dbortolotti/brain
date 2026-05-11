@@ -10,6 +10,7 @@ from urllib.parse import parse_qs
 
 from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.responses import JSONResponse
+import httpx
 
 from memory_stack.config import Settings, load_settings
 from memory_stack.slack_memory_agent import SlackAgentRequest, SlackMemoryAgent
@@ -41,6 +42,9 @@ async def slack_events(
         return JSONResponse({"challenge": payload.get("challenge")})
 
     event = payload.get("event") or {}
+    if should_ignore_event(event):
+        return JSONResponse({"ok": True, "ignored": True})
+
     slack_request = SlackAgentRequest(
         text=strip_bot_mention(str(event.get("text") or "")),
         user_id=str(event.get("user") or payload.get("user_id") or ""),
@@ -52,7 +56,13 @@ async def slack_events(
     )
     require_slack_allowlist(slack_request, settings)
     response = SlackMemoryAgent(settings).handle(slack_request)
-    return JSONResponse(response.as_slack_payload())
+    posted = await post_slack_message(
+        settings,
+        channel=slack_request.channel_id,
+        response=response.as_slack_payload(),
+        thread_ts=slack_request.thread_ts or slack_request.message_ts,
+    )
+    return JSONResponse({"ok": True, "posted": posted})
 
 
 @app.post("/slack/commands")
@@ -93,17 +103,20 @@ async def slack_interactions(
     channel = payload.get("channel") or {}
     team = payload.get("team") or {}
     action = (payload.get("actions") or [{}])[0]
-    proposed_memory = json.loads(action.get("value") or "{}").get("proposed_memory")
+    action_value = json.loads(action.get("value") or "{}")
+    proposed_memory = action_value.get("proposed_memory")
+    help_command = action_value.get("help_command")
     slack_request = SlackAgentRequest(
-        text="confirm",
+        text=f"help-template {help_command}" if help_command else "confirm",
         user_id=str(user.get("id") or ""),
         channel_id=str(channel.get("id") or ""),
         team_id=str(team.get("id") or ""),
         thread_ts=(payload.get("message") or {}).get("thread_ts"),
         message_ts=(payload.get("message") or {}).get("ts"),
         source="interaction",
-        confirmed=True,
+        confirmed=help_command is None,
         proposed_memory=proposed_memory,
+        help_command=help_command,
     )
     require_slack_allowlist(slack_request, settings)
     response = SlackMemoryAgent(settings).handle(slack_request)
@@ -141,6 +154,56 @@ def verify_slack_request(
     expected = f"v0={digest}"
     if not hmac.compare_digest(expected, signature):
         raise HTTPException(status_code=401, detail="Invalid Slack signature.")
+
+
+def should_ignore_event(event: dict[str, Any]) -> bool:
+    return bool(
+        event.get("bot_id")
+        or event.get("subtype") in {"bot_message", "message_deleted", "message_changed"}
+    )
+
+
+async def post_slack_message(
+    active_settings: Settings,
+    *,
+    channel: str,
+    response: dict[str, Any],
+    thread_ts: str | None = None,
+) -> bool:
+    if not active_settings.brain_slack_bot_token:
+        return False
+    payload: dict[str, Any] = {
+        "channel": channel,
+        "text": str(response.get("text") or ""),
+    }
+    if response.get("blocks"):
+        payload["blocks"] = response["blocks"]
+    if thread_ts:
+        payload["thread_ts"] = thread_ts
+    async with httpx.AsyncClient(timeout=10) as client:
+        slack_response = await client.post(
+            "https://slack.com/api/chat.postMessage",
+            headers={
+                "Authorization": f"Bearer {active_settings.brain_slack_bot_token}",
+                "Content-Type": "application/json; charset=utf-8",
+            },
+            json=payload,
+        )
+    if slack_response.status_code >= 400:
+        raise HTTPException(
+            status_code=502,
+            detail=f"Slack chat.postMessage failed: HTTP {slack_response.status_code}",
+        )
+    try:
+        data = slack_response.json()
+    except ValueError as exc:
+        raise HTTPException(status_code=502, detail="Slack chat.postMessage returned invalid JSON.") from exc
+    if not data.get("ok"):
+        raise HTTPException(
+            status_code=502,
+            detail=f"Slack chat.postMessage failed: {data.get('error', 'unknown_error')}",
+        )
+    return True
 
 
 def require_slack_allowlist(slack_request: SlackAgentRequest, active_settings: Settings) -> None:

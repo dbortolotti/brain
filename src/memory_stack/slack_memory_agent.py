@@ -56,6 +56,7 @@ class SlackAgentRequest:
     source: str = "slash_command"
     confirmed: bool = False
     proposed_memory: dict[str, Any] | None = None
+    help_command: str | None = None
 
 
 @dataclass(frozen=True)
@@ -187,6 +188,8 @@ class SlackMemoryAgent:
             return self._handle_help()
 
         command, argument = split_intent(normalized)
+        if command == "help_template":
+            return self._handle_help_template(argument)
         if command == "help":
             return self._handle_help()
         if command == "remember":
@@ -226,6 +229,20 @@ class SlackMemoryAgent:
                     "help",
                 ]
             },
+            blocks=help_blocks(),
+        )
+
+    def _handle_help_template(self, command: str) -> SlackAgentResponse:
+        template = HELP_COMMAND_TEMPLATES.get(command)
+        if template is None:
+            return self._handle_help()
+        return SlackAgentResponse(
+            decision="help_template",
+            text=(
+                "Slack cannot insert text into your message box from a bot button. "
+                f"Use this template:\n`{template}`"
+            ),
+            payload={"command": command, "template": template},
         )
 
     def _handle_remember(
@@ -549,6 +566,7 @@ def split_intent(text: str) -> tuple[str, str]:
         "open_loop": "open_loops",
         "memory": "get_memory",
         "undo": "undo_last",
+        "help_template": "help_template",
     }
     if normalized in {
         "help",
@@ -560,6 +578,7 @@ def split_intent(text: str) -> tuple[str, str]:
         "get_memory",
         "review",
         "undo_last",
+        "help_template",
         "debug",
     }:
         return aliases.get(normalized, normalized), argument
@@ -569,6 +588,16 @@ def split_intent(text: str) -> tuple[str, str]:
     if lower.startswith(("what ", "who ", "tell me ", "find ")):
         return "recall", text
     return "unsupported", text
+
+
+HELP_COMMAND_TEMPLATES = {
+    "remember": "/brain remember <memory>",
+    "recall": "/brain recall <query>",
+    "profile": "/brain profile <entity>",
+    "open_loops": "/brain open-loops [topic]",
+    "review": "/brain review",
+    "undo_last": "/brain undo-last",
+}
 
 
 def slack_help_text() -> str:
@@ -586,6 +615,42 @@ def slack_help_text() -> str:
             "/brain help - show this help",
         ]
     )
+
+
+def help_blocks() -> list[dict[str, Any]]:
+    buttons = [
+        ("Remember", "remember"),
+        ("Recall", "recall"),
+        ("Profile", "profile"),
+        ("Open loops", "open_loops"),
+        ("Review", "review"),
+        ("Undo last", "undo_last"),
+    ]
+    return [
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": (
+                    "*Brain commands*\n"
+                    "Pick a template. Slack does not allow app buttons to insert text "
+                    "into your composer, so I will show a copyable command."
+                ),
+            },
+        },
+        {
+            "type": "actions",
+            "elements": [
+                {
+                    "type": "button",
+                    "text": {"type": "plain_text", "text": label},
+                    "action_id": "brain_help_template",
+                    "value": json.dumps({"help_command": command}, separators=(",", ":")),
+                }
+                for label, command in buttons
+            ],
+        },
+    ]
 
 
 def split_first(text: str) -> tuple[str, str]:

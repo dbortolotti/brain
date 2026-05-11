@@ -81,6 +81,10 @@ Show available commands:
 /brain help
 ```
 
+Help includes buttons for common command templates. Slack does not allow Brain
+to insert text directly into your message box from those buttons, so pressing
+one shows a copyable command template.
+
 Profile an entity:
 
 ```text

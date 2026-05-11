@@ -52,6 +52,8 @@ def test_help_command_returns_supported_commands(tmp_path) -> None:
     assert "/brain remember <memory>" in response.text
     assert "/brain recall <query>" in response.text
     assert "/brain undo-last" in response.text
+    assert response.blocks[1]["elements"][0]["action_id"] == "brain_help_template"
+    assert response.blocks[1]["elements"][0]["text"]["text"] == "Remember"
     assert response.payload["commands"] == [
         "remember",
         "confirm",
@@ -64,6 +66,21 @@ def test_help_command_returns_supported_commands(tmp_path) -> None:
         "help",
     ]
     assert empty_response.decision == "help"
+
+
+def test_help_template_button_returns_copyable_command(tmp_path) -> None:
+    settings = brain_test_settings(tmp_path)
+    agent = SlackMemoryAgent(settings)
+
+    response = agent.handle(slack_request("help-template recall"))
+
+    assert response.decision == "help_template"
+    assert response.payload == {
+        "command": "recall",
+        "template": "/brain recall <query>",
+    }
+    assert "cannot insert text into your message box" in response.text
+    assert "`/brain recall <query>`" in response.text
 
 
 def test_confirmation_commits_proposed_memory(tmp_path) -> None:
