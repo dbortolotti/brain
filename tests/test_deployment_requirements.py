@@ -53,7 +53,6 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     assert "launchd/com.brain.slack-agent.plist.template" in script
     assert 'ensure_env_var "BRAIN_SLACK_AGENT_ENABLED" "true"' in script
     assert 'ensure_env_var "BRAIN_SLACK_AGENT_PORT" "8003"' in script
-    assert 'ensure_env_var "BRAIN_SLACK_RULES_PATH"' in script
     assert 'BRAIN_DATABASE_URL=$DATABASE_URL' in script
     assert 'ensure_env_var "BRAIN_DATABASE_URL" "$DATABASE_URL"' in script
     assert 'ensure_env_var "BRAIN_PROVIDER_AUTH_PROFILES_PATH"' in script

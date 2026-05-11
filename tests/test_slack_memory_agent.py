@@ -223,6 +223,11 @@ def test_malformed_llm_json_is_rejected(tmp_path) -> None:
 
     assert response.decision == "complain"
     assert response.payload["reason"] == "invalid_guardrail_proposal"
+    prompt = agent.llm_client.prompts[0]
+    assert "Use the same role contracts that the model eval harness tests." in prompt
+    assert "Role markdown from src/memory_stack/agents/roles/intent_router.md" in prompt
+    assert "Role markdown from src/memory_stack/agents/roles/durability_filter.md" in prompt
+    assert "Agent markdown excerpt from src/memory_stack/agents/shared/memory_agent_rules.md#Mission" in prompt
 
 
 def test_llm_bypass_missing_memory_is_rejected(tmp_path) -> None:

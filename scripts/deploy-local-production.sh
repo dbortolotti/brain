@@ -126,7 +126,6 @@ BRAIN_SLACK_ALLOWED_TEAM_IDS=
 BRAIN_SLACK_ALLOWED_CHANNEL_IDS=
 BRAIN_SLACK_ALLOWED_USER_IDS=
 BRAIN_SLACK_ADMIN_USER_IDS=
-BRAIN_SLACK_RULES_PATH=$CURRENT_LINK/config/slack_memory_agent_rules.md
 BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE=false
 EOF
   chmod 600 "$SECRETS_DIR/brain.env"
@@ -166,7 +165,6 @@ ensure_env_var "BRAIN_SLACK_ALLOWED_TEAM_IDS" ""
 ensure_env_var "BRAIN_SLACK_ALLOWED_CHANNEL_IDS" ""
 ensure_env_var "BRAIN_SLACK_ALLOWED_USER_IDS" ""
 ensure_env_var "BRAIN_SLACK_ADMIN_USER_IDS" ""
-ensure_env_var "BRAIN_SLACK_RULES_PATH" "$CURRENT_LINK/config/slack_memory_agent_rules.md"
 ensure_env_var "BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE" "false"
 
 if [[ ! -f "$SECRETS_DIR/brain-auth-password" ]]; then

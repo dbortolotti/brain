@@ -92,9 +92,9 @@ Routes:
 
 The agent verifies Slack signatures, timestamp freshness, team/channel/user
 allowlists, and admin-only debug access before it touches Brain internals. Write
-requests go through `config/slack_memory_agent_rules.md`, a structured proposal
-contract, deterministic guardrails, and a dry-run before commit. By default,
-Slack writes require confirmation.
+requests use the same role contracts in `src/memory_stack/agents/` that the
+model eval harness tests, plus deterministic guardrails and a dry-run before
+commit. By default, Slack writes require confirmation.
 
 Supported Slack commands:
 
@@ -209,7 +209,6 @@ Slack capture settings, optional:
 - `BRAIN_SLACK_ALLOWED_CHANNEL_IDS`
 - `BRAIN_SLACK_ALLOWED_USER_IDS`
 - `BRAIN_SLACK_ADMIN_USER_IDS`
-- `BRAIN_SLACK_RULES_PATH=./config/slack_memory_agent_rules.md`
 - `BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE=false`
 
 Slack command handling is a thin optional layer over Brain service methods. It

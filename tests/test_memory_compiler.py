@@ -76,6 +76,11 @@ def test_fake_llm_transcript_extracts_multiple_cards(tmp_path) -> None:
     assert [card.kind for card in receipt.memory_cards] == ["decision", "open_question"]
     assert receipt.open_loops[0]["status"] == "open"
     assert fake_llm.calls
+    prompt = fake_llm.calls[0]["prompt"]
+    assert "Use the same role contracts that the model eval harness tests." in prompt
+    assert "Role markdown from src/memory_stack/agents/roles/source_classifier.md" in prompt
+    assert "Role markdown from src/memory_stack/agents/roles/atomic_card_extractor.md" in prompt
+    assert "Agent markdown excerpt from src/memory_stack/agents/shared/memory_agent_rules.md#Mission" in prompt
 
 
 def test_fake_llm_article_extracts_takeaways_and_open_question(tmp_path) -> None:

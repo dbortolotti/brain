@@ -183,7 +183,6 @@ class Settings(BaseSettings):
     brain_slack_allowed_channel_ids: str = ""
     brain_slack_allowed_user_ids: str = ""
     brain_slack_admin_user_ids: str = ""
-    brain_slack_rules_path: str = "./config/slack_memory_agent_rules.md"
     brain_slack_auto_commit_high_confidence: bool = False
     brain_log_level: str = "INFO"
     brain_prod_root: str = "/Volumes/xpg_usb4/prod/brain"
@@ -489,7 +488,6 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "BRAIN_SLACK_ALLOWED_CHANNEL_IDS": settings.brain_slack_allowed_channel_ids,
         "BRAIN_SLACK_ALLOWED_USER_IDS": settings.brain_slack_allowed_user_ids,
         "BRAIN_SLACK_ADMIN_USER_IDS": settings.brain_slack_admin_user_ids,
-        "BRAIN_SLACK_RULES_PATH": settings.brain_slack_rules_path,
         "BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE": str(
             settings.brain_slack_auto_commit_high_confidence
         ).lower(),

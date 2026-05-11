@@ -2,12 +2,9 @@ from __future__ import annotations
 
 import json
 import re
-from pathlib import Path
 from typing import Any, Literal
 
 from pydantic import BaseModel, Field, ValidationError
-
-from memory_stack.config import Settings, repo_path
 
 
 Decision = Literal[
@@ -70,14 +67,6 @@ class GuardrailResult(BaseModel):
     accepted: bool
     proposal: SlackAgentProposal
     blocked_reason: str | None = None
-
-
-def load_slack_rules(settings: Settings) -> str:
-    path = Path(settings.brain_slack_rules_path)
-    if not path.is_absolute():
-        path = repo_path(path)
-    return path.read_text(encoding="utf-8")
-
 
 def parse_llm_proposal(raw: Any) -> SlackAgentProposal:
     if isinstance(raw, SlackAgentProposal):

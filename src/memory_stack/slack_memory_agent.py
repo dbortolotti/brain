@@ -9,6 +9,7 @@ from pydantic import BaseModel
 from sqlalchemy import func, select
 
 from memory_stack import brain_schema as schema
+from memory_stack.agents.prompt_contracts import SLACK_RUNTIME_ROLES, prompt_contract_block
 from memory_stack.brain_models import RecallRequest, RememberRequest
 from memory_stack.brain_service import (
     get_memory,
@@ -26,7 +27,6 @@ from memory_stack.slack_guardrails import (
     ProposedMemory,
     SlackAgentProposal,
     contains_secret,
-    load_slack_rules,
     parse_llm_proposal,
     validate_slack_proposal,
 )
@@ -180,7 +180,7 @@ class SlackMemoryAgent:
         self.settings = settings
         self.llm_client = llm_client
         self.store = BrainStore(settings)
-        self.rules = load_slack_rules(settings)
+        self.role_contract = prompt_contract_block(SLACK_RUNTIME_ROLES)
 
     def handle(self, request: SlackAgentRequest) -> SlackAgentResponse:
         normalized = normalize_agent_text(request.text)
@@ -479,7 +479,10 @@ class SlackMemoryAgent:
     ) -> str:
         return "\n".join(
             [
-                self.rules,
+                "You are the production Brain Slack memory agent.",
+                "Use the same role contracts that the model eval harness tests.",
+                "Return only JSON matching the provided schema.",
+                self.role_contract,
                 "",
                 "Slack request:",
                 json.dumps(request.__dict__, default=str, sort_keys=True),

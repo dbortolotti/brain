@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from memory_stack.agents.role_specs import markdown_section_lines, role_spec_lines
+from memory_stack.agents.prompt_contracts import prompt_contract_lines
 
 
 @dataclass(frozen=True)
@@ -2719,8 +2719,7 @@ def fixture_prompt(fixture: ModelEvalFixture) -> str:
 def role_contract_lines(fixture: ModelEvalFixture) -> list[str]:
     expected = fixture.expected
     checks = set(fixture.zero_tolerance_checks)
-    lines: list[str] = agent_markdown_contract_lines(fixture.role)
-    lines.extend(role_spec_lines(fixture.role))
+    lines: list[str] = prompt_contract_lines(fixture.role)
 
     if fixture.role == "recall_synthesizer" and {"Identity", "Known facts", "Relationships", "Open loops"} <= set(
         expected.get("must_include", [])
@@ -2759,101 +2758,3 @@ def role_contract_lines(fixture: ModelEvalFixture) -> list[str]:
         lines.append("Zero tolerance: do not expose raw private email addresses or raw source content unnecessarily.")
 
     return list(dict.fromkeys(lines))
-
-
-def agent_markdown_contract_lines(role: str) -> list[str]:
-    lines = agent_markdown_excerpt_lines(
-        [
-            ("src/memory_stack/agents/shared/memory_agent_rules.md", "Mission"),
-            ("src/memory_stack/agents/shared/memory_agent_rules.md", "Non-Goals"),
-            ("src/memory_stack/agents/shared/agent_architecture.md", "1.2 Slack agent has an extra LLM layer"),
-        ],
-        max_lines_per_section=10,
-    )
-    if role == "intent_router":
-        lines += agent_markdown_excerpt_lines(
-            [
-                ("src/memory_stack/agents/shared/agent_architecture.md", "6. Slack commands"),
-                ("src/memory_stack/agents/shared/agent_architecture.md", "7. Slack message routing"),
-            ],
-            max_lines_per_section=21,
-        )
-    elif role == "source_classifier":
-        lines += agent_markdown_excerpt_lines(
-            [("src/memory_stack/agents/shared/agent_architecture.md", "6.2 `/brain source`")],
-            max_lines_per_section=14,
-        )
-    elif role == "durability_filter":
-        lines += agent_markdown_excerpt_lines(
-            [
-                ("src/memory_stack/agents/shared/memory_agent_rules.md", "Refusal Criteria"),
-                ("src/memory_stack/agents/shared/memory_agent_rules.md", "Clarification Criteria"),
-            ],
-            max_lines_per_section=12,
-        )
-    elif role == "memory_kind_classifier":
-        lines += agent_markdown_excerpt_lines(
-            [
-                ("src/memory_stack/agents/shared/memory_agent_rules.md", "Allowed Memory Kinds"),
-                ("src/memory_stack/agents/shared/memory_agent_rules.md", "Required Proposal Fields"),
-            ],
-            max_lines_per_section=16,
-        )
-    elif role == "open_loop_detector":
-        lines += agent_markdown_excerpt_lines(
-            [("src/memory_stack/agents/shared/memory_agent_rules.md", "Clarification Criteria")],
-            max_lines_per_section=12,
-        )
-    elif role == "repair_option_generator":
-        lines += agent_markdown_excerpt_lines(
-            [
-                ("src/memory_stack/agents/shared/agent_architecture.md", "2. Core behaviour"),
-                ("src/memory_stack/agents/shared/memory_agent_rules.md", "Conflict Behavior"),
-            ],
-            max_lines_per_section=25,
-        )
-    elif role == "recall_synthesizer":
-        lines += agent_markdown_excerpt_lines(
-            [
-                ("src/memory_stack/agents/shared/agent_architecture.md", "6.3 `/brain recall`"),
-                ("src/memory_stack/agents/shared/agent_architecture.md", "6.4 `/brain profile`"),
-                ("src/memory_stack/agents/shared/agent_architecture.md", "6.5 `/brain open`"),
-            ],
-            max_lines_per_section=10,
-        )
-    elif role == "debug_explainer":
-        lines += agent_markdown_excerpt_lines(
-            [
-                ("src/memory_stack/agents/shared/agent_architecture.md", "5.2 Slack gets extra debug/admin flows"),
-                ("src/memory_stack/agents/shared/agent_architecture.md", "6.9 `/brain debug`"),
-                ("src/memory_stack/agents/shared/agent_architecture.md", "6.10 `/brain admin`"),
-            ],
-            max_lines_per_section=12,
-        )
-    return lines
-
-
-def agent_markdown_excerpt_lines(
-    sections: list[tuple[str, str]],
-    *,
-    max_lines_per_section: int,
-) -> list[str]:
-    lines: list[str] = []
-    for relative_path, heading in sections:
-        content = markdown_section(relative_path, heading)
-        if not content:
-            continue
-        lines.append(f"Agent markdown excerpt from {relative_path}#{heading}:")
-        lines.extend(f"  {line}" for line in content[:max_lines_per_section])
-    return lines
-
-
-def markdown_section(relative_path: str, heading: str) -> list[str]:
-    from pathlib import Path
-
-    path = Path(__file__).resolve().parents[3] / relative_path
-    try:
-        text = path.read_text(encoding="utf-8")
-    except OSError:
-        return []
-    return markdown_section_lines(text, heading)

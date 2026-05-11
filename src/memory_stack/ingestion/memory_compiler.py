@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from memory_stack.agents.prompt_contracts import MEMORY_COMPILER_RUNTIME_ROLES, prompt_contract_block
 from memory_stack.brain_models import (
     EntityMention,
     MemoryCandidate,
@@ -65,6 +66,8 @@ def compiler_prompt(
             "Extract durable personal-memory cards from the input.",
             "Keep facts atomic. Preserve uncertainty. Do not invent names, dates, or relationships.",
             "Return only JSON matching the provided schema.",
+            "Use the same role contracts that the model eval harness tests.",
+            prompt_contract_block(MEMORY_COMPILER_RUNTIME_ROLES),
             f"Owner: {settings.brain_owner_name}",
             f"Input type: {request.input_type}",
             f"Rule classification: {rule_result.classification}",
