@@ -22,7 +22,7 @@ model-smoke-all:
 	uv run python scripts/live_model_smoke.py --all-registry --json-output $(MODEL_SMOKE_OUTPUT) $(MODEL_SMOKE_ARGS)
 
 ingest-sample:
-	uv run python -m memory_stack.ingest_cognee --input data/samples/synthetic_property_emails.jsonl --temporal
+	uv run python -m memory_stack.ingest_cognee --input tests/fixtures/synthetic_property_emails.jsonl --temporal
 
 recall-sample:
 	uv run python -m memory_stack.recall_cognee --dataset property_trial --search-type TEMPORAL --query "What is our current position on the Principal Designer question?"
@@ -45,7 +45,7 @@ targeted-fine-grained-eval:
 		--output-json eval_runs/targeted_fine_grained/results.json
 
 tokens:
-	uv run python scripts/estimate_tokens.py --input data/samples/synthetic_property_emails.jsonl
+	uv run python scripts/estimate_tokens.py --input tests/fixtures/synthetic_property_emails.jsonl
 
 reset:
 	uv run python scripts/reset_stores.py --soft

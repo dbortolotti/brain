@@ -16,7 +16,7 @@ from memory_stack.scoring import result_to_text
 
 
 console = Console()
-SAMPLE = PROJECT_ROOT / "data" / "samples" / "synthetic_property_emails.jsonl"
+SAMPLE = PROJECT_ROOT / "tests" / "fixtures" / "synthetic_property_emails.jsonl"
 
 
 async def run_smoke() -> int:
