@@ -77,6 +77,8 @@ def test_render_prod_env_writes_github_secret_values_without_printing_them(tmp_p
     assert "BRAIN_CONFIG_RENDER_SHA=abc123" in rendered
     assert "OPENAI_AUTH_MODE=oauth" in rendered
     assert "OPENAI_CODEX_AUTH_PROFILE=default" in rendered
+    assert "LLM_PROVIDER=openai" in rendered
+    assert "LLM_MODEL=gpt-5.5" in rendered
     assert "EMBEDDING_PROVIDER=fastembed" in rendered
     assert "EMBEDDING_MODEL=intfloat/multilingual-e5-large" in rendered
     assert "EMBEDDING_DIMENSIONS=1024" in rendered

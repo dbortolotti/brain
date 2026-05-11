@@ -141,7 +141,7 @@ ORDERED_KEYS = [
 DEFAULTS = {
     "PROFILE": "openai",
     "LLM_PROVIDER": "openai",
-    "LLM_MODEL": "gpt-5.4-mini",
+    "LLM_MODEL": "gpt-5.5",
     "LLM_TEMPERATURE": "0.0",
     "LLM_MAX_TOKENS": "8192",
     "OPENAI_AUTH_MODE": "oauth",
