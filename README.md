@@ -187,14 +187,34 @@ runtime LLM as the rest of Brain: `openai:gpt-5.5`.
 - `LLM_MODEL`
 - `LLM_API_KEY`
 
-Cognee projection settings, optional:
+Cognee projection settings:
 
-- `BRAIN_COGNEE_ENABLED=false`
+- `BRAIN_COGNEE_ENABLED=true`
 - `BRAIN_COGNEE_RECALL_ENABLED=false`
 - `BRAIN_COGNEE_MEMORY_DATASET=memory`
 - `BRAIN_COGNEE_SOURCES_DATASET=sources`
 - `BRAIN_COGNEE_DATA_DATASET=data`
 - `BRAIN_COGNEE_RECALL_TOP_K=10`
+- `GRAPH_DATABASE_PROVIDER=ladybug`
+- `ENABLE_BACKEND_ACCESS_CONTROL=false`
+
+Brain defaults Cognee's rebuildable projection to Cognee's local file graph.
+Neo4j can still be configured explicitly, but it is not required for normal
+local memory projection.
+
+Brain Taste settings:
+
+- `BRAIN_TASTE_ENABLED=true`
+- `BRAIN_TASTE_LLM_ROUTING_ENABLED=false`
+- `BRAIN_TASTE_AUTO_ENRICH_ENABLED=true`
+- `BRAIN_TASTE_OMDB_API_KEY`
+- `BRAIN_TASTE_WEB_ENRICHMENT_ENABLED=true`
+- `BRAIN_TASTE_GOOGLE_PLACES_API_KEY`
+- `BRAIN_TASTE_AUTO_WRITE_THRESHOLD=0.95`
+- `BRAIN_TASTE_CONFIRMATION_THRESHOLD=0.70`
+- `BRAIN_TASTE_OPEN_LOOP_CLOSE_THRESHOLD=0.97`
+- `BRAIN_TASTE_OPEN_LOOP_CONFIRMATION_THRESHOLD=0.80`
+- `BRAIN_TASTE_PROPOSAL_EXPIRY_HOURS=24`
 
 Slack capture settings, optional:
 

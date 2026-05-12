@@ -22,6 +22,9 @@ def test_github_deploy_action_validates_before_deploying() -> None:
     assert "secrets.OPENAI_API_KEY" in workflow
     assert "secrets.OPENROUTER_API_KEY" in workflow
     assert "secrets.BRAIN_AUTH_PASSWORD" in workflow
+    assert "secrets.BRAIN_TASTE_OMDB_API_KEY" in workflow
+    assert "vars.BRAIN_TASTE_OPEN_LOOP_CONFIRMATION_THRESHOLD" in workflow
+    assert "vars.BRAIN_TASTE_IMPORT_SOURCE_PATH" not in workflow
     renderer = Path("scripts/render_prod_env.py").read_text(encoding="utf-8")
     assert "brain.env.last-deployed" in renderer
     assert "BRAIN_CONFIG_RENDER_SHA" in renderer
@@ -73,6 +76,10 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     assert 'BRAIN_DATABASE_URL=$DATABASE_URL' in script
     assert 'ensure_env_var "BRAIN_DATABASE_URL" "$DATABASE_URL"' in script
     assert 'ensure_env_var "BRAIN_PROVIDER_AUTH_PROFILES_PATH"' in script
+    assert 'ensure_env_var "BRAIN_TASTE_ENABLED" "true"' in script
+    assert 'ensure_env_var "BRAIN_TASTE_LLM_ROUTING_ENABLED" "false"' in script
+    assert 'ensure_env_var "BRAIN_TASTE_OPEN_LOOP_CONFIRMATION_THRESHOLD" "0.80"' in script
+    assert 'ensure_env_var "BRAIN_TASTE_IMPORT_SOURCE_PATH"' not in script
     assert "http://127.0.0.1:8003/slack/healthz" in script
     assert "uv run python scripts/verify_slack_agent.py" in script
     assert "uv run python scripts/live_model_smoke.py" in script

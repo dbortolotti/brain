@@ -8,7 +8,13 @@ from typing import Any
 import pytest
 
 from memory_stack.config import Settings
-from memory_stack.evals.model_fixtures import ModelEvalFixture, fixture_prompt, output_schema_for_fixture, select_fixtures
+from memory_stack.evals.model_fixtures import (
+    TASTE_MODEL_EVAL_FIXTURES,
+    ModelEvalFixture,
+    fixture_prompt,
+    output_schema_for_fixture,
+    select_fixtures,
+)
 from memory_stack.evals.model_matrix import ModelCandidate, select_model_candidates
 from memory_stack.evals.model_runner import (
     ModelEvalRunConfig,
@@ -166,9 +172,9 @@ def test_model_matrix_uses_configured_defaults_without_registry() -> None:
         profile="openai",
         llm_provider="openai",
         llm_model="gpt-5.5",
-        embedding_provider="fastembed",
-        embedding_model="intfloat/multilingual-e5-large",
-        embedding_dimensions=1024,
+        embedding_provider="openai",
+        embedding_model="text-embedding-3-large",
+        embedding_dimensions=3072,
     )
     candidates = select_model_candidates(
         settings,
@@ -179,7 +185,7 @@ def test_model_matrix_uses_configured_defaults_without_registry() -> None:
 
     assert [candidate.ref for candidate in candidates] == [
         "openai:gpt-5.5",
-        "fastembed:intfloat/multilingual-e5-large",
+        "openai:text-embedding-3-large",
     ]
 
 
@@ -192,6 +198,57 @@ def test_select_fixtures_derives_fine_grained_roles() -> None:
 
     assert fixtures
     assert all(fixture.role == "intent_router" for fixture in fixtures)
+
+
+def test_taste_fine_grained_fixtures_use_native_taste_scenarios() -> None:
+    taste_roles = {
+        "taste_domain_router",
+        "taste_entity_classifier",
+        "taste_enrichment_planner",
+        "taste_enrichment_normalizer",
+        "taste_attribute_extractor",
+        "taste_signal_extractor",
+        "taste_option_matcher",
+        "taste_ranker",
+        "taste_explanation_synthesizer",
+        "taste_memory_projector",
+    }
+    fixtures = select_fixtures(
+        fixture_set="development",
+        roles=taste_roles,
+        mode="fine-grained",
+    )
+
+    assert taste_roles == {fixture.role for fixture in fixtures}
+    assert len(TASTE_MODEL_EVAL_FIXTURES) == 100
+    assert len(fixtures) == 300
+    assert all(
+        sum(1 for item in TASTE_MODEL_EVAL_FIXTURES if item[2] == role) == 10
+        for role in taste_roles
+    )
+    assert all(
+        sum(1 for fixture in fixtures if fixture.role == role) == 30
+        for role in taste_roles
+    )
+    assert all(fixture.context["source_role"] == fixture.role for fixture in fixtures)
+    assert all(fixture.scenario_group.startswith("taste_") for fixture in fixtures)
+    assert not any(
+        "long_source_as_single_memory_card" in fixture.zero_tolerance_checks
+        for fixture in fixtures
+    )
+
+
+def test_taste_role_quality_weights_ignore_generic_recall_scores() -> None:
+    score = semantic_quality_score_for_role(
+        "taste_attribute_extractor",
+        {
+            "decision_correctness": 0.0,
+            "memory_card_quality": 1.0,
+            "recall_quality": 0.0,
+        },
+    )
+
+    assert score == 1.0
 
 
 def test_recall_planner_fixtures_are_planner_scoped() -> None:
@@ -528,7 +585,7 @@ def test_embedding_eval_uses_configured_embedding_model(tmp_path) -> None:
 
     rows = [json.loads(line) for line in output.read_text().splitlines()]
     assert result["record_count"] == 3
-    assert {row["model"] for row in rows} == {"fastembed:intfloat/multilingual-e5-large"}
+    assert {row["model"] for row in rows} == {"openai:text-embedding-3-large"}
 
 
 def test_embedding_retrieval_probes_rank_positive_passage(tmp_path: Path) -> None:

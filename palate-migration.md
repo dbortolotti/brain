@@ -1,91 +1,132 @@
-# Palate Migration Plan
+# Palate → Brain Migration: Detailed Coding-Agent Implementation Spec
 
-## Executive summary
+## 0. Status and purpose
 
-Merge `palate` into `brain` as an internal **Taste domain module**. Brain remains the unified memory/control plane. Taste preserves Palate's specialized enrichment, structured taste storage, ranking, option matching, and decision-feedback logic.
+This document is the implementation authority for merging `dbortolotti/palate` into `dbortolotti/brain` as Brain's first-class **Taste** domain module.
 
-The user-facing interface remains unified:
+The coding agent should use this document to avoid re-asking already-decided architectural questions. If an implementation detail is not specified here, the coding agent may choose a reasonable approach only if it does not violate the decisions and invariants below.
 
-```text
-Slack:
-  /brain ...
+## 1. Top-level decisions already made
 
-MCP:
-  brain.*
-  brain.taste.*
-```
+### 1.1 Repository and service model
 
-No separate Palate service, DB, HTTP endpoint namespace, or MCP server should remain after the merge.
+* Move Palate logic into the Brain repository.
+* Delete standalone Palate server code during the merge.
+* Do **not** keep a separate Palate service.
+* Do **not** keep a separate Palate MCP server.
+* Do **not** keep a separate Palate DB.
+* Do **not** keep a separate Palate launch agent, Cloudflare route, or deployment path.
+* Use the old Palate repository only as a reference if needed.
 
-Critical constraint:
+### 1.2 User-facing interface
 
-> Do not collapse Palate into generic Brain memory cards. Brain memory cards are evidence/provenance/projection. Structured taste state must live in dedicated Brain-managed `taste_*` tables.
+* Slack remains unified under `/brain ...`.
+* Do **not** add `/brain taste ...` subcommands initially.
+* MCP should expose generic `brain.*` tools plus explicit `brain.taste.*` tools.
+* Do **not** preserve old `palate_*` MCP tool names.
+* Do **not** add `/taste/*` HTTP routes initially.
+* Taste behavior should be invoked semantically through generic Brain tools when the content is clearly taste-related.
 
-Brain remains the source of truth for memory identity, lifecycle, entity resolution, conflicts, open loops, and source provenance. Taste becomes a first-class domain module for taste-specific enrichment, structured attributes, signals, ranking, and decisions.
+### 1.3 Storage transition
 
----
+* Palate is new and has few records.
+* No Palate data migration is required.
+* No import bridge from the old Palate SQLite DB is required.
+* Create new Brain-managed `taste_*` tables directly.
+* Use Brain's DB and migration system.
 
-## 1. Goals
+### 1.4 Core architectural rule
 
-### 1.1 Product goals
+Do **not** collapse Palate into generic Brain memory cards.
 
-Implement one Brain system where:
+Brain memory cards are evidence/provenance/projection. The canonical structured taste state must live in dedicated Brain-managed `taste_*` tables.
+
+Brain owns:
+
+* identity;
+* entity resolution;
+* memory cards;
+* source provenance;
+* relationships;
+* open loops;
+* conflicts / supersession;
+* visibility / privacy / lifecycle;
+* backup;
+* generic recall.
+
+Taste owns:
+
+* supported taste categories;
+* category-specific enrichment;
+* structured taste items;
+* taste attributes;
+* 95% attribute intervals;
+* taste signals;
+* taste decisions;
+* option matching;
+* ranking;
+* recommendation explanations.
+
+## 2. Product behavior target
+
+A user should be able to write:
 
 ```text
 /brain remember Sam recommended Château Musar 2016.
 ```
 
-automatically creates:
+Brain should infer that this is a taste-related memory, then create or update:
 
-- a Brain entity for `Sam`, if needed;
-- a Brain entity for `Château Musar 2016`;
-- a structured taste record;
-- a taste recommendation signal;
-- a Brain memory card as evidence;
-- a Brain relationship: `Sam -> recommended -> Château Musar 2016`;
-- optionally a wanted-to-try open loop if implied.
+* a Brain entity for `Sam`, if needed;
+* a Brain entity for `Château Musar 2016`;
+* a structured taste item for the wine;
+* a `recommended_by` taste signal;
+* a Brain memory card as evidence;
+* a Brain relationship: `Sam -> recommended -> Château Musar 2016`;
+* a confirmation response that explicitly says a taste record was created or updated and includes the enriched data summary.
 
-And:
+A user should be able to ask:
 
 ```text
 /brain recall What wines did Sam recommend?
 ```
 
-retrieves the relevant taste-linked Brain evidence and taste data.
+Brain should retrieve linked Brain evidence and taste records, rather than relying on string search alone.
 
-### 1.2 Technical goals
+A user should be able to ask:
 
-- Move Palate logic into the Brain repository.
-- Delete standalone Palate server/service code.
-- Create Brain-managed `taste_*` tables via Brain migrations.
-- Expose explicit `brain.taste.*` MCP tools.
-- Add semantic taste routing inside generic `brain.remember` and `brain.recall`.
-- Preserve Palate enrichment, ranking, option matching, and decision feedback.
-- Add strict tests/evals before considering the merge complete.
+```text
+Tell me about Noble Rot, but don't save it.
+```
 
----
+Brain should run read-only enrichment where appropriate and return `stored=false`, with no DB writes.
 
-## 2. Non-goals
+## 3. Supported categories
 
-Do **not** do the following:
+Initial categories only:
 
-- Do not keep a separate Palate MCP server.
-- Do not keep a separate Palate DB.
-- Do not preserve old `palate_*` MCP tool names.
-- Do not add `/taste/*` HTTP endpoints initially.
-- Do not implement a generic plugin framework for arbitrary future taste categories.
-- Do not mass-enrich every taste mention inside large source documents.
-- Do not auto-broaden web enrichment beyond strict source allowlists.
-- Do not write enriched records when enrichment fails unless the user confirms minimal storage.
-- Do not store every taste decision as a Brain memory card.
+* `wine`
+* `restaurant`
+* `music`
+* `cigar`
+* `experience`
+* `movie`
+* `series`
 
----
+Do not build a generic plugin framework.
 
-## 3. Final architecture
+Adding a category later must be a deliberate code change including:
 
-### 3.1 Module layout
+* category semantics;
+* allowed attributes;
+* enrichment source policy;
+* ranking policy;
+* validation;
+* tests/evals.
 
-Target layout inside Brain:
+## 4. Target module layout
+
+Recommended layout:
 
 ```text
 src/memory_stack/
@@ -95,22 +136,28 @@ src/memory_stack/
     store.py
     service.py
     routing.py
+    validation.py
+    categories.py
+    attributes.py
+    signals.py
+    projection.py
+    proposals.py
+    option_matching.py
+    ranking.py
+    explanations.py
+    mcp_tools.py
     enrichment/
       __init__.py
       planner.py
       normalizer.py
+      sources.py
       omdb.py
       restaurants.py
       music.py
       wine.py
       cigar.py
       experience.py
-      sources.py
-    ranking.py
-    option_matching.py
-    projection.py
-    proposals.py
-    mcp_tools.py
+      media.py
     evals/
       __init__.py
       cases.py
@@ -118,41 +165,32 @@ src/memory_stack/
       scoring.py
 ```
 
-Prefer integrating tests under the existing Brain test directory:
+Recommended tests:
 
 ```text
 tests/taste/
+  test_schema.py
+  test_store.py
+  test_routing.py
+  test_enrichment.py
+  test_projection.py
+  test_proposals.py
+  test_ranking.py
+  test_option_matching.py
+  test_mcp_tools.py
+  test_slack_taste_confirmation.py
+  test_source_ingestion_taste_mentions.py
 ```
 
-or equivalent existing convention.
+The coding agent may adjust file names to fit existing Brain conventions, but the logical modules must remain represented.
 
-### 3.2 Ownership boundaries
-
-| Concern | Owner |
-|---|---|
-| Durable memory lifecycle | Brain |
-| Entity identity / aliases | Brain |
-| Sources / provenance | Brain |
-| Relationships | Brain |
-| Open loops | Brain |
-| Conflicts / supersession | Brain |
-| Taste category classification | Taste |
-| Taste enrichment | Taste |
-| Taste structured attributes | Taste |
-| Taste rating/signals | Taste |
-| Taste option matching | Taste |
-| Taste ranking | Taste |
-| Taste decision log | Taste |
-| Generic recall synthesis | Brain |
-| Taste recommendation explanation | Taste, using Brain evidence |
-
----
-
-## 4. Data model
+## 5. Data model
 
 Implement Brain-managed SQLAlchemy tables with migrations.
 
-### 4.1 `taste_items`
+### 5.1 `taste_items`
+
+Fields:
 
 ```text
 taste_items
@@ -167,25 +205,21 @@ taste_items
   enrichment_metadata_json JSON NOT NULL DEFAULT {}
   enrichment_status TEXT NOT NULL DEFAULT 'not_attempted'
   status TEXT NOT NULL DEFAULT 'current'
-  created_at TIMESTAMP
-  updated_at TIMESTAMP
+  created_at TIMESTAMP NOT NULL
+  updated_at TIMESTAMP NOT NULL
 ```
 
-Supported `type` values only:
+Required semantics:
 
-```text
-wine
-restaurant
-music
-cigar
-experience
-movie
-series
-```
+* Every taste item must have `brain_entity_id`.
+* `type` must be one of the supported categories.
+* `status` should include at least `current` and `deleted`.
+* Soft-delete is default.
+* Hard-delete only if explicitly requested and should require confirmation.
 
-Every taste item **must** have a `brain_entity_id`.
+### 5.2 `taste_attributes`
 
-### 4.2 `taste_attributes`
+Fields:
 
 ```text
 taste_attributes
@@ -194,22 +228,22 @@ taste_attributes
   value REAL NOT NULL CHECK 0 <= value <= 1
   lower_95 REAL NOT NULL CHECK 0 <= lower_95 <= 1
   upper_95 REAL NOT NULL CHECK 0 <= upper_95 <= 1
-  created_at TIMESTAMP
-  updated_at TIMESTAMP
+  created_at TIMESTAMP NOT NULL
+  updated_at TIMESTAMP NOT NULL
   PRIMARY KEY (taste_item_id, key)
 ```
 
-Attributes are strict per-category. Unknown attributes go to:
+Required semantics:
 
-```text
-taste_items.enrichment_metadata_json
-taste_items.notes
-warnings
-```
+* Attributes are strict per-category.
+* Unknown keys must not enter `taste_attributes`.
+* Unknown/exploratory fields go to `enrichment_metadata_json`, `notes`, or warnings.
+* `lower_95 <= value <= upper_95` after normalization.
+* Clamp invalid numeric values only if this is an explicit validator decision; otherwise reject and warn.
 
-not `taste_attributes`.
+### 5.3 `taste_signals`
 
-### 4.3 `taste_signals`
+Fields:
 
 ```text
 taste_signals
@@ -220,10 +254,10 @@ taste_signals
   provenance_memory_id TEXT REFERENCES memory_cards(id)
   provenance_entity_id TEXT REFERENCES entities(id)
   source TEXT
-  created_at TIMESTAMP
+  created_at TIMESTAMP NOT NULL
 ```
 
-Supported initial signal types:
+Initial allowed signal types:
 
 ```text
 rating
@@ -243,25 +277,19 @@ rejected_option
 
 Rating semantics:
 
-```text
-Current effective rating = latest explicit user rating.
-Older ratings remain as evidence/signals.
-```
+* Preserve all rating signals.
+* Current effective rating is the latest explicit user rating.
+* Older ratings remain as history/evidence.
 
 Negative signal semantics:
 
-```text
-avoid:
-  hard negative filter unless user explicitly asks to include avoided items
+* `avoid`: hard negative filter unless the user explicitly asks to include avoided items.
+* `disliked`, `not_my_style`, `bad_fit`: ranking penalty, not necessarily exclusion.
+* `rejected_option`: decision-feedback penalty for similar future queries.
 
-disliked / not_my_style / bad_fit:
-  ranking penalty
+### 5.4 `taste_decisions`
 
-rejected_option:
-  decision-feedback penalty for similar future queries
-```
-
-### 4.4 `taste_decisions`
+Fields:
 
 ```text
 taste_decisions
@@ -271,19 +299,18 @@ taste_decisions
   options_json JSON NOT NULL DEFAULT []
   ranked_json JSON NOT NULL DEFAULT []
   chosen_taste_item_id TEXT REFERENCES taste_items(id)
-  created_at TIMESTAMP
+  created_at TIMESTAMP NOT NULL
 ```
 
-Decision logs do **not** create Brain memory cards by default.
+Required semantics:
 
-Only create memory cards when:
+* Decision logs do not create Brain memory cards by default.
+* If the user wants a decision remembered, generic Brain memory should handle that explicitly.
+* Decision logs are for ranking feedback and eval/tuning.
 
-- user explicitly says to remember/save the decision; or
-- the input contains a durable taste preference.
+### 5.5 `taste_proposals`
 
-### 4.5 `taste_proposals`
-
-Persist server-side confirmation proposals.
+Fields:
 
 ```text
 taste_proposals
@@ -296,11 +323,11 @@ taste_proposals
   correction_count INTEGER NOT NULL DEFAULT 0
   last_correction_text TEXT
   last_corrected_at TIMESTAMP
-  created_at TIMESTAMP
-  expires_at TIMESTAMP
+  created_at TIMESTAMP NOT NULL
+  expires_at TIMESTAMP NOT NULL
 ```
 
-Statuses:
+Allowed statuses:
 
 ```text
 pending
@@ -310,65 +337,71 @@ expired
 superseded
 ```
 
-Initial expiry:
+Required semantics:
 
-```text
-24 hours
-```
+* Proposals are persisted server-side.
+* Confirm/cancel/correct operate by `proposal_id`.
+* Initial expiry: 24 hours.
+* Expired proposals cannot be confirmed.
+* Expired proposals cannot be corrected.
+* Expired proposals must be regenerated.
+* Correction updates the existing proposal in place and preserves the same `proposal_id`.
+* Keep minimal audit fields: `correction_count`, `last_correction_text`, `last_corrected_at`.
 
-Expired proposals cannot be confirmed or corrected. They must be regenerated.
-
-### 4.6 Backup inclusion
+### 5.6 Backup behavior
 
 Brain backups must include:
 
-- taste items;
-- taste attributes;
-- taste signals;
-- taste decisions;
-- taste enrichment metadata;
-- taste proposals in all statuses;
-- linked Brain entities;
-- linked memory cards;
-- linked relationships;
-- linked open loops.
+* taste items;
+* taste attributes;
+* taste signals;
+* taste decisions;
+* taste enrichment metadata;
+* taste proposals in all statuses;
+* linked Brain entities;
+* linked memory cards;
+* linked relationships;
+* linked open loops.
 
----
+Do not exclude pending/expired/cancelled proposals from backups.
 
-## 5. Configuration
+## 6. Configuration
 
 Use Brain config with taste-prefixed settings.
 
-Add settings similar to:
+Recommended settings:
 
 ```text
 BRAIN_TASTE_ENABLED=true
 BRAIN_TASTE_AUTO_ENRICH_ENABLED=true
-BRAIN_TASTE_OMDB_API_KEY=
-BRAIN_TASTE_WEB_ENRICHMENT_ENABLED=true
-BRAIN_TASTE_GOOGLE_PLACES_API_KEY=
 BRAIN_TASTE_AUTO_WRITE_THRESHOLD=0.95
 BRAIN_TASTE_CONFIRMATION_THRESHOLD=0.70
 BRAIN_TASTE_OPEN_LOOP_CLOSE_THRESHOLD=0.97
+BRAIN_TASTE_OPEN_LOOP_CONFIRMATION_THRESHOLD=0.80
 BRAIN_TASTE_PROPOSAL_EXPIRY_HOURS=24
+BRAIN_TASTE_WEB_ENRICHMENT_ENABLED=true
+BRAIN_TASTE_OMDB_API_KEY=
+BRAIN_TASTE_GOOGLE_PLACES_API_KEY=
 ```
 
-Do not preserve Palate env vars like:
+Do not preserve old Palate settings such as:
 
 ```text
 PALATE_DB_PATH
 PALATE_MODEL
 PALATE_BACKUP_DIR
 PALATE_AUTH_ENABLED
+PALATE_PORT
+PALATE_MCP_PATH
 ```
 
----
+Even though `BRAIN_TASTE_ENABLED` exists, the decision is that once implemented and tests pass, taste routing is active by default. The main safety mechanism is conservative confidence thresholds and structured confirmation, not a staged feature-flag rollout.
 
-## 6. MCP and HTTP surface
+## 7. MCP tool surface
 
-### 6.1 Generic Brain MCP tools
+### 7.1 Generic Brain tools remain primary
 
-Keep existing Brain MCP tools as primary user path:
+Generic Brain MCP tools should be the default user path:
 
 ```text
 brain.remember
@@ -384,11 +417,11 @@ brain.review_recent
 brain.undo_last
 ```
 
-Update tool descriptions so clients know generic `brain.remember` and `brain.recall` may invoke taste logic automatically.
+Update descriptions for `brain.remember`, `brain.recall`, and `brain.ingest_source` to state that Brain may invoke Taste logic when the content clearly involves supported taste categories.
 
-### 6.2 Explicit taste MCP tools
+### 7.2 Explicit taste tools
 
-Expose explicit tools:
+Expose these explicit tools:
 
 ```text
 brain.taste.describe_item
@@ -402,329 +435,31 @@ brain.taste.correct_proposal
 brain.taste.refresh_enrichment
 ```
 
-No `palate_*` aliases.
-
-### 6.3 HTTP routes
-
-Do not add `/taste/*` HTTP endpoints initially.
-
-Taste functionality should be reachable through:
+Do not expose:
 
 ```text
-MCP brain.taste.*
-generic Brain HTTP routes such as /memory/remember and /memory/recall
+palate_query
+palate_remember
+palate_describe_item
+palate_evaluate_options
 ```
 
----
-
-## 7. Slack UX
-
-Keep only:
-
-```text
-/brain ...
-```
-
-No `/brain taste` subcommand initially.
-
-Semantic routing handles taste automatically.
-
-### 7.1 High-confidence write
-
-Example:
-
-```text
-/brain remember Sam recommended Château Musar 2016.
-```
-
-If confidence is high enough:
-
-```text
->= 0.95
-```
-
-Brain should write directly, subject to validation.
-
-Response must confirm taste record creation/update and include enriched highlights.
-
-### 7.2 Medium-confidence write
-
-For ambiguous or medium-confidence cases:
-
-```text
-0.70 <= confidence < 0.95
-```
-
-Slack should show a structured confirmation card with:
-
-- detected taste category;
-- proposed canonical item;
-- enriched normalized fields;
-- enrichment metadata summary;
-- proposed Brain memory card;
-- proposed Brain entity links;
-- proposed relationships;
-- proposed open loop, if any;
-- warnings / ambiguity reasons;
-- free-text correction option.
-
-Free-text correction examples:
-
-```text
-Yes, but this detail should be XXX.
-Save it, but category is restaurant, not wine.
-Correct the vintage to 2016.
-```
-
-Correction updates the existing proposal in place and keeps `proposal_id` stable.
-
-### 7.3 Low-confidence write
-
-If confidence is below threshold:
-
-```text
-< 0.70
-```
-
-Treat as normal Brain memory unless the user explicitly asks for taste handling.
-
----
-
-## 8. Semantic routing
-
-### 8.1 Taste router
-
-Add `taste_domain_router`.
-
-Output:
-
-```json
-{
-  "domain": "taste | general | ambiguous",
-  "taste_intent": "remember | describe | query | evaluate_options | log_decision | refresh | none",
-  "entity_type_hint": "wine | restaurant | music | movie | series | cigar | experience | null",
-  "confidence": 0.0,
-  "requires_enrichment": true,
-  "requires_confirmation": false,
-  "ambiguity_reasons": []
-}
-```
-
-### 8.2 Routing thresholds
-
-Initial policy:
-
-```text
-confidence >= 0.95:
-  auto-enrich and write, if write intent is explicit
-
-0.70 <= confidence < 0.95:
-  create persisted proposal and ask confirmation
-
-confidence < 0.70:
-  normal Brain behavior unless explicitly taste-directed
-```
-
-### 8.3 Ambiguity examples
-
-Ambiguous:
-
-```text
-Blue Note
-The Bear
-Burgundy
-Noble / Nobble Rot
-```
-
-These should usually trigger confirmation unless surrounding context resolves them.
-
----
-
-## 9. Enrichment
-
-Palate's enrichment layer must be treated as first-class. It supports media metadata, restaurant metadata, cuisine, Michelin, Google, and web-search-style grounding. In the merged system, enrichment must remain separate from storage.
-
-### 9.1 Enrichment architecture
-
-Implement:
-
-```text
-TasteEnrichmentService.describe_item(...)
-TasteEnrichmentService.plan(...)
-TasteEnrichmentService.normalize(...)
-TasteEnrichmentService.refresh(...)
-```
-
-Enrichment should return:
-
-```json
-{
-  "canonical_name": "...",
-  "entity_type": "restaurant",
-  "normalized_metadata": {},
-  "attributes": {},
-  "attribute_intervals_95": {},
-  "enrichment_metadata": {},
-  "sources": [],
-  "warnings": [],
-  "confidence": 0.0,
-  "enrichment_status": "success | partial | failed | skipped"
-}
-```
-
-### 9.2 Normalized vs free-form metadata
-
-Separate clean normalized metadata from freer source-qualified enrichment metadata.
-
-```text
-taste_items.metadata_json
-  cleaned normalized domain metadata
-
-taste_items.enrichment_metadata_json
-  source-qualified/free-form enrichment payload
-  checked_at timestamps
-  source URLs
-  consulted web sources
-  raw/semi-structured notes
-  diagnostics/warnings
-```
-
-### 9.3 Strict source allowlist
-
-Use explicit source allowlists per category.
-
-Initial policy:
-
-```text
-media:
-  OMDb only for IMDb/Rotten Tomatoes/runtime/country/language/seasons unless another source is explicitly added.
-
-restaurant:
-  official site
-  Michelin Guide
-  Google/Places data where available
-  controlled web-search grounding for cuisine/menu/ambiance/setting only when source URLs are retained.
-
-music:
-  conservative initial enrichment.
-  no uncontrolled source expansion without category rules.
-
-wine:
-  conservative initial enrichment.
-  source allowlist required before structured external claims are trusted.
-
-cigar:
-  conservative initial enrichment.
-  source allowlist required before structured external claims are trusted.
-
-experience:
-  minimal enrichment unless explicitly designed.
-```
-
-### 9.4 Broader web search
-
-If strict-source enrichment fails:
-
-- do not broaden search automatically;
-- ask whether to search more broadly;
-- if user permits broader search, keep data lower-trust and mostly in `enrichment_metadata_json`;
-- only promote to normalized fields if category validation passes.
-
-### 9.5 Failed enrichment
-
-If enrichment fails:
-
-```text
-Do not silently write an enriched record from prompt-only data.
-```
-
-Behavior:
-
-```text
-If item identity is clear but enrichment failed:
-  create minimal proposal and ask confirmation.
-
-If item identity may be misspelled:
-  ask clarification or suggest possible matches.
-
-If user explicitly says "store anyway":
-  store minimal user-input-only taste record.
-```
-
-Record fields:
-
-```json
-{
-  "enrichment_status": "failed",
-  "enrichment_warnings": ["No strict-source match found"],
-  "normalized_fields_source": "user_input_only"
-}
-```
-
-### 9.6 Read-only enrichment
-
-Support query-only enrichment.
-
-Examples:
-
-```text
-Tell me about wine XYZ using Brain enrichment, but don't save it.
-Describe Noble Rot, don't add it to memory.
-Would I like restaurant X? Don't store anything.
-```
-
-Tool:
-
-```text
-brain.taste.describe_item
-```
-
-Response:
-
-```json
-{
-  "stored": false,
-  "source": "read_only_enrichment",
-  "enriched": {},
-  "suggested_remember_payload": {},
-  "warnings": [],
-  "server_llm_used": {}
-}
-```
-
-No persistent DB writes:
-
-- no taste item;
-- no Brain entity;
-- no memory card;
-- no relationship;
-- no open loop.
-
----
-
-## 10. Taste writes
-
-### 10.1 User-originated taste write
-
-For every user-originated taste write:
-
-1. classify taste domain and category;
-2. enrich if high-confidence and appropriate;
-3. resolve/create Brain entity for taste item;
-4. create/update `taste_items`;
-5. upsert strict attributes;
-6. append taste signals;
-7. create Brain memory card as evidence;
-8. link memory card to taste entity;
-9. create Brain relationships when relevant;
-10. create/open/close open loops when relevant;
-11. return confirmation including taste record count and enriched data.
-
-### 10.2 Response shape
-
-Successful taste write must explicitly confirm records created/updated.
-
-Example:
+### 7.3 Tool response contracts
+
+`brain.taste.remember` and any generic `brain.remember` path that creates taste data must explicitly state:
+
+* whether anything was stored;
+* how many taste records were created;
+* how many taste records were updated;
+* the enriched data summary;
+* Brain memory-card IDs;
+* Brain entity IDs;
+* relationship IDs if any;
+* open-loop IDs if any;
+* warnings;
+* whether server LLM/enrichment was used.
+
+Example structured response:
 
 ```json
 {
@@ -758,31 +493,372 @@ Example:
 }
 ```
 
-Normal user-facing responses should summarize the stored data and enriched highlights. Exact full records should be exposed when:
+For ordinary user-facing summaries, show enriched highlights rather than dumping every field. Full record output is required when:
 
-- explicit `brain.taste.*` tool contract requires it;
-- user asks for exact record/details/debug;
-- dry-run/confirmation payload is returned.
+* explicit `brain.taste.*` tool contract requires it;
+* user asks for exact record/details/debug;
+* dry-run/confirmation payload is returned.
 
----
+## 8. HTTP and Slack surface
 
-## 11. Brain projection
+### 8.1 HTTP
 
-Implement `taste/projection.py`.
+Do not add `/taste/*` routes initially.
 
-### 11.1 Taste item entity
+Taste is reachable through:
 
-Every taste record gets a Brain entity.
+* generic Brain HTTP routes such as `/memory/remember` and `/memory/recall`;
+* MCP `brain.taste.*` tools.
 
-Example:
+### 8.2 Slack
+
+Keep only:
 
 ```text
-taste_item.brain_entity_id -> entities.id
+/brain ...
 ```
 
-### 11.2 Memory card
+Do not add `/brain taste` initially.
 
-Every user-originated taste write creates a Brain memory card.
+Examples:
+
+```text
+/brain remember Sam recommended Château Musar 2016.
+/brain remember I want to try Noble Rot.
+/brain recall What wines did Sam recommend?
+```
+
+All should route semantically.
+
+## 9. Semantic routing policy
+
+### 9.1 Router output
+
+Implement a taste router that returns:
+
+```json
+{
+  "domain": "taste | general | ambiguous",
+  "taste_intent": "remember | describe | query | evaluate_options | log_decision | refresh | none",
+  "entity_type_hint": "wine | restaurant | music | movie | series | cigar | experience | null",
+  "confidence": 0.0,
+  "requires_enrichment": true,
+  "requires_confirmation": false,
+  "ambiguity_reasons": []
+}
+```
+
+### 9.2 Initial thresholds
+
+Use conservative thresholds:
+
+```text
+confidence >= 0.95:
+  auto-enrich and write, if write intent is explicit and validation passes
+
+0.70 <= confidence < 0.95:
+  create persisted proposal and ask confirmation
+
+confidence < 0.70:
+  treat as normal Brain memory unless explicitly taste-directed
+```
+
+### 9.3 High-confidence examples
+
+Likely high confidence:
+
+```text
+Sam recommended Château Musar 2016.
+I want to try Noble Rot Soho.
+I watched The Bear and rate it 8/10.
+I listened to Kind of Blue and loved it.
+I smoked a Partagas Serie D No. 4 and disliked it.
+```
+
+### 9.4 Ambiguous examples
+
+Usually require confirmation:
+
+```text
+Blue Note is important.
+Sam likes Burgundy.
+I want to try Noble.
+Remember The Bear.
+Sam recommended Musar.
+```
+
+Ambiguity causes:
+
+* item may be a place/person/brand/media item;
+* category is unclear;
+* spelling may be wrong;
+* enrichment cannot verify identity;
+* multiple candidates match.
+
+### 9.5 Routing and enrichment are separate
+
+A high-confidence taste route does not automatically mean external enrichment is trusted.
+
+Route classification answers:
+
+```text
+Is this taste-related?
+```
+
+Enrichment answers:
+
+```text
+Can we verify and normalize this item from allowed sources?
+```
+
+Both must pass validation before an enriched write occurs.
+
+## 10. Fine-grained taste roles
+
+Brain's generic roles should not be duplicated for Taste. Add taste-specific roles only where the problem is genuinely taste-specific.
+
+### 10.1 New taste-specific roles
+
+Add logical roles/contracts for:
+
+```text
+taste_domain_router
+taste_entity_classifier
+taste_enrichment_planner
+taste_enrichment_normalizer
+taste_attribute_extractor
+taste_signal_extractor
+taste_option_matcher
+taste_ranker
+taste_explanation_synthesizer
+taste_memory_projector
+```
+
+### 10.2 Reuse Brain roles
+
+Do not create taste-specific duplicates for:
+
+```text
+entity_mention_extractor
+entity_final_resolver
+conflict_candidate_detector
+conflict_policy_decider
+open_loop_detector
+recall_relevance_filter
+success_receipt_generator
+zero_tolerance_validator
+```
+
+Brain owns these control-plane roles.
+
+### 10.3 Role placement
+
+Write path:
+
+```text
+brain.remember
+  -> taste_domain_router
+  -> taste_entity_classifier
+  -> taste_enrichment_planner
+  -> taste_enrichment_normalizer
+  -> taste_attribute_extractor
+  -> taste_signal_extractor
+  -> Brain entity resolution
+  -> taste_memory_projector
+  -> Brain conflict/open-loop handling
+  -> taste store write
+```
+
+Query path:
+
+```text
+brain.recall / brain.taste.query
+  -> taste_domain_router
+  -> taste_option_matcher if options supplied
+  -> taste_ranker for recommendation-style queries
+  -> Brain recall for memory-style queries
+  -> taste_explanation_synthesizer where appropriate
+```
+
+## 11. Enrichment policy
+
+### 11.1 Enrichment is first-class
+
+Palate's enrichment layer is not optional glue. It is the layer that converts messy real-world items into structured taste objects.
+
+Preserve and port enrichment behavior into Brain's `taste/enrichment/` modules.
+
+### 11.2 Enrichment output
+
+Recommended normalized output:
+
+```json
+{
+  "canonical_name": "...",
+  "entity_type": "restaurant",
+  "normalized_metadata": {},
+  "attributes": {},
+  "attribute_intervals_95": {},
+  "enrichment_metadata": {},
+  "sources": [],
+  "warnings": [],
+  "confidence": 0.0,
+  "enrichment_status": "success | partial | failed | skipped"
+}
+```
+
+### 11.3 Normalized vs free-form metadata
+
+Separate:
+
+```text
+taste_items.metadata_json
+  cleaned normalized domain metadata
+
+taste_items.enrichment_metadata_json
+  source-qualified/free-form enrichment payload
+  checked_at timestamps
+  source URLs
+  consulted web sources
+  raw/semi-structured notes
+  diagnostics/warnings
+```
+
+Do not mix raw web-search snippets into normalized fields.
+
+### 11.4 Strict source allowlist
+
+Use category-specific allowlists.
+
+Initial policy:
+
+```text
+media:
+  OMDb for IMDb / Rotten Tomatoes / runtime / country / language / seasons.
+  Do not add other media providers unless explicitly implemented and tested.
+
+restaurant:
+  official website
+  Michelin Guide
+  Google/Places where available
+  controlled web-search grounding for cuisine/menu/ambiance/setting only when source URLs are retained.
+
+music:
+  conservative initial enrichment.
+  No uncontrolled source expansion without explicit category rules.
+
+wine:
+  conservative initial enrichment.
+  Source allowlist required before structured external claims are trusted.
+
+cigar:
+  conservative initial enrichment.
+  Source allowlist required before structured external claims are trusted.
+
+experience:
+  minimal enrichment unless explicitly designed.
+```
+
+### 11.5 Failed enrichment
+
+If enrichment fails, do **not** silently write enriched data from the prompt alone.
+
+Default behavior:
+
+```text
+If item identity is clear but enrichment failed:
+  create a minimal proposal and ask confirmation.
+
+If item identity may be misspelled:
+  ask clarification or suggest possible matches.
+
+If user explicitly says "store anyway":
+  store minimal user-input-only taste record.
+```
+
+Minimal user-input-only record should include:
+
+```json
+{
+  "enrichment_status": "failed",
+  "normalized_fields_source": "user_input_only",
+  "enrichment_warnings": ["No strict-source match found"]
+}
+```
+
+### 11.6 Broader web search
+
+If strict sources do not find the item:
+
+* do not broaden search automatically;
+* ask the user whether to search more broadly;
+* if the user permits broader search, clearly label source quality;
+* place broad-web data primarily in `enrichment_metadata_json`;
+* promote to normalized fields only after category-specific validation.
+
+Example response:
+
+```text
+I could not verify "Nobble Rot" using the allowed restaurant sources, so I have not stored enriched data. Did you mean "Noble Rot"? I can also search the broader web or save a minimal user-input-only record if you confirm.
+```
+
+### 11.7 Read-only enrichment
+
+Support query-only enrichment.
+
+Examples:
+
+```text
+Tell me about wine XYZ using Brain enrichment, but don't save it.
+Describe Noble Rot, don't add it to memory.
+Would I like restaurant X? Don't store anything.
+```
+
+`brain.taste.describe_item` must return:
+
+```json
+{
+  "stored": false,
+  "source": "read_only_enrichment",
+  "enriched": {},
+  "suggested_remember_payload": {},
+  "warnings": [],
+  "server_llm_used": {}
+}
+```
+
+No persistent DB writes are allowed in read-only enrichment:
+
+* no taste item;
+* no Brain entity;
+* no memory card;
+* no relationship;
+* no open loop;
+* no proposal unless the user asks to save or confirmation is needed for a write.
+
+## 12. Taste writes
+
+### 12.1 Required write sequence
+
+For every user-originated taste write:
+
+1. classify taste domain and category;
+2. decide whether to enrich, propose, or store minimal;
+3. enrich if allowed and useful;
+4. validate category and attributes;
+5. resolve/create Brain entity for the taste item;
+6. create/update `taste_items`;
+7. upsert strict attributes;
+8. append taste signals;
+9. create Brain memory card as evidence;
+10. link memory card to taste entity;
+11. create Brain relationships when relevant;
+12. create/open/close open loops when relevant;
+13. return a response confirming taste record creation/update and including enriched data.
+
+### 12.2 Always create Brain memory cards for user-originated writes
+
+Every user-originated taste write creates a Brain memory card as evidence.
 
 Examples:
 
@@ -790,9 +866,36 @@ Examples:
 Sam recommended Château Musar 2016.
 Daniele wants to try Noble Rot.
 Daniele rated The Bear 8.5/10.
+Daniele disliked a Partagas Serie D No. 4.
 ```
 
-### 11.3 Relationships
+### 12.3 Update policy
+
+When a new taste write refers to an existing taste item:
+
+* update the current taste record in place;
+* append new signals where applicable;
+* create a new Brain memory card as evidence;
+* preserve previous evidence via existing memory cards and signals;
+* do not create a second taste item unless the item identity is materially distinct.
+
+### 12.4 Rating policy
+
+If multiple ratings exist:
+
+* preserve all ratings;
+* latest explicit user rating wins as current effective rating;
+* older ratings remain in history/evidence.
+
+## 13. Brain projection rules
+
+### 13.1 Entity projection
+
+Every taste item must map to a Brain entity.
+
+The entity should use a suitable type. The coding agent may choose exact entity type names if consistent with Brain's existing schema, but the entity must be resolvable and profile-able through Brain.
+
+### 13.2 Relationship projection
 
 Examples:
 
@@ -800,13 +903,14 @@ Examples:
 Sam -> recommended -> Château Musar 2016
 Daniele -> wants_to_try -> Noble Rot
 Daniele -> rated -> The Bear
+Daniele -> disliked -> Partagas Serie D No. 4
 ```
 
-Use Brain's existing relationship model.
+Relationships should be backed by evidence memory IDs when available.
 
-### 11.4 Open loops
+### 13.3 Open loop projection
 
-Automatically create open loops for wanted intents:
+Automatically create open loops for:
 
 ```text
 wine / restaurant / cigar / experience:
@@ -819,11 +923,21 @@ music:
   wanted_to_listen
 ```
 
-Completion should auto-close matching open loops only at very high confidence:
+Open-loop text should be user-readable, for example:
+
+```text
+Try Noble Rot.
+Watch The Bear.
+Listen to Kind of Blue.
+```
+
+### 13.4 Open loop closure
+
+When user later says they tried/watched/listened:
 
 ```text
 confidence >= 0.97:
-  auto-close
+  auto-close matching taste open loop
 
 0.80 <= confidence < 0.97:
   ask confirmation
@@ -832,27 +946,31 @@ confidence < 0.80:
   do not close
 ```
 
----
+Return closed `open_loop_id` when auto-closed.
 
-## 12. Source ingestion with taste mentions
+## 14. Large source ingestion
 
-For large source ingestion, do not fully enrich every taste mention.
+Taste items mentioned inside a large source document require special handling.
 
-Policy:
+Do not enrich/store every taste mention automatically.
+
+### 14.1 Policy
 
 ```text
 Large source document
   -> normal Brain source ingestion
   -> detect taste mentions
   -> classify candidate taste mentions
-  -> only promote/enrich/store durable, salient, actionable items
+  -> only promote/enrich/store if durable, salient, and actionable
 ```
 
-Initial thresholds:
+### 14.2 Thresholds
+
+Initial policy:
 
 ```text
 <= 3 high-salience taste items:
-  propose/enrich/store if confidence is high
+  propose/enrich/store if confidence is high and write intent is clear
 
 4-10 taste items:
   create structured proposal requiring confirmation
@@ -862,28 +980,25 @@ Initial thresholds:
   summarize candidates and ask user to select
 ```
 
-Examples:
+### 14.3 Examples
 
-| Source content | Behavior |
-|---|---|
-| "Sam recommended Château Musar 2016" | Create taste item + memory card + relationship |
-| "I want to try Noble Rot" | Create taste item + wanted-to-try open loop |
-| "The menu included Barolo, Burgundy, Riesling" | Usually source text only |
-| "Here is a list of 40 restaurants" | Store source, ask whether to select/enrich |
-| "My Paris wishlist: Septime, Clamato..." | Proposal, not mass write if many |
+| Source content                                          | Behavior                                       |
+| ------------------------------------------------------- | ---------------------------------------------- |
+| "Sam recommended Château Musar 2016"                    | Create taste item + memory card + relationship |
+| "I want to try Noble Rot"                               | Create taste item + wanted-to-try open loop    |
+| "The menu included Barolo, Burgundy, and Riesling"      | Usually source text only                       |
+| "Here is a list of 40 restaurants from an article"      | Store source; ask which to enrich/store        |
+| "My Paris wishlist: Septime, Clamato, Le Chateaubriand" | Create proposal; no mass write if many         |
 
----
+### 14.4 Source-only preservation
 
-## 13. Recall and query behavior
+Even when taste items are not promoted to structured records, the source should still be saved according to normal Brain source policy.
 
-### 13.1 Generic Brain recall
+## 15. Recall and query behavior
 
-Generic Brain recall should include relevant taste-linked memories when:
+### 15.1 Generic Brain recall includes relevant taste evidence
 
-- taste item is linked to a relevant Brain entity;
-- evidence memory card is current and visible;
-- taste record adds useful context;
-- user did not ask to exclude taste.
+Generic Brain recall should include taste-linked memories when relevant.
 
 Example:
 
@@ -898,17 +1013,18 @@ Sam recommended Château Musar 2016.
 Sam suggested trying Noble Rot.
 ```
 
-### 13.2 Taste-specific query
+Include taste-linked evidence only when:
 
-Intent-sensitive behavior:
+* the taste item is linked to a relevant Brain entity;
+* the evidence memory card is current and visible;
+* the taste record adds useful context;
+* the user did not ask to exclude taste.
 
-```text
-Recommendation / choice / ranking / comparison / option evaluation:
-  use taste ranking.
+### 15.2 Intent-sensitive behavior
 
-What do I know / remember / who recommended / what was stored:
-  use Brain recall, with linked taste evidence.
-```
+Recommendation-style queries use taste ranking.
+
+Memory-style queries use Brain recall.
 
 Examples:
 
@@ -916,78 +1032,129 @@ Examples:
 What wine should I bring?
   -> taste ranking
 
-What wines did Sam recommend?
-  -> Brain recall + taste-linked evidence
-
 Which of these restaurants should I choose?
   -> taste option evaluation
 
+What wines did Sam recommend?
+  -> Brain recall + taste-linked evidence
+
 What do I know about Noble Rot?
-  -> Brain entity profile/recall with taste record included
+  -> Brain entity profile / recall with taste record included
 ```
 
----
+## 16. Option matching
 
-## 14. Ranking and explanations
+Option-set tools must stay constrained to provided options.
 
-### 14.1 Ranking
+If the user pastes options and asks for an evaluation:
 
-Port Palate ranking logic into `taste/ranking.py`.
+* rank only provided options;
+* match provided option names to stored taste items where possible;
+* return unmatched options;
+* return `needs_confirmation` for medium-confidence matches;
+* do not substitute unrelated stored items.
 
-Ranking should use:
+Suggested confidence bands:
 
-- structured attributes;
-- 95% intervals;
-- current effective rating;
-- tried/watched/listened status;
-- wanted-to-try status;
-- negative signals;
-- decision feedback;
-- Brain graph context, such as recommender identity;
-- hard filters such as `avoid`.
+```text
+>= 0.85:
+  confident match
 
-### 14.2 Explanation style
+0.50 <= confidence < 0.85:
+  needs confirmation
 
-Default:
+< 0.50:
+  unmatched
+```
 
-- concise grounded explanation;
-- no full scoring dump.
+## 17. Ranking and explanations
 
-When user asks for details, scoring, breakdown, why exactly, confidence, attributes, or ranking logic:
+### 17.1 Ranking inputs
 
-- expose numeric score components;
-- weights;
-- penalties;
-- filters;
-- uncertainty interval effects;
-- decision-feedback adjustments;
-- evidence IDs.
+Taste ranking should use:
 
----
+* structured attributes;
+* 95% intervals;
+* latest explicit rating;
+* tried/watched/listened status;
+* wanted status;
+* negative signals;
+* decision feedback;
+* Brain graph context, e.g. recommender identity;
+* hard `avoid` filters.
 
-## 15. Confirmation/proposals
+### 17.2 Ranking transparency
 
-### 15.1 Proposal creation
+Default responses are concise.
 
-For ambiguous taste writes, create persisted proposals with `proposal_id`.
+If the user asks for details, elaborate, breakdown, scoring, confidence, attributes, trade-offs, ranking logic, or debug info, expose:
 
-Proposal contains:
+* numeric score components;
+* ranking weights;
+* penalties;
+* filters;
+* uncertainty interval effects;
+* decision-feedback adjustments;
+* evidence IDs.
 
-- original text;
-- proposed taste records;
-- normalized enriched data;
-- enrichment metadata;
-- proposed Brain memory cards;
-- proposed Brain entities;
-- proposed relationships;
-- proposed open loops;
-- warnings/ambiguity;
-- client/source metadata;
-- expiry.
+### 17.3 Explanation default
 
-### 15.2 Proposal actions
+Default style:
 
-Expose:
+```text
+Recommendation: Pick X.
+
+Why: It matches your stored preference for ..., avoids ..., and has relevant evidence from ...
+```
+
+Avoid long scoring dumps by default.
+
+## 18. Proposals and confirmation
+
+### 18.1 When to create a proposal
+
+Create a persisted proposal when:
+
+* taste route confidence is medium;
+* category is ambiguous;
+* item identity is ambiguous;
+* enrichment failed but user likely wants a taste write;
+* strict-source lookup fails and spelling may be wrong;
+* multiple taste items are detected in a source and require selection;
+* a write would close an open loop below auto-close threshold.
+
+### 18.2 Proposal contents
+
+Proposal must include:
+
+* `proposal_id`;
+* original user text;
+* proposed taste records;
+* normalized enriched fields;
+* enrichment metadata summary;
+* proposed Brain memory cards;
+* proposed Brain entities;
+* proposed relationships;
+* proposed open loops;
+* warnings;
+* ambiguity reasons;
+* allowed actions: confirm, cancel, correct.
+
+### 18.3 Slack confirmation
+
+Slack confirmation should be a structured card where possible.
+
+It must support free-text correction, e.g.:
+
+```text
+Yes, but this detail should be XXX.
+Save it, but category is restaurant, not wine.
+Correct the vintage to 2016.
+```
+
+### 18.4 MCP confirmation
+
+MCP confirmation should use:
 
 ```text
 brain.taste.confirm
@@ -995,35 +1162,23 @@ brain.taste.cancel
 brain.taste.correct_proposal
 ```
 
-No generic confirmation endpoint initially.
+Start taste-specific. If implementation later proves identical to generic confirmation, it may be consolidated, but not initially.
 
-### 15.3 Correction behavior
+### 18.5 Correction behavior
 
-Free-text correction updates the existing proposal in place.
+Correction updates the existing proposal in place.
 
-Keep:
+Re-run proposal generation when correction changes:
 
-```text
-proposal_id stable
-correction_count
-last_correction_text
-last_corrected_at
-```
+* category;
+* identity;
+* spelling;
+* attributes;
+* enrichment;
+* relationships;
+* open-loop behavior.
 
-Re-run proposal generation when correction affects identity, category, attributes, enrichment, relationships, or open-loop behavior.
-
-### 15.4 Expiry behavior
-
-Expired proposals:
-
-- cannot be confirmed;
-- cannot be corrected;
-- must be regenerated;
-- may be marked cancelled/no-op if user cancels.
-
----
-
-## 16. Refresh enrichment
+## 19. Refresh enrichment
 
 Expose:
 
@@ -1031,9 +1186,13 @@ Expose:
 brain.taste.refresh_enrichment
 ```
 
-Refresh is explicit only. Do not refresh automatically on read/query.
+Refresh is explicit only.
 
-Response:
+Do not refresh automatically on read/query.
+
+### 19.1 Refresh response
+
+Return:
 
 ```json
 {
@@ -1046,11 +1205,11 @@ Response:
 }
 ```
 
-### 16.1 Memory cards for refresh
+### 19.2 Memory cards for refresh
 
 Routine refresh updates only enrichment metadata.
 
-Create Brain memory card only for material changes.
+Create a Brain memory card only for material changes.
 
 Initial materiality rules:
 
@@ -1068,94 +1227,105 @@ canonical identity changes
 enrichment contradicts existing stored metadata
 ```
 
----
+## 20. LLM and validation
 
-## 17. LLM and schema validation
+### 20.1 LLM-first taste semantics
 
-Use LLM-first for taste semantics, with strict insertion schemas.
+Taste classification, attribute extraction, signal extraction, enrichment normalization, and explanation may be LLM-first.
 
-Allowed LLM-backed tasks:
+### 20.2 Strict DB insertion
 
-- taste classification;
-- attribute extraction;
-- signal extraction;
-- enrichment normalization;
-- explanation.
-
-Required validator behavior:
-
-```text
-No free-form model output writes directly to DB.
-```
+No free-form model output may write directly to Brain DB or taste tables.
 
 Before insertion:
 
-- category must be allowed;
-- attributes must be allowed for category;
-- values must be valid;
-- intervals must be normalized;
-- unknown keys go to enrichment metadata/notes/warnings;
-- conflicts/ambiguity trigger proposal/confirmation.
+* category must be allowed;
+* attributes must be allowed for that category;
+* signal type must be allowed;
+* values must validate;
+* intervals must validate;
+* entity identity must be resolved or created safely;
+* conflicts/ambiguity must be handled through proposals.
 
----
+### 20.3 Unknown fields
 
-## 18. Deletion and privacy
+Unknown fields must go to:
 
-### 18.1 Delete behavior
+* `enrichment_metadata_json`;
+* notes;
+* warnings.
 
-Default: soft-delete.
+They must not affect ranking until promoted into the strict schema by a code change.
+
+## 21. Deletion, privacy, and lifecycle
+
+### 21.1 Delete behavior
+
+Default: soft delete.
 
 ```text
 taste_items.status = deleted
 ```
 
-Deleted taste records are excluded from default ranking/query results.
+Deleted taste records:
 
-Hard-delete only if explicitly requested, and should require confirmation.
+* excluded from default ranking/query;
+* visible only in admin/debug or explicit include-deleted requests;
+* preserve linked Brain evidence.
 
-### 18.2 Privacy
+Hard delete:
 
-Use Brain's existing privacy/sensitivity/status model. Do not add a separate taste privacy layer initially.
+* only on explicit request;
+* should require confirmation;
+* must handle dependent rows safely.
 
-Taste visibility follows:
+### 21.2 Privacy
 
-- linked memory cards;
-- linked entities;
-- source provenance;
-- generic recall visibility rules;
-- admin/debug scope.
+Use Brain's existing privacy/status visibility model.
 
----
+Do not add a separate taste privacy layer initially.
 
-## 19. Tests and evals
+Taste visibility follows linked:
+
+* memory cards;
+* entities;
+* sources;
+* status visibility filters;
+* admin/debug scope.
+
+## 22. Tests and evals
 
 Port and expand Palate evals immediately.
 
-### 19.1 Unit tests
+### 22.1 Unit tests
 
-Add tests for:
+Required test areas:
 
-- schema/migrations;
-- taste item creation;
-- Brain entity creation;
-- memory card projection;
-- relationship projection;
-- open-loop creation;
-- open-loop closure;
-- attribute strictness;
-- signal semantics;
-- latest-rating-wins;
-- negative-signal ranking effects;
-- soft delete;
-- proposal persistence;
-- proposal correction;
-- proposal expiry;
-- refresh materiality;
-- backup inclusion.
+* schema/migrations;
+* strict category validation;
+* strict attribute validation;
+* taste item creation/update;
+* Brain entity creation for every taste item;
+* memory card projection for every user-originated write;
+* relationship projection;
+* open-loop creation;
+* open-loop closure thresholds;
+* rating latest-wins;
+* negative signal effects;
+* soft delete;
+* hard-delete confirmation path if implemented;
+* proposal persistence;
+* proposal correction in place;
+* proposal expiry;
+* enrichment failure behavior;
+* read-only enrichment no-write guarantee;
+* source allowlist behavior;
+* refresh materiality;
+* backup inclusion.
 
-### 19.2 Integration tests
+### 22.2 Integration tests
 
-Add tests for:
+Required integration tests:
 
 ```text
 brain.remember -> taste route -> taste write -> Brain projection
@@ -1167,118 +1337,91 @@ Slack medium-confidence proposal -> free-text correction -> confirm
 source ingestion with many taste mentions -> no mass enrichment
 failed strict enrichment -> confirmation instead of prompt-only write
 strict-source miss -> asks whether to broaden search
+completion statement -> closes open loop only above threshold
+generic recall of person -> includes linked taste recommendations
 ```
 
-### 19.3 Eval coverage
+### 22.3 Eval coverage
 
-Add eval cases for:
+Required eval cases:
 
-- taste-domain routing;
-- entity classification;
-- enrichment normalization;
-- strict schema validation;
-- option matching;
-- ranking quality;
-- negative-signal handling;
-- decision feedback;
-- Brain entity projection;
-- Brain memory-card projection;
-- relationship creation;
-- open-loop creation/closure;
-- generic Brain recall including taste evidence;
-- detailed ranking explainability.
+* taste-domain routing;
+* taste entity classification;
+* enrichment normalization;
+* strict schema validation;
+* option matching;
+* ranking quality;
+* negative-signal handling;
+* decision feedback;
+* Brain entity projection;
+* Brain memory-card projection;
+* relationship creation;
+* open-loop creation;
+* open-loop closure;
+* generic Brain recall including taste-linked evidence;
+* detailed ranking explainability;
+* failed enrichment safety;
+* large source ingestion selectivity.
 
----
+## 23. Implementation phases
 
-## 20. Acceptance criteria
+### Phase 1 — Move code and establish module skeleton
 
-The merge is complete only when all of these pass:
-
-```text
-brain.remember routes high-confidence taste writes.
-brain.taste.* tools work.
-taste records use Brain DB.
-taste writes create Brain entities.
-taste writes create Brain memory cards.
-taste writes create Brain relationships when applicable.
-wanted-to-try/watch/listen creates Brain open loops.
-tried/watched/listened completion closes matching open loops at high confidence.
-generic Brain recall includes taste-linked memories.
-taste ranking works.
-option matching is constrained to supplied options.
-read-only enrichment performs no writes.
-failed strict enrichment asks confirmation before minimal storage.
-large source ingestion avoids mass enrichment.
-enrichment separates normalized fields from source-qualified/free-form metadata.
-Slack confirmation supports free-text correction.
-MCP confirmation supports proposal_id confirm/cancel/correct.
-Brain backups include taste tables and proposals.
-All relevant tests/evals pass.
-Standalone Palate server code is removed.
-No separate Palate DB/service/MCP server remains.
-```
-
----
-
-## 21. Suggested implementation phases
-
-### Phase 1 — Move code and create Brain-native taste module
-
-1. Copy relevant Palate logic into `src/memory_stack/taste/`.
-2. Do not copy standalone `palate.server` as runnable service.
-3. Delete/deprecate standalone service code.
-4. Keep enrichment/ranking/core logic as reusable modules.
-5. Add initial Brain config settings.
+1. Move relevant Palate logic into `src/memory_stack/taste/`.
+2. Do not preserve standalone `palate.server`.
+3. Do not expose old `palate_*` tools.
+4. Add module skeleton and tests directory.
+5. Add Brain taste config settings.
 
 Deliverable:
 
 ```text
-Taste code exists inside Brain repo, no separate service.
+Taste module exists inside Brain repo. No separate Palate service remains.
 ```
 
-### Phase 2 — Add schema and store
+### Phase 2 — Schema and store
 
-1. Add SQLAlchemy tables/migrations for `taste_*`.
+1. Add `taste_*` tables to Brain schema/migrations.
 2. Implement `TasteStore`.
-3. Implement strict category/attribute schemas.
-4. Add unit tests for DB behavior.
+3. Implement strict category and attribute registries.
+4. Add unit tests.
 
 Deliverable:
 
 ```text
-Brain DB can store structured taste records.
+Brain DB can store structured taste records with validated attributes/signals.
 ```
 
-### Phase 3 — Port enrichment
+### Phase 3 — Enrichment
 
 1. Port OMDb/media enrichment.
 2. Port restaurant enrichment.
-3. Implement source allowlist.
-4. Implement normalized vs enrichment metadata separation.
+3. Implement strict source allowlist.
+4. Implement normalized/free-form metadata split.
 5. Implement read-only `describe_item`.
-6. Add failed-enrichment confirmation behavior.
+6. Implement failed-enrichment confirmation behavior.
 
 Deliverable:
 
 ```text
-brain.taste.describe_item works with stored=false and no DB writes.
+brain.taste.describe_item can enrich read-only with stored=false and no DB writes.
 ```
 
-### Phase 4 — Brain projection
+### Phase 4 — Projection
 
-1. Implement taste item -> Brain entity creation.
-2. Implement user-originated taste write -> Brain memory card.
-3. Implement relationships.
-4. Implement wanted-to-try/watch/listen open loops.
+1. Create Brain entity for every taste item.
+2. Create Brain memory cards for every user-originated taste write.
+3. Create relationships.
+4. Create wanted-to-try/watch/listen open loops.
 5. Implement high-confidence open-loop closure.
 
 Deliverable:
 
 ```text
-Taste writes compound with Brain entity graph.
+Taste writes compound with Brain's entity graph.
 ```
 
-### Phase 5 — MCP tools
+### Phase 5 — Explicit MCP tools
 
 Implement:
 
@@ -1297,77 +1440,101 @@ brain.taste.refresh_enrichment
 Deliverable:
 
 ```text
-Explicit taste tools work and return structured confirmations.
+Explicit taste MCP tools work and return structured confirmations.
 ```
 
-### Phase 6 — Semantic routing in generic Brain tools
+### Phase 6 — Semantic routing in Brain tools
 
-1. Add `taste_domain_router`.
+1. Add taste router.
 2. Wire into `brain.remember`.
 3. Wire into `brain.recall`.
-4. Add thresholds.
-5. Add proposal flow for medium-confidence routing.
-6. Add source-ingestion taste mention policy.
+4. Wire into source ingestion selectivity.
+5. Add thresholds and proposal behavior.
 
 Deliverable:
 
 ```text
-Users can use /brain and brain.* naturally without selecting Taste manually.
+Users can use /brain and brain.* naturally without manually selecting Taste.
 ```
 
-### Phase 7 — Ranking and decision feedback
+### Phase 7 — Ranking, option matching, decisions
 
 1. Port ranking logic.
 2. Port option matching.
 3. Port decision feedback.
-4. Implement negative signals.
-5. Implement detailed scoring explainability.
+4. Add negative signal effects.
+5. Add detailed scoring explainability.
 
 Deliverable:
 
 ```text
-Taste recommendation quality matches or exceeds current Palate behavior.
+Taste recommendations work with structured ranking and explainable scoring.
 ```
 
-### Phase 8 — Slack confirmation
+### Phase 8 — Slack confirmation UX
 
-1. Add structured confirmation card.
+1. Add structured Slack confirmation.
 2. Add free-text correction.
-3. Implement proposal confirm/cancel/correct path.
-4. Ensure proposal expiry handling.
+3. Wire proposal confirm/cancel/correct.
+4. Enforce expiry.
 
 Deliverable:
 
 ```text
-Ambiguous Slack taste writes are safe and correctable.
+Ambiguous Slack taste writes are safe, inspectable, and correctable.
 ```
 
-### Phase 9 — Tests/evals/backup/deployment cleanup
+### Phase 9 — Tests/evals/docs/backup cleanup
 
 1. Add full tests/evals.
-2. Add taste tables to backup/export verification.
-3. Remove Palate standalone deployment artifacts.
-4. Update docs.
-5. Update README and API setup docs.
+2. Verify backup includes taste tables.
+3. Remove standalone Palate deployment artifacts.
+4. Update README/API docs/user docs.
+5. Confirm strict acceptance criteria.
 
 Deliverable:
 
 ```text
-Strict acceptance criteria pass.
+Merge is complete.
 ```
 
----
+## 24. Acceptance criteria
 
-## 22. Coding-agent instruction block
+The merge is complete only when all are true:
+
+* `brain.remember` routes high-confidence taste writes.
+* `brain.taste.*` tools work.
+* Taste records use Brain DB.
+* Every taste record has a Brain entity.
+* Every user-originated taste write creates a Brain memory card.
+* Taste writes create relationships when applicable.
+* Wanted-to-try/watch/listen creates Brain open loops.
+* Tried/watched/listened completion closes matching open loops only above high threshold.
+* Generic Brain recall includes relevant taste-linked memories.
+* Taste ranking works.
+* Option matching is constrained to supplied options.
+* Read-only enrichment performs no persistent writes.
+* Failed strict enrichment asks confirmation before minimal storage.
+* Strict-source misses ask whether to broaden search.
+* Large source ingestion avoids mass enrichment.
+* Enrichment separates normalized fields from source-qualified/free-form metadata.
+* Slack confirmation supports free-text correction.
+* MCP confirmation supports `proposal_id` confirm/cancel/correct.
+* Brain backups include taste tables and proposals.
+* Tests/evals cover routing, enrichment, storage, projection, ranking, recall, and safety cases.
+* Standalone Palate server code is removed.
+* No separate Palate DB/service/MCP server remains.
+
+## 25. Coding-agent instruction block
 
 Use this as the direct instruction to the coding agent:
 
 ```text
 Implement Brain Taste integration by moving Palate into Brain as an internal taste domain module.
 
-Do not preserve the old Palate DB, service, MCP server, or tool names. Do not add /taste/* HTTP routes initially. Expose explicit brain.taste.* MCP tools and route high-confidence taste-related brain.remember / brain.recall calls semantically.
+Do not preserve the old Palate DB, service, MCP server, HTTP route namespace, or tool names. Do not add /taste/* HTTP routes initially. Expose explicit brain.taste.* MCP tools and route high-confidence taste-related brain.remember / brain.recall calls semantically.
 
-Brain remains the source of truth for entities, memory cards, sources, relationships, open loops, conflict lifecycle, backup, privacy/status visibility, and recall. Taste owns structured taste records, enrichment, attributes, signals, decisions, option matching, ranking, and recommendation explanations.
+Brain remains the source of truth for entities, memory cards, sources, relationships, open loops, conflict lifecycle, backup, privacy/status visibility, and generic recall. Taste owns structured taste records, enrichment, attributes, signals, decisions, option matching, ranking, and recommendation explanations.
 
 Every taste record must have a Brain entity. Every user-originated taste write must create a Brain memory card as evidence. Wanted-to-try/watch/listen must create Brain open loops. Completion closes matching open loops only at very high confidence.
 
@@ -1380,18 +1547,53 @@ Use LLM-first taste semantics but strict DB insertion schemas. Only allowed cate
 Port and expand Palate evals immediately. The merge is not complete until strict acceptance criteria pass.
 ```
 
----
+## 26. Questions the coding agent should not ask again
 
-## 23. Open implementation details the coding agent may choose
+The following are already decided:
 
-The coding agent may choose under these constraints:
+* No old Palate DB migration is needed.
+* No old `palate_*` MCP aliases are needed.
+* Explicit `brain.taste.*` MCP tools are required.
+* Taste-write responses must confirm created/updated taste records and include enriched data.
+* Auto-enrich high-confidence taste writes only with a very high threshold.
+* Ask confirmation for medium-confidence or ambiguous writes.
+* Every taste record gets a Brain entity.
+* Every user-originated taste write gets a Brain memory card.
+* Wanted-to-try/watch/listen creates an open loop.
+* Completion can auto-close an open loop only at very high confidence.
+* Decision logs do not become Brain memory cards by default.
+* Generic Brain recall includes relevant taste-linked evidence.
+* Taste-specific query behavior is intent-sensitive: ranking for recommendations, recall for memory-style queries.
+* Read-only enrichment is allowed and must not store unless asked.
+* Strict-source failures should ask before broader web search.
+* Enrichment source metadata should be preserved separately from normalized fields.
+* Taste records update in place with evidence history.
+* Latest explicit rating wins.
+* Explicit negative signals are required.
+* Strict per-category attribute schemas are required.
+* New categories require deliberate code changes.
+* Slack uses only `/brain ...`.
+* No `/taste/*` HTTP routes initially.
+* Use Brain config with taste-prefixed settings.
+* Remove separate Palate service.
+* Delete standalone Palate server code.
+* Include all taste data and proposals in Brain backups.
+* Soft-delete taste records by default.
+* Use Brain's existing privacy/sensitivity model.
+* Strict acceptance criteria are required.
+* Active by default after implementation/tests; no staged feature flag requirement.
 
-- exact SQLAlchemy naming conventions;
-- exact migration file organization;
-- exact schema JSON field names if semantically equivalent;
-- exact scoring formula, provided it is testable and explainable;
-- exact Slack UI mechanics for structured confirmation;
-- exact model prompt layout for taste roles;
-- exact backup verification implementation.
+## 27. Implementation details the coding agent may decide
 
-The agent must not change the architectural decisions above without explicit approval.
+The coding agent may decide these, provided all constraints above are respected:
+
+* exact SQLAlchemy class/table naming;
+* exact migration file names;
+* exact ID prefixes;
+* exact Slack card UI representation;
+* exact prompt format for LLM-first taste extraction;
+* exact scoring formula and weights, provided detailed mode exposes them and tests cover them;
+* exact backup verification mechanics;
+* exact doc organization.
+
+The coding agent must not change any architectural decision in this document without explicit approval.

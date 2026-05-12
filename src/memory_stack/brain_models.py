@@ -126,6 +126,7 @@ class IngestionReceipt(BaseModel):
     relationships: list[dict[str, Any]] = Field(default_factory=list)
     open_loops: list[dict[str, Any]] = Field(default_factory=list)
     conflicts: list[dict[str, Any]] = Field(default_factory=list)
+    taste: dict[str, Any] = Field(default_factory=dict)
     cognee_sync_status: str = "pending"
     dry_run: bool = False
 
@@ -146,3 +147,4 @@ class RecallResponse(BaseModel):
     open_loops: list[dict[str, Any]] = Field(default_factory=list)
     conflicts: list[dict[str, Any]] = Field(default_factory=list)
     evidence: list[dict[str, Any]] = Field(default_factory=list)
+    taste: dict[str, Any] = Field(default_factory=dict)

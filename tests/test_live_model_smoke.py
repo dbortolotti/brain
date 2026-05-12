@@ -53,16 +53,16 @@ def test_active_scope_selects_configured_llm_and_embedding(
         llm_provider="openai",
         llm_model="openai/gpt-5.5",
         openai_api_key="sk-provider",
-        embedding_provider="fastembed",
-        embedding_model="intfloat/multilingual-e5-large",
-        embedding_dimensions=1024,
+        embedding_provider="openai",
+        embedding_model="text-embedding-3-large",
+        embedding_dimensions=3072,
     )
 
     probes = live_model_smoke.active_probes(settings)
 
     assert [(probe.kind, probe.provider, probe.model) for probe in probes] == [
         ("llm", "openai", "gpt-5.5"),
-        ("embedding", "fastembed", "intfloat/multilingual-e5-large"),
+        ("embedding", "openai", "text-embedding-3-large"),
     ]
 
 
@@ -125,25 +125,20 @@ def test_openai_active_probe_makes_live_style_calls_without_leaking_key(
         llm_provider="openai",
         llm_model="gpt-5.5",
         openai_api_key="sk-provider-secret",
-        embedding_provider="fastembed",
-        embedding_model="intfloat/multilingual-e5-large",
-        embedding_dimensions=1024,
+        embedding_provider="openai",
+        embedding_model="text-embedding-3-large",
+        embedding_dimensions=3072,
     )
     seen_paths: list[str] = []
-    embedding_calls: list[tuple[str, str]] = []
-
-    def fake_fastembed_vector(model: str, text: str) -> list[float]:
-        embedding_calls.append((model, text))
-        return [0.1, 0.2]
-
     def handler(request: httpx.Request) -> httpx.Response:
         seen_paths.append(request.url.path)
         assert request.headers["authorization"] == "Bearer sk-provider-secret"
         if request.url.path == "/v1/responses":
             return httpx.Response(200, json={"id": "resp_123", "output_text": '{"ok": true}'})
+        if request.url.path == "/v1/embeddings":
+            return httpx.Response(200, json={"data": [{"embedding": [0.1, 0.2]}]})
         return httpx.Response(404, json={"error": {"message": "not found"}})
 
-    monkeypatch.setattr(provider_client, "fastembed_vector", fake_fastembed_vector)
     client = httpx.Client(transport=httpx.MockTransport(handler))
     probes = live_model_smoke.active_probes(settings)
 
@@ -155,8 +150,7 @@ def test_openai_active_probe_makes_live_style_calls_without_leaking_key(
     )
 
     assert [result.status for result in results] == ["ok", "ok"]
-    assert seen_paths == ["/v1/responses"]
-    assert embedding_calls == [("intfloat/multilingual-e5-large", "brain smoke test")]
+    assert seen_paths == ["/v1/responses", "/v1/embeddings"]
     assert "sk-provider-secret" not in "\n".join(result.detail for result in results)
 
 
@@ -219,7 +213,7 @@ def test_openai_oauth_text_smoke_reports_missing_profile_without_api_key(
             kind="embedding",
             label="openai:text-embedding-3-small",
         ),
-    ) == "missing OPENAI_API_KEY for OpenAI embeddings"
+    ) == "OpenAI OAuth credentials are missing. Run `brain models auth login --provider openai-codex`."
 
 
 def test_openai_oauth_text_smoke_accepts_codex_cli_token_without_brain_profile(
@@ -240,9 +234,9 @@ def test_openai_oauth_text_smoke_accepts_codex_cli_token_without_brain_profile(
         openai_auth_mode="oauth",
         llm_provider="openai",
         llm_model="gpt-5.5",
-        embedding_provider="fastembed",
-        embedding_model="intfloat/multilingual-e5-large",
-        embedding_dimensions=1024,
+        embedding_provider="openai",
+        embedding_model="text-embedding-3-large",
+        embedding_dimensions=3072,
         brain_provider_auth_profiles_path=str(tmp_path / "profiles.json"),
         brain_provider_auth_state_dir=str(tmp_path / "state"),
     )
@@ -274,9 +268,9 @@ def test_openai_oauth_text_smoke_uses_codex_bearer(
         openai_auth_mode="oauth",
         llm_provider="openai",
         llm_model="gpt-5.5",
-        embedding_provider="fastembed",
-        embedding_model="intfloat/multilingual-e5-large",
-        embedding_dimensions=1024,
+        embedding_provider="openai",
+        embedding_model="text-embedding-3-large",
+        embedding_dimensions=3072,
         brain_provider_auth_profiles_path=str(tmp_path / "profiles.json"),
         brain_provider_auth_state_dir=str(tmp_path / "state"),
     )
@@ -352,9 +346,9 @@ def test_openrouter_probe_uses_api_model_and_quantization(
         llm_model="gpt-5.5",
         openai_api_key="sk-provider",
         openrouter_api_key="sk-or-provider",
-        embedding_provider="fastembed",
-        embedding_model="intfloat/multilingual-e5-large",
-        embedding_dimensions=1024,
+        embedding_provider="openai",
+        embedding_model="text-embedding-3-large",
+        embedding_dimensions=3072,
     )
     seen_json: list[dict[str, object]] = []
 
@@ -408,9 +402,9 @@ def test_google_probe_uses_api_model_and_thinking_level(
         llm_model="gpt-5.5",
         openai_api_key="sk-provider",
         gemini_api_key="AIza-provider",
-        embedding_provider="fastembed",
-        embedding_model="intfloat/multilingual-e5-large",
-        embedding_dimensions=1024,
+        embedding_provider="openai",
+        embedding_model="text-embedding-3-large",
+        embedding_dimensions=3072,
     )
     seen_json: list[dict[str, object]] = []
 

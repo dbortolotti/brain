@@ -117,11 +117,12 @@ class Settings(BaseSettings):
     groq_api_key: str | None = None
     voyage_api_key: str | None = None
 
-    graph_database_provider: str = "neo4j"
-    graph_database_url: str = "bolt://localhost:7687"
-    graph_database_name: str = "neo4j"
-    graph_database_username: str = "neo4j"
-    graph_database_password: str = "change-me"
+    graph_database_provider: str = "ladybug"
+    graph_database_url: str = ""
+    graph_database_name: str = ""
+    graph_database_username: str = ""
+    graph_database_password: str = ""
+    enable_backend_access_control: bool = False
 
     vector_db_provider: str = "lancedb"
     vector_db_url: str = "./.data/lancedb/cognee.lancedb"
@@ -165,12 +166,23 @@ class Settings(BaseSettings):
     brain_database_url: str = "sqlite:///.data/brain/brain.db"
     brain_owner_name: str = "Daniele"
     brain_llm_enabled: bool = False
-    brain_cognee_enabled: bool = False
+    brain_cognee_enabled: bool = True
     brain_cognee_recall_enabled: bool = False
     brain_cognee_memory_dataset: str = "memory"
     brain_cognee_sources_dataset: str = "sources"
     brain_cognee_data_dataset: str = "data"
     brain_cognee_recall_top_k: int = 10
+    brain_taste_enabled: bool = True
+    brain_taste_llm_routing_enabled: bool = False
+    brain_taste_auto_enrich_enabled: bool = True
+    brain_taste_omdb_api_key: str | None = None
+    brain_taste_web_enrichment_enabled: bool = True
+    brain_taste_google_places_api_key: str | None = None
+    brain_taste_auto_write_threshold: float = 0.95
+    brain_taste_confirmation_threshold: float = 0.70
+    brain_taste_open_loop_close_threshold: float = 0.97
+    brain_taste_open_loop_confirmation_threshold: float = 0.80
+    brain_taste_proposal_expiry_hours: int = 24
     brain_slack_enabled: bool = False
     brain_slack_agent_enabled: bool = False
     brain_slack_agent_host: str = "127.0.0.1"
@@ -205,10 +217,14 @@ class Settings(BaseSettings):
             self.llm_api_key = self.llm_api_key or self.configured_provider_api_key(
                 self.llm_provider
             )
-        self.embedding_api_key = (
-            self.embedding_api_key
-            or self.configured_provider_api_key(self.embedding_provider)
-        )
+        if not (
+            normalize_provider_name(self.embedding_provider) == "openai"
+            and self.openai_auth_mode == "oauth"
+        ):
+            self.embedding_api_key = (
+                self.embedding_api_key
+                or self.configured_provider_api_key(self.embedding_provider)
+            )
 
         if self.profile != "openai":
             raise ValueError("Brain runtime supports PROFILE=openai only")
@@ -432,6 +448,7 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "GRAPH_DATABASE_NAME": settings.graph_database_name,
         "GRAPH_DATABASE_USERNAME": settings.graph_database_username,
         "GRAPH_DATABASE_PASSWORD": settings.graph_database_password,
+        "ENABLE_BACKEND_ACCESS_CONTROL": str(settings.enable_backend_access_control).lower(),
         "VECTOR_DB_PROVIDER": settings.vector_db_provider,
         "VECTOR_DB_URL": str(repo_path(settings.vector_db_url)),
         "DB_PROVIDER": settings.db_provider,
@@ -471,6 +488,29 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "BRAIN_COGNEE_SOURCES_DATASET": settings.brain_cognee_sources_dataset,
         "BRAIN_COGNEE_DATA_DATASET": settings.brain_cognee_data_dataset,
         "BRAIN_COGNEE_RECALL_TOP_K": str(settings.brain_cognee_recall_top_k),
+        "BRAIN_TASTE_ENABLED": str(settings.brain_taste_enabled).lower(),
+        "BRAIN_TASTE_LLM_ROUTING_ENABLED": str(
+            settings.brain_taste_llm_routing_enabled
+        ).lower(),
+        "BRAIN_TASTE_AUTO_ENRICH_ENABLED": str(
+            settings.brain_taste_auto_enrich_enabled
+        ).lower(),
+        "BRAIN_TASTE_WEB_ENRICHMENT_ENABLED": str(
+            settings.brain_taste_web_enrichment_enabled
+        ).lower(),
+        "BRAIN_TASTE_AUTO_WRITE_THRESHOLD": str(settings.brain_taste_auto_write_threshold),
+        "BRAIN_TASTE_CONFIRMATION_THRESHOLD": str(
+            settings.brain_taste_confirmation_threshold
+        ),
+        "BRAIN_TASTE_OPEN_LOOP_CLOSE_THRESHOLD": str(
+            settings.brain_taste_open_loop_close_threshold
+        ),
+        "BRAIN_TASTE_OPEN_LOOP_CONFIRMATION_THRESHOLD": str(
+            settings.brain_taste_open_loop_confirmation_threshold
+        ),
+        "BRAIN_TASTE_PROPOSAL_EXPIRY_HOURS": str(
+            settings.brain_taste_proposal_expiry_hours
+        ),
         "BRAIN_SLACK_ENABLED": str(settings.brain_slack_enabled).lower(),
         "BRAIN_SLACK_AGENT_ENABLED": str(settings.brain_slack_agent_enabled).lower(),
         "BRAIN_SLACK_AGENT_HOST": settings.brain_slack_agent_host,
@@ -499,6 +539,8 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "BRAIN_AUTH_TOKEN": settings.brain_auth_token,
         "BRAIN_AUTH_PASSWORD": settings.brain_auth_password,
         "BRAIN_GOOGLE_DRIVE_LOCAL_PATH": settings.brain_google_drive_local_path,
+        "BRAIN_TASTE_OMDB_API_KEY": settings.brain_taste_omdb_api_key,
+        "BRAIN_TASTE_GOOGLE_PLACES_API_KEY": settings.brain_taste_google_places_api_key,
         "BRAIN_SLACK_SIGNING_SECRET": settings.brain_slack_signing_secret,
         "BRAIN_SLACK_BOT_TOKEN": settings.brain_slack_bot_token,
     }

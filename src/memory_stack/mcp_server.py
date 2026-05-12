@@ -49,6 +49,14 @@ from memory_stack.domain_constants import (
 from memory_stack.io import to_jsonable
 from memory_stack.oauth import BrainOAuthProvider, parse_bearer
 from memory_stack.request_logging import RequestResponseLogMiddleware
+from memory_stack.taste.models import (
+    TasteDescribeRequest,
+    TasteLogDecisionRequest,
+    TasteQueryRequest,
+    TasteRefreshRequest,
+    TasteRememberRequest,
+)
+from memory_stack.taste.service import TasteService
 
 STARTED_AT = time.time()
 settings = load_settings()
@@ -129,8 +137,11 @@ class MergeEntitiesRequest(BaseModel):
 def memory_tool_definitions() -> list[dict[str, Any]]:
     return [
         {
-            "name": "brain_remember",
-            "description": "Store a user-level memory, fact, thought, or short note in Brain.",
+            "name": "brain.remember",
+            "description": (
+                "Store a user-level memory, fact, thought, or short note in Brain. "
+                "High-confidence taste memories may route to Brain Taste automatically."
+            ),
             "inputSchema": {
                 "type": "object",
                 "properties": {
@@ -150,8 +161,12 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain_ingest_source",
-            "description": "Store source material and optionally extract durable Brain memories.",
+            "name": "brain.ingest_source",
+            "description": (
+                "Store source material and optionally extract durable Brain memories. "
+                "Brain may detect taste mentions, but large source ingestion avoids "
+                "mass Taste enrichment/writes without confirmation."
+            ),
             "inputSchema": {
                 "type": "object",
                 "properties": {
@@ -168,8 +183,11 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain_recall",
-            "description": "Answer a user-level memory query with evidence.",
+            "name": "brain.recall",
+            "description": (
+                "Answer a user-level memory query with evidence. Recommendation-style "
+                "taste queries may use Brain Taste ranking."
+            ),
             "inputSchema": {
                 "type": "object",
                 "properties": {
@@ -193,7 +211,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain_profile_entity",
+            "name": "brain.profile_entity",
             "description": "Build an entity-centric Brain profile.",
             "inputSchema": {
                 "type": "object",
@@ -210,7 +228,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain_list_open_loops",
+            "name": "brain.list_open_loops",
             "description": "List open questions, ideas, reminders, and parked research threads.",
             "inputSchema": {
                 "type": "object",
@@ -225,7 +243,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain_get_memory",
+            "name": "brain.get_memory",
             "description": "Read one Brain memory card by id.",
             "inputSchema": {
                 "type": "object",
@@ -240,7 +258,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain_get_source",
+            "name": "brain.get_source",
             "description": "Read Brain source metadata and optionally truncated source text.",
             "inputSchema": {
                 "type": "object",
@@ -254,7 +272,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain_resolve_conflict",
+            "name": "brain.resolve_conflict",
             "description": "Resolve a contradiction or duplicate between two Brain memories.",
             "inputSchema": {
                 "type": "object",
@@ -269,7 +287,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain_forget",
+            "name": "brain.forget",
             "description": "Soft delete a Brain object. Hard delete requires confirm=true.",
             "inputSchema": {
                 "type": "object",
@@ -289,7 +307,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain_review_recent",
+            "name": "brain.review_recent",
             "description": "Review recent Brain ingestion runs, sources, memories, and conflict links.",
             "inputSchema": {
                 "type": "object",
@@ -302,7 +320,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain_undo_last",
+            "name": "brain.undo_last",
             "description": "Soft-delete objects created by one recent ingestion run.",
             "inputSchema": {
                 "type": "object",
@@ -313,7 +331,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain_sync_cognee",
+            "name": "brain.sync_cognee",
             "description": "Manually sync pending Brain projections to Cognee.",
             "inputSchema": {
                 "type": "object",
@@ -327,7 +345,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain_rebuild_cognee",
+            "name": "brain.rebuild_cognee",
             "description": "Mark Cognee projections stale so they can be rebuilt from Brain DB.",
             "inputSchema": {
                 "type": "object",
@@ -344,7 +362,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": "brain_merge_entities",
+            "name": "brain.merge_entities",
             "description": "Merge a duplicate entity into a primary entity after confirmation.",
             "inputSchema": {
                 "type": "object",
@@ -359,6 +377,158 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
                     },
                 },
                 "required": ["primary_entity_id", "duplicate_entity_id"],
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain.taste.describe_item",
+            "description": "Describe a taste item with strict-source enrichment without storing it.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "item_text": {"type": "string"},
+                    "entity_type": {"type": "string"},
+                    "canonical_name": {"type": "string"},
+                    "attributes": {"type": "object", "additionalProperties": True},
+                    "attribute_intervals_95": {"type": "object", "additionalProperties": True},
+                    "metadata": {"type": "object", "additionalProperties": True},
+                    "notes": {"type": "string"},
+                    "fetch_external_ratings": {"type": "boolean", "default": True},
+                    "allow_broader_web_search": {"type": "boolean", "default": False},
+                },
+                "required": ["item_text", "entity_type"],
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain.taste.remember",
+            "description": "Store a structured taste item and project it into Brain evidence.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "id": {"type": "string"},
+                    "type": {"type": "string"},
+                    "canonical_name": {"type": "string"},
+                    "description": {"type": "string"},
+                    "attributes": {"type": "object", "additionalProperties": True},
+                    "attribute_intervals_95": {"type": "object", "additionalProperties": True},
+                    "rating": {"type": "number"},
+                    "tried": {"type": "boolean"},
+                    "watched": {"type": "boolean"},
+                    "listened": {"type": "boolean"},
+                    "wanted": {"type": "boolean"},
+                    "recommended_by": {"type": "string"},
+                    "disliked": {"type": "boolean"},
+                    "avoid": {"type": "boolean"},
+                    "not_my_style": {"type": "boolean"},
+                    "bad_fit": {"type": "boolean"},
+                    "notes": {"type": "string"},
+                    "metadata": {"type": "object", "additionalProperties": True},
+                    "dry_run": {"type": "boolean", "default": False},
+                    "store_anyway": {"type": "boolean", "default": False},
+                    "context": {"type": "object", "additionalProperties": True},
+                    "fetch_external_ratings": {"type": "boolean", "default": True},
+                    "allow_broader_web_search": {"type": "boolean", "default": False},
+                },
+                "required": ["type", "canonical_name", "description"],
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain.taste.query",
+            "description": "Rank saved taste records for a recommendation or comparison query.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string"},
+                    "context": {"type": "object", "additionalProperties": True},
+                    "options_text": {"type": "string"},
+                    "explain": {"type": "boolean", "default": False},
+                    "intent": {"type": "object", "additionalProperties": True},
+                    "extracted_entities": {
+                        "type": "array",
+                        "items": {"type": "object", "additionalProperties": True},
+                    },
+                },
+                "required": ["query"],
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain.taste.evaluate_options",
+            "description": "Rank only supplied options against saved taste records.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string"},
+                    "options_text": {"type": "string"},
+                    "context": {"type": "object", "additionalProperties": True},
+                    "explain": {"type": "boolean", "default": False},
+                    "intent": {"type": "object", "additionalProperties": True},
+                    "extracted_entities": {
+                        "type": "array",
+                        "items": {"type": "object", "additionalProperties": True},
+                    },
+                },
+                "required": ["query"],
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain.taste.log_decision",
+            "description": "Record which taste item was chosen after a recommendation.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "chosen_taste_item_id": {"type": "string"},
+                    "decision_id": {"type": "string"},
+                    "query": {"type": "string"},
+                    "context": {"type": "object", "additionalProperties": True},
+                },
+                "required": ["chosen_taste_item_id"],
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain.taste.confirm",
+            "description": "Confirm a pending taste proposal by proposal_id.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {"proposal_id": {"type": "string"}},
+                "required": ["proposal_id"],
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain.taste.cancel",
+            "description": "Cancel a pending taste proposal by proposal_id.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {"proposal_id": {"type": "string"}},
+                "required": ["proposal_id"],
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain.taste.correct_proposal",
+            "description": "Apply a free-text correction to a pending taste proposal.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "proposal_id": {"type": "string"},
+                    "correction": {"type": "string"},
+                },
+                "required": ["proposal_id", "correction"],
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain.taste.refresh_enrichment",
+            "description": "Explicitly refresh enrichment for one stored taste item.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {"taste_item_id": {"type": "string"}},
+                "required": ["taste_item_id"],
                 "additionalProperties": False,
             },
         },
@@ -814,7 +984,7 @@ async def handle_json_rpc(payload: Any) -> Any:
 async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
     name = str(params.get("name") or "")
     arguments = params.get("arguments") or {}
-    if name == "brain_remember":
+    if name in {"brain.remember", "brain_remember"}:
         request = RememberRequest.model_validate(
             {
                 "input": arguments.get("input", ""),
@@ -828,7 +998,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
         payload = brain_remember(request, settings).model_dump(mode="json")
         return json_tool_response(payload, summary=remember_summary(payload))
 
-    if name == "brain_ingest_source":
+    if name in {"brain.ingest_source", "brain_ingest_source"}:
         if "source" in arguments:
             request = IngestSourceRequest.model_validate(
                 {
@@ -870,7 +1040,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
             ),
         )
 
-    if name == "brain_recall":
+    if name in {"brain.recall", "brain_recall"}:
         request = RecallRequest.model_validate(
             {
                 "query": arguments["query"],
@@ -884,7 +1054,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
         payload = brain_recall(request, settings).model_dump(mode="json")
         return json_tool_response(payload, summary=payload.get("answer", "Recall complete."))
 
-    if name == "brain_profile_entity":
+    if name in {"brain.profile_entity", "brain_profile_entity"}:
         entity_type = arguments.get("entity_type")
         if entity_type == "auto":
             entity_type = None
@@ -897,7 +1067,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
         ).model_dump(mode="json")
         return json_tool_response(payload, summary=payload.get("answer", "Profile complete."))
 
-    if name == "brain_list_open_loops":
+    if name in {"brain.list_open_loops", "brain_list_open_loops"}:
         payload = {
             "open_loops": brain_list_open_loops(
                 settings,
@@ -911,14 +1081,14 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
             summary=f"Found {len(payload['open_loops'])} open loops.",
         )
 
-    if name == "brain_get_memory":
+    if name in {"brain.get_memory", "brain_get_memory"}:
         memory = brain_get_memory(str(arguments["memory_id"]), settings)
         return json_tool_response(
             {"memory": memory},
             summary="Memory found." if memory else "Memory not found.",
         )
 
-    if name == "brain_get_source":
+    if name in {"brain.get_source", "brain_get_source"}:
         max_chars = bounded_int(arguments.get("max_chars", 10_000), minimum=1_000, maximum=100_000)
         source = brain_get_source(
             str(arguments["source_id"]),
@@ -935,7 +1105,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
             summary="Source found." if source else "Source not found.",
         )
 
-    if name == "brain_resolve_conflict":
+    if name in {"brain.resolve_conflict", "brain_resolve_conflict"}:
         payload = brain_resolve_conflict(
             settings,
             conflict_memory_id=str(arguments["conflict_memory_id"]),
@@ -948,10 +1118,10 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
             summary=f"Conflict action applied: {payload.get('action')}.",
         )
 
-    if name == "brain_forget":
+    if name in {"brain.forget", "brain_forget"}:
         hard = bool(arguments.get("hard", False))
         if hard and not bool(arguments.get("confirm", False)):
-            raise ValueError("brain_forget requires confirm=true for hard deletes.")
+            raise ValueError("brain.forget requires confirm=true for hard deletes.")
         payload = brain_forget(
             settings,
             object_type=str(arguments["object_type"]),
@@ -963,7 +1133,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
         payload = {**payload, "mode": mode, "cognee_sync_status": "stale"}
         return json_tool_response(payload, summary=f"{mode.title()} delete result: {payload['status']}.")
 
-    if name == "brain_review_recent":
+    if name in {"brain.review_recent", "brain_review_recent"}:
         payload = brain_review_recent(
             settings,
             since=parse_optional_datetime(arguments.get("since")),
@@ -978,7 +1148,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
             ),
         )
 
-    if name == "brain_undo_last":
+    if name in {"brain.undo_last", "brain_undo_last"}:
         payload = brain_undo_last(
             settings,
             ingestion_run_id=arguments.get("ingestion_run_id"),
@@ -988,7 +1158,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
             summary=f"Undo result: {payload['status']}.",
         )
 
-    if name == "brain_sync_cognee":
+    if name in {"brain.sync_cognee", "brain_sync_cognee"}:
         payload = brain_sync_cognee(
             settings,
             object_type=str(arguments.get("object_type", "all")),
@@ -1001,7 +1171,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
             summary=f"Cognee sync {payload.get('status', 'complete')}: {payload.get('processed', 0)} rows.",
         )
 
-    if name == "brain_rebuild_cognee":
+    if name in {"brain.rebuild_cognee", "brain_rebuild_cognee"}:
         payload = brain_rebuild_cognee(
             settings,
             dataset=str(arguments.get("dataset", "all")),
@@ -1017,7 +1187,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
             ),
         )
 
-    if name == "brain_merge_entities":
+    if name in {"brain.merge_entities", "brain_merge_entities"}:
         payload = brain_merge_entities(
             settings,
             primary_entity_id=str(arguments["primary_entity_id"]),
@@ -1028,6 +1198,123 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
         return json_tool_response(
             payload,
             summary=f"Merged duplicate entity {payload['duplicate_entity_id']}.",
+        )
+
+    if name == "brain.taste.describe_item":
+        payload = TasteService(settings).describe_item(
+            TasteDescribeRequest.model_validate(
+                {
+                    "item_text": arguments["item_text"],
+                    "entity_type": arguments["entity_type"],
+                    "canonical_name": arguments.get("canonical_name"),
+                    "attributes": arguments.get("attributes"),
+                    "attribute_intervals_95": arguments.get("attribute_intervals_95"),
+                    "metadata": arguments.get("metadata") or {},
+                    "notes": arguments.get("notes"),
+                    "fetch_external_ratings": bool(
+                        arguments.get("fetch_external_ratings", True)
+                    ),
+                    "allow_broader_web_search": bool(
+                        arguments.get("allow_broader_web_search", False)
+                    ),
+                }
+            )
+        )
+        return json_tool_response(payload, summary="Taste item described without storing.")
+
+    if name == "brain.taste.remember":
+        payload = TasteService(settings).remember(
+            TasteRememberRequest.model_validate(
+                {
+                    "id": arguments.get("id"),
+                    "type": arguments["type"],
+                    "canonical_name": arguments["canonical_name"],
+                    "description": arguments["description"],
+                    "attributes": arguments.get("attributes"),
+                    "attribute_intervals_95": arguments.get("attribute_intervals_95"),
+                    "rating": arguments.get("rating"),
+                    "tried": arguments.get("tried"),
+                    "watched": arguments.get("watched"),
+                    "listened": arguments.get("listened"),
+                    "wanted": arguments.get("wanted"),
+                    "recommended_by": arguments.get("recommended_by"),
+                    "disliked": arguments.get("disliked"),
+                    "avoid": arguments.get("avoid"),
+                    "not_my_style": arguments.get("not_my_style"),
+                    "bad_fit": arguments.get("bad_fit"),
+                    "notes": arguments.get("notes"),
+                    "metadata": arguments.get("metadata") or {},
+                    "dry_run": bool(arguments.get("dry_run", False)),
+                    "store_anyway": bool(arguments.get("store_anyway", False)),
+                    "context": arguments.get("context") or {},
+                    "fetch_external_ratings": bool(
+                        arguments.get("fetch_external_ratings", True)
+                    ),
+                    "allow_broader_web_search": bool(
+                        arguments.get("allow_broader_web_search", False)
+                    ),
+                }
+            )
+        )
+        return json_tool_response(
+            payload,
+            summary=(
+                f"Stored {len(payload.get('taste_records', []))} taste record(s)."
+                if payload.get("stored")
+                else "Taste remember dry run complete."
+            ),
+        )
+
+    if name == "brain.taste.query":
+        payload = TasteService(settings).query(TasteQueryRequest.model_validate(arguments))
+        return json_tool_response(payload, summary=payload.get("answer", "Taste query complete."))
+
+    if name == "brain.taste.evaluate_options":
+        payload = TasteService(settings).evaluate_options(
+            TasteQueryRequest.model_validate(arguments)
+        )
+        return json_tool_response(
+            payload,
+            summary=payload.get("answer", "Taste option evaluation complete."),
+        )
+
+    if name == "brain.taste.log_decision":
+        payload = TasteService(settings).log_decision(
+            TasteLogDecisionRequest.model_validate(arguments)
+        )
+        return json_tool_response(
+            payload,
+            summary="Taste decision logged." if payload.get("logged") else "Taste decision not logged.",
+        )
+
+    if name == "brain.taste.confirm":
+        payload = TasteService(settings).confirm(str(arguments["proposal_id"]))
+        return json_tool_response(
+            payload,
+            summary="Taste proposal confirmed." if payload.get("confirmed") else "Taste proposal not confirmed.",
+        )
+
+    if name == "brain.taste.cancel":
+        payload = TasteService(settings).cancel(str(arguments["proposal_id"]))
+        return json_tool_response(
+            payload,
+            summary="Taste proposal cancelled." if payload.get("cancelled") else "Taste proposal not cancelled.",
+        )
+
+    if name == "brain.taste.correct_proposal":
+        payload = TasteService(settings).correct_proposal(
+            str(arguments["proposal_id"]),
+            str(arguments["correction"]),
+        )
+        return json_tool_response(payload, summary="Taste proposal corrected.")
+
+    if name == "brain.taste.refresh_enrichment":
+        payload = TasteService(settings).refresh_enrichment(
+            TasteRefreshRequest.model_validate(arguments)
+        )
+        return json_tool_response(
+            payload,
+            summary="Taste enrichment refreshed." if payload.get("refreshed") else "Taste refresh failed.",
         )
 
     raise ValueError(f"Unknown tool: {name}")

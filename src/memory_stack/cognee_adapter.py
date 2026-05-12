@@ -5,6 +5,7 @@ import inspect
 from typing import Any
 
 from memory_stack.config import Settings, apply_runtime_environment
+from memory_stack.cognee.oauth_compat import prepare_cognee_oauth_runtime
 
 
 class CogneeUnavailableError(RuntimeError):
@@ -131,6 +132,7 @@ async def remember_text(
 ) -> Any:
     if settings is not None:
         apply_runtime_environment(settings)
+        prepare_cognee_oauth_runtime(settings)
     cognee = import_cognee()
     normalized_node_set = normalize_optional_string_list(node_set, field_name="node_set")
 
@@ -193,6 +195,7 @@ async def cognify_dataset(
 ) -> Any:
     if settings is not None:
         apply_runtime_environment(settings)
+        prepare_cognee_oauth_runtime(settings)
     cognee = import_cognee()
     if not hasattr(cognee, "cognify"):
         raise RuntimeError("Installed Cognee package does not expose cognify().")
@@ -286,6 +289,7 @@ async def recall_text(
 ) -> Any:
     if settings is not None:
         apply_runtime_environment(settings)
+        prepare_cognee_oauth_runtime(settings)
     cognee = import_cognee()
     query_type = resolve_search_type(search_type)
     datasets = [dataset] if dataset else None

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from typing import Any
 
 from memory_stack.brain_models import RememberRequest
@@ -7,6 +8,7 @@ from memory_stack.brain_service import remember
 from memory_stack.brain_store import BrainStore
 from memory_stack.config import Settings
 from memory_stack.slack_memory_agent import SlackAgentRequest, SlackMemoryAgent, receipt_text
+from memory_stack.taste.store import TasteStore
 
 
 class FakeLLM:
@@ -265,6 +267,55 @@ def test_recall_returns_memory_id_and_evidence(tmp_path) -> None:
     assert response.payload["facts"][0]["memory_id"] == receipt.memory_cards[0].id
 
 
+def test_taste_memory_returns_proposal_card_and_writes_nothing_below_threshold(tmp_path) -> None:
+    settings = brain_test_settings(tmp_path)
+    agent = SlackMemoryAgent(settings)
+
+    response = agent.handle(slack_request("remember Alex recommended Mystery Thing."))
+
+    assert response.decision == "taste_proposal"
+    assert response.payload["requires_confirmation"] is True
+    assert response.blocks[1]["elements"][0]["action_id"] == "brain_confirm_taste"
+    assert response.blocks[1]["elements"][1]["action_id"] == "brain_cancel_taste"
+    assert json.loads(response.blocks[1]["elements"][0]["value"]) == {
+        "taste_proposal_id": response.payload["proposal_id"],
+        "taste_action": "confirm",
+    }
+    assert BrainStore(settings).search_memory("Mystery Thing") == []
+
+
+def test_taste_proposal_confirm_cancel_and_correction(tmp_path) -> None:
+    settings = brain_test_settings(tmp_path)
+    agent = SlackMemoryAgent(settings)
+    first = agent.handle(slack_request("remember Alex recommended Mystery Thing."))
+    proposal_id = first.payload["proposal_id"]
+
+    corrected = agent.handle(slack_request(f"correct {proposal_id} this is a wine"))
+    confirmed = agent.handle(
+        slack_request(
+            "confirm",
+            taste_proposal_id=proposal_id,
+            taste_action="confirm",
+        )
+    )
+    cancel_first = agent.handle(slack_request("remember Jamie recommended Another Thing."))
+    cancelled = agent.handle(
+        slack_request(
+            "cancel",
+            taste_proposal_id=cancel_first.payload["proposal_id"],
+            taste_action="cancel",
+        )
+    )
+
+    assert corrected.decision == "taste_correct"
+    assert corrected.payload["corrected"] is True
+    assert corrected.payload["proposal"]["proposal_json"]["remember_payload"]["type"] == "wine"
+    assert confirmed.decision == "taste_confirm"
+    assert TasteStore(settings).list_entities()
+    assert cancelled.decision == "taste_cancel"
+    assert cancelled.payload["cancelled"] is True
+
+
 def test_admin_debug_snapshot_is_admin_only(tmp_path) -> None:
     settings = brain_test_settings(tmp_path, brain_slack_admin_user_ids="UADMIN")
     agent = SlackMemoryAgent(settings)
@@ -282,6 +333,8 @@ def slack_request(
     user_id: str = "U1",
     confirmed: bool = False,
     proposed_memory: dict[str, Any] | None = None,
+    taste_proposal_id: str | None = None,
+    taste_action: str | None = None,
 ) -> SlackAgentRequest:
     return SlackAgentRequest(
         text=text,
@@ -292,6 +345,8 @@ def slack_request(
         source="slash_command",
         confirmed=confirmed,
         proposed_memory=proposed_memory,
+        taste_proposal_id=taste_proposal_id,
+        taste_action=taste_action,
     )
 
 

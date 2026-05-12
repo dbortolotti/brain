@@ -37,6 +37,7 @@ def main() -> int:
     check_path(current, "current symlink", failures)
     check_path(shared_data, "shared/data", failures)
     check_runtime_paths(settings, shared_data, failures)
+    check_palate_retired(failures)
 
     pid = None
     if not args.skip_launchd:
@@ -89,6 +90,37 @@ def check_runtime_paths(settings, shared_data: Path, failures: list[str]) -> Non
             console.print(f"[green][OK][/green] {label} under shared/data")
         except ValueError:
             failures.append(f"{label} is not under shared/data: {path}")
+
+
+def check_palate_retired(failures: list[str]) -> None:
+    launch_agents = Path.home() / "Library" / "LaunchAgents"
+    active_launch_agents = [
+        path
+        for path in launch_agents.glob("*palate*")
+        if "retired" not in str(path)
+    ]
+    if active_launch_agents:
+        failures.append(f"active Palate launch agents still present: {active_launch_agents}")
+
+    prod_palate = Path("/Volumes/xpg_usb4/prod/palate")
+    if prod_palate.exists():
+        failures.append(f"active Palate production path still present: {prod_palate}")
+
+    cloudflared_config = Path.home() / ".cloudflared" / "config.yml"
+    if cloudflared_config.exists():
+        text = cloudflared_config.read_text(encoding="utf-8")
+        if "palate.dceb.net" in text or "/palate" in text:
+            failures.append(f"Cloudflare tunnel config still contains Palate routes: {cloudflared_config}")
+
+    if command_exists("launchctl"):
+        result = subprocess.run(
+            ["launchctl", "list"],
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        if "palate" in result.stdout.lower():
+            failures.append("active launchctl list still contains Palate service labels")
 
 
 def sqlite_path(database_url: str) -> Path:

@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 from sqlalchemy import (
+    CheckConstraint,
+    Float,
     JSON,
     Column,
     DateTime,
     ForeignKey,
     Index,
+    Integer,
     MetaData,
     Table,
     Text,
@@ -221,3 +224,114 @@ recall_logs = Table(
     Column("metadata_json", JSON, nullable=False, default=dict),
     Column("created_at", DateTime(timezone=True), nullable=False, server_default=func.now()),
 )
+
+
+taste_items = Table(
+    "taste_items",
+    metadata,
+    Column("id", Text, primary_key=True),
+    Column("brain_entity_id", Text, ForeignKey("entities.id"), nullable=False),
+    Column("type", Text, nullable=False),
+    Column("canonical_name", Text, nullable=False),
+    Column("normalized_name", Text, nullable=False),
+    Column("source_text", Text),
+    Column("notes", Text),
+    Column("metadata_json", JSON, nullable=False, default=dict),
+    Column("enrichment_metadata_json", JSON, nullable=False, default=dict),
+    Column("enrichment_status", Text, nullable=False, default="not_attempted"),
+    Column("status", Text, nullable=False, default="current"),
+    Column("created_at", DateTime(timezone=True), nullable=False, server_default=func.now()),
+    Column("updated_at", DateTime(timezone=True), nullable=False, server_default=func.now()),
+    CheckConstraint(
+        "type IN ('wine','restaurant','music','cigar','experience','movie','series')",
+        name="taste_items_type_ck",
+    ),
+    CheckConstraint(
+        "status IN ('current','deleted')",
+        name="taste_items_status_ck",
+    ),
+)
+Index("taste_items_entity_idx", taste_items.c.brain_entity_id)
+Index("taste_items_type_idx", taste_items.c.type)
+Index("taste_items_normalized_name_idx", taste_items.c.normalized_name)
+Index("taste_items_status_idx", taste_items.c.status)
+
+
+taste_attributes = Table(
+    "taste_attributes",
+    metadata,
+    Column("taste_item_id", Text, ForeignKey("taste_items.id"), primary_key=True),
+    Column("key", Text, primary_key=True),
+    Column("value", Float, nullable=False),
+    Column("lower_95", Float, nullable=False),
+    Column("upper_95", Float, nullable=False),
+    Column("created_at", DateTime(timezone=True), nullable=False, server_default=func.now()),
+    Column("updated_at", DateTime(timezone=True), nullable=False, server_default=func.now()),
+    CheckConstraint("value >= 0 AND value <= 1", name="taste_attributes_value_01_ck"),
+    CheckConstraint("lower_95 >= 0 AND lower_95 <= 1", name="taste_attributes_lower_01_ck"),
+    CheckConstraint("upper_95 >= 0 AND upper_95 <= 1", name="taste_attributes_upper_01_ck"),
+    CheckConstraint("lower_95 <= value", name="taste_attributes_lower_le_value_ck"),
+    CheckConstraint("value <= upper_95", name="taste_attributes_value_le_upper_ck"),
+)
+Index("taste_attributes_key_idx", taste_attributes.c.key)
+
+
+taste_signals = Table(
+    "taste_signals",
+    metadata,
+    Column("id", Text, primary_key=True),
+    Column("taste_item_id", Text, ForeignKey("taste_items.id"), nullable=False),
+    Column("signal_type", Text, nullable=False),
+    Column("value_json", JSON, nullable=False),
+    Column("provenance_memory_id", Text, ForeignKey("memory_cards.id")),
+    Column("provenance_entity_id", Text, ForeignKey("entities.id")),
+    Column("source", Text),
+    Column("created_at", DateTime(timezone=True), nullable=False, server_default=func.now()),
+    CheckConstraint(
+        "signal_type IN ("
+        "'rating','tried','watched','listened','wanted_to_try','wanted_to_watch',"
+        "'wanted_to_listen','recommended_by','disliked','avoid','not_my_style',"
+        "'bad_fit','rejected_option'"
+        ")",
+        name="taste_signals_type_ck",
+    ),
+)
+Index("taste_signals_item_idx", taste_signals.c.taste_item_id)
+Index("taste_signals_type_idx", taste_signals.c.signal_type)
+
+
+taste_decisions = Table(
+    "taste_decisions",
+    metadata,
+    Column("id", Text, primary_key=True),
+    Column("query", Text, nullable=False),
+    Column("context_json", JSON, nullable=False, default=dict),
+    Column("options_json", JSON, nullable=False, default=list),
+    Column("ranked_json", JSON, nullable=False, default=list),
+    Column("chosen_taste_item_id", Text, ForeignKey("taste_items.id")),
+    Column("created_at", DateTime(timezone=True), nullable=False, server_default=func.now()),
+)
+Index("taste_decisions_chosen_idx", taste_decisions.c.chosen_taste_item_id)
+
+
+taste_proposals = Table(
+    "taste_proposals",
+    metadata,
+    Column("id", Text, primary_key=True),
+    Column("original_text", Text, nullable=False),
+    Column("proposal_json", JSON, nullable=False),
+    Column("warnings_json", JSON, nullable=False, default=list),
+    Column("source_metadata_json", JSON, nullable=False, default=dict),
+    Column("status", Text, nullable=False),
+    Column("correction_count", Integer, nullable=False, default=0),
+    Column("last_correction_text", Text),
+    Column("last_corrected_at", DateTime(timezone=True)),
+    Column("created_at", DateTime(timezone=True), nullable=False, server_default=func.now()),
+    Column("expires_at", DateTime(timezone=True), nullable=False),
+    CheckConstraint(
+        "status IN ('pending','confirmed','cancelled','expired','superseded')",
+        name="taste_proposals_status_ck",
+    ),
+)
+Index("taste_proposals_status_idx", taste_proposals.c.status)
+Index("taste_proposals_expires_idx", taste_proposals.c.expires_at)

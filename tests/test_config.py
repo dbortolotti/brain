@@ -55,9 +55,9 @@ def test_openai_api_key_is_used_for_fixed_llm_only(
                 "LLM_PROVIDER=openai",
                 "LLM_MODEL=gpt-5.5",
                 "OPENAI_API_KEY=sk-provider",
-                "EMBEDDING_PROVIDER=fastembed",
-                "EMBEDDING_MODEL=intfloat/multilingual-e5-large",
-                "EMBEDDING_DIMENSIONS=1024",
+                "EMBEDDING_PROVIDER=openai",
+                "EMBEDDING_MODEL=text-embedding-3-large",
+                "EMBEDDING_DIMENSIONS=3072",
             ]
         ),
         encoding="utf-8",
@@ -67,10 +67,10 @@ def test_openai_api_key_is_used_for_fixed_llm_only(
     env = runtime_env(settings)
 
     assert settings.llm_api_key == "sk-provider"
-    assert settings.embedding_api_key is None
+    assert settings.embedding_api_key == "sk-provider"
     assert env["LLM_API_KEY"] == "sk-provider"
     assert env["OPENAI_API_KEY"] == "sk-provider"
-    assert "EMBEDDING_API_KEY" not in env
+    assert env["EMBEDDING_API_KEY"] == "sk-provider"
 
 
 def test_openai_oauth_is_default_and_does_not_export_text_api_key(
@@ -82,9 +82,10 @@ def test_openai_oauth_is_default_and_does_not_export_text_api_key(
         llm_provider="openai",
         llm_model="gpt-5.5",
         openai_api_key="sk-provider",
-        embedding_provider="fastembed",
-        embedding_model="intfloat/multilingual-e5-large",
-        embedding_dimensions=1024,
+        embedding_provider="openai",
+        embedding_model="text-embedding-3-large",
+        embedding_dimensions=3072,
+        graph_database_provider="ladybug",
     )
     env = runtime_env(settings)
 
@@ -107,20 +108,23 @@ def test_openai_profile_exports_fixed_models(
         llm_model="gpt-5.5",
         openai_auth_mode="oauth",
         openai_api_key="sk-provider",
-        embedding_provider="fastembed",
-        embedding_model="intfloat/multilingual-e5-large",
-        embedding_dimensions=1024,
+        embedding_provider="openai",
+        embedding_model="text-embedding-3-large",
+        embedding_dimensions=3072,
+        graph_database_provider="ladybug",
     )
     env = runtime_env(settings)
 
     assert settings.llm_api_key is None
     assert settings.embedding_api_key is None
-    assert settings.provider_api_key("fastembed") is None
+    assert settings.provider_api_key("openai") is None
     assert env["PROFILE"] == "openai"
     assert env["LLM_PROVIDER"] == "openai"
-    assert env["EMBEDDING_PROVIDER"] == "fastembed"
-    assert env["EMBEDDING_MODEL"] == "intfloat/multilingual-e5-large"
-    assert env["EMBEDDING_DIMENSIONS"] == "1024"
+    assert env["EMBEDDING_PROVIDER"] == "openai"
+    assert env["EMBEDDING_MODEL"] == "text-embedding-3-large"
+    assert env["EMBEDDING_DIMENSIONS"] == "3072"
+    assert env["GRAPH_DATABASE_PROVIDER"] == "ladybug"
+    assert env["ENABLE_BACKEND_ACCESS_CONTROL"] == "false"
     assert "LLM_API_KEY" not in env
     assert "EMBEDDING_API_KEY" not in env
     assert "OPENAI_API_KEY" not in env
@@ -147,13 +151,13 @@ def test_llm_api_key_overrides_provider_api_key(monkeypatch: pytest.MonkeyPatch)
         llm_model="gpt-5.5",
         llm_api_key="sk-llm-role",
         openai_api_key="sk-provider",
-        embedding_provider="fastembed",
-        embedding_model="intfloat/multilingual-e5-large",
-        embedding_dimensions=1024,
+        embedding_provider="openai",
+        embedding_model="text-embedding-3-large",
+        embedding_dimensions=3072,
     )
 
     assert settings.llm_api_key == "sk-llm-role"
-    assert settings.embedding_api_key is None
+    assert settings.embedding_api_key == "sk-provider"
     assert runtime_env(settings)["OPENAI_API_KEY"] == "sk-provider"
 
 
@@ -169,9 +173,9 @@ def test_provider_key_lookup_supports_non_active_benchmark_providers(
                 "PROFILE=openai",
                 "LLM_PROVIDER=openai",
                 "LLM_MODEL=gpt-5.5",
-                "EMBEDDING_PROVIDER=fastembed",
-                "EMBEDDING_MODEL=intfloat/multilingual-e5-large",
-                "EMBEDDING_DIMENSIONS=1024",
+                "EMBEDDING_PROVIDER=openai",
+                "EMBEDDING_MODEL=text-embedding-3-large",
+                "EMBEDDING_DIMENSIONS=3072",
                 "GROQ_API_KEY=gsk-provider",
                 "ANTHROPIC_API_KEY=sk-ant-provider",
                 "VOYAGE_API_KEY=pa-provider",
@@ -235,3 +239,20 @@ def test_slack_agent_settings_are_exported() -> None:
     assert env["BRAIN_SLACK_AGENT_PORT"] == "8003"
     assert env["BRAIN_SLACK_SIGNING_SECRET"] == "secret"
     assert env["BRAIN_SLACK_BOT_TOKEN"] == "xoxb-test"
+
+
+def test_taste_settings_are_exported() -> None:
+    settings = Settings(
+        brain_taste_enabled=True,
+        brain_taste_omdb_api_key="omdb-key",
+        brain_taste_google_places_api_key="places-key",
+    )
+    env = runtime_env(settings)
+
+    assert env["BRAIN_TASTE_ENABLED"] == "true"
+    assert env["BRAIN_TASTE_LLM_ROUTING_ENABLED"] == "false"
+    assert env["BRAIN_TASTE_AUTO_ENRICH_ENABLED"] == "true"
+    assert env["BRAIN_TASTE_OMDB_API_KEY"] == "omdb-key"
+    assert env["BRAIN_TASTE_GOOGLE_PLACES_API_KEY"] == "places-key"
+    assert env["BRAIN_TASTE_OPEN_LOOP_CONFIRMATION_THRESHOLD"] == "0.8"
+    assert "BRAIN_TASTE_IMPORT_SOURCE_PATH" not in env

@@ -5,9 +5,9 @@ from dataclasses import dataclass
 
 DEFAULT_LLM_PROVIDER = "openai"
 DEFAULT_LLM_MODEL = "gpt-5.5"
-DEFAULT_EMBEDDING_PROVIDER = "fastembed"
-DEFAULT_EMBEDDING_MODEL = "intfloat/multilingual-e5-large"
-DEFAULT_EMBEDDING_DIMENSIONS = 1024
+DEFAULT_EMBEDDING_PROVIDER = "openai"
+DEFAULT_EMBEDDING_MODEL = "text-embedding-3-large"
+DEFAULT_EMBEDDING_DIMENSIONS = 3072
 
 
 EMBEDDING_PROVIDERS = {"fastembed", "voyage"}
@@ -68,6 +68,8 @@ def configured_embedding(settings: object) -> ProviderModel:
 def is_embedding_ref(ref: str) -> bool:
     parsed = parse_model_ref(ref)
     model = parsed.model.lower()
+    if parsed.provider == "openai":
+        return "embedding" in model
     return parsed.provider in EMBEDDING_PROVIDERS or "embedding" in model or model.startswith("intfloat/")
 
 

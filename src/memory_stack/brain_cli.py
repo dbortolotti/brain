@@ -99,11 +99,16 @@ def auth_status(
     else:
         console.print(f"openai text: OAuth profile {settings.openai_codex_auth_profile} missing")
 
-    embedding_status = (
-        "OPENAI_API_KEY configured"
-        if settings.configured_provider_api_key("openai")
-        else "missing OPENAI_API_KEY"
-    )
+    if settings.openai_auth_mode == "api_key":
+        embedding_status = (
+            "OPENAI_API_KEY configured"
+            if settings.configured_provider_api_key("openai")
+            else "missing OPENAI_API_KEY"
+        )
+    elif settings.embedding_provider == "openai":
+        embedding_status = f"OAuth profile {settings.openai_codex_auth_profile}"
+    else:
+        embedding_status = "not using OpenAI embeddings"
     console.print(f"openai embedding: {embedding_status}")
 
 
