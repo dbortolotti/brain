@@ -91,39 +91,39 @@ Each candidate was queried with `artifacts/ask_cognee_dataset.py`, using:
 
 The score table has one row per candidate/question with a 1-5 score and a short scoring note. For comparability, every scored run in this series uses `gpt-5.5` extra high as the judge, even when the retrieval/answer model changes.
 
-## Average Score by Difficulty and Retrieval Model
+## Average Score by Difficulty and Recall Model
 
-This table groups the scored runs by retrieval / answer model and question difficulty. The three score columns are the ingestion-model candidate datasets. Each value is the average judge score on the 1-5 scale for that difficulty bucket.
+This table groups the scored runs by question difficulty and recall / answer model, sorted by difficulty first. The three score columns are the ingestion-model candidate datasets. Each value is the average judge score on the 1-5 scale for that difficulty bucket.
 
-| Retrieval / answer model | Difficulty | Questions | `menotti-54-mini` | `menotti-55-low` | `menotti-55-high` |
-|---|---:|---:|---:|---:|---:|
-| `gpt-5.5` extra high | 1 | 31 | 4.48 | 4.39 | 4.39 |
-| `gpt-5.5` extra high | 2 | 41 | 4.85 | 4.88 | 4.93 |
-| `gpt-5.5` extra high | 3 | 20 | 4.95 | 4.95 | 4.95 |
-| `gpt-5.5` extra high | 4 | 7 | 4.14 | 4.14 | 4.14 |
-| `gpt-5.5` extra high | 5 | 1 | 5.00 | 5.00 | 5.00 |
-| `gpt-5.4-mini` | 1 | 31 | 4.00 | 4.13 | 3.87 |
-| `gpt-5.4-mini` | 2 | 41 | 4.71 | 4.76 | 4.63 |
-| `gpt-5.4-mini` | 3 | 20 | 4.85 | 4.95 | 4.75 |
-| `gpt-5.4-mini` | 4 | 7 | 4.29 | 4.14 | 4.14 |
-| `gpt-5.4-mini` | 5 | 1 | 5.00 | 5.00 | 5.00 |
+| Difficulty / Recall model | Ingest `5.4-mini` | Ingest `5.5 low` | Ingest `5.5 high` |
+|---|---:|---:|---:|
+| 1 / `gpt-5.5` | 4.48 | 4.39 | 4.39 |
+| 1 / `gpt-5.4-mini` | 4.00 | 4.13 | 3.87 |
+| 2 / `gpt-5.5` | 4.85 | 4.88 | 4.93 |
+| 2 / `gpt-5.4-mini` | 4.71 | 4.76 | 4.63 |
+| 3 / `gpt-5.5` | 4.95 | 4.95 | 4.95 |
+| 3 / `gpt-5.4-mini` | 4.85 | 4.95 | 4.75 |
+| 4 / `gpt-5.5` | 4.14 | 4.14 | 4.14 |
+| 4 / `gpt-5.4-mini` | 4.29 | 4.14 | 4.14 |
+| 5 / `gpt-5.5` | 5.00 | 5.00 | 5.00 |
+| 5 / `gpt-5.4-mini` | 5.00 | 5.00 | 5.00 |
 
-## Average Retrieval Time by Difficulty and Retrieval Model
+## Average Time by Difficulty and Recall Model
 
-This table uses the same grouping, but reports average Cognee retrieval-stage time in seconds. It sums vector collection retrieval, ID-filtered graph retrieval, and graph projection for each question. It does not include answer-synthesis LLM time or process overhead.
+This table uses the same grouping, but each cell reports `average time in; average time out`. `Time in` is the one-time ingestion/cognify wall time for the candidate dataset. `Time out` is the average Cognee retrieval-stage time for that difficulty and recall model, summing vector collection retrieval, ID-filtered graph retrieval, and graph projection. It does not include answer-synthesis LLM time or process overhead.
 
-| Retrieval / answer model | Difficulty | Questions | `menotti-54-mini` | `menotti-55-low` | `menotti-55-high` |
-|---|---:|---:|---:|---:|---:|
-| `gpt-5.5` extra high | 1 | 31 | 1.281s | 1.194s | 1.190s |
-| `gpt-5.5` extra high | 2 | 41 | 1.114s | 1.121s | 1.114s |
-| `gpt-5.5` extra high | 3 | 20 | 1.502s | 1.147s | 1.109s |
-| `gpt-5.5` extra high | 4 | 7 | 1.173s | 1.116s | 1.126s |
-| `gpt-5.5` extra high | 5 | 1 | 1.150s | 1.370s | 1.280s |
-| `gpt-5.4-mini` | 1 | 31 | 1.180s | 1.202s | 1.150s |
-| `gpt-5.4-mini` | 2 | 41 | 1.117s | 1.114s | 1.147s |
-| `gpt-5.4-mini` | 3 | 20 | 1.115s | 1.129s | 1.130s |
-| `gpt-5.4-mini` | 4 | 7 | 1.119s | 1.140s | 1.141s |
-| `gpt-5.4-mini` | 5 | 1 | 1.170s | 1.260s | 1.210s |
+| Difficulty / Recall model | Ingest `5.4-mini` | Ingest `5.5 low` | Ingest `5.5 high` |
+|---|---:|---:|---:|
+| 1 / `gpt-5.5` | 43.31s in; 1.281s out | 283.27s in; 1.194s out | 885.39s in; 1.190s out |
+| 1 / `gpt-5.4-mini` | 43.31s in; 1.180s out | 283.27s in; 1.202s out | 885.39s in; 1.150s out |
+| 2 / `gpt-5.5` | 43.31s in; 1.114s out | 283.27s in; 1.121s out | 885.39s in; 1.114s out |
+| 2 / `gpt-5.4-mini` | 43.31s in; 1.117s out | 283.27s in; 1.114s out | 885.39s in; 1.147s out |
+| 3 / `gpt-5.5` | 43.31s in; 1.502s out | 283.27s in; 1.147s out | 885.39s in; 1.109s out |
+| 3 / `gpt-5.4-mini` | 43.31s in; 1.115s out | 283.27s in; 1.129s out | 885.39s in; 1.130s out |
+| 4 / `gpt-5.5` | 43.31s in; 1.173s out | 283.27s in; 1.116s out | 885.39s in; 1.126s out |
+| 4 / `gpt-5.4-mini` | 43.31s in; 1.119s out | 283.27s in; 1.140s out | 885.39s in; 1.141s out |
+| 5 / `gpt-5.5` | 43.31s in; 1.150s out | 283.27s in; 1.370s out | 885.39s in; 1.280s out |
+| 5 / `gpt-5.4-mini` | 43.31s in; 1.170s out | 283.27s in; 1.260s out | 885.39s in; 1.210s out |
 
 ## Current Qualitative Read
 

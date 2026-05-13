@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import inspect
+from contextlib import asynccontextmanager
 from typing import Any
 
 from memory_stack.config import Settings, apply_runtime_environment
@@ -50,6 +51,11 @@ async def maybe_await(value: Any) -> Any:
     if inspect.isawaitable(value):
         return await value
     return value
+
+
+@asynccontextmanager
+async def cognee_execution_context(settings: Settings | None):
+    yield
 
 
 async def ensure_cognee_ready() -> None:
@@ -136,33 +142,34 @@ async def remember_text(
     cognee = import_cognee()
     normalized_node_set = normalize_optional_string_list(node_set, field_name="node_set")
 
-    if hasattr(cognee, "remember"):
-        kwargs: dict[str, Any] = {
-            "dataset_name": dataset_name,
-            "temporal_cognify": temporal,
-            "self_improvement": self_improvement,
-        }
-        if normalized_node_set is not None:
-            kwargs["node_set"] = normalized_node_set
-        try:
-            return await maybe_await(cognee.remember(text, **kwargs))
-        except TypeError:
-            return await maybe_await(cognee.remember(text, dataset_name=dataset_name))
-
-    if hasattr(cognee, "add"):
-        add_kwargs: dict[str, Any] = {"dataset_name": dataset_name}
-        if normalized_node_set is not None:
-            add_kwargs["node_set"] = normalized_node_set
-        await maybe_await(cognee.add(text, **add_kwargs))
-        if hasattr(cognee, "cognify"):
-            kwargs: dict[str, Any] = {"datasets": [dataset_name]}
-            if temporal:
-                kwargs["temporal_cognify"] = True
+    async with cognee_execution_context(settings):
+        if hasattr(cognee, "remember"):
+            kwargs: dict[str, Any] = {
+                "dataset_name": dataset_name,
+                "temporal_cognify": temporal,
+                "self_improvement": self_improvement,
+            }
+            if normalized_node_set is not None:
+                kwargs["node_set"] = normalized_node_set
             try:
-                return await maybe_await(cognee.cognify(**kwargs))
+                return await maybe_await(cognee.remember(text, **kwargs))
             except TypeError:
-                return await maybe_await(cognee.cognify(datasets=[dataset_name]))
-        return None
+                return await maybe_await(cognee.remember(text, dataset_name=dataset_name))
+
+        if hasattr(cognee, "add"):
+            add_kwargs: dict[str, Any] = {"dataset_name": dataset_name}
+            if normalized_node_set is not None:
+                add_kwargs["node_set"] = normalized_node_set
+            await maybe_await(cognee.add(text, **add_kwargs))
+            if hasattr(cognee, "cognify"):
+                kwargs: dict[str, Any] = {"datasets": [dataset_name]}
+                if temporal:
+                    kwargs["temporal_cognify"] = True
+                try:
+                    return await maybe_await(cognee.cognify(**kwargs))
+                except TypeError:
+                    return await maybe_await(cognee.cognify(datasets=[dataset_name]))
+            return None
 
     raise RuntimeError("Installed Cognee package exposes neither remember() nor add().")
 
@@ -176,6 +183,7 @@ async def add_text(
 ) -> Any:
     if settings is not None:
         apply_runtime_environment(settings)
+        prepare_cognee_oauth_runtime(settings)
     cognee = import_cognee()
     if not hasattr(cognee, "add"):
         raise RuntimeError("Installed Cognee package does not expose add().")
@@ -184,7 +192,8 @@ async def add_text(
     normalized_node_set = normalize_optional_string_list(node_set, field_name="node_set")
     if normalized_node_set is not None:
         kwargs["node_set"] = normalized_node_set
-    return await maybe_await(cognee.add(text, **kwargs))
+    async with cognee_execution_context(settings):
+        return await maybe_await(cognee.add(text, **kwargs))
 
 
 async def cognify_dataset(
@@ -203,10 +212,11 @@ async def cognify_dataset(
     kwargs: dict[str, Any] = {"datasets": [dataset_name]}
     if temporal:
         kwargs["temporal_cognify"] = True
-    try:
-        return await maybe_await(cognee.cognify(**kwargs))
-    except TypeError:
-        return await maybe_await(cognee.cognify(datasets=[dataset_name]))
+    async with cognee_execution_context(settings):
+        try:
+            return await maybe_await(cognee.cognify(**kwargs))
+        except TypeError:
+            return await maybe_await(cognee.cognify(datasets=[dataset_name]))
 
 
 async def list_datasources(*, settings: Settings | None = None) -> list[dict[str, Any]]:
@@ -238,6 +248,27 @@ async def create_datasource(
     user = await get_default_cognee_user()
     datasource = await maybe_await(create_authorized_dataset(datasource_name, user))
     return serialize_datasource(datasource)
+
+
+async def ensure_datasources_ready(
+    names: list[str],
+    *,
+    settings: Settings | None = None,
+) -> list[dict[str, Any]]:
+    datasource_names = sorted({validate_datasource_name(name) for name in names})
+    if settings is not None:
+        apply_runtime_environment(settings)
+    import_cognee()
+    await ensure_cognee_ready()
+
+    from cognee.modules.data.methods import create_authorized_dataset  # type: ignore
+
+    user = await get_default_cognee_user()
+    datasources = []
+    for datasource_name in datasource_names:
+        datasource = await maybe_await(create_authorized_dataset(datasource_name, user))
+        datasources.append(serialize_datasource(datasource))
+    return datasources
 
 
 async def delete_datasource(

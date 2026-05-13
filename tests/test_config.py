@@ -3,6 +3,7 @@ from __future__ import annotations
 import pytest
 
 from memory_stack.config import Settings, normalize_path, runtime_env
+from memory_stack.model_selection import DEFAULT_LLM_MODEL
 
 
 PROVIDER_ENV_VARS = (
@@ -53,7 +54,7 @@ def test_openai_api_key_is_used_for_fixed_llm_only(
                 "PROFILE=openai",
                 "OPENAI_AUTH_MODE=api_key",
                 "LLM_PROVIDER=openai",
-                "LLM_MODEL=gpt-5.5",
+                f"LLM_MODEL={DEFAULT_LLM_MODEL}",
                 "OPENAI_API_KEY=sk-provider",
                 "EMBEDDING_PROVIDER=openai",
                 "EMBEDDING_MODEL=text-embedding-3-large",
@@ -80,7 +81,7 @@ def test_openai_oauth_is_default_and_does_not_export_text_api_key(
     settings = Settings(
         profile="openai",
         llm_provider="openai",
-        llm_model="gpt-5.5",
+        llm_model=DEFAULT_LLM_MODEL,
         openai_api_key="sk-provider",
         embedding_provider="openai",
         embedding_model="text-embedding-3-large",
@@ -105,7 +106,7 @@ def test_openai_profile_exports_fixed_models(
     settings = Settings(
         profile="openai",
         llm_provider="openai",
-        llm_model="gpt-5.5",
+        llm_model=DEFAULT_LLM_MODEL,
         openai_auth_mode="oauth",
         openai_api_key="sk-provider",
         embedding_provider="openai",
@@ -130,6 +131,30 @@ def test_openai_profile_exports_fixed_models(
     assert "OPENAI_API_KEY" not in env
 
 
+def test_local_cognee_env_does_not_export_modal_env() -> None:
+    env = runtime_env(Settings())
+
+    assert env["BRAIN_COGNEE_EXECUTION_BACKEND"] == "local"
+    assert "COGNEE_DISTRIBUTED" not in env
+    assert "MODAL_SECRET_NAME" not in env
+
+
+def test_cognee_uses_postgres_pgvector_by_default() -> None:
+    env = runtime_env(Settings())
+
+    assert env["DB_PROVIDER"] == "postgres"
+    assert env["DB_HOST"] == "127.0.0.1"
+    assert env["DB_PORT"] == "5432"
+    assert env["DB_USERNAME"] == "cognee"
+    assert env["DB_PASSWORD"] == "cognee"
+    assert env["VECTOR_DB_PROVIDER"] == "pgvector"
+    assert env["VECTOR_DATASET_DATABASE_HANDLER"] == "pgvector"
+    assert env["VECTOR_DB_HOST"] == "127.0.0.1"
+    assert env["VECTOR_DB_PORT"] == "5432"
+    assert env["VECTOR_DB_USERNAME"] == "cognee"
+    assert env["VECTOR_DB_PASSWORD"] == "cognee"
+
+
 def test_runtime_rejects_non_default_llm_or_embedding() -> None:
     with pytest.raises(ValueError, match="runtime LLM is fixed"):
         Settings(llm_model="gpt-5.4-mini")
@@ -148,7 +173,7 @@ def test_llm_api_key_overrides_provider_api_key(monkeypatch: pytest.MonkeyPatch)
         profile="openai",
         openai_auth_mode="api_key",
         llm_provider="openai",
-        llm_model="gpt-5.5",
+        llm_model=DEFAULT_LLM_MODEL,
         llm_api_key="sk-llm-role",
         openai_api_key="sk-provider",
         embedding_provider="openai",
@@ -172,7 +197,7 @@ def test_provider_key_lookup_supports_non_active_benchmark_providers(
             [
                 "PROFILE=openai",
                 "LLM_PROVIDER=openai",
-                "LLM_MODEL=gpt-5.5",
+                f"LLM_MODEL={DEFAULT_LLM_MODEL}",
                 "EMBEDDING_PROVIDER=openai",
                 "EMBEDDING_MODEL=text-embedding-3-large",
                 "EMBEDDING_DIMENSIONS=3072",

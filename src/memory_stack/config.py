@@ -124,11 +124,22 @@ class Settings(BaseSettings):
     graph_database_password: str = ""
     enable_backend_access_control: bool = False
 
-    vector_db_provider: str = "lancedb"
-    vector_db_url: str = "./.data/lancedb/cognee.lancedb"
+    vector_db_provider: str = "pgvector"
+    vector_db_url: str = ""
+    vector_db_port: int = 5432
+    vector_db_name: str = "cognee_vectors"
+    vector_db_key: str = ""
+    vector_dataset_database_handler: str = "pgvector"
+    vector_db_username: str = "cognee"
+    vector_db_password: str = "cognee"
+    vector_db_host: str = "127.0.0.1"
 
-    db_provider: str = "sqlite"
+    db_provider: str = "postgres"
     db_name: str = "cognee_db"
+    db_host: str = "127.0.0.1"
+    db_port: int = 5432
+    db_username: str = "cognee"
+    db_password: str = "cognee"
 
     system_root_directory: str = "./.data/system"
     data_root_directory: str = "./.data/data"
@@ -168,6 +179,7 @@ class Settings(BaseSettings):
     brain_llm_enabled: bool = False
     brain_cognee_enabled: bool = True
     brain_cognee_recall_enabled: bool = False
+    brain_cognee_execution_backend: Literal["local"] = "local"
     brain_cognee_memory_dataset: str = "memory"
     brain_cognee_sources_dataset: str = "sources"
     brain_cognee_data_dataset: str = "data"
@@ -450,9 +462,24 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "GRAPH_DATABASE_PASSWORD": settings.graph_database_password,
         "ENABLE_BACKEND_ACCESS_CONTROL": str(settings.enable_backend_access_control).lower(),
         "VECTOR_DB_PROVIDER": settings.vector_db_provider,
-        "VECTOR_DB_URL": str(repo_path(settings.vector_db_url)),
+        "VECTOR_DB_URL": (
+            str(repo_path(settings.vector_db_url))
+            if settings.vector_db_provider == "lancedb" and settings.vector_db_url
+            else settings.vector_db_url
+        ),
+        "VECTOR_DB_PORT": str(settings.vector_db_port),
+        "VECTOR_DB_NAME": settings.vector_db_name,
+        "VECTOR_DB_KEY": settings.vector_db_key,
+        "VECTOR_DATASET_DATABASE_HANDLER": settings.vector_dataset_database_handler,
+        "VECTOR_DB_USERNAME": settings.vector_db_username,
+        "VECTOR_DB_PASSWORD": settings.vector_db_password,
+        "VECTOR_DB_HOST": settings.vector_db_host,
         "DB_PROVIDER": settings.db_provider,
         "DB_NAME": settings.db_name,
+        "DB_HOST": settings.db_host,
+        "DB_PORT": str(settings.db_port),
+        "DB_USERNAME": settings.db_username,
+        "DB_PASSWORD": settings.db_password,
         "SYSTEM_ROOT_DIRECTORY": str(repo_path(settings.system_root_directory)),
         "DATA_ROOT_DIRECTORY": str(repo_path(settings.data_root_directory)),
         "BRAIN_MCP_HOST": settings.brain_mcp_host,
@@ -484,6 +511,7 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "BRAIN_LLM_ENABLED": str(settings.brain_llm_enabled).lower(),
         "BRAIN_COGNEE_ENABLED": str(settings.brain_cognee_enabled).lower(),
         "BRAIN_COGNEE_RECALL_ENABLED": str(settings.brain_cognee_recall_enabled).lower(),
+        "BRAIN_COGNEE_EXECUTION_BACKEND": settings.brain_cognee_execution_backend,
         "BRAIN_COGNEE_MEMORY_DATASET": settings.brain_cognee_memory_dataset,
         "BRAIN_COGNEE_SOURCES_DATASET": settings.brain_cognee_sources_dataset,
         "BRAIN_COGNEE_DATA_DATASET": settings.brain_cognee_data_dataset,
@@ -554,11 +582,13 @@ def runtime_env(settings: Settings) -> dict[str, str]:
 def apply_runtime_environment(settings: Settings) -> None:
     for key, value in runtime_env(settings).items():
         os.environ[key] = value
-    for path_value in (
+    path_values = [
         runtime_env(settings)["SYSTEM_ROOT_DIRECTORY"],
         runtime_env(settings)["DATA_ROOT_DIRECTORY"],
-        runtime_env(settings)["VECTOR_DB_URL"],
-    ):
+    ]
+    if settings.vector_db_provider == "lancedb" and runtime_env(settings)["VECTOR_DB_URL"]:
+        path_values.append(runtime_env(settings)["VECTOR_DB_URL"])
+    for path_value in path_values:
         path = repo_path(path_value)
         if path.suffix and path.suffix != ".lancedb":
             path.parent.mkdir(parents=True, exist_ok=True)

@@ -191,16 +191,21 @@ Cognee projection settings:
 
 - `BRAIN_COGNEE_ENABLED=true`
 - `BRAIN_COGNEE_RECALL_ENABLED=false`
+- `BRAIN_COGNEE_EXECUTION_BACKEND=local`
 - `BRAIN_COGNEE_MEMORY_DATASET=memory`
 - `BRAIN_COGNEE_SOURCES_DATASET=sources`
 - `BRAIN_COGNEE_DATA_DATASET=data`
 - `BRAIN_COGNEE_RECALL_TOP_K=10`
 - `GRAPH_DATABASE_PROVIDER=ladybug`
+- `VECTOR_DB_PROVIDER=pgvector`
+- `VECTOR_DATASET_DATABASE_HANDLER=pgvector`
+- `DB_PROVIDER=postgres`
 - `ENABLE_BACKEND_ACCESS_CONTROL=false`
 
-Brain defaults Cognee's rebuildable projection to Cognee's local file graph.
-Neo4j can still be configured explicitly, but it is not required for normal
-local memory projection.
+Brain defaults Cognee's rebuildable projection to Postgres/pgvector for vector
+storage and Postgres for Cognee metadata. The configured Postgres role must be
+able to create the `vector` extension; with Cognee's pgvector dataset handler it
+also needs permission to create per-dataset databases.
 
 Brain Taste settings:
 

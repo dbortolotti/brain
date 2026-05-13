@@ -1,0 +1,3289 @@
+{
+  "schema_version": 1,
+  "name": "organic_recall_100_cases",
+  "description": "Balanced organic recall model-eval fixture set: 100 cases, difficulties 1 through 5, 20 cases each.",
+  "difficulty_scale": {
+    "1": "Direct single-fact recall.",
+    "2": "Direct recall with simple filtering, status, or source distractors.",
+    "3": "Multi-fact synthesis across two or more memories or sources.",
+    "4": "Precise filtering under distractors, status conflicts, or scoped exclusions.",
+    "5": "High-constraint synthesis across multiple domains with stale/deleted exclusions."
+  },
+  "seed_inserts": [
+    {
+      "id": "daniele_home_city",
+      "write_path": "remember",
+      "input": "Daniele lives in London.",
+      "expected_terms": [
+        "Daniele",
+        "London"
+      ],
+      "status": "current",
+      "tags": [
+        "identity",
+        "place"
+      ]
+    },
+    {
+      "id": "daniele_twin_daughters",
+      "write_path": "remember",
+      "input": "Nur and Sara are Daniele's twin daughters.",
+      "expected_terms": [
+        "Nur",
+        "Sara",
+        "Daniele"
+      ],
+      "status": "current",
+      "tags": [
+        "family"
+      ]
+    },
+    {
+      "id": "nur_violin",
+      "write_path": "remember",
+      "input": "Nur practices violin on Tuesdays.",
+      "expected_terms": [
+        "Nur",
+        "violin",
+        "Tuesdays"
+      ],
+      "status": "current",
+      "tags": [
+        "family",
+        "schedule"
+      ]
+    },
+    {
+      "id": "sara_swimming",
+      "write_path": "remember",
+      "input": "Sara has swimming lessons on Thursdays.",
+      "expected_terms": [
+        "Sara",
+        "swimming",
+        "Thursdays"
+      ],
+      "status": "current",
+      "tags": [
+        "family",
+        "schedule"
+      ]
+    },
+    {
+      "id": "school_pickup",
+      "write_path": "remember",
+      "input": "Daniele usually handles school pickup on Fridays.",
+      "expected_terms": [
+        "school pickup",
+        "Fridays"
+      ],
+      "status": "current",
+      "tags": [
+        "family",
+        "schedule"
+      ]
+    },
+    {
+      "id": "sam_work_old",
+      "write_path": "remember",
+      "input": "Sam works at Goldman.",
+      "expected_terms": [
+        "Sam",
+        "Goldman"
+      ],
+      "status": "superseded",
+      "tags": [
+        "work",
+        "superseded"
+      ]
+    },
+    {
+      "id": "sam_work_current",
+      "write_path": "remember",
+      "input": "Sam left Goldman and joined Point72.",
+      "expected_terms": [
+        "Sam",
+        "Point72"
+      ],
+      "status": "current",
+      "tags": [
+        "work",
+        "currentness"
+      ]
+    },
+    {
+      "id": "sam_music",
+      "write_path": "remember",
+      "input": "Sam from Goldman likes Bill Evans.",
+      "expected_terms": [
+        "Sam",
+        "Bill Evans"
+      ],
+      "status": "current",
+      "tags": [
+        "preference",
+        "music"
+      ]
+    },
+    {
+      "id": "sam_deleted_music",
+      "write_path": "remember",
+      "input": "Sam likes Taylor Swift.",
+      "expected_terms": [
+        "Sam",
+        "Taylor Swift"
+      ],
+      "status": "deleted",
+      "tags": [
+        "deleted",
+        "music"
+      ]
+    },
+    {
+      "id": "sam_jazz_club",
+      "write_path": "remember",
+      "input": "Sam recommended Ronnie Scott's for live jazz in London.",
+      "expected_terms": [
+        "Sam",
+        "Ronnie Scott's",
+        "jazz"
+      ],
+      "status": "current",
+      "tags": [
+        "recommendation",
+        "music",
+        "place"
+      ]
+    },
+    {
+      "id": "alex_company",
+      "write_path": "remember",
+      "input": "Alex Chen works at Stripe on billing infrastructure.",
+      "expected_terms": [
+        "Alex Chen",
+        "Stripe",
+        "billing"
+      ],
+      "status": "current",
+      "tags": [
+        "work"
+      ]
+    },
+    {
+      "id": "maya_company",
+      "write_path": "remember",
+      "input": "Maya Patel is a security engineer at Cloudflare.",
+      "expected_terms": [
+        "Maya Patel",
+        "Cloudflare",
+        "security"
+      ],
+      "status": "current",
+      "tags": [
+        "work"
+      ]
+    },
+    {
+      "id": "ravi_company",
+      "write_path": "remember",
+      "input": "Ravi works at Anthropic on eval infrastructure.",
+      "expected_terms": [
+        "Ravi",
+        "Anthropic",
+        "eval"
+      ],
+      "status": "current",
+      "tags": [
+        "work",
+        "evals"
+      ]
+    },
+    {
+      "id": "lucia_translation",
+      "write_path": "remember",
+      "input": "Lucia is translating Anna Banti notes from Italian to English.",
+      "expected_terms": [
+        "Lucia",
+        "Anna Banti",
+        "Italian",
+        "English"
+      ],
+      "status": "current",
+      "tags": [
+        "project",
+        "translation"
+      ]
+    },
+    {
+      "id": "brain_source_truth",
+      "write_path": "remember",
+      "input": "Brain DB remains the source of truth for memory lifecycle state.",
+      "expected_terms": [
+        "Brain DB",
+        "source of truth",
+        "memory lifecycle"
+      ],
+      "status": "current",
+      "tags": [
+        "brain",
+        "architecture"
+      ]
+    },
+    {
+      "id": "cognee_projection",
+      "write_path": "remember",
+      "input": "Cognee should be treated as a rebuildable semantic projection, not the authority for lifecycle state.",
+      "expected_terms": [
+        "Cognee",
+        "rebuildable",
+        "semantic projection"
+      ],
+      "status": "current",
+      "tags": [
+        "cognee",
+        "architecture"
+      ]
+    },
+    {
+      "id": "cognee_sync_rule",
+      "write_path": "remember",
+      "input": "Cognee sync rows should mark failed projections stale before retrying them.",
+      "expected_terms": [
+        "Cognee sync",
+        "stale",
+        "retrying"
+      ],
+      "status": "current",
+      "tags": [
+        "cognee",
+        "sync"
+      ]
+    },
+    {
+      "id": "mcp_public_tools",
+      "write_path": "remember",
+      "input": "Public MCP tools should expose high-level remember, recall, ingest_source, and admin sync operations only.",
+      "expected_terms": [
+        "MCP",
+        "remember",
+        "recall",
+        "ingest_source",
+        "admin sync"
+      ],
+      "status": "current",
+      "tags": [
+        "mcp",
+        "tools"
+      ]
+    },
+    {
+      "id": "low_level_sql_rejected",
+      "write_path": "remember",
+      "input": "Low-level SQL and raw Cognee operations must not be exposed as public MCP tools.",
+      "expected_terms": [
+        "SQL",
+        "raw Cognee",
+        "not exposed"
+      ],
+      "status": "current",
+      "tags": [
+        "mcp",
+        "security"
+      ]
+    },
+    {
+      "id": "oauth_cognee",
+      "write_path": "remember",
+      "input": "Cognee OAuth compatibility routes OpenAI text calls through the Codex bearer token adapter.",
+      "expected_terms": [
+        "Cognee OAuth",
+        "OpenAI",
+        "Codex bearer token"
+      ],
+      "status": "current",
+      "tags": [
+        "oauth",
+        "cognee"
+      ]
+    },
+    {
+      "id": "local_cognee_backend",
+      "write_path": "remember",
+      "input": "The local Cognee backend runs add and cognify directly for ingestion benchmarks.",
+      "expected_terms": [
+        "local Cognee backend",
+        "add",
+        "cognify",
+        "ingestion benchmarks"
+      ],
+      "status": "current",
+      "tags": [
+        "cognee",
+        "testing"
+      ]
+    },
+    {
+      "id": "model_selection_default",
+      "write_path": "remember",
+      "input": "Current Cognee model-selection evidence favors gpt-5.4-mini ingestion for speed-sensitive local use.",
+      "expected_terms": [
+        "gpt-5.4-mini",
+        "ingestion",
+        "speed-sensitive"
+      ],
+      "status": "current",
+      "tags": [
+        "model_selection"
+      ]
+    },
+    {
+      "id": "model_selection_high_cost",
+      "write_path": "remember",
+      "input": "The gpt-5.5 high-effort ingestion candidate was much slower and did not clearly improve recall quality.",
+      "expected_terms": [
+        "gpt-5.5 high",
+        "slower",
+        "recall quality"
+      ],
+      "status": "current",
+      "tags": [
+        "model_selection"
+      ]
+    },
+    {
+      "id": "eval_judge",
+      "write_path": "remember",
+      "input": "Manetti candidate answers are scored by a gpt-5.5 judge on a 1 to 5 scale.",
+      "expected_terms": [
+        "Manetti",
+        "gpt-5.5 judge",
+        "1 to 5"
+      ],
+      "status": "current",
+      "tags": [
+        "evals"
+      ]
+    },
+    {
+      "id": "eval_question_generation",
+      "write_path": "remember",
+      "input": "The Manetti evaluation uses one hundred LLM-generated questions read from the full corpus, ranked from easy to hard.",
+      "expected_terms": [
+        "one hundred",
+        "LLM-generated",
+        "full corpus"
+      ],
+      "status": "current",
+      "tags": [
+        "evals"
+      ]
+    },
+    {
+      "id": "source_brain_cognee_chat",
+      "write_path": "ingest_source",
+      "source_kind": "markdown",
+      "title": "Brain/Cognee design chat",
+      "input": "# Brain/Cognee design chat\nBrain DB remains source of truth. Cognee is rebuildable. MCP should expose high-level tools. Open question: how much source text should be projected into semantic recall?",
+      "expected_terms": [
+        "Brain DB",
+        "Cognee",
+        "MCP"
+      ],
+      "status": "current",
+      "tags": [
+        "source",
+        "brain"
+      ]
+    },
+    {
+      "id": "source_ai_memory_article",
+      "write_path": "ingest_source",
+      "source_kind": "article",
+      "title": "AI memory design",
+      "input": "AI memory systems need durable source evidence. Atomic memory cards should be traceable. Semantic indexes improve recall but application databases should own lifecycle and conflict state.",
+      "expected_terms": [
+        "AI memory",
+        "source evidence",
+        "lifecycle"
+      ],
+      "status": "current",
+      "tags": [
+        "source",
+        "article"
+      ]
+    },
+    {
+      "id": "source_banti_notes",
+      "write_path": "ingest_source",
+      "source_kind": "markdown",
+      "title": "Banti research notes",
+      "input": "Anna Banti's La camicia bruciata is read through Marguerite Louise, Violante, historical truth, and hypothetical interpretation of archival gaps.",
+      "expected_terms": [
+        "Anna Banti",
+        "La camicia bruciata",
+        "Marguerite Louise",
+        "historical truth"
+      ],
+      "status": "current",
+      "tags": [
+        "source",
+        "banti"
+      ]
+    },
+    {
+      "id": "source_preference_table",
+      "write_path": "ingest_source",
+      "source_kind": "table",
+      "title": "Preference distractor table",
+      "input": "| Person | Preference |\n| --- | --- |\n| Sam | Bill Evans |\n| Daniele | Knowledge graphs |\n| Maya | Cloudflare papers |",
+      "expected_terms": [
+        "Bill Evans",
+        "Knowledge graphs",
+        "Cloudflare"
+      ],
+      "status": "current",
+      "tags": [
+        "source",
+        "table"
+      ]
+    },
+    {
+      "id": "source_mcp_release_notes",
+      "write_path": "ingest_source",
+      "source_kind": "markdown",
+      "title": "MCP release notes",
+      "input": "Release notes: add OAuth protected resource metadata, keep Slack routes separate from /mcp, and reject legacy low-level tools.",
+      "expected_terms": [
+        "OAuth",
+        "Slack",
+        "legacy low-level tools"
+      ],
+      "status": "current",
+      "tags": [
+        "source",
+        "mcp"
+      ]
+    },
+    {
+      "id": "open_loop_knowledge_graphs",
+      "write_path": "remember",
+      "input": "I want to learn more about knowledge graphs for memory recall.",
+      "expected_terms": [
+        "knowledge graphs",
+        "memory recall"
+      ],
+      "status": "open_loop_open",
+      "tags": [
+        "open_loop"
+      ]
+    },
+    {
+      "id": "open_loop_chunking",
+      "write_path": "remember",
+      "input": "Open question: should LLM question generation read the whole corpus instead of artificial chunks?",
+      "expected_terms": [
+        "whole corpus",
+        "artificial chunks"
+      ],
+      "status": "open_loop_open",
+      "tags": [
+        "open_loop",
+        "evals"
+      ]
+    },
+    {
+      "id": "open_loop_gpt55_low",
+      "write_path": "remember",
+      "input": "Open question: repeat the same one hundred questions with gpt-5.5 low as the recall model.",
+      "expected_terms": [
+        "gpt-5.5 low",
+        "one hundred questions"
+      ],
+      "status": "open_loop_open",
+      "tags": [
+        "open_loop",
+        "model_selection"
+      ]
+    },
+    {
+      "id": "open_loop_python_closed",
+      "write_path": "remember",
+      "input": "I want to learn more about basic Python.",
+      "expected_terms": [
+        "basic Python"
+      ],
+      "status": "open_loop_closed",
+      "tags": [
+        "open_loop",
+        "closed"
+      ]
+    },
+    {
+      "id": "open_loop_slack_backup",
+      "write_path": "remember",
+      "input": "Follow up on whether Slack memory agent needs a backup notification channel.",
+      "expected_terms": [
+        "Slack",
+        "backup notification"
+      ],
+      "status": "open_loop_open",
+      "tags": [
+        "open_loop",
+        "slack"
+      ]
+    },
+    {
+      "id": "wine_musar",
+      "write_path": "remember",
+      "input": "Daniele wants to try Chateau Musar 2016.",
+      "expected_terms": [
+        "Daniele",
+        "Chateau Musar 2016"
+      ],
+      "status": "current",
+      "tags": [
+        "taste",
+        "wine"
+      ]
+    },
+    {
+      "id": "restaurant_noble_rot",
+      "write_path": "remember",
+      "input": "Daniele wants to try Noble Rot for wine-focused dining.",
+      "expected_terms": [
+        "Noble Rot",
+        "wine-focused dining"
+      ],
+      "status": "current",
+      "tags": [
+        "taste",
+        "restaurant"
+      ]
+    },
+    {
+      "id": "movie_coherence",
+      "write_path": "remember",
+      "input": "Daniele liked the movie Coherence for its puzzle-box structure.",
+      "expected_terms": [
+        "Coherence",
+        "puzzle-box"
+      ],
+      "status": "current",
+      "tags": [
+        "taste",
+        "film"
+      ]
+    },
+    {
+      "id": "music_kind_of_blue",
+      "write_path": "remember",
+      "input": "Daniele loved listening to Kind of Blue.",
+      "expected_terms": [
+        "Kind of Blue"
+      ],
+      "status": "current",
+      "tags": [
+        "taste",
+        "music"
+      ]
+    },
+    {
+      "id": "cigar_partagas_dislike",
+      "write_path": "remember",
+      "input": "Daniele disliked Partagas Serie D No. 4.",
+      "expected_terms": [
+        "Partagas Serie D No. 4",
+        "disliked"
+      ],
+      "status": "current",
+      "tags": [
+        "taste",
+        "cigar"
+      ]
+    },
+    {
+      "id": "backup_policy",
+      "write_path": "remember",
+      "input": "Production backups should include the main Cognee database and LanceDB archive.",
+      "expected_terms": [
+        "backups",
+        "Cognee database",
+        "LanceDB"
+      ],
+      "status": "current",
+      "tags": [
+        "ops",
+        "backup"
+      ]
+    },
+    {
+      "id": "deploy_smoke",
+      "write_path": "remember",
+      "input": "Production deploys run live model smoke checks before promotion.",
+      "expected_terms": [
+        "production deploys",
+        "live model smoke"
+      ],
+      "status": "current",
+      "tags": [
+        "ops",
+        "smoke"
+      ]
+    },
+    {
+      "id": "cloudflare_route",
+      "write_path": "remember",
+      "input": "Cloudflare routes Slack traffic to the Slack agent before the MCP catchall route.",
+      "expected_terms": [
+        "Cloudflare",
+        "Slack",
+        "MCP catchall"
+      ],
+      "status": "current",
+      "tags": [
+        "ops",
+        "cloudflare"
+      ]
+    },
+    {
+      "id": "launchd_services",
+      "write_path": "remember",
+      "input": "Local production manages separate launchd services for MCP, UI, and Slack agent.",
+      "expected_terms": [
+        "launchd",
+        "MCP",
+        "UI",
+        "Slack agent"
+      ],
+      "status": "current",
+      "tags": [
+        "ops",
+        "macos"
+      ]
+    },
+    {
+      "id": "old_cognee_authority",
+      "write_path": "remember",
+      "input": "Cognee is the source of truth for all memory lifecycle state.",
+      "expected_terms": [
+        "Cognee",
+        "source of truth"
+      ],
+      "status": "superseded",
+      "tags": [
+        "superseded",
+        "architecture"
+      ]
+    },
+    {
+      "id": "deleted_low_level_tool",
+      "write_path": "remember",
+      "input": "Expose raw SQL as a public MCP tool for debugging.",
+      "expected_terms": [
+        "raw SQL",
+        "public MCP"
+      ],
+      "status": "deleted",
+      "tags": [
+        "deleted",
+        "security"
+      ]
+    },
+    {
+      "id": "old_ingest_choice",
+      "write_path": "remember",
+      "input": "Use gpt-5.5 high-effort ingestion as the default for all Cognee datasets.",
+      "expected_terms": [
+        "gpt-5.5 high-effort",
+        "default"
+      ],
+      "status": "superseded",
+      "tags": [
+        "superseded",
+        "model_selection"
+      ]
+    }
+  ],
+  "recall_cases": [
+    {
+      "id": "recall_d1_home_city",
+      "difficulty": 1,
+      "query": "Where does Daniele live?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "London"
+        ],
+        "must_not_include": [
+          "Paris"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "daniele_home_city"
+      ]
+    },
+    {
+      "id": "recall_d1_daughters_names",
+      "difficulty": 1,
+      "query": "Who are Daniele's twin daughters?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Nur",
+          "Sara"
+        ],
+        "must_not_include": [
+          "sons"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "daniele_twin_daughters"
+      ]
+    },
+    {
+      "id": "recall_d1_nur_activity",
+      "difficulty": 1,
+      "query": "What does Nur practice on Tuesdays?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "violin",
+          "Tuesdays"
+        ],
+        "must_not_include": [
+          "swimming"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "nur_violin"
+      ]
+    },
+    {
+      "id": "recall_d1_sara_activity",
+      "difficulty": 1,
+      "query": "What does Sara do on Thursdays?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "swimming",
+          "Thursdays"
+        ],
+        "must_not_include": [
+          "violin"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "sara_swimming"
+      ]
+    },
+    {
+      "id": "recall_d1_school_pickup",
+      "difficulty": 1,
+      "query": "Who usually handles school pickup on Fridays?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Daniele",
+          "Fridays"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "school_pickup"
+      ]
+    },
+    {
+      "id": "recall_d1_sam_music",
+      "difficulty": 1,
+      "query": "What music does Sam like?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Bill Evans"
+        ],
+        "must_not_include": [
+          "Taylor Swift"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "sam_music",
+        "sam_deleted_music"
+      ]
+    },
+    {
+      "id": "recall_d1_sam_jazz_place",
+      "difficulty": 1,
+      "query": "Which London jazz venue did Sam recommend?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Ronnie Scott's",
+          "jazz"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "sam_jazz_club"
+      ]
+    },
+    {
+      "id": "recall_d1_alex_work",
+      "difficulty": 1,
+      "query": "Where does Alex Chen work?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Stripe",
+          "billing"
+        ],
+        "must_not_include": [
+          "Cloudflare"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "alex_company"
+      ]
+    },
+    {
+      "id": "recall_d1_maya_work",
+      "difficulty": 1,
+      "query": "What is Maya Patel's job?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "security engineer",
+          "Cloudflare"
+        ],
+        "must_not_include": [
+          "Stripe"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "maya_company"
+      ]
+    },
+    {
+      "id": "recall_d1_ravi_work",
+      "difficulty": 1,
+      "query": "What does Ravi work on?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Anthropic",
+          "eval infrastructure"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "ravi_company"
+      ]
+    },
+    {
+      "id": "recall_d1_lucia_translation",
+      "difficulty": 1,
+      "query": "What is Lucia translating?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Anna Banti",
+          "Italian",
+          "English"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "lucia_translation"
+      ]
+    },
+    {
+      "id": "recall_d1_musar",
+      "difficulty": 1,
+      "query": "Which wine does Daniele want to try?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Chateau Musar 2016"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "wine_musar"
+      ]
+    },
+    {
+      "id": "recall_d1_noble_rot",
+      "difficulty": 1,
+      "query": "Which wine-focused restaurant does Daniele want to try?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Noble Rot"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "restaurant_noble_rot"
+      ]
+    },
+    {
+      "id": "recall_d1_coherence",
+      "difficulty": 1,
+      "query": "Why did Daniele like Coherence?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "puzzle-box"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "movie_coherence"
+      ]
+    },
+    {
+      "id": "recall_d1_kind_of_blue",
+      "difficulty": 1,
+      "query": "Which Miles Davis album did Daniele love listening to?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Kind of Blue"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "music_kind_of_blue"
+      ]
+    },
+    {
+      "id": "recall_d1_partagas",
+      "difficulty": 1,
+      "query": "Which cigar did Daniele dislike?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Partagas Serie D No. 4",
+          "disliked"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "cigar_partagas_dislike"
+      ]
+    },
+    {
+      "id": "recall_d1_backup",
+      "difficulty": 1,
+      "query": "What must production backups include?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Cognee database",
+          "LanceDB"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "backup_policy"
+      ]
+    },
+    {
+      "id": "recall_d1_deploy_smoke",
+      "difficulty": 1,
+      "query": "What check runs before production promotion?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "live model smoke"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "deploy_smoke"
+      ]
+    },
+    {
+      "id": "recall_d1_cloudflare",
+      "difficulty": 1,
+      "query": "What traffic should Cloudflare route before the MCP catchall?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Slack",
+          "MCP catchall"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "cloudflare_route"
+      ]
+    },
+    {
+      "id": "recall_d1_launchd",
+      "difficulty": 1,
+      "query": "Which launchd services are managed locally?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "MCP",
+          "UI",
+          "Slack agent"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "launchd_services"
+      ]
+    },
+    {
+      "id": "recall_d2_current_work",
+      "difficulty": 2,
+      "query": "Where does Sam work now?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Point72"
+        ],
+        "must_not_include": [
+          "works at Goldman",
+          "Taylor Swift"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "sam_work_current",
+        "sam_work_old"
+      ]
+    },
+    {
+      "id": "recall_d2_brain_source_truth",
+      "difficulty": 2,
+      "query": "What remains the source of truth for memory lifecycle state?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Brain DB",
+          "source of truth"
+        ],
+        "must_not_include": [
+          "Cognee is the source of truth"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "brain_source_truth",
+        "old_cognee_authority"
+      ]
+    },
+    {
+      "id": "recall_d2_cognee_role",
+      "difficulty": 2,
+      "query": "What role should Cognee play in the architecture?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "rebuildable",
+          "semantic projection"
+        ],
+        "must_not_include": [
+          "authority for lifecycle"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "cognee_projection"
+      ]
+    },
+    {
+      "id": "recall_d2_public_mcp",
+      "difficulty": 2,
+      "query": "Which public MCP tools should be exposed?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "remember",
+          "recall",
+          "ingest_source",
+          "admin sync"
+        ],
+        "must_not_include": [
+          "raw SQL"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "mcp_public_tools",
+        "deleted_low_level_tool"
+      ]
+    },
+    {
+      "id": "recall_d2_low_level_mcp",
+      "difficulty": 2,
+      "query": "What low-level operations must not be public MCP tools?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "SQL",
+          "raw Cognee",
+          "not exposed"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "low_level_sql_rejected"
+      ]
+    },
+    {
+      "id": "recall_d2_oauth",
+      "difficulty": 2,
+      "query": "How are Cognee OAuth text calls routed?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Codex bearer token",
+          "adapter"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "oauth_cognee"
+      ]
+    },
+    {
+      "id": "recall_d2_local_cognee_backend",
+      "difficulty": 2,
+      "query": "What does the local Cognee backend do for ingestion benchmarks?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "add",
+          "cognify",
+          "directly",
+          "ingestion benchmarks"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "local_cognee_backend"
+      ]
+    },
+    {
+      "id": "recall_d2_ingest_default",
+      "difficulty": 2,
+      "query": "Which ingestion model is favored for speed-sensitive Cognee use?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "gpt-5.4-mini",
+          "speed-sensitive"
+        ],
+        "must_not_include": [
+          "gpt-5.5 high-effort"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "model_selection_default",
+        "old_ingest_choice"
+      ]
+    },
+    {
+      "id": "recall_d2_high_cost",
+      "difficulty": 2,
+      "query": "What happened with the gpt-5.5 high-effort ingestion candidate?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "slower",
+          "did not clearly improve"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "model_selection_high_cost"
+      ]
+    },
+    {
+      "id": "recall_d2_eval_judge",
+      "difficulty": 2,
+      "query": "How are Manetti candidate answers scored?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "gpt-5.5 judge",
+          "1 to 5"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "eval_judge"
+      ]
+    },
+    {
+      "id": "recall_d2_eval_questions",
+      "difficulty": 2,
+      "query": "How were the Manetti evaluation questions generated?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "LLM-generated",
+          "full corpus",
+          "easy to hard"
+        ],
+        "must_not_include": [
+          "chunks"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "eval_question_generation"
+      ]
+    },
+    {
+      "id": "recall_d2_source_brain_chat",
+      "difficulty": 2,
+      "query": "What does the Brain/Cognee design chat source say?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Brain DB",
+          "source of truth",
+          "Cognee",
+          "rebuildable"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "source_brain_cognee_chat"
+      ]
+    },
+    {
+      "id": "recall_d2_ai_article",
+      "difficulty": 2,
+      "query": "What does the AI memory article emphasize?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "durable source evidence",
+          "traceable",
+          "lifecycle"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "source_ai_memory_article"
+      ]
+    },
+    {
+      "id": "recall_d2_banti_source",
+      "difficulty": 2,
+      "query": "What Banti work appears in the research notes source?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "La camicia bruciata",
+          "Marguerite Louise"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "source_banti_notes"
+      ]
+    },
+    {
+      "id": "recall_d2_preference_table",
+      "difficulty": 2,
+      "query": "What preferences are in the table source?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Bill Evans",
+          "Knowledge graphs",
+          "Cloudflare"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "source_preference_table"
+      ]
+    },
+    {
+      "id": "recall_d2_mcp_release",
+      "difficulty": 2,
+      "query": "What did the MCP release notes mention?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "OAuth",
+          "Slack",
+          "legacy low-level tools"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "source_mcp_release_notes"
+      ]
+    },
+    {
+      "id": "recall_d2_open_knowledge",
+      "difficulty": 2,
+      "query": "What open loop exists about knowledge graphs?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "knowledge graphs",
+          "memory recall"
+        ],
+        "must_not_include": [
+          "basic Python"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "open_loop_knowledge_graphs",
+        "open_loop_python_closed"
+      ]
+    },
+    {
+      "id": "recall_d2_open_chunking",
+      "difficulty": 2,
+      "query": "What open question exists about question generation chunks?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "whole corpus",
+          "artificial chunks"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "open_loop_chunking"
+      ]
+    },
+    {
+      "id": "recall_d2_open_gpt55_low",
+      "difficulty": 2,
+      "query": "What model-selection run remains open?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "gpt-5.5 low",
+          "one hundred questions"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "open_loop_gpt55_low"
+      ]
+    },
+    {
+      "id": "recall_d2_open_slack_backup",
+      "difficulty": 2,
+      "query": "What Slack backup open loop exists?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Slack",
+          "backup notification"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "open_loop_slack_backup"
+      ]
+    },
+    {
+      "id": "recall_d3_family_schedule",
+      "difficulty": 3,
+      "query": "Summarize the girls' weekly activities and Daniele's Friday responsibility.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Nur",
+          "violin",
+          "Sara",
+          "swimming",
+          "school pickup",
+          "Fridays"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "nur_violin",
+        "sara_swimming",
+        "school_pickup"
+      ]
+    },
+    {
+      "id": "recall_d3_sam_profile",
+      "difficulty": 3,
+      "query": "Summarize current facts about Sam, filtering stale music and old job facts.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Point72",
+          "Bill Evans",
+          "Ronnie Scott's"
+        ],
+        "must_not_include": [
+          "Taylor Swift",
+          "works at Goldman"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "sam_work_current",
+        "sam_music",
+        "sam_jazz_club",
+        "sam_work_old",
+        "sam_deleted_music"
+      ]
+    },
+    {
+      "id": "recall_d3_work_network",
+      "difficulty": 3,
+      "query": "Who are the remembered work contacts and where do they work?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Alex Chen",
+          "Stripe",
+          "Maya Patel",
+          "Cloudflare",
+          "Ravi",
+          "Anthropic"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "alex_company",
+        "maya_company",
+        "ravi_company"
+      ]
+    },
+    {
+      "id": "recall_d3_architecture_summary",
+      "difficulty": 3,
+      "query": "Summarize the Brain and Cognee architecture conclusion.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Brain DB",
+          "source of truth",
+          "Cognee",
+          "rebuildable",
+          "semantic projection"
+        ],
+        "must_not_include": [
+          "Cognee is the source of truth"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "brain_source_truth",
+        "cognee_projection",
+        "old_cognee_authority"
+      ]
+    },
+    {
+      "id": "recall_d3_mcp_security",
+      "difficulty": 3,
+      "query": "Summarize the MCP exposure policy and excluded low-level operations.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "high-level",
+          "remember",
+          "recall",
+          "ingest_source",
+          "SQL",
+          "raw Cognee",
+          "not exposed"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "mcp_public_tools",
+        "low_level_sql_rejected"
+      ]
+    },
+    {
+      "id": "recall_d3_cognee_dev",
+      "difficulty": 3,
+      "query": "What Cognee development/testing mechanisms are remembered?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "OAuth",
+          "Codex bearer",
+          "local Cognee backend",
+          "add",
+          "cognify"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "oauth_cognee",
+        "local_cognee_backend"
+      ]
+    },
+    {
+      "id": "recall_d3_model_selection",
+      "difficulty": 3,
+      "query": "Summarize the current Cognee model-selection takeaway.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "gpt-5.4-mini",
+          "speed-sensitive",
+          "gpt-5.5 high",
+          "slower"
+        ],
+        "must_not_include": [
+          "default for all Cognee datasets"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "model_selection_default",
+        "model_selection_high_cost",
+        "old_ingest_choice"
+      ]
+    },
+    {
+      "id": "recall_d3_manetti_eval",
+      "difficulty": 3,
+      "query": "Summarize how the Manetti eval questions and scores work.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "LLM-generated",
+          "full corpus",
+          "gpt-5.5 judge",
+          "1 to 5"
+        ],
+        "must_not_include": [
+          "chunks"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "eval_question_generation",
+        "eval_judge"
+      ]
+    },
+    {
+      "id": "recall_d3_saved_sources",
+      "difficulty": 3,
+      "query": "Which saved sources discuss Brain/Cognee, AI memory, and Banti?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Brain/Cognee design chat",
+          "AI memory design",
+          "Banti research notes"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "source_brain_cognee_chat",
+        "source_ai_memory_article",
+        "source_banti_notes"
+      ]
+    },
+    {
+      "id": "recall_d3_open_loops",
+      "difficulty": 3,
+      "query": "List the currently open research loops, excluding closed Python.",
+      "mode": "open_loops",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "knowledge graphs",
+          "whole corpus",
+          "gpt-5.5 low",
+          "Slack"
+        ],
+        "must_not_include": [
+          "basic Python"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "open_loop_knowledge_graphs",
+        "open_loop_chunking",
+        "open_loop_gpt55_low",
+        "open_loop_slack_backup",
+        "open_loop_python_closed"
+      ]
+    },
+    {
+      "id": "recall_d3_taste_summary",
+      "difficulty": 3,
+      "query": "Summarize Daniele's remembered taste items.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Chateau Musar 2016",
+          "Noble Rot",
+          "Coherence",
+          "Kind of Blue",
+          "Partagas"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "wine_musar",
+        "restaurant_noble_rot",
+        "movie_coherence",
+        "music_kind_of_blue",
+        "cigar_partagas_dislike"
+      ]
+    },
+    {
+      "id": "recall_d3_ops_summary",
+      "difficulty": 3,
+      "query": "Summarize production operations memories.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "backups",
+          "Cognee database",
+          "LanceDB",
+          "live model smoke",
+          "Cloudflare",
+          "launchd"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "backup_policy",
+        "deploy_smoke",
+        "cloudflare_route",
+        "launchd_services"
+      ]
+    },
+    {
+      "id": "recall_d3_source_vs_memory",
+      "difficulty": 3,
+      "query": "What do source-backed notes say about memory architecture?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "durable source evidence",
+          "semantic indexes",
+          "application databases",
+          "lifecycle"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "source_ai_memory_article",
+        "brain_source_truth"
+      ]
+    },
+    {
+      "id": "recall_d3_translation_banti",
+      "difficulty": 3,
+      "query": "What Banti-related work and source notes are remembered?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Lucia",
+          "translating",
+          "Anna Banti",
+          "La camicia bruciata",
+          "Marguerite Louise"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "lucia_translation",
+        "source_banti_notes"
+      ]
+    },
+    {
+      "id": "recall_d3_currentness_pair",
+      "difficulty": 3,
+      "query": "What is the current Sam work fact and what old fact should be excluded?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Point72"
+        ],
+        "must_not_include": [
+          "works at Goldman"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "sam_work_current",
+        "sam_work_old"
+      ]
+    },
+    {
+      "id": "recall_d3_deleted_music_pair",
+      "difficulty": 3,
+      "query": "What music should be recalled for Sam and what deleted music should be excluded?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Bill Evans"
+        ],
+        "must_not_include": [
+          "Taylor Swift"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "sam_music",
+        "sam_deleted_music"
+      ]
+    },
+    {
+      "id": "recall_d3_slack_routes",
+      "difficulty": 3,
+      "query": "How should Slack and MCP routing be handled in production?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Slack",
+          "before",
+          "MCP catchall"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "cloudflare_route",
+        "launchd_services"
+      ]
+    },
+    {
+      "id": "recall_d3_table_distractor",
+      "difficulty": 3,
+      "query": "What should the preference table contribute without distracting from saved memories?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Bill Evans",
+          "Knowledge graphs",
+          "Cloudflare"
+        ],
+        "must_not_include": [
+          "Taylor Swift"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "source_preference_table",
+        "sam_deleted_music"
+      ]
+    },
+    {
+      "id": "recall_d3_evals_open_runs",
+      "difficulty": 3,
+      "query": "Which eval-related questions remain open?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "whole corpus",
+          "artificial chunks",
+          "gpt-5.5 low"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "open_loop_chunking",
+        "open_loop_gpt55_low"
+      ]
+    },
+    {
+      "id": "recall_d3_memory_lifecycle",
+      "difficulty": 3,
+      "query": "What owns lifecycle and conflict state according to the memories and article?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Brain DB",
+          "application databases",
+          "lifecycle",
+          "conflict state"
+        ],
+        "must_not_include": [
+          "Cognee is the source of truth"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "brain_source_truth",
+        "source_ai_memory_article",
+        "old_cognee_authority"
+      ]
+    },
+    {
+      "id": "recall_d4_sam_current_only",
+      "difficulty": 4,
+      "query": "Answer only with Sam's current employer and cite why Goldman is not current.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Point72",
+          "left Goldman"
+        ],
+        "must_not_include": [
+          "works at Goldman",
+          "Taylor Swift"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "sam_work_current",
+        "sam_work_old",
+        "sam_deleted_music"
+      ]
+    },
+    {
+      "id": "recall_d4_cognee_not_authority",
+      "difficulty": 4,
+      "query": "Explain the Brain/Cognee authority split while excluding the superseded claim.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Brain DB",
+          "source of truth",
+          "Cognee",
+          "rebuildable projection"
+        ],
+        "must_not_include": [
+          "Cognee is the source of truth"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "brain_source_truth",
+        "cognee_projection",
+        "old_cognee_authority"
+      ]
+    },
+    {
+      "id": "recall_d4_mcp_reject_deleted_sql",
+      "difficulty": 4,
+      "query": "What should public MCP expose, and what deleted/debug idea must not be revived?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "remember",
+          "recall",
+          "ingest_source",
+          "admin sync",
+          "raw SQL",
+          "not exposed"
+        ],
+        "must_not_include": [
+          "Expose raw SQL as a public MCP tool"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "mcp_public_tools",
+        "low_level_sql_rejected",
+        "deleted_low_level_tool"
+      ]
+    },
+    {
+      "id": "recall_d4_model_default_exclusion",
+      "difficulty": 4,
+      "query": "Which ingestion default is currently favored, and which old default should be rejected?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "gpt-5.4-mini",
+          "speed-sensitive"
+        ],
+        "must_not_include": [
+          "Use gpt-5.5 high-effort ingestion as the default"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "model_selection_default",
+        "old_ingest_choice"
+      ]
+    },
+    {
+      "id": "recall_d4_open_loops_only",
+      "difficulty": 4,
+      "query": "Return only currently open loops and exclude closed Python.",
+      "mode": "open_loops",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "knowledge graphs",
+          "whole corpus",
+          "gpt-5.5 low",
+          "Slack"
+        ],
+        "must_not_include": [
+          "basic Python"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "open_loop_knowledge_graphs",
+        "open_loop_chunking",
+        "open_loop_gpt55_low",
+        "open_loop_slack_backup",
+        "open_loop_python_closed"
+      ]
+    },
+    {
+      "id": "recall_d4_family_not_sam",
+      "difficulty": 4,
+      "query": "Answer the family schedule question without pulling Sam work/music facts.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Nur",
+          "violin",
+          "Sara",
+          "swimming",
+          "school pickup"
+        ],
+        "must_not_include": [
+          "Point72",
+          "Bill Evans"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "nur_violin",
+        "sara_swimming",
+        "school_pickup",
+        "sam_work_current",
+        "sam_music"
+      ]
+    },
+    {
+      "id": "recall_d4_ops_not_model",
+      "difficulty": 4,
+      "query": "Summarize production ops and avoid model-selection conclusions.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "backups",
+          "live model smoke",
+          "Cloudflare",
+          "launchd"
+        ],
+        "must_not_include": [
+          "gpt-5.4-mini",
+          "gpt-5.5 high"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "backup_policy",
+        "deploy_smoke",
+        "cloudflare_route",
+        "launchd_services",
+        "model_selection_default"
+      ]
+    },
+    {
+      "id": "recall_d4_banti_not_eval",
+      "difficulty": 4,
+      "query": "Summarize Banti research notes without confusing them with Manetti eval mechanics.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Anna Banti",
+          "La camicia bruciata",
+          "Marguerite Louise",
+          "historical truth"
+        ],
+        "must_not_include": [
+          "gpt-5.5 judge",
+          "1 to 5"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "source_banti_notes",
+        "eval_judge"
+      ]
+    },
+    {
+      "id": "recall_d4_ai_article_not_table",
+      "difficulty": 4,
+      "query": "What does the AI memory article say, excluding table preferences?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "durable source evidence",
+          "traceable",
+          "semantic indexes",
+          "lifecycle"
+        ],
+        "must_not_include": [
+          "Bill Evans",
+          "Knowledge graphs"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "source_ai_memory_article",
+        "source_preference_table"
+      ]
+    },
+    {
+      "id": "recall_d4_taste_with_negative",
+      "difficulty": 4,
+      "query": "Summarize taste preferences including dislikes, not deleted Sam music.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Chateau Musar",
+          "Noble Rot",
+          "Coherence",
+          "Kind of Blue",
+          "Partagas",
+          "disliked"
+        ],
+        "must_not_include": [
+          "Taylor Swift"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "wine_musar",
+        "restaurant_noble_rot",
+        "movie_coherence",
+        "music_kind_of_blue",
+        "cigar_partagas_dislike",
+        "sam_deleted_music"
+      ]
+    },
+    {
+      "id": "recall_d4_entity_disambiguation",
+      "difficulty": 4,
+      "query": "Distinguish Sam from Goldman/Point72 from Alex, Maya, and Ravi.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Sam",
+          "Point72",
+          "Alex Chen",
+          "Stripe",
+          "Maya Patel",
+          "Cloudflare",
+          "Ravi",
+          "Anthropic"
+        ],
+        "must_not_include": [
+          "Sam works at Goldman"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "sam_work_current",
+        "sam_work_old",
+        "alex_company",
+        "maya_company",
+        "ravi_company"
+      ]
+    },
+    {
+      "id": "recall_d4_sync_retry",
+      "difficulty": 4,
+      "query": "What is remembered about Cognee sync failure handling?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "failed projections",
+          "stale",
+          "retrying"
+        ],
+        "must_not_include": [
+          "deleted"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "cognee_sync_rule"
+      ]
+    },
+    {
+      "id": "recall_d4_oauth_vs_local_backend",
+      "difficulty": 4,
+      "query": "Contrast Cognee OAuth compatibility with local backend ingestion testing.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Codex bearer token",
+          "local Cognee backend",
+          "add",
+          "cognify",
+          "ingestion benchmarks"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "oauth_cognee",
+        "local_cognee_backend"
+      ]
+    },
+    {
+      "id": "recall_d4_release_security",
+      "difficulty": 4,
+      "query": "What release/security notes affect MCP routes and low-level tools?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "OAuth",
+          "Slack",
+          "legacy low-level tools",
+          "raw SQL",
+          "not exposed"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "source_mcp_release_notes",
+        "low_level_sql_rejected"
+      ]
+    },
+    {
+      "id": "recall_d4_eval_no_chunks",
+      "difficulty": 4,
+      "query": "Explain the eval question generation rule and the chunking concern.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "full corpus",
+          "LLM-generated",
+          "artificial chunks"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "eval_question_generation",
+        "open_loop_chunking"
+      ]
+    },
+    {
+      "id": "recall_d4_work_currentness_and_music",
+      "difficulty": 4,
+      "query": "Give Sam's current employer and valid music preference only.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Point72",
+          "Bill Evans"
+        ],
+        "must_not_include": [
+          "works at Goldman",
+          "Taylor Swift"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "sam_work_current",
+        "sam_work_old",
+        "sam_music",
+        "sam_deleted_music"
+      ]
+    },
+    {
+      "id": "recall_d4_source_titles",
+      "difficulty": 4,
+      "query": "Which source titles are saved for Brain/Cognee, AI memory, Banti, table preferences, and MCP notes?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Brain/Cognee design chat",
+          "AI memory design",
+          "Banti research notes",
+          "Preference distractor table",
+          "MCP release notes"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "source_brain_cognee_chat",
+        "source_ai_memory_article",
+        "source_banti_notes",
+        "source_preference_table",
+        "source_mcp_release_notes"
+      ]
+    },
+    {
+      "id": "recall_d4_closed_loop_exclusion",
+      "difficulty": 4,
+      "query": "Which learning loop about Python should be excluded from open loop answers, and why?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "basic Python",
+          "closed"
+        ],
+        "must_not_include": [
+          "open Python"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "open_loop_python_closed"
+      ]
+    },
+    {
+      "id": "recall_d4_model_scoring_vs_timing",
+      "difficulty": 4,
+      "query": "What do we know about Manetti scoring and model-selection conclusion?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "gpt-5.5 judge",
+          "1 to 5",
+          "gpt-5.4-mini",
+          "speed-sensitive"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "eval_judge",
+        "model_selection_default"
+      ]
+    },
+    {
+      "id": "recall_d4_lifecycle_conflicts",
+      "difficulty": 4,
+      "query": "What system owns lifecycle/conflict state and what projection should not own it?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Brain DB",
+          "lifecycle",
+          "conflict state",
+          "Cognee",
+          "projection"
+        ],
+        "must_not_include": [
+          "Cognee is the source of truth"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "brain_source_truth",
+        "source_ai_memory_article",
+        "cognee_projection",
+        "old_cognee_authority"
+      ]
+    },
+    {
+      "id": "recall_d5_architecture_decision",
+      "difficulty": 5,
+      "query": "Write the current architecture decision about Brain, Cognee, MCP exposure, and lifecycle ownership; exclude superseded/deleted claims.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Brain DB",
+          "source of truth",
+          "Cognee",
+          "rebuildable",
+          "MCP",
+          "high-level",
+          "lifecycle"
+        ],
+        "must_not_include": [
+          "Cognee is the source of truth",
+          "Expose raw SQL"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "brain_source_truth",
+        "cognee_projection",
+        "mcp_public_tools",
+        "low_level_sql_rejected",
+        "source_ai_memory_article",
+        "old_cognee_authority",
+        "deleted_low_level_tool"
+      ]
+    },
+    {
+      "id": "recall_d5_model_eval_plan",
+      "difficulty": 5,
+      "query": "Summarize the model-eval plan from question generation through scoring and remaining run, with no chunk boundary assumption.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "LLM-generated",
+          "full corpus",
+          "easy to hard",
+          "gpt-5.5 judge",
+          "gpt-5.5 low"
+        ],
+        "must_not_include": [
+          "chunks"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "eval_question_generation",
+        "eval_judge",
+        "open_loop_gpt55_low",
+        "open_loop_chunking"
+      ]
+    },
+    {
+      "id": "recall_d5_sam_full_filtered_profile",
+      "difficulty": 5,
+      "query": "Give Sam's current work, valid music preference, and recommendation while excluding stale/deleted facts.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Point72",
+          "Bill Evans",
+          "Ronnie Scott's"
+        ],
+        "must_not_include": [
+          "works at Goldman",
+          "Taylor Swift"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "sam_work_current",
+        "sam_work_old",
+        "sam_music",
+        "sam_deleted_music",
+        "sam_jazz_club"
+      ]
+    },
+    {
+      "id": "recall_d5_family_plus_taste",
+      "difficulty": 5,
+      "query": "Combine family schedule and Daniele taste facts without mixing in Sam or work contacts.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Nur",
+          "violin",
+          "Sara",
+          "swimming",
+          "school pickup",
+          "Chateau Musar",
+          "Noble Rot",
+          "Coherence",
+          "Kind of Blue",
+          "Partagas"
+        ],
+        "must_not_include": [
+          "Point72",
+          "Stripe",
+          "Cloudflare"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "nur_violin",
+        "sara_swimming",
+        "school_pickup",
+        "wine_musar",
+        "restaurant_noble_rot",
+        "movie_coherence",
+        "music_kind_of_blue",
+        "cigar_partagas_dislike"
+      ]
+    },
+    {
+      "id": "recall_d5_open_loop_strategy",
+      "difficulty": 5,
+      "query": "List all current open loops, explain the closed Python exclusion, and identify the eval-related ones.",
+      "mode": "open_loops",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "knowledge graphs",
+          "whole corpus",
+          "gpt-5.5 low",
+          "Slack",
+          "basic Python",
+          "closed"
+        ],
+        "must_not_include": [
+          "open Python"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "open_loop_knowledge_graphs",
+        "open_loop_chunking",
+        "open_loop_gpt55_low",
+        "open_loop_slack_backup",
+        "open_loop_python_closed"
+      ]
+    },
+    {
+      "id": "recall_d5_source_backed_memory",
+      "difficulty": 5,
+      "query": "Synthesize what saved sources say about memory architecture and cite the relevant source themes.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "durable source evidence",
+          "semantic indexes",
+          "application databases",
+          "Brain DB",
+          "Cognee",
+          "MCP"
+        ],
+        "must_not_include": [
+          "Taylor Swift"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "source_ai_memory_article",
+        "source_brain_cognee_chat",
+        "source_mcp_release_notes"
+      ]
+    },
+    {
+      "id": "recall_d5_banti_eval_context",
+      "difficulty": 5,
+      "query": "Connect Banti research notes to the Manetti evaluation setup without inventing chunked question generation.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Anna Banti",
+          "La camicia bruciata",
+          "Marguerite Louise",
+          "LLM-generated",
+          "full corpus",
+          "gpt-5.5 judge"
+        ],
+        "must_not_include": [
+          "chunks"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "source_banti_notes",
+        "lucia_translation",
+        "eval_question_generation",
+        "eval_judge"
+      ]
+    },
+    {
+      "id": "recall_d5_ops_release_plan",
+      "difficulty": 5,
+      "query": "Summarize the production operations and release routing plan across backups, smoke checks, Cloudflare, and launchd.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "backups",
+          "Cognee database",
+          "LanceDB",
+          "live model smoke",
+          "Cloudflare",
+          "Slack",
+          "MCP catchall",
+          "launchd"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "backup_policy",
+        "deploy_smoke",
+        "cloudflare_route",
+        "launchd_services"
+      ]
+    },
+    {
+      "id": "recall_d5_people_map",
+      "difficulty": 5,
+      "query": "Build a concise people map covering family, Sam, Alex, Maya, Ravi, and Lucia with their remembered roles.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Nur",
+          "Sara",
+          "twin daughters",
+          "Sam",
+          "Point72",
+          "Bill Evans",
+          "Alex Chen",
+          "Stripe",
+          "Maya Patel",
+          "Cloudflare",
+          "Ravi",
+          "Anthropic",
+          "Lucia",
+          "Anna Banti"
+        ],
+        "must_not_include": [
+          "Taylor Swift",
+          "works at Goldman"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "daniele_twin_daughters",
+        "sam_work_current",
+        "sam_work_old",
+        "sam_music",
+        "sam_deleted_music",
+        "alex_company",
+        "maya_company",
+        "ravi_company",
+        "lucia_translation"
+      ]
+    },
+    {
+      "id": "recall_d5_security_posture",
+      "difficulty": 5,
+      "query": "Explain the security posture across OAuth, MCP tool exposure, route separation, and deleted SQL debug ideas.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "OAuth",
+          "Codex bearer token",
+          "high-level",
+          "raw SQL",
+          "not exposed",
+          "Slack",
+          "MCP catchall"
+        ],
+        "must_not_include": [
+          "Expose raw SQL as a public MCP tool"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "oauth_cognee",
+        "mcp_public_tools",
+        "low_level_sql_rejected",
+        "cloudflare_route",
+        "deleted_low_level_tool"
+      ]
+    },
+    {
+      "id": "recall_d5_cognee_testing_stack",
+      "difficulty": 5,
+      "query": "Summarize the Cognee testing stack and what remains authoritative.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "local Cognee backend",
+          "add",
+          "cognify",
+          "Cognee sync",
+          "stale",
+          "Brain DB",
+          "source of truth"
+        ],
+        "must_not_include": [
+          "Cognee is the source of truth"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "local_cognee_backend",
+        "cognee_sync_rule",
+        "brain_source_truth",
+        "old_cognee_authority"
+      ]
+    },
+    {
+      "id": "recall_d5_model_selection_tradeoff",
+      "difficulty": 5,
+      "query": "Explain the ingestion model tradeoff and reject the superseded high-effort default.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "gpt-5.4-mini",
+          "speed-sensitive",
+          "gpt-5.5 high",
+          "slower",
+          "did not clearly improve"
+        ],
+        "must_not_include": [
+          "Use gpt-5.5 high-effort ingestion as the default"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "model_selection_default",
+        "model_selection_high_cost",
+        "old_ingest_choice"
+      ]
+    },
+    {
+      "id": "recall_d5_distractor_table",
+      "difficulty": 5,
+      "query": "Use the preference table only where relevant, and distinguish it from Sam's current person memories.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Bill Evans",
+          "Knowledge graphs",
+          "Cloudflare",
+          "Point72"
+        ],
+        "must_not_include": [
+          "Taylor Swift",
+          "works at Goldman"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "source_preference_table",
+        "sam_music",
+        "sam_work_current",
+        "sam_work_old",
+        "sam_deleted_music"
+      ]
+    },
+    {
+      "id": "recall_d5_article_lifecycle",
+      "difficulty": 5,
+      "query": "Combine the AI memory article with Brain/Cognee decisions to explain lifecycle, conflict, and semantic index ownership.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "source evidence",
+          "semantic index",
+          "application DB",
+          "lifecycle",
+          "conflict state",
+          "Brain DB",
+          "Cognee",
+          "projection"
+        ],
+        "must_not_include": [
+          "Cognee is the source of truth"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "source_ai_memory_article",
+        "brain_source_truth",
+        "cognee_projection",
+        "old_cognee_authority"
+      ]
+    },
+    {
+      "id": "recall_d5_banti_project_state",
+      "difficulty": 5,
+      "query": "What is the remembered Banti project state across Lucia's translation and saved research notes?",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Lucia",
+          "translating",
+          "Anna Banti",
+          "Italian",
+          "English",
+          "La camicia bruciata",
+          "Marguerite Louise",
+          "historical truth"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "lucia_translation",
+        "source_banti_notes"
+      ]
+    },
+    {
+      "id": "recall_d5_release_and_eval",
+      "difficulty": 5,
+      "query": "Tie together release safety and model eval safety gates.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "live model smoke",
+          "production",
+          "gpt-5.5 judge",
+          "1 to 5",
+          "MCP",
+          "legacy low-level tools"
+        ],
+        "must_not_include": [],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "deploy_smoke",
+        "eval_judge",
+        "source_mcp_release_notes"
+      ]
+    },
+    {
+      "id": "recall_d5_open_research_priorities",
+      "difficulty": 5,
+      "query": "Prioritize open research loops related to recall and model selection, excluding non-eval operational loops unless asked.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "knowledge graphs",
+          "whole corpus",
+          "gpt-5.5 low"
+        ],
+        "must_not_include": [
+          "Slack backup",
+          "basic Python"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "open_loop_knowledge_graphs",
+        "open_loop_chunking",
+        "open_loop_gpt55_low",
+        "open_loop_slack_backup",
+        "open_loop_python_closed"
+      ]
+    },
+    {
+      "id": "recall_d5_taste_negative_filter",
+      "difficulty": 5,
+      "query": "Explain Daniele's taste profile including positive and negative signals, and avoid treating Sam's deleted music as Daniele's taste.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Chateau Musar",
+          "Noble Rot",
+          "Coherence",
+          "Kind of Blue",
+          "Partagas",
+          "disliked"
+        ],
+        "must_not_include": [
+          "Taylor Swift"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "wine_musar",
+        "restaurant_noble_rot",
+        "movie_coherence",
+        "music_kind_of_blue",
+        "cigar_partagas_dislike",
+        "sam_deleted_music"
+      ]
+    },
+    {
+      "id": "recall_d5_compliance_summary",
+      "difficulty": 5,
+      "query": "Summarize all remembered compliance boundaries for public tools, source authority, and deleted/superseded recall.",
+      "mode": "auto",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "high-level tools",
+          "raw SQL",
+          "not exposed",
+          "Brain DB",
+          "source of truth",
+          "deleted",
+          "superseded"
+        ],
+        "must_not_include": [
+          "Cognee is the source of truth",
+          "Expose raw SQL"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "mcp_public_tools",
+        "low_level_sql_rejected",
+        "brain_source_truth",
+        "old_cognee_authority",
+        "deleted_low_level_tool"
+      ]
+    },
+    {
+      "id": "recall_d5_full_system_snapshot",
+      "difficulty": 5,
+      "query": "Give a full system snapshot across architecture, evals, operations, and active open loops, excluding stale/deleted facts.",
+      "mode": "open_loops",
+      "include_sources": true,
+      "include_superseded": false,
+      "include_conflicts": true,
+      "limit": 20,
+      "expected": {
+        "must_include": [
+          "Brain DB",
+          "Cognee",
+          "gpt-5.4-mini",
+          "live model smoke",
+          "knowledge graphs",
+          "gpt-5.5 low",
+          "Slack"
+        ],
+        "must_not_include": [
+          "Cognee is the source of truth",
+          "Taylor Swift",
+          "works at Goldman",
+          "Expose raw SQL"
+        ],
+        "citations_required": true
+      },
+      "relevant_seed_ids": [
+        "brain_source_truth",
+        "cognee_projection",
+        "model_selection_default",
+        "deploy_smoke",
+        "open_loop_knowledge_graphs",
+        "open_loop_gpt55_low",
+        "open_loop_slack_backup",
+        "old_cognee_authority",
+        "sam_deleted_music",
+        "sam_work_old",
+        "deleted_low_level_tool"
+      ]
+    }
+  ]
+}
