@@ -91,6 +91,23 @@ Each candidate was queried with `artifacts/ask_cognee_dataset.py`, using:
 
 The score table has one row per candidate/question with a 1-5 score and a short scoring note. For comparability, every scored run in this series uses `gpt-5.5` extra high as the judge, even when the retrieval/answer model changes.
 
+## Average Score by Difficulty and Retrieval Model
+
+This table groups the scored runs by retrieval / answer model and question difficulty. The three score columns are the ingestion-model candidate datasets. Each value is the average judge score on the 1-5 scale for that difficulty bucket.
+
+| Retrieval / answer model | Difficulty | Questions | `menotti-54-mini` | `menotti-55-low` | `menotti-55-high` |
+|---|---:|---:|---:|---:|---:|
+| `gpt-5.5` extra high | 1 | 31 | 4.48 | 4.39 | 4.39 |
+| `gpt-5.5` extra high | 2 | 41 | 4.85 | 4.88 | 4.93 |
+| `gpt-5.5` extra high | 3 | 20 | 4.95 | 4.95 | 4.95 |
+| `gpt-5.5` extra high | 4 | 7 | 4.14 | 4.14 | 4.14 |
+| `gpt-5.5` extra high | 5 | 1 | 5.00 | 5.00 | 5.00 |
+| `gpt-5.4-mini` | 1 | 31 | 4.00 | 4.13 | 3.87 |
+| `gpt-5.4-mini` | 2 | 41 | 4.71 | 4.76 | 4.63 |
+| `gpt-5.4-mini` | 3 | 20 | 4.85 | 4.95 | 4.75 |
+| `gpt-5.4-mini` | 4 | 7 | 4.29 | 4.14 | 4.14 |
+| `gpt-5.4-mini` | 5 | 1 | 5.00 | 5.00 | 5.00 |
+
 ## Current Qualitative Read
 
 In the `gpt-5.5` retrieval run, all three candidates returned an answer for every one of the 100 questions. A spot check shows they are strong on direct factual recall and many medium-depth interpretive questions, but that completed run still has several clear retrieval or graph confusions.
