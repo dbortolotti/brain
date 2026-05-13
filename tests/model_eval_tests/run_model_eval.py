@@ -9,6 +9,7 @@ import sys
 import time
 from contextlib import contextmanager, redirect_stdout
 from dataclasses import dataclass
+from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Iterator
@@ -17,10 +18,10 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from memory_stack.cognee_adapter import add_text, cognify_dataset, recall_text
-from memory_stack.config import Settings, load_settings
-from memory_stack.evals.model_matrix import candidate_from_ref
-from memory_stack.evals.provider_client import LiveProviderClient
+from memory_stack.cognee_adapter import add_text, cognify_dataset, recall_text  # noqa: E402
+from memory_stack.config import Settings, load_settings  # noqa: E402
+from memory_stack.evals.model_matrix import candidate_from_ref  # noqa: E402
+from memory_stack.evals.provider_client import LiveProviderClient  # noqa: E402
 
 
 FIXTURE_DIR = Path(__file__).resolve().parent
@@ -74,7 +75,6 @@ def settings_for_model(model: str, dataset: str) -> Settings:
     base = load_settings()
     return base.model_copy(
         update={
-            "brain_cognee_execution_backend": "local",
             "brain_taste_enabled": False,
             "brain_cognee_memory_dataset": dataset,
             "llm_provider": "openai",
@@ -391,9 +391,12 @@ def score_answers(
     organic_seeds: list[dict[str, Any]],
     output_dir: Path,
     timeout_s: float,
+    reasoning_effort: str | None,
 ) -> list[dict[str, Any]]:
     settings = load_settings()
     candidate = candidate_from_ref(model_ref(judge_model), roles={"judge"})
+    if reasoning_effort:
+        candidate = replace(candidate, reasoning_effort=reasoning_effort)
     client = LiveProviderClient(settings, timeout_seconds=timeout_s, retry_attempts=1)
     question_by_key = {(q.suite, q.question_id): q for q in questions}
     seeds_by_id = {seed["id"]: seed for seed in organic_seeds}
@@ -425,6 +428,7 @@ def score_answers(
                 "answer": answer["answer"],
                 "recall_model": answer["recall_model"],
                 "judge_model": candidate.ref,
+                "judge_reasoning_effort": candidate.reasoning_effort,
                 "score": score,
                 "judge_reason": payload.get("reason"),
                 "judge_status": result.status,
@@ -535,6 +539,7 @@ async def run(args: argparse.Namespace) -> dict[str, Any]:
         "created_at": datetime.now(UTC).isoformat(),
         "dataset": dataset,
         "judge_model": model_ref(args.judge_model),
+        "judge_reasoning_effort": args.judge_reasoning_effort,
         "remember_model": model_ref(args.remember_model),
         "recall_model": model_ref(args.recall_model),
         "search_type": args.search_type,
@@ -575,6 +580,7 @@ async def run(args: argparse.Namespace) -> dict[str, Any]:
         organic_seeds=organic_seeds,
         output_dir=output_dir,
         timeout_s=args.judge_timeout_s,
+        reasoning_effort=args.judge_reasoning_effort,
     )
     write_scores_csv(output_dir / "scores.csv", scores)
     report = markdown_report(config=config, ingestion=ingestion, scores=scores)
@@ -603,6 +609,11 @@ def parse_args() -> argparse.Namespace:
         )
     )
     parser.add_argument("--judge-model", required=True, help="Judge model, e.g. gpt-5.5.")
+    parser.add_argument(
+        "--judge-reasoning-effort",
+        choices=["minimal", "low", "medium", "high"],
+        help="Reasoning effort for judge calls on models that support it.",
+    )
     parser.add_argument("--remember-model", required=True, help="Cognee ingestion model.")
     parser.add_argument("--recall-model", required=True, help="Cognee recall model.")
     parser.add_argument("--dataset", help="Dataset name. Defaults to a unique run dataset.")

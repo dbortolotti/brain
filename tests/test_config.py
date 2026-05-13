@@ -131,12 +131,12 @@ def test_openai_profile_exports_fixed_models(
     assert "OPENAI_API_KEY" not in env
 
 
-def test_local_cognee_env_does_not_export_modal_env() -> None:
+def test_cognee_env_does_not_export_cloud_or_modal_env() -> None:
     env = runtime_env(Settings())
 
-    assert env["BRAIN_COGNEE_EXECUTION_BACKEND"] == "local"
     assert "COGNEE_DISTRIBUTED" not in env
     assert "MODAL_SECRET_NAME" not in env
+    assert "BRAIN_COGNEE_EXECUTION_BACKEND" not in env
 
 
 def test_cognee_uses_postgres_pgvector_by_default() -> None:

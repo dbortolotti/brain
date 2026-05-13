@@ -179,7 +179,6 @@ class Settings(BaseSettings):
     brain_llm_enabled: bool = False
     brain_cognee_enabled: bool = True
     brain_cognee_recall_enabled: bool = False
-    brain_cognee_execution_backend: Literal["local"] = "local"
     brain_cognee_memory_dataset: str = "memory"
     brain_cognee_sources_dataset: str = "sources"
     brain_cognee_data_dataset: str = "data"
@@ -511,7 +510,6 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "BRAIN_LLM_ENABLED": str(settings.brain_llm_enabled).lower(),
         "BRAIN_COGNEE_ENABLED": str(settings.brain_cognee_enabled).lower(),
         "BRAIN_COGNEE_RECALL_ENABLED": str(settings.brain_cognee_recall_enabled).lower(),
-        "BRAIN_COGNEE_EXECUTION_BACKEND": settings.brain_cognee_execution_backend,
         "BRAIN_COGNEE_MEMORY_DATASET": settings.brain_cognee_memory_dataset,
         "BRAIN_COGNEE_SOURCES_DATASET": settings.brain_cognee_sources_dataset,
         "BRAIN_COGNEE_DATA_DATASET": settings.brain_cognee_data_dataset,

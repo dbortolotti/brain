@@ -47,6 +47,27 @@ def import_cognee() -> Any:
     return cognee
 
 
+def refresh_cognee_runtime(settings: Settings | None, *, prepare_oauth: bool = True) -> None:
+    if settings is None:
+        return
+    apply_runtime_environment(settings)
+    if prepare_oauth:
+        prepare_cognee_oauth_runtime(settings)
+    for module_name, function_name in (
+        ("cognee.base_config", "get_base_config"),
+        ("cognee.infrastructure.databases.graph.config", "get_graph_config"),
+        ("cognee.infrastructure.databases.vector.config", "get_vectordb_config"),
+        ("cognee.infrastructure.databases.relational.config", "get_relational_config"),
+    ):
+        try:
+            module = __import__(module_name, fromlist=[function_name])
+            function = getattr(module, function_name, None)
+        except Exception:
+            continue
+        if hasattr(function, "cache_clear"):
+            function.cache_clear()
+
+
 async def maybe_await(value: Any) -> Any:
     if inspect.isawaitable(value):
         return await value
@@ -137,9 +158,9 @@ async def remember_text(
     settings: Settings | None = None,
 ) -> Any:
     if settings is not None:
-        apply_runtime_environment(settings)
-        prepare_cognee_oauth_runtime(settings)
+        refresh_cognee_runtime(settings)
     cognee = import_cognee()
+    refresh_cognee_runtime(settings, prepare_oauth=False)
     normalized_node_set = normalize_optional_string_list(node_set, field_name="node_set")
 
     async with cognee_execution_context(settings):
@@ -182,9 +203,9 @@ async def add_text(
     settings: Settings | None = None,
 ) -> Any:
     if settings is not None:
-        apply_runtime_environment(settings)
-        prepare_cognee_oauth_runtime(settings)
+        refresh_cognee_runtime(settings)
     cognee = import_cognee()
+    refresh_cognee_runtime(settings, prepare_oauth=False)
     if not hasattr(cognee, "add"):
         raise RuntimeError("Installed Cognee package does not expose add().")
 
@@ -203,9 +224,9 @@ async def cognify_dataset(
     settings: Settings | None = None,
 ) -> Any:
     if settings is not None:
-        apply_runtime_environment(settings)
-        prepare_cognee_oauth_runtime(settings)
+        refresh_cognee_runtime(settings)
     cognee = import_cognee()
+    refresh_cognee_runtime(settings, prepare_oauth=False)
     if not hasattr(cognee, "cognify"):
         raise RuntimeError("Installed Cognee package does not expose cognify().")
 
@@ -221,8 +242,9 @@ async def cognify_dataset(
 
 async def list_datasources(*, settings: Settings | None = None) -> list[dict[str, Any]]:
     if settings is not None:
-        apply_runtime_environment(settings)
+        refresh_cognee_runtime(settings)
     cognee = import_cognee()
+    refresh_cognee_runtime(settings, prepare_oauth=False)
     await ensure_cognee_ready()
 
     if not hasattr(cognee, "datasets") or not hasattr(cognee.datasets, "list_datasets"):
@@ -239,8 +261,9 @@ async def create_datasource(
 ) -> dict[str, Any]:
     datasource_name = validate_datasource_name(name)
     if settings is not None:
-        apply_runtime_environment(settings)
+        refresh_cognee_runtime(settings)
     import_cognee()
+    refresh_cognee_runtime(settings, prepare_oauth=False)
     await ensure_cognee_ready()
 
     from cognee.modules.data.methods import create_authorized_dataset  # type: ignore
@@ -257,8 +280,9 @@ async def ensure_datasources_ready(
 ) -> list[dict[str, Any]]:
     datasource_names = sorted({validate_datasource_name(name) for name in names})
     if settings is not None:
-        apply_runtime_environment(settings)
+        refresh_cognee_runtime(settings)
     import_cognee()
+    refresh_cognee_runtime(settings, prepare_oauth=False)
     await ensure_cognee_ready()
 
     from cognee.modules.data.methods import create_authorized_dataset  # type: ignore
@@ -278,8 +302,9 @@ async def delete_datasource(
 ) -> dict[str, Any]:
     datasource_ref = validate_datasource_name(datasource)
     if settings is not None:
-        apply_runtime_environment(settings)
+        refresh_cognee_runtime(settings)
     cognee = import_cognee()
+    refresh_cognee_runtime(settings, prepare_oauth=False)
     await ensure_cognee_ready()
 
     if not hasattr(cognee, "datasets") or not hasattr(cognee.datasets, "empty_dataset"):
@@ -319,9 +344,9 @@ async def recall_text(
     settings: Settings | None = None,
 ) -> Any:
     if settings is not None:
-        apply_runtime_environment(settings)
-        prepare_cognee_oauth_runtime(settings)
+        refresh_cognee_runtime(settings)
     cognee = import_cognee()
+    refresh_cognee_runtime(settings, prepare_oauth=False)
     query_type = resolve_search_type(search_type)
     datasets = [dataset] if dataset else None
     normalized_node_name = normalize_optional_string_list(node_name, field_name="node_name")
