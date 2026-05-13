@@ -150,7 +150,7 @@ def test_deleted_source_sync_row_is_not_projected(tmp_path) -> None:
     assert adapter.calls == []
 
 
-def test_source_creation_creates_pending_source_sync_row(tmp_path) -> None:
+def test_source_creation_creates_pending_source_record_sync_row(tmp_path) -> None:
     settings = brain_test_settings(tmp_path)
     receipt = ingest_source(
         IngestSourceRequest(
@@ -161,11 +161,11 @@ def test_source_creation_creates_pending_source_sync_row(tmp_path) -> None:
         settings,
     )
 
-    sync_rows = BrainStore(settings).get_cognee_sync(receipt.source.source_id)
+    sync_rows = BrainStore(settings).get_cognee_sync(receipt.memory_cards[0].id)
     assert {
         (row["object_type"], row["dataset"], row["status"])
         for row in sync_rows
-    } == {("source", "sources", "pending")}
+    } == {("memory", "memory", "pending")}
 
 
 def test_memory_update_marks_projection_stale(tmp_path) -> None:
@@ -179,5 +179,5 @@ def test_memory_update_marks_projection_stale(tmp_path) -> None:
     assert row["status"] == "stale"
 
 
-def brain_test_settings(tmp_path) -> Settings:
-    return Settings(brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}")
+def brain_test_settings(tmp_path, **overrides: Any) -> Settings:
+    return Settings(brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}", **overrides)

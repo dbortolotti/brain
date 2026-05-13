@@ -26,8 +26,21 @@ MemoryKind = Literal[
     "place_note",
     "table_note",
     "source_summary",
+    "source_record",
     "project_state",
     "commitment",
+    "taste_wine",
+    "taste_cigar",
+    "taste_restaurant",
+    "taste_food",
+    "taste_travel",
+    "taste_music",
+    "taste_art",
+    "taste_book",
+    "taste_film",
+    "taste_product",
+    "taste_place",
+    "taste_other",
 ]
 
 

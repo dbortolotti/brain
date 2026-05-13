@@ -194,7 +194,10 @@ def test_openai_oauth_text_smoke_reports_missing_profile_without_api_key(
     empty_codex_home = tmp_path / "empty-codex"
     empty_codex_home.mkdir()
     monkeypatch.setenv("CODEX_HOME", str(empty_codex_home))
-    settings = Settings(openai_auth_mode="oauth")
+    settings = Settings(
+        openai_auth_mode="oauth",
+        brain_provider_auth_profiles_path=str(tmp_path / "missing-profiles.json"),
+    )
 
     assert live_model_smoke.missing_credential(
         settings,

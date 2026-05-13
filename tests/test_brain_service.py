@@ -179,19 +179,20 @@ def test_ingest_source_request_accepts_article_url(tmp_path, monkeypatch) -> Non
     source = BrainStore(settings).get_source(receipt.source.source_id, include_text=True)
     assert receipt.classification == "article_url"
     assert receipt.source.created is True
-    assert receipt.memory_cards[0].kind == "article_note"
+    assert receipt.memory_cards[0].kind == "source_record"
     assert source["kind"] == "article"
     assert source["title"] == "AI memory note"
     assert source["uri"] == "https://example.com/ai-memory"
-    assert "durable source evidence" in source["text"]
+    assert source["text"] == ""
+    assert source["metadata_json"]["raw_text_storage"] == "cognee"
     assert source["status"] == "processed"
     assert source["metadata_json"]["fetched"] is True
     assert source["metadata_json"]["why_saved"] == "Useful for memory design."
-    sync_rows = BrainStore(settings).get_cognee_sync(receipt.source.source_id)
+    sync_rows = BrainStore(settings).get_cognee_sync(receipt.memory_cards[0].id)
     assert {
         (row["object_type"], row["dataset"], row["status"])
         for row in sync_rows
-    } == {("source", "sources", "pending")}
+    } == {("memory", "memory", "pending")}
 
 
 def test_ingest_source_dry_run_does_not_write_rows(tmp_path) -> None:
@@ -261,7 +262,39 @@ def test_transcript_source_preserves_participants(tmp_path) -> None:
     assert source["kind"] == "transcript"
     assert source["metadata_json"]["participants"] == ["Daniele", "Sam"]
     assert source["metadata_json"]["turn_count"] == 3
-    assert receipt.memory_cards[0].kind == "source_summary"
+    assert source["metadata_json"]["raw_text_storage"] == "cognee"
+    assert receipt.memory_cards[0].kind == "source_record"
+
+
+def test_markdown_source_record_stores_citation_metadata_without_raw_text(tmp_path) -> None:
+    settings = brain_test_settings(tmp_path)
+    source_text = "# Anna Banti et Artemisia Gentileschi\n\nLong article body."
+
+    receipt = ingest_source(
+        IngestSourceRequest(
+            source=source_text,
+            source_kind="markdown",
+            title="Anna Banti et Artemisia Gentileschi",
+            metadata={
+                "author": "Genesio",
+                "journal": "Marges",
+                "year": "2004",
+            },
+        ),
+        settings,
+    )
+
+    store = BrainStore(settings)
+    source = store.get_source(receipt.source.source_id, include_text=True)
+    memory = store.get_memory(receipt.memory_cards[0].id)
+    assert source["text"] == ""
+    assert source["metadata_json"]["raw_text_storage"] == "cognee"
+    assert source["metadata_json"]["raw_text_chars"] == len(source_text)
+    assert memory["kind"] == "source_record"
+    assert memory["statement"] == "Source stored: Anna Banti et Artemisia Gentileschi"
+    assert memory["metadata_json"]["citation"] == (
+        'Genesio. "Anna Banti et Artemisia Gentileschi". Marges. 2004'
+    )
 
 
 def brain_test_settings(tmp_path) -> Settings:

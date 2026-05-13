@@ -12,12 +12,16 @@ import pytest
 from pydantic import BaseModel
 
 from memory_stack.cognee import oauth_compat
-from memory_stack.cognee_adapter import remember_text
+from memory_stack.cognee_adapter import add_text, remember_text
 from memory_stack.config import Settings
 
 
 class SampleResponse(BaseModel):
     answer: str
+
+
+async def _completed_sleep() -> None:
+    return None
 
 
 @pytest.fixture(autouse=True)
@@ -92,6 +96,131 @@ def test_cognee_oauth_adapter_calls_codex_responses_endpoint(tmp_path, monkeypat
     assert "JSON schema:" in requests[0]["json"]["input"][0]["content"]
 
 
+def test_cognee_oauth_adapter_reads_completed_stream_item_text(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    monkeypatch.setattr(oauth_compat, "resolve_openai_text_bearer", lambda settings: "oauth-token")
+    requests: list[dict[str, Any]] = []
+
+    class FakeAsyncClient:
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
+            del args, kwargs
+
+        async def __aenter__(self) -> "FakeAsyncClient":
+            return self
+
+        async def __aexit__(self, *args: Any) -> None:
+            del args
+
+        async def post(self, url: str, *, headers: dict[str, str], json: dict[str, Any]) -> httpx.Response:
+            del url, headers
+            requests.append(json)
+            event = {
+                "type": "response.output_item.done",
+                "item": {"content": [{"type": "output_text", "text": '{"answer":"done"}'}]},
+            }
+            return httpx.Response(200, text=f"data: {json_dumps(event)}\n\ndata: [DONE]\n")
+
+    monkeypatch.setattr(oauth_compat.httpx, "AsyncClient", FakeAsyncClient)
+    adapter = oauth_compat.CogneeOAuthLLMAdapter(auth_settings(tmp_path))
+
+    result = asyncio.run(
+        adapter.acreate_structured_output(
+            text_input="question",
+            system_prompt="system",
+            response_model=SampleResponse,
+        )
+    )
+
+    assert result.answer == "done"
+    assert [request["stream"] for request in requests] == [True]
+
+
+def test_cognee_oauth_adapter_retries_empty_stream_response(tmp_path, monkeypatch) -> None:
+    monkeypatch.setattr(oauth_compat, "resolve_openai_text_bearer", lambda settings: "oauth-token")
+    monkeypatch.setattr(oauth_compat.asyncio, "sleep", lambda *_args, **_kwargs: _completed_sleep())
+    monkeypatch.setattr(oauth_compat.random, "random", lambda: 0)
+    requests: list[dict[str, Any]] = []
+
+    class FakeAsyncClient:
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
+            del args, kwargs
+
+        async def __aenter__(self) -> "FakeAsyncClient":
+            return self
+
+        async def __aexit__(self, *args: Any) -> None:
+            del args
+
+        async def post(self, url: str, *, headers: dict[str, str], json: dict[str, Any]) -> httpx.Response:
+            del url, headers
+            requests.append(json)
+            if len(requests) == 1:
+                return httpx.Response(200, text="data: [DONE]\n")
+            event = {
+                "type": "response.output_text.delta",
+                "delta": '{"answer":"retry"}',
+            }
+            return httpx.Response(200, text=f"data: {json_dumps(event)}\n\ndata: [DONE]\n")
+
+    monkeypatch.setattr(oauth_compat.httpx, "AsyncClient", FakeAsyncClient)
+    adapter = oauth_compat.CogneeOAuthLLMAdapter(auth_settings(tmp_path))
+
+    result = asyncio.run(
+        adapter.acreate_structured_output(
+            text_input="question",
+            system_prompt="system",
+            response_model=SampleResponse,
+        )
+    )
+
+    assert result.answer == "retry"
+    assert len(requests) == 2
+
+
+def test_cognee_oauth_adapter_retries_transport_errors(tmp_path, monkeypatch) -> None:
+    monkeypatch.setattr(oauth_compat, "resolve_openai_text_bearer", lambda settings: "oauth-token")
+    monkeypatch.setattr(oauth_compat.asyncio, "sleep", lambda *_args, **_kwargs: _completed_sleep())
+    monkeypatch.setattr(oauth_compat.random, "random", lambda: 0)
+    requests: list[dict[str, Any]] = []
+
+    class FakeAsyncClient:
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
+            del args, kwargs
+
+        async def __aenter__(self) -> "FakeAsyncClient":
+            return self
+
+        async def __aexit__(self, *args: Any) -> None:
+            del args
+
+        async def post(self, url: str, *, headers: dict[str, str], json: dict[str, Any]) -> httpx.Response:
+            del url, headers
+            requests.append(json)
+            if len(requests) == 1:
+                raise httpx.RemoteProtocolError("incomplete chunked read")
+            event = {
+                "type": "response.output_text.delta",
+                "delta": '{"answer":"transport-retry"}',
+            }
+            return httpx.Response(200, text=f"data: {json_dumps(event)}\n\ndata: [DONE]\n")
+
+    monkeypatch.setattr(oauth_compat.httpx, "AsyncClient", FakeAsyncClient)
+    adapter = oauth_compat.CogneeOAuthLLMAdapter(auth_settings(tmp_path))
+
+    result = asyncio.run(
+        adapter.acreate_structured_output(
+            text_input="question",
+            system_prompt="system",
+            response_model=SampleResponse,
+        )
+    )
+
+    assert result.answer == "transport-retry"
+    assert len(requests) == 2
+
+
 def test_cognee_oauth_adapter_supports_cognee_string_connection_check(
     tmp_path,
     monkeypatch,
@@ -151,6 +280,26 @@ def test_remember_text_prepares_oauth_runtime_before_cognee_call(tmp_path, monke
     assert calls == ["prepared", "hello"]
     assert result["dataset_name"] == "memory"
     assert result["temporal_cognify"] is True
+
+
+def test_add_text_prepares_oauth_runtime_before_cognee_call(tmp_path, monkeypatch) -> None:
+    calls: list[str] = []
+
+    class FakeCognee:
+        async def add(self, text: str, **kwargs: Any) -> dict[str, Any]:
+            calls.append(text)
+            return kwargs
+
+    monkeypatch.setattr(
+        "memory_stack.cognee_adapter.prepare_cognee_oauth_runtime",
+        lambda settings: calls.append("prepared") or True,
+    )
+    monkeypatch.setattr("memory_stack.cognee_adapter.import_cognee", lambda: FakeCognee())
+
+    result = asyncio.run(add_text("hello", dataset_name="memory", settings=auth_settings(tmp_path)))
+
+    assert calls == ["prepared", "hello"]
+    assert result["dataset_name"] == "memory"
 
 
 def test_install_cognee_oauth_adapter_patches_cognee_factory(tmp_path, monkeypatch) -> None:

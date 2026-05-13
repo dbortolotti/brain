@@ -109,32 +109,33 @@ def remember(
     source_created = False
     try:
         if compiled.source is not None:
+            raw_source_text = compiled.source.raw_text or ""
+            source_metadata = {
+                **compiled.source.metadata,
+                "ingestion_run_id": run["id"],
+                "raw_text_hash": content_hash(raw_source_text),
+                "raw_text_chars": len(raw_source_text),
+                "raw_text_storage": "cognee",
+            }
             source, source_created = store.upsert_source(
                 {
                     "kind": compiled.source.kind,
                     "title": compiled.source.title,
                     "uri": compiled.source.uri,
                     "file_path": compiled.source.file_path,
-                    "raw_text": compiled.source.raw_text,
+                    "raw_text": None,
                     "summary": compiled.source.summary,
-                    "metadata_json": {**compiled.source.metadata, "ingestion_run_id": run["id"]},
+                    "metadata_json": source_metadata,
                     "status": compiled.source.status,
+                    "content_hash": content_hash(
+                        compiled.source.kind,
+                        compiled.source.uri,
+                        compiled.source.title,
+                        raw_source_text,
+                    ),
                 }
             )
             source_id = source["id"]
-            projection_hash = content_hash(
-                source["id"],
-                source["kind"],
-                source.get("uri"),
-                source.get("summary"),
-                source.get("status"),
-            )
-            store.mark_cognee_pending(
-                object_type="source",
-                object_id=source["id"],
-                dataset=settings.brain_cognee_sources_dataset,
-                projection_hash=projection_hash,
-            )
 
         receipt = IngestionReceipt(
             ingestion_run_id=run["id"],
@@ -147,6 +148,9 @@ def remember(
             memory_metadata = {**card.metadata, "ingestion_run_id": run["id"]}
             if "slack" in request.context:
                 memory_metadata["slack"] = request.context["slack"]
+            source_quote = card.source_quote
+            if card.kind == "source_record":
+                source_quote = None
             memory, memory_created = store.upsert_memory_card(
                 {
                     "kind": str(card.kind),
@@ -156,7 +160,7 @@ def remember(
                     "status": card.status,
                     "observed_at": card.observed_at,
                     "source_id": source_id,
-                    "source_quote": card.source_quote,
+                    "source_quote": source_quote,
                     "metadata_json": memory_metadata,
                 }
             )

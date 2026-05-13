@@ -21,10 +21,10 @@ Classify memory kind taxonomy labels for an input.
 
 ## Must Do
 - Classify only the memory kind taxonomy; do not extract memory cards, entities, relationships, receipts, or backend actions.
-- Allowed memory kinds are: article_note, basic_fact, chat_conclusion, decision, family_fact, key_takeaway, open_loop, open_question, person_fact, person_interaction, preference, project_state, research_question, source_summary, table_note.
+- Allowed memory kinds are: source_record, fact, takeaway, decision, commitment, open_loop, interaction, project_state, preference, research_question, taste_wine, taste_cigar, taste_restaurant, taste_food, taste_travel, taste_music, taste_art, taste_book, taste_film, taste_product, taste_place, taste_other.
 - Return all applicable kinds, not just the primary kind.
-- Source-bearing transcripts, emails, markdown, or article-like inputs should include source_summary alongside person facts, interactions, and open loops.
-- Use the literal kind source_summary for source-bearing transcripts or emails even when you also return person_fact, person_interaction, preference, or open_loop.
+- Source-bearing transcripts, emails, markdown, academic works, books, or article-like inputs should include source_record alongside facts, interactions, takeaways, and open loops.
+- Use source_record for the source manifest; use takeaway or fact only for extracted durable claims.
 
 ## Must Not Do
 - Do not decide durability, commit policy, entity resolution, or conflict handling.

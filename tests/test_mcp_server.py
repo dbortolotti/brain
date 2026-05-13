@@ -267,7 +267,8 @@ def test_brain_ingest_source_and_get_source_mcp_tools(tmp_path) -> None:
     source_payload = source_response.json()["result"]["structuredContent"]
     assert source_payload["source"]["id"] == source_id
     assert source_payload["source"]["kind"] == "markdown"
-    assert "Knowledge graphs matter" in source_payload["text"]
+    assert source_payload["text"] == ""
+    assert source_payload["source"]["metadata_json"]["raw_text_storage"] == "cognee"
 
 
 def test_brain_ingest_source_rest_accepts_source_schema(tmp_path) -> None:
@@ -291,7 +292,7 @@ def test_brain_ingest_source_rest_accepts_source_schema(tmp_path) -> None:
     payload = response.json()
     assert payload["classification"] == "markdown"
     assert payload["source"]["created"] is True
-    assert payload["memory_cards"][0]["kind"] == "source_summary"
+    assert payload["memory_cards"][0]["kind"] == "source_record"
 
 
 def test_list_datasources_http_endpoint(monkeypatch) -> None:
