@@ -108,6 +108,23 @@ This table groups the scored runs by retrieval / answer model and question diffi
 | `gpt-5.4-mini` | 4 | 7 | 4.29 | 4.14 | 4.14 |
 | `gpt-5.4-mini` | 5 | 1 | 5.00 | 5.00 | 5.00 |
 
+## Average Retrieval Time by Difficulty and Retrieval Model
+
+This table uses the same grouping, but reports average Cognee retrieval-stage time in seconds. It sums vector collection retrieval, ID-filtered graph retrieval, and graph projection for each question. It does not include answer-synthesis LLM time or process overhead.
+
+| Retrieval / answer model | Difficulty | Questions | `menotti-54-mini` | `menotti-55-low` | `menotti-55-high` |
+|---|---:|---:|---:|---:|---:|
+| `gpt-5.5` extra high | 1 | 31 | 1.281s | 1.194s | 1.190s |
+| `gpt-5.5` extra high | 2 | 41 | 1.114s | 1.121s | 1.114s |
+| `gpt-5.5` extra high | 3 | 20 | 1.502s | 1.147s | 1.109s |
+| `gpt-5.5` extra high | 4 | 7 | 1.173s | 1.116s | 1.126s |
+| `gpt-5.5` extra high | 5 | 1 | 1.150s | 1.370s | 1.280s |
+| `gpt-5.4-mini` | 1 | 31 | 1.180s | 1.202s | 1.150s |
+| `gpt-5.4-mini` | 2 | 41 | 1.117s | 1.114s | 1.147s |
+| `gpt-5.4-mini` | 3 | 20 | 1.115s | 1.129s | 1.130s |
+| `gpt-5.4-mini` | 4 | 7 | 1.119s | 1.140s | 1.141s |
+| `gpt-5.4-mini` | 5 | 1 | 1.170s | 1.260s | 1.210s |
+
 ## Current Qualitative Read
 
 In the `gpt-5.5` retrieval run, all three candidates returned an answer for every one of the 100 questions. A spot check shows they are strong on direct factual recall and many medium-depth interpretive questions, but that completed run still has several clear retrieval or graph confusions.
