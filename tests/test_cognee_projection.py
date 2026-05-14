@@ -6,6 +6,7 @@ from memory_stack.brain_models import IngestSourceRequest, RememberRequest
 from memory_stack.brain_service import ingest_source, remember
 from memory_stack.brain_store import BrainStore
 from memory_stack.cognee.projector import project_memory, project_source
+from memory_stack.cognee import sync_worker
 from memory_stack.cognee.sync_worker import sync_pending_cognee
 from memory_stack.cfg import Settings
 
@@ -148,6 +149,33 @@ def test_deleted_source_sync_row_is_not_projected(tmp_path) -> None:
     assert row["status"] == "deleted"
     assert "Source is deleted" in row["error_message"]
     assert adapter.calls == []
+
+
+def test_default_batch_sync_uses_one_async_flow(tmp_path, monkeypatch) -> None:
+    settings = brain_test_settings(tmp_path, brain_cognee_enabled=True)
+    remember(RememberRequest(input="Sam likes Bill Evans."), settings)
+    remember(RememberRequest(input="Alex likes Thelonious Monk."), settings)
+    calls: list[str] = []
+
+    async def fake_ensure_datasources_ready(names, *, settings=None):
+        calls.append(f"ensure:{','.join(names)}")
+        return []
+
+    async def fake_project_memory_async(memory_id, *, settings=None, store=None):
+        calls.append(memory_id)
+        return {
+            "projection_hash": f"sha256:{memory_id}",
+            "cognee_reference": f"fake:{memory_id}",
+        }
+
+    monkeypatch.setattr(sync_worker, "ensure_datasources_ready", fake_ensure_datasources_ready)
+    monkeypatch.setattr(sync_worker, "project_memory_async", fake_project_memory_async)
+
+    result = sync_pending_cognee(settings=settings)
+
+    assert result["succeeded"] == 2
+    assert calls[0] == "ensure:memory"
+    assert len(calls) == 3
 
 
 def test_source_creation_creates_pending_source_record_sync_row(tmp_path) -> None:

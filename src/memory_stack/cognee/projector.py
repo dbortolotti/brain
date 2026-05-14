@@ -75,6 +75,35 @@ def project_memory(
     }
 
 
+async def project_memory_async(
+    memory_id: str,
+    *,
+    store: BrainStore | None = None,
+    settings: Settings | None = None,
+) -> dict[str, Any]:
+    active_settings = settings or load_settings()
+    active_store = store or BrainStore(active_settings)
+    memory = active_store.get_memory(memory_id)
+    if memory is None:
+        raise ValueError(f"Memory not found: {memory_id}")
+    text = serialize_memory_for_cognee(memory_id, store=active_store)
+    node_set = node_sets_for_memory(memory)
+    result = await remember_text(
+        text,
+        dataset_name=active_settings.brain_cognee_memory_dataset,
+        node_set=node_set,
+        settings=active_settings,
+    )
+    return {
+        "object_type": "memory",
+        "object_id": memory_id,
+        "dataset": active_settings.brain_cognee_memory_dataset,
+        "projection_hash": content_hash(text, node_set),
+        "cognee_reference": _reference_text(result),
+        "result": result,
+    }
+
+
 def project_source(
     source_id: str,
     *,
@@ -91,6 +120,35 @@ def project_source(
     text = serialize_source_for_cognee(source_id, store=active_store)
     node_set = node_sets_for_source(source)
     result = active_adapter.remember_text(
+        text,
+        dataset_name=active_settings.brain_cognee_sources_dataset,
+        node_set=node_set,
+        settings=active_settings,
+    )
+    return {
+        "object_type": "source",
+        "object_id": source_id,
+        "dataset": active_settings.brain_cognee_sources_dataset,
+        "projection_hash": content_hash(text, node_set),
+        "cognee_reference": _reference_text(result),
+        "result": result,
+    }
+
+
+async def project_source_async(
+    source_id: str,
+    *,
+    store: BrainStore | None = None,
+    settings: Settings | None = None,
+) -> dict[str, Any]:
+    active_settings = settings or load_settings()
+    active_store = store or BrainStore(active_settings)
+    source = active_store.get_source(source_id, include_text=False)
+    if source is None:
+        raise ValueError(f"Source not found: {source_id}")
+    text = serialize_source_for_cognee(source_id, store=active_store)
+    node_set = node_sets_for_source(source)
+    result = await remember_text(
         text,
         dataset_name=active_settings.brain_cognee_sources_dataset,
         node_set=node_set,
