@@ -296,6 +296,34 @@ def test_router_extracts_listened_and_negative_signals_into_proposals(tmp_path) 
     assert smoked.taste["proposal"]["remember_payload"]["disliked"] is True
 
 
+def test_taste_and_palate_keywords_strongly_hint_generic_remember_routing(tmp_path) -> None:
+    settings = brain_test_settings(tmp_path)
+
+    receipt = remember(
+        RememberRequest(input="Palate memory: Alex recommended Mystery Thing."),
+        settings,
+    )
+
+    assert receipt.classification == "taste_proposal"
+    assert receipt.taste["requires_confirmation"] is True
+    assert receipt.taste["proposal"]["route"]["routing_hints"] == ["taste_keyword"]
+    assert receipt.taste["proposal"]["remember_payload"]["canonical_name"] == "Mystery Thing"
+    assert receipt.taste["proposal"]["remember_payload"]["recommended_by"] == "Alex"
+    assert table_count(settings, schema.memory_cards) == 0
+
+
+def test_taste_and_palate_keywords_do_not_replace_domain_evidence(tmp_path) -> None:
+    settings = brain_test_settings(tmp_path)
+
+    receipt = remember(
+        RememberRequest(input="Brain owns schema and Palate is an internal service."),
+        settings,
+    )
+
+    assert receipt.classification != "taste_proposal"
+    assert table_count(settings, schema.taste_proposals) == 0
+
+
 def test_optional_llm_taste_routing_creates_confirmation_proposal(tmp_path) -> None:
     settings = brain_test_settings(tmp_path, brain_taste_llm_routing_enabled=True)
     llm = FakeLLMClient(

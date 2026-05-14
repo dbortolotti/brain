@@ -33,11 +33,24 @@ DISLIKED_RE = re.compile(
     re.IGNORECASE,
 )
 AVOID_RE = re.compile(r"\bavoid\s+(?P<item>[^.]+)", re.IGNORECASE)
+TASTE_HINT_RE = re.compile(r"\b(?:taste|palate)\b", re.IGNORECASE)
+TASTE_HINT_PREFIX_RE = re.compile(
+    r"^\s*(?:brain\s+)?(?:taste|palate)(?:\s+(?:memory|note|record))?\s*[:\-–—]\s*(?P<body>.+)$",
+    re.IGNORECASE,
+)
+TASTE_HINT_COMMAND_RE = re.compile(
+    r"^\s*(?:save|store|remember|record|add)\s+(?:this\s+)?"
+    r"(?:to|in|as)?\s*(?:my\s+)?(?:taste|palate)"
+    r"(?:\s+(?:memory|note|record))?\s*[:\-–—]?\s*(?P<body>.+)$",
+    re.IGNORECASE,
+)
 
 
 def taste_domain_router(text: str, *, explicit: bool = False) -> dict[str, Any]:
     stripped = text.strip()
     lower = stripped.casefold()
+    hinted, routed_text = taste_hint_body(stripped)
+    routed_lower = routed_text.casefold()
     result = {
         "domain": "general",
         "taste_intent": "none",
@@ -60,7 +73,7 @@ def taste_domain_router(text: str, *, explicit: bool = False) -> dict[str, Any]:
         )
         return result
 
-    wanted = WANTED_RE.search(stripped)
+    wanted = WANTED_RE.search(routed_text)
     if wanted:
         verb = wanted.group("verb").casefold()
         item = clean_item(wanted.group("item"))
@@ -73,9 +86,9 @@ def taste_domain_router(text: str, *, explicit: bool = False) -> dict[str, Any]:
             requires_enrichment=True,
             extracted={"wanted": True, "item": item},
         )
-        return result
+        return apply_taste_hint(result, hinted)
 
-    recommended = RECOMMENDED_RE.search(stripped)
+    recommended = RECOMMENDED_RE.search(routed_text)
     if recommended:
         item = clean_item(recommended.group("item"))
         entity_type = type_for_item(item)
@@ -90,9 +103,9 @@ def taste_domain_router(text: str, *, explicit: bool = False) -> dict[str, Any]:
                 "item": item,
             },
         )
-        return result
+        return apply_taste_hint(result, hinted)
 
-    watched_rated = WATCHED_RATED_RE.search(stripped)
+    watched_rated = WATCHED_RATED_RE.search(routed_text)
     if watched_rated:
         item = clean_item(watched_rated.group("item"))
         result.update(
@@ -107,9 +120,9 @@ def taste_domain_router(text: str, *, explicit: bool = False) -> dict[str, Any]:
                 "rating": float(watched_rated.group("rating")),
             },
         )
-        return result
+        return apply_taste_hint(result, hinted)
 
-    rated = RATED_RE.search(stripped)
+    rated = RATED_RE.search(routed_text)
     if rated and "rate limit" not in lower:
         item = clean_item(rated.group("item"))
         entity_type = type_for_item(item)
@@ -121,9 +134,9 @@ def taste_domain_router(text: str, *, explicit: bool = False) -> dict[str, Any]:
             requires_enrichment=True,
             extracted={"item": item, "rating": float(rated.group("rating"))},
         )
-        return result
+        return apply_taste_hint(result, hinted)
 
-    watched = WATCHED_RE.search(stripped)
+    watched = WATCHED_RE.search(routed_text)
     if watched:
         item = clean_item(watched.group("item"))
         result.update(
@@ -134,9 +147,9 @@ def taste_domain_router(text: str, *, explicit: bool = False) -> dict[str, Any]:
             requires_enrichment=True,
             extracted={"item": item, "watched": True},
         )
-        return result
+        return apply_taste_hint(result, hinted)
 
-    listened = LISTENED_RE.search(stripped)
+    listened = LISTENED_RE.search(routed_text)
     if listened:
         item = clean_item(listened.group("item"))
         result.update(
@@ -147,9 +160,9 @@ def taste_domain_router(text: str, *, explicit: bool = False) -> dict[str, Any]:
             requires_enrichment=True,
             extracted={"item": item, "listened": True},
         )
-        return result
+        return apply_taste_hint(result, hinted)
 
-    smoked = SMOKED_RE.search(stripped)
+    smoked = SMOKED_RE.search(routed_text)
     if smoked:
         item = clean_item(smoked.group("item"))
         result.update(
@@ -164,9 +177,9 @@ def taste_domain_router(text: str, *, explicit: bool = False) -> dict[str, Any]:
                 "disliked": any(word in lower for word in ("disliked", "did not like", "don't like")),
             },
         )
-        return result
+        return apply_taste_hint(result, hinted)
 
-    disliked = DISLIKED_RE.search(stripped)
+    disliked = DISLIKED_RE.search(routed_text)
     if disliked:
         item = clean_item(disliked.group("item"))
         entity_type = type_for_item(item)
@@ -179,9 +192,9 @@ def taste_domain_router(text: str, *, explicit: bool = False) -> dict[str, Any]:
             requires_confirmation=entity_type is None,
             extracted={"item": item, "disliked": True},
         )
-        return result
+        return apply_taste_hint(result, hinted)
 
-    avoid = AVOID_RE.search(stripped)
+    avoid = AVOID_RE.search(routed_text)
     if avoid:
         item = clean_item(avoid.group("item"))
         entity_type = type_for_item(item)
@@ -194,29 +207,66 @@ def taste_domain_router(text: str, *, explicit: bool = False) -> dict[str, Any]:
             requires_confirmation=entity_type is None,
             extracted={"item": item, "avoid": True},
         )
-        return result
+        return apply_taste_hint(result, hinted)
 
-    if any(word in lower for word in ("which wine", "what wine", "which restaurant", "what restaurant")):
+    if any(word in routed_lower for word in ("which wine", "what wine", "which restaurant", "what restaurant")):
         result.update(
             domain="taste",
             taste_intent="query",
-            entity_type_hint="wine" if "wine" in lower else "restaurant",
+            entity_type_hint="wine" if "wine" in routed_lower else "restaurant",
             confidence=0.92,
             requires_enrichment=False,
         )
-        return result
+        return apply_taste_hint(result, hinted)
 
-    if any(word in lower for word in ("wine", "restaurant", "movie", "series", "cigar")):
+    if any(word in routed_lower for word in ("wine", "restaurant", "movie", "series", "cigar")):
         result.update(
             domain="ambiguous",
             taste_intent="query",
-            entity_type_hint=next((kind for kind in ENTITY_TYPES if kind in lower), None),
+            entity_type_hint=next((kind for kind in ENTITY_TYPES if kind in routed_lower), None),
             confidence=0.72,
             requires_confirmation=True,
             ambiguity_reasons=["Taste keyword present without explicit taste action."],
         )
 
-    return result
+    if hinted and result["domain"] == "general":
+        item = clean_item(routed_text)
+        entity_type = type_for_item(item)
+        if entity_type:
+            result.update(
+                domain="ambiguous",
+                taste_intent="remember",
+                entity_type_hint=entity_type,
+                confidence=0.82,
+                requires_enrichment=True,
+                requires_confirmation=True,
+                ambiguity_reasons=[
+                    "Taste/palate keyword present without an explicit taste action."
+                ],
+                extracted={"item": item},
+            )
+
+    return apply_taste_hint(result, hinted)
+
+
+def taste_hint_body(text: str) -> tuple[bool, str]:
+    prefix = TASTE_HINT_PREFIX_RE.match(text)
+    if prefix:
+        return True, prefix.group("body").strip()
+    command = TASTE_HINT_COMMAND_RE.match(text)
+    if command:
+        return True, command.group("body").strip()
+    return bool(TASTE_HINT_RE.search(text)), text
+
+
+def apply_taste_hint(route: dict[str, Any], hinted: bool) -> dict[str, Any]:
+    if not hinted or route.get("domain") == "general":
+        return route
+    route["routing_hints"] = ["taste_keyword"]
+    route["confidence"] = max(float(route.get("confidence") or 0), 0.86)
+    if route.get("domain") == "ambiguous":
+        route["requires_confirmation"] = True
+    return route
 
 
 def classify_taste_route(
