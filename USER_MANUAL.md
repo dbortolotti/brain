@@ -359,6 +359,10 @@ Use `brain_ingest_source` when the input is too large or too source-like for a
 single memory card: meeting notes, articles, design docs, transcripts, tables,
 or copied research.
 
+For very long documents, set `run_in_background: true`. Brain returns a queued
+receipt immediately, then performs ingestion in-process and leaves Cognee
+projection pending for `brain_sync_cognee`.
+
 Good source-ingestion prompt:
 
 ```text

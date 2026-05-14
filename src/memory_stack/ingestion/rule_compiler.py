@@ -607,8 +607,8 @@ def compile_source_record(text: str, request: RememberRequest) -> MemoryCandidat
         "title": title,
         "citation": citation,
         "source_chars": len(text),
-        "source_storage": "cognee",
-        "brain_raw_text_policy": "metadata_only",
+        "source_storage": "brain_db_pending_cognee",
+        "brain_raw_text_policy": "async_cognee_projection",
     }
     for key in (
         "authors",

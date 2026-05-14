@@ -292,6 +292,7 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
                     "why_saved": {"type": "string"},
                     "extract_memories": {"type": "boolean", "default": True},
                     "dry_run": {"type": "boolean", "default": False},
+                    "run_in_background": {"type": "boolean", "default": False},
                     "metadata": {"type": "object", "additionalProperties": True},
                 },
                 "required": ["source"],
@@ -1600,6 +1601,7 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
                     "why_saved": arguments.get("why_saved"),
                     "extract_memories": bool(arguments.get("extract_memories", True)),
                     "dry_run": bool(arguments.get("dry_run", False)),
+                    "run_in_background": bool(arguments.get("run_in_background", False)),
                     "metadata": arguments.get("metadata") or {},
                 }
             )
@@ -1611,13 +1613,14 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
                     "observed_at": arguments.get("observed_at"),
                     "source_policy": "source_and_memory",
                     "dry_run": bool(arguments.get("dry_run", False)),
+                    "run_in_background": bool(arguments.get("run_in_background", False)),
                     "context": arguments.get("context") or {},
                 }
             )
         receipt = brain_ingest_source(request, settings).model_dump(mode="json")
         payload = {
             "source_id": receipt.get("source", {}).get("source_id"),
-            "status": "processed",
+            "status": "queued" if receipt.get("cognee_sync_status") == "queued" else "processed",
             "memory_cards_created": [
                 card["id"] for card in receipt.get("memory_cards", []) if card.get("created")
             ],
@@ -1628,7 +1631,9 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
         return json_tool_response(
             payload,
             summary=(
-                f"Ingested source and created {len(payload['memory_cards_created'])} memories."
+                "Queued source ingestion in the background."
+                if payload["status"] == "queued"
+                else f"Ingested source and created {len(payload['memory_cards_created'])} memories."
             ),
         )
 

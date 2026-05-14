@@ -272,9 +272,14 @@ Use `brain_ingest_source` for longer source material:
   "title": "Architecture review notes",
   "why_saved": "Project state and follow-up planning.",
   "extract_memories": true,
-  "dry_run": false
+  "dry_run": false,
+  "run_in_background": true
 }
 ```
+
+Set `run_in_background` for very long documents or chat clients with short tool
+timeouts. The tool returns `status: queued`; Brain then writes source/memory rows
+in-process and leaves Cognee projection as `pending` for `brain_sync_cognee`.
 
 Use `brain_recall` to answer from memory:
 

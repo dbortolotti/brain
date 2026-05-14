@@ -14,6 +14,7 @@ from memory_stack.brain_store import BrainStore
 from memory_stack.cfg import Settings
 from memory_stack.mcp_server import app
 from memory_stack import mcp_server
+from memory_stack import brain_service
 from memory_stack.oauth import BrainOAuthProvider
 from memory_stack.request_logging import RequestResponseLogMiddleware, redact_text, redact_url
 
@@ -798,8 +799,55 @@ def test_brain_ingest_source_and_get_source_mcp_tools(tmp_path) -> None:
     source_payload = source_response.json()["result"]["structuredContent"]
     assert source_payload["source"]["id"] == source_id
     assert source_payload["source"]["kind"] == "markdown"
-    assert source_payload["text"] == ""
-    assert source_payload["source"]["metadata_json"]["raw_text_storage"] == "cognee"
+    assert source_payload["text"] == "# Source\nKnowledge graphs matter for Brain."
+    assert source_payload["source"]["metadata_json"]["raw_text_storage"] == "brain_db_pending_cognee"
+
+
+def test_brain_ingest_source_mcp_background_returns_queued(tmp_path, monkeypatch) -> None:
+    previous_settings = mcp_server.settings
+    mcp_server.settings = Settings(brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}")
+    submitted = []
+
+    def fake_submit_background_ingest(request, active_settings, *, llm_client=None):
+        del llm_client
+        assert active_settings is mcp_server.settings
+        submitted.append(request)
+        return None
+
+    monkeypatch.setattr(
+        brain_service,
+        "_submit_background_ingest",
+        fake_submit_background_ingest,
+    )
+    try:
+        client = TestClient(app)
+        response = client.post(
+            "/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "tools/call",
+                "params": {
+                    "name": "brain_ingest_source",
+                    "arguments": {
+                        "source": "# Source\nKnowledge graphs matter for Brain.",
+                        "source_kind": "markdown",
+                        "run_in_background": True,
+                    },
+                },
+            },
+        )
+    finally:
+        mcp_server.settings = previous_settings
+
+    assert response.status_code == 200
+    payload = response.json()["result"]["structuredContent"]
+    assert payload["status"] == "queued"
+    assert payload["source_id"] is None
+    assert payload["memory_cards_created"] == []
+    assert payload["cognee_sync_status"] == "queued"
+    assert submitted
+    assert submitted[0].run_in_background is False
 
 
 def test_brain_ingest_source_rest_accepts_source_schema(tmp_path) -> None:

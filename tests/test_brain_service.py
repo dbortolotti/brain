@@ -4,6 +4,7 @@ from memory_stack.brain_models import IngestSourceRequest, RecallRequest, Rememb
 from memory_stack.brain_service import ingest_source, list_open_loops, profile_entity, recall, remember
 from memory_stack.brain_store import BrainStore
 from memory_stack.cfg import Settings
+from memory_stack import brain_service
 
 
 def test_family_fact_creates_single_card_entities_and_relationships(tmp_path) -> None:
@@ -183,16 +184,22 @@ def test_ingest_source_request_accepts_article_url(tmp_path, monkeypatch) -> Non
     assert source["kind"] == "article"
     assert source["title"] == "AI memory note"
     assert source["uri"] == "https://example.com/ai-memory"
-    assert source["text"] == ""
-    assert source["metadata_json"]["raw_text_storage"] == "cognee"
+    assert "AI memory systems need durable source evidence." in source["text"]
+    assert source["metadata_json"]["raw_text_storage"] == "brain_db_pending_cognee"
     assert source["status"] == "processed"
     assert source["metadata_json"]["fetched"] is True
     assert source["metadata_json"]["why_saved"] == "Useful for memory design."
-    sync_rows = BrainStore(settings).get_cognee_sync(receipt.memory_cards[0].id)
+    sync_rows = (
+        BrainStore(settings).get_cognee_sync(receipt.memory_cards[0].id)
+        + BrainStore(settings).get_cognee_sync(receipt.source.source_id)
+    )
     assert {
         (row["object_type"], row["dataset"], row["status"])
         for row in sync_rows
-    } == {("memory", "memory", "pending")}
+    } == {
+        ("memory", "memory", "pending"),
+        ("source", "sources", "pending"),
+    }
 
 
 def test_ingest_source_dry_run_does_not_write_rows(tmp_path) -> None:
@@ -211,6 +218,39 @@ def test_ingest_source_dry_run_does_not_write_rows(tmp_path) -> None:
     assert receipt.source.created is True
     assert receipt.source.source_id is None
     assert BrainStore(settings).search_memory("knowledge graphs") == []
+
+
+def test_ingest_source_background_returns_queued_receipt(tmp_path, monkeypatch) -> None:
+    settings = brain_test_settings(tmp_path)
+    submitted: list[IngestSourceRequest | RememberRequest] = []
+
+    def fake_submit_background_ingest(request, active_settings, *, llm_client=None):
+        del llm_client
+        assert active_settings is settings
+        submitted.append(request)
+        return None
+
+    monkeypatch.setattr(
+        brain_service,
+        "_submit_background_ingest",
+        fake_submit_background_ingest,
+    )
+
+    receipt = ingest_source(
+        IngestSourceRequest(
+            source="# Brain note\nKnowledge graphs matter for Brain.",
+            source_kind="markdown",
+            run_in_background=True,
+        ),
+        settings,
+    )
+
+    assert receipt.classification == "queued"
+    assert receipt.cognee_sync_status == "queued"
+    assert receipt.source.source_id is None
+    assert submitted
+    assert submitted[0].run_in_background is False
+    assert BrainStore(settings).list_ingestion_runs(limit=10) == []
 
 
 def test_table_source_creates_source_and_table_note(tmp_path) -> None:
@@ -262,7 +302,7 @@ def test_transcript_source_preserves_participants(tmp_path) -> None:
     assert source["kind"] == "transcript"
     assert source["metadata_json"]["participants"] == ["Daniele", "Sam"]
     assert source["metadata_json"]["turn_count"] == 3
-    assert source["metadata_json"]["raw_text_storage"] == "cognee"
+    assert source["metadata_json"]["raw_text_storage"] == "brain_db_pending_cognee"
     assert receipt.memory_cards[0].kind == "source_record"
 
 
@@ -287,11 +327,13 @@ def test_markdown_source_record_stores_citation_metadata_without_raw_text(tmp_pa
     store = BrainStore(settings)
     source = store.get_source(receipt.source.source_id, include_text=True)
     memory = store.get_memory(receipt.memory_cards[0].id)
-    assert source["text"] == ""
-    assert source["metadata_json"]["raw_text_storage"] == "cognee"
+    assert source["text"] == source_text
+    assert source["metadata_json"]["raw_text_storage"] == "brain_db_pending_cognee"
     assert source["metadata_json"]["raw_text_chars"] == len(source_text)
     assert memory["kind"] == "source_record"
     assert memory["statement"] == "Source stored: Anna Banti et Artemisia Gentileschi"
+    assert memory["metadata_json"]["source_storage"] == "brain_db_pending_cognee"
+    assert memory["metadata_json"]["brain_raw_text_policy"] == "async_cognee_projection"
     assert memory["metadata_json"]["citation"] == (
         'Genesio. "Anna Banti et Artemisia Gentileschi". Marges. 2004'
     )

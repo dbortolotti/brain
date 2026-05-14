@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+from concurrent.futures import Future, ThreadPoolExecutor
 from datetime import datetime
+import logging
 import re
 from typing import Any
 
@@ -37,6 +39,51 @@ from memory_stack.taste.models import TasteQueryRequest
 from memory_stack.taste.routing import classify_taste_route
 from memory_stack.taste.service import TasteService, canonical_taste_store, remember_request_from_route
 from memory_stack.taste.store import TasteStore
+
+
+_LOGGER = logging.getLogger(__name__)
+_INGEST_EXECUTOR = ThreadPoolExecutor(max_workers=2, thread_name_prefix="brain-ingest")
+
+
+def _submit_background_ingest(
+    request: IngestSourceRequest | RememberRequest,
+    settings: Settings,
+    *,
+    llm_client: LLMClient | None = None,
+) -> Future[IngestionReceipt]:
+    future = _INGEST_EXECUTOR.submit(
+        ingest_source,
+        request,
+        settings,
+        llm_client=llm_client,
+    )
+    future.add_done_callback(_log_background_ingest_result)
+    return future
+
+
+def _log_background_ingest_result(future: Future[IngestionReceipt]) -> None:
+    try:
+        receipt = future.result()
+    except Exception:
+        _LOGGER.exception("Background source ingestion failed.")
+        return
+    _LOGGER.info("Background source ingestion completed: %s", receipt.ingestion_run_id)
+
+
+def _queued_ingestion_receipt(request: IngestSourceRequest | RememberRequest) -> IngestionReceipt:
+    source_text = request.source if isinstance(request, IngestSourceRequest) else request.input
+    source_type = (
+        request.source_kind
+        if isinstance(request, IngestSourceRequest)
+        else request.input_type
+    )
+    return IngestionReceipt(
+        ingestion_run_id=stable_id("queued_ing", content_hash(source_text, source_type)),
+        classification="queued",
+        source=SourceReceipt(created=False, source_id=None),
+        cognee_sync_status="queued",
+        dry_run=request.dry_run,
+    )
 
 
 def remember(
@@ -117,7 +164,7 @@ def remember(
                 "ingestion_run_id": run["id"],
                 "raw_text_hash": content_hash(raw_source_text),
                 "raw_text_chars": len(raw_source_text),
-                "raw_text_storage": "cognee",
+                "raw_text_storage": "brain_db_pending_cognee",
             }
             source, source_created = store.upsert_source(
                 {
@@ -125,7 +172,7 @@ def remember(
                     "title": compiled.source.title,
                     "uri": compiled.source.uri,
                     "file_path": compiled.source.file_path,
-                    "raw_text": None,
+                    "raw_text": raw_source_text,
                     "summary": compiled.source.summary,
                     "metadata_json": source_metadata,
                     "status": compiled.source.status,
@@ -138,6 +185,16 @@ def remember(
                 }
             )
             source_id = source["id"]
+            store.mark_cognee_pending(
+                object_type="source",
+                object_id=source_id,
+                dataset=settings.brain_cognee_sources_dataset,
+                projection_hash=content_hash(
+                    source_id,
+                    compiled.source.status,
+                    raw_source_text,
+                ),
+            )
 
         receipt = IngestionReceipt(
             ingestion_run_id=run["id"],
@@ -283,6 +340,15 @@ def ingest_source(
     *,
     llm_client: LLMClient | None = None,
 ) -> IngestionReceipt:
+    if request.run_in_background:
+        queued_request = request.model_copy(update={"run_in_background": False})
+        _submit_background_ingest(
+            queued_request,
+            settings,
+            llm_client=llm_client,
+        )
+        return _queued_ingestion_receipt(request)
+
     if isinstance(request, RememberRequest):
         return remember(
             request.model_copy(

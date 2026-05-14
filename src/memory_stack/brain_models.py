@@ -93,6 +93,7 @@ class RememberRequest(BaseModel):
     observed_at: datetime | None = None
     source_policy: str = "auto"
     dry_run: bool = False
+    run_in_background: bool = False
     context: dict[str, Any] = Field(default_factory=dict)
 
 
@@ -106,6 +107,7 @@ class IngestSourceRequest(BaseModel):
     why_saved: str | None = None
     extract_memories: bool = True
     dry_run: bool = False
+    run_in_background: bool = False
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 

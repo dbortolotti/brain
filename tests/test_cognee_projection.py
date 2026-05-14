@@ -69,6 +69,7 @@ def test_source_projection_contains_source_id(tmp_path) -> None:
     project_source(receipt.source.source_id, settings=settings, adapter=adapter)
 
     assert receipt.source.source_id in adapter.calls[0]["text"]
+    assert "Knowledge graphs matter for Brain." in adapter.calls[0]["text"]
     assert "brain_source" in adapter.calls[0]["node_set"]
 
 
@@ -207,11 +208,18 @@ def test_source_creation_creates_pending_source_record_sync_row(tmp_path) -> Non
         settings,
     )
 
-    sync_rows = BrainStore(settings).get_cognee_sync(receipt.memory_cards[0].id)
+    store = BrainStore(settings)
+    sync_rows = (
+        store.get_cognee_sync(receipt.memory_cards[0].id)
+        + store.get_cognee_sync(receipt.source.source_id)
+    )
     assert {
         (row["object_type"], row["dataset"], row["status"])
         for row in sync_rows
-    } == {("memory", "memory", "pending")}
+    } == {
+        ("memory", "memory", "pending"),
+        ("source", "sources", "pending"),
+    }
 
 
 def test_memory_update_marks_projection_stale(tmp_path) -> None:

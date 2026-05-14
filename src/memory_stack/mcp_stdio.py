@@ -106,6 +106,7 @@ def build_server():
         why_saved: str | None = None,
         extract_memories: bool = True,
         dry_run: bool = False,
+        run_in_background: bool = False,
         metadata: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Store source material; Taste mentions are selective and never mass-written."""
@@ -116,12 +117,13 @@ def build_server():
             why_saved=why_saved,
             extract_memories=extract_memories,
             dry_run=dry_run,
+            run_in_background=run_in_background,
             metadata=metadata or {},
         )
         receipt = brain_ingest_source(request, settings).model_dump(mode="json")
         return {
             "source_id": receipt.get("source", {}).get("source_id"),
-            "status": "processed",
+            "status": "queued" if receipt.get("cognee_sync_status") == "queued" else "processed",
             "memory_cards_created": [
                 card["id"] for card in receipt.get("memory_cards", []) if card.get("created")
             ],
