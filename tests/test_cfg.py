@@ -18,6 +18,8 @@ def test_cfg_defaults_to_dev() -> None:
     assert cfg.get("BRAIN_TASTE_LLM_MODEL") == "gpt-5.5"
     assert cfg.get("BRAIN_TASTE_LLM_REASONING_EFFORT") == "medium"
     assert cfg.get("BRAIN_AGENT_MEMORY_SESSION_ID") == "portable_agent_session"
+    assert cfg.get("BRAIN_REQUEST_LOG_PATH") == "./.data/logs/requests/{date}.jsonl"
+    assert cfg.get("BRAIN_ROUTING_LOG_PATH") == "./.data/logs/routing/{date}.jsonl"
     assert cfg.get("BRAIN_LOG_LEVEL") == "DEBUG"
 
 
@@ -29,6 +31,8 @@ def test_cfg_uses_prod_only_when_explicit() -> None:
     assert values["BRAIN_LOG_LEVEL"] == "INFO"
     assert values["BRAIN_DATABASE_URL"] == "sqlite:////Volumes/xpg_usb4/prod/brain/shared/data/brain/brain.db"
     assert values["BRAIN_TASTE_CANONICAL_STORE"] == "cognee"
+    assert values["BRAIN_REQUEST_LOG_PATH"] == "/Volumes/xpg_usb4/prod/brain/shared/logs/requests/{date}.jsonl"
+    assert values["BRAIN_ROUTING_LOG_ENABLED"] is True
 
 
 def test_cfg_rejects_unknown_environment() -> None:

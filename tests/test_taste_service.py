@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from typing import Any
 
 from sqlalchemy import func, select
@@ -323,6 +324,27 @@ def test_taste_and_palate_keywords_do_not_replace_domain_evidence(tmp_path) -> N
 
     assert receipt.classification != "taste_proposal"
     assert table_count(settings, schema.taste_proposals) == 0
+
+
+def test_generic_remember_writes_routing_log_without_raw_text(tmp_path) -> None:
+    settings = brain_test_settings(
+        tmp_path,
+        brain_routing_log_enabled=True,
+        brain_routing_log_path=str(tmp_path / "routing" / "{date}.jsonl"),
+        brain_routing_log_retention_days=90,
+    )
+    text = "Palate memory: Alex recommended Mystery Thing."
+
+    remember(RememberRequest(input=text), settings)
+
+    [log_path] = list((tmp_path / "routing").glob("*.jsonl"))
+    record = json.loads(log_path.read_text(encoding="utf-8"))
+    assert record["route"] == "palate_proposal"
+    assert record["routing_hints"] == ["taste_keyword"]
+    assert record["requires_confirmation"] is True
+    assert "input_hash" in record
+    assert text not in log_path.read_text(encoding="utf-8")
+    assert record["extracted_keys"] == ["item", "recommended_by"]
 
 
 def test_optional_llm_taste_routing_creates_confirmation_proposal(tmp_path) -> None:

@@ -747,7 +747,7 @@ def test_request_response_logger_redacts_secrets(tmp_path) -> None:
     log_path = tmp_path / "requests.jsonl"
     settings = Settings(
         brain_request_log_path=str(log_path),
-        brain_request_log_max_body_bytes=0,
+        brain_request_log_max_body_bytes=8192,
     )
     test_app = FastAPI()
     test_app.add_middleware(RequestResponseLogMiddleware, settings=settings)
@@ -774,6 +774,62 @@ def test_request_response_logger_redacts_secrets(tmp_path) -> None:
     assert record["request"]["body"]["text"] == "keep this refinement text"
     assert record["request"]["body"]["password"] == "[REDACTED]"
     assert record["response"]["body"]["access_token"] == "[REDACTED]"
+
+
+def test_request_logger_zero_body_limit_omits_bodies(tmp_path) -> None:
+    log_path = tmp_path / "requests.jsonl"
+    settings = Settings(
+        brain_request_log_path=str(log_path),
+        brain_request_log_max_body_bytes=0,
+    )
+    test_app = FastAPI()
+    test_app.add_middleware(RequestResponseLogMiddleware, settings=settings)
+
+    @test_app.post("/echo")
+    async def echo(request: Request) -> JSONResponse:
+        return JSONResponse(await request.json())
+
+    client = TestClient(test_app)
+    response = client.post("/echo", json={"text": "do not log this body"})
+
+    assert response.status_code == 200
+    record = json.loads(log_path.read_text(encoding="utf-8"))
+    assert record["request"]["body"] is None
+    assert record["request"]["body_truncated"] is True
+    assert record["response"]["body"] is None
+    assert record["response"]["body_truncated"] is True
+
+
+def test_request_logger_writes_dated_logs_and_summarizes_large_sources(tmp_path) -> None:
+    log_template = tmp_path / "requests" / "{date}.jsonl"
+    settings = Settings(
+        brain_request_log_path=str(log_template),
+        brain_request_log_max_body_bytes=8192,
+        brain_request_log_retention_days=30,
+    )
+    test_app = FastAPI()
+    test_app.add_middleware(RequestResponseLogMiddleware, settings=settings)
+
+    @test_app.post("/echo")
+    async def echo(request: Request) -> JSONResponse:
+        return JSONResponse(await request.json())
+
+    large_source = "source text " * 200
+    client = TestClient(test_app)
+    response = client.post(
+        "/echo",
+        json={"source": large_source, "title": "large source"},
+    )
+
+    assert response.status_code == 200
+    log_files = list((tmp_path / "requests").glob("*.jsonl"))
+    assert len(log_files) == 1
+    record = json.loads(log_files[0].read_text(encoding="utf-8"))
+    source = record["request"]["body"]["source"]
+    assert source["body_omitted"] is True
+    assert source["chars"] == len(large_source)
+    assert source["sha256"] == hashlib.sha256(large_source.encode("utf-8")).hexdigest()
+    assert source["preview"] == large_source[:500]
 
 
 def test_request_logger_redacts_auth_urls_and_html() -> None:

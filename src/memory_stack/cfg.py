@@ -280,6 +280,10 @@ class Settings(BaseSettings):
     brain_request_log_enabled: bool = Field(default_factory=lambda: get("BRAIN_REQUEST_LOG_ENABLED", False))
     brain_request_log_path: str = Field(default_factory=lambda: get("BRAIN_REQUEST_LOG_PATH", "./.data/logs/requests.jsonl"))
     brain_request_log_max_body_bytes: int = Field(default_factory=lambda: get("BRAIN_REQUEST_LOG_MAX_BODY_BYTES", 1024 * 1024))
+    brain_request_log_retention_days: int = Field(default_factory=lambda: get("BRAIN_REQUEST_LOG_RETENTION_DAYS", 30))
+    brain_routing_log_enabled: bool = Field(default_factory=lambda: get("BRAIN_ROUTING_LOG_ENABLED", False))
+    brain_routing_log_path: str = Field(default_factory=lambda: get("BRAIN_ROUTING_LOG_PATH", "./.data/logs/routing/{date}.jsonl"))
+    brain_routing_log_retention_days: int = Field(default_factory=lambda: get("BRAIN_ROUTING_LOG_RETENTION_DAYS", 90))
     brain_service_name: str = Field(default_factory=lambda: get("BRAIN_SERVICE_NAME"))
     brain_database_url: str = Field(default_factory=lambda: get("BRAIN_DATABASE_URL"))
     brain_owner_name: str = Field(default_factory=lambda: get("BRAIN_OWNER_NAME"))
@@ -637,6 +641,10 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "BRAIN_REQUEST_LOG_ENABLED": str(settings.brain_request_log_enabled).lower(),
         "BRAIN_REQUEST_LOG_PATH": settings.brain_request_log_path,
         "BRAIN_REQUEST_LOG_MAX_BODY_BYTES": str(settings.brain_request_log_max_body_bytes),
+        "BRAIN_REQUEST_LOG_RETENTION_DAYS": str(settings.brain_request_log_retention_days),
+        "BRAIN_ROUTING_LOG_ENABLED": str(settings.brain_routing_log_enabled).lower(),
+        "BRAIN_ROUTING_LOG_PATH": settings.brain_routing_log_path,
+        "BRAIN_ROUTING_LOG_RETENTION_DAYS": str(settings.brain_routing_log_retention_days),
         "BRAIN_DATABASE_URL": settings.brain_database_url,
         "BRAIN_OWNER_NAME": settings.brain_owner_name,
         "BRAIN_LLM_ENABLED": str(settings.brain_llm_enabled).lower(),

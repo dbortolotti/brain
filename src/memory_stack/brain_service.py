@@ -32,6 +32,7 @@ from memory_stack.recall.retriever import retrieve_memories, retrieve_open_loops
 from memory_stack.recall.synthesizer import render_memory_answer, render_open_loops
 from memory_stack.resolution.conflict_detector import detect_and_apply_memory_resolution
 from memory_stack.resolution.entity_resolver import EntityResolver
+from memory_stack.route_logging import log_taste_route
 from memory_stack.taste.models import TasteQueryRequest
 from memory_stack.taste.routing import classify_taste_route
 from memory_stack.taste.service import TasteService, canonical_taste_store, remember_request_from_route
@@ -46,6 +47,7 @@ def remember(
 ) -> IngestionReceipt:
     if settings.brain_taste_enabled and not request.context.get("taste_skip"):
         route = classify_taste_route(request.input, settings=settings, llm_client=llm_client)
+        log_taste_route(request.input, route, settings)
         if route.get("taste_intent") == "remember" and route.get("domain") in {"taste", "ambiguous"}:
             taste_service = TasteService(settings, llm_client=llm_client)
             if (

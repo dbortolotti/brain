@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import os
 import re
 import time
 import uuid
@@ -13,6 +12,7 @@ from urllib.parse import parse_qs, urlencode, urlsplit, urlunsplit
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from memory_stack.cfg import Settings
+from memory_stack.logging_utils import append_jsonl
 
 
 REDACTED = "[REDACTED]"
@@ -26,6 +26,7 @@ SENSITIVE_EXACT_KEYS = {
     "request_id",
     "set-cookie",
 }
+LARGE_TEXT_PREVIEW_CHARS = 500
 
 
 class RequestResponseLogMiddleware:
@@ -33,6 +34,7 @@ class RequestResponseLogMiddleware:
         self.app = app
         self.log_path = Path(settings.brain_request_log_path).expanduser()
         self.max_body_bytes = settings.brain_request_log_max_body_bytes
+        self.retention_days = settings.brain_request_log_retention_days
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         if scope["type"] != "http":
@@ -90,7 +92,11 @@ class RequestResponseLogMiddleware:
                 response_body_truncated=response_truncated,
                 app_error=app_error,
             )
-            append_jsonl(self.log_path, record)
+            append_jsonl(
+                self.log_path,
+                record,
+                retention_days=self.retention_days,
+            )
 
 
 async def drain_request(receive: Receive, max_body_bytes: int) -> tuple[list[Message], bytearray, bool]:
@@ -117,6 +123,8 @@ def append_limited(
     already_truncated: bool,
 ) -> bool:
     if max_body_bytes == 0:
+        return already_truncated or bool(chunk)
+    if max_body_bytes < 0:
         target.extend(chunk)
         return already_truncated
 
@@ -218,11 +226,24 @@ def redact_query_string(query_string: str) -> dict[str, Any]:
 def redact_payload(value: Any, key: str | None = None) -> Any:
     if key and is_sensitive_key(key):
         return REDACTED
+    if key == "source" and isinstance(value, str) and len(value) > LARGE_TEXT_PREVIEW_CHARS:
+        return summarize_large_text(value)
     if isinstance(value, dict):
         return {item_key: redact_payload(item_value, item_key) for item_key, item_value in value.items()}
     if isinstance(value, list):
         return [redact_payload(item, key) for item in value]
     return value
+
+
+def summarize_large_text(value: str) -> dict[str, Any]:
+    import hashlib
+
+    return {
+        "body_omitted": True,
+        "chars": len(value),
+        "sha256": hashlib.sha256(value.encode("utf-8")).hexdigest(),
+        "preview": value[:LARGE_TEXT_PREVIEW_CHARS],
+    }
 
 
 def redact_mapping(headers: dict[str, str]) -> dict[str, str]:
@@ -287,11 +308,3 @@ def is_sensitive_key(key: str) -> bool:
         or normalized.endswith("_token")
         or normalized.endswith("_api_key")
     )
-def append_jsonl(path: Path, record: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    line = json.dumps(record, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n"
-    fd = os.open(path, os.O_APPEND | os.O_CREAT | os.O_WRONLY, 0o600)
-    try:
-        os.write(fd, line.encode("utf-8"))
-    finally:
-        os.close(fd)

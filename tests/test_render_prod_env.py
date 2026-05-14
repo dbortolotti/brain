@@ -101,6 +101,12 @@ def test_render_prod_env_writes_github_secret_values_without_printing_them(tmp_p
     assert "BRAIN_TASTE_LLM_ROUTING_ENABLED=false" in rendered
     assert "BRAIN_TASTE_OPEN_LOOP_CONFIRMATION_THRESHOLD=0.80" in rendered
     assert "BRAIN_AGENT_MEMORY_SESSION_ID=portable_agent_session" in rendered
+    assert "BRAIN_REQUEST_LOG_PATH=/Volumes/xpg_usb4/prod/brain/shared/logs/requests/{date}.jsonl" in rendered
+    assert "BRAIN_REQUEST_LOG_MAX_BODY_BYTES=8192" in rendered
+    assert "BRAIN_REQUEST_LOG_RETENTION_DAYS=30" in rendered
+    assert "BRAIN_ROUTING_LOG_ENABLED=true" in rendered
+    assert "BRAIN_ROUTING_LOG_PATH=/Volumes/xpg_usb4/prod/brain/shared/logs/routing/{date}.jsonl" in rendered
+    assert "BRAIN_ROUTING_LOG_RETENTION_DAYS=90" in rendered
     assert "BRAIN_TASTE_IMPORT_SOURCE_PATH" not in rendered
     assert "BRAIN_SLACK_SIGNING_SECRET=prod-slack-signing-secret" in rendered
     assert base_rendered == rendered
@@ -127,6 +133,8 @@ def test_render_prod_env_uses_cfg_for_fixed_runtime_model_values(tmp_path) -> No
             "LLM_MAX_TOKENS": "123",
             "EMBEDDING_MODEL": "text-embedding-3-small",
             "EMBEDDING_DIMENSIONS": "1536",
+            "BRAIN_REQUEST_LOG_MAX_BODY_BYTES": "0",
+            "BRAIN_ROUTING_LOG_ENABLED": "false",
         },
     )
 
@@ -136,6 +144,8 @@ def test_render_prod_env_uses_cfg_for_fixed_runtime_model_values(tmp_path) -> No
     assert values["LLM_MAX_TOKENS"] == "8192"
     assert values["EMBEDDING_MODEL"] == "text-embedding-3-large"
     assert values["EMBEDDING_DIMENSIONS"] == "3072"
+    assert values["BRAIN_REQUEST_LOG_MAX_BODY_BYTES"] == "8192"
+    assert values["BRAIN_ROUTING_LOG_ENABLED"] == "true"
     assert values["BRAIN_TASTE_LLM_MODEL"] == "gpt-5.5"
 
 

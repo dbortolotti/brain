@@ -28,6 +28,8 @@ SLACK_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.slack-agent.plist.temp
 SLACK_PLIST_DST="$HOME/Library/LaunchAgents/$SLACK_LABEL.plist"
 AGENT_MEMORY_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.agent-memory.plist.template"
 AGENT_MEMORY_PLIST_DST="$HOME/Library/LaunchAgents/$AGENT_MEMORY_LABEL.plist"
+NEWSYSLOG_SRC="$DEPLOYMENT_CONFIG_DIR/newsyslog/brain.conf"
+NEWSYSLOG_DST="/etc/newsyslog.d/brain.conf"
 
 log() {
   printf '[deploy] %s\n' "$*"
@@ -88,6 +90,26 @@ enable_launch_agent() {
   launchctl bootstrap "$domain" "$plist"
 }
 
+install_newsyslog_config() {
+  if [[ ! -f "$NEWSYSLOG_SRC" ]]; then
+    log "newsyslog config template not found; skipping"
+    return
+  fi
+  if [[ -w "$(dirname "$NEWSYSLOG_DST")" ]]; then
+    cp "$NEWSYSLOG_SRC" "$NEWSYSLOG_DST"
+    chmod 644 "$NEWSYSLOG_DST"
+    log "installed newsyslog config at $NEWSYSLOG_DST"
+    return
+  fi
+  if command -v sudo >/dev/null 2>&1 && sudo -n true >/dev/null 2>&1; then
+    sudo cp "$NEWSYSLOG_SRC" "$NEWSYSLOG_DST"
+    sudo chmod 644 "$NEWSYSLOG_DST"
+    log "installed newsyslog config at $NEWSYSLOG_DST"
+    return
+  fi
+  log "cannot install $NEWSYSLOG_DST without sudo; launchd logs will not get daily system rotation"
+}
+
 is_true() {
   case "${1:-}" in
     1|true|TRUE|yes|YES|on|ON)
@@ -146,8 +168,12 @@ BRAIN_AUTH_REQUIRE_PKCE=true
 BRAIN_AUTH_ACCESS_TOKEN_SECONDS=3600
 BRAIN_AUTH_REFRESH_TOKEN_SECONDS=2592000
 BRAIN_REQUEST_LOG_ENABLED=true
-BRAIN_REQUEST_LOG_PATH=$LOG_DIR/requests.jsonl
-BRAIN_REQUEST_LOG_MAX_BODY_BYTES=0
+BRAIN_REQUEST_LOG_PATH=$LOG_DIR/requests/{date}.jsonl
+BRAIN_REQUEST_LOG_MAX_BODY_BYTES=8192
+BRAIN_REQUEST_LOG_RETENTION_DAYS=30
+BRAIN_ROUTING_LOG_ENABLED=true
+BRAIN_ROUTING_LOG_PATH=$LOG_DIR/routing/{date}.jsonl
+BRAIN_ROUTING_LOG_RETENTION_DAYS=90
 BRAIN_TASTE_ENABLED=true
 BRAIN_TASTE_LLM_ROUTING_ENABLED=false
 BRAIN_TASTE_AUTO_ENRICH_ENABLED=true
@@ -194,8 +220,12 @@ ensure_env_var "BRAIN_AUTH_REQUIRE_PKCE" "true"
 ensure_env_var "BRAIN_AUTH_ACCESS_TOKEN_SECONDS" "3600"
 ensure_env_var "BRAIN_AUTH_REFRESH_TOKEN_SECONDS" "2592000"
 ensure_env_var "BRAIN_REQUEST_LOG_ENABLED" "true"
-ensure_env_var "BRAIN_REQUEST_LOG_PATH" "$LOG_DIR/requests.jsonl"
-ensure_env_var "BRAIN_REQUEST_LOG_MAX_BODY_BYTES" "0"
+set_env_var "BRAIN_REQUEST_LOG_PATH" "$LOG_DIR/requests/{date}.jsonl"
+set_env_var "BRAIN_REQUEST_LOG_MAX_BODY_BYTES" "8192"
+ensure_env_var "BRAIN_REQUEST_LOG_RETENTION_DAYS" "30"
+ensure_env_var "BRAIN_ROUTING_LOG_ENABLED" "true"
+set_env_var "BRAIN_ROUTING_LOG_PATH" "$LOG_DIR/routing/{date}.jsonl"
+ensure_env_var "BRAIN_ROUTING_LOG_RETENTION_DAYS" "90"
 ensure_env_var "BRAIN_DATABASE_URL" "$DATABASE_URL"
 set_env_var "BRAIN_MCP_PORT" "18000"
 set_env_var "GRAPH_DATABASE_URL" "bolt://127.0.0.1:17687"
@@ -314,6 +344,7 @@ cp "$SLACK_PLIST_SRC" "$SLACK_PLIST_DST"
 plutil -lint "$SLACK_PLIST_DST" >/dev/null
 cp "$AGENT_MEMORY_PLIST_SRC" "$AGENT_MEMORY_PLIST_DST"
 plutil -lint "$AGENT_MEMORY_PLIST_DST" >/dev/null
+install_newsyslog_config
 
 log "updating current symlink"
 ln -sfn "$RELEASE_DIR" "$CURRENT_LINK"

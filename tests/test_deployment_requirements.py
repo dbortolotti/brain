@@ -56,6 +56,7 @@ def test_deployment_templates_live_under_deployment() -> None:
         Path("deployment/launchd/com.brain.slack-agent.plist.template"),
         Path("deployment/launchd/com.brain.agent-memory.plist.template"),
         Path("deployment/mcp/claude_desktop_config.template.json"),
+        Path("deployment/newsyslog/brain.conf"),
     }
 
     assert all(path.exists() for path in expected)
@@ -87,6 +88,14 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     assert "LLM_TEMPERATURE=0.0" in script
     assert "LLM_MAX_TOKENS=8192" in script
     assert 'ensure_env_var "BRAIN_PROVIDER_AUTH_PROFILES_PATH"' in script
+    assert 'set_env_var "BRAIN_REQUEST_LOG_PATH" "$LOG_DIR/requests/{date}.jsonl"' in script
+    assert 'set_env_var "BRAIN_REQUEST_LOG_MAX_BODY_BYTES" "8192"' in script
+    assert 'ensure_env_var "BRAIN_REQUEST_LOG_RETENTION_DAYS" "30"' in script
+    assert 'ensure_env_var "BRAIN_ROUTING_LOG_ENABLED" "true"' in script
+    assert 'set_env_var "BRAIN_ROUTING_LOG_PATH" "$LOG_DIR/routing/{date}.jsonl"' in script
+    assert 'ensure_env_var "BRAIN_ROUTING_LOG_RETENTION_DAYS" "90"' in script
+    assert "install_newsyslog_config()" in script
+    assert 'NEWSYSLOG_DST="/etc/newsyslog.d/brain.conf"' in script
     assert "enable_launch_agent()" in script
     assert 'launchctl enable "$domain/$label"' in script
     assert 'enable_launch_agent "$LABEL" "$PLIST_DST"' in script
@@ -110,6 +119,32 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     assert script.index("uv run python scripts/live_model_smoke.py") < script.index(
         "waiting for local health"
     )
+
+
+def test_mcp_launchd_uses_dated_request_and_routing_logs() -> None:
+    plist = Path("deployment/launchd/com.brain.mcp.plist.template").read_text(
+        encoding="utf-8"
+    )
+
+    assert "/Volumes/xpg_usb4/prod/brain/shared/logs/requests/{date}.jsonl" in plist
+    assert "<key>BRAIN_REQUEST_LOG_MAX_BODY_BYTES</key>" in plist
+    assert "<string>8192</string>" in plist
+    assert "<key>BRAIN_REQUEST_LOG_RETENTION_DAYS</key>" in plist
+    assert "<string>30</string>" in plist
+    assert "<key>BRAIN_ROUTING_LOG_ENABLED</key>" in plist
+    assert "/Volumes/xpg_usb4/prod/brain/shared/logs/routing/{date}.jsonl" in plist
+    assert "<key>BRAIN_ROUTING_LOG_RETENTION_DAYS</key>" in plist
+    assert "<string>90</string>" in plist
+
+
+def test_newsyslog_rotates_launchd_logs_daily() -> None:
+    config = Path("deployment/newsyslog/brain.conf").read_text(encoding="utf-8")
+
+    assert "brain-prod.err.log" in config
+    assert "brain-ui.err.log" in config
+    assert "brain-slack-agent.err.log" in config
+    assert "@T00" in config
+    assert " J" in config
 
 
 def test_agent_memory_launchd_runs_nightly_at_3am() -> None:
