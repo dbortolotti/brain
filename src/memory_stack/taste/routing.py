@@ -264,8 +264,13 @@ def apply_taste_hint(route: dict[str, Any], hinted: bool) -> dict[str, Any]:
         return route
     route["routing_hints"] = ["taste_keyword"]
     route["confidence"] = max(float(route.get("confidence") or 0), 0.86)
-    if route.get("domain") == "ambiguous":
+    if route.get("domain") == "ambiguous" or (
+        route.get("taste_intent") == "remember" and route.get("entity_type_hint") is None
+    ):
         route["requires_confirmation"] = True
+        route.setdefault("ambiguity_reasons", []).append(
+            "Taste/palate keyword present but item type is not certain."
+        )
     return route
 
 

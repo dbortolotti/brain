@@ -307,6 +307,7 @@ def test_taste_and_palate_keywords_strongly_hint_generic_remember_routing(tmp_pa
     assert receipt.classification == "taste_proposal"
     assert receipt.taste["requires_confirmation"] is True
     assert receipt.taste["proposal"]["route"]["routing_hints"] == ["taste_keyword"]
+    assert receipt.taste["proposal"]["route"]["requires_confirmation"] is True
     assert receipt.taste["proposal"]["remember_payload"]["canonical_name"] == "Mystery Thing"
     assert receipt.taste["proposal"]["remember_payload"]["recommended_by"] == "Alex"
     assert table_count(settings, schema.memory_cards) == 0
