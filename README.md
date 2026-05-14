@@ -106,7 +106,7 @@ Supported Slack commands:
 - `/brain debug ...` for admin-only read-only inspection
 
 Production should run this under launchd label `com.brain.slack-agent` on local
-port `8003`; see `config/deployment/launchd/com.brain.slack-agent.plist.template`. Verify route
+port `8003`; see `deployment/launchd/com.brain.slack-agent.plist.template`. Verify route
 separation and fail-closed signature behavior with:
 
 ```bash

@@ -284,9 +284,10 @@ Useful tools:
 | `brain_agent_memory_recall` | Search the dedicated agent-memory dataset. |
 | `brain_agent_memory_clear` | Clear that dataset after explicit confirmation. |
 
-The production automation is intended to improve `portable_agent_session`
-nightly at 03:00 UK time. Manual improvement is still useful after an important
-long session.
+The production deploy pipeline installs a launchd job,
+`com.brain.prod.agent-memory`, which improves `portable_agent_session` nightly
+at 03:00 UK time. Manual improvement is still useful after an important long
+session.
 
 ## Bias And Preference Prompt
 

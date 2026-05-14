@@ -1,4 +1,4 @@
-.PHONY: setup up down check model-smoke brain-eval targeted-fine-grained-eval reset reset-hard mcp-config mcp-http slack-agent ui-proxy deploy-local-production prod-check slack-agent-check ui-prod-check backup cloudflare-verify test lint
+.PHONY: setup up down check model-smoke brain-eval targeted-fine-grained-eval palate-probe reset reset-hard mcp-config mcp-http slack-agent ui-proxy deploy-local-production prod-check slack-agent-check ui-prod-check backup agent-memory cloudflare-verify test lint
 
 MODEL_SMOKE_OUTPUT ?= eval_runs/live_model_smoke_active.json
 MODEL_SMOKE_ARGS ?=
@@ -25,12 +25,15 @@ targeted-fine-grained-eval:
 	uv run python -m memory_stack.evals.cli models \
 		--mode fine-grained \
 		--fixture-set brain-model-test-v2 \
-		--roles durability_filter,atomic_card_extractor,entity_candidate_ranker,recall_synthesizer,debug_explainer,eval_judge \
+		--roles durability_filter,atomic_card_extractor,entity_mention_extractor,eval_judge,intent_router,memory_kind_classifier,open_loop_detector,relationship_extractor,repair_option_generator,source_classifier,source_takeaway_extractor,table_policy_handler \
 		--models openai:gpt-5.5 \
 		--repeat-runs 3 \
 		--endpoint-max-concurrency 10 \
 		--retry-attempts 3 \
 		--output-json eval_runs/targeted_fine_grained/results.json
+
+palate-probe:
+	uv run python scripts/palate_cognee_capability_probe.py
 
 reset:
 	uv run python scripts/reset_stores.py --soft
@@ -64,6 +67,9 @@ ui-prod-check:
 
 backup:
 	uv run python scripts/backup_stores.py
+
+agent-memory:
+	uv run python scripts/brain_agent_memory.py --env prod --session-id portable_agent_session
 
 cloudflare-verify:
 	uv run python scripts/verify_cloudflare_mcp.py

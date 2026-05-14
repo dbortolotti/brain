@@ -5,9 +5,10 @@ APP_NAME="brain"
 LABEL="com.brain.prod.mcp"
 UI_LABEL="com.brain.prod.ui"
 SLACK_LABEL="com.brain.prod.slack-agent"
+AGENT_MEMORY_LABEL="com.brain.prod.agent-memory"
 PROD_ROOT="${BRAIN_PROD_ROOT:-/Volumes/xpg_usb4/prod/brain}"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-DEPLOYMENT_CONFIG_DIR="$REPO_ROOT/config/deployment"
+DEPLOYMENT_CONFIG_DIR="$REPO_ROOT/deployment"
 SHA="${GITHUB_SHA:-$(git -C "$REPO_ROOT" rev-parse HEAD)}"
 SHORT_SHA="${SHA:0:12}"
 RELEASE_DIR="$PROD_ROOT/releases/$SHA"
@@ -25,6 +26,8 @@ UI_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.ui.plist.template"
 UI_PLIST_DST="$HOME/Library/LaunchAgents/$UI_LABEL.plist"
 SLACK_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.slack-agent.plist.template"
 SLACK_PLIST_DST="$HOME/Library/LaunchAgents/$SLACK_LABEL.plist"
+AGENT_MEMORY_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.agent-memory.plist.template"
+AGENT_MEMORY_PLIST_DST="$HOME/Library/LaunchAgents/$AGENT_MEMORY_LABEL.plist"
 
 log() {
   printf '[deploy] %s\n' "$*"
@@ -161,6 +164,7 @@ BRAIN_SLACK_ALLOWED_CHANNEL_IDS=
 BRAIN_SLACK_ALLOWED_USER_IDS=
 BRAIN_SLACK_ADMIN_USER_IDS=
 BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE=false
+BRAIN_AGENT_MEMORY_SESSION_ID=portable_agent_session
 EOF
   chmod 600 "$SECRETS_DIR/brain.env"
 fi
@@ -211,6 +215,7 @@ ensure_env_var "BRAIN_SLACK_ALLOWED_CHANNEL_IDS" ""
 ensure_env_var "BRAIN_SLACK_ALLOWED_USER_IDS" ""
 ensure_env_var "BRAIN_SLACK_ADMIN_USER_IDS" ""
 ensure_env_var "BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE" "false"
+ensure_env_var "BRAIN_AGENT_MEMORY_SESSION_ID" "portable_agent_session"
 
 if [[ ! -f "$SECRETS_DIR/brain-auth-password" ]]; then
   log "creating Brain OAuth password at $SECRETS_DIR/brain-auth-password"
@@ -267,7 +272,7 @@ log "starting production Neo4j container"
   cd "$RELEASE_DIR"
   GRAPH_DATABASE_PASSWORD="$GRAPH_DATABASE_PASSWORD" \
     BRAIN_PROD_ROOT="$PROD_ROOT" \
-    docker compose -f config/deployment/docker-compose.prod.yml up -d neo4j
+    docker compose -f deployment/docker-compose.prod.yml up -d neo4j
 )
 
 MODEL_SMOKE_SCOPE="${BRAIN_MODEL_SMOKE_SCOPE:-active}"
@@ -295,6 +300,8 @@ cp "$UI_PLIST_SRC" "$UI_PLIST_DST"
 plutil -lint "$UI_PLIST_DST" >/dev/null
 cp "$SLACK_PLIST_SRC" "$SLACK_PLIST_DST"
 plutil -lint "$SLACK_PLIST_DST" >/dev/null
+cp "$AGENT_MEMORY_PLIST_SRC" "$AGENT_MEMORY_PLIST_DST"
+plutil -lint "$AGENT_MEMORY_PLIST_DST" >/dev/null
 
 log "updating current symlink"
 ln -sfn "$RELEASE_DIR" "$CURRENT_LINK"
@@ -309,6 +316,9 @@ if command -v launchctl >/dev/null 2>&1; then
   log "restarting launchd service $SLACK_LABEL"
   launchctl bootout "gui/$(id -u)" "$SLACK_PLIST_DST" >/dev/null 2>&1 || true
   launchctl bootstrap "gui/$(id -u)" "$SLACK_PLIST_DST"
+  log "reloading launchd job $AGENT_MEMORY_LABEL"
+  launchctl bootout "gui/$(id -u)" "$AGENT_MEMORY_PLIST_DST" >/dev/null 2>&1 || true
+  launchctl bootstrap "gui/$(id -u)" "$AGENT_MEMORY_PLIST_DST"
 else
   log "launchctl not found; skipping service restart"
 fi

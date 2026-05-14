@@ -47,14 +47,15 @@ def test_validation_workflow_runs_without_production_secrets() -> None:
     assert "secrets." not in workflow
 
 
-def test_deployment_templates_live_under_config_deployment() -> None:
+def test_deployment_templates_live_under_deployment() -> None:
     expected = {
-        Path("config/deployment/cloudflare/config.example.yml"),
-        Path("config/deployment/docker-compose.prod.yml"),
-        Path("config/deployment/launchd/com.brain.mcp.plist.template"),
-        Path("config/deployment/launchd/com.brain.ui.plist.template"),
-        Path("config/deployment/launchd/com.brain.slack-agent.plist.template"),
-        Path("config/deployment/mcp/claude_desktop_config.template.json"),
+        Path("deployment/cloudflare/config.example.yml"),
+        Path("deployment/docker-compose.prod.yml"),
+        Path("deployment/launchd/com.brain.mcp.plist.template"),
+        Path("deployment/launchd/com.brain.ui.plist.template"),
+        Path("deployment/launchd/com.brain.slack-agent.plist.template"),
+        Path("deployment/launchd/com.brain.agent-memory.plist.template"),
+        Path("deployment/mcp/claude_desktop_config.template.json"),
     }
 
     assert all(path.exists() for path in expected)
@@ -66,12 +67,18 @@ def test_deployment_templates_live_under_config_deployment() -> None:
 def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     script = Path("scripts/deploy-local-production.sh").read_text(encoding="utf-8")
 
-    for label in ["com.brain.prod.mcp", "com.brain.prod.ui", "com.brain.prod.slack-agent"]:
+    for label in [
+        "com.brain.prod.mcp",
+        "com.brain.prod.ui",
+        "com.brain.prod.slack-agent",
+        "com.brain.prod.agent-memory",
+    ]:
         assert label in script
 
-    assert 'DEPLOYMENT_CONFIG_DIR="$REPO_ROOT/config/deployment"' in script
-    assert "config/deployment" in script
+    assert 'DEPLOYMENT_CONFIG_DIR="$REPO_ROOT/deployment"' in script
+    assert "deployment" in script
     assert "$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.slack-agent.plist.template" in script
+    assert "$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.agent-memory.plist.template" in script
     assert 'ensure_env_var "BRAIN_SLACK_AGENT_ENABLED" "true"' in script
     assert 'set_env_var "BRAIN_SLACK_AGENT_PORT" "18003"' in script
     assert 'BRAIN_DATABASE_URL=$DATABASE_URL' in script
@@ -83,7 +90,8 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     assert 'ensure_env_var "BRAIN_TASTE_IMPORT_SOURCE_PATH"' not in script
     assert "${BRAIN_SLACK_AGENT_PORT:-18003}/slack/healthz" in script
     assert "uv run python scripts/verify_slack_agent.py" in script
-    assert "docker compose -f config/deployment/docker-compose.prod.yml up -d neo4j" in script
+    assert 'ensure_env_var "BRAIN_AGENT_MEMORY_SESSION_ID" "portable_agent_session"' in script
+    assert "docker compose -f deployment/docker-compose.prod.yml up -d neo4j" in script
     assert "GRAPH_DATABASE_PASSWORD must be set to a real secret" in script
     assert "uv run python scripts/live_model_smoke.py" in script
     assert 'MODEL_SMOKE_SCOPE="${BRAIN_MODEL_SMOKE_SCOPE:-active}"' in script
@@ -95,6 +103,23 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     )
 
 
+def test_agent_memory_launchd_runs_nightly_at_3am() -> None:
+    plist = Path("deployment/launchd/com.brain.agent-memory.plist.template").read_text(
+        encoding="utf-8"
+    )
+
+    assert "com.brain.prod.agent-memory" in plist
+    assert "scripts/brain_agent_memory.py" in plist
+    assert "--env prod" in plist
+    assert "--env-file /Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env" in plist
+    assert "--session-id portable_agent_session" in plist
+    assert "<key>StartCalendarInterval</key>" in plist
+    assert "<key>Hour</key>" in plist
+    assert "<integer>3</integer>" in plist
+    assert "<key>Minute</key>" in plist
+    assert "<integer>0</integer>" in plist
+
+
 def test_production_verifier_checks_brain_database_under_shared_data() -> None:
     verifier = Path("scripts/verify_mcp_production.py").read_text(encoding="utf-8")
 
@@ -102,7 +127,7 @@ def test_production_verifier_checks_brain_database_under_shared_data() -> None:
 
 
 def test_cloudflare_routes_slack_to_agent_before_mcp_catchall() -> None:
-    config = Path("config/deployment/cloudflare/config.example.yml").read_text(encoding="utf-8")
+    config = Path("deployment/cloudflare/config.example.yml").read_text(encoding="utf-8")
 
     slack_route = "path: /slack*"
     slack_service = "service: http://127.0.0.1:18003"
