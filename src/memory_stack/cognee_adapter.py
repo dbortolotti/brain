@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import inspect
+import threading
 from contextlib import asynccontextmanager
 from typing import Any
 
@@ -34,6 +35,10 @@ SEARCH_TYPES = [
     "CODING_RULES",
     "CHUNKS_LEXICAL",
 ]
+
+_RUN_ASYNC_LOOP: asyncio.AbstractEventLoop | None = None
+_RUN_ASYNC_THREAD: threading.Thread | None = None
+_RUN_ASYNC_LOCK = threading.Lock()
 NODE_NAME_FILTER_OPERATORS = {"AND", "OR"}
 
 
@@ -516,10 +521,38 @@ async def improve_cognee(
 
 
 def run_async(coro: Any) -> Any:
+    loop = _run_async_loop()
     try:
-        loop = asyncio.get_running_loop()
+        running_loop = asyncio.get_running_loop()
     except RuntimeError:
-        return asyncio.run(coro)
-    if loop.is_running():
-        raise RuntimeError("Cannot run async Cognee call from an already-running loop.")
-    return loop.run_until_complete(coro)
+        running_loop = None
+    if running_loop is loop:
+        raise RuntimeError("Cannot synchronously wait for Cognee from its own event loop.")
+    future = asyncio.run_coroutine_threadsafe(coro, loop)
+    return future.result()
+
+
+def _run_async_loop() -> asyncio.AbstractEventLoop:
+    global _RUN_ASYNC_LOOP, _RUN_ASYNC_THREAD
+    with _RUN_ASYNC_LOCK:
+        if _RUN_ASYNC_LOOP is not None and _RUN_ASYNC_LOOP.is_running():
+            return _RUN_ASYNC_LOOP
+
+        ready = threading.Event()
+        loop = asyncio.new_event_loop()
+
+        def run_forever() -> None:
+            asyncio.set_event_loop(loop)
+            ready.set()
+            loop.run_forever()
+
+        thread = threading.Thread(
+            target=run_forever,
+            name="brain-cognee-asyncio",
+            daemon=True,
+        )
+        thread.start()
+        ready.wait(timeout=5)
+        _RUN_ASYNC_LOOP = loop
+        _RUN_ASYNC_THREAD = thread
+        return loop

@@ -5,6 +5,7 @@ from typing import Any
 from memory_stack.brain_models import IngestSourceRequest, RememberRequest
 from memory_stack.brain_service import ingest_source, remember
 from memory_stack.brain_store import BrainStore
+from memory_stack.cognee_adapter import run_async
 from memory_stack.cognee.projector import project_memory, project_source
 from memory_stack.cognee import sync_worker
 from memory_stack.cognee.sync_worker import sync_pending_cognee
@@ -176,6 +177,23 @@ def test_default_batch_sync_uses_one_async_flow(tmp_path, monkeypatch) -> None:
     assert result["succeeded"] == 2
     assert calls[0] == "ensure:memory"
     assert len(calls) == 3
+
+
+def test_run_async_reuses_background_loop() -> None:
+    loop_ids: list[int] = []
+
+    async def capture_loop_id() -> int:
+        import asyncio
+
+        loop_id = id(asyncio.get_running_loop())
+        loop_ids.append(loop_id)
+        return loop_id
+
+    first = run_async(capture_loop_id())
+    second = run_async(capture_loop_id())
+
+    assert first == second
+    assert loop_ids == [first, first]
 
 
 def test_source_creation_creates_pending_source_record_sync_row(tmp_path) -> None:
