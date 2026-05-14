@@ -223,7 +223,7 @@ def taste_domain_router(text: str, *, explicit: bool = False) -> dict[str, Any]:
         result.update(
             domain="ambiguous",
             taste_intent="query",
-            entity_type_hint=next((kind for kind in ENTITY_TYPES if kind in routed_lower), None),
+            entity_type_hint=mentioned_entity_type(routed_lower),
             confidence=0.72,
             requires_confirmation=True,
             ambiguity_reasons=["Taste keyword present without explicit taste action."],
@@ -436,6 +436,19 @@ def type_for_item(item: str, *, verb: str | None = None) -> str | None:
     if any(word in lower for word in ("album", "song", "track", "jazz")):
         return "music"
     return None
+
+
+def mentioned_entity_type(lower_text: str) -> str | None:
+    matches = [
+        kind
+        for kind in ENTITY_TYPES
+        if re.search(rf"\b{re.escape(kind)}s?\b", lower_text)
+    ]
+    if not matches:
+        return None
+    if "restaurant" in matches:
+        return "restaurant"
+    return matches[0]
 
 
 def clean_item(value: str) -> str:

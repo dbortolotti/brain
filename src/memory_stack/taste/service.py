@@ -1009,11 +1009,7 @@ def normalize_intent(intent: dict[str, Any]) -> dict[str, Any]:
 
 def intent_from_query(query: str) -> dict[str, Any]:
     lower = query.casefold()
-    entity_type = None
-    for kind in ENTITY_TYPES:
-        if kind in lower or f"{kind}s" in lower:
-            entity_type = kind
-            break
+    entity_type = mentioned_entity_type(lower)
     attributes = [
         attr
         for attr in attribute_keys_for_type(entity_type)
@@ -1044,10 +1040,23 @@ def recommended_by_from_query(query: str) -> str | None:
 
 def extract_option_entities(options_text: str, entity_type: str | None) -> list[dict[str, Any]]:
     return [
-        {"canonical_name": line.strip("-* \t"), "type": entity_type, "source_text": line.strip()}
-        for line in options_text.splitlines()
-        if line.strip("-* \t")
+        {"canonical_name": option.strip("-* \t"), "type": entity_type, "source_text": option.strip()}
+        for option in re.split(r"[\n;]+", options_text)
+        if option.strip("-* \t")
     ]
+
+
+def mentioned_entity_type(lower_query: str) -> str | None:
+    matches = [
+        kind
+        for kind in ENTITY_TYPES
+        if re.search(rf"\b{re.escape(kind)}s?\b", lower_query)
+    ]
+    if not matches:
+        return None
+    if "restaurant" in matches:
+        return "restaurant"
+    return matches[0]
 
 
 def describe_retrieval(retrieval: dict[str, Any]) -> dict[str, Any]:

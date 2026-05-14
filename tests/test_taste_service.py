@@ -20,7 +20,7 @@ from memory_stack.taste.models import (
 from memory_stack.taste.evals import DEFAULT_TASTE_EVAL_CASES, coverage_report
 from memory_stack.taste.evals.runner import run_acceptance_evals
 from memory_stack.taste import restaurants
-from memory_stack.taste.service import TasteService
+from memory_stack.taste.service import TasteService, extract_option_entities, intent_from_query
 from memory_stack.taste.store import TasteStore
 
 
@@ -223,6 +223,31 @@ def test_evaluate_options_reports_unmatched_without_substituting_saved_items(tmp
     assert result["retrieval"]["constrained_to_options"] is True
     assert result["retrieval"]["unmatched_options"] == ["Mystery Bottle"]
     assert [item["id"] for item in result["ranked_results"]] == [known["id"]]
+
+
+def test_restaurant_query_with_wine_context_keeps_restaurant_entity_type() -> None:
+    query = (
+        "Restaurant recommendation for Daniele in Mayfair London right now; infer from "
+        "palate/taste memories including fine dining, wine, restaurants, preferred cuisines, "
+        "and prior dining likes/dislikes."
+    )
+
+    assert intent_from_query(query)["entity_type"] == "restaurant"
+
+
+def test_semicolon_option_text_splits_restaurant_candidates() -> None:
+    options = extract_option_entities(
+        "Gymkhana; Bibi; Hide; Hakkasan Mayfair; The Guinea Grill; Scott's; "
+        "Roka Mayfair; Mount St. Restaurant; Umu; Jamavar; Sparrow Italia Mayfair; 34 Mayfair",
+        "restaurant",
+    )
+
+    assert [option["canonical_name"] for option in options[:3]] == ["Gymkhana", "Bibi", "Hide"]
+    assert options[-1] == {
+        "canonical_name": "34 Mayfair",
+        "type": "restaurant",
+        "source_text": "34 Mayfair",
+    }
 
 
 def test_generic_remember_routes_high_confidence_taste_to_confirmation_then_recall_links_evidence(tmp_path) -> None:
