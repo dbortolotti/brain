@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import subprocess
 import sys
+import time
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -60,14 +61,20 @@ def check_health(url: str, failures: list[str]) -> None:
 
 
 def check_backend_health(url: str, failures: list[str]) -> None:
-    status, _headers, body = fetch(url)
-    if status != 200:
-        failures.append(f"Cognee backend health returned {status}: {body[:200]}")
+    last_status = None
+    last_body = ""
+    for _attempt in range(30):
+        status, _headers, body = fetch(url)
+        last_status = status
+        last_body = body
+        if status == 200 and '"ready"' in body and '"healthy"' in body:
+            console.print(f"[green][OK][/green] Cognee backend health: {url}")
+            return
+        time.sleep(2)
+    if last_status != 200:
+        failures.append(f"Cognee backend health returned {last_status}: {last_body[:200]}")
         return
-    if '"ready"' not in body or '"healthy"' not in body:
-        failures.append(f"Cognee backend health was not ready: {body[:200]}")
-        return
-    console.print(f"[green][OK][/green] Cognee backend health: {url}")
+    failures.append(f"Cognee backend health was not ready: {last_body[:200]}")
 
 
 def check_ui_requires_auth(url: str, failures: list[str]) -> None:

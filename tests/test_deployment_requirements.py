@@ -201,6 +201,13 @@ def test_log_rotation_launchd_runs_daily_after_midnight() -> None:
     assert "<integer>5</integer>" in plist
 
 
+def test_cognee_ui_verifier_retries_backend_health() -> None:
+    verifier = Path("scripts/verify_cognee_ui_production.py").read_text(encoding="utf-8")
+
+    assert "for _attempt in range(30):" in verifier
+    assert "time.sleep(2)" in verifier
+
+
 def test_production_verifier_checks_brain_database_under_shared_data() -> None:
     verifier = Path("scripts/verify_mcp_production.py").read_text(encoding="utf-8")
 
