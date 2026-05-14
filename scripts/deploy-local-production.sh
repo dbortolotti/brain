@@ -78,6 +78,16 @@ path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 PY
 }
 
+enable_launch_agent() {
+  local label="$1"
+  local plist="$2"
+  local domain="gui/$(id -u)"
+
+  launchctl enable "$domain/$label" >/dev/null 2>&1 || true
+  launchctl bootout "$domain" "$plist" >/dev/null 2>&1 || true
+  launchctl bootstrap "$domain" "$plist"
+}
+
 is_true() {
   case "${1:-}" in
     1|true|TRUE|yes|YES|on|ON)
@@ -310,17 +320,13 @@ ln -sfn "$RELEASE_DIR" "$CURRENT_LINK"
 
 if command -v launchctl >/dev/null 2>&1; then
   log "restarting launchd service $LABEL"
-  launchctl bootout "gui/$(id -u)" "$PLIST_DST" >/dev/null 2>&1 || true
-  launchctl bootstrap "gui/$(id -u)" "$PLIST_DST"
+  enable_launch_agent "$LABEL" "$PLIST_DST"
   log "restarting launchd service $UI_LABEL"
-  launchctl bootout "gui/$(id -u)" "$UI_PLIST_DST" >/dev/null 2>&1 || true
-  launchctl bootstrap "gui/$(id -u)" "$UI_PLIST_DST"
+  enable_launch_agent "$UI_LABEL" "$UI_PLIST_DST"
   log "restarting launchd service $SLACK_LABEL"
-  launchctl bootout "gui/$(id -u)" "$SLACK_PLIST_DST" >/dev/null 2>&1 || true
-  launchctl bootstrap "gui/$(id -u)" "$SLACK_PLIST_DST"
+  enable_launch_agent "$SLACK_LABEL" "$SLACK_PLIST_DST"
   log "reloading launchd job $AGENT_MEMORY_LABEL"
-  launchctl bootout "gui/$(id -u)" "$AGENT_MEMORY_PLIST_DST" >/dev/null 2>&1 || true
-  launchctl bootstrap "gui/$(id -u)" "$AGENT_MEMORY_PLIST_DST"
+  enable_launch_agent "$AGENT_MEMORY_LABEL" "$AGENT_MEMORY_PLIST_DST"
 else
   log "launchctl not found; skipping service restart"
 fi

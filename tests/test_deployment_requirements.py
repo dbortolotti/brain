@@ -87,6 +87,12 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     assert "LLM_TEMPERATURE=0.0" in script
     assert "LLM_MAX_TOKENS=8192" in script
     assert 'ensure_env_var "BRAIN_PROVIDER_AUTH_PROFILES_PATH"' in script
+    assert "enable_launch_agent()" in script
+    assert 'launchctl enable "$domain/$label"' in script
+    assert 'enable_launch_agent "$LABEL" "$PLIST_DST"' in script
+    assert 'enable_launch_agent "$UI_LABEL" "$UI_PLIST_DST"' in script
+    assert 'enable_launch_agent "$SLACK_LABEL" "$SLACK_PLIST_DST"' in script
+    assert 'enable_launch_agent "$AGENT_MEMORY_LABEL" "$AGENT_MEMORY_PLIST_DST"' in script
     assert 'ensure_env_var "BRAIN_TASTE_ENABLED" "true"' in script
     assert 'ensure_env_var "BRAIN_TASTE_LLM_ROUTING_ENABLED" "false"' in script
     assert 'ensure_env_var "BRAIN_TASTE_OPEN_LOOP_CONFIRMATION_THRESHOLD" "0.80"' in script
