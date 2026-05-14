@@ -840,6 +840,21 @@ class BrainStore:
         normalized = normalize_name(name)
         if not normalized:
             return None
+        owner_names = {
+            normalize_name(self.settings.brain_owner_name),
+            normalize_name(self.settings.brain_owner_full_name),
+            "me",
+            "myself",
+            "the user",
+            "profile owner",
+        }
+        if (entity_type in {None, "person"}) and normalized in owner_names:
+            owner = self.find_entity_by_normalized_name(
+                entity_type="person",
+                normalized_name=normalize_name(self.settings.brain_owner_full_name),
+            )
+            if owner and (owner.get("metadata_json") or {}).get("is_profile_owner"):
+                return owner
         type_filter = schema.entities.c.type == entity_type if entity_type else True
         with self.engine.begin() as conn:
             row = conn.execute(

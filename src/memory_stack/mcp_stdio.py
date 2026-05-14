@@ -24,6 +24,7 @@ from memory_stack.profile_context import (
     forget_profile_context,
     list_profile_context,
     remember_profile_context,
+    sync_profile_context,
 )
 from memory_stack.session import brain_session_payload
 from memory_stack.taste.models import (
@@ -73,6 +74,11 @@ def build_server():
     async def profile_context_forget(context_id: str) -> dict[str, Any]:
         """Remove stable user-profile context by id."""
         return forget_profile_context(settings, context_id=context_id)
+
+    @mcp.tool(name="brain_profile_context_sync", structured_output=True)
+    async def profile_context_sync() -> dict[str, Any]:
+        """Project profile context into the normal Brain memory/entity graph."""
+        return sync_profile_context(settings)
 
     @mcp.tool(name="brain_remember", structured_output=True)
     async def remember(

@@ -10,6 +10,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.testclient import TestClient
 
+from memory_stack.brain_store import BrainStore
 from memory_stack.cfg import Settings
 from memory_stack.mcp_server import app
 from memory_stack import mcp_server
@@ -43,6 +44,7 @@ def test_datasource_tools_are_listed() -> None:
         "brain_profile_context_remember",
         "brain_profile_context_list",
         "brain_profile_context_forget",
+        "brain_profile_context_sync",
         "brain_remember",
         "brain_ingest_source",
         "brain_recall",
@@ -100,6 +102,7 @@ def test_memory_tools_expose_node_set_and_search_options() -> None:
         "brain_profile_context_remember",
         "brain_profile_context_list",
         "brain_profile_context_forget",
+        "brain_profile_context_sync",
         "brain_remember",
         "brain_recall",
         "brain_profile_entity",
@@ -264,9 +267,80 @@ def test_profile_context_tools_update_brain_session(tmp_path) -> None:
     assert remembered["statement"] == "Daniele works in a bank as a quant."
     session_payload = session_response.json()["result"]["structuredContent"]
     assert session_payload["profile_context"] == ["Daniele works in a bank as a quant."]
+    assert session_payload["profile_context_records"][0]["memory_id"].startswith("mem_")
+    assert session_payload["profile_context_records"][0]["owner_entity_id"].startswith("ent_")
     listed = list_response.json()["result"]["structuredContent"]["profile_context"]
     assert listed[0]["id"] == context_id
     assert forget_response.json()["result"]["structuredContent"]["status"] == "deleted"
+
+
+def test_profile_context_sync_projects_owner_entity_without_first_name_alias(tmp_path) -> None:
+    previous_settings = mcp_server.settings
+    mcp_server.settings = Settings(
+        brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
+        brain_owner_full_name="Daniele Bortolotti",
+        brain_owner_name="Daniele",
+        brain_profile_context_path=str(tmp_path / "profile_context.json"),
+    )
+    try:
+        client = TestClient(app)
+        remember_response = client.post(
+            "/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "tools/call",
+                "params": {
+                    "name": "brain_profile_context_remember",
+                    "arguments": {
+                        "statement": "Daniele has a PhD in theoretical physics.",
+                    },
+                },
+            },
+        )
+        sync_response = client.post(
+            "/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 2,
+                "method": "tools/call",
+                "params": {"name": "brain_profile_context_sync", "arguments": {}},
+            },
+        )
+        profile_response = client.post(
+            "/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 3,
+                "method": "tools/call",
+                "params": {
+                    "name": "brain_profile_entity",
+                    "arguments": {"name": "Daniele"},
+                },
+            },
+        )
+    finally:
+        mcp_server.settings = previous_settings
+
+    assert remember_response.status_code == 200
+    assert sync_response.status_code == 200
+    sync_payload = sync_response.json()["result"]["structuredContent"]
+    assert sync_payload["synced_count"] == 1
+    assert "Daniele has a PhD in theoretical physics." in profile_response.json()["result"][
+        "structuredContent"
+    ]["answer"]
+    raw_profile = BrainStore(
+        Settings(
+            brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
+            brain_owner_full_name="Daniele Bortolotti",
+            brain_owner_name="Daniele",
+            brain_profile_context_path=str(tmp_path / "profile_context.json"),
+        )
+    ).entity_profile("Daniele")
+    assert raw_profile["entity"]["canonical_name"] == "Daniele Bortolotti"
+    aliases = {alias["alias"] for alias in raw_profile["aliases"]}
+    assert "Daniele" not in aliases
+    assert "me" in aliases
 
 
 def test_cognee_improve_mcp_tool_calls_configured_dataset(tmp_path, monkeypatch) -> None:

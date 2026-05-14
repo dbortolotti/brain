@@ -55,6 +55,7 @@ from memory_stack.profile_context import (
     forget_profile_context,
     list_profile_context,
     remember_profile_context,
+    sync_profile_context,
 )
 from memory_stack.request_logging import RequestResponseLogMiddleware
 from memory_stack.session import brain_session_payload
@@ -252,6 +253,18 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
                     "context_id": {"type": "string"},
                 },
                 "required": ["context_id"],
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain_profile_context_sync",
+            "description": (
+                "Project all standing profile-context items into the normal Brain "
+                "memory/entity graph linked to the configured owner entity."
+            ),
+            "inputSchema": {
+                "type": "object",
+                "properties": {},
                 "additionalProperties": False,
             },
         },
@@ -1376,6 +1389,13 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
         return json_tool_response(
             payload,
             summary=f"Profile context forget result: {payload['status']}.",
+        )
+
+    if name == "brain_profile_context_sync":
+        payload = sync_profile_context(settings)
+        return json_tool_response(
+            payload,
+            summary=f"Profile context sync complete: {payload['synced_count']} items.",
         )
 
     if name == "brain_ingest_source":
