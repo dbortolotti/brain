@@ -83,6 +83,9 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     assert 'set_env_var "BRAIN_SLACK_AGENT_PORT" "18003"' in script
     assert 'BRAIN_DATABASE_URL=$DATABASE_URL' in script
     assert 'ensure_env_var "BRAIN_DATABASE_URL" "$DATABASE_URL"' in script
+    assert "LLM_MODEL=gpt-5.4-mini" in script
+    assert "LLM_TEMPERATURE=0.0" in script
+    assert "LLM_MAX_TOKENS=8192" in script
     assert 'ensure_env_var "BRAIN_PROVIDER_AUTH_PROFILES_PATH"' in script
     assert 'ensure_env_var "BRAIN_TASTE_ENABLED" "true"' in script
     assert 'ensure_env_var "BRAIN_TASTE_LLM_ROUTING_ENABLED" "false"' in script

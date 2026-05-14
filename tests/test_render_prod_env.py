@@ -66,6 +66,16 @@ def run_renderer_with_args(tmp_path, env_overrides, extra_args, *, check=True):
     return result, output, auth_password_file
 
 
+def parse_rendered_env(rendered: str) -> dict[str, str]:
+    values: dict[str, str] = {}
+    for line in rendered.splitlines():
+        if not line or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        values[key] = value
+    return values
+
+
 def test_render_prod_env_writes_github_secret_values_without_printing_them(tmp_path) -> None:
     result, output, auth_password_file = run_renderer(
         tmp_path,
@@ -105,6 +115,27 @@ def test_render_prod_env_writes_github_secret_values_without_printing_them(tmp_p
     assert auth_password_file.stat().st_mode & 0o777 == 0o600
     assert "sk-prod-openai" not in result.stdout
     assert "prod-auth-password" not in result.stdout
+
+
+def test_render_prod_env_uses_cfg_for_fixed_runtime_model_values(tmp_path) -> None:
+    _, output, _ = run_renderer(
+        tmp_path,
+        {
+            "LLM_MODEL": "gpt-5.5",
+            "LLM_TEMPERATURE": "0.9",
+            "LLM_MAX_TOKENS": "123",
+            "EMBEDDING_MODEL": "text-embedding-3-small",
+            "EMBEDDING_DIMENSIONS": "1536",
+        },
+    )
+
+    values = parse_rendered_env(output.read_text(encoding="utf-8"))
+    assert values["LLM_MODEL"] == "gpt-5.4-mini"
+    assert values["LLM_TEMPERATURE"] == "0.0"
+    assert values["LLM_MAX_TOKENS"] == "8192"
+    assert values["EMBEDDING_MODEL"] == "text-embedding-3-large"
+    assert values["EMBEDDING_DIMENSIONS"] == "3072"
+    assert values["BRAIN_TASTE_LLM_MODEL"] == "gpt-5.5"
 
 
 def test_render_prod_env_allows_blank_openai_key_in_oauth_mode(tmp_path) -> None:

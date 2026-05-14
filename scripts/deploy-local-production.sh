@@ -97,7 +97,9 @@ if [[ ! -f "$SECRETS_DIR/brain.env" ]]; then
   cat >"$SECRETS_DIR/brain.env" <<EOF
 PROFILE=openai
 LLM_PROVIDER=openai
-LLM_MODEL=gpt-5.5
+LLM_MODEL=gpt-5.4-mini
+LLM_TEMPERATURE=0.0
+LLM_MAX_TOKENS=8192
 OPENAI_AUTH_MODE=oauth
 OPENAI_CODEX_AUTH_PROFILE=default
 OPENAI_CODEX_BASE_URL=https://chatgpt.com/backend-api/codex

@@ -42,6 +42,16 @@ REQUIRED_EXTERNAL_SECRET_KEYS = {
         "...",
     },
 }
+CFG_AUTHORITATIVE_KEYS = {
+    "PROFILE",
+    "LLM_PROVIDER",
+    "LLM_MODEL",
+    "LLM_TEMPERATURE",
+    "LLM_MAX_TOKENS",
+    "EMBEDDING_PROVIDER",
+    "EMBEDDING_MODEL",
+    "EMBEDDING_DIMENSIONS",
+}
 
 
 ORDERED_KEYS = [
@@ -249,6 +259,8 @@ def render_values() -> dict[str, str]:
     for key in ORDERED_KEYS:
         if key in metadata:
             values[key] = metadata[key]
+        elif key in CFG_AUTHORITATIVE_KEYS and key in defaults:
+            values[key] = format_config_value(defaults[key])
         elif key in os.environ and os.environ[key] != "":
             values[key] = os.environ[key]
         elif key in defaults:
