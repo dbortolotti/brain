@@ -51,7 +51,7 @@ def test_mcp_initialize() -> None:
         {
             "src": f"{mcp_server.settings.brain_public_base_url.rstrip('/')}/icon.png",
             "mimeType": "image/png",
-            "sizes": "512x512",
+            "sizes": ["512x512"],
         }
     ]
     assert response.json()["result"]["capabilities"]["prompts"] == {}
@@ -118,7 +118,7 @@ def test_datasource_tools_are_listed() -> None:
         {
             "src": f"{mcp_server.settings.brain_public_base_url.rstrip('/')}/icon.png",
             "mimeType": "image/png",
-            "sizes": "512x512",
+            "sizes": ["512x512"],
         }
     ]
     for tool in response.json()["result"]["tools"]:
