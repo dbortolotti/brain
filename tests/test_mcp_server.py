@@ -75,6 +75,10 @@ def test_datasource_tools_are_listed() -> None:
     }
     assert expected_tools == tool_names
     assert all("." not in tool_name for tool_name in tool_names)
+    for tool in response.json()["result"]["tools"]:
+        assert "outputSchema" in tool
+        assert tool["outputSchema"]["type"] == "object"
+        assert "structuredContent" not in tool["outputSchema"]["properties"]
     assert {
         "add",
         "cognify",
@@ -125,6 +129,8 @@ def test_memory_tools_expose_node_set_and_search_options() -> None:
     } <= set(tools)
 
     assert tools["brain_session"]["inputSchema"]["properties"] == {}
+    assert tools["brain_session"]["outputSchema"]["required"] == ["session_id"]
+    assert "profile_context" in tools["brain_session"]["outputSchema"]["properties"]
     profile_context_properties = tools["brain_profile_context_remember"]["inputSchema"]["properties"]
     assert {"statement", "scope", "source"} <= set(profile_context_properties)
 
@@ -132,6 +138,7 @@ def test_memory_tools_expose_node_set_and_search_options() -> None:
     assert "input" in remember_properties
     assert "dataset_name" not in remember_properties
     assert "node_set" not in remember_properties
+    assert "memory_cards" in tools["brain_remember"]["outputSchema"]["properties"]
 
     recall_properties = tools["brain_recall"]["inputSchema"]["properties"]
     assert recall_properties["mode"]["enum"] == [
@@ -146,6 +153,10 @@ def test_memory_tools_expose_node_set_and_search_options() -> None:
     assert "dataset" not in recall_properties
     assert "search_type" not in recall_properties
     assert "node_name" not in recall_properties
+    assert tools["brain_recall"]["outputSchema"]["required"] == ["answer"]
+    assert {"answer", "facts", "evidence"} <= set(
+        tools["brain_recall"]["outputSchema"]["properties"]
+    )
 
     improve_properties = tools["cognee_improve"]["inputSchema"]["properties"]
     assert improve_properties["dataset"]["enum"] == ["memory", "sources", "data", "palate", "agent_memory"]
@@ -157,6 +168,7 @@ def test_memory_tools_expose_node_set_and_search_options() -> None:
 
     taste_properties = tools["brain_palate_remember"]["inputSchema"]["properties"]
     assert {"type", "canonical_name", "description"} <= set(taste_properties)
+    assert "taste_records" in tools["brain_palate_remember"]["outputSchema"]["properties"]
 
     forget_properties = tools["brain_forget"]["inputSchema"]["properties"]
     assert forget_properties["object_type"]["enum"] == [

@@ -177,7 +177,7 @@ class MergeEntitiesRequest(BaseModel):
 
 
 def memory_tool_definitions() -> list[dict[str, Any]]:
-    return [
+    tools = [
         {
             "name": "brain_session",
             "description": (
@@ -709,6 +709,146 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
             },
         },
     ]
+    return tools_with_output_schemas(tools)
+
+
+def tools_with_output_schemas(tools: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return [
+        {**tool, "outputSchema": tool_output_schema(str(tool["name"]))}
+        for tool in tools
+    ]
+
+
+def tool_output_schema(tool_name: str) -> dict[str, Any]:
+    return STRUCTURED_OUTPUT_SCHEMAS.get(tool_name, ANY_OBJECT_SCHEMA)
+
+
+def object_schema(
+    properties: dict[str, Any] | None = None,
+    *,
+    required: list[str] | None = None,
+    additional_properties: bool = True,
+) -> dict[str, Any]:
+    schema: dict[str, Any] = {
+        "type": "object",
+        "properties": properties or {},
+        "additionalProperties": additional_properties,
+    }
+    if required:
+        schema["required"] = required
+    return schema
+
+
+ANY_OBJECT_SCHEMA = object_schema()
+STRING_ARRAY_SCHEMA = {"type": "array", "items": {"type": "string"}}
+OBJECT_ARRAY_SCHEMA = {"type": "array", "items": ANY_OBJECT_SCHEMA}
+
+RECALL_OUTPUT_SCHEMA = object_schema(
+    {
+        "answer": {"type": "string"},
+        "facts": OBJECT_ARRAY_SCHEMA,
+        "evidence": OBJECT_ARRAY_SCHEMA,
+        "open_loops": OBJECT_ARRAY_SCHEMA,
+        "taste": ANY_OBJECT_SCHEMA,
+    },
+    required=["answer"],
+)
+
+SYNC_OUTPUT_SCHEMA = object_schema(
+    {
+        "status": {"type": "string"},
+        "processed": {"type": "integer"},
+        "succeeded": {"type": "integer"},
+        "failed": {"type": "integer"},
+        "skipped": {"type": "integer"},
+        "results": OBJECT_ARRAY_SCHEMA,
+    },
+    required=["status"],
+)
+
+PALATE_QUERY_OUTPUT_SCHEMA = object_schema(
+    {
+        "answer": {"type": "string"},
+        "ranked_results": OBJECT_ARRAY_SCHEMA,
+        "decision_id": {"type": "string"},
+        "intent": ANY_OBJECT_SCHEMA,
+    },
+)
+
+STRUCTURED_OUTPUT_SCHEMAS: dict[str, dict[str, Any]] = {
+    "brain_session": object_schema(
+        {
+            "session_id": {"type": "string"},
+            "owner": ANY_OBJECT_SCHEMA,
+            "profile_context": OBJECT_ARRAY_SCHEMA,
+            "agent_memory": ANY_OBJECT_SCHEMA,
+            "instructions": {"type": "string"},
+        },
+        required=["session_id"],
+    ),
+    "brain_remember": object_schema(
+        {
+            "ingestion_run_id": {"type": "string"},
+            "classification": {"type": "string"},
+            "memory_cards": OBJECT_ARRAY_SCHEMA,
+            "entities": OBJECT_ARRAY_SCHEMA,
+            "relationships": OBJECT_ARRAY_SCHEMA,
+            "open_loops": OBJECT_ARRAY_SCHEMA,
+            "conflicts": OBJECT_ARRAY_SCHEMA,
+            "taste": ANY_OBJECT_SCHEMA,
+            "dry_run": {"type": "boolean"},
+        },
+    ),
+    "brain_profile_context_remember": object_schema(
+        {"id": {"type": "string"}, "statement": {"type": "string"}, "scope": {"type": "string"}},
+        required=["id", "statement"],
+    ),
+    "brain_profile_context_list": object_schema({"profile_context": OBJECT_ARRAY_SCHEMA}, required=["profile_context"]),
+    "brain_profile_context_forget": object_schema({"context_id": {"type": "string"}, "status": {"type": "string"}}, required=["status"]),
+    "brain_profile_context_sync": object_schema({"synced_count": {"type": "integer"}, "results": OBJECT_ARRAY_SCHEMA}, required=["synced_count"]),
+    "brain_ingest_source": object_schema(
+        {
+            "source_id": {"type": ["string", "null"]},
+            "status": {"type": "string"},
+            "memory_cards_created": STRING_ARRAY_SCHEMA,
+            "summary": {"type": ["string", "null"]},
+            "cognee_sync_status": {"type": "string"},
+            "ingestion": ANY_OBJECT_SCHEMA,
+        },
+        required=["status", "memory_cards_created"],
+    ),
+    "brain_recall": RECALL_OUTPUT_SCHEMA,
+    "brain_profile_entity": RECALL_OUTPUT_SCHEMA,
+    "brain_list_open_loops": object_schema({"open_loops": OBJECT_ARRAY_SCHEMA}, required=["open_loops"]),
+    "brain_get_memory": object_schema({"memory": {"anyOf": [ANY_OBJECT_SCHEMA, {"type": "null"}]}}, required=["memory"]),
+    "brain_get_source": object_schema(
+        {
+            "source": {"anyOf": [ANY_OBJECT_SCHEMA, {"type": "null"}]},
+            "text": {"type": ["string", "null"]},
+        },
+        required=["source", "text"],
+    ),
+    "brain_resolve_conflict": object_schema({"status": {"type": "string"}, "action": {"type": "string"}, "created_links": OBJECT_ARRAY_SCHEMA, "updated_memories": OBJECT_ARRAY_SCHEMA}),
+    "brain_forget": object_schema({"object_type": {"type": "string"}, "object_id": {"type": "string"}, "status": {"type": "string"}, "mode": {"type": "string"}, "cognee_sync_status": {"type": "string"}}, required=["status"]),
+    "brain_review_recent": object_schema({"ingestion_runs": OBJECT_ARRAY_SCHEMA, "sources": OBJECT_ARRAY_SCHEMA, "memory_cards": OBJECT_ARRAY_SCHEMA, "conflicts": OBJECT_ARRAY_SCHEMA}),
+    "brain_undo_last": object_schema({"status": {"type": "string"}, "deleted_memories": STRING_ARRAY_SCHEMA, "deleted_sources": STRING_ARRAY_SCHEMA}, required=["status"]),
+    "brain_sync_cognee": SYNC_OUTPUT_SCHEMA,
+    "brain_rebuild_cognee": object_schema({"status": {"type": "string"}, "dataset": {"type": "string"}, "memory_rows_marked_stale": {"type": "integer"}, "source_rows_marked_stale": {"type": "integer"}}, required=["status"]),
+    "cognee_improve": object_schema({"dataset": {"type": "string"}, "resolved_dataset": {"type": "string"}, "node_name": STRING_ARRAY_SCHEMA, "session_ids": STRING_ARRAY_SCHEMA, "run_in_background": {"type": "boolean"}, "result": ANY_OBJECT_SCHEMA}),
+    "brain_agent_memory": object_schema({"session_id": {"type": "string"}, "dataset": {"type": "string"}, "resolved_dataset": {"type": "string"}, "node_name": STRING_ARRAY_SCHEMA, "run_in_background": {"type": "boolean"}, "result": ANY_OBJECT_SCHEMA}),
+    "brain_agent_memory_recall": object_schema({"query": {"type": "string"}, "dataset": {"type": "string"}, "resolved_dataset": {"type": "string"}, "result": ANY_OBJECT_SCHEMA}),
+    "brain_agent_memory_clear": object_schema({"dataset": {"type": "string"}, "resolved_dataset": {"type": "string"}, "result": ANY_OBJECT_SCHEMA}),
+    "brain_merge_entities": object_schema({"status": {"type": "string"}, "primary_entity_id": {"type": "string"}, "duplicate_entity_id": {"type": "string"}}, required=["status"]),
+    "brain_palate_describe_item": ANY_OBJECT_SCHEMA,
+    "brain_palate_remember": object_schema({"stored": {"type": "boolean"}, "taste_records": OBJECT_ARRAY_SCHEMA, "canonical_store": {"type": "string"}, "brain_projection": ANY_OBJECT_SCHEMA, "requires_confirmation": {"type": "boolean"}}),
+    "brain_palate_query": PALATE_QUERY_OUTPUT_SCHEMA,
+    "brain_palate_evaluate_options": PALATE_QUERY_OUTPUT_SCHEMA,
+    "brain_palate_log_decision": object_schema({"logged": {"type": "boolean"}, "decision": ANY_OBJECT_SCHEMA}),
+    "brain_palate_confirm": object_schema({"confirmed": {"type": "boolean"}, "proposal_id": {"type": "string"}}),
+    "brain_palate_cancel": object_schema({"cancelled": {"type": "boolean"}, "proposal_id": {"type": "string"}}),
+    "brain_palate_correct_proposal": ANY_OBJECT_SCHEMA,
+    "brain_palate_refresh_enrichment": object_schema({"refreshed": {"type": "boolean"}, "taste_item_id": {"type": "string"}, "enrichment": ANY_OBJECT_SCHEMA}),
+}
 
 
 def resource_definitions() -> list[dict[str, str]]:
