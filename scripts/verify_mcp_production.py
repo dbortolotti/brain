@@ -78,9 +78,10 @@ def check_runtime_paths(settings, shared_data: Path, failures: list[str]) -> Non
     paths = {
         "SYSTEM_ROOT_DIRECTORY": Path(settings.system_root_directory),
         "DATA_ROOT_DIRECTORY": Path(settings.data_root_directory),
-        "VECTOR_DB_URL": Path(settings.vector_db_url),
         "BRAIN_DATABASE_URL": sqlite_path(settings.brain_database_url),
     }
+    if getattr(settings, "vector_db_provider", "lancedb") == "lancedb":
+        paths["VECTOR_DB_URL"] = Path(settings.vector_db_url)
     for label, path in paths.items():
         if not path.is_absolute():
             failures.append(f"{label} is not absolute in production: {path}")

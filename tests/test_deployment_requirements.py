@@ -205,6 +205,8 @@ def test_production_verifier_checks_brain_database_under_shared_data() -> None:
     verifier = Path("scripts/verify_mcp_production.py").read_text(encoding="utf-8")
 
     assert '"BRAIN_DATABASE_URL": sqlite_path(settings.brain_database_url)' in verifier
+    assert 'if getattr(settings, "vector_db_provider", "lancedb") == "lancedb":' in verifier
+    assert 'paths["VECTOR_DB_URL"] = Path(settings.vector_db_url)' in verifier
 
 
 def test_cloudflare_routes_slack_to_agent_before_mcp_catchall() -> None:
