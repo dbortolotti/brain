@@ -722,11 +722,9 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
 
 
 def tools_with_output_schemas(tools: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    icons = brain_icon_metadata(settings.brain_public_base_url)
     return [
         {
             **tool,
-            "icons": icons,
             "outputSchema": tool_output_schema(str(tool["name"])),
         }
         for tool in tools

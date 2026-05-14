@@ -117,13 +117,7 @@ def test_datasource_tools_are_listed() -> None:
     for tool in response.json()["result"]["tools"]:
         assert "outputSchema" in tool
         assert tool["outputSchema"]["type"] == "object"
-        assert tool["icons"] == [
-            {
-                "src": "https://brain.dceb.net/icon.png",
-                "mimeType": "image/png",
-                "sizes": "512x512",
-            }
-        ]
+        assert "icons" not in tool
         assert "structuredContent" not in tool["outputSchema"]["properties"]
     assert {
         "add",
