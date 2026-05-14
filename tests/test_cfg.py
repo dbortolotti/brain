@@ -17,6 +17,7 @@ def test_cfg_defaults_to_dev() -> None:
     assert cfg.get("LLM_MODEL") == "gpt-5.4-mini"
     assert cfg.get("BRAIN_TASTE_LLM_MODEL") == "gpt-5.5"
     assert cfg.get("BRAIN_TASTE_LLM_REASONING_EFFORT") == "medium"
+    assert cfg.get("BRAIN_AGENT_MEMORY_SESSION_ID") == "portable_agent_session"
     assert cfg.get("BRAIN_LOG_LEVEL") == "DEBUG"
 
 
@@ -46,6 +47,7 @@ def test_settings_defaults_follow_explicit_config_env(tmp_path) -> None:
     assert settings.system_root_directory == "/Volumes/xpg_usb4/prod/brain/shared/data/system"
     assert settings.brain_ui_enabled is True
     assert settings.brain_taste_canonical_store == "cognee"
+    assert settings.brain_agent_memory_session_id == "portable_agent_session"
 
 
 def test_load_settings_accepts_explicit_config_env(tmp_path) -> None:

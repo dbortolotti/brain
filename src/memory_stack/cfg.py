@@ -293,6 +293,9 @@ class Settings(BaseSettings):
     brain_cognee_agent_memory_dataset: str = Field(
         default_factory=lambda: get("BRAIN_COGNEE_AGENT_MEMORY_DATASET", "agent_memory")
     )
+    brain_agent_memory_session_id: str = Field(
+        default_factory=lambda: get("BRAIN_AGENT_MEMORY_SESSION_ID", "portable_agent_session")
+    )
     brain_cognee_recall_top_k: int = Field(default_factory=lambda: get("BRAIN_COGNEE_RECALL_TOP_K"))
     brain_taste_enabled: bool = Field(default_factory=lambda: get("BRAIN_TASTE_ENABLED"))
     brain_taste_canonical_store: Literal["sqlite", "cognee"] = Field(
@@ -644,6 +647,7 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "BRAIN_COGNEE_DATA_DATASET": settings.brain_cognee_data_dataset,
         "BRAIN_COGNEE_PALATE_DATASET": settings.brain_cognee_palate_dataset,
         "BRAIN_COGNEE_AGENT_MEMORY_DATASET": settings.brain_cognee_agent_memory_dataset,
+        "BRAIN_AGENT_MEMORY_SESSION_ID": settings.brain_agent_memory_session_id,
         "BRAIN_COGNEE_RECALL_TOP_K": str(settings.brain_cognee_recall_top_k),
         "BRAIN_TASTE_ENABLED": str(settings.brain_taste_enabled).lower(),
         "BRAIN_TASTE_CANONICAL_STORE": settings.brain_taste_canonical_store,

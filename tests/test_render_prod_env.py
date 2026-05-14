@@ -100,6 +100,7 @@ def test_render_prod_env_writes_github_secret_values_without_printing_them(tmp_p
     assert "BRAIN_TASTE_LLM_REASONING_EFFORT=medium" in rendered
     assert "BRAIN_TASTE_LLM_ROUTING_ENABLED=false" in rendered
     assert "BRAIN_TASTE_OPEN_LOOP_CONFIRMATION_THRESHOLD=0.80" in rendered
+    assert "BRAIN_AGENT_MEMORY_SESSION_ID=portable_agent_session" in rendered
     assert "BRAIN_TASTE_IMPORT_SOURCE_PATH" not in rendered
     assert "BRAIN_SLACK_SIGNING_SECRET=prod-slack-signing-secret" in rendered
     assert base_rendered == rendered
