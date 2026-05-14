@@ -39,6 +39,10 @@ def test_datasource_tools_are_listed() -> None:
     assert response.status_code == 200
     tool_names = {tool["name"] for tool in response.json()["result"]["tools"]}
     expected_tools = {
+        "brain_session",
+        "brain_profile_context_remember",
+        "brain_profile_context_list",
+        "brain_profile_context_forget",
         "brain_remember",
         "brain_ingest_source",
         "brain_recall",
@@ -92,6 +96,10 @@ def test_memory_tools_expose_node_set_and_search_options() -> None:
     assert response.status_code == 200
     tools = {tool["name"]: tool for tool in response.json()["result"]["tools"]}
     assert {
+        "brain_session",
+        "brain_profile_context_remember",
+        "brain_profile_context_list",
+        "brain_profile_context_forget",
         "brain_remember",
         "brain_recall",
         "brain_profile_entity",
@@ -112,6 +120,10 @@ def test_memory_tools_expose_node_set_and_search_options() -> None:
         "brain_palate_remember",
         "brain_palate_evaluate_options",
     } <= set(tools)
+
+    assert tools["brain_session"]["inputSchema"]["properties"] == {}
+    profile_context_properties = tools["brain_profile_context_remember"]["inputSchema"]["properties"]
+    assert {"statement", "scope", "source"} <= set(profile_context_properties)
 
     remember_properties = tools["brain_remember"]["inputSchema"]["properties"]
     assert "input" in remember_properties
@@ -152,6 +164,109 @@ def test_memory_tools_expose_node_set_and_search_options() -> None:
         "open_loop",
     ]
     assert "confirm" in forget_properties
+
+
+def test_brain_session_returns_configured_identity(tmp_path) -> None:
+    previous_settings = mcp_server.settings
+    mcp_server.settings = Settings(
+        brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
+        brain_owner_full_name="Daniele Bortolotti",
+        brain_owner_name="Daniele",
+        brain_profile_context_path=str(tmp_path / "profile_context.json"),
+        brain_agent_memory_session_id="portable_agent_session",
+        brain_cognee_agent_memory_dataset="agent_memory_test",
+    )
+    try:
+        client = TestClient(app)
+        response = client.post(
+            "/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "tools/call",
+                "params": {"name": "brain_session", "arguments": {}},
+            },
+        )
+    finally:
+        mcp_server.settings = previous_settings
+
+    assert response.status_code == 200
+    payload = response.json()["result"]["structuredContent"]
+    assert payload["session_id"] == "portable_agent_session"
+    assert payload["profile_name"] == "Daniele"
+    assert payload["profile_full_name"] == "Daniele Bortolotti"
+    assert payload["profile_context"] == []
+    assert payload["bias_prompt"] == "brain_bias_protocol"
+    assert payload["agent_memory_workflow"] == "brain_agent_memory"
+    assert payload["resolved_agent_memory_dataset"] == "agent_memory_test"
+
+
+def test_profile_context_tools_update_brain_session(tmp_path) -> None:
+    previous_settings = mcp_server.settings
+    mcp_server.settings = Settings(
+        brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
+        brain_profile_context_path=str(tmp_path / "profile_context.json"),
+    )
+    try:
+        client = TestClient(app)
+        remember_response = client.post(
+            "/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "tools/call",
+                "params": {
+                    "name": "brain_profile_context_remember",
+                    "arguments": {
+                        "statement": "Daniele works in a bank as a quant.",
+                        "scope": "answer_tailoring",
+                    },
+                },
+            },
+        )
+        session_response = client.post(
+            "/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 2,
+                "method": "tools/call",
+                "params": {"name": "brain_session", "arguments": {}},
+            },
+        )
+        list_response = client.post(
+            "/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 3,
+                "method": "tools/call",
+                "params": {"name": "brain_profile_context_list", "arguments": {}},
+            },
+        )
+        context_id = remember_response.json()["result"]["structuredContent"]["id"]
+        forget_response = client.post(
+            "/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 4,
+                "method": "tools/call",
+                "params": {
+                    "name": "brain_profile_context_forget",
+                    "arguments": {"context_id": context_id},
+                },
+            },
+        )
+    finally:
+        mcp_server.settings = previous_settings
+
+    assert remember_response.status_code == 200
+    remembered = remember_response.json()["result"]["structuredContent"]
+    assert remembered["created"] is True
+    assert remembered["statement"] == "Daniele works in a bank as a quant."
+    session_payload = session_response.json()["result"]["structuredContent"]
+    assert session_payload["profile_context"] == ["Daniele works in a bank as a quant."]
+    listed = list_response.json()["result"]["structuredContent"]["profile_context"]
+    assert listed[0]["id"] == context_id
+    assert forget_response.json()["result"]["structuredContent"]["status"] == "deleted"
 
 
 def test_cognee_improve_mcp_tool_calls_configured_dataset(tmp_path, monkeypatch) -> None:

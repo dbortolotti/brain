@@ -51,7 +51,13 @@ from memory_stack.domain_constants import (
 )
 from memory_stack.io import to_jsonable
 from memory_stack.oauth import BrainOAuthProvider, parse_bearer
+from memory_stack.profile_context import (
+    forget_profile_context,
+    list_profile_context,
+    remember_profile_context,
+)
 from memory_stack.request_logging import RequestResponseLogMiddleware
+from memory_stack.session import brain_session_payload
 from memory_stack.taste.models import (
     TasteDescribeRequest,
     TasteLogDecisionRequest,
@@ -62,7 +68,6 @@ from memory_stack.taste.models import (
 from memory_stack.taste.service import TasteService
 
 STARTED_AT = time.time()
-DEFAULT_AGENT_SESSION_ID = "portable_agent_session"
 settings = load_settings()
 oauth_provider = BrainOAuthProvider(settings) if settings.brain_auth_enabled else None
 
@@ -153,6 +158,16 @@ class BrainAgentMemoryClearRequest(BaseModel):
     confirm: bool = False
 
 
+class BrainProfileContextRememberRequest(BaseModel):
+    statement: str
+    scope: str = "answer_tailoring"
+    source: str | None = None
+
+
+class BrainProfileContextForgetRequest(BaseModel):
+    context_id: str
+
+
 class MergeEntitiesRequest(BaseModel):
     primary_entity_id: str
     duplicate_entity_id: str
@@ -162,6 +177,18 @@ class MergeEntitiesRequest(BaseModel):
 
 def memory_tool_definitions() -> list[dict[str, Any]]:
     return [
+        {
+            "name": "brain_session",
+            "description": (
+                "Resolve the configured Brain session identity agents should use "
+                "for durable memory, bias/preferences, and portable agent-memory calls."
+            ),
+            "inputSchema": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": False,
+            },
+        },
         {
             "name": "brain_remember",
             "description": (
@@ -183,6 +210,48 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
                     "context": {"type": "object", "additionalProperties": True},
                 },
                 "required": ["input"],
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain_profile_context_remember",
+            "description": (
+                "Store a stable user-profile fact that should always be returned "
+                "by brain_session to tailor future answers."
+            ),
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "statement": {"type": "string"},
+                    "scope": {
+                        "type": "string",
+                        "default": "answer_tailoring",
+                        "description": "Why this standing context should be loaded.",
+                    },
+                    "source": {"type": "string"},
+                },
+                "required": ["statement"],
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain_profile_context_list",
+            "description": "List standing user-profile context returned by brain_session.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "brain_profile_context_forget",
+            "description": "Remove one standing user-profile context item by id.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "context_id": {"type": "string"},
+                },
+                "required": ["context_id"],
                 "additionalProperties": False,
             },
         },
@@ -661,8 +730,8 @@ def prompt_definitions() -> list[dict[str, Any]]:
                 {
                     "name": "session_id",
                     "description": (
-                        "Cognee session ID to use consistently. Defaults to "
-                        f"{DEFAULT_AGENT_SESSION_ID}."
+                        "Cognee session ID to use consistently. Defaults to the "
+                        "configured Brain agent-memory session."
                     ),
                     "required": False,
                 }
@@ -687,7 +756,7 @@ def prompt_definitions() -> list[dict[str, Any]]:
 
 def get_prompt(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
     if name == "brain_agent_memory_protocol":
-        session_id = str(arguments.get("session_id") or DEFAULT_AGENT_SESSION_ID).strip()
+        session_id = str(arguments.get("session_id") or settings.brain_agent_memory_session_id).strip()
         if not session_id:
             raise ValueError("session_id must not be blank.")
         return prompt_response(
@@ -1260,6 +1329,13 @@ async def handle_json_rpc(payload: Any) -> Any:
 async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
     name = str(params.get("name") or "")
     arguments = params.get("arguments") or {}
+    if name == "brain_session":
+        payload = brain_session_payload(settings)
+        return json_tool_response(
+            payload,
+            summary=f"Brain session resolved: {payload['session_id']}.",
+        )
+
     if name == "brain_remember":
         request = RememberRequest.model_validate(
             {
@@ -1273,6 +1349,34 @@ async def call_tool(params: dict[str, Any]) -> dict[str, Any]:
         )
         payload = brain_remember(request, settings).model_dump(mode="json")
         return json_tool_response(payload, summary=remember_summary(payload))
+
+    if name == "brain_profile_context_remember":
+        request = BrainProfileContextRememberRequest.model_validate(arguments)
+        payload = remember_profile_context(
+            settings,
+            statement=request.statement,
+            scope=request.scope,
+            source=request.source,
+        )
+        return json_tool_response(
+            payload,
+            summary=f"Profile context stored: {payload['id']}.",
+        )
+
+    if name == "brain_profile_context_list":
+        payload = {"profile_context": list_profile_context(settings)}
+        return json_tool_response(
+            payload,
+            summary=f"Found {len(payload['profile_context'])} profile context items.",
+        )
+
+    if name == "brain_profile_context_forget":
+        request = BrainProfileContextForgetRequest.model_validate(arguments)
+        payload = forget_profile_context(settings, context_id=request.context_id)
+        return json_tool_response(
+            payload,
+            summary=f"Profile context forget result: {payload['status']}.",
+        )
 
     if name == "brain_ingest_source":
         if "source" in arguments:

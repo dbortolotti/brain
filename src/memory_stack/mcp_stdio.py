@@ -20,6 +20,12 @@ from memory_stack.brain_service import (
     undo_last as brain_undo_last,
 )
 from memory_stack.cfg import load_settings
+from memory_stack.profile_context import (
+    forget_profile_context,
+    list_profile_context,
+    remember_profile_context,
+)
+from memory_stack.session import brain_session_payload
 from memory_stack.taste.models import (
     TasteDescribeRequest,
     TasteLogDecisionRequest,
@@ -38,6 +44,35 @@ def build_server():
 
     settings = load_settings()
     mcp = FastMCP("Brain")
+
+    @mcp.tool(name="brain_session", structured_output=True)
+    async def session() -> dict[str, Any]:
+        """Resolve the configured Brain session identity for agents."""
+        return brain_session_payload(settings)
+
+    @mcp.tool(name="brain_profile_context_remember", structured_output=True)
+    async def profile_context_remember(
+        statement: str,
+        scope: str = "answer_tailoring",
+        source: str | None = None,
+    ) -> dict[str, Any]:
+        """Store stable user-profile context returned by brain_session."""
+        return remember_profile_context(
+            settings,
+            statement=statement,
+            scope=scope,
+            source=source,
+        )
+
+    @mcp.tool(name="brain_profile_context_list", structured_output=True)
+    async def profile_context_list() -> dict[str, Any]:
+        """List stable user-profile context returned by brain_session."""
+        return {"profile_context": list_profile_context(settings)}
+
+    @mcp.tool(name="brain_profile_context_forget", structured_output=True)
+    async def profile_context_forget(context_id: str) -> dict[str, Any]:
+        """Remove stable user-profile context by id."""
+        return forget_profile_context(settings, context_id=context_id)
 
     @mcp.tool(name="brain_remember", structured_output=True)
     async def remember(

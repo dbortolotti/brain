@@ -286,7 +286,9 @@ class Settings(BaseSettings):
     brain_routing_log_retention_days: int = Field(default_factory=lambda: get("BRAIN_ROUTING_LOG_RETENTION_DAYS", 90))
     brain_service_name: str = Field(default_factory=lambda: get("BRAIN_SERVICE_NAME"))
     brain_database_url: str = Field(default_factory=lambda: get("BRAIN_DATABASE_URL"))
+    brain_owner_full_name: str = Field(default_factory=lambda: get("BRAIN_OWNER_FULL_NAME", get("BRAIN_OWNER_NAME")))
     brain_owner_name: str = Field(default_factory=lambda: get("BRAIN_OWNER_NAME"))
+    brain_profile_context_path: str = Field(default_factory=lambda: get("BRAIN_PROFILE_CONTEXT_PATH"))
     brain_llm_enabled: bool = Field(default_factory=lambda: get("BRAIN_LLM_ENABLED"))
     brain_cognee_enabled: bool = Field(default_factory=lambda: get("BRAIN_COGNEE_ENABLED"))
     brain_cognee_recall_enabled: bool = Field(default_factory=lambda: get("BRAIN_COGNEE_RECALL_ENABLED"))
@@ -646,7 +648,9 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "BRAIN_ROUTING_LOG_PATH": settings.brain_routing_log_path,
         "BRAIN_ROUTING_LOG_RETENTION_DAYS": str(settings.brain_routing_log_retention_days),
         "BRAIN_DATABASE_URL": settings.brain_database_url,
+        "BRAIN_OWNER_FULL_NAME": settings.brain_owner_full_name,
         "BRAIN_OWNER_NAME": settings.brain_owner_name,
+        "BRAIN_PROFILE_CONTEXT_PATH": settings.brain_profile_context_path,
         "BRAIN_LLM_ENABLED": str(settings.brain_llm_enabled).lower(),
         "BRAIN_COGNEE_ENABLED": str(settings.brain_cognee_enabled).lower(),
         "BRAIN_COGNEE_RECALL_ENABLED": str(settings.brain_cognee_recall_enabled).lower(),

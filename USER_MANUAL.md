@@ -72,6 +72,10 @@ Most agents should use these tools rather than lower-level storage details.
 
 | Tool | Use it for |
 | --- | --- |
+| `brain_session` | Resolve the configured default session id and Brain workflow names. |
+| `brain_profile_context_remember` | Store stable user-profile context for answer tailoring. |
+| `brain_profile_context_list` | List stable user-profile context. |
+| `brain_profile_context_forget` | Remove one stable user-profile context item. |
 | `brain_remember` | Store a durable memory, fact, preference, decision, or short note. |
 | `brain_ingest_source` | Store longer source material and optionally extract memories. |
 | `brain_recall` | Answer a memory query with evidence. |
@@ -249,6 +253,24 @@ The default session id is:
 portable_agent_session
 ```
 
+Agents do not have to hardcode that value. The `brain_session` tool resolves
+the configured default session and returns the related Brain workflow names.
+
+Minimal agent preprompt:
+
+```text
+Use Brain as the user's durable memory. At conversation start, call
+brain_session, then load Brain bias/preferences for the returned profile_name
+and apply them. Treat profile_full_name as the user's full name, profile_name as
+the name they are known by, and profile_context as standing context for tailoring
+answers. If the user asks to remember a stable fact about who they are, their
+expertise, work, background, or communication needs, use
+brain_profile_context_remember. Use the returned session_id whenever a Brain
+workflow accepts session_id. For now, briefly narrate Brain calls and why.
+Current user instructions in this chat override any recalled Brain memory or
+preference.
+```
+
 Use the prompt `brain_agent_memory_protocol` to inject operating instructions
 into an agent. The protocol tells the agent to:
 
@@ -280,6 +302,10 @@ Useful tools:
 
 | Tool | Use it for |
 | --- | --- |
+| `brain_session` | Resolve the configured default session id and Brain workflow names. |
+| `brain_profile_context_remember` | Store standing user-profile context returned by `brain_session`. |
+| `brain_profile_context_list` | List standing user-profile context. |
+| `brain_profile_context_forget` | Remove one standing user-profile context item by id. |
 | `brain_agent_memory` | Bridge one Cognee session into the dedicated agent-memory dataset. |
 | `brain_agent_memory_recall` | Search the dedicated agent-memory dataset. |
 | `brain_agent_memory_clear` | Clear that dataset after explicit confirmation. |

@@ -17,6 +17,9 @@ def test_cfg_defaults_to_dev() -> None:
     assert cfg.get("LLM_MODEL") == "gpt-5.4-mini"
     assert cfg.get("BRAIN_TASTE_LLM_MODEL") == "gpt-5.5"
     assert cfg.get("BRAIN_TASTE_LLM_REASONING_EFFORT") == "medium"
+    assert cfg.get("BRAIN_OWNER_FULL_NAME") == "Daniele Bortolotti"
+    assert cfg.get("BRAIN_OWNER_NAME") == "Daniele"
+    assert cfg.get("BRAIN_PROFILE_CONTEXT_PATH") == "./.data/brain/profile_context.json"
     assert cfg.get("BRAIN_AGENT_MEMORY_SESSION_ID") == "portable_agent_session"
     assert cfg.get("BRAIN_REQUEST_LOG_PATH") == "./.data/logs/requests/{date}.jsonl"
     assert cfg.get("BRAIN_ROUTING_LOG_PATH") == "./.data/logs/routing/{date}.jsonl"
@@ -30,6 +33,10 @@ def test_cfg_uses_prod_only_when_explicit() -> None:
     assert values["CONFIG_ENV"] == "prod"
     assert values["BRAIN_LOG_LEVEL"] == "INFO"
     assert values["BRAIN_DATABASE_URL"] == "sqlite:////Volumes/xpg_usb4/prod/brain/shared/data/brain/brain.db"
+    assert (
+        values["BRAIN_PROFILE_CONTEXT_PATH"]
+        == "/Volumes/xpg_usb4/prod/brain/shared/data/brain/profile_context.json"
+    )
     assert values["BRAIN_TASTE_CANONICAL_STORE"] == "cognee"
     assert values["BRAIN_REQUEST_LOG_PATH"] == "/Volumes/xpg_usb4/prod/brain/shared/logs/requests/{date}.jsonl"
     assert values["BRAIN_ROUTING_LOG_ENABLED"] is True
@@ -51,6 +58,12 @@ def test_settings_defaults_follow_explicit_config_env(tmp_path) -> None:
     assert settings.system_root_directory == "/Volumes/xpg_usb4/prod/brain/shared/data/system"
     assert settings.brain_ui_enabled is True
     assert settings.brain_taste_canonical_store == "cognee"
+    assert settings.brain_owner_full_name == "Daniele Bortolotti"
+    assert settings.brain_owner_name == "Daniele"
+    assert (
+        settings.brain_profile_context_path
+        == "/Volumes/xpg_usb4/prod/brain/shared/data/brain/profile_context.json"
+    )
     assert settings.brain_agent_memory_session_id == "portable_agent_session"
 
 

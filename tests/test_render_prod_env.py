@@ -100,6 +100,12 @@ def test_render_prod_env_writes_github_secret_values_without_printing_them(tmp_p
     assert "BRAIN_TASTE_LLM_REASONING_EFFORT=medium" in rendered
     assert "BRAIN_TASTE_LLM_ROUTING_ENABLED=false" in rendered
     assert "BRAIN_TASTE_OPEN_LOOP_CONFIRMATION_THRESHOLD=0.80" in rendered
+    assert "BRAIN_OWNER_FULL_NAME='Daniele Bortolotti'" in rendered
+    assert "BRAIN_OWNER_NAME=Daniele" in rendered
+    assert (
+        "BRAIN_PROFILE_CONTEXT_PATH=/Volumes/xpg_usb4/prod/brain/shared/data/brain/profile_context.json"
+        in rendered
+    )
     assert "BRAIN_AGENT_MEMORY_SESSION_ID=portable_agent_session" in rendered
     assert "BRAIN_REQUEST_LOG_PATH=/Volumes/xpg_usb4/prod/brain/shared/logs/requests/{date}.jsonl" in rendered
     assert "BRAIN_REQUEST_LOG_MAX_BODY_BYTES=8192" in rendered
