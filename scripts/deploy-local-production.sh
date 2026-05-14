@@ -6,6 +6,7 @@ LABEL="com.brain.prod.mcp"
 UI_LABEL="com.brain.prod.ui"
 SLACK_LABEL="com.brain.prod.slack-agent"
 AGENT_MEMORY_LABEL="com.brain.prod.agent-memory"
+LOG_ROTATION_LABEL="com.brain.prod.log-rotation"
 PROD_ROOT="${BRAIN_PROD_ROOT:-/Volumes/xpg_usb4/prod/brain}"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DEPLOYMENT_CONFIG_DIR="$REPO_ROOT/deployment"
@@ -28,6 +29,8 @@ SLACK_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.slack-agent.plist.temp
 SLACK_PLIST_DST="$HOME/Library/LaunchAgents/$SLACK_LABEL.plist"
 AGENT_MEMORY_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.agent-memory.plist.template"
 AGENT_MEMORY_PLIST_DST="$HOME/Library/LaunchAgents/$AGENT_MEMORY_LABEL.plist"
+LOG_ROTATION_PLIST_SRC="$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.log-rotation.plist.template"
+LOG_ROTATION_PLIST_DST="$HOME/Library/LaunchAgents/$LOG_ROTATION_LABEL.plist"
 NEWSYSLOG_SRC="$DEPLOYMENT_CONFIG_DIR/newsyslog/brain.conf"
 NEWSYSLOG_DST="/etc/newsyslog.d/brain.conf"
 
@@ -344,6 +347,8 @@ cp "$SLACK_PLIST_SRC" "$SLACK_PLIST_DST"
 plutil -lint "$SLACK_PLIST_DST" >/dev/null
 cp "$AGENT_MEMORY_PLIST_SRC" "$AGENT_MEMORY_PLIST_DST"
 plutil -lint "$AGENT_MEMORY_PLIST_DST" >/dev/null
+cp "$LOG_ROTATION_PLIST_SRC" "$LOG_ROTATION_PLIST_DST"
+plutil -lint "$LOG_ROTATION_PLIST_DST" >/dev/null
 install_newsyslog_config
 
 log "updating current symlink"
@@ -358,6 +363,8 @@ if command -v launchctl >/dev/null 2>&1; then
   enable_launch_agent "$SLACK_LABEL" "$SLACK_PLIST_DST"
   log "reloading launchd job $AGENT_MEMORY_LABEL"
   enable_launch_agent "$AGENT_MEMORY_LABEL" "$AGENT_MEMORY_PLIST_DST"
+  log "reloading launchd job $LOG_ROTATION_LABEL"
+  enable_launch_agent "$LOG_ROTATION_LABEL" "$LOG_ROTATION_PLIST_DST"
 else
   log "launchctl not found; skipping service restart"
 fi

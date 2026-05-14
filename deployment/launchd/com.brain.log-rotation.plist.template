@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.brain.prod.log-rotation</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/zsh</string>
+    <string>-lc</string>
+    <string>cd /Volumes/xpg_usb4/prod/brain/current &amp;&amp; exec /opt/homebrew/bin/uv run python scripts/rotate_launchd_logs.py --retention-days 30</string>
+  </array>
+
+  <key>WorkingDirectory</key>
+  <string>/Users/oric</string>
+
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>0</integer>
+    <key>Minute</key>
+    <integer>5</integer>
+  </dict>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>ENV_FILE</key>
+    <string>/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env</string>
+  </dict>
+
+  <key>StandardOutPath</key>
+  <string>/Users/oric/Library/Logs/brain-log-rotation.out.log</string>
+
+  <key>StandardErrorPath</key>
+  <string>/Users/oric/Library/Logs/brain-log-rotation.err.log</string>
+</dict>
+</plist>

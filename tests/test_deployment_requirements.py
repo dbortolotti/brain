@@ -55,6 +55,7 @@ def test_deployment_templates_live_under_deployment() -> None:
         Path("deployment/launchd/com.brain.ui.plist.template"),
         Path("deployment/launchd/com.brain.slack-agent.plist.template"),
         Path("deployment/launchd/com.brain.agent-memory.plist.template"),
+        Path("deployment/launchd/com.brain.log-rotation.plist.template"),
         Path("deployment/mcp/claude_desktop_config.template.json"),
         Path("deployment/newsyslog/brain.conf"),
     }
@@ -73,6 +74,7 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
         "com.brain.prod.ui",
         "com.brain.prod.slack-agent",
         "com.brain.prod.agent-memory",
+        "com.brain.prod.log-rotation",
     ]:
         assert label in script
 
@@ -80,6 +82,7 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     assert "deployment" in script
     assert "$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.slack-agent.plist.template" in script
     assert "$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.agent-memory.plist.template" in script
+    assert "$DEPLOYMENT_CONFIG_DIR/launchd/com.brain.log-rotation.plist.template" in script
     assert 'ensure_env_var "BRAIN_SLACK_AGENT_ENABLED" "true"' in script
     assert 'set_env_var "BRAIN_SLACK_AGENT_PORT" "18003"' in script
     assert 'BRAIN_DATABASE_URL=$DATABASE_URL' in script
@@ -102,6 +105,7 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     assert 'enable_launch_agent "$UI_LABEL" "$UI_PLIST_DST"' in script
     assert 'enable_launch_agent "$SLACK_LABEL" "$SLACK_PLIST_DST"' in script
     assert 'enable_launch_agent "$AGENT_MEMORY_LABEL" "$AGENT_MEMORY_PLIST_DST"' in script
+    assert 'enable_launch_agent "$LOG_ROTATION_LABEL" "$LOG_ROTATION_PLIST_DST"' in script
     assert 'ensure_env_var "BRAIN_TASTE_ENABLED" "true"' in script
     assert 'ensure_env_var "BRAIN_TASTE_LLM_ROUTING_ENABLED" "false"' in script
     assert 'ensure_env_var "BRAIN_TASTE_OPEN_LOOP_CONFIRMATION_THRESHOLD" "0.80"' in script
@@ -162,6 +166,21 @@ def test_agent_memory_launchd_runs_nightly_at_3am() -> None:
     assert "<integer>3</integer>" in plist
     assert "<key>Minute</key>" in plist
     assert "<integer>0</integer>" in plist
+
+
+def test_log_rotation_launchd_runs_daily_after_midnight() -> None:
+    plist = Path("deployment/launchd/com.brain.log-rotation.plist.template").read_text(
+        encoding="utf-8"
+    )
+
+    assert "com.brain.prod.log-rotation" in plist
+    assert "scripts/rotate_launchd_logs.py" in plist
+    assert "--retention-days 30" in plist
+    assert "<key>StartCalendarInterval</key>" in plist
+    assert "<key>Hour</key>" in plist
+    assert "<integer>0</integer>" in plist
+    assert "<key>Minute</key>" in plist
+    assert "<integer>5</integer>" in plist
 
 
 def test_production_verifier_checks_brain_database_under_shared_data() -> None:
