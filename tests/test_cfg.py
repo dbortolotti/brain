@@ -33,6 +33,11 @@ def test_cfg_uses_prod_only_when_explicit() -> None:
     assert values["CONFIG_ENV"] == "prod"
     assert values["BRAIN_LOG_LEVEL"] == "INFO"
     assert values["BRAIN_DATABASE_URL"] == "sqlite:////Volumes/xpg_usb4/prod/brain/shared/data/brain/brain.db"
+    assert values["VECTOR_DB_PROVIDER"] == "pgvector"
+    assert values["VECTOR_DB_PORT"] == 15432
+    assert values["VECTOR_DATASET_DATABASE_HANDLER"] == "pgvector"
+    assert values["DB_PROVIDER"] == "postgres"
+    assert values["DB_PORT"] == 15432
     assert (
         values["BRAIN_PROFILE_CONTEXT_PATH"]
         == "/Volumes/xpg_usb4/prod/brain/shared/data/brain/profile_context.json"
@@ -55,6 +60,11 @@ def test_settings_defaults_follow_explicit_config_env(tmp_path) -> None:
     settings = Settings(_env_file=str(env_file))
 
     assert settings.brain_database_url == "sqlite:////Volumes/xpg_usb4/prod/brain/shared/data/brain/brain.db"
+    assert settings.vector_db_provider == "pgvector"
+    assert settings.vector_db_port == 15432
+    assert settings.vector_dataset_database_handler == "pgvector"
+    assert settings.db_provider == "postgres"
+    assert settings.db_port == 15432
     assert settings.system_root_directory == "/Volumes/xpg_usb4/prod/brain/shared/data/system"
     assert settings.brain_ui_enabled is True
     assert settings.brain_taste_canonical_store == "cognee"

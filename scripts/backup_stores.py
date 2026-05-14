@@ -44,6 +44,7 @@ def main() -> int:
         "data_root": str(data_root),
         "sqlite": [],
         "lancedb": [],
+        "pgvector": [],
         "raw_data": [],
         "secrets": [],
         "neo4j": [],
@@ -53,7 +54,10 @@ def main() -> int:
 
     backup_sqlite(data_root, run_dir, manifest)
     backup_raw_data(Path(settings.data_root_directory), run_dir, manifest)
-    backup_lancedb(settings.vector_db_url, data_root, run_dir, manifest)
+    if settings.vector_db_provider == "pgvector":
+        backup_pgvector(settings, run_dir, manifest)
+    else:
+        backup_lancedb(settings.vector_db_url, data_root, run_dir, manifest)
     backup_secrets(settings, run_dir, manifest)
     backup_neo4j(settings, data_root, run_dir, manifest)
 
@@ -171,6 +175,46 @@ def backup_lancedb(
             tar.add(source, arcname=source.name)
         manifest["lancedb"].append({"source": str(source), "archive": str(archive)})
         console.print(f"[green][OK][/green] LanceDB archive {archive}")
+
+
+def backup_pgvector(settings, run_dir: Path, manifest: dict[str, Any]) -> None:
+    dump_dir = run_dir / "pgvector"
+    dump_dir.mkdir(exist_ok=True)
+    dump_path = dump_dir / f"{settings.db_name}.sql"
+    if not shutil.which("docker"):
+        manifest["blockers"].append("Docker not found; cannot pg_dump pgvector/Postgres.")
+        console.print("[yellow][WARN][/yellow] docker not found; no pgvector dump")
+        return
+    result = subprocess.run(
+        [
+            "docker",
+            "exec",
+            "brain-prod-postgres",
+            "pg_dump",
+            "-U",
+            settings.db_username,
+            "-d",
+            settings.db_name,
+        ],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    dump_path.write_text(result.stdout, encoding="utf-8")
+    verified = result.returncode == 0 and dump_path.stat().st_size > 0
+    manifest["pgvector"].append(
+        {
+            "method": "docker-pg-dump",
+            "database": settings.db_name,
+            "dump": str(dump_path),
+            "returncode": result.returncode,
+            "stderr": result.stderr,
+            "verified": verified,
+        }
+    )
+    if not verified:
+        raise RuntimeError(f"pgvector/Postgres dump failed: {result.stderr.strip()}")
+    console.print(f"[green][OK][/green] pgvector/Postgres dump {dump_path}")
 
 
 def backup_secrets(settings, run_dir: Path, manifest: dict[str, Any]) -> None:

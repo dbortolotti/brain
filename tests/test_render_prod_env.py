@@ -92,6 +92,12 @@ def test_render_prod_env_writes_github_secret_values_without_printing_them(tmp_p
     assert "EMBEDDING_PROVIDER=openai" in rendered
     assert "EMBEDDING_MODEL=text-embedding-3-large" in rendered
     assert "EMBEDDING_DIMENSIONS=3072" in rendered
+    assert "VECTOR_DB_PROVIDER=pgvector" in rendered
+    assert "VECTOR_DB_PORT=15432" in rendered
+    assert "VECTOR_DATASET_DATABASE_HANDLER=pgvector" in rendered
+    assert "VECTOR_DB_HOST=127.0.0.1" in rendered
+    assert "DB_PROVIDER=postgres" in rendered
+    assert "DB_PORT=15432" in rendered
     assert "OPENAI_API_KEY=sk-prod-openai" in rendered
     assert "OPENROUTER_API_KEY=sk-prod-openrouter" in rendered
     assert "GRAPH_DATABASE_PASSWORD=prod-graph-password" in rendered

@@ -99,6 +99,41 @@ def test_backup_raw_data_and_secrets_archives(tmp_path, monkeypatch) -> None:
     assert secrets_archive.stat().st_mode & 0o777 == 0o600
 
 
+def test_backup_pgvector_uses_docker_pg_dump(tmp_path, monkeypatch) -> None:
+    calls = []
+
+    class Result:
+        returncode = 0
+        stdout = "pg dump"
+        stderr = ""
+
+    def fake_run(command, **kwargs):
+        calls.append({"command": command, **kwargs})
+        return Result()
+
+    monkeypatch.setattr(backup_stores.shutil, "which", lambda name: "/usr/bin/docker")
+    monkeypatch.setattr(backup_stores.subprocess, "run", fake_run)
+    settings = SimpleNamespace(db_username="cognee", db_name="cognee_db")
+    manifest = {"pgvector": [], "blockers": []}
+    run_dir = tmp_path / "backup"
+    run_dir.mkdir()
+
+    backup_stores.backup_pgvector(settings, run_dir, manifest)
+
+    assert calls[0]["command"] == [
+        "docker",
+        "exec",
+        "brain-prod-postgres",
+        "pg_dump",
+        "-U",
+        "cognee",
+        "-d",
+        "cognee_db",
+    ]
+    assert manifest["pgvector"][0]["verified"] is True
+    assert Path(manifest["pgvector"][0]["dump"]).read_text(encoding="utf-8") == "pg dump"
+
+
 def test_verify_backups_requires_critical_artifacts(tmp_path) -> None:
     backup_dir = tmp_path / "backups"
     run_dir = backup_dir / "20260504_120000"
@@ -130,6 +165,8 @@ def test_verify_backups_requires_critical_artifacts(tmp_path) -> None:
 
     settings = SimpleNamespace(
         system_root_directory="/prod/shared/data/system",
+        db_provider="sqlite",
+        vector_db_provider="lancedb",
         brain_google_drive_backup_enabled=True,
     )
     failures: list[str] = []
@@ -159,6 +196,8 @@ def test_verify_backups_rejects_missing_main_cognee_db(tmp_path) -> None:
     )
     settings = SimpleNamespace(
         system_root_directory="/prod/shared/data/system",
+        db_provider="sqlite",
+        vector_db_provider="lancedb",
         brain_google_drive_backup_enabled=True,
     )
     failures: list[str] = []
@@ -200,6 +239,51 @@ def test_verify_backups_uses_configured_db_name(tmp_path) -> None:
     settings = SimpleNamespace(
         system_root_directory="/prod/shared/data/system",
         db_name="custom_cognee",
+        db_provider="sqlite",
+        vector_db_provider="lancedb",
+        brain_google_drive_backup_enabled=False,
+    )
+    failures: list[str] = []
+
+    verify_mcp_production.check_backups(backup_dir, settings, failures)
+
+    assert failures == []
+
+
+def test_verify_backups_accepts_pgvector_instead_of_lancedb(tmp_path) -> None:
+    backup_dir = tmp_path / "backups"
+    run_dir = backup_dir / "20260504_120000"
+    for name in ("sqlite", "raw_data", "pgvector", "secrets"):
+        (run_dir / name).mkdir(parents=True, exist_ok=True)
+    brain_db_backup = run_dir / "sqlite" / "brain__brain.db"
+    raw_archive = run_dir / "raw_data" / "data.tar.gz"
+    pg_dump = run_dir / "pgvector" / "cognee_db.sql"
+    secrets_archive = run_dir / "secrets" / "secrets.tar.gz"
+    for path in (brain_db_backup, raw_archive, pg_dump, secrets_archive):
+        path.write_text("backup", encoding="utf-8")
+
+    manifest = {
+        "blockers": [],
+        "sqlite": [
+            {
+                "source": "/prod/shared/data/brain/brain.db",
+                "backup": str(brain_db_backup),
+                "integrity_check": "ok",
+            }
+        ],
+        "raw_data": [{"archive": str(raw_archive)}],
+        "pgvector": [{"dump": str(pg_dump), "verified": True}],
+        "lancedb": [],
+        "secrets": [{"archive": str(secrets_archive)}],
+        "neo4j": [{"method": "cypher_count_check", "verified": True}],
+        "google_drive": {"verified": False},
+    }
+    (run_dir / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+
+    settings = SimpleNamespace(
+        system_root_directory="/prod/shared/data/system",
+        db_provider="postgres",
+        vector_db_provider="pgvector",
         brain_google_drive_backup_enabled=False,
     )
     failures: list[str] = []

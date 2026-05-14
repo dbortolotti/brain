@@ -66,6 +66,19 @@ def test_deployment_templates_live_under_deployment() -> None:
     assert not Path("mcp").exists()
 
 
+def test_production_docker_compose_runs_pgvector_and_neo4j() -> None:
+    compose = Path("deployment/docker-compose.prod.yml").read_text(encoding="utf-8")
+
+    assert "brain-prod-postgres" in compose
+    assert "pgvector/pgvector:pg16" in compose
+    assert "127.0.0.1:${DB_PORT:-15432}:5432" in compose
+    assert "./postgres/initdb:/docker-entrypoint-initdb.d:ro" in compose
+    assert "CREATE EXTENSION IF NOT EXISTS vector" in Path(
+        "deployment/postgres/initdb/001-vector.sql"
+    ).read_text(encoding="utf-8")
+    assert "brain-prod-neo4j" in compose
+
+
 def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     script = Path("scripts/deploy-local-production.sh").read_text(encoding="utf-8")
 
@@ -113,7 +126,12 @@ def test_local_production_deploy_manages_mcp_ui_and_slack_services() -> None:
     assert "${BRAIN_SLACK_AGENT_PORT:-18003}/slack/healthz" in script
     assert "uv run python scripts/verify_slack_agent.py" in script
     assert 'ensure_env_var "BRAIN_AGENT_MEMORY_SESSION_ID" "portable_agent_session"' in script
-    assert "docker compose -f deployment/docker-compose.prod.yml up -d neo4j" in script
+    assert "docker compose -f deployment/docker-compose.prod.yml up -d postgres neo4j" in script
+    assert 'set_env_var "VECTOR_DB_PROVIDER" "pgvector"' in script
+    assert 'set_env_var "VECTOR_DB_PORT" "15432"' in script
+    assert 'set_env_var "VECTOR_DATASET_DATABASE_HANDLER" "pgvector"' in script
+    assert 'set_env_var "DB_PROVIDER" "postgres"' in script
+    assert 'set_env_var "DB_PORT" "15432"' in script
     assert "GRAPH_DATABASE_PASSWORD must be set to a real secret" in script
     assert "uv run python scripts/live_model_smoke.py" in script
     assert 'MODEL_SMOKE_SCOPE="${BRAIN_MODEL_SMOKE_SCOPE:-active}"' in script

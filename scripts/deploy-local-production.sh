@@ -148,10 +148,21 @@ GRAPH_DATABASE_URL=bolt://127.0.0.1:17687
 GRAPH_DATABASE_NAME=neo4j
 GRAPH_DATABASE_USERNAME=neo4j
 GRAPH_DATABASE_PASSWORD=change-me
-VECTOR_DB_PROVIDER=lancedb
-VECTOR_DB_URL=$DATA_DIR/lancedb/cognee.lancedb
-DB_PROVIDER=sqlite
+VECTOR_DB_PROVIDER=pgvector
+VECTOR_DB_URL=
+VECTOR_DB_PORT=15432
+VECTOR_DB_NAME=cognee_vectors
+VECTOR_DB_KEY=
+VECTOR_DATASET_DATABASE_HANDLER=pgvector
+VECTOR_DB_USERNAME=cognee
+VECTOR_DB_PASSWORD=cognee
+VECTOR_DB_HOST=127.0.0.1
+DB_PROVIDER=postgres
 DB_NAME=cognee_db
+DB_HOST=127.0.0.1
+DB_PORT=15432
+DB_USERNAME=cognee
+DB_PASSWORD=cognee
 SYSTEM_ROOT_DIRECTORY=$DATA_DIR/system
 DATA_ROOT_DIRECTORY=$DATA_DIR/data
 BRAIN_DATABASE_URL=$DATABASE_URL
@@ -232,6 +243,21 @@ ensure_env_var "BRAIN_ROUTING_LOG_RETENTION_DAYS" "90"
 ensure_env_var "BRAIN_DATABASE_URL" "$DATABASE_URL"
 set_env_var "BRAIN_MCP_PORT" "18000"
 set_env_var "GRAPH_DATABASE_URL" "bolt://127.0.0.1:17687"
+set_env_var "VECTOR_DB_PROVIDER" "pgvector"
+set_env_var "VECTOR_DB_URL" ""
+set_env_var "VECTOR_DB_PORT" "15432"
+set_env_var "VECTOR_DB_NAME" "cognee_vectors"
+set_env_var "VECTOR_DB_KEY" ""
+set_env_var "VECTOR_DATASET_DATABASE_HANDLER" "pgvector"
+set_env_var "VECTOR_DB_USERNAME" "cognee"
+set_env_var "VECTOR_DB_PASSWORD" "cognee"
+set_env_var "VECTOR_DB_HOST" "127.0.0.1"
+set_env_var "DB_PROVIDER" "postgres"
+set_env_var "DB_NAME" "cognee_db"
+set_env_var "DB_HOST" "127.0.0.1"
+set_env_var "DB_PORT" "15432"
+set_env_var "DB_USERNAME" "cognee"
+set_env_var "DB_PASSWORD" "cognee"
 ensure_env_var "BRAIN_TASTE_ENABLED" "true"
 ensure_env_var "BRAIN_TASTE_LLM_ROUTING_ENABLED" "false"
 ensure_env_var "BRAIN_TASTE_AUTO_ENRICH_ENABLED" "true"
@@ -312,12 +338,16 @@ if [[ -z "${GRAPH_DATABASE_PASSWORD:-}" || "$GRAPH_DATABASE_PASSWORD" == "change
   exit 1
 fi
 
-log "starting production Neo4j container"
+log "starting production Postgres/pgvector and Neo4j containers"
 (
   cd "$RELEASE_DIR"
   GRAPH_DATABASE_PASSWORD="$GRAPH_DATABASE_PASSWORD" \
+    DB_NAME="${DB_NAME:-cognee_db}" \
+    DB_USERNAME="${DB_USERNAME:-cognee}" \
+    DB_PASSWORD="${DB_PASSWORD:-cognee}" \
+    DB_PORT="${DB_PORT:-15432}" \
     BRAIN_PROD_ROOT="$PROD_ROOT" \
-    docker compose -f deployment/docker-compose.prod.yml up -d neo4j
+    docker compose -f deployment/docker-compose.prod.yml up -d postgres neo4j
 )
 
 MODEL_SMOKE_SCOPE="${BRAIN_MODEL_SMOKE_SCOPE:-active}"
