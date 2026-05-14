@@ -47,7 +47,13 @@ def test_mcp_initialize() -> None:
     assert response.json()["result"]["protocolVersion"] == "2024-11-05"
     server_info = response.json()["result"]["serverInfo"]
     assert server_info["name"] == "brain"
-    assert "icons" not in server_info
+    assert server_info["icons"] == [
+        {
+            "src": f"{mcp_server.settings.brain_public_base_url.rstrip('/')}/icon.png",
+            "mimeType": "image/png",
+            "sizes": "512x512",
+        }
+    ]
     assert response.json()["result"]["capabilities"]["prompts"] == {}
 
 
@@ -108,10 +114,17 @@ def test_datasource_tools_are_listed() -> None:
     }
     assert expected_tools == tool_names
     assert all("." not in tool_name for tool_name in tool_names)
+    expected_icons = [
+        {
+            "src": f"{mcp_server.settings.brain_public_base_url.rstrip('/')}/icon.png",
+            "mimeType": "image/png",
+            "sizes": "512x512",
+        }
+    ]
     for tool in response.json()["result"]["tools"]:
         assert "outputSchema" in tool
         assert tool["outputSchema"]["type"] == "object"
-        assert "icons" not in tool
+        assert tool["icons"] == expected_icons
         assert "structuredContent" not in tool["outputSchema"]["properties"]
     assert {
         "add",
