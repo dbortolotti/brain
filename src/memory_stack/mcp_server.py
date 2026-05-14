@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import Any
 
 from fastapi import FastAPI, Header, HTTPException, Request, Response
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
 
 from memory_stack.brain_models import IngestSourceRequest, RecallRequest, RememberRequest
@@ -48,6 +48,12 @@ from memory_stack.domain_constants import (
     OPEN_LOOP_STATUSES,
     RECALL_MODES,
     SOURCE_KINDS,
+)
+from memory_stack.icon_assets import (
+    BRAIN_APPLE_TOUCH_ICON_PATH,
+    BRAIN_FAVICON_PATH,
+    BRAIN_ICON_PATH,
+    brain_icon_metadata,
 )
 from memory_stack.io import to_jsonable
 from memory_stack.oauth import BrainOAuthProvider, parse_bearer
@@ -713,8 +719,13 @@ def memory_tool_definitions() -> list[dict[str, Any]]:
 
 
 def tools_with_output_schemas(tools: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    icons = brain_icon_metadata(settings.brain_public_base_url)
     return [
-        {**tool, "outputSchema": tool_output_schema(str(tool["name"]))}
+        {
+            **tool,
+            "icons": tool.get("icons", icons),
+            "outputSchema": tool_output_schema(str(tool["name"])),
+        }
         for tool in tools
     ]
 
@@ -1047,6 +1058,33 @@ async def healthz() -> dict[str, Any]:
         "public_mcp_url": settings.public_mcp_url,
         "uptime_seconds": round(time.time() - STARTED_AT, 3),
     }
+
+
+@app.get("/icon.png", include_in_schema=False)
+async def icon_png() -> FileResponse:
+    return FileResponse(
+        BRAIN_ICON_PATH,
+        media_type="image/png",
+        headers={"Cache-Control": "public, max-age=86400"},
+    )
+
+
+@app.get("/apple-touch-icon.png", include_in_schema=False)
+async def apple_touch_icon_png() -> FileResponse:
+    return FileResponse(
+        BRAIN_APPLE_TOUCH_ICON_PATH,
+        media_type="image/png",
+        headers={"Cache-Control": "public, max-age=86400"},
+    )
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon_ico() -> FileResponse:
+    return FileResponse(
+        BRAIN_FAVICON_PATH,
+        media_type="image/x-icon",
+        headers={"Cache-Control": "public, max-age=86400"},
+    )
 
 
 @app.get("/.well-known/oauth-protected-resource")
@@ -1450,7 +1488,11 @@ async def handle_json_rpc(payload: Any) -> Any:
             result = {
                 "protocolVersion": "2024-11-05",
                 "capabilities": {"tools": {}, "resources": {}, "prompts": {}},
-                "serverInfo": {"name": "brain", "version": "0.1.0"},
+                "serverInfo": {
+                    "name": "brain",
+                    "version": "0.1.0",
+                    "icons": brain_icon_metadata(settings.brain_public_base_url),
+                },
             }
         elif method == "tools/list":
             result = {"tools": memory_tool_definitions()}

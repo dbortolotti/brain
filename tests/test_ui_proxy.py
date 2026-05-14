@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import importlib
 
+from fastapi.testclient import TestClient
+
 
 def test_rewrite_backend_absolute_redirect(monkeypatch) -> None:
     ui_proxy = load_ui_proxy(monkeypatch)
@@ -42,6 +44,17 @@ def test_rewrite_external_redirect_leaves_location_unchanged(monkeypatch) -> Non
     location = "https://example.com/login"
 
     assert ui_proxy.rewrite_redirect_location(location, ui_proxy.backend_base_url()) == location
+
+
+def test_icon_routes_do_not_require_ui_session(monkeypatch) -> None:
+    ui_proxy = load_ui_proxy(monkeypatch)
+    client = TestClient(ui_proxy.app)
+
+    response = client.get("/icon.png")
+
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "image/png"
+    assert response.content.startswith(b"\x89PNG")
 
 
 def load_ui_proxy(monkeypatch):

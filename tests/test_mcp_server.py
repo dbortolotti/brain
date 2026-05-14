@@ -25,11 +25,33 @@ def test_healthz() -> None:
     assert response.json()["service"] == "Brain"
 
 
+def test_icon_routes() -> None:
+    client = TestClient(app)
+
+    icon_response = client.get("/icon.png")
+    assert icon_response.status_code == 200
+    assert icon_response.headers["content-type"] == "image/png"
+    assert icon_response.content.startswith(b"\x89PNG")
+
+    favicon_response = client.get("/favicon.ico")
+    assert favicon_response.status_code == 200
+    assert favicon_response.headers["content-type"] == "image/x-icon"
+    assert favicon_response.content.startswith(b"\x00\x00\x01\x00")
+
+
 def test_mcp_initialize() -> None:
     client = TestClient(app)
     response = client.post("/mcp", json={"jsonrpc": "2.0", "id": 1, "method": "initialize"})
     assert response.status_code == 200
-    assert response.json()["result"]["serverInfo"]["name"] == "brain"
+    server_info = response.json()["result"]["serverInfo"]
+    assert server_info["name"] == "brain"
+    assert server_info["icons"] == [
+        {
+            "src": "https://brain.dceb.net/icon.png",
+            "mimeType": "image/png",
+            "sizes": "512x512",
+        }
+    ]
     assert response.json()["result"]["capabilities"]["prompts"] == {}
 
 
@@ -78,6 +100,13 @@ def test_datasource_tools_are_listed() -> None:
     for tool in response.json()["result"]["tools"]:
         assert "outputSchema" in tool
         assert tool["outputSchema"]["type"] == "object"
+        assert tool["icons"] == [
+            {
+                "src": "https://brain.dceb.net/icon.png",
+                "mimeType": "image/png",
+                "sizes": "512x512",
+            }
+        ]
         assert "structuredContent" not in tool["outputSchema"]["properties"]
     assert {
         "add",

@@ -9,9 +9,14 @@ from urllib.parse import urlencode, urlsplit, urlunsplit
 
 import httpx
 from fastapi import FastAPI, HTTPException, Request, Response
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 
 from memory_stack.cfg import load_settings
+from memory_stack.icon_assets import (
+    BRAIN_APPLE_TOUCH_ICON_PATH,
+    BRAIN_FAVICON_PATH,
+    BRAIN_ICON_PATH,
+)
 from memory_stack.oauth import ensure_auth_password, read_form
 
 settings = load_settings()
@@ -47,6 +52,33 @@ async def healthz() -> dict[str, str | int | bool]:
 @app.get("/")
 async def root() -> RedirectResponse:
     return RedirectResponse(settings.brain_public_ui_path, status_code=302)
+
+
+@app.get("/icon.png", include_in_schema=False)
+async def icon_png() -> FileResponse:
+    return FileResponse(
+        BRAIN_ICON_PATH,
+        media_type="image/png",
+        headers={"Cache-Control": "public, max-age=86400"},
+    )
+
+
+@app.get("/apple-touch-icon.png", include_in_schema=False)
+async def apple_touch_icon_png() -> FileResponse:
+    return FileResponse(
+        BRAIN_APPLE_TOUCH_ICON_PATH,
+        media_type="image/png",
+        headers={"Cache-Control": "public, max-age=86400"},
+    )
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon_ico() -> FileResponse:
+    return FileResponse(
+        BRAIN_FAVICON_PATH,
+        media_type="image/x-icon",
+        headers={"Cache-Control": "public, max-age=86400"},
+    )
 
 
 @app.api_route("/ui-login", methods=["GET", "POST"])
