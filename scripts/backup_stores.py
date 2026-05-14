@@ -53,7 +53,7 @@ def main() -> int:
     }
 
     backup_sqlite(data_root, run_dir, manifest)
-    backup_raw_data(Path(settings.data_root_directory), run_dir, manifest)
+    backup_raw_data(data_root, run_dir, manifest)
     if settings.vector_db_provider == "pgvector":
         backup_pgvector(settings, run_dir, manifest)
     else:
@@ -130,8 +130,8 @@ def sqlite_integrity_check(path: Path) -> str:
 
 def backup_raw_data(data_dir: Path, run_dir: Path, manifest: dict[str, Any]) -> None:
     if not data_dir.exists():
-        manifest["blockers"].append(f"DATA_ROOT_DIRECTORY missing: {data_dir}")
-        console.print(f"[yellow][WARN][/yellow] DATA_ROOT_DIRECTORY missing: {data_dir}")
+        manifest["blockers"].append(f"shared data directory missing: {data_dir}")
+        console.print(f"[yellow][WARN][/yellow] shared data directory missing: {data_dir}")
         return
 
     archive_dir = run_dir / "raw_data"

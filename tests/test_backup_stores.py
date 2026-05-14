@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import sqlite3
 import sys
+import tarfile
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -68,9 +69,12 @@ def test_backup_sqlite_includes_brain_taste_tables(tmp_path) -> None:
 
 
 def test_backup_raw_data_and_secrets_archives(tmp_path, monkeypatch) -> None:
-    data_dir = tmp_path / "shared" / "data" / "data"
+    data_dir = tmp_path / "shared" / "data"
     data_dir.mkdir(parents=True)
-    (data_dir / "memory.txt").write_text("remember this", encoding="utf-8")
+    (data_dir / "data").mkdir()
+    (data_dir / "data" / "memory.txt").write_text("remember this", encoding="utf-8")
+    (data_dir / "brain").mkdir()
+    (data_dir / "brain" / "profile_context.json").write_text("[]\n", encoding="utf-8")
 
     secrets_dir = tmp_path / "shared" / "secrets"
     secrets_dir.mkdir(parents=True)
@@ -94,6 +98,8 @@ def test_backup_raw_data_and_secrets_archives(tmp_path, monkeypatch) -> None:
     backup_stores.backup_secrets(settings, run_dir, manifest)
 
     assert Path(manifest["raw_data"][0]["archive"]).exists()
+    with tarfile.open(manifest["raw_data"][0]["archive"], "r:gz") as tar:
+        assert "data/brain/profile_context.json" in tar.getnames()
     secrets_archive = Path(manifest["secrets"][0]["archive"])
     assert secrets_archive.exists()
     assert secrets_archive.stat().st_mode & 0o777 == 0o600
@@ -143,8 +149,13 @@ def test_verify_backups_requires_critical_artifacts(tmp_path) -> None:
     raw_archive = run_dir / "raw_data" / "data.tar.gz"
     lancedb_archive = run_dir / "lancedb" / "cognee.lancedb.tar.gz"
     secrets_archive = run_dir / "secrets" / "secrets.tar.gz"
-    for path in (main_db_backup, raw_archive, lancedb_archive, secrets_archive):
+    for path in (main_db_backup, lancedb_archive, secrets_archive):
         path.write_text("backup", encoding="utf-8")
+    profile_context = tmp_path / "prod" / "shared" / "data" / "brain" / "profile_context.json"
+    profile_context.parent.mkdir(parents=True)
+    profile_context.write_text("[]\n", encoding="utf-8")
+    with tarfile.open(raw_archive, "w:gz") as tar:
+        tar.add(profile_context.parent.parent, arcname="data")
 
     manifest = {
         "blockers": [],
@@ -155,7 +166,12 @@ def test_verify_backups_requires_critical_artifacts(tmp_path) -> None:
                 "integrity_check": "ok",
             }
         ],
-        "raw_data": [{"archive": str(raw_archive)}],
+        "raw_data": [
+            {
+                "source": str(profile_context.parent.parent),
+                "archive": str(raw_archive),
+            }
+        ],
         "lancedb": [{"archive": str(lancedb_archive)}],
         "secrets": [{"archive": str(secrets_archive)}],
         "neo4j": [{"method": "cypher_count_check", "verified": True}],
@@ -167,6 +183,7 @@ def test_verify_backups_requires_critical_artifacts(tmp_path) -> None:
         system_root_directory="/prod/shared/data/system",
         db_provider="sqlite",
         vector_db_provider="lancedb",
+        brain_profile_context_path=str(profile_context),
         brain_google_drive_backup_enabled=True,
     )
     failures: list[str] = []
@@ -216,8 +233,13 @@ def test_verify_backups_uses_configured_db_name(tmp_path) -> None:
     raw_archive = run_dir / "raw_data" / "data.tar.gz"
     lancedb_archive = run_dir / "lancedb" / "cognee.lancedb.tar.gz"
     secrets_archive = run_dir / "secrets" / "secrets.tar.gz"
-    for path in (main_db_backup, raw_archive, lancedb_archive, secrets_archive):
+    for path in (main_db_backup, lancedb_archive, secrets_archive):
         path.write_text("backup", encoding="utf-8")
+    profile_context = tmp_path / "prod" / "shared" / "data" / "brain" / "profile_context.json"
+    profile_context.parent.mkdir(parents=True)
+    profile_context.write_text("[]\n", encoding="utf-8")
+    with tarfile.open(raw_archive, "w:gz") as tar:
+        tar.add(profile_context.parent.parent, arcname="data")
 
     manifest = {
         "blockers": [],
@@ -228,7 +250,12 @@ def test_verify_backups_uses_configured_db_name(tmp_path) -> None:
                 "integrity_check": "ok",
             }
         ],
-        "raw_data": [{"archive": str(raw_archive)}],
+        "raw_data": [
+            {
+                "source": str(profile_context.parent.parent),
+                "archive": str(raw_archive),
+            }
+        ],
         "lancedb": [{"archive": str(lancedb_archive)}],
         "secrets": [{"archive": str(secrets_archive)}],
         "neo4j": [{"method": "cypher_count_check", "verified": True}],
@@ -241,6 +268,7 @@ def test_verify_backups_uses_configured_db_name(tmp_path) -> None:
         db_name="custom_cognee",
         db_provider="sqlite",
         vector_db_provider="lancedb",
+        brain_profile_context_path=str(profile_context),
         brain_google_drive_backup_enabled=False,
     )
     failures: list[str] = []
@@ -259,8 +287,13 @@ def test_verify_backups_accepts_pgvector_instead_of_lancedb(tmp_path) -> None:
     raw_archive = run_dir / "raw_data" / "data.tar.gz"
     pg_dump = run_dir / "pgvector" / "cognee_db.sql"
     secrets_archive = run_dir / "secrets" / "secrets.tar.gz"
-    for path in (brain_db_backup, raw_archive, pg_dump, secrets_archive):
+    for path in (brain_db_backup, pg_dump, secrets_archive):
         path.write_text("backup", encoding="utf-8")
+    profile_context = tmp_path / "prod" / "shared" / "data" / "brain" / "profile_context.json"
+    profile_context.parent.mkdir(parents=True)
+    profile_context.write_text("[]\n", encoding="utf-8")
+    with tarfile.open(raw_archive, "w:gz") as tar:
+        tar.add(profile_context.parent.parent, arcname="data")
 
     manifest = {
         "blockers": [],
@@ -271,7 +304,12 @@ def test_verify_backups_accepts_pgvector_instead_of_lancedb(tmp_path) -> None:
                 "integrity_check": "ok",
             }
         ],
-        "raw_data": [{"archive": str(raw_archive)}],
+        "raw_data": [
+            {
+                "source": str(profile_context.parent.parent),
+                "archive": str(raw_archive),
+            }
+        ],
         "pgvector": [{"dump": str(pg_dump), "verified": True}],
         "lancedb": [],
         "secrets": [{"archive": str(secrets_archive)}],
@@ -284,6 +322,7 @@ def test_verify_backups_accepts_pgvector_instead_of_lancedb(tmp_path) -> None:
         system_root_directory="/prod/shared/data/system",
         db_provider="postgres",
         vector_db_provider="pgvector",
+        brain_profile_context_path=str(profile_context),
         brain_google_drive_backup_enabled=False,
     )
     failures: list[str] = []
@@ -291,3 +330,52 @@ def test_verify_backups_accepts_pgvector_instead_of_lancedb(tmp_path) -> None:
     verify_mcp_production.check_backups(backup_dir, settings, failures)
 
     assert failures == []
+
+
+def test_verify_backups_rejects_raw_archive_missing_profile_context(tmp_path) -> None:
+    backup_dir = tmp_path / "backups"
+    run_dir = backup_dir / "20260504_120000"
+    for name in ("sqlite", "raw_data", "pgvector", "secrets"):
+        (run_dir / name).mkdir(parents=True, exist_ok=True)
+    brain_db_backup = run_dir / "sqlite" / "brain__brain.db"
+    raw_archive = run_dir / "raw_data" / "data.tar.gz"
+    pg_dump = run_dir / "pgvector" / "cognee_db.sql"
+    secrets_archive = run_dir / "secrets" / "secrets.tar.gz"
+    for path in (brain_db_backup, pg_dump, secrets_archive):
+        path.write_text("backup", encoding="utf-8")
+    shared_data = tmp_path / "prod" / "shared" / "data"
+    (shared_data / "data").mkdir(parents=True)
+    (shared_data / "data" / "memory.txt").write_text("missing profile", encoding="utf-8")
+    with tarfile.open(raw_archive, "w:gz") as tar:
+        tar.add(shared_data / "data", arcname="data")
+
+    manifest = {
+        "blockers": [],
+        "sqlite": [
+            {
+                "source": "/prod/shared/data/brain/brain.db",
+                "backup": str(brain_db_backup),
+                "integrity_check": "ok",
+            }
+        ],
+        "raw_data": [{"source": str(shared_data), "archive": str(raw_archive)}],
+        "pgvector": [{"dump": str(pg_dump), "verified": True}],
+        "lancedb": [],
+        "secrets": [{"archive": str(secrets_archive)}],
+        "neo4j": [{"method": "cypher_count_check", "verified": True}],
+        "google_drive": {"verified": False},
+    }
+    (run_dir / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+
+    settings = SimpleNamespace(
+        system_root_directory="/prod/shared/data/system",
+        db_provider="postgres",
+        vector_db_provider="pgvector",
+        brain_profile_context_path=str(shared_data / "brain" / "profile_context.json"),
+        brain_google_drive_backup_enabled=False,
+    )
+    failures: list[str] = []
+
+    verify_mcp_production.check_backups(backup_dir, settings, failures)
+
+    assert any("profile context" in failure for failure in failures)

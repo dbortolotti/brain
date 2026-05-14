@@ -5,6 +5,7 @@ import argparse
 import json
 import subprocess
 import sys
+import tarfile
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -333,8 +334,15 @@ def check_backups(backup_dir: Path, settings, failures: list[str]) -> None:
     if bad_sqlite:
         failures.append(f"latest backup has invalid SQLite entries: {bad_sqlite}")
 
-    if not verified_archive_entries(payload.get("raw_data")):
+    raw_data_entries = payload.get("raw_data")
+    if not verified_archive_entries(raw_data_entries):
         failures.append(f"latest backup has no verified raw data archive: {latest}")
+    profile_context_path = getattr(settings, "brain_profile_context_path", None)
+    if profile_context_path and not raw_archive_contains(
+        raw_data_entries,
+        Path(profile_context_path),
+    ):
+        failures.append(f"latest backup raw data archive does not include profile context: {latest}")
     if getattr(settings, "vector_db_provider", "lancedb") == "pgvector":
         if not any(entry.get("verified") and Path(entry.get("dump", "")).exists() for entry in payload.get("pgvector") or []):
             failures.append(f"latest backup has no verified pgvector/Postgres dump: {latest}")
@@ -361,6 +369,28 @@ def verified_archive_entries(entries: Any) -> bool:
         archive = entry.get("archive")
         if archive and Path(archive).exists():
             return True
+    return False
+
+
+def raw_archive_contains(entries: Any, target: Path) -> bool:
+    if not entries:
+        return False
+    for entry in entries:
+        archive = Path(entry.get("archive", ""))
+        source = Path(entry.get("source", ""))
+        if not archive.exists() or not source:
+            continue
+        try:
+            relative_target = target.relative_to(source)
+        except ValueError:
+            continue
+        expected = f"{source.name}/{relative_target.as_posix()}"
+        try:
+            with tarfile.open(archive, "r:*") as tar:
+                if expected in tar.getnames():
+                    return True
+        except (OSError, tarfile.TarError):
+            continue
     return False
 
 
