@@ -115,6 +115,7 @@ def test_backup_neo4j_uses_configured_docker_container(tmp_path, monkeypatch) ->
     settings = SimpleNamespace(
         brain_neo4j_dump_enabled=True,
         brain_neo4j_docker_container="brain-prod-neo4j",
+        brain_neo4j_stop_for_dump=False,
     )
     observed_commands: list[list[str]] = []
 
@@ -123,7 +124,8 @@ def test_backup_neo4j_uses_configured_docker_container(tmp_path, monkeypatch) ->
 
     def fake_run(cmd, **kwargs):
         observed_commands.append(cmd)
-        (data_root / "neo4j" / "neo4j.dump").write_text("dump", encoding="utf-8")
+        (run_dir / "neo4j").mkdir(exist_ok=True)
+        (run_dir / "neo4j" / "neo4j.dump").write_text("dump", encoding="utf-8")
         return subprocess.CompletedProcess(cmd, 0, stdout="ok", stderr="")
 
     monkeypatch.setattr(backup_stores.subprocess, "run", fake_run)
@@ -133,6 +135,55 @@ def test_backup_neo4j_uses_configured_docker_container(tmp_path, monkeypatch) ->
     assert observed_commands[0][2] == "brain-prod-neo4j"
     assert manifest["neo4j"][0]["verified"] is True
     assert (run_dir / "neo4j" / "neo4j.dump").exists()
+
+
+def test_backup_neo4j_stops_docker_container_for_consistent_dump(tmp_path, monkeypatch) -> None:
+    data_root = tmp_path / "shared" / "data"
+    data_root.mkdir(parents=True)
+    docker_data = tmp_path / "shared" / "docker" / "neo4j" / "data"
+    docker_data.mkdir(parents=True)
+    run_dir = tmp_path / "backup"
+    run_dir.mkdir()
+    manifest = {"neo4j": [], "blockers": []}
+    settings = SimpleNamespace(
+        brain_neo4j_dump_enabled=True,
+        brain_neo4j_docker_container="brain-prod-neo4j",
+        brain_neo4j_stop_for_dump=True,
+    )
+    observed_commands: list[list[str]] = []
+
+    monkeypatch.setattr(backup_stores, "neo4j_graph_counts", lambda _settings: None)
+    monkeypatch.setattr(backup_stores.shutil, "which", lambda name: "/usr/bin/docker" if name == "docker" else None)
+
+    def fake_run(cmd, **kwargs):
+        observed_commands.append(cmd)
+        if cmd[:2] == ["docker", "inspect"]:
+            payload = [
+                {
+                    "Config": {"Image": "neo4j:5-community"},
+                    "Mounts": [{"Destination": "/data", "Source": str(docker_data)}],
+                }
+            ]
+            return subprocess.CompletedProcess(cmd, 0, stdout=json.dumps(payload), stderr="")
+        if cmd[:2] == ["docker", "run"]:
+            (run_dir / "neo4j").mkdir(exist_ok=True)
+            (run_dir / "neo4j" / "neo4j.dump").write_text("dump", encoding="utf-8")
+        return subprocess.CompletedProcess(cmd, 0, stdout="ok", stderr="")
+
+    monkeypatch.setattr(backup_stores.subprocess, "run", fake_run)
+
+    backup_stores.backup_neo4j(settings, data_root, run_dir, manifest)
+
+    assert [cmd[:2] for cmd in observed_commands] == [
+        ["docker", "inspect"],
+        ["docker", "stop"],
+        ["docker", "run"],
+        ["docker", "start"],
+    ]
+    run_command = observed_commands[2]
+    assert f"{docker_data}:/data" in run_command
+    assert f"{run_dir / 'neo4j'}:/backup" in run_command
+    assert manifest["neo4j"][0]["verified"] is True
 
 
 def test_backup_pgvector_uses_docker_pg_dump(tmp_path, monkeypatch) -> None:

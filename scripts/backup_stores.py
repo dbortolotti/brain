@@ -278,27 +278,66 @@ def backup_neo4j(settings, data_root: Path, run_dir: Path, manifest: dict[str, A
     dump_dir = run_dir / "neo4j"
     dump_dir.mkdir(exist_ok=True)
     dump_path = dump_dir / "neo4j.dump"
-    mounted_dump = data_root / "neo4j" / "neo4j.dump"
-    if mounted_dump.exists():
-        mounted_dump.unlink()
+    container = settings.brain_neo4j_docker_container
 
-    result = subprocess.run(
-        [
-            "docker",
-            "exec",
-            settings.brain_neo4j_docker_container,
-            "neo4j-admin",
-            "database",
-            "dump",
-            "neo4j",
-            "--to-path=/data",
-        ],
-        text=True,
-        capture_output=True,
-        check=False,
-    )
-    if result.returncode == 0 and mounted_dump.exists():
-        shutil.copy2(mounted_dump, dump_path)
+    if getattr(settings, "brain_neo4j_stop_for_dump", False):
+        image, data_source = docker_neo4j_container_info(container)
+        stop_result = subprocess.run(
+            ["docker", "stop", container],
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        if stop_result.returncode != 0:
+            raise RuntimeError(f"Neo4j stop failed: {stop_result.stderr.strip()}")
+        try:
+            result = subprocess.run(
+                [
+                    "docker",
+                    "run",
+                    "--rm",
+                    "-v",
+                    f"{data_source}:/data",
+                    "-v",
+                    f"{dump_dir}:/backup",
+                    image,
+                    "neo4j-admin",
+                    "database",
+                    "dump",
+                    "neo4j",
+                    "--to-path=/backup",
+                    "--overwrite-destination=true",
+                ],
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+        finally:
+            start_result = subprocess.run(
+                ["docker", "start", container],
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            if start_result.returncode != 0:
+                raise RuntimeError(f"Neo4j restart failed: {start_result.stderr.strip()}")
+    else:
+        result = subprocess.run(
+            [
+                "docker",
+                "exec",
+                container,
+                "neo4j-admin",
+                "database",
+                "dump",
+                "neo4j",
+                "--to-path=/data",
+                "--overwrite-destination=true",
+            ],
+            text=True,
+            capture_output=True,
+            check=False,
+        )
 
     manifest["neo4j"].append(
         {
@@ -312,6 +351,26 @@ def backup_neo4j(settings, data_root: Path, run_dir: Path, manifest: dict[str, A
     )
     if result.returncode != 0:
         raise RuntimeError(f"Neo4j dump failed: {result.stderr.strip()}")
+
+
+def docker_neo4j_container_info(container: str) -> tuple[str, str]:
+    result = subprocess.run(
+        ["docker", "inspect", container],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(f"Neo4j inspect failed: {result.stderr.strip()}")
+    payload = json.loads(result.stdout)
+    if not payload:
+        raise RuntimeError(f"Neo4j inspect returned no container data for {container}")
+    info = payload[0]
+    image = info.get("Config", {}).get("Image") or "neo4j:5-community"
+    for mount in info.get("Mounts", []):
+        if mount.get("Destination") == "/data" and mount.get("Source"):
+            return image, mount["Source"]
+    raise RuntimeError(f"Neo4j container {container} has no /data mount")
 
 
 def dump_with_neo4j_admin(settings, run_dir: Path, manifest: dict[str, Any]) -> None:
