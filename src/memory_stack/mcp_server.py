@@ -53,7 +53,6 @@ from memory_stack.icon_assets import (
     BRAIN_APPLE_TOUCH_ICON_PATH,
     BRAIN_FAVICON_PATH,
     BRAIN_ICON_PATH,
-    brain_icon_metadata,
 )
 from memory_stack.io import to_jsonable
 from memory_stack.oauth import BrainOAuthProvider, parse_bearer
@@ -1500,7 +1499,6 @@ async def handle_json_rpc(payload: Any) -> Any:
                 "serverInfo": {
                     "name": "brain",
                     "version": "0.1.0",
-                    "icons": brain_icon_metadata(settings.brain_public_base_url),
                 },
             }
         elif method == "tools/list":
