@@ -262,6 +262,7 @@ class Settings(BaseSettings):
     brain_backup_dir: str = Field(default_factory=lambda: get("BRAIN_BACKUP_DIR"))
     brain_neo4j_dump_enabled: bool = Field(default_factory=lambda: get("BRAIN_NEO4J_DUMP_ENABLED", False))
     brain_neo4j_stop_for_dump: bool = Field(default_factory=lambda: get("BRAIN_NEO4J_STOP_FOR_DUMP", False))
+    brain_neo4j_docker_container: str = Field(default_factory=lambda: get("BRAIN_NEO4J_DOCKER_CONTAINER", "neo4j-cognee"))
     brain_neo4j_brew_service: str = Field(default_factory=lambda: get("BRAIN_NEO4J_BREW_SERVICE", "neo4j"))
     brain_neo4j_launchd_label: str = Field(default_factory=lambda: get("BRAIN_NEO4J_LAUNCHD_LABEL", "homebrew.mxcl.neo4j"))
     brain_google_drive_backup_enabled: bool = Field(default_factory=lambda: get("BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED", False))
@@ -627,6 +628,7 @@ def runtime_env(settings: Settings) -> dict[str, str]:
         "BRAIN_BACKUP_DIR": settings.brain_backup_dir,
         "BRAIN_NEO4J_DUMP_ENABLED": str(settings.brain_neo4j_dump_enabled).lower(),
         "BRAIN_NEO4J_STOP_FOR_DUMP": str(settings.brain_neo4j_stop_for_dump).lower(),
+        "BRAIN_NEO4J_DOCKER_CONTAINER": settings.brain_neo4j_docker_container,
         "BRAIN_NEO4J_BREW_SERVICE": settings.brain_neo4j_brew_service,
         "BRAIN_NEO4J_LAUNCHD_LABEL": settings.brain_neo4j_launchd_label,
         "BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED": str(

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import sqlite3
+import subprocess
 import sys
 import tarfile
 from pathlib import Path
@@ -103,6 +104,35 @@ def test_backup_raw_data_and_secrets_archives(tmp_path, monkeypatch) -> None:
     secrets_archive = Path(manifest["secrets"][0]["archive"])
     assert secrets_archive.exists()
     assert secrets_archive.stat().st_mode & 0o777 == 0o600
+
+
+def test_backup_neo4j_uses_configured_docker_container(tmp_path, monkeypatch) -> None:
+    data_root = tmp_path / "shared" / "data"
+    (data_root / "neo4j").mkdir(parents=True)
+    run_dir = tmp_path / "backup"
+    run_dir.mkdir()
+    manifest = {"neo4j": [], "blockers": []}
+    settings = SimpleNamespace(
+        brain_neo4j_dump_enabled=True,
+        brain_neo4j_docker_container="brain-prod-neo4j",
+    )
+    observed_commands: list[list[str]] = []
+
+    monkeypatch.setattr(backup_stores, "neo4j_graph_counts", lambda _settings: None)
+    monkeypatch.setattr(backup_stores.shutil, "which", lambda name: "/usr/bin/docker" if name == "docker" else None)
+
+    def fake_run(cmd, **kwargs):
+        observed_commands.append(cmd)
+        (data_root / "neo4j" / "neo4j.dump").write_text("dump", encoding="utf-8")
+        return subprocess.CompletedProcess(cmd, 0, stdout="ok", stderr="")
+
+    monkeypatch.setattr(backup_stores.subprocess, "run", fake_run)
+
+    backup_stores.backup_neo4j(settings, data_root, run_dir, manifest)
+
+    assert observed_commands[0][2] == "brain-prod-neo4j"
+    assert manifest["neo4j"][0]["verified"] is True
+    assert (run_dir / "neo4j" / "neo4j.dump").exists()
 
 
 def test_backup_pgvector_uses_docker_pg_dump(tmp_path, monkeypatch) -> None:

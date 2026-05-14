@@ -286,7 +286,7 @@ def backup_neo4j(settings, data_root: Path, run_dir: Path, manifest: dict[str, A
         [
             "docker",
             "exec",
-            "neo4j-cognee",
+            settings.brain_neo4j_docker_container,
             "neo4j-admin",
             "database",
             "dump",
