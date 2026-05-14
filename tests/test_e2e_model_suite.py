@@ -51,8 +51,8 @@ def test_e2e_model_fixture_matrix_covers_runtime_role_specs(tmp_path) -> None:
 
     assert roles == set(EXPECTED_E2E_ROLES)
     assert roles == role_spec_role_names()
-    assert len(fixtures) == len(EXPECTED_E2E_ROLES) + len(E2E_RECALL_CASES) - 1
-    assert sum(1 for fixture in fixtures if fixture.role == "recall_synthesizer") == len(
+    assert len(fixtures) == len(EXPECTED_E2E_ROLES) + len(E2E_RECALL_CASES)
+    assert sum(1 for fixture in fixtures if fixture.scenario_group == "e2e_runtime_recall") == len(
         E2E_RECALL_CASES
     )
 
@@ -86,7 +86,7 @@ def test_live_e2e_model_suite_runs_configured_model_front_to_back(tmp_path) -> N
 
     result = run_e2e_model_suite(settings)
 
-    assert result["model"] == "openai:gpt-5.5"
-    assert result["record_count"] == len(EXPECTED_E2E_ROLES) + len(E2E_RECALL_CASES) - 1
+    assert result["model"] == "openai:gpt-5.4-mini"
+    assert result["record_count"] == len(EXPECTED_E2E_ROLES) + len(E2E_RECALL_CASES)
     assert {record["role"] for record in result["records"]} == set(EXPECTED_E2E_ROLES)
     assert result["fail_count"] == 0

@@ -7,7 +7,7 @@ from alembic.config import Config
 from sqlalchemy import create_engine, inspect
 
 from memory_stack.brain_store import BrainStore
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 
 
 def test_alembic_upgrade_creates_fresh_brain_schema(tmp_path) -> None:
@@ -18,7 +18,8 @@ def test_alembic_upgrade_creates_fresh_brain_schema(tmp_path) -> None:
     command.upgrade(config, "head")
 
     engine = create_engine(f"sqlite:///{db_path}", future=True)
-    tables = set(inspect(engine).get_table_names())
+    inspector = inspect(engine)
+    tables = set(inspector.get_table_names())
     assert {
         "memory_cards",
         "sources",
@@ -27,7 +28,29 @@ def test_alembic_upgrade_creates_fresh_brain_schema(tmp_path) -> None:
         "open_loops",
         "cognee_sync",
         "ingestion_runs",
+        "taste_items",
+        "taste_attributes",
+        "taste_signals",
+        "taste_decisions",
+        "taste_proposals",
     } <= tables
+    proposal_columns = {
+        column["name"]: column for column in inspector.get_columns("taste_proposals")
+    }
+    taste_item_checks = {
+        constraint["name"] for constraint in inspector.get_check_constraints("taste_items")
+    }
+    taste_signal_checks = {
+        constraint["name"] for constraint in inspector.get_check_constraints("taste_signals")
+    }
+    proposal_checks = {
+        constraint["name"] for constraint in inspector.get_check_constraints("taste_proposals")
+    }
+    assert proposal_columns["expires_at"]["nullable"] is False
+    assert "taste_items_type_ck" in taste_item_checks
+    assert "taste_items_status_ck" in taste_item_checks
+    assert "taste_signals_type_ck" in taste_signal_checks
+    assert "taste_proposals_status_ck" in proposal_checks
 
 
 def test_brain_store_initializes_clean_sqlite_db(tmp_path) -> None:

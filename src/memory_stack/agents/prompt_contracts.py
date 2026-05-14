@@ -98,24 +98,6 @@ def agent_markdown_contract_lines(role: str) -> list[str]:
             ],
             max_lines_per_section=25,
         )
-    elif role == "recall_synthesizer":
-        lines += agent_markdown_excerpt_lines(
-            [
-                ("src/memory_stack/agents/shared/agent_architecture.md", "6.3 `/brain recall`"),
-                ("src/memory_stack/agents/shared/agent_architecture.md", "6.4 `/brain profile`"),
-                ("src/memory_stack/agents/shared/agent_architecture.md", "6.5 `/brain open`"),
-            ],
-            max_lines_per_section=10,
-        )
-    elif role == "debug_explainer":
-        lines += agent_markdown_excerpt_lines(
-            [
-                ("src/memory_stack/agents/shared/agent_architecture.md", "5.2 Slack gets extra debug/admin flows"),
-                ("src/memory_stack/agents/shared/agent_architecture.md", "6.9 `/brain debug`"),
-                ("src/memory_stack/agents/shared/agent_architecture.md", "6.10 `/brain admin`"),
-            ],
-            max_lines_per_section=12,
-        )
     return lines
 
 

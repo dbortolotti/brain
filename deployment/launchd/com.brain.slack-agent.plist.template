@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.brain.prod.slack-agent</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/zsh</string>
+    <string>-lc</string>
+    <string>cd /Volumes/xpg_usb4/prod/brain/current &amp;&amp; exec /opt/homebrew/bin/uv run python -m memory_stack.slack_agent_server</string>
+  </array>
+
+  <key>WorkingDirectory</key>
+  <string>/Users/oric</string>
+
+  <key>RunAtLoad</key>
+  <true/>
+
+  <key>KeepAlive</key>
+  <true/>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>ENV_FILE</key>
+    <string>/Volumes/xpg_usb4/prod/brain/shared/secrets/brain.env</string>
+    <key>BRAIN_SLACK_AGENT_ENABLED</key>
+    <string>true</string>
+    <key>BRAIN_SLACK_AGENT_HOST</key>
+    <string>127.0.0.1</string>
+    <key>BRAIN_SLACK_AGENT_PORT</key>
+    <string>18003</string>
+  </dict>
+
+  <key>StandardOutPath</key>
+  <string>/Users/oric/Library/Logs/brain-slack-agent.out.log</string>
+
+  <key>StandardErrorPath</key>
+  <string>/Users/oric/Library/Logs/brain-slack-agent.err.log</string>
+</dict>
+</plist>

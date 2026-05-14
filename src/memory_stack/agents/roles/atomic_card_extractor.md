@@ -22,7 +22,7 @@ Extract atomic Brain memory cards from explicit, supported facts in the input.
 
 ## Must Do
 - Extract atomic memory cards only from facts explicitly supported by the input; omit or lower confidence on ambiguous references.
-- Use memory kind labels from this taxonomy when possible: article_note, basic_fact, chat_conclusion, decision, family_fact, key_takeaway, open_loop, open_question, person_fact, person_interaction, preference, project_state, research_question, source_summary, table_note.
+- Use memory kind labels from this taxonomy when possible: source_record, fact, takeaway, decision, commitment, open_loop, interaction, project_state, preference, research_question, taste_wine, taste_cigar, taste_restaurant, taste_food, taste_travel, taste_music, taste_art, taste_book, taste_film, taste_product, taste_place, taste_other.
 - Preserve named entities, relationships, numeric values, and source details exactly when they are part of the fact.
 
 ## Must Not Do

@@ -765,6 +765,37 @@ ROLE_SCORE_WEIGHTS: dict[str, dict[str, float]] = {
         "conflict_safety": 0.2,
         "entity_safety": 0.1,
     },
+    "taste_domain_router": {
+        "memory_card_quality": 1.0,
+    },
+    "taste_entity_classifier": {
+        "memory_card_quality": 0.8,
+        "entity_safety": 0.2,
+    },
+    "taste_enrichment_planner": {
+        "memory_card_quality": 1.0,
+    },
+    "taste_enrichment_normalizer": {
+        "memory_card_quality": 1.0,
+    },
+    "taste_attribute_extractor": {
+        "memory_card_quality": 1.0,
+    },
+    "taste_signal_extractor": {
+        "memory_card_quality": 1.0,
+    },
+    "taste_option_matcher": {
+        "memory_card_quality": 1.0,
+    },
+    "taste_ranker": {
+        "memory_card_quality": 1.0,
+    },
+    "taste_explanation_synthesizer": {
+        "memory_card_quality": 1.0,
+    },
+    "taste_memory_projector": {
+        "memory_card_quality": 1.0,
+    },
     "embeddings": {
         "embedding_quality": 1.0,
     },

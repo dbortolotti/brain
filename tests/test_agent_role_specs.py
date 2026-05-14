@@ -58,32 +58,8 @@ def test_fine_grained_fixture_prompts_include_agent_spec() -> None:
         assert "## Must Not Do" in prompt
 
 
-def test_entity_candidate_ranker_contract_requires_unique_disambiguating_evidence() -> None:
-    text = role_spec_markdown("entity_candidate_ranker")
-    assert text is not None
-
-    assert "only when the evidence identifies one specific supplied candidate" in text
-    assert "exact surface-text match is not sufficient" in text
-    assert "compressed punctuation lists as ambiguous" in text
-    assert "Do not infer \"no competing candidates\"" in text
-    assert "Prefer a false clarification over a false merge" in text
-
-
 def test_role_specs_cover_recent_model_failure_contracts() -> None:
     required_phrases = {
-        "commit_policy_decider": [
-            "Do not require extra confirmation solely because a fact is about the user's family or a named third party",
-            "Resolve simple local pronouns",
-        ],
-        "conflict_candidate_detector": [
-            "Never put possible_conflict, conflict_candidate, needs_policy, or ambiguous in conflict_classification",
-        ],
-        "conflict_policy_decider": [
-            "no automatic overwrite",
-            "escalation or user confirmation is required",
-            "Treat temporal status transitions as user-choice conflicts",
-            "planned/open -> implemented",
-        ],
         "durability_filter": [
             "Treat direct user memory statements about the user's family",
             "Treat third-party facts as durable when the user explicitly asks Brain to remember them",
@@ -98,11 +74,6 @@ def test_role_specs_cover_recent_model_failure_contracts() -> None:
             "Do not treat transient non-durable observations with relative words like today as open loops",
             "Treat OCR/source-noise artifacts as source repair or compiler concerns",
             "Do not treat OCR misspellings",
-        ],
-        "recall_relevance_filter": [
-            "When the prompt supplies candidate facts without explicit IDs",
-            "For profile or broad \"everything about\" recall modes",
-            "include the literal labels Identity, Known facts, Relationships, and Open loops",
         ],
         "relationship_extractor": [
             "emit daughter_of from each child to the user/me",

@@ -26,8 +26,21 @@ MemoryKind = Literal[
     "place_note",
     "table_note",
     "source_summary",
+    "source_record",
     "project_state",
     "commitment",
+    "taste_wine",
+    "taste_cigar",
+    "taste_restaurant",
+    "taste_food",
+    "taste_travel",
+    "taste_music",
+    "taste_art",
+    "taste_book",
+    "taste_film",
+    "taste_product",
+    "taste_place",
+    "taste_other",
 ]
 
 
@@ -126,6 +139,7 @@ class IngestionReceipt(BaseModel):
     relationships: list[dict[str, Any]] = Field(default_factory=list)
     open_loops: list[dict[str, Any]] = Field(default_factory=list)
     conflicts: list[dict[str, Any]] = Field(default_factory=list)
+    taste: dict[str, Any] = Field(default_factory=dict)
     cognee_sync_status: str = "pending"
     dry_run: bool = False
 
@@ -146,3 +160,4 @@ class RecallResponse(BaseModel):
     open_loops: list[dict[str, Any]] = Field(default_factory=list)
     conflicts: list[dict[str, Any]] = Field(default_factory=list)
     evidence: list[dict[str, Any]] = Field(default_factory=list)
+    taste: dict[str, Any] = Field(default_factory=dict)

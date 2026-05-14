@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 from memory_stack.model_selection import (
     DEFAULT_EMBEDDING_DIMENSIONS,
     DEFAULT_EMBEDDING_MODEL,

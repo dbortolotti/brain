@@ -11,7 +11,7 @@ from pathlib import Path
 
 import uvicorn
 
-from memory_stack.config import load_settings, runtime_env
+from memory_stack.cfg import load_settings, runtime_env
 
 
 processes: list[subprocess.Popen] = []

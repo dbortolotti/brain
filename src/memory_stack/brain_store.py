@@ -11,7 +11,7 @@ from sqlalchemy import Engine, and_, create_engine, delete, insert, or_, select,
 from sqlalchemy.exc import IntegrityError
 
 from memory_stack import brain_schema as schema
-from memory_stack.config import Settings, repo_path
+from memory_stack.cfg import Settings, repo_path
 
 
 WORD_RE = re.compile(r"[a-z0-9]+")

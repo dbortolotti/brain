@@ -6,7 +6,7 @@ from pathlib import Path
 import typer
 from rich.console import Console
 
-from memory_stack.config import load_settings
+from memory_stack.cfg import load_settings
 from memory_stack.evals.e2e_model_suite import run_e2e_model_suite
 from memory_stack.evals.model_runner import ModelEvalRunConfig, run_model_evals, run_rescore, run_rerun_failed
 from memory_stack.evals.runner import run_golden_evals

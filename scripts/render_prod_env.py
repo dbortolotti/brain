@@ -2,29 +2,21 @@
 from __future__ import annotations
 
 import argparse
-import subprocess
 import os
 import shlex
+import subprocess
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
-from memory_stack.model_selection import (
-    DEFAULT_EMBEDDING_DIMENSIONS,
-    DEFAULT_EMBEDDING_MODEL,
-    DEFAULT_EMBEDDING_PROVIDER,
-    DEFAULT_LLM_MODEL,
-    DEFAULT_LLM_PROVIDER,
-)
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+
+from memory_stack import cfg
 
 
-PROD_ROOT = Path(os.getenv("BRAIN_PROD_ROOT", "/Volumes/xpg_usb4/prod/brain"))
+PROD_ROOT = Path(str(cfg.load("prod").get("BRAIN_PROD_ROOT", "/Volumes/xpg_usb4/prod/brain")))
 SHARED_DIR = PROD_ROOT / "shared"
 SECRETS_DIR = SHARED_DIR / "secrets"
-DATA_DIR = SHARED_DIR / "data"
-BACKUP_DIR = SHARED_DIR / "backups"
-LOG_DIR = SHARED_DIR / "logs"
-CURRENT_LINK = PROD_ROOT / "current"
 
 
 METADATA_KEYS = {
@@ -99,6 +91,9 @@ ORDERED_KEYS = [
     "SYSTEM_ROOT_DIRECTORY",
     "DATA_ROOT_DIRECTORY",
     "BRAIN_DATABASE_URL",
+    "BRAIN_PROD_ROOT",
+    "BRAIN_LAUNCHD_LABEL",
+    "BRAIN_HEALTH_PATH",
     "BRAIN_MCP_HOST",
     "BRAIN_MCP_PORT",
     "BRAIN_MCP_PATH",
@@ -111,6 +106,7 @@ ORDERED_KEYS = [
     "BRAIN_NEO4J_LAUNCHD_LABEL",
     "BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED",
     "BRAIN_GOOGLE_DRIVE_FOLDER",
+    "BRAIN_GOOGLE_DRIVE_REMOTE",
     "BRAIN_GOOGLE_DRIVE_LOCAL_PATH",
     "BRAIN_AUTH_ENABLED",
     "BRAIN_AUTH_TOKEN",
@@ -123,8 +119,22 @@ ORDERED_KEYS = [
     "BRAIN_REQUEST_LOG_ENABLED",
     "BRAIN_REQUEST_LOG_PATH",
     "BRAIN_REQUEST_LOG_MAX_BODY_BYTES",
+    "BRAIN_TASTE_ENABLED",
+    "BRAIN_TASTE_LLM_MODEL",
+    "BRAIN_TASTE_LLM_REASONING_EFFORT",
+    "BRAIN_TASTE_LLM_ROUTING_ENABLED",
+    "BRAIN_TASTE_AUTO_ENRICH_ENABLED",
+    "BRAIN_TASTE_OMDB_API_KEY",
+    "BRAIN_TASTE_WEB_ENRICHMENT_ENABLED",
+    "BRAIN_TASTE_GOOGLE_PLACES_API_KEY",
+    "BRAIN_TASTE_AUTO_WRITE_THRESHOLD",
+    "BRAIN_TASTE_CONFIRMATION_THRESHOLD",
+    "BRAIN_TASTE_OPEN_LOOP_CLOSE_THRESHOLD",
+    "BRAIN_TASTE_OPEN_LOOP_CONFIRMATION_THRESHOLD",
+    "BRAIN_TASTE_PROPOSAL_EXPIRY_HOURS",
     "ENABLE_BACKEND_ACCESS_CONTROL",
     "BRAIN_UI_ENABLED",
+    "BRAIN_UI_LAUNCHD_LABEL",
     "BRAIN_UI_HOST",
     "BRAIN_UI_PROXY_PORT",
     "BRAIN_UI_FRONTEND_PORT",
@@ -132,6 +142,7 @@ ORDERED_KEYS = [
     "BRAIN_PUBLIC_UI_PATH",
     "BRAIN_PUBLIC_UI_API_PATH",
     "BRAIN_UI_SESSION_SECONDS",
+    "BRAIN_SLACK_ENABLED",
     "BRAIN_SLACK_AGENT_ENABLED",
     "BRAIN_SLACK_AGENT_HOST",
     "BRAIN_SLACK_AGENT_PORT",
@@ -143,74 +154,6 @@ ORDERED_KEYS = [
     "BRAIN_SLACK_ADMIN_USER_IDS",
     "BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE",
 ]
-
-
-DEFAULTS = {
-    "PROFILE": "openai",
-    "LLM_PROVIDER": DEFAULT_LLM_PROVIDER,
-    "LLM_MODEL": DEFAULT_LLM_MODEL,
-    "LLM_TEMPERATURE": "0.0",
-    "LLM_MAX_TOKENS": "8192",
-    "OPENAI_AUTH_MODE": "oauth",
-    "OPENAI_CODEX_AUTH_PROFILE": "default",
-    "OPENAI_CODEX_BASE_URL": "https://chatgpt.com/backend-api/codex",
-    "BRAIN_PROVIDER_AUTH_PROFILES_PATH": str(SECRETS_DIR / "provider-auth-profiles.json"),
-    "BRAIN_PROVIDER_AUTH_STATE_DIR": str(SECRETS_DIR / "provider-auth-state"),
-    "EMBEDDING_PROVIDER": DEFAULT_EMBEDDING_PROVIDER,
-    "EMBEDDING_MODEL": DEFAULT_EMBEDDING_MODEL,
-    "EMBEDDING_DIMENSIONS": str(DEFAULT_EMBEDDING_DIMENSIONS),
-    "GRAPH_DATABASE_PROVIDER": "neo4j",
-    "GRAPH_DATABASE_URL": "bolt://localhost:7687",
-    "GRAPH_DATABASE_NAME": "neo4j",
-    "GRAPH_DATABASE_USERNAME": "neo4j",
-    "GRAPH_DATABASE_PASSWORD": "change-me",
-    "VECTOR_DB_PROVIDER": "lancedb",
-    "VECTOR_DB_URL": str(DATA_DIR / "lancedb" / "cognee.lancedb"),
-    "DB_PROVIDER": "sqlite",
-    "DB_NAME": "cognee_db",
-    "SYSTEM_ROOT_DIRECTORY": str(DATA_DIR / "system"),
-    "DATA_ROOT_DIRECTORY": str(DATA_DIR / "data"),
-    "BRAIN_DATABASE_URL": f"sqlite:///{DATA_DIR / 'brain' / 'brain.db'}",
-    "BRAIN_MCP_HOST": "127.0.0.1",
-    "BRAIN_MCP_PORT": "8000",
-    "BRAIN_MCP_PATH": "/mcp",
-    "BRAIN_PUBLIC_BASE_URL": "https://brain.dceb.net",
-    "BRAIN_PUBLIC_MCP_PATH": "/mcp",
-    "BRAIN_BACKUP_DIR": str(BACKUP_DIR),
-    "BRAIN_NEO4J_DUMP_ENABLED": "true",
-    "BRAIN_NEO4J_STOP_FOR_DUMP": "true",
-    "BRAIN_NEO4J_BREW_SERVICE": "neo4j",
-    "BRAIN_NEO4J_LAUNCHD_LABEL": "homebrew.mxcl.neo4j",
-    "BRAIN_GOOGLE_DRIVE_BACKUP_ENABLED": "true",
-    "BRAIN_GOOGLE_DRIVE_FOLDER": "backup/brain",
-    "BRAIN_AUTH_ENABLED": "true",
-    "BRAIN_AUTH_PASSWORD_FILE": str(SECRETS_DIR / "brain-auth-password"),
-    "BRAIN_AUTH_STATE_PATH": str(SECRETS_DIR / "brain-oauth.json"),
-    "BRAIN_AUTH_SCOPES": "brain.memory.read brain.memory.write",
-    "BRAIN_AUTH_REQUIRE_PKCE": "true",
-    "BRAIN_AUTH_ACCESS_TOKEN_SECONDS": "3600",
-    "BRAIN_AUTH_REFRESH_TOKEN_SECONDS": "2592000",
-    "BRAIN_REQUEST_LOG_ENABLED": "true",
-    "BRAIN_REQUEST_LOG_PATH": str(LOG_DIR / "requests.jsonl"),
-    "BRAIN_REQUEST_LOG_MAX_BODY_BYTES": "0",
-    "ENABLE_BACKEND_ACCESS_CONTROL": "false",
-    "BRAIN_UI_ENABLED": "true",
-    "BRAIN_UI_HOST": "127.0.0.1",
-    "BRAIN_UI_PROXY_PORT": "8002",
-    "BRAIN_UI_FRONTEND_PORT": "3000",
-    "BRAIN_UI_BACKEND_PORT": "8001",
-    "BRAIN_PUBLIC_UI_PATH": "/ui",
-    "BRAIN_PUBLIC_UI_API_PATH": "/ui-api",
-    "BRAIN_UI_SESSION_SECONDS": "43200",
-    "BRAIN_SLACK_AGENT_ENABLED": "true",
-    "BRAIN_SLACK_AGENT_HOST": "127.0.0.1",
-    "BRAIN_SLACK_AGENT_PORT": "8003",
-    "BRAIN_SLACK_ALLOWED_TEAM_IDS": "",
-    "BRAIN_SLACK_ALLOWED_CHANNEL_IDS": "",
-    "BRAIN_SLACK_ALLOWED_USER_IDS": "",
-    "BRAIN_SLACK_ADMIN_USER_IDS": "",
-    "BRAIN_SLACK_AUTO_COMMIT_HIGH_CONFIDENCE": "false",
-}
 
 
 def main() -> int:
@@ -301,17 +244,26 @@ def parse_env_file(path: Path) -> dict[str, str]:
 
 def render_values() -> dict[str, str]:
     metadata = render_metadata()
+    defaults = cfg.load("prod")
     values: dict[str, str] = {}
     for key in ORDERED_KEYS:
         if key in metadata:
             values[key] = metadata[key]
         elif key in os.environ and os.environ[key] != "":
             values[key] = os.environ[key]
-        elif key in DEFAULTS:
-            values[key] = DEFAULTS[key]
+        elif key in defaults:
+            values[key] = format_config_value(defaults[key])
         else:
             values[key] = ""
     return values
+
+
+def format_config_value(value: object) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, bool):
+        return str(value).lower()
+    return str(value)
 
 
 def write_env_file(path: Path, values: dict[str, str]) -> None:

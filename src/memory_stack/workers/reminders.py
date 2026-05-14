@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from typing import Any
 
 from memory_stack.brain_store import BrainStore, normalize_name, now_utc
-from memory_stack.config import Settings, load_settings
+from memory_stack.cfg import Settings, load_settings
 
 
 def list_due_open_loops(

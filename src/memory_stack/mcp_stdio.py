@@ -19,7 +19,15 @@ from memory_stack.brain_service import (
     sync_cognee as brain_sync_cognee,
     undo_last as brain_undo_last,
 )
-from memory_stack.config import load_settings
+from memory_stack.cfg import load_settings
+from memory_stack.taste.models import (
+    TasteDescribeRequest,
+    TasteLogDecisionRequest,
+    TasteQueryRequest,
+    TasteRefreshRequest,
+    TasteRememberRequest,
+)
+from memory_stack.taste.service import TasteService
 
 
 def build_server():
@@ -39,7 +47,7 @@ def build_server():
         dry_run: bool = False,
         context: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Store a user-level memory, fact, thought, or short note in Brain."""
+        """Store a user-level memory; high-confidence taste writes may route to Brain Taste."""
         request = RememberRequest(
             input=input,
             input_type=input_type,
@@ -59,7 +67,7 @@ def build_server():
         dry_run: bool = False,
         metadata: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Store source material and optionally extract durable Brain memories."""
+        """Store source material; Taste mentions are selective and never mass-written."""
         request = IngestSourceRequest(
             source=source,
             source_kind=source_kind,
@@ -90,7 +98,7 @@ def build_server():
         include_conflicts: bool = True,
         limit: int = 20,
     ) -> dict[str, Any]:
-        """Answer a user-level memory query with evidence."""
+        """Answer a user-level memory query; recommendation-style taste queries may rank Taste records."""
         request = RecallRequest(
             query=query,
             mode=mode,
@@ -277,6 +285,169 @@ def build_server():
             duplicate_entity_id=duplicate_entity_id,
             reason=reason,
             confirm=confirm,
+        )
+
+    @mcp.tool(name="brain_palate_describe_item", structured_output=True)
+    async def taste_describe_item(
+        item_text: str,
+        entity_type: str,
+        canonical_name: str | None = None,
+        attributes: dict[str, Any] | None = None,
+        attribute_intervals_95: dict[str, dict[str, float]] | None = None,
+        metadata: dict[str, Any] | None = None,
+        notes: str | None = None,
+        fetch_external_ratings: bool = True,
+        allow_broader_web_search: bool = False,
+    ) -> dict[str, Any]:
+        """Describe a taste item without storing it."""
+        return TasteService(settings).describe_item(
+            TasteDescribeRequest(
+                item_text=item_text,
+                entity_type=entity_type,
+                canonical_name=canonical_name,
+                attributes=attributes,
+                attribute_intervals_95=attribute_intervals_95,
+                metadata=metadata or {},
+                notes=notes,
+                fetch_external_ratings=fetch_external_ratings,
+                allow_broader_web_search=allow_broader_web_search,
+            )
+        )
+
+    @mcp.tool(name="brain_palate_remember", structured_output=True)
+    async def taste_remember(
+        type: str,
+        canonical_name: str,
+        description: str,
+        id: str | None = None,
+        attributes: dict[str, Any] | None = None,
+        attribute_intervals_95: dict[str, dict[str, float]] | None = None,
+        rating: float | None = None,
+        tried: bool | None = None,
+        watched: bool | None = None,
+        listened: bool | None = None,
+        wanted: bool | None = None,
+        recommended_by: str | None = None,
+        disliked: bool | None = None,
+        avoid: bool | None = None,
+        not_my_style: bool | None = None,
+        bad_fit: bool | None = None,
+        notes: str | None = None,
+        metadata: dict[str, Any] | None = None,
+        dry_run: bool = False,
+        store_anyway: bool = False,
+        context: dict[str, Any] | None = None,
+        fetch_external_ratings: bool = True,
+        allow_broader_web_search: bool = False,
+    ) -> dict[str, Any]:
+        """Store a structured taste item and Brain projection."""
+        return TasteService(settings).remember(
+            TasteRememberRequest(
+                id=id,
+                type=type,
+                canonical_name=canonical_name,
+                description=description,
+                attributes=attributes,
+                attribute_intervals_95=attribute_intervals_95,
+                rating=rating,
+                tried=tried,
+                watched=watched,
+                listened=listened,
+                wanted=wanted,
+                recommended_by=recommended_by,
+                disliked=disliked,
+                avoid=avoid,
+                not_my_style=not_my_style,
+                bad_fit=bad_fit,
+                notes=notes,
+                metadata=metadata or {},
+                dry_run=dry_run,
+                store_anyway=store_anyway,
+                context=context or {},
+                fetch_external_ratings=fetch_external_ratings,
+                allow_broader_web_search=allow_broader_web_search,
+            )
+        )
+
+    @mcp.tool(name="brain_palate_query", structured_output=True)
+    async def taste_query(
+        query: str,
+        context: dict[str, Any] | None = None,
+        options_text: str | None = None,
+        explain: bool = False,
+        intent: dict[str, Any] | None = None,
+        extracted_entities: list[dict[str, Any]] | None = None,
+    ) -> dict[str, Any]:
+        """Rank saved taste records for a recommendation query."""
+        return TasteService(settings).query(
+            TasteQueryRequest(
+                query=query,
+                context=context or {},
+                options_text=options_text,
+                explain=explain,
+                intent=intent,
+                extracted_entities=extracted_entities,
+            )
+        )
+
+    @mcp.tool(name="brain_palate_evaluate_options", structured_output=True)
+    async def taste_evaluate_options(
+        query: str,
+        options_text: str,
+        context: dict[str, Any] | None = None,
+        explain: bool = False,
+        intent: dict[str, Any] | None = None,
+        extracted_entities: list[dict[str, Any]] | None = None,
+    ) -> dict[str, Any]:
+        """Rank only supplied options against saved taste records."""
+        return TasteService(settings).evaluate_options(
+            TasteQueryRequest(
+                query=query,
+                context=context or {},
+                options_text=options_text,
+                explain=explain,
+                intent=intent,
+                extracted_entities=extracted_entities,
+            )
+        )
+
+    @mcp.tool(name="brain_palate_log_decision", structured_output=True)
+    async def taste_log_decision(
+        chosen_taste_item_id: str,
+        decision_id: str | None = None,
+        query: str = "",
+        context: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Record the selected taste item after ranking."""
+        return TasteService(settings).log_decision(
+            TasteLogDecisionRequest(
+                chosen_taste_item_id=chosen_taste_item_id,
+                decision_id=decision_id,
+                query=query,
+                context=context or {},
+            )
+        )
+
+    @mcp.tool(name="brain_palate_confirm", structured_output=True)
+    async def taste_confirm(proposal_id: str) -> dict[str, Any]:
+        """Confirm a pending taste proposal."""
+        return TasteService(settings).confirm(proposal_id)
+
+    @mcp.tool(name="brain_palate_cancel", structured_output=True)
+    async def taste_cancel(proposal_id: str) -> dict[str, Any]:
+        """Cancel a pending taste proposal."""
+        return TasteService(settings).cancel(proposal_id)
+
+    @mcp.tool(name="brain_palate_correct_proposal", structured_output=True)
+    async def taste_correct_proposal(proposal_id: str, correction: str) -> dict[str, Any]:
+        """Apply a free-text correction to a pending taste proposal."""
+        return TasteService(settings).correct_proposal(proposal_id, correction)
+
+    @mcp.tool(name="brain_palate_refresh_enrichment", structured_output=True)
+    async def taste_refresh_enrichment(taste_item_id: str) -> dict[str, Any]:
+        """Refresh enrichment for a stored taste item."""
+        return TasteService(settings).refresh_enrichment(
+            TasteRefreshRequest(taste_item_id=taste_item_id)
         )
 
     return mcp

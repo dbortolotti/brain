@@ -10,7 +10,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.testclient import TestClient
 
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 from memory_stack.mcp_server import app
 from memory_stack import mcp_server
 from memory_stack.oauth import BrainOAuthProvider
@@ -29,6 +29,7 @@ def test_mcp_initialize() -> None:
     response = client.post("/mcp", json={"jsonrpc": "2.0", "id": 1, "method": "initialize"})
     assert response.status_code == 200
     assert response.json()["result"]["serverInfo"]["name"] == "brain"
+    assert response.json()["result"]["capabilities"]["prompts"] == {}
 
 
 def test_datasource_tools_are_listed() -> None:
@@ -37,7 +38,7 @@ def test_datasource_tools_are_listed() -> None:
 
     assert response.status_code == 200
     tool_names = {tool["name"] for tool in response.json()["result"]["tools"]}
-    assert {
+    expected_tools = {
         "brain_remember",
         "brain_ingest_source",
         "brain_recall",
@@ -51,8 +52,23 @@ def test_datasource_tools_are_listed() -> None:
         "brain_undo_last",
         "brain_sync_cognee",
         "brain_rebuild_cognee",
+        "cognee_improve",
+        "brain_agent_memory",
+        "brain_agent_memory_recall",
+        "brain_agent_memory_clear",
         "brain_merge_entities",
-    } == tool_names
+        "brain_palate_describe_item",
+        "brain_palate_remember",
+        "brain_palate_query",
+        "brain_palate_evaluate_options",
+        "brain_palate_log_decision",
+        "brain_palate_confirm",
+        "brain_palate_cancel",
+        "brain_palate_correct_proposal",
+        "brain_palate_refresh_enrichment",
+    }
+    assert expected_tools == tool_names
+    assert all("." not in tool_name for tool_name in tool_names)
     assert {
         "add",
         "cognify",
@@ -60,6 +76,12 @@ def test_datasource_tools_are_listed() -> None:
         "create_datasource",
         "delete_datasource",
         "create_node_set",
+        "brain.remember",
+        "brain.recall",
+        "brain.palate.remember",
+        "brain.palate.query",
+        "brain.taste.remember",
+        "brain.taste.query",
     }.isdisjoint(tool_names)
 
 
@@ -82,7 +104,13 @@ def test_memory_tools_expose_node_set_and_search_options() -> None:
         "brain_undo_last",
         "brain_sync_cognee",
         "brain_rebuild_cognee",
+        "cognee_improve",
+        "brain_agent_memory",
+        "brain_agent_memory_recall",
+        "brain_agent_memory_clear",
         "brain_merge_entities",
+        "brain_palate_remember",
+        "brain_palate_evaluate_options",
     } <= set(tools)
 
     remember_properties = tools["brain_remember"]["inputSchema"]["properties"]
@@ -104,6 +132,17 @@ def test_memory_tools_expose_node_set_and_search_options() -> None:
     assert "search_type" not in recall_properties
     assert "node_name" not in recall_properties
 
+    improve_properties = tools["cognee_improve"]["inputSchema"]["properties"]
+    assert improve_properties["dataset"]["enum"] == ["memory", "sources", "data", "palate", "agent_memory"]
+    assert "session_ids" in improve_properties
+
+    agent_memory_properties = tools["brain_agent_memory"]["inputSchema"]["properties"]
+    assert "session_id" in agent_memory_properties
+    assert tools["brain_agent_memory"]["inputSchema"]["required"] == ["session_id"]
+
+    taste_properties = tools["brain_palate_remember"]["inputSchema"]["properties"]
+    assert {"type", "canonical_name", "description"} <= set(taste_properties)
+
     forget_properties = tools["brain_forget"]["inputSchema"]["properties"]
     assert forget_properties["object_type"]["enum"] == [
         "memory",
@@ -113,6 +152,177 @@ def test_memory_tools_expose_node_set_and_search_options() -> None:
         "open_loop",
     ]
     assert "confirm" in forget_properties
+
+
+def test_cognee_improve_mcp_tool_calls_configured_dataset(tmp_path, monkeypatch) -> None:
+    calls = []
+
+    async def fake_improve_cognee(**kwargs):
+        calls.append(kwargs)
+        return {"run_id": "improve-1"}
+
+    monkeypatch.setattr(mcp_server, "improve_cognee", fake_improve_cognee)
+    previous_settings = mcp_server.settings
+    mcp_server.settings = Settings(
+        brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
+        brain_cognee_palate_dataset="palate_live",
+    )
+    try:
+        client = TestClient(app)
+        response = client.post(
+            "/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "tools/call",
+                "params": {
+                    "name": "cognee_improve",
+                    "arguments": {
+                        "dataset": "palate",
+                        "node_name": ["Wine"],
+                        "session_ids": ["session-1"],
+                    },
+                },
+            },
+        )
+    finally:
+        mcp_server.settings = previous_settings
+
+    assert response.status_code == 200
+    payload = response.json()["result"]["structuredContent"]
+    assert payload["resolved_dataset"] == "palate_live"
+    assert payload["session_ids"] == ["session-1"]
+    assert calls[0]["dataset"] == "palate_live"
+    assert calls[0]["node_name"] == ["Wine"]
+    assert calls[0]["session_ids"] == ["session-1"]
+
+
+def test_brain_agent_memory_uses_single_session_and_dedicated_dataset(tmp_path, monkeypatch) -> None:
+    calls = []
+
+    async def fake_improve_cognee(**kwargs):
+        calls.append(kwargs)
+        return {"run_id": "agent-memory-1"}
+
+    monkeypatch.setattr(mcp_server, "improve_cognee", fake_improve_cognee)
+    previous_settings = mcp_server.settings
+    mcp_server.settings = Settings(
+        brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
+        brain_cognee_agent_memory_dataset="agent_memory_test",
+    )
+    try:
+        client = TestClient(app)
+        response = client.post(
+            "/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "tools/call",
+                "params": {
+                    "name": "brain_agent_memory",
+                    "arguments": {
+                        "session_id": "session-1",
+                        "node_name": ["project-x"],
+                    },
+                },
+            },
+        )
+    finally:
+        mcp_server.settings = previous_settings
+
+    assert response.status_code == 200
+    payload = response.json()["result"]["structuredContent"]
+    assert payload["session_id"] == "session-1"
+    assert payload["resolved_dataset"] == "agent_memory_test"
+    assert calls[0]["dataset"] == "agent_memory_test"
+    assert calls[0]["session_ids"] == ["session-1"]
+    assert calls[0]["node_name"] == ["project-x"]
+
+
+def test_brain_agent_memory_recall_uses_dedicated_dataset(tmp_path, monkeypatch) -> None:
+    calls = []
+
+    async def fake_recall_text(**kwargs):
+        calls.append(kwargs)
+        return [{"text": "remembered agent context"}]
+
+    monkeypatch.setattr(mcp_server, "recall_text", fake_recall_text)
+    previous_settings = mcp_server.settings
+    mcp_server.settings = Settings(
+        brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
+        brain_cognee_agent_memory_dataset="agent_memory_test",
+    )
+    try:
+        client = TestClient(app)
+        response = client.post(
+            "/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "tools/call",
+                "params": {
+                    "name": "brain_agent_memory_recall",
+                    "arguments": {"query": "what happened last chat?"},
+                },
+            },
+        )
+    finally:
+        mcp_server.settings = previous_settings
+
+    assert response.status_code == 200
+    payload = response.json()["result"]["structuredContent"]
+    assert payload["resolved_dataset"] == "agent_memory_test"
+    assert payload["result"] == [{"text": "remembered agent context"}]
+    assert calls[0]["dataset"] == "agent_memory_test"
+    assert calls[0]["search_type"] == "GRAPH_COMPLETION"
+
+
+def test_brain_agent_memory_clear_requires_confirmation(tmp_path, monkeypatch) -> None:
+    calls = []
+
+    async def fake_delete_datasource(datasource, *, settings):
+        calls.append({"datasource": datasource, "settings": settings})
+        return {"name": datasource, "status": "deleted"}
+
+    monkeypatch.setattr(mcp_server, "delete_cognee_datasource", fake_delete_datasource)
+    previous_settings = mcp_server.settings
+    mcp_server.settings = Settings(
+        brain_database_url=f"sqlite:///{tmp_path / 'brain.db'}",
+        brain_cognee_agent_memory_dataset="agent_memory_test",
+    )
+    try:
+        client = TestClient(app)
+        rejected = client.post(
+            "/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "tools/call",
+                "params": {
+                    "name": "brain_agent_memory_clear",
+                    "arguments": {},
+                },
+            },
+        )
+        accepted = client.post(
+            "/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 2,
+                "method": "tools/call",
+                "params": {
+                    "name": "brain_agent_memory_clear",
+                    "arguments": {"confirm": True},
+                },
+            },
+        )
+    finally:
+        mcp_server.settings = previous_settings
+
+    assert rejected.status_code == 200
+    assert "confirm=true" in rejected.json()["error"]["message"]
+    assert accepted.status_code == 200
+    assert calls[0]["datasource"] == "agent_memory_test"
 
 
 def test_mcp_resources_are_listed_and_schema_can_be_read() -> None:
@@ -154,6 +364,96 @@ def test_mcp_resources_are_listed_and_schema_can_be_read() -> None:
     content = read_response.json()["result"]["contents"][0]
     assert content["uri"] == "brain://schema/memory-card"
     assert json.loads(content["text"])["schema"] == "memory-card"
+
+
+def test_agent_memory_protocol_prompt_can_be_inserted_with_session_id() -> None:
+    client = TestClient(app)
+    list_response = client.post(
+        "/mcp",
+        json={"jsonrpc": "2.0", "id": 1, "method": "prompts/list"},
+    )
+    get_response = client.post(
+        "/mcp",
+        json={
+            "jsonrpc": "2.0",
+            "id": 2,
+            "method": "prompts/get",
+            "params": {
+                "name": "brain_agent_memory_protocol",
+                "arguments": {"session_id": "daniele"},
+            },
+        },
+    )
+
+    assert list_response.status_code == 200
+    prompts = list_response.json()["result"]["prompts"]
+    prompt_names = {prompt["name"] for prompt in prompts}
+    assert {"brain_agent_memory_protocol", "brain_bias_protocol"} <= prompt_names
+    agent_prompt = next(prompt for prompt in prompts if prompt["name"] == "brain_agent_memory_protocol")
+    assert agent_prompt["arguments"][0]["name"] == "session_id"
+    assert get_response.status_code == 200
+    text = get_response.json()["result"]["messages"][0]["content"]["text"]
+    assert 'Use session_id="daniele" consistently' in text
+    assert "brain_agent_memory" in text
+    assert "Don't narrate" in text
+
+
+def test_agent_memory_protocol_prompt_defaults_to_portable_session() -> None:
+    client = TestClient(app)
+    response = client.post(
+        "/mcp",
+        json={
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "prompts/get",
+            "params": {"name": "brain_agent_memory_protocol"},
+        },
+    )
+
+    assert response.status_code == 200
+    text = response.json()["result"]["messages"][0]["content"]["text"]
+    assert 'Use session_id="portable_agent_session" consistently' in text
+
+
+def test_bias_protocol_prompt_can_be_inserted_with_profile_name() -> None:
+    client = TestClient(app)
+    response = client.post(
+        "/mcp",
+        json={
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "prompts/get",
+            "params": {
+                "name": "brain_bias_protocol",
+                "arguments": {"profile_name": "Daniele"},
+            },
+        },
+    )
+
+    assert response.status_code == 200
+    text = response.json()["result"]["messages"][0]["content"]["text"]
+    assert "Bias and Preference Protocol" in text
+    assert "brain_recall" in text
+    assert "brain_remember" in text
+    assert "Daniele prefers short answers" in text
+    assert "Don't narrate memory calls" in text
+
+
+def test_bias_protocol_prompt_defaults_to_owner_name() -> None:
+    client = TestClient(app)
+    response = client.post(
+        "/mcp",
+        json={
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "prompts/get",
+            "params": {"name": "brain_bias_protocol"},
+        },
+    )
+
+    assert response.status_code == 200
+    text = response.json()["result"]["messages"][0]["content"]["text"]
+    assert f"for {mcp_server.settings.brain_owner_name}" in text
 
 
 def test_high_level_brain_remember_and_recall_mcp_tools(tmp_path) -> None:
@@ -252,7 +552,8 @@ def test_brain_ingest_source_and_get_source_mcp_tools(tmp_path) -> None:
     source_payload = source_response.json()["result"]["structuredContent"]
     assert source_payload["source"]["id"] == source_id
     assert source_payload["source"]["kind"] == "markdown"
-    assert "Knowledge graphs matter" in source_payload["text"]
+    assert source_payload["text"] == ""
+    assert source_payload["source"]["metadata_json"]["raw_text_storage"] == "cognee"
 
 
 def test_brain_ingest_source_rest_accepts_source_schema(tmp_path) -> None:
@@ -276,7 +577,7 @@ def test_brain_ingest_source_rest_accepts_source_schema(tmp_path) -> None:
     payload = response.json()
     assert payload["classification"] == "markdown"
     assert payload["source"]["created"] is True
-    assert payload["memory_cards"][0]["kind"] == "source_summary"
+    assert payload["memory_cards"][0]["kind"] == "source_record"
 
 
 def test_list_datasources_http_endpoint(monkeypatch) -> None:
@@ -335,6 +636,13 @@ def test_low_level_legacy_mcp_tools_are_rejected() -> None:
         "list_node_sets",
         "delete_datasource",
         "sync_cognee",
+        "brain.remember",
+        "brain.recall",
+        "brain.get_source",
+        "brain.palate.describe_item",
+        "brain.palate.remember",
+        "brain.taste.describe_item",
+        "brain.taste.remember",
     ]
     for idx, name in enumerate(stale_names, start=1):
         response = client.post(

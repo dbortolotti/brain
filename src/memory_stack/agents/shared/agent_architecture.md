@@ -239,15 +239,15 @@ Hard delete disabled unless explicitly confirmed.
 Existing MCP tools should remain:
 
 ```text
-brain.remember
-brain.ingest_source
-brain.recall
-brain.profile_entity
-brain.list_open_loops
-brain.get_memory
-brain.get_source
-brain.resolve_conflict
-brain.forget
+brain_remember
+brain_ingest_source
+brain_recall
+brain_profile_entity
+brain_list_open_loops
+brain_get_memory
+brain_get_source
+brain_resolve_conflict
+brain_forget
 ```
 
 Do not expose low-level database or Cognee operations through normal MCP tools.

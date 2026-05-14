@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from typing import Any
 
 from memory_stack.brain_models import (
     EntityMention,
@@ -9,7 +10,7 @@ from memory_stack.brain_models import (
     RememberRequest,
     SourceCandidate,
 )
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 from memory_stack.ingestion.article_loader import load_article
 from memory_stack.ingestion.classifier import source_kind_for_input_type
 from memory_stack.ingestion.table_parser import parse_table, table_summary
@@ -111,13 +112,13 @@ def compile_input(request: RememberRequest, settings: Settings) -> CompiledInput
     elif input_type == "research_question":
         cards = [compile_research_question(text, request, settings)]
     elif input_type in {"article_url", "article"}:
-        cards = [compile_article_note(text, request)]
+        cards = [compile_source_record(source.raw_text if source and source.raw_text else text, request)]
     elif input_type == "table":
         cards = [compile_table_note(text, request)]
     elif input_type in {"chat_summary", "chat_conclusion"}:
         cards = [compile_chat_conclusion(text, request)]
     elif input_type in {"transcript", "markdown", "source_text"}:
-        cards = [compile_source_summary(text, request)]
+        cards = [compile_source_record(text, request)]
     else:
         cards = [compile_basic_memory(text, request)]
 
@@ -293,6 +294,12 @@ def rule_sufficient(input_type: str) -> bool:
         "person_workplace",
         "person_transition",
         "person_family_fact",
+        "article",
+        "article_url",
+        "markdown",
+        "source_text",
+        "transcript",
+        "table",
     }
 
 
@@ -587,15 +594,78 @@ def compile_chat_conclusion(text: str, request: RememberRequest) -> MemoryCandid
     )
 
 
-def compile_source_summary(text: str, request: RememberRequest) -> MemoryCandidate:
+def compile_source_record(text: str, request: RememberRequest) -> MemoryCandidate:
+    context = request.context or {}
+    metadata = dict(context.get("metadata") or {})
+    source_kind = str(context.get("source_kind") or request.input_type or "source")
+    title = string_or_none(context.get("title")) or first_heading(text) or "Untitled source"
+    citation = citation_from_metadata(metadata, title=title)
+    executive_summary = string_or_none(context.get("why_saved")) or executive_summary_from_text(text)
+    record_metadata = {
+        "topics": infer_topics(text),
+        "source_kind": source_kind,
+        "title": title,
+        "citation": citation,
+        "source_chars": len(text),
+        "source_storage": "cognee",
+        "brain_raw_text_policy": "metadata_only",
+    }
+    for key in (
+        "authors",
+        "author",
+        "publication",
+        "publisher",
+        "journal",
+        "year",
+        "date",
+        "doi",
+        "isbn",
+        "url",
+        "uri",
+    ):
+        if metadata.get(key):
+            record_metadata[key] = metadata[key]
+
     return MemoryCandidate(
-        kind="source_summary",
-        statement=f"Stored source material: {text[:220]}",
-        summary=text[:500],
+        kind="source_record",
+        statement=f"Source stored: {title}",
+        summary=executive_summary,
         confidence="medium",
         observed_at=request.observed_at,
-        metadata={"topics": infer_topics(text)},
+        metadata=record_metadata,
     )
+
+
+def first_heading(text: str) -> str | None:
+    for line in text.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("#"):
+            return stripped.lstrip("#").strip() or None
+    return None
+
+
+def citation_from_metadata(metadata: dict[str, Any], *, title: str) -> str | None:
+    explicit = string_or_none(metadata.get("citation"))
+    if explicit:
+        return explicit
+    authors = metadata.get("authors") or metadata.get("author")
+    if isinstance(authors, list):
+        author_text = ", ".join(str(author) for author in authors if str(author).strip())
+    else:
+        author_text = string_or_none(authors)
+    year = string_or_none(metadata.get("year")) or string_or_none(metadata.get("date"))
+    publication = (
+        string_or_none(metadata.get("publication"))
+        or string_or_none(metadata.get("journal"))
+        or string_or_none(metadata.get("publisher"))
+    )
+    parts = [part for part in (author_text, f'"{title}"', publication, year) if part]
+    return ". ".join(parts) if parts else None
+
+
+def executive_summary_from_text(text: str, *, max_chars: int = 500) -> str:
+    compact = " ".join(line.strip() for line in text.splitlines() if line.strip())
+    return compact[:max_chars]
 
 
 def compile_basic_memory(text: str, request: RememberRequest) -> MemoryCandidate:

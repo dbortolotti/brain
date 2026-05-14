@@ -56,20 +56,20 @@ HTTP endpoints include:
 
 The high-level MCP tools are:
 
-- `brain.remember`
-- `brain.ingest_source`
-- `brain.recall`
-- `brain.profile_entity`
-- `brain.list_open_loops`
-- `brain.get_memory`
-- `brain.get_source`
-- `brain.resolve_conflict`
-- `brain.forget`
-- `brain.review_recent`
-- `brain.undo_last`
-- `brain.sync_cognee`
-- `brain.rebuild_cognee`
-- `brain.merge_entities`
+- `brain_remember`
+- `brain_ingest_source`
+- `brain_recall`
+- `brain_profile_entity`
+- `brain_list_open_loops`
+- `brain_get_memory`
+- `brain_get_source`
+- `brain_resolve_conflict`
+- `brain_forget`
+- `brain_review_recent`
+- `brain_undo_last`
+- `brain_sync_cognee`
+- `brain_rebuild_cognee`
+- `brain_merge_entities`
 
 Low-level Cognee and SQL operations are intentionally not exposed as public MCP
 tools.
@@ -106,7 +106,7 @@ Supported Slack commands:
 - `/brain debug ...` for admin-only read-only inspection
 
 Production should run this under launchd label `com.brain.slack-agent` on local
-port `8003`; see `config/deployment/launchd/com.brain.slack-agent.plist.template`. Verify route
+port `8003`; see `deployment/launchd/com.brain.slack-agent.plist.template`. Verify route
 separation and fail-closed signature behavior with:
 
 ```bash
@@ -180,21 +180,51 @@ Core Brain settings:
 - `BRAIN_AUTH_TOKEN`
 
 LLM compiler settings, disabled by default. When enabled, it uses the same fixed
-runtime LLM as the rest of Brain: `openai:gpt-5.5`.
+runtime LLM as the rest of Brain/Cognee: `openai:gpt-5.4-mini`.
 
 - `BRAIN_LLM_ENABLED=false`
 - `LLM_PROVIDER`
 - `LLM_MODEL`
 - `LLM_API_KEY`
 
-Cognee projection settings, optional:
+Taste/palate input enrichment uses its own model setting so it can stay on a
+stronger model without changing Cognee projection defaults:
 
-- `BRAIN_COGNEE_ENABLED=false`
+- `BRAIN_TASTE_LLM_MODEL=gpt-5.5`
+- `BRAIN_TASTE_LLM_REASONING_EFFORT=medium`
+
+Cognee projection settings:
+
+- `BRAIN_COGNEE_ENABLED=true`
 - `BRAIN_COGNEE_RECALL_ENABLED=false`
 - `BRAIN_COGNEE_MEMORY_DATASET=memory`
 - `BRAIN_COGNEE_SOURCES_DATASET=sources`
 - `BRAIN_COGNEE_DATA_DATASET=data`
 - `BRAIN_COGNEE_RECALL_TOP_K=10`
+- `GRAPH_DATABASE_PROVIDER=ladybug`
+- `VECTOR_DB_PROVIDER=pgvector`
+- `VECTOR_DATASET_DATABASE_HANDLER=pgvector`
+- `DB_PROVIDER=postgres`
+- `ENABLE_BACKEND_ACCESS_CONTROL=false`
+
+Brain defaults Cognee's rebuildable projection to Postgres/pgvector for vector
+storage and Postgres for Cognee metadata. The configured Postgres role must be
+able to create the `vector` extension; with Cognee's pgvector dataset handler it
+also needs permission to create per-dataset databases.
+
+Brain Taste settings:
+
+- `BRAIN_TASTE_ENABLED=true`
+- `BRAIN_TASTE_LLM_ROUTING_ENABLED=false`
+- `BRAIN_TASTE_AUTO_ENRICH_ENABLED=true`
+- `BRAIN_TASTE_OMDB_API_KEY`
+- `BRAIN_TASTE_WEB_ENRICHMENT_ENABLED=true`
+- `BRAIN_TASTE_GOOGLE_PLACES_API_KEY`
+- `BRAIN_TASTE_AUTO_WRITE_THRESHOLD=0.95`
+- `BRAIN_TASTE_CONFIRMATION_THRESHOLD=0.70`
+- `BRAIN_TASTE_OPEN_LOOP_CLOSE_THRESHOLD=0.97`
+- `BRAIN_TASTE_OPEN_LOOP_CONFIRMATION_THRESHOLD=0.80`
+- `BRAIN_TASTE_PROPOSAL_EXPIRY_HOURS=24`
 
 Slack capture settings, optional:
 
@@ -216,7 +246,7 @@ does not bypass Brain DB.
 ## Profiles
 
 Runtime uses one configured LLM and one configured embedding model. The default
-production values are OpenAI `gpt-5.5` for LLM calls and
+production values are OpenAI `gpt-5.4-mini` for runtime/Cognee LLM calls and
 `fastembed:intfloat/multilingual-e5-large` with 1024-dimensional vectors for
 local embeddings.
 

@@ -4,7 +4,7 @@ import sys
 import importlib.util
 from pathlib import Path
 
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 
 
 SCRIPT_PATH = Path(__file__).resolve().parents[1] / "scripts" / "check_provider_credit_status.py"
@@ -23,7 +23,6 @@ def test_provider_billing_capabilities_include_configured_providers() -> None:
         anthropic_api_key="sk-ant",
         voyage_api_key="pa-voyage",
         llm_provider="openai",
-        embedding_provider="fastembed",
     )
 
     capabilities = MODULE.provider_billing_capabilities(settings)

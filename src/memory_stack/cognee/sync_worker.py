@@ -4,7 +4,8 @@ from typing import Any
 
 from memory_stack.brain_store import BrainStore, now_utc
 from memory_stack.cognee.projector import ProjectionAdapter, project_memory, project_source
-from memory_stack.config import Settings, load_settings
+from memory_stack.cognee_adapter import ensure_datasources_ready, run_async
+from memory_stack.cfg import Settings, load_settings
 
 
 def sync_pending_cognee(
@@ -27,14 +28,26 @@ def sync_pending_cognee(
             "results": [],
         }
 
+    sync_ids = [row["id"] for row in rows]
+    if not sync_ids:
+        return _summary([])
+
+    if adapter is None:
+        run_async(
+            ensure_datasources_ready(
+                sorted({row["dataset"] for row in rows}),
+                settings=active_settings,
+            )
+        )
+
     results = [
         sync_one(
-            row["id"],
+            sync_id,
             settings=active_settings,
             store=active_store,
             adapter=adapter,
         )
-        for row in rows
+        for sync_id in sync_ids
     ]
     return _summary(results)
 
@@ -118,14 +131,24 @@ def retry_failed(
     active_settings = settings or load_settings()
     active_store = store or BrainStore(active_settings)
     rows = active_store.list_cognee_sync(statuses=("failed",), limit=limit)
+    sync_ids = [row["id"] for row in rows]
+    if not sync_ids:
+        return _summary([])
+    if adapter is None:
+        run_async(
+            ensure_datasources_ready(
+                sorted({row["dataset"] for row in rows}),
+                settings=active_settings,
+            )
+        )
     results = [
         sync_one(
-            row["id"],
+            sync_id,
             settings=active_settings,
             store=active_store,
             adapter=adapter,
         )
-        for row in rows
+        for sync_id in sync_ids
     ]
     return _summary(results)
 

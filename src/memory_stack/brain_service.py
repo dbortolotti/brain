@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+import re
 from typing import Any
 
 from memory_stack.brain_models import (
@@ -20,7 +21,7 @@ from memory_stack.cognee.serializers import (
     serialize_source_for_cognee,
 )
 from memory_stack.cognee.sync_worker import sync_one, sync_pending_cognee
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 from memory_stack.ingestion.classifier import input_type_for_source_kind
 from memory_stack.ingestion.memory_compiler import compile_memory
 from memory_stack.llm.client import LLMClient
@@ -31,6 +32,10 @@ from memory_stack.recall.retriever import retrieve_memories, retrieve_open_loops
 from memory_stack.recall.synthesizer import render_memory_answer, render_open_loops
 from memory_stack.resolution.conflict_detector import detect_and_apply_memory_resolution
 from memory_stack.resolution.entity_resolver import EntityResolver
+from memory_stack.taste.models import TasteQueryRequest
+from memory_stack.taste.routing import classify_taste_route
+from memory_stack.taste.service import TasteService, canonical_taste_store, remember_request_from_route
+from memory_stack.taste.store import TasteStore
 
 
 def remember(
@@ -39,6 +44,38 @@ def remember(
     *,
     llm_client: LLMClient | None = None,
 ) -> IngestionReceipt:
+    if settings.brain_taste_enabled and not request.context.get("taste_skip"):
+        route = classify_taste_route(request.input, settings=settings, llm_client=llm_client)
+        if route.get("taste_intent") == "remember" and route.get("domain") in {"taste", "ambiguous"}:
+            taste_service = TasteService(settings, llm_client=llm_client)
+            if (
+                route.get("domain") == "taste"
+                and float(route.get("confidence") or 0) >= settings.brain_taste_auto_write_threshold
+            ):
+                taste_result = taste_service.remember(
+                    remember_request_from_route(request.input, route).model_copy(
+                        update={"dry_run": request.dry_run, "context": request.context}
+                    )
+                )
+                return taste_result_to_ingestion_receipt(taste_result, settings, route)
+            if float(route.get("confidence") or 0) >= settings.brain_taste_confirmation_threshold:
+                proposal = taste_service.create_proposal_from_text(
+                    request.input,
+                    route=route,
+                    source_metadata={"context": request.context},
+                )
+                return IngestionReceipt(
+                    ingestion_run_id=proposal["id"],
+                    classification="taste_proposal",
+                    dry_run=True,
+                    taste={
+                        "requires_confirmation": True,
+                        "proposal_id": proposal["id"],
+                        "proposal": proposal["proposal_json"],
+                        "warnings": proposal["warnings_json"],
+                    },
+                )
+
     compiled = compile_memory(request, settings, llm_client=llm_client)
     input_hash = content_hash(request.input, request.input_type, request.context)
     run_id = stable_id("dry_ing", input_hash)
@@ -72,32 +109,33 @@ def remember(
     source_created = False
     try:
         if compiled.source is not None:
+            raw_source_text = compiled.source.raw_text or ""
+            source_metadata = {
+                **compiled.source.metadata,
+                "ingestion_run_id": run["id"],
+                "raw_text_hash": content_hash(raw_source_text),
+                "raw_text_chars": len(raw_source_text),
+                "raw_text_storage": "cognee",
+            }
             source, source_created = store.upsert_source(
                 {
                     "kind": compiled.source.kind,
                     "title": compiled.source.title,
                     "uri": compiled.source.uri,
                     "file_path": compiled.source.file_path,
-                    "raw_text": compiled.source.raw_text,
+                    "raw_text": None,
                     "summary": compiled.source.summary,
-                    "metadata_json": {**compiled.source.metadata, "ingestion_run_id": run["id"]},
+                    "metadata_json": source_metadata,
                     "status": compiled.source.status,
+                    "content_hash": content_hash(
+                        compiled.source.kind,
+                        compiled.source.uri,
+                        compiled.source.title,
+                        raw_source_text,
+                    ),
                 }
             )
             source_id = source["id"]
-            projection_hash = content_hash(
-                source["id"],
-                source["kind"],
-                source.get("uri"),
-                source.get("summary"),
-                source.get("status"),
-            )
-            store.mark_cognee_pending(
-                object_type="source",
-                object_id=source["id"],
-                dataset=settings.brain_cognee_sources_dataset,
-                projection_hash=projection_hash,
-            )
 
         receipt = IngestionReceipt(
             ingestion_run_id=run["id"],
@@ -110,6 +148,9 @@ def remember(
             memory_metadata = {**card.metadata, "ingestion_run_id": run["id"]}
             if "slack" in request.context:
                 memory_metadata["slack"] = request.context["slack"]
+            source_quote = card.source_quote
+            if card.kind == "source_record":
+                source_quote = None
             memory, memory_created = store.upsert_memory_card(
                 {
                     "kind": str(card.kind),
@@ -119,7 +160,7 @@ def remember(
                     "status": card.status,
                     "observed_at": card.observed_at,
                     "source_id": source_id,
-                    "source_quote": card.source_quote,
+                    "source_quote": source_quote,
                     "metadata_json": memory_metadata,
                 }
             )
@@ -242,7 +283,12 @@ def ingest_source(
 ) -> IngestionReceipt:
     if isinstance(request, RememberRequest):
         return remember(
-            request.model_copy(update={"source_policy": "source_and_memory"}),
+            request.model_copy(
+                update={
+                    "source_policy": "source_and_memory",
+                    "context": {**request.context, "taste_skip": True, "source_ingest": True},
+                }
+            ),
             settings,
             llm_client=llm_client,
         )
@@ -257,9 +303,79 @@ def ingest_source(
             "why_saved": request.why_saved,
             "metadata": request.metadata,
             "source_kind": request.source_kind,
+            "taste_skip": True,
+            "source_ingest": True,
         },
     )
-    return remember(remember_request, settings, llm_client=llm_client)
+    receipt = remember(remember_request, settings, llm_client=llm_client)
+    if settings.brain_taste_enabled:
+        candidates = taste_source_candidates(request.source, settings=settings, llm_client=llm_client)
+        if candidates:
+            taste_service = TasteService(settings, llm_client=llm_client)
+            proposal_ids = []
+            if len(candidates) <= 3 and not request.dry_run:
+                for candidate in candidates:
+                    proposal = taste_service.create_proposal_from_text(
+                        candidate["text"],
+                        route=candidate["route"],
+                        source_metadata={
+                            "source_ingest": True,
+                            "title": request.title,
+                            "source_kind": request.source_kind,
+                        },
+                    )
+                    proposal_ids.append(proposal["id"])
+                policy = "candidate_proposals"
+            elif len(candidates) <= 10:
+                policy = "structured_candidate_selection"
+                if not request.dry_run:
+                    proposal = taste_service.store.create_proposal(
+                        original_text=request.source,
+                        proposal={
+                            "route": {
+                                "domain": "taste",
+                                "taste_intent": "remember",
+                                "confidence": max(
+                                    float(candidate.get("confidence") or 0)
+                                    for candidate in candidates
+                                ),
+                                "requires_enrichment": True,
+                                "requires_confirmation": True,
+                                "ambiguity_reasons": [
+                                    "Multiple taste candidates were found in one source."
+                                ],
+                            },
+                            "source_candidates": candidates,
+                            "selection_required": True,
+                            "proposed_taste_records": [],
+                            "proposed_brain_entities": [],
+                            "proposed_memory_cards": [],
+                            "proposed_relationships": [],
+                            "proposed_open_loops": [],
+                            "allowed_actions": ["confirm", "cancel", "correct"],
+                        },
+                        warnings=[
+                            "Select which taste candidates to enrich or store; "
+                            "Brain does not mass-enrich source mentions automatically."
+                        ],
+                        source_metadata={
+                            "source_ingest": True,
+                            "title": request.title,
+                            "source_kind": request.source_kind,
+                            "candidate_count": len(candidates),
+                        },
+                    )
+                    proposal_ids.append(proposal["id"])
+            else:
+                policy = "selection_required"
+            receipt.taste = {
+                "source_ingestion_policy": policy,
+                "candidate_count": len(candidates),
+                "candidates": candidates[:10],
+                "proposal_ids": proposal_ids,
+                "mass_enrichment_skipped": True,
+            }
+    return receipt
 
 
 def recall(
@@ -270,6 +386,21 @@ def recall(
 ) -> RecallResponse:
     store = BrainStore(settings)
     query = request.query.strip()
+    if settings.brain_taste_enabled and should_route_recall_to_taste(query):
+        taste_result = TasteService(settings).query(TasteQueryRequest(query=query))
+        return RecallResponse(
+            answer=taste_result.get("answer") or "No matching taste records found.",
+            facts=[
+                {
+                    "taste_item_id": item.get("id"),
+                    "statement": item.get("name"),
+                    "score": item.get("score"),
+                }
+                for item in taste_result.get("ranked_results", [])
+            ],
+            evidence=taste_result.get("ranked_results", []),
+            taste=taste_result,
+        )
     mode = request.mode if request.mode != "auto" else infer_recall_mode(query)
     if mode == "profile":
         name = extract_profile_name(query)
@@ -280,13 +411,22 @@ def recall(
             include_conflicts=request.include_conflicts,
         )
         if profile is not None:
+            profile_memory_ids = [fact["memory_id"] for fact in profile.facts if "memory_id" in fact]
+            profile_memories = [
+                memory
+                for memory_id in profile_memory_ids
+                if (memory := store.get_memory(memory_id)) is not None
+            ]
+            taste_evidence = collect_taste_evidence(settings, profile_memories)
             store.log_recall(
                 query=query,
                 mode=mode,
-                retrieved_memory_ids=[fact["memory_id"] for fact in profile.facts if "memory_id" in fact],
+                retrieved_memory_ids=profile_memory_ids,
                 retrieved_source_ids=[],
                 answer_preview=profile.answer,
             )
+            if taste_evidence:
+                return profile.model_copy(update={"taste": taste_evidence})
             return profile
     if mode == "open_loops":
         loops = retrieve_open_loops(store, limit=request.limit)
@@ -313,6 +453,7 @@ def recall(
     facts = build_facts(memories)
     evidence = build_evidence(memories, include_sources=request.include_sources)
     answer = render_memory_answer(memories)
+    taste_evidence = collect_taste_evidence(settings, memories)
     store.log_recall(
         query=query,
         mode=mode,
@@ -320,7 +461,7 @@ def recall(
         retrieved_source_ids=[memory["source_id"] for memory in memories if memory.get("source_id")],
         answer_preview=answer,
     )
-    return RecallResponse(answer=answer, facts=facts, evidence=evidence)
+    return RecallResponse(answer=answer, facts=facts, evidence=evidence, taste=taste_evidence)
 
 
 def get_memory(memory_id: str, settings: Settings) -> dict[str, Any] | None:
@@ -582,7 +723,7 @@ def merge_entities(
     confirm: bool = False,
 ) -> dict[str, Any]:
     if not confirm:
-        raise ValueError("brain.merge_entities requires confirm=true.")
+        raise ValueError("brain_merge_entities requires confirm=true.")
     store = BrainStore(settings)
     result = store.merge_entities(
         primary_entity_id=primary_entity_id,
@@ -620,3 +761,158 @@ def _ensure_projection_row(
         )
     if force:
         store.mark_cognee_stale(object_type=object_type, object_id=object_id)
+
+
+def should_route_recall_to_taste(query: str) -> bool:
+    lower = query.casefold()
+    if "recommend" in lower and lower.startswith(("what ", "who ")):
+        return False
+    choice_words = ("which", "what should", "should i", "rank", "choose", "best")
+    taste_words = ("wine", "restaurant", "movie", "series", "music", "cigar")
+    return any(word in lower for word in choice_words) and any(
+        word in lower for word in taste_words
+    )
+
+
+def collect_taste_evidence(settings: Settings, memories: list[dict[str, Any]]) -> dict[str, Any]:
+    taste_memory_ids = [
+        memory["id"]
+        for memory in memories
+        if (memory.get("metadata_json") or {}).get("taste_item_id")
+    ]
+    if not taste_memory_ids:
+        return {}
+    sqlite_store = TasteStore(settings)
+    store = canonical_taste_store(settings, sqlite_store)
+    linked = []
+    for memory in memories:
+        taste_item_id = (memory.get("metadata_json") or {}).get("taste_item_id")
+        if not taste_item_id:
+            continue
+        item = store.get_item(taste_item_id)
+        if item is None:
+            continue
+        linked.append(
+            {
+                "memory_id": memory["id"],
+                "taste_item_id": item["id"],
+                "type": item["type"],
+                "canonical_name": item["canonical_name"],
+                "attributes": item.get("attributes") or {},
+                "signals": item.get("signals") or [],
+            }
+        )
+    return {"linked_evidence": linked} if linked else {}
+
+
+def taste_result_to_ingestion_receipt(
+    taste_result: dict[str, Any],
+    settings: Settings,
+    route: dict[str, Any],
+) -> IngestionReceipt:
+    if not taste_result.get("stored"):
+        if taste_result.get("requires_confirmation") or taste_result.get("proposal_id"):
+            return IngestionReceipt(
+                ingestion_run_id=str(
+                    taste_result.get("proposal_id")
+                    or stable_id("taste_prop", jsonable_hashable(taste_result))
+                ),
+                classification="taste_proposal",
+                dry_run=True,
+                taste={
+                    "requires_confirmation": True,
+                    "proposal_id": taste_result.get("proposal_id"),
+                    "proposal": taste_result.get("proposal"),
+                    "warnings": taste_result.get("warnings", []),
+                    "enrichment": taste_result.get("enrichment", {}),
+                },
+            )
+        return IngestionReceipt(
+            ingestion_run_id=stable_id("taste", jsonable_hashable(taste_result)),
+            classification="taste",
+            dry_run=bool(taste_result.get("dry_run")),
+            taste=taste_result,
+        )
+    store = BrainStore(settings)
+    projection = taste_result.get("brain_projection") or {}
+    memory_ids = projection.get("memory_ids") or []
+    records = taste_result.get("taste_records") or []
+    memory_receipts = []
+    for memory_id in memory_ids:
+        memory = store.get_memory(memory_id)
+        if memory is None:
+            continue
+        memory_receipts.append(
+            MemoryReceipt(
+                id=memory["id"],
+                kind=memory["kind"],
+                statement=memory["statement"],
+                status=memory["status"],
+                confidence=memory["confidence"],
+                created=True,
+            )
+        )
+    entity_receipts = []
+    for record in records:
+        entity = store.get_entity(record["brain_entity_id"])
+        if entity is None:
+            continue
+        entity_receipts.append(
+            EntityReceipt(
+                id=entity["id"],
+                canonical_name=entity["canonical_name"],
+                type=entity["type"],
+                created=bool(projection.get("entity_created")),
+            )
+        )
+    return IngestionReceipt(
+        ingestion_run_id=stable_id("taste_ing", jsonable_hashable(taste_result)),
+        classification=f"taste_{route.get('taste_intent', 'remember')}",
+        memory_cards=memory_receipts,
+        entities=entity_receipts,
+        relationships=[
+            {"id": rel_id, "created": True}
+            for rel_id in projection.get("relationship_ids", [])
+        ],
+        open_loops=[
+            {"id": loop_id, "created": True}
+            for loop_id in projection.get("open_loop_ids", [])
+        ],
+        taste=taste_result,
+    )
+
+
+def jsonable_hashable(value: Any) -> str:
+    import json
+
+    return json.dumps(value, sort_keys=True, default=str)
+
+
+def taste_source_candidates(
+    text: str,
+    *,
+    settings: Settings,
+    llm_client: LLMClient | None = None,
+) -> list[dict[str, Any]]:
+    candidates = []
+    chunks = [
+        chunk.strip(" -*\t")
+        for chunk in re.split(r"[\n.;]+", text)
+        if chunk.strip(" -*\t")
+    ]
+    for chunk in chunks:
+        route = classify_taste_route(chunk, settings=settings, llm_client=llm_client)
+        if (
+            route.get("taste_intent") == "remember"
+            and route.get("domain") in {"taste", "ambiguous"}
+            and float(route.get("confidence") or 0) >= settings.brain_taste_confirmation_threshold
+        ):
+            candidates.append(
+                {
+                    "text": chunk,
+                    "route": route,
+                    "confidence": route.get("confidence"),
+                    "entity_type_hint": route.get("entity_type_hint"),
+                }
+            )
+    return candidates

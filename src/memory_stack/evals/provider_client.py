@@ -13,7 +13,7 @@ from urllib.parse import quote, urlparse
 
 import httpx
 
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 from memory_stack.evals.model_matrix import ModelCandidate
 from memory_stack.local_embeddings import fastembed_vector
 from memory_stack.provider_auth import ProviderAuthError, resolve_openai_text_bearer
@@ -218,15 +218,15 @@ class LiveProviderClient:
             if not has_bearer and not has_sigv4:
                 return "missing AWS_BEARER_TOKEN_BEDROCK or AWS access key credentials"
             return None
-        if candidate.provider == "openai" and getattr(candidate, "kind", "llm") == "embedding":
-            if not self.settings.configured_provider_api_key("openai"):
-                return "missing OPENAI_API_KEY for OpenAI embeddings"
-            return None
         if candidate.provider == "openai" and self.settings.openai_auth_mode == "oauth":
             try:
                 resolve_openai_text_bearer(self.settings)
             except ProviderAuthError as exc:
                 return str(exc)
+            return None
+        if candidate.provider == "openai" and getattr(candidate, "kind", "llm") == "embedding":
+            if not self.settings.configured_provider_api_key("openai"):
+                return "missing OPENAI_API_KEY for OpenAI embeddings"
             return None
         if candidate.provider == "fastembed" and getattr(candidate, "kind", "llm") == "embedding":
             return None
@@ -448,7 +448,9 @@ class LiveProviderClient:
             response = self.client.post(
                 "https://api.openai.com/v1/embeddings",
                 headers={
-                    "Authorization": f"Bearer {self.settings.configured_provider_api_key('openai')}"
+                    "Authorization": f"Bearer {resolve_openai_text_bearer(self.settings)}"
+                    if self.settings.openai_auth_mode == "oauth"
+                    else f"Bearer {self.settings.configured_provider_api_key('openai')}"
                 },
                 json={"model": candidate.api_model or candidate.model, "input": text},
             )

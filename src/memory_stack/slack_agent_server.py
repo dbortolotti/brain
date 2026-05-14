@@ -12,7 +12,7 @@ from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.responses import JSONResponse
 import httpx
 
-from memory_stack.config import Settings, load_settings
+from memory_stack.cfg import Settings, load_settings
 from memory_stack.slack_memory_agent import SlackAgentRequest, SlackMemoryAgent
 
 
@@ -104,9 +104,15 @@ async def slack_interactions(
     action = (payload.get("actions") or [{}])[0]
     action_value = json.loads(action.get("value") or "{}")
     proposed_memory = action_value.get("proposed_memory")
+    taste_proposal_id = action_value.get("taste_proposal_id")
+    taste_action = action_value.get("taste_action")
     help_command = action_value.get("help_command")
     slack_request = SlackAgentRequest(
-        text=f"help-template {help_command}" if help_command else "confirm",
+        text=(
+            f"help-template {help_command}"
+            if help_command
+            else taste_action or "confirm"
+        ),
         user_id=str(user.get("id") or ""),
         channel_id=str(channel.get("id") or ""),
         team_id=str(team.get("id") or ""),
@@ -115,6 +121,8 @@ async def slack_interactions(
         source="interaction",
         confirmed=help_command is None,
         proposed_memory=proposed_memory,
+        taste_proposal_id=taste_proposal_id,
+        taste_action=taste_action,
         help_command=help_command,
     )
     require_slack_allowlist(slack_request, settings)

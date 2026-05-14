@@ -11,7 +11,7 @@ from rich.table import Table
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from memory_stack.config import Settings, load_settings, normalize_provider_name
+from memory_stack.cfg import Settings, load_settings, normalize_provider_name
 
 
 console = Console()

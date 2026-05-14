@@ -12,7 +12,7 @@ from typer.testing import CliRunner
 
 import memory_stack.brain_cli as brain_cli
 from memory_stack.brain_cli import app
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 from memory_stack import provider_auth
 from memory_stack.provider_auth import (
     OpenAICodexCredential,
@@ -335,7 +335,7 @@ def test_cli_status_reports_oauth_and_embedding_status(tmp_path: Path) -> None:
 
     assert result.exit_code == 0
     assert "openai text: OAuth profile default" in result.output
-    assert "openai embedding: OPENAI_API_KEY configured" in result.output
+    assert "openai embedding: OAuth profile default" in result.output
 
 
 def test_cli_list_reports_profiles(tmp_path: Path) -> None:

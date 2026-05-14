@@ -10,7 +10,7 @@ from memory_stack.brain_models import (
     RememberRequest,
     SourceCandidate,
 )
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 from memory_stack.llm.client import LLMClient, build_llm_client
 from memory_stack.llm.models import LLMCompilerOutput, compiler_output_schema
 from memory_stack.ingestion.rule_compiler import CompiledInput, compile_input

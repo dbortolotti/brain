@@ -9,7 +9,7 @@ from typing import Any
 from memory_stack.brain_models import IngestSourceRequest, RecallRequest, RememberRequest
 from memory_stack.brain_service import ingest_source, recall, remember
 from memory_stack.brain_store import BrainStore
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 from memory_stack.evals.fixtures.golden import ARTICLE_TEXT, LONG_CHAT_SUMMARY, PREFERENCE_TABLE
 from memory_stack.evals.model_fixtures import ModelEvalFixture, fixture_prompt, output_schema_for_fixture
 from memory_stack.evals.model_matrix import ModelCandidate, candidate_from_ref
@@ -106,28 +106,16 @@ E2E_RECALL_CASES: tuple[E2ERecallCase, ...] = (
 
 EXPECTED_E2E_ROLES: tuple[str, ...] = (
     "atomic_card_extractor",
-    "commit_policy_decider",
-    "conflict_candidate_detector",
-    "conflict_explainer",
-    "conflict_policy_decider",
-    "debug_explainer",
     "durability_filter",
-    "entity_candidate_ranker",
-    "entity_final_resolver",
     "entity_mention_extractor",
     "eval_judge",
-    "groundedness_checker",
     "intent_router",
     "memory_kind_classifier",
     "open_loop_detector",
-    "recall_planner",
-    "recall_relevance_filter",
-    "recall_synthesizer",
     "relationship_extractor",
     "repair_option_generator",
     "source_classifier",
     "source_takeaway_extractor",
-    "success_receipt_generator",
     "table_policy_handler",
 )
 
@@ -376,7 +364,7 @@ def build_recall_e2e_fixture(
     return ModelEvalFixture(
         id=case.id,
         scenario_group="e2e_runtime_recall",
-        role="recall_synthesizer",
+        role="eval_judge",
         input_text=e2e_model_prompt(case, runtime_response.model_dump(mode="json"), seed),
         expected=case.expected,
         zero_tolerance_checks=case.zero_tolerance_checks,
@@ -419,7 +407,7 @@ def build_role_e2e_fixtures(seed: E2EDatabaseSeed) -> tuple[ModelEvalFixture, ..
             zero_tolerance_checks=zero_tolerance_checks,
         )
 
-    return (
+    fixtures = (
         fixture(
             "e2e_intent_router_recall_vs_write",
             "intent_router",
@@ -644,7 +632,96 @@ def build_role_e2e_fixtures(seed: E2EDatabaseSeed) -> tuple[ModelEvalFixture, ..
                 "must_not_include": ["pass"],
             },
         ),
+        fixture(
+            "e2e_taste_domain_router_high_confidence",
+            "taste_domain_router",
+            "/brain remember Sam recommended Chateau Musar 2016.",
+            {
+                "must_include": ["taste", "remember", "wine"],
+                "must_include_any": ["recommended", "Sam"],
+            },
+        ),
+        fixture(
+            "e2e_taste_entity_classifier_supported_category",
+            "taste_entity_classifier",
+            "Classify the taste item in: I watched The Bear and rate it 8/10.",
+            {
+                "must_include": ["series", "The Bear"],
+                "must_not_include": ["person"],
+            },
+        ),
+        fixture(
+            "e2e_taste_enrichment_planner_strict_source",
+            "taste_enrichment_planner",
+            "Plan enrichment for movie Coherence with OMDb enabled and broad web search not approved.",
+            {
+                "must_include": ["OMDb", "strict", "broad"],
+                "must_not_include": ["automatic broad web"],
+            },
+        ),
+        fixture(
+            "e2e_taste_enrichment_normalizer_metadata_split",
+            "taste_enrichment_normalizer",
+            "Normalize OMDb payload for Coherence. Keep raw provider payload separate from normalized runtime/country/language fields.",
+            {
+                "must_include": ["normalized", "enrichment_metadata", "source"],
+                "must_not_include": ["raw snippets in normalized"],
+            },
+        ),
+        fixture(
+            "e2e_taste_attribute_extractor_strict_keys",
+            "taste_attribute_extractor",
+            "Extract attributes for wine: oak=0.8, quiet=0.4, tannic=0.7. Wine does not allow quiet.",
+            {
+                "must_include": ["oak", "tannic", "quiet"],
+                "must_include_any": ["ignored", "warning", "not valid"],
+            },
+        ),
+        fixture(
+            "e2e_taste_signal_extractor_negative_and_experience",
+            "taste_signal_extractor",
+            "Extract signals from: I listened to Kind of Blue and loved it. I disliked Partagas Serie D No. 4.",
+            {
+                "must_include": ["listened", "disliked", "Kind of Blue", "Partagas"],
+            },
+        ),
+        fixture(
+            "e2e_taste_option_matcher_constrained_options",
+            "taste_option_matcher",
+            "Options supplied: Known Wine, Mystery Bottle. Stored Taste also has Other Saved Wine. Match only supplied options.",
+            {
+                "must_include": ["Known Wine", "Mystery Bottle"],
+                "must_not_include": ["Other Saved Wine as substitute"],
+            },
+        ),
+        fixture(
+            "e2e_taste_ranker_negative_penalty",
+            "taste_ranker",
+            "Rank wines using rating, attributes, recommended_by Sam, avoid filter, disliked penalty, and rejected_option feedback.",
+            {
+                "must_include": ["rating", "recommended", "avoid", "disliked", "rejected"],
+            },
+        ),
+        fixture(
+            "e2e_taste_explanation_synthesizer_grounded",
+            "taste_explanation_synthesizer",
+            "Explain why the top restaurant was recommended using evidence IDs and mention unmatched supplied options only if present.",
+            {
+                "must_include": ["evidence", "recommended"],
+                "must_not_include": ["invented preference"],
+            },
+        ),
+        fixture(
+            "e2e_taste_memory_projector_brain_projection",
+            "taste_memory_projector",
+            "Project: Daniele wants to try Noble Rot. Return entity, memory card, relationship/open-loop plan and no writes for read-only describe.",
+            {
+                "must_include": ["entity", "memory", "open loop", "Noble Rot"],
+                "must_not_include": ["read-only write"],
+            },
+        ),
     )
+    return tuple(fixture for fixture in fixtures if fixture.role in EXPECTED_E2E_ROLES)
 
 
 def e2e_model_prompt(

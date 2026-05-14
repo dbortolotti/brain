@@ -4,7 +4,7 @@ import json
 from typing import Any
 
 from memory_stack.brain_store import BrainStore
-from memory_stack.config import Settings, load_settings
+from memory_stack.cfg import Settings, load_settings
 
 
 def serialize_memory_for_cognee(
@@ -42,10 +42,10 @@ def serialize_source_for_cognee(
     *,
     store: BrainStore | None = None,
     settings: Settings | None = None,
-    max_chars: int = 50_000,
+    max_chars: int = 0,
 ) -> str:
     active_store = store or BrainStore(settings or load_settings())
-    source = active_store.get_source(source_id, include_text=True, max_chars=max_chars)
+    source = active_store.get_source(source_id, include_text=max_chars > 0, max_chars=max_chars)
     if source is None:
         raise ValueError(f"Source not found: {source_id}")
     payload = {

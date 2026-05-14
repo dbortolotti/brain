@@ -10,6 +10,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
 import backup_stores
 import verify_mcp_production
+from memory_stack.cfg import Settings
+from memory_stack.taste.models import TasteRememberRequest
+from memory_stack.taste.service import TasteService
 
 
 def test_backup_sqlite_includes_cognee_db_without_extension(tmp_path) -> None:
@@ -32,6 +35,36 @@ def test_backup_sqlite_includes_cognee_db_without_extension(tmp_path) -> None:
     assert entry["source"] == str(db_path)
     assert entry["integrity_check"] == "ok"
     assert Path(entry["backup"]).name == "system__databases__cognee_db"
+
+
+def test_backup_sqlite_includes_brain_taste_tables(tmp_path) -> None:
+    data_root = tmp_path / "shared" / "data"
+    brain_db = data_root / "brain" / "brain.db"
+    brain_db.parent.mkdir(parents=True)
+    settings = Settings(brain_database_url=f"sqlite:///{brain_db}")
+    TasteService(settings).remember(
+        TasteRememberRequest(
+            type="wine",
+            canonical_name="Backup Wine",
+            description="Backup Wine is rated 8/10.",
+            rating=8,
+            fetch_external_ratings=False,
+        )
+    )
+    proposal = TasteService(settings).create_proposal_from_text("Alex recommended Mystery Thing.")
+    TasteService(settings).cancel(proposal["id"])
+    manifest = {"sqlite": [], "blockers": []}
+    run_dir = tmp_path / "backup"
+    run_dir.mkdir()
+
+    backup_stores.backup_sqlite(data_root, run_dir, manifest)
+
+    brain_entry = next(entry for entry in manifest["sqlite"] if entry["source"] == str(brain_db))
+    with sqlite3.connect(brain_entry["backup"]) as conn:
+        count = conn.execute("SELECT COUNT(*) FROM taste_items").fetchone()[0]
+        proposal_status = conn.execute("SELECT status FROM taste_proposals").fetchone()[0]
+    assert count == 1
+    assert proposal_status == "cancelled"
 
 
 def test_backup_raw_data_and_secrets_archives(tmp_path, monkeypatch) -> None:

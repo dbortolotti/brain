@@ -2,12 +2,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from memory_stack import cfg
 
-DEFAULT_LLM_PROVIDER = "openai"
-DEFAULT_LLM_MODEL = "gpt-5.5"
-DEFAULT_EMBEDDING_PROVIDER = "fastembed"
-DEFAULT_EMBEDDING_MODEL = "intfloat/multilingual-e5-large"
-DEFAULT_EMBEDDING_DIMENSIONS = 1024
+DEFAULT_LLM_PROVIDER = str(cfg.get("LLM_PROVIDER"))
+DEFAULT_LLM_MODEL = str(cfg.get("LLM_MODEL"))
+DEFAULT_EMBEDDING_PROVIDER = str(cfg.get("EMBEDDING_PROVIDER"))
+DEFAULT_EMBEDDING_MODEL = str(cfg.get("EMBEDDING_MODEL"))
+DEFAULT_EMBEDDING_DIMENSIONS = int(cfg.get("EMBEDDING_DIMENSIONS"))
 
 
 EMBEDDING_PROVIDERS = {"fastembed", "voyage"}
@@ -68,6 +69,8 @@ def configured_embedding(settings: object) -> ProviderModel:
 def is_embedding_ref(ref: str) -> bool:
     parsed = parse_model_ref(ref)
     model = parsed.model.lower()
+    if parsed.provider == "openai":
+        return "embedding" in model
     return parsed.provider in EMBEDDING_PROVIDERS or "embedding" in model or model.startswith("intfloat/")
 
 

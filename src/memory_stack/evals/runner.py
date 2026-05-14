@@ -5,7 +5,7 @@ from typing import Any
 
 from memory_stack.brain_models import IngestSourceRequest, RecallRequest, RememberRequest
 from memory_stack.brain_service import ingest_source, recall, remember
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 from memory_stack.evals.fixtures import GOLDEN_INGESTION_FIXTURES, GoldenFixture
 from memory_stack.evals.golden_queries import GOLDEN_RECALL_QUERIES, GoldenRecallQuery
 from memory_stack.evals.metrics import groundedness, summarize_metrics, term_recall

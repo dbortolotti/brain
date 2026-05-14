@@ -21,7 +21,7 @@ from memory_stack.brain_service import (
     undo_last,
 )
 from memory_stack.brain_store import BrainStore, row_dict
-from memory_stack.config import Settings
+from memory_stack.cfg import Settings
 from memory_stack.slack.formatter import format_review, format_undo
 from memory_stack.slack_guardrails import (
     ProposedMemory,
@@ -30,6 +30,8 @@ from memory_stack.slack_guardrails import (
     parse_llm_proposal,
     validate_slack_proposal,
 )
+from memory_stack.taste.routing import classify_taste_route
+from memory_stack.taste.service import TasteService
 
 
 class SlackGuardLLM(Protocol):
@@ -56,6 +58,8 @@ class SlackAgentRequest:
     source: str = "slash_command"
     confirmed: bool = False
     proposed_memory: dict[str, Any] | None = None
+    taste_proposal_id: str | None = None
+    taste_action: str | None = None
     help_command: str | None = None
 
 
@@ -196,6 +200,10 @@ class SlackMemoryAgent:
             return self._handle_remember(argument, request)
         if command == "confirm":
             return self._handle_confirm(argument, request)
+        if command == "cancel":
+            return self._handle_cancel(argument, request)
+        if command == "correct":
+            return self._handle_correct(argument)
         if command == "recall":
             return self._handle_recall(argument, request)
         if command == "profile":
@@ -251,6 +259,76 @@ class SlackMemoryAgent:
     ) -> SlackAgentResponse:
         if not text:
             return self._ask("What should I remember?")
+        taste_route = classify_taste_route(
+            text,
+            settings=self.settings,
+            llm_client=self.llm_client,
+        )
+        if (
+            self.settings.brain_taste_enabled
+            and taste_route.get("taste_intent") == "remember"
+            and taste_route.get("domain") in {"taste", "ambiguous"}
+            and float(taste_route.get("confidence") or 0)
+            >= self.settings.brain_taste_confirmation_threshold
+        ):
+            if (
+                taste_route.get("domain") == "taste"
+                and float(taste_route.get("confidence") or 0)
+                >= self.settings.brain_taste_auto_write_threshold
+            ):
+                receipt = remember(
+                    RememberRequest(
+                        input=text,
+                        input_type="auto",
+                        source_policy="memory_only",
+                        context={"slack": self._slack_context(request)},
+                    ),
+                    self.settings,
+                )
+                if receipt.classification == "taste_proposal":
+                    response_text = (
+                        "I found a taste memory, but strict enrichment needs "
+                        "confirmation before I store it."
+                    )
+                    proposal_id = receipt.taste.get("proposal_id") if receipt.taste else None
+                    return SlackAgentResponse(
+                        decision="taste_proposal",
+                        text=response_text,
+                        payload={
+                            "requires_confirmation": True,
+                            "proposal_id": proposal_id,
+                            "proposal": receipt.taste.get("proposal") if receipt.taste else None,
+                            "warnings": receipt.taste.get("warnings") if receipt.taste else [],
+                            "receipt": receipt.model_dump(mode="json"),
+                        },
+                        blocks=taste_confirmation_blocks(response_text, proposal_id)
+                        if proposal_id
+                        else [],
+                    )
+                return SlackAgentResponse(
+                    decision="commit",
+                    text=receipt_text(receipt.model_dump(mode="json")),
+                    payload={"receipt": receipt.model_dump(mode="json")},
+                )
+            proposal = TasteService(self.settings).create_proposal_from_text(
+                text,
+                route=taste_route,
+                source_metadata={"slack": self._slack_context(request)},
+            )
+            response_text = (
+                "I found a taste memory, but it needs confirmation before I store it."
+            )
+            return SlackAgentResponse(
+                decision="taste_proposal",
+                text=response_text,
+                payload={
+                    "requires_confirmation": True,
+                    "proposal_id": proposal["id"],
+                    "proposal": proposal["proposal_json"],
+                    "warnings": proposal["warnings_json"],
+                },
+                blocks=taste_confirmation_blocks(response_text, proposal["id"]),
+            )
         context = self._context_for(text)
         try:
             proposal = self._proposal_for_remember(text, request=request, context=context)
@@ -330,6 +408,18 @@ class SlackMemoryAgent:
         text: str,
         request: SlackAgentRequest,
     ) -> SlackAgentResponse:
+        if request.taste_proposal_id or text.startswith("tprop_"):
+            proposal_id = request.taste_proposal_id or text.split()[0]
+            result = TasteService(self.settings).confirm(proposal_id)
+            return SlackAgentResponse(
+                decision="taste_confirm",
+                text=(
+                    "Confirmed. I stored the taste memory."
+                    if result.get("confirmed")
+                    else f"Taste proposal was not confirmed: {result.get('error')}"
+                ),
+                payload=result,
+            )
         if request.proposed_memory:
             proposed_memory = ProposedMemory.model_validate(request.proposed_memory)
         elif text:
@@ -353,6 +443,32 @@ class SlackMemoryAgent:
             response_type=response.response_type,
             payload={**response.payload, "proposal": proposal.model_dump(mode="json")},
             blocks=response.blocks,
+        )
+
+    def _handle_cancel(
+        self,
+        text: str,
+        request: SlackAgentRequest,
+    ) -> SlackAgentResponse:
+        proposal_id = request.taste_proposal_id or (text.split()[0] if text else None)
+        if not proposal_id:
+            return self._ask("Which proposal should I cancel?")
+        result = TasteService(self.settings).cancel(proposal_id)
+        return SlackAgentResponse(
+            decision="taste_cancel",
+            text="Cancelled the taste proposal." if result.get("cancelled") else result.get("error", "Not cancelled."),
+            payload=result,
+        )
+
+    def _handle_correct(self, argument: str) -> SlackAgentResponse:
+        proposal_id, correction = split_first(argument)
+        if not proposal_id or not correction:
+            return self._ask("Use `/brain correct <proposal_id> <correction>`.")
+        result = TasteService(self.settings).correct_proposal(proposal_id, correction)
+        return SlackAgentResponse(
+            decision="taste_correct",
+            text="Updated the taste proposal. Confirm it when ready.",
+            payload=result,
         )
 
     def _handle_recall(self, query: str, request: SlackAgentRequest) -> SlackAgentResponse:
@@ -521,17 +637,20 @@ class SlackMemoryAgent:
             source_policy=memory.source_policy,
             dry_run=dry_run,
             context={
-                "slack": {
-                    "team_id": request.team_id,
-                    "channel_id": request.channel_id,
-                    "user_id": request.user_id,
-                    "thread_ts": request.thread_ts,
-                    "message_ts": request.message_ts,
-                    "permalink": request.permalink,
-                    "source": request.source,
-                }
+                "slack": self._slack_context(request)
             },
         )
+
+    def _slack_context(self, request: SlackAgentRequest) -> dict[str, Any]:
+        return {
+            "team_id": request.team_id,
+            "channel_id": request.channel_id,
+            "user_id": request.user_id,
+            "thread_ts": request.thread_ts,
+            "message_ts": request.message_ts,
+            "permalink": request.permalink,
+            "source": request.source,
+        }
 
     def _auto_commit_allowed(self, proposal: SlackAgentProposal) -> bool:
         return (
@@ -576,6 +695,8 @@ def split_intent(text: str) -> tuple[str, str]:
         "help",
         "remember",
         "confirm",
+        "cancel",
+        "correct",
         "recall",
         "profile",
         "open_loops",
@@ -804,8 +925,42 @@ def confirmation_blocks(text: str, proposed_memory: dict[str, Any]) -> list[dict
     ]
 
 
+def taste_confirmation_blocks(text: str, proposal_id: str) -> list[dict[str, Any]]:
+    confirm_value = json.dumps(
+        {"taste_proposal_id": proposal_id, "taste_action": "confirm"},
+        separators=(",", ":"),
+    )
+    cancel_value = json.dumps(
+        {"taste_proposal_id": proposal_id, "taste_action": "cancel"},
+        separators=(",", ":"),
+    )
+    return [
+        {"type": "section", "text": {"type": "mrkdwn", "text": text}},
+        {
+            "type": "actions",
+            "elements": [
+                {
+                    "type": "button",
+                    "text": {"type": "plain_text", "text": "Confirm"},
+                    "style": "primary",
+                    "action_id": "brain_confirm_taste",
+                    "value": confirm_value,
+                },
+                {
+                    "type": "button",
+                    "text": {"type": "plain_text", "text": "Cancel"},
+                    "action_id": "brain_cancel_taste",
+                    "value": cancel_value,
+                },
+            ],
+        },
+    ]
+
+
 class InteractionPayload(BaseModel):
-    proposed_memory: dict[str, Any]
+    proposed_memory: dict[str, Any] | None = None
+    taste_proposal_id: str | None = None
+    taste_action: str | None = None
     user_id: str
     channel_id: str
     team_id: str | None = None

@@ -15,7 +15,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from rich.console import Console
 
-from memory_stack.config import load_settings
+from memory_stack.cfg import load_settings
 from production_check_utils import command_exists, uid
 
 
