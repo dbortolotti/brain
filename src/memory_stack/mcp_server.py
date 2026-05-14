@@ -77,6 +77,8 @@ from memory_stack.taste.service import TasteService
 STARTED_AT = time.time()
 settings = load_settings()
 oauth_provider = BrainOAuthProvider(settings) if settings.brain_auth_enabled else None
+SUPPORTED_MCP_PROTOCOL_VERSIONS = {"2024-11-05", "2025-11-25"}
+DEFAULT_MCP_PROTOCOL_VERSION = "2024-11-05"
 
 app = FastAPI(title="Brain MCP", version="0.1.0")
 if settings.brain_request_log_enabled:
@@ -732,6 +734,14 @@ def tools_with_output_schemas(tools: list[dict[str, Any]]) -> list[dict[str, Any
 
 def tool_output_schema(tool_name: str) -> dict[str, Any]:
     return STRUCTURED_OUTPUT_SCHEMAS.get(tool_name, ANY_OBJECT_SCHEMA)
+
+
+def negotiate_mcp_protocol_version(params: Any) -> str:
+    if isinstance(params, dict):
+        requested = params.get("protocolVersion")
+        if requested in SUPPORTED_MCP_PROTOCOL_VERSIONS:
+            return str(requested)
+    return DEFAULT_MCP_PROTOCOL_VERSION
 
 
 def object_schema(
@@ -1486,7 +1496,7 @@ async def handle_json_rpc(payload: Any) -> Any:
     try:
         if method == "initialize":
             result = {
-                "protocolVersion": "2024-11-05",
+                "protocolVersion": negotiate_mcp_protocol_version(params),
                 "capabilities": {"tools": {}, "resources": {}, "prompts": {}},
                 "serverInfo": {
                     "name": "brain",

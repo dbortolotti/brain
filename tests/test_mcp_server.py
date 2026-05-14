@@ -43,6 +43,7 @@ def test_mcp_initialize() -> None:
     client = TestClient(app)
     response = client.post("/mcp", json={"jsonrpc": "2.0", "id": 1, "method": "initialize"})
     assert response.status_code == 200
+    assert response.json()["result"]["protocolVersion"] == "2024-11-05"
     server_info = response.json()["result"]["serverInfo"]
     assert server_info["name"] == "brain"
     assert server_info["icons"] == [
@@ -53,6 +54,21 @@ def test_mcp_initialize() -> None:
         }
     ]
     assert response.json()["result"]["capabilities"]["prompts"] == {}
+
+
+def test_mcp_initialize_negotiates_requested_protocol_version() -> None:
+    client = TestClient(app)
+    response = client.post(
+        "/mcp",
+        json={
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "initialize",
+            "params": {"protocolVersion": "2025-11-25"},
+        },
+    )
+    assert response.status_code == 200
+    assert response.json()["result"]["protocolVersion"] == "2025-11-25"
 
 
 def test_datasource_tools_are_listed() -> None:
